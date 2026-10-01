@@ -352,6 +352,221 @@
   .admin-chip.is-active {
     @apply border-ink text-ink;
   }
+
+  .checkout-pay-banner {
+    @apply flex flex-col gap-4 border border-ink/15 bg-paper px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8 sm:px-6 sm:py-6;
+  }
+
+  .checkout-pay-banner__badge {
+    @apply w-fit shrink-0 border border-ink bg-ink px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-paper sm:self-center;
+  }
+
+  .checkout-panel {
+    @apply border border-line bg-paper px-5 py-6 sm:px-6 sm:py-7;
+  }
+
+  .checkout-panel > legend.checkout-panel__title,
+  .checkout-panel__title {
+    @apply px-0 text-[11px] uppercase tracking-[0.24em] text-ink;
+  }
+
+  .checkout-panel__hint {
+    @apply mt-2 text-sm leading-6 text-ink-soft;
+  }
+
+  .checkout-field {
+    @apply space-y-2;
+  }
+
+  .checkout-label {
+    @apply block text-[10px] uppercase tracking-[0.2em] text-ink-soft;
+  }
+
+  .checkout-input {
+    @apply w-full border border-line bg-stone-floor px-3 py-3 text-base text-ink outline-none transition focus:border-ink md:text-sm;
+  }
+
+  .checkout-input--area {
+    @apply resize-y;
+  }
+
+  .checkout-help {
+    @apply text-xs leading-5 text-ink-faint;
+  }
+
+  .checkout-alert {
+    @apply border border-ink/20 bg-blush/30 px-4 py-3;
+  }
+
+  .checkout-submit {
+    @apply border border-line bg-paper px-5 py-5;
+  }
+
+  /* ——— Landing page ——— */
+  .landing-hero {
+    @apply relative grid min-h-screen min-h-dvh items-stretch bg-stone-floor pt-20 md:grid-cols-12 md:pt-0;
+  }
+
+  .landing-hero__copy {
+    @apply relative z-10 flex flex-col justify-center px-5 pb-10 pt-6 md:col-span-5 md:px-10 md:pb-16 md:pt-28 lg:px-14;
+  }
+
+  .landing-hero__brand {
+    @apply mb-10 text-ink md:mb-14;
+  }
+
+  .landing-hero__brand .morea-wordmark-type {
+    font-size: clamp(1.75rem, 4.5vw, 2.35rem);
+    letter-spacing: 0.34em;
+    margin-right: -0.34em;
+  }
+
+  .landing-hero__eyebrow {
+    @apply text-[10px] uppercase tracking-[0.36em] text-ink-faint;
+  }
+
+  .landing-hero__title {
+    @apply mt-3 font-display text-[2.35rem] leading-[1.1] tracking-tight text-ink md:mt-4 md:text-5xl lg:text-[3.35rem];
+  }
+
+  .landing-hero__tagline {
+    @apply mt-4 max-w-xs text-sm leading-7 text-ink-soft md:mt-5;
+  }
+
+  .landing-ghost-btn {
+    @apply mt-8 inline-flex w-fit border border-ink px-8 py-3.5 text-[10px] uppercase tracking-[0.28em] text-ink transition-colors duration-500 hover:bg-ink hover:text-paper md:mt-10 md:tracking-[0.32em];
+  }
+
+  .landing-hero__visual {
+    @apply relative flex min-h-[70vh] flex-col md:col-span-7 md:min-h-screen md:min-h-dvh;
+  }
+
+  .landing-hero__media {
+    @apply absolute inset-0;
+  }
+
+  .landing-hero__media img {
+    @apply h-full w-full object-cover object-[center_20%];
+  }
+
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+    .landing-hero__media img {
+      animation: campaign-drift 22s ease-in-out infinite alternate;
+    }
+  }
+
+  .landing-hero__caption {
+    @apply relative z-10 mt-auto px-5 pb-8 pt-24 text-paper md:px-10 md:pb-10 md:pt-32;
+    background: linear-gradient(to top, rgba(26, 23, 22, 0.62) 0%, rgba(26, 23, 22, 0.28) 45%, transparent 100%);
+  }
+
+  .landing-hero__movement {
+    @apply text-[10px] uppercase tracking-[0.36em] text-paper/90;
+  }
+
+  .landing-features {
+    @apply mt-6 grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-4 md:mt-8 md:gap-6;
+  }
+
+  .landing-features__item {
+    @apply flex flex-col items-start gap-2;
+  }
+
+  .landing-features__icon {
+    @apply text-paper/90;
+  }
+
+  .landing-features__label {
+    @apply max-w-[9rem] text-[10px] leading-4 tracking-[0.04em] text-paper/85;
+  }
+
+  .landing-product {
+    @apply grid gap-10 border-t border-line px-5 py-14 md:grid-cols-12 md:gap-8 md:px-10 md:py-20 lg:gap-12;
+    scroll-margin-top: 5rem;
+  }
+
+  .landing-gallery {
+    @apply flex gap-3 overflow-x-auto pb-2 md:col-span-8 md:grid md:grid-cols-4 md:gap-3 md:overflow-visible md:pb-0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .landing-gallery__shot {
+    @apply w-[68vw] shrink-0 sm:w-[42vw] md:w-auto;
+    scroll-snap-align: start;
+  }
+
+  .landing-gallery__caption {
+    @apply mt-3 text-center text-[9px] uppercase tracking-[0.28em] text-ink-faint;
+  }
+
+  .landing-buy {
+    @apply flex items-center md:col-span-4;
+  }
+
+  .landing-buy__form {
+    @apply w-full space-y-8;
+  }
+
+  .landing-buy__group {
+    @apply space-y-1;
+  }
+
+  .landing-buy__label {
+    @apply text-[10px] uppercase tracking-[0.24em] text-ink-faint;
+  }
+
+  .landing-swatch {
+    @apply inline-flex flex-col items-center gap-2 text-ink-faint transition-opacity duration-300;
+  }
+
+  .landing-swatch.is-active {
+    @apply text-ink;
+  }
+
+  .landing-swatch__dot {
+    @apply h-9 w-9 rounded-full border border-line transition duration-300 md:h-8 md:w-8;
+  }
+
+  .landing-swatch.is-active .landing-swatch__dot {
+    @apply ring-1 ring-ink ring-offset-2 ring-offset-stone-floor;
+  }
+
+  .landing-swatch__name {
+    @apply text-[10px] tracking-[0.04em];
+  }
+
+  .landing-trust {
+    @apply space-y-3;
+  }
+
+  .landing-trust__item {
+    @apply flex items-start gap-3 text-[10px] leading-4 tracking-[0.04em] text-ink-faint;
+  }
+
+  .landing-trust__icon {
+    @apply mt-0.5 shrink-0 text-ink-soft;
+  }
+
+  .landing-story {
+    @apply grid items-center gap-10 border-t border-line px-5 py-14 md:grid-cols-2 md:gap-0 md:px-0 md:py-0;
+  }
+
+  .landing-story__copy {
+    @apply md:px-12 md:py-20 lg:px-16 lg:py-24;
+  }
+
+  .landing-story__title {
+    @apply font-display text-3xl leading-tight text-ink md:text-4xl lg:text-5xl;
+  }
+
+  .landing-story__body {
+    @apply mt-5 max-w-md text-sm leading-7 text-ink-soft md:mt-6 md:leading-8;
+  }
+
+  .landing-story__media {
+    @apply aspect-[4/3] w-full md:aspect-auto md:min-h-[32rem] lg:min-h-[36rem];
+  }
 }
 
 .turbo-progress-bar {
@@ -379,6 +594,7 @@ main {
   }
 
   .campaign-hero__media img,
+  .landing-hero__media img,
   .object-frame img {
     animation: none !important;
     transition: none !important;

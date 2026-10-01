@@ -31,7 +31,7 @@ store.assign_attributes(
   phone: "0522000000",
   email: "hello@morea.website",
   currency: "MAD",
-  campaign_image_url: "https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&w=2400&q=80"
+  campaign_image_url: "/images/products/essentiel-set/front.jpg"
 )
 store.save!
 Store.where.not(id: store.id).find_each(&:destroy)
@@ -120,16 +120,16 @@ catalog = [
     slug: "essential-set",
     price_dh: 899,
     compare_at_dh: 999,
-    stock: 24,
+    stock: 48,
     featured: true,
-    image_url: "https://images.unsplash.com/photo-1518310383802-640c2de311b2?auto=format&fit=crop&w=1600&q=80",
-    detail_image_url: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1600&q=80",
+    image_url: "/images/products/essentiel-set/front.jpg",
+    detail_image_url: "/images/products/essentiel-set/details.jpg",
     collections: [essentials, premium],
     translations: {
       "fr" => {
-        name: "L'ensemble essentiel",
+        name: "L'Essentiel Set",
         short_description: "Un ensemble de sport pudique complet — composé, couvert, prêt à bouger.",
-        story: "Morea est née d'une idée : le sportswear doit permettre de s'entraîner entièrement couverte sans se sentir freinée. L'ensemble essentiel, c'est cette idée rendue tangible.",
+        story: "Une tenue pensée pour accompagner vos mouvements, du sport à la vie de tous les jours, sans compromis sur le style ni sur la pudeur.",
         material: "Jersey stretch respirant au toucher doux brossé. Opaque en mouvement. Léger sur la peau.",
         fit: "Décontracté sur le corps avec une ligne nette. Conçu pour effleurer, pas pour coller. Disponible du S au XL.",
         movement: "Stretch quatre directions qui tient lors des extensions, fentes et longues marches. La couverture reste en place.",
@@ -140,7 +140,7 @@ catalog = [
       "en" => {
         name: "The Essential Set",
         short_description: "A complete modest sportswear set — composed, covered, ready to move.",
-        story: "Morea began with one idea: activewear should let you train fully covered without feeling held back. The Essential Set is that idea made tangible — coordinated pieces that feel intentional together and effortless alone.",
+        story: "A set made to move with you — from sport to everyday life — without compromise on style or modesty.",
         material: "Breathable stretch jersey with a soft brushed hand-feel. Opaque in motion. Light against the skin.",
         fit: "Relaxed through the body with a clean line. Designed to skim, not cling. Available in S–XL.",
         movement: "Four-way stretch that holds through reaches, lunges, and long walks. Coverage stays put.",
@@ -151,7 +151,7 @@ catalog = [
       "ar" => {
         name: "الطقم الأساسي",
         short_description: "طقم رياضي محتشم كامل — متناسق، مغطى، جاهز للحركة.",
-        story: "بدأت موريا بفكرة واحدة: يجب أن يسمح لك اللباس الرياضي بالتدرب بتغطية كاملة دون شعور بالتقييد. الطقم الأساسي هو هذه الفكرة وقد صارت ملموسة.",
+        story: "طقم يرافق حركتكم من الرياضة إلى الحياة اليومية، دون تنازل عن الأناقة أو الحشمة.",
         material: "جيرسي مطاطي قابل للتنفس بملمس ناعم. غير شفاف أثناء الحركة. خفيف على البشرة.",
         fit: "مريح على الجسم بخط نظيف. مصمم ليلامس دون أن يلتصق. متوفر من S إلى XL.",
         movement: "تمدد رباعي الاتجاهات يثبت أثناء التمدد والطعنات والمشي الطويل. التغطية تبقى في مكانها.",
@@ -161,11 +161,18 @@ catalog = [
       }
     },
     variants: [
-      { name: "S / Black", option1_name: "Size", option1_value: "S", option2_name: "Color", option2_value: "Black", stock: 6 },
-      { name: "M / Black", option1_name: "Size", option1_value: "M", option2_name: "Color", option2_value: "Black", stock: 8 },
-      { name: "L / Black", option1_name: "Size", option1_value: "L", option2_name: "Color", option2_value: "Black", stock: 6 },
-      { name: "XL / Black", option1_name: "Size", option1_value: "XL", option2_name: "Color", option2_value: "Black", stock: 4 },
-      { name: "M / Blush", option1_name: "Size", option1_value: "M", option2_name: "Color", option2_value: "Blush", stock: 4 }
+      { name: "S / Rose poudré", option1_name: "Size", option1_value: "S", option2_name: "Color", option2_value: "Rose poudré", stock: 4 },
+      { name: "M / Rose poudré", option1_name: "Size", option1_value: "M", option2_name: "Color", option2_value: "Rose poudré", stock: 6 },
+      { name: "L / Rose poudré", option1_name: "Size", option1_value: "L", option2_name: "Color", option2_value: "Rose poudré", stock: 5 },
+      { name: "XL / Rose poudré", option1_name: "Size", option1_value: "XL", option2_name: "Color", option2_value: "Rose poudré", stock: 3 },
+      { name: "S / Taupe", option1_name: "Size", option1_value: "S", option2_name: "Color", option2_value: "Taupe", stock: 4 },
+      { name: "M / Taupe", option1_name: "Size", option1_value: "M", option2_name: "Color", option2_value: "Taupe", stock: 5 },
+      { name: "L / Taupe", option1_name: "Size", option1_value: "L", option2_name: "Color", option2_value: "Taupe", stock: 4 },
+      { name: "XL / Taupe", option1_name: "Size", option1_value: "XL", option2_name: "Color", option2_value: "Taupe", stock: 3 },
+      { name: "S / Noir", option1_name: "Size", option1_value: "S", option2_name: "Color", option2_value: "Noir", stock: 4 },
+      { name: "M / Noir", option1_name: "Size", option1_value: "M", option2_name: "Color", option2_value: "Noir", stock: 5 },
+      { name: "L / Noir", option1_name: "Size", option1_value: "L", option2_name: "Color", option2_value: "Noir", stock: 4 },
+      { name: "XL / Noir", option1_name: "Size", option1_value: "XL", option2_name: "Color", option2_value: "Noir", stock: 3 }
     ]
   },
   {
@@ -315,7 +322,7 @@ catalog = [
     slug: "soft-day-set",
     price_dh: 699,
     stock: 15,
-    image_url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1600&q=80",
+    image_url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1600&q=80",
     collections: [casual],
     translations: {
       "fr" => {

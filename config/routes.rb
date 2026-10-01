@@ -5,6 +5,15 @@ require "sidekiq/web"
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
+  namespace :api do
+    resources :orders, only: [] do
+      member do
+        match :confirm, via: %i[get post]
+        match :cancel, via: %i[get post]
+      end
+    end
+  end
+
   root to: redirect("/fr")
 
   scope "/:locale", locale: /fr|en|ar/, defaults: { locale: "fr" } do

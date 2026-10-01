@@ -29,3 +29,5 @@ end
 group :development do
   gem "web-console"
 end
+
+gem "jwt", "~> 2.10"

@@ -3,6 +3,7 @@
 require "net/http"
 require "uri"
 require "json"
+require "cgi"
 
 class DiscordNotifier
   WEBHOOK_ENV = "DISCORD_ORDERS_WEBHOOK_URL"
@@ -20,7 +21,9 @@ class DiscordNotifier
 
     payload = {
       username: "Morea",
-      embeds: [ order_embed(order) ]
+      content: "New COD order **#{order.number}** — validate or reject:",
+      embeds: [ order_embed(order) ],
+      components: [ action_row(order) ]
     }
 
     post_json(url, payload)
@@ -60,14 +63,43 @@ class DiscordNotifier
     }
   end
 
+  def action_row(order)
+    {
+      type: 1,
+      components: [
+        {
+          type: 2,
+          style: 5,
+          label: "Validate",
+          url: action_url(order, :confirm)
+        },
+        {
+          type: 2,
+          style: 5,
+          label: "Reject",
+          url: action_url(order, :cancel)
+        }
+      ]
+    }
+  end
+
+  def action_url(order, action)
+    token = OrderActionToken.issue(order: order, action: action)
+    "#{app_origin}/api/orders/#{order.id}/#{action}?token=#{CGI.escape(token)}"
+  end
+
   def money(cents, currency)
     "#{(cents.to_i / 100.0).round} #{currency}"
   end
 
   def admin_order_url(order)
+    "#{app_origin}/admin/orders/#{order.id}"
+  end
+
+  def app_origin
     host = ENV.fetch("APP_HOST", "localhost:3010")
     protocol = host.include?("localhost") ? "http" : "https"
-    "#{protocol}://#{host}/admin/orders/#{order.id}"
+    "#{protocol}://#{host}"
   end
 
   def post_json(url, payload)

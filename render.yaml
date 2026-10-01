@@ -1,0 +1,35 @@
+# Morea on Render — links existing morea-db + morea-redis by name.
+# Env secrets (RAILS_MASTER_KEY) are set on the service; DB/Redis use fromDatabase/fromService.
+services:
+  - type: web
+    name: morea
+    runtime: ruby
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: chmod +x bin/render-build.sh bin/render-start.sh && bin/render-build.sh
+    startCommand: bin/render-start.sh
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: APP_HOST
+        value: morea-d53h.onrender.com
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: morea-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: morea-redis
+          type: keyvalue
+          property: connectionString
+
+databases:
+  - name: morea-db
+    plan: basic-256mb
+    region: frankfurt
+    postgresMajorVersion: "16"
+
+# Key Value (Redis-compatible) is managed as a separate resource named morea-redis.

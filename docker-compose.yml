@@ -40,6 +40,8 @@ services:
       BINDING: "0.0.0.0"
       DATABASE_URL: postgres://maison:maison@db:5432/maison_development
       REDIS_URL: redis://redis:6379/0
+      DISCORD_ORDERS_WEBHOOK_URL: ${DISCORD_ORDERS_WEBHOOK_URL:-}
+      APP_HOST: localhost:3010
     depends_on:
       db:
         condition: service_healthy
@@ -61,6 +63,8 @@ services:
       RAILS_ENV: development
       DATABASE_URL: postgres://maison:maison@db:5432/maison_development
       REDIS_URL: redis://redis:6379/0
+      DISCORD_ORDERS_WEBHOOK_URL: ${DISCORD_ORDERS_WEBHOOK_URL:-}
+      APP_HOST: localhost:3010
     depends_on:
       db:
         condition: service_healthy

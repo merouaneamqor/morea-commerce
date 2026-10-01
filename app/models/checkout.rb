@@ -53,6 +53,7 @@ class Checkout
     end
 
     OrderStatusJob.perform_later(order.id)
+    DiscordOrderNotifyJob.perform_later(order.id)
     order
   end
 

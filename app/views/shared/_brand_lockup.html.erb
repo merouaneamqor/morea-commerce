@@ -1,0 +1,9 @@
+<%# Quiet fashion-house wordmark. %>
+<%= link_to localized_root_path,
+      class: "morea-lockup #{local_assigns[:class]}",
+      "aria-label": "Morea home" do %>
+  <span class="morea-lockup__mark" aria-hidden="true">
+    <%= render "shared/wordmark_svg" %>
+  </span>
+  <span class="sr-only">Morea</span>
+<% end %>

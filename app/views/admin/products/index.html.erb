@@ -1,0 +1,29 @@
+<% content_for :title, "Products — Admin" %>
+
+<div class="mb-8 flex items-center justify-between">
+  <h1 class="text-2xl font-medium">Products</h1>
+  <%= link_to "+ Add product", new_admin_product_path, class: "admin-btn" %>
+</div>
+
+<div class="overflow-hidden rounded border border-line bg-paper">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Stock</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @products.each do |product| %>
+        <tr>
+          <td><%= link_to product.name, edit_admin_product_path(product), class: "underline" %></td>
+          <td><%= product.price_display %></td>
+          <td><%= product.track_inventory ? product.stock : "—" %></td>
+          <td><%= product.status %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

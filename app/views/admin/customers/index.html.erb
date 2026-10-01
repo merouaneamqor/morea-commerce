@@ -1,0 +1,19 @@
+<% content_for :title, "Customers — Admin" %>
+
+<h1 class="mb-8 text-2xl font-medium">Customers</h1>
+
+<div class="overflow-hidden rounded border border-line bg-paper">
+  <table class="admin-table">
+    <thead><tr><th>Name</th><th>Phone</th><th>City</th><th>Orders</th></tr></thead>
+    <tbody>
+      <% @customers.each do |customer| %>
+        <tr>
+          <td><%= link_to customer.name, admin_customer_path(customer), class: "underline" %></td>
+          <td><%= customer.phone %></td>
+          <td><%= customer.city %></td>
+          <td><%= customer.orders_count %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

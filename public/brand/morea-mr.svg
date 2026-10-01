@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 64" fill="none">
+  <!-- Custom MR ligature for labels, pulls, packaging -->
+  <rect width="72" height="64" fill="#f7f5f2"/>
+  <g fill="#1a1716">
+    <path d="M10 50 V16.2 L22.2 41.5 L34.4 16.2 V50 h2.6 V13 H32.2 L22.2 36.8 L12.2 13 H7.4 V50 Z"/>
+    <path d="M42 50 V16.2 h10.2c5.4 0 8.7 2.9 8.7 7.7 0 4-2.2 6.45-5.7 7.3 L64.2 50 h-2.7 L52.6 31.2 H44.6 V50 Zm2.6-21.05 h8.35c4.25 0 6.75-2.1 6.75-5.9 0-3.75-2.5-5.95-6.75-5.95 H44.6 Z"/>
+  </g>
+</svg>

@@ -1,0 +1,29 @@
+<%# Discreet header locale control — FR⌄ / EN⌄ / AR⌄ %>
+<% current = current_locale.to_sym %>
+<div class="locale-switcher relative" data-controller="locale-switcher">
+  <button type="button"
+          class="maison-link inline-flex items-center gap-1"
+          data-locale-switcher-target="button"
+          data-action="locale-switcher#toggle"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-label="<%= t("nav.shop") %> — language">
+    <span><%= Morea::Locales.code_for(current) %></span>
+    <span class="locale-switcher__caret" aria-hidden="true">⌄</span>
+  </button>
+
+  <ul class="locale-switcher__menu"
+      data-locale-switcher-target="menu"
+      role="listbox"
+      hidden>
+    <% Morea::Locales::AVAILABLE.each do |locale| %>
+      <li role="option" aria-selected="<%= locale == current %>">
+        <%= link_to Morea::Locales.label_for(locale),
+              url_for(locale: locale),
+              class: "locale-switcher__option #{'is-active' if locale == current}",
+              hreflang: locale,
+              lang: locale %>
+      </li>
+    <% end %>
+  </ul>
+</div>

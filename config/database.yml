@@ -1,0 +1,18 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  url: <%= ENV.fetch("DATABASE_URL", "postgres://maison:maison@localhost:5433/maison_development") %>
+
+development:
+  <<: *default
+  database: maison_development
+
+test:
+  <<: *default
+  database: maison_test
+  url: <%= ENV.fetch("DATABASE_URL", "postgres://maison:maison@localhost:5433/maison_test") %>
+
+production:
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>

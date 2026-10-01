@@ -1,0 +1,74 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: maison
+      POSTGRES_PASSWORD: maison
+      POSTGRES_DB: maison_development
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U maison -d maison_development"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3010:3000"
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+      - storage_data:/rails/storage
+    environment:
+      RAILS_ENV: development
+      BINDING: "0.0.0.0"
+      DATABASE_URL: postgres://maison:maison@db:5432/maison_development
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+    command: bash -c "bundle install && bin/rails db:prepare && bin/rails runner 'load \"db/seeds.rb\" if Store.count.zero?' && bin/dev"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+      - storage_data:/rails/storage
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgres://maison:maison@db:5432/maison_development
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: bash -c "bundle install && bundle exec sidekiq -C config/sidekiq.yml"
+
+volumes:
+  bundle_cache:
+  postgres_data:
+  storage_data:

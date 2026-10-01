@@ -1,0 +1,22 @@
+<% content_for :title, "#{@customer.name} — Admin" %>
+
+<%= link_to "← Customers", admin_customers_path, class: "text-sm text-ink-faint" %>
+<h1 class="mt-4 text-2xl font-medium"><%= @customer.name %></h1>
+<p class="mt-2 text-sm text-ink-soft"><%= @customer.phone %> · <%= @customer.city %></p>
+
+<h2 class="mb-4 mt-10 text-lg font-medium">Orders</h2>
+<div class="overflow-hidden rounded border border-line bg-paper">
+  <table class="admin-table">
+    <thead><tr><th>Order</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>
+      <% @orders.each do |order| %>
+        <tr>
+          <td><%= link_to order.number, admin_order_path(order), class: "underline" %></td>
+          <td><%= order.total_display %></td>
+          <td><%= order.status_label %></td>
+          <td><%= order.created_at.strftime("%d/%m/%Y") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

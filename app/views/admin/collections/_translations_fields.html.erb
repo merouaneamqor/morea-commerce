@@ -1,0 +1,38 @@
+<% @collection.build_missing_translations! %>
+
+<section class="space-y-4 border-t border-line pt-8">
+  <h2 class="text-lg font-medium">Languages</h2>
+  <ul class="flex flex-wrap gap-4 text-sm">
+    <% Morea::Locales::AVAILABLE.each do |locale| %>
+      <li class="flex items-center gap-2">
+        <span><%= Morea::Locales.code_for(locale) %> <%= Morea::Locales.label_for(locale) %></span>
+        <% if @collection.locale_complete?(locale) %>
+          <span class="text-ink">✓</span>
+        <% else %>
+          <span class="text-ink-faint">—</span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</section>
+
+<%= f.fields_for :translations, @collection.translations.sort_by { |t| Morea::Locales::AVAILABLE.map(&:to_s).index(t.locale) || 99 } do |tf| %>
+  <% locale = tf.object.locale %>
+  <section class="space-y-4 border-t border-line pt-8">
+    <h2 class="text-lg font-medium"><%= Morea::Locales.label_for(locale) %></h2>
+    <%= tf.hidden_field :id if tf.object.persisted? %>
+    <%= tf.hidden_field :locale %>
+    <div>
+      <%= tf.label :name, "Name", class: "admin-label" %>
+      <%= tf.text_field :name, class: "admin-input", required: locale == "fr", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
+    </div>
+    <div>
+      <%= tf.label :subtitle, class: "admin-label" %>
+      <%= tf.text_field :subtitle, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
+    </div>
+    <div>
+      <%= tf.label :description, class: "admin-label" %>
+      <%= tf.text_area :description, rows: 4, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
+    </div>
+  </section>
+<% end %>

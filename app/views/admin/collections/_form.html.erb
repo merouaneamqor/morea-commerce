@@ -1,0 +1,38 @@
+<% content_for :title, (@collection.persisted? ? "Edit" : "New") + " collection — Admin" %>
+
+<h1 class="text-2xl font-medium"><%= @collection.persisted? ? "Edit collection" : "New collection" %></h1>
+
+<%= form_with model: [:admin, @collection], class: "mt-8 max-w-2xl space-y-6" do |f| %>
+  <% if @collection.errors.any? %>
+    <p class="text-sm text-red-800"><%= @collection.errors.full_messages.to_sentence %></p>
+  <% end %>
+  <div>
+    <%= f.label :slug, class: "admin-label" %>
+    <%= f.text_field :slug, class: "admin-input" %>
+  </div>
+  <div>
+    <%= f.label :position, class: "admin-label" %>
+    <%= f.number_field :position, class: "admin-input" %>
+  </div>
+  <label class="flex items-center gap-2 text-sm">
+    <%= f.check_box :published %> Published
+  </label>
+  <div>
+    <p class="admin-label">Products</p>
+    <div class="mt-2 space-y-2">
+      <% current_store.products.order(:name).each do |product| %>
+        <label class="flex items-center gap-2 text-sm">
+          <%= check_box_tag "collection[product_ids][]", product.id, @collection.product_ids.include?(product.id) %>
+          <%= product.name %>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <%= render "translations_fields", f: f %>
+
+  <div class="flex gap-3">
+    <%= f.submit "Save", class: "admin-btn cursor-pointer" %>
+    <%= link_to "Cancel", admin_collections_path, class: "admin-btn-secondary" %>
+  </div>
+<% end %>

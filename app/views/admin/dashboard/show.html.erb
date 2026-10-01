@@ -1,0 +1,64 @@
+<% content_for :title, "Dashboard — Admin" %>
+
+<h1 class="text-2xl font-medium">Dashboard</h1>
+
+<div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <% @counts.each do |status, count| %>
+    <%= link_to admin_orders_path(status: status), class: "admin-card" do %>
+      <p class="text-xs uppercase tracking-wider text-ink-faint"><%= status %></p>
+      <p class="mt-2 text-3xl font-medium"><%= count %></p>
+    <% end %>
+  <% end %>
+  <div class="admin-card">
+    <p class="text-xs uppercase tracking-wider text-ink-faint">COD cancel rate</p>
+    <p class="mt-2 text-3xl font-medium"><%= @cancel_rate %>%</p>
+  </div>
+</div>
+
+<div class="mt-12 grid gap-10 lg:grid-cols-2">
+  <section>
+    <div class="mb-4 flex items-center justify-between">
+      <h2 class="text-lg font-medium">Recent orders</h2>
+      <%= link_to "All", admin_orders_path, class: "text-sm text-ink-faint" %>
+    </div>
+    <div class="overflow-hidden rounded border border-line bg-paper">
+      <table class="admin-table">
+        <thead>
+          <tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <% @recent_orders.each do |order| %>
+            <tr>
+              <td><%= link_to order.number, admin_order_path(order), class: "underline" %></td>
+              <td><%= order.customer_name %></td>
+              <td><%= order.total_display %></td>
+              <td><%= order.status_label %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="mb-4 text-lg font-medium">Low stock</h2>
+    <div class="overflow-hidden rounded border border-line bg-paper">
+      <table class="admin-table">
+        <thead>
+          <tr><th>Product</th><th>Stock</th></tr>
+        </thead>
+        <tbody>
+          <% @low_stock.each do |product| %>
+            <tr>
+              <td><%= link_to product.name, edit_admin_product_path(product), class: "underline" %></td>
+              <td><%= product.stock %></td>
+            </tr>
+          <% end %>
+          <% if @low_stock.empty? %>
+            <tr><td colspan="2" class="text-ink-faint">All good</td></tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

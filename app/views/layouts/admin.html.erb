@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for?(:title) ? yield(:title) : "Admin — Morea" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="min-h-screen bg-[#ececec] font-sans text-ink antialiased" style="font-family: 'DM Sans', sans-serif">
+    <% if session[:user_id] %>
+      <div class="flex min-h-screen">
+        <aside class="hidden w-52 shrink-0 border-r border-neutral-300 bg-white px-4 py-6 md:block">
+          <p class="text-sm font-semibold tracking-wide">MOREA</p>
+          <p class="mt-0.5 text-[10px] uppercase tracking-wider text-neutral-500">Admin</p>
+          <nav class="mt-8 space-y-2 text-sm">
+            <%= link_to "Dashboard", admin_root_path, class: "admin-nav-link" %>
+            <%= link_to "Orders", admin_orders_path, class: "admin-nav-link" %>
+            <%= link_to "Products", admin_products_path, class: "admin-nav-link" %>
+            <%= link_to "Inventory", admin_products_path, class: "admin-nav-link" %>
+            <%= link_to "Collections", admin_collections_path, class: "admin-nav-link" %>
+            <%= link_to "Customers", admin_customers_path, class: "admin-nav-link" %>
+            <%= link_to "Settings", edit_admin_store_path, class: "admin-nav-link" %>
+            <%= link_to "View storefront", localized_root_path(locale: :fr), class: "admin-nav-link", target: "_blank" %>
+            <%= button_to "Sign out", admin_logout_path, method: :delete, class: "admin-nav-link mt-6 text-left" %>
+          </nav>
+        </aside>
+        <div class="flex-1">
+          <header class="flex items-center justify-between border-b border-neutral-300 bg-white px-4 py-3 md:hidden">
+            <p class="text-sm font-semibold">MOREA Admin</p>
+            <%= link_to "Menu", admin_root_path, class: "text-sm" %>
+          </header>
+          <div class="px-4 py-5 md:px-6">
+            <% if notice.present? %><p class="mb-4 text-sm text-neutral-600"><%= notice %></p><% end %>
+            <% if alert.present? %><p class="mb-4 text-sm text-red-700"><%= alert %></p><% end %>
+            <%= yield %>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <div class="mx-auto flex min-h-screen max-w-sm items-center px-4">
+        <%= yield %>
+      </div>
+    <% end %>
+  </body>
+</html>

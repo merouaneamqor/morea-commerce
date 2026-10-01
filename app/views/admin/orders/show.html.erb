@@ -1,0 +1,67 @@
+<% content_for :title, "#{@order.number} — Admin" %>
+
+<div class="mb-6">
+  <%= link_to "← Orders", admin_orders_path, class: "text-sm text-ink-faint" %>
+</div>
+
+<div class="grid gap-10 lg:grid-cols-2">
+  <section class="space-y-6">
+    <h1 class="font-display text-3xl"><%= @order.number %></h1>
+    <div class="rounded border border-line bg-paper p-6 space-y-3 text-sm">
+      <p class="text-lg font-medium"><%= @order.customer_name %></p>
+      <p>📞 <%= @order.customer_phone %></p>
+      <p><%= @order.customer_address %>, <%= @order.customer_city %></p>
+      <div class="border-t border-line pt-4 space-y-2">
+        <% @order.order_items.each do |item| %>
+          <div class="flex justify-between gap-4">
+            <span><%= item.product_name %><%= " — #{item.variant_name}" if item.variant_name %> × <%= item.quantity %></span>
+            <span><%= money(item.total_cents, @order.currency) %></span>
+          </div>
+        <% end %>
+        <div class="flex justify-between border-t border-line pt-3 font-medium">
+          <span>Total</span>
+          <span><%= @order.total_display %></span>
+        </div>
+      </div>
+      <% if @order.notes.present? %>
+        <p class="border-t border-line pt-4 text-ink-soft"><%= @order.notes %></p>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="space-y-6">
+    <h2 class="text-lg font-medium">Status</h2>
+    <ol class="space-y-3">
+      <% Order::STATUSES.each do |status| %>
+        <li class="flex items-center gap-3 text-sm <%= @order.status == status ? 'font-medium' : 'text-ink-faint' %>">
+          <span class="inline-block h-2.5 w-2.5 rounded-full <%= @order.status == status ? 'bg-ink' : 'bg-stone-deep' %>"></span>
+          <%= status.humanize %>
+        </li>
+      <% end %>
+    </ol>
+
+    <div class="flex flex-wrap gap-3 pt-4">
+      <% Order::TRANSITIONS.fetch(@order.status, []).each do |next_status| %>
+        <% if next_status == "cancelled" %>
+          <%= form_with url: transition_admin_order_path(@order), method: :patch, class: "flex flex-wrap items-end gap-2" do %>
+            <%= hidden_field_tag :to_status, "cancelled" %>
+            <%= text_field_tag :cancel_reason, nil, placeholder: "Cancel reason", class: "admin-input" %>
+            <%= submit_tag "Cancel", class: "admin-btn-secondary cursor-pointer" %>
+          <% end %>
+        <% else %>
+          <%= button_to next_status.humanize,
+                transition_admin_order_path(@order),
+                method: :patch,
+                params: { to_status: next_status },
+                class: "admin-btn cursor-pointer" %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%= form_with model: [:admin, @order], class: "space-y-3 border-t border-line pt-6" do |f| %>
+      <%= f.label :notes, class: "admin-label" %>
+      <%= f.text_area :notes, rows: 3, class: "admin-input" %>
+      <%= f.submit "Save notes", class: "admin-btn-secondary cursor-pointer" %>
+    <% end %>
+  </section>
+</div>

@@ -1,0 +1,386 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: "Noto Naskh Arabic", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-stone-floor: #f7f5f2;
+  --color-stone-deep: #ebe7e2;
+  --color-ink: #1a1716;
+  --color-ink-soft: #4a4340;
+  --color-ink-faint: #8a827c;
+  --color-brass: #9a6f72;
+  --color-brass-soft: #c4a0a3;
+  --color-paper: #faf9f7;
+  --color-line: rgba(26, 23, 22, 0.1);
+  --color-blush: #f8cdd0;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-stone-floor text-ink font-sans antialiased;
+    background-color: #f7f5f2;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  body.is-rtl {
+    font-family: var(--font-arabic);
+  }
+
+  body.is-rtl .font-display,
+  body.is-rtl .maison-brand,
+  body.is-rtl h1,
+  body.is-rtl h2 {
+    font-family: var(--font-arabic);
+  }
+
+  ::selection {
+    background: rgba(248, 205, 208, 0.4);
+  }
+
+  /* Prevent iOS zoom on form focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  @media (min-width: 768px) {
+    input,
+    select,
+    textarea {
+      font-size: inherit;
+    }
+  }
+}
+
+@layer components {
+  .maison-nav {
+    @apply fixed inset-x-0 top-0 z-40 flex items-center justify-between px-5 py-4 md:px-10 md:py-5;
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .maison-nav.is-over-hero {
+    color: #faf9f7;
+  }
+
+  .maison-nav.is-over-hero .morea-lockup,
+  .maison-nav.is-over-hero .maison-link {
+    color: #faf9f7;
+  }
+
+  /* Fashion-house wordmark lockup — quiet, spaced, no icon */
+  .morea-lockup {
+    @apply inline-flex shrink-0 items-center text-ink;
+  }
+
+  .morea-lockup__mark {
+    display: block;
+    overflow: visible;
+  }
+
+  .morea-wordmark-type {
+    display: block;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 1.05rem;
+    letter-spacing: 0.32em;
+    line-height: 1;
+    text-transform: uppercase;
+    margin-right: -0.32em;
+  }
+
+  @media (min-width: 768px) {
+    .morea-wordmark-type {
+      font-size: 1.2rem;
+      letter-spacing: 0.34em;
+      margin-right: -0.34em;
+    }
+  }
+
+  .campaign-wordmark .morea-wordmark-type {
+    font-size: clamp(1.85rem, 7.5vw, 3.5rem);
+    letter-spacing: 0.36em;
+    margin-right: -0.36em;
+    font-weight: 400;
+  }
+
+  .morea-packaging__mark .morea-wordmark-type {
+    font-size: 1.15rem;
+    letter-spacing: 0.34em;
+    margin-right: -0.34em;
+  }
+
+  @media (min-width: 768px) {
+    .morea-packaging__mark .morea-wordmark-type {
+      font-size: 1.35rem;
+    }
+  }
+
+  /* Keep the Latin wordmark LTR even on Arabic pages */
+  [dir="rtl"] .morea-lockup,
+  [dir="rtl"] .campaign-wordmark,
+  [dir="rtl"] .morea-packaging__mark {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
+  .morea-packaging__mark {
+    width: auto;
+  }
+
+  .maison-brand {
+    @apply font-display text-[1.35rem] tracking-[0.22em] uppercase text-ink md:text-[1.65rem] md:tracking-[0.28em];
+  }
+
+  .maison-link {
+    @apply text-[10px] uppercase tracking-[0.22em] text-ink-soft transition-opacity duration-500 hover:opacity-55 md:tracking-[0.28em];
+  }
+
+  .maison-rule {
+    @apply border-t border-line;
+  }
+
+  .maison-cta {
+    @apply inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.28em] text-ink transition-opacity duration-500 hover:opacity-50 md:tracking-[0.32em];
+  }
+
+  .maison-cta::after {
+    content: "";
+    display: inline-block;
+    width: 2.25rem;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.7s ease;
+  }
+
+  .maison-cta:hover::after {
+    width: 3.25rem;
+  }
+
+  .maison-cta-light {
+    @apply text-paper;
+  }
+
+  .maison-button {
+    @apply inline-block border border-ink bg-ink px-8 py-4 text-[10px] uppercase tracking-[0.24em] text-paper transition-all duration-700 hover:bg-transparent hover:text-ink md:px-10 md:tracking-[0.28em];
+    min-height: 3rem;
+  }
+
+  .object-frame {
+    @apply relative overflow-hidden bg-stone-deep;
+  }
+
+  .object-frame img {
+    @apply h-full w-full object-cover transition-transform duration-[2200ms] ease-out;
+  }
+
+  @media (hover: hover) {
+    .object-frame:hover img {
+      transform: scale(1.025);
+    }
+  }
+
+  .campaign-hero {
+    @apply relative flex w-full flex-col items-center justify-end overflow-hidden;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .campaign-hero__media {
+    @apply absolute inset-0;
+  }
+
+  .campaign-hero__media img {
+    @apply h-full w-full object-cover;
+  }
+
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+    .campaign-hero__media img {
+      animation: campaign-drift 18s ease-in-out infinite alternate;
+    }
+  }
+
+  .campaign-hero__veil {
+    @apply absolute inset-0;
+    background:
+      linear-gradient(to bottom, rgba(26, 23, 22, 0.35) 0%, rgba(26, 23, 22, 0.15) 40%, rgba(26, 23, 22, 0.55) 100%);
+  }
+
+  .campaign-hero__content {
+    @apply relative z-10 flex w-full flex-col items-center px-5 pb-14 pt-28 text-center text-paper md:px-6 md:pb-20 md:pt-32;
+    padding-bottom: max(3.5rem, calc(env(safe-area-inset-bottom) + 2rem));
+  }
+
+  .campaign-wordmark {
+    @apply opacity-95;
+    width: auto;
+    color: #faf9f7;
+  }
+
+  .size-pill {
+    @apply inline-flex h-12 min-w-12 flex-1 items-center justify-center border border-line px-3 text-[11px] uppercase tracking-[0.18em] text-ink-soft transition-all duration-300 md:h-11 md:min-w-11 md:flex-none;
+  }
+
+  .size-pill.is-active {
+    @apply border-ink bg-ink text-paper;
+  }
+
+  @media (hover: hover) {
+    .size-pill:hover {
+      @apply border-ink text-ink;
+    }
+  }
+
+  .color-swatch {
+    @apply inline-flex h-9 w-9 rounded-full border border-line transition md:h-7 md:w-7;
+  }
+
+  .color-swatch.is-active {
+    @apply ring-1 ring-ink ring-offset-2 ring-offset-stone-floor;
+  }
+
+  .story-section {
+    @apply grid gap-4 border-t border-line py-12 md:grid-cols-12 md:gap-16 md:py-20;
+  }
+
+  .story-label {
+    @apply text-[10px] uppercase tracking-[0.32em] text-brass md:col-span-3;
+  }
+
+  .story-body {
+    @apply md:col-span-7 md:col-start-5;
+  }
+
+  .flash {
+    @apply fixed start-1/2 z-50 -translate-x-1/2 border border-line bg-paper px-5 py-3 text-[10px] uppercase tracking-[0.2em] text-ink;
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+    max-width: calc(100vw - 2rem);
+  }
+
+  .locale-switcher__caret {
+    font-size: 0.7em;
+    line-height: 1;
+    opacity: 0.7;
+  }
+
+  .locale-switcher__menu {
+    @apply absolute end-0 top-full z-50 mt-3 min-w-[9rem] border border-line bg-paper py-2 text-start shadow-sm;
+  }
+
+  .maison-nav.is-over-hero .locale-switcher__menu {
+    @apply border-white/20 bg-ink text-paper;
+  }
+
+  .locale-switcher__option {
+    @apply block px-4 py-2 text-[10px] tracking-[0.18em] text-ink-soft transition-opacity hover:opacity-55;
+  }
+
+  .maison-nav.is-over-hero .locale-switcher__option {
+    @apply text-paper/80;
+  }
+
+  .locale-switcher__option.is-active {
+    @apply text-ink;
+  }
+
+  .maison-nav.is-over-hero .locale-switcher__option.is-active {
+    @apply text-paper;
+  }
+
+  body.has-mobile-buy .flash {
+    bottom: max(5.5rem, calc(env(safe-area-inset-bottom) + 4.5rem));
+  }
+
+  .mobile-buy-bar {
+    @apply fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 backdrop-blur-sm md:hidden;
+    padding: 0.75rem 1.25rem max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .pdp-mobile-pad {
+    @apply pb-28 md:pb-28;
+  }
+
+  .admin-nav-link {
+    @apply block text-sm text-ink-soft transition hover:text-ink;
+  }
+
+  .admin-input {
+    @apply mt-1 w-full border border-line bg-white px-3 py-2 text-sm outline-none focus:border-ink;
+  }
+
+  .admin-label {
+    @apply text-xs uppercase tracking-wider text-ink-faint;
+  }
+
+  .admin-btn {
+    @apply inline-flex items-center justify-center bg-ink px-4 py-2 text-sm text-paper transition hover:opacity-90;
+  }
+
+  .admin-btn-secondary {
+    @apply inline-flex items-center justify-center border border-line bg-white px-4 py-2 text-sm text-ink transition hover:border-ink;
+  }
+
+  .admin-card {
+    @apply border border-line bg-white p-4 transition hover:border-ink/30;
+  }
+
+  .admin-table {
+    @apply w-full text-left text-sm;
+  }
+
+  .admin-table th {
+    @apply border-b border-line px-3 py-2 text-[11px] uppercase tracking-wider text-ink-faint;
+  }
+
+  .admin-table td {
+    @apply border-b border-line px-3 py-2;
+  }
+
+  .admin-chip {
+    @apply border border-line px-2.5 py-1 text-[11px] uppercase tracking-wider text-ink-faint;
+  }
+
+  .admin-chip.is-active {
+    @apply border-ink text-ink;
+  }
+}
+
+.turbo-progress-bar {
+  background: var(--color-brass);
+  height: 1px;
+}
+
+main {
+  animation: page-enter 1s ease both;
+}
+
+@keyframes page-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes campaign-drift {
+  from { transform: scale(1); }
+  to { transform: scale(1.04); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main {
+    animation: none;
+  }
+
+  .campaign-hero__media img,
+  .object-frame img {
+    animation: none !important;
+    transition: none !important;
+  }
+}

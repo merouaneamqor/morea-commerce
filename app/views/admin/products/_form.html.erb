@@ -1,0 +1,101 @@
+<% content_for :title, (@product.persisted? ? "Edit" : "New") + " product — Admin" %>
+
+<h1 class="text-2xl font-medium"><%= @product.persisted? ? "Edit product" : "New product" %></h1>
+
+<%= form_with model: [:admin, @product], class: "mt-8 max-w-3xl space-y-6" do |f| %>
+  <% if @product.errors.any? %>
+    <p class="text-sm text-red-800"><%= @product.errors.full_messages.to_sentence %></p>
+  <% end %>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    <div>
+      <%= f.label :slug, class: "admin-label" %>
+      <%= f.text_field :slug, class: "admin-input" %>
+    </div>
+    <div>
+      <%= f.label :price_dh, "Price (DH)", class: "admin-label" %>
+      <%= f.number_field :price_dh, class: "admin-input", required: true, min: 0 %>
+    </div>
+    <div>
+      <%= f.label :compare_at_dh, "Compare-at (DH)", class: "admin-label" %>
+      <%= f.number_field :compare_at_dh, class: "admin-input", min: 0 %>
+    </div>
+    <div>
+      <%= f.label :status, class: "admin-label" %>
+      <%= f.select :status, Product::STATUSES, {}, class: "admin-input" %>
+    </div>
+    <div>
+      <%= f.label :stock, class: "admin-label" %>
+      <%= f.number_field :stock, class: "admin-input", min: 0 %>
+    </div>
+    <div>
+      <%= f.label :sku, class: "admin-label" %>
+      <%= f.text_field :sku, class: "admin-input" %>
+    </div>
+    <div class="flex items-end gap-4 pb-2">
+      <label class="flex items-center gap-2 text-sm">
+        <%= f.check_box :track_inventory %> Track inventory
+      </label>
+      <label class="flex items-center gap-2 text-sm">
+        <%= f.check_box :featured %> Featured
+      </label>
+    </div>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    <div>
+      <%= f.label :image_url, "Image URL", class: "admin-label" %>
+      <%= f.text_field :image_url, class: "admin-input" %>
+    </div>
+    <div>
+      <%= f.label :detail_image_url, "Detail image URL", class: "admin-label" %>
+      <%= f.text_field :detail_image_url, class: "admin-input" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :images, "Upload images", class: "admin-label" %>
+    <%= f.file_field :images, multiple: true, direct_upload: false, class: "admin-input" %>
+  </div>
+
+  <div>
+    <%= f.label :collection_ids, "Collections", class: "admin-label" %>
+    <div class="mt-2 space-y-2">
+      <%= f.collection_check_boxes :collection_ids, current_store.collections.order(:name), :id, :name do |b| %>
+        <label class="flex items-center gap-2 text-sm"><%= b.check_box %> <%= b.text %></label>
+      <% end %>
+    </div>
+  </div>
+
+  <%= render "translations_fields", f: f %>
+
+  <div class="flex gap-3 pt-4">
+    <%= f.submit "Save", class: "admin-btn cursor-pointer" %>
+    <%= link_to "Cancel", admin_products_path, class: "admin-btn-secondary" %>
+  </div>
+<% end %>
+
+<% if @product.persisted? %>
+  <section class="mt-16 max-w-3xl border-t border-line pt-10">
+    <h2 class="text-lg font-medium">Variants</h2>
+    <ul class="mt-4 space-y-3">
+      <% @product.product_variants.each do |variant| %>
+        <li class="flex items-center justify-between rounded border border-line bg-paper px-4 py-3 text-sm">
+          <span><%= variant.display_name %> · stock <%= variant.stock %></span>
+          <%= button_to "Remove", admin_product_variant_path(@product, variant), method: :delete, class: "text-ink-faint" %>
+        </li>
+      <% end %>
+    </ul>
+
+    <%= form_with model: [:admin, @product, ProductVariant.new], class: "mt-6 grid gap-3 md:grid-cols-4" do |vf| %>
+      <%= vf.text_field :name, placeholder: "Name", class: "admin-input", required: true %>
+      <%= vf.text_field :sku, placeholder: "SKU", class: "admin-input" %>
+      <%= vf.number_field :stock, placeholder: "Stock", class: "admin-input", value: 0 %>
+      <%= vf.submit "Add variant", class: "admin-btn cursor-pointer" %>
+    <% end %>
+  </section>
+
+  <div class="mt-10">
+    <%= button_to "Delete product", admin_product_path(@product), method: :delete, form: { data: { turbo_confirm: "Delete this product?" } }, class: "text-sm text-red-800" %>
+  </div>
+<% end %>

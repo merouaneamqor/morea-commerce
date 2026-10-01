@@ -1,0 +1,48 @@
+<% content_for :title, "#{t("checkout.title")} — #{current_store.name}" %>
+
+<section class="mx-auto max-w-md px-5 pb-24 pt-28 md:px-10 md:pb-28 md:pt-32">
+  <h1 class="font-display text-3xl text-ink md:text-4xl"><%= t("checkout.title") %></h1>
+
+  <ul class="mt-10 space-y-3 border-b border-line pb-8 md:mt-12">
+    <% @items.each do |item| %>
+      <li class="flex justify-between gap-4 text-sm text-ink-soft">
+        <span class="min-w-0"><%= item.display_name %> × <%= item.quantity %></span>
+        <span class="shrink-0"><%= money(item.line_total_cents, current_store.currency) %></span>
+      </li>
+    <% end %>
+  </ul>
+
+  <%= form_with model: @checkout, url: checkout_path, method: :post, class: "mt-8 space-y-7 md:mt-10 md:space-y-8" do |f| %>
+    <% if @checkout.errors.any? %>
+      <p class="text-sm text-ink-soft"><%= @checkout.errors.full_messages.to_sentence %></p>
+    <% end %>
+
+    <div class="space-y-2">
+      <%= f.label :name, t("checkout.full_name"), class: "text-[10px] uppercase tracking-[0.22em] text-ink-faint" %>
+      <%= f.text_field :name, required: true, autocomplete: "name", class: "w-full border-0 border-b border-line bg-transparent py-3 text-base outline-none focus:border-ink md:text-sm" %>
+    </div>
+    <div class="space-y-2">
+      <%= f.label :phone, t("checkout.phone"), class: "text-[10px] uppercase tracking-[0.22em] text-ink-faint" %>
+      <%= f.telephone_field :phone, required: true, autocomplete: "tel", inputmode: "tel", placeholder: "06 XX XX XX XX", class: "w-full border-0 border-b border-line bg-transparent py-3 text-base outline-none focus:border-ink md:text-sm" %>
+    </div>
+    <div class="space-y-2">
+      <%= f.label :city, t("checkout.city"), class: "text-[10px] uppercase tracking-[0.22em] text-ink-faint" %>
+      <%= f.text_field :city, required: true, autocomplete: "address-level2", placeholder: "Casablanca", class: "w-full border-0 border-b border-line bg-transparent py-3 text-base outline-none focus:border-ink md:text-sm" %>
+    </div>
+    <div class="space-y-2">
+      <%= f.label :address, t("checkout.address"), class: "text-[10px] uppercase tracking-[0.22em] text-ink-faint" %>
+      <%= f.text_area :address, required: true, autocomplete: "street-address", rows: 3, class: "w-full border-0 border-b border-line bg-transparent py-3 text-base outline-none focus:border-ink md:text-sm" %>
+    </div>
+    <div class="space-y-2">
+      <%= f.label :notes, t("checkout.notes"), class: "text-[10px] uppercase tracking-[0.22em] text-ink-faint" %>
+      <%= f.text_area :notes, rows: 2, class: "w-full border-0 border-b border-line bg-transparent py-3 text-base outline-none focus:border-ink md:text-sm" %>
+    </div>
+
+    <div class="border-t border-line pt-8" style="padding-bottom: env(safe-area-inset-bottom)">
+      <p class="font-display text-2xl"><%= t("checkout.total") %> <%= money(@cart.subtotal_cents, current_store.currency) %></p>
+      <%= f.submit t("checkout.confirm"), class: "maison-button mt-6 w-full cursor-pointer text-center md:mt-8" %>
+      <p class="mt-5 text-[10px] uppercase tracking-[0.2em] text-ink-faint"><%= current_store.cod_label %></p>
+      <p class="mt-2 text-sm leading-6 text-ink-soft"><%= current_store.cod_note %></p>
+    </div>
+  <% end %>
+</section>

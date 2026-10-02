@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0;400;500;600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
     <%= yield :head %>
 
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -23,7 +23,8 @@
 
   <% body = yield %>
   <body class="min-h-screen min-h-dvh <%= "has-mobile-buy" if content_for?(:mobile_buy) %> <%= "is-rtl" if rtl? %>">
-    <header class="maison-nav <%= "is-over-hero" if content_for?(:hero_nav) %>">
+    <header class="maison-nav <%= "is-over-hero" if content_for?(:hero_nav) %> <%= "is-split-hero" if content_for?(:split_hero_nav) %>"
+            data-controller="nav-scroll">
       <%= render "shared/brand_lockup" %>
       <nav class="flex items-center gap-5 md:gap-8">
         <%= link_to t("nav.shop"), collections_path, class: "maison-link" %>

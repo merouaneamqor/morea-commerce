@@ -5,6 +5,11 @@ en:
     default_campaign_cta: "Discover Morea"
     tagline_fallback: "Luxury modest sportswear for active women."
     footer_tagline: "Modern Modest Activewear"
+  home:
+    selection_title: "The Selection"
+    view_all: "View all"
+    collections_title: "Train, move, unwind"
+    explore: "Explore"
   landing:
     eyebrow: "Activewear"
     hero_product: "The Essential Set"
@@ -27,6 +32,7 @@ en:
     story_title: "Designed for your balance"
     story_body: "A set made to move with you — from sport to everyday life — without compromise on style or modesty."
     our_story: "Our story"
+    story_eyebrow: "The House"
   nav:
     shop: "Shop"
     bag: "Bag"

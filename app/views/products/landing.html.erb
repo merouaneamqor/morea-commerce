@@ -1,5 +1,6 @@
 <% content_for :title, "#{@product.name} — #{current_store.name}" %>
 <% content_for :meta_description, @product.short_description.presence || t("landing.hero_tagline") %>
+<% content_for :split_hero_nav, "1" %>
 <% if @hero_image.present? %>
   <% content_for :head do %>
     <%= preload_hero_image(@hero_image) %>
@@ -9,12 +10,7 @@
 <%# ——— Hero ——— %>
 <section class="landing-hero">
   <div class="landing-hero__copy" data-controller="reveal">
-    <div class="landing-hero__brand" aria-hidden="true">
-      <%= render "shared/wordmark_svg" %>
-    </div>
-    <span class="sr-only">Morea</span>
-
-    <p class="landing-hero__eyebrow"><%= t("landing.eyebrow") %></p>
+    <p class="landing-eyebrow"><%= t("landing.eyebrow") %></p>
     <h1 class="landing-hero__title"><%= @product.name %></h1>
     <p class="landing-hero__tagline"><%= t("landing.hero_tagline") %></p>
 
@@ -22,8 +18,10 @@
        class="landing-ghost-btn"
        data-controller="scroll-to"
        data-action="scroll-to#scroll">
-      <%= t("landing.discover") %>
+      <span><%= t("landing.discover") %></span>
     </a>
+
+    <span class="landing-hero__scroll" aria-hidden="true"></span>
   </div>
 
   <div class="landing-hero__visual">
@@ -42,21 +40,6 @@
 
     <div class="landing-hero__caption" data-controller="reveal" data-reveal-delay-value="180">
       <p class="landing-hero__movement"><%= t("landing.for_movement") %></p>
-      <ul class="landing-features" role="list">
-        <% [
-          ["breathable", t("landing.features.breathable")],
-          ["quickdry", t("landing.features.quickdry")],
-          ["fit", t("landing.features.fit")],
-          ["modest", t("landing.features.modest")]
-        ].each do |key, label| %>
-          <li class="landing-features__item">
-            <span class="landing-features__icon" aria-hidden="true">
-              <%= render "shared/feature_icon", name: key %>
-            </span>
-            <span class="landing-features__label"><%= label %></span>
-          </li>
-        <% end %>
-      </ul>
     </div>
   </div>
 </section>
@@ -69,11 +52,14 @@
         <div class="object-frame aspect-[3/4]">
           <%= object_image_tag shot[:url],
                 alt: "#{@product.name} — #{shot[:label]}",
-                sizes: "(max-width: 768px) 70vw, 18vw",
-                widths: [400, 640, 960],
+                sizes: "(max-width: 768px) 78vw, 30vw",
+                widths: [400, 640, 960, 1280],
                 loading: i < 2 ? "eager" : "lazy" %>
         </div>
-        <figcaption class="landing-gallery__caption"><%= shot[:label] %></figcaption>
+        <figcaption class="landing-gallery__caption">
+          <span class="landing-gallery__index"><%= format("%02d", i + 1) %></span>
+          <span><%= shot[:label] %></span>
+        </figcaption>
       </figure>
     <% end %>
   </div>
@@ -87,21 +73,34 @@
       <%= hidden_field_tag :product_id, @product.id %>
       <%= hidden_field_tag :quantity, 1 %>
 
+      <header class="landing-buy__head">
+        <p class="landing-eyebrow"><%= t("landing.eyebrow") %></p>
+        <h2 class="landing-buy__title"><%= @product.name %></h2>
+        <p class="landing-buy__price"><%= @product.price_display %></p>
+        <% if @product.short_description.present? %>
+          <p class="landing-buy__desc"><%= @product.short_description %></p>
+        <% end %>
+      </header>
+
       <% if @variants.any? %>
         <%= hidden_field_tag :product_variant_id, @variants.first.id, data: { variant_picker_target: "variantId" } %>
 
         <% if @colors.any? %>
           <div class="landing-buy__group">
-            <div class="flex flex-wrap gap-5">
+            <p class="landing-buy__label">
+              <%= t("product.color") %>
+              <span class="landing-buy__value" data-variant-picker-target="colorLabel"><%= @colors.first %></span>
+            </p>
+            <div class="mt-4 flex flex-wrap gap-4">
               <% @colors.each do |color| %>
                 <button type="button"
                         class="landing-swatch <%= "is-active" if color == @colors.first %>"
                         data-variant-picker-target="colorButton"
                         data-color="<%= color %>"
                         data-action="variant-picker#selectColor"
-                        aria-label="<%= color %>">
+                        aria-label="<%= color %>"
+                        title="<%= color %>">
                   <span class="landing-swatch__dot" style="background: <%= color_hex(color) %>"></span>
-                  <span class="landing-swatch__name"><%= color %></span>
                 </button>
               <% end %>
             </div>
@@ -111,7 +110,7 @@
         <% if @sizes.any? %>
           <div class="landing-buy__group">
             <p class="landing-buy__label"><%= t("product.size") %></p>
-            <div class="mt-3 flex gap-2">
+            <div class="mt-4 flex gap-2">
               <% @sizes.each do |size| %>
                 <button type="button"
                         class="size-pill <%= "is-active" if size == @sizes.first %>"
@@ -129,13 +128,13 @@
       <ul class="landing-trust" role="list">
         <li class="landing-trust__item">
           <span class="landing-trust__icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7h11v10H3z"/><path d="M14 10h4l3 3v4h-7"/><circle cx="7" cy="18.5" r="1.5"/><circle cx="17" cy="18.5" r="1.5"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 7h11v10H3z"/><path d="M14 10h4l3 3v4h-7"/><circle cx="7" cy="18.5" r="1.5"/><circle cx="17" cy="18.5" r="1.5"/></svg>
           </span>
           <span><%= t("landing.trust.delivery") %></span>
         </li>
         <li class="landing-trust__item">
           <span class="landing-trust__icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 12a8 8 0 0 1 13.5-5.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 12a8 8 0 0 1-13.5 5.8L4 16"/><path d="M4 20v-4h4"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M4 12a8 8 0 0 1 13.5-5.8L20 8"/><path d="M20 4v4h-4"/><path d="M20 12a8 8 0 0 1-13.5 5.8L4 16"/><path d="M4 20v-4h4"/></svg>
           </span>
           <span><%= t("landing.trust.returns") %></span>
         </li>
@@ -144,16 +143,24 @@
   </div>
 </section>
 
+<%# ——— Savoir-faire ——— %>
+<section class="landing-craft" data-controller="reveal">
+  <p class="landing-eyebrow landing-eyebrow--light justify-center"><%= t("landing.for_movement") %></p>
+  <ul class="landing-craft__list" role="list">
+    <% %w[breathable quickdry fit modest].each_with_index do |key, i| %>
+      <li class="landing-craft__item">
+        <span class="landing-craft__index"><%= format("%02d", i + 1) %></span>
+        <span class="landing-craft__icon" aria-hidden="true">
+          <%= render "shared/feature_icon", name: key %>
+        </span>
+        <span class="landing-craft__label"><%= t("landing.features.#{key}") %></span>
+      </li>
+    <% end %>
+  </ul>
+</section>
+
 <%# ——— Story ——— %>
 <section class="landing-story" data-controller="reveal">
-  <div class="landing-story__copy">
-    <h2 class="landing-story__title"><%= t("landing.story_title") %></h2>
-    <p class="landing-story__body">
-      <%= t("landing.story_body") %>
-    </p>
-    <%= link_to t("landing.our_story"), collections_path, class: "maison-cta mt-8 md:mt-10" %>
-  </div>
-
   <div class="landing-story__media object-frame">
     <% if @story_image.present? %>
       <%= object_image_tag @story_image,
@@ -161,7 +168,16 @@
             sizes: "(max-width: 768px) 100vw, 50vw",
             widths: [640, 960, 1280] %>
     <% else %>
-      <div class="aspect-[4/3] w-full bg-stone-deep md:aspect-auto md:min-h-[28rem]"></div>
+      <div class="h-full w-full bg-stone-deep"></div>
     <% end %>
+  </div>
+
+  <div class="landing-story__copy">
+    <p class="landing-eyebrow"><%= t("landing.story_eyebrow") %></p>
+    <h2 class="landing-story__title"><%= t("landing.story_title") %></h2>
+    <p class="landing-story__body">
+      <%= t("landing.story_body") %>
+    </p>
+    <%= link_to t("landing.our_story"), collections_path, class: "maison-cta mt-10 md:mt-12" %>
   </div>
 </section>

@@ -5,6 +5,11 @@ fr:
     default_campaign_cta: "Découvrir Morea"
     tagline_fallback: "Sportswear pudique de luxe pour femmes actives."
     footer_tagline: "Activewear pudique moderne"
+  home:
+    selection_title: "La sélection"
+    view_all: "Tout voir"
+    collections_title: "S'entraîner, se déplacer, se poser"
+    explore: "Explorer"
   landing:
     eyebrow: "Activewear"
     hero_product: "L'Essentiel Set"
@@ -27,6 +32,7 @@ fr:
     story_title: "Conçu pour votre équilibre"
     story_body: "Une tenue pensée pour accompagner vos mouvements, du sport à la vie de tous les jours, sans compromis sur le style ni sur la pudeur."
     our_story: "Notre histoire"
+    story_eyebrow: "La Maison"
   nav:
     shop: "Boutique"
     bag: "Panier"

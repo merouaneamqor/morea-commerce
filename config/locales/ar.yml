@@ -5,6 +5,11 @@ ar:
     default_campaign_cta: "اكتشفوا موريا"
     tagline_fallback: "ملابس رياضية محتشمة فاخرة للنساء النشيطات."
     footer_tagline: "ملابس رياضية محتشمة عصرية"
+  home:
+    selection_title: "المختارات"
+    view_all: "عرض الكل"
+    collections_title: "تمرّني، تحرّكي، استرخي"
+    explore: "اكتشفي"
   landing:
     eyebrow: "ملابس رياضية"
     hero_product: "الطقم الأساسي"
@@ -27,6 +32,7 @@ ar:
     story_title: "مصمم لتوازنكم"
     story_body: "طقم يرافق حركتكم من الرياضة إلى الحياة اليومية، دون تنازل عن الأناقة أو الحشمة."
     our_story: "قصتنا"
+    story_eyebrow: "الدار"
   nav:
     shop: "تسوق"
     bag: "الحقيبة"

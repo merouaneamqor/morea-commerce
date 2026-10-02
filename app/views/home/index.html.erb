@@ -1,9 +1,9 @@
 <% content_for :title, "#{@store&.name || "Morea"} — #{@store&.tagline.presence || t("store.tagline_fallback")}" %>
 <% if @sections.first&.kind == "hero" %>
   <% content_for :hero_nav, "1" %>
-  <% if @sections.first.image_url.present? %>
+  <% if @sections.first.image_src.present? %>
     <% content_for :head do %>
-      <%= preload_hero_image(@sections.first.image_url) %>
+      <%= preload_hero_image(@sections.first.image_src) %>
     <% end %>
   <% end %>
 <% end %>

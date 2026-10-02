@@ -1,7 +1,7 @@
 <section class="landing-story <%= "landing-story--reverse" if section.image_on_right? %>" data-controller="reveal">
   <div class="landing-story__media object-frame">
-    <% if section.image_url.present? %>
-      <%= object_image_tag section.image_url, alt: section.heading.to_s, sizes: "(max-width: 768px) 100vw, 50vw", widths: [640, 960, 1280] %>
+    <% if section.image_src.present? %>
+      <%= object_image_tag section.image_src, alt: section.heading.to_s, sizes: "(max-width: 768px) 100vw, 50vw", widths: [640, 960, 1280] %>
     <% else %>
       <div class="h-full w-full bg-stone-deep"></div>
     <% end %>

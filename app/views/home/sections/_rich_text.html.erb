@@ -1,7 +1,7 @@
 <% if section.body.present? %>
-  <section class="home-manifesto <%= "home-manifesto--plain" if section.image_url.blank? %>" data-controller="reveal">
-    <% if section.image_url.present? %>
-      <%= image_tag section.image_url, alt: "", class: "home-manifesto__media", loading: "lazy", decoding: "async" %>
+  <section class="home-manifesto <%= "home-manifesto--plain" if section.image_src.blank? %>" data-controller="reveal">
+    <% if section.image_src.present? %>
+      <%= image_tag cdn_image_url(section.image_src, width: 1600), alt: "", class: "home-manifesto__media", loading: "lazy", decoding: "async" %>
     <% end %>
     <div class="home-manifesto__copy">
       <% if section.subheading.present? %>

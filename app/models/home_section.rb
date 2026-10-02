@@ -35,12 +35,18 @@ class HomeSection < ApplicationRecord
   }.freeze
 
   belongs_to :store
+  has_one_attached :image
   has_many :translations, class_name: "HomeSectionTranslation", dependent: :destroy, inverse_of: :home_section
 
   accepts_nested_attributes_for :translations, allow_destroy: false
 
   translates :heading, :subheading, :body, :button_label
   store_accessor :settings, :image_url, :link, :collection_id, :limit, :image_position
+
+  # Uploaded image, else an image URL typed in admin
+  def image_src
+    image.attached? ? MediaUrl.for(image, store: store) : image_url.presence
+  end
 
   validates :kind, inclusion: { in: KINDS.keys }
 

@@ -55,7 +55,6 @@ module Admin
       params.require(:product).permit(
         :slug, :status, :price_dh, :compare_at_dh, :currency,
         :sku, :stock, :track_inventory, :featured, :position,
-        :image_url, :detail_image_url,
         collection_ids: [],
         translations_attributes: [
           :id, :locale, :name, :short_description, :story, :material, :fit, :movement,

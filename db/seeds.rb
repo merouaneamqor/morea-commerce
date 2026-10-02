@@ -39,8 +39,7 @@ store.assign_attributes(
   name: "Morea",
   phone: "0522000000",
   email: "hello@morea.website",
-  currency: "MAD",
-  campaign_image_url: "/images/editorial/campaign-hero.jpg"
+  currency: "MAD"
 )
 store.save!
 Store.where.not(id: store.id).find_each(&:destroy)
@@ -131,8 +130,6 @@ catalog = [
     compare_at_dh: 999,
     stock: 48,
     featured: true,
-    image_url: "/images/products/essential-set/front.jpg",
-    detail_image_url: "/images/products/essential-set/details.jpg",
     collections: [essentials, premium],
     translations: {
       "fr" => {
@@ -188,7 +185,6 @@ catalog = [
     slug: "longline-performance-top",
     price_dh: 349,
     stock: 40,
-    image_url: "/images/products/catalog/mocha-studio.jpg",
     collections: [essentials, casual],
     translations: {
       "fr" => {
@@ -225,7 +221,6 @@ catalog = [
     slug: "wide-leg-motion-pant",
     price_dh: 429,
     stock: 28,
-    image_url: "/images/products/catalog/yoga-lunge.jpg",
     collections: [essentials, premium],
     translations: {
       "fr" => {
@@ -256,8 +251,6 @@ catalog = [
     slug: "sports-hijab",
     price_dh: 199,
     stock: 60,
-    image_url: "/images/products/catalog/padel-brown.jpg",
-    detail_image_url: "/images/products/catalog/fabric-detail.jpg",
     collections: [essentials],
     translations: {
       "fr" => {
@@ -301,8 +294,6 @@ catalog = [
     slug: "oversized-studio-jacket",
     price_dh: 599,
     stock: 18,
-    image_url: "/images/products/catalog/hoodie-comfort.jpg",
-    detail_image_url: "/images/products/catalog/brown-flatlay.jpg",
     collections: [premium, casual],
     translations: {
       "fr" => {
@@ -333,8 +324,6 @@ catalog = [
     slug: "soft-day-set",
     price_dh: 699,
     stock: 15,
-    image_url: "/images/products/catalog/wellness-brown.jpg",
-    detail_image_url: "/images/products/catalog/mocha-walk.jpg",
     collections: [casual],
     translations: {
       "fr" => {
@@ -365,8 +354,6 @@ catalog = [
     slug: "premium-training-set",
     price_dh: 999,
     stock: 10,
-    image_url: "/images/products/catalog/gym-black.jpg",
-    detail_image_url: "/images/products/catalog/track-lunge.jpg",
     collections: [premium],
     translations: {
       "fr" => {

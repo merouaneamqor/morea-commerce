@@ -6,15 +6,10 @@ class ProductsController < ApplicationController
     @product = current_store.products.active.includes(:collections, :product_variants, :translations).find_by!(slug: params[:slug])
     prepare_variants!
 
-    if landing_page?
-      prepare_landing_media!
-      render :landing
-    else
-      @eyebrow = "MOREA ACTIVE"
-      @collection = @product.collections.published.order(:position).first
-      @gallery = product_gallery
-      @related = related_products
-    end
+    @eyebrow = "MOREA ACTIVE"
+    @collection = @product.collections.published.order(:position).first
+    @gallery = product_gallery
+    @related = related_products
   end
 
   private
@@ -36,45 +31,12 @@ class ProductsController < ApplicationController
   end
 
   def product_gallery
-    uploaded = @product.ordered_images.map { |image| helpers.media_url(image) }
-    (uploaded + [ @product.image_url, @product.detail_image_url ]).compact_blank.uniq.presence || [ nil ]
+    @product.ordered_images.map { |image| helpers.media_url(image) }.presence || [ nil ]
   end
 
   def related_products
     scope = @collection ? @collection.products : current_store.products
     scope.active.where.not(id: @product.id).includes(:translations, images_attachments: :blob).limit(4)
-  end
-
-  def landing_page?
-    product_image_path("front.jpg").exist?
-  end
-
-  def prepare_landing_media!
-    front = public_image_url("front.jpg") || @product.image_url
-    side = public_image_url("side.jpg")
-    back = public_image_url("back.jpg")
-    details = public_image_url("details.jpg") || @product.detail_image_url
-    lifestyle = public_image_url("lifestyle.jpg")
-    story = public_image_url("story.jpg")
-
-    @hero_image = lifestyle.presence || front
-    @story_image = story.presence || front.presence || @product.image_url
-
-    @gallery = [
-      { label: t("landing.gallery.front"), url: front },
-      { label: t("landing.gallery.side"), url: side },
-      { label: t("landing.gallery.back"), url: back },
-      { label: t("landing.gallery.details"), url: details }
-    ].select { |shot| shot[:url].present? }
-  end
-
-  def product_image_path(filename)
-    Rails.root.join("public/images/products/#{@product.slug}/#{filename}")
-  end
-
-  def public_image_url(filename)
-    path = product_image_path(filename)
-    "/images/products/#{@product.slug}/#{filename}" if path.exist?
   end
 
   def ordered_sizes(sizes)

@@ -87,13 +87,7 @@ class Product < ApplicationRecord
   end
 
   def primary_image_url
-    if images.attached?
-      MediaUrl.for(ordered_images.first, store: store)
-    else
-      image_url
-    end
-  rescue StandardError
-    image_url
+    MediaUrl.for(ordered_images.first, store: store) if images.attached?
   end
 
   def format_money(cents)

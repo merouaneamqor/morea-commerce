@@ -10,18 +10,15 @@ module MediaHelper
     end
   end
 
+  # Main uploaded image (first in the admin order); nil until one is uploaded
   def product_image_url(product)
-    if product.images.attached?
-      media_url(product.ordered_images.first)
-    else
-      product.image_url.presence || product.detail_image_url
-    end
+    media_url(product.ordered_images.first) if product.images.attached?
   end
 
-  # Second uploaded image (card hover), else the detail image URL
+  # Second uploaded image, shown on card hover
   def product_alt_image_url(product)
     second = product.ordered_images.second if product.images.attached?
-    second ? media_url(second) : product.detail_image_url.presence
+    media_url(second) if second
   end
 
   # Delivery URL for an uploaded image, with its batch edits (see MediaUrl)
@@ -29,12 +26,9 @@ module MediaHelper
     MediaUrl.for(attachment, store: respond_to?(:current_store, true) ? current_store : nil)
   end
 
-  # Cover uploaded in admin, else an editorial cover dropped at public/images/collections/<slug>/cover.jpg
+  # Cover uploaded in admin (collection tiles fall back to a product photo)
   def collection_cover_url(collection)
-    return media_url(collection.image) if collection.image.attached?
-
-    path = "images/collections/#{collection.slug}/cover.jpg"
-    "/#{path}" if Rails.public_path.join(path).exist?
+    media_url(collection.image) if collection.image.attached?
   end
 
   def object_image_tag(url, alt:, widths: [640, 960, 1280, 1600], sizes: "(max-width: 768px) 100vw, 50vw", css_class: "h-full w-full object-cover", loading: "lazy", fetchpriority: nil)

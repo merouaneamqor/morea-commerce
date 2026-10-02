@@ -1,7 +1,7 @@
 <section class="campaign-hero">
   <div class="campaign-hero__media">
-    <% if section.image_url.present? %>
-      <%= object_image_tag section.image_url,
+    <% if section.image_src.present? %>
+      <%= object_image_tag section.image_src,
             alt: section.heading.to_s,
             sizes: "100vw",
             widths: [640, 960, 1440, 1920],

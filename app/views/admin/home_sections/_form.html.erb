@@ -39,12 +39,27 @@
           <div class="admin-card__header"><h2 class="admin-card__title">Settings</h2></div>
           <div class="space-y-4 px-4 pb-4">
             <% if @section.setting_fields.include?(:image_url) %>
-              <div>
-                <%= f.label :image_url, "Image URL", class: "admin-label" %>
-                <% if @section.image_url.present? %>
-                  <div class="mb-2 overflow-hidden rounded-lg"><%= image_tag @section.image_url, alt: "", class: "aspect-[16/10] w-full object-cover" %></div>
+              <div class="space-y-3" data-controller="media">
+                <p class="admin-label">Image</p>
+                <% if (src = @section.image_src) %>
+                  <div class="overflow-hidden rounded-lg"><%= image_tag MediaUrl.sized(src, width: 800), alt: "", class: "aspect-[16/10] w-full object-cover" %></div>
+                  <% if @section.image.attached? %>
+                    <label class="admin-check"><%= check_box_tag "home_section[remove_image]", "1", false %> Remove image</label>
+                  <% end %>
                 <% end %>
-                <%= f.text_field :image_url, class: "admin-input", placeholder: "/images/… or https://…" %>
+                <label class="admin-dropzone" data-media-target="zone"
+                       data-action="dragover->media#zoneOver dragleave->media#zoneLeave drop->media#zoneDrop">
+                  <span class="admin-btn-secondary pointer-events-none"><%= @section.image.attached? ? "Replace image" : "Upload image" %></span>
+                  <span class="admin-help">or drop an image here. Stored on Cloudinary and resized for every screen.</span>
+                  <%= f.file_field :image, direct_upload: false, accept: "image/*", class: "sr-only",
+                        data: { media_target: "input", action: "change->media#renderPreviews" } %>
+                </label>
+                <ul class="admin-media-grid empty:hidden" data-media-target="previews"></ul>
+                <details>
+                  <summary class="admin-help cursor-pointer">Use an image URL instead</summary>
+                  <%= f.text_field :image_url, class: "admin-input mt-2", placeholder: "https://…" %>
+                  <p class="admin-help">Only used when no image is uploaded.</p>
+                </details>
               </div>
             <% end %>
             <% if @section.setting_fields.include?(:image_position) %>

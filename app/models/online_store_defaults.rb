@@ -21,7 +21,6 @@ class OnlineStoreDefaults
 
   def home_sections
     featured_link = store.featured_product ? "product:#{store.featured_product.slug}" : "collections"
-    manifesto = "/images/editorial/manifesto.jpg"
 
     [
       section("hero", { image_url: store.campaign_image, link: featured_link }) do |loc, st|
@@ -39,7 +38,7 @@ class OnlineStoreDefaults
       section("collection_list", { limit: "3" }) do |loc, _|
         { subheading: t(loc, "shop.collections"), heading: t(loc, "home.collections_title") }
       end,
-      section("rich_text", { image_url: (manifesto if Rails.public_path.join(manifesto.delete_prefix("/")).exist?), link: featured_link }) do |loc, st|
+      section("rich_text", { link: featured_link }) do |loc, st|
         { subheading: t(loc, "landing.story_eyebrow"), body: st&.about,
           button_label: st&.campaign_cta.presence || t(loc, "store.default_campaign_cta") }
       end

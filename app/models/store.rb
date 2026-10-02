@@ -36,7 +36,7 @@ class Store < ApplicationRecord
   end
 
   def campaign_image
-    campaign_image_url.presence || featured_product&.image_url || featured_product&.detail_image_url
+    campaign_image_url.presence
   end
 
   def campaign_heading

@@ -47,12 +47,6 @@
                   </li>
                 <% end %>
               </ul>
-            <% elsif @product.image_url.present? %>
-              <div class="flex flex-wrap gap-2">
-                <% [@product.image_url, @product.detail_image_url].compact_blank.each do |url| %>
-                  <span class="admin-thumb !h-20 !w-20"><%= image_tag url, alt: "" %></span>
-                <% end %>
-              </div>
             <% end %>
 
             <label class="admin-dropzone" data-media-target="zone"
@@ -63,16 +57,6 @@
                     data: { media_target: "input", action: "change->media#renderPreviews" } %>
             </label>
             <ul class="admin-media-grid empty:hidden" data-media-target="previews"></ul>
-          </div>
-          <div class="admin-field-grid">
-            <div>
-              <%= f.label :image_url, "Image URL", class: "admin-label" %>
-              <%= f.text_field :image_url, class: "admin-input" %>
-            </div>
-            <div>
-              <%= f.label :detail_image_url, "Detail image URL", class: "admin-label" %>
-              <%= f.text_field :detail_image_url, class: "admin-input" %>
-            </div>
           </div>
         </div>
       </section>

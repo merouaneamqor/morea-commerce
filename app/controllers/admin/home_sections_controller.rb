@@ -29,6 +29,7 @@ module Admin
 
     def update
       if @section.update(section_params)
+        @section.image.purge_later if params.dig(:home_section, :remove_image) == "1" && params.dig(:home_section, :image).blank?
         redirect_to edit_admin_home_section_path(@section), notice: "Section saved."
       else
         @section.build_missing_translations!
@@ -59,7 +60,7 @@ module Admin
 
     def section_params
       params.require(:home_section).permit(
-        :visible, :image_url, :link, :custom_url, :collection_id, :limit, :image_position,
+        :visible, :image, :image_url, :link, :custom_url, :collection_id, :limit, :image_position,
         translations_attributes: %i[id locale heading subheading body button_label]
       )
     end

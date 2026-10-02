@@ -1,38 +1,60 @@
-<% content_for :title, (@collection.persisted? ? "Edit" : "New") + " collection — Admin" %>
+<% content_for :title, (@collection.persisted? ? @collection.name : "Create collection") + " — Admin" %>
 
-<h1 class="text-2xl font-medium"><%= @collection.persisted? ? "Edit collection" : "New collection" %></h1>
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to admin_collections_path, class: "admin-back", "aria-label": "Back to collections" do %><%= admin_icon(:back) %><% end %>
+    <h1 class="admin-page-header__title"><%= @collection.persisted? ? @collection.name : "Create collection" %></h1>
+  </div>
+  <button type="submit" form="collection-form" class="admin-btn">Save</button>
+</div>
 
-<%= form_with model: [:admin, @collection], class: "mt-8 max-w-2xl space-y-6" do |f| %>
+<%= form_with model: [:admin, @collection], id: "collection-form" do |f| %>
   <% if @collection.errors.any? %>
-    <p class="text-sm text-red-800"><%= @collection.errors.full_messages.to_sentence %></p>
+    <div class="admin-banner admin-banner--critical"><%= @collection.errors.full_messages.to_sentence %></div>
   <% end %>
-  <div>
-    <%= f.label :slug, class: "admin-label" %>
-    <%= f.text_field :slug, class: "admin-input" %>
-  </div>
-  <div>
-    <%= f.label :position, class: "admin-label" %>
-    <%= f.number_field :position, class: "admin-input" %>
-  </div>
-  <label class="flex items-center gap-2 text-sm">
-    <%= f.check_box :published %> Published
-  </label>
-  <div>
-    <p class="admin-label">Products</p>
-    <div class="mt-2 space-y-2">
-      <% current_store.products.order(:name).each do |product| %>
-        <label class="flex items-center gap-2 text-sm">
-          <%= check_box_tag "collection[product_ids][]", product.id, @collection.product_ids.include?(product.id) %>
-          <%= product.name %>
-        </label>
-      <% end %>
+
+  <div class="admin-layout">
+    <div class="admin-stack">
+      <%= render "translations_fields", f: f %>
+
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Products</h2></div>
+        <ul class="pb-2">
+          <% current_store.products.includes(:translations, images_attachments: :blob).order(:name).each do |product| %>
+            <li>
+              <label class="flex cursor-pointer items-center gap-3 px-4 py-2 hover:bg-[#f7f7f7]">
+                <%= check_box_tag "collection[product_ids][]", product.id, @collection.product_ids.include?(product.id), class: "h-4 w-4 accent-[#303030]" %>
+                <%= admin_thumb(product_image_url(product)) %>
+                <span class="flex-1 font-medium"><%= product.name %></span>
+                <%= admin_badge(product.status) %>
+              </label>
+            </li>
+          <% end %>
+        </ul>
+      </section>
     </div>
-  </div>
 
-  <%= render "translations_fields", f: f %>
+    <div class="admin-stack">
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Publishing</h2></div>
+        <div class="px-4 pb-4">
+          <label class="admin-check"><%= f.check_box :published %> Visible on Online Store</label>
+        </div>
+      </section>
 
-  <div class="flex gap-3">
-    <%= f.submit "Save", class: "admin-btn cursor-pointer" %>
-    <%= link_to "Cancel", admin_collections_path, class: "admin-btn-secondary" %>
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Details</h2></div>
+        <div class="space-y-4 px-4 pb-4">
+          <div>
+            <%= f.label :slug, "URL handle", class: "admin-label" %>
+            <%= f.text_field :slug, class: "admin-input" %>
+          </div>
+          <div>
+            <%= f.label :position, "Sort position", class: "admin-label" %>
+            <%= f.number_field :position, class: "admin-input" %>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
 <% end %>

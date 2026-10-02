@@ -44,7 +44,7 @@ module Admin
     private
 
     def set_collection
-      @collection = current_store.collections.includes(:translations).find(params[:id])
+      @collection = current_store.collections.includes(:translations).find_by!(slug: params[:id])
     end
 
     def collection_params

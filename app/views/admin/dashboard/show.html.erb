@@ -1,64 +1,75 @@
-<% content_for :title, "Dashboard — Admin" %>
+<% content_for :title, "Home — Admin" %>
 
-<h1 class="text-2xl font-medium">Dashboard</h1>
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Home</h1>
+    <p class="admin-page-header__meta">Cash-on-delivery orders across all channels</p>
+  </div>
+  <%= link_to admin_orders_path, class: "admin-btn-secondary" do %>View orders<% end %>
+</div>
 
-<div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-  <% @counts.each do |status, count| %>
-    <%= link_to admin_orders_path(status: status), class: "admin-card" do %>
-      <p class="text-xs uppercase tracking-wider text-ink-faint"><%= status %></p>
-      <p class="mt-2 text-3xl font-medium"><%= count %></p>
+<div class="admin-card mb-4">
+  <div class="grid grid-cols-2 divide-[#ebebeb] sm:grid-cols-4 lg:grid-cols-7 lg:divide-x [&>*]:border-[#ebebeb] max-lg:[&>*]:border-b">
+    <% @counts.each do |status, count| %>
+      <%= link_to admin_orders_path(status: status), class: "block p-4 transition-colors hover:bg-[#f7f7f7]" do %>
+        <p class="admin-metric__label"><%= status.humanize %></p>
+        <p class="admin-metric__value"><%= count %></p>
+      <% end %>
     <% end %>
-  <% end %>
-  <div class="admin-card">
-    <p class="text-xs uppercase tracking-wider text-ink-faint">COD cancel rate</p>
-    <p class="mt-2 text-3xl font-medium"><%= @cancel_rate %>%</p>
+    <div class="p-4">
+      <p class="admin-metric__label">Cancel rate</p>
+      <p class="admin-metric__value"><%= @cancel_rate %>%</p>
+    </div>
   </div>
 </div>
 
-<div class="mt-12 grid gap-10 lg:grid-cols-2">
-  <section>
-    <div class="mb-4 flex items-center justify-between">
-      <h2 class="text-lg font-medium">Recent orders</h2>
-      <%= link_to "All", admin_orders_path, class: "text-sm text-ink-faint" %>
+<div class="admin-layout">
+  <section class="admin-card">
+    <div class="admin-card__header">
+      <h2 class="admin-card__title">Recent orders</h2>
+      <%= link_to "View all", admin_orders_path, class: "admin-btn-plain" %>
     </div>
-    <div class="overflow-hidden rounded border border-line bg-paper">
+    <div class="admin-table-wrap">
       <table class="admin-table">
         <thead>
-          <tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th></tr>
+          <tr><th>Order</th><th>Date</th><th>Customer</th><th>Status</th><th class="is-numeric">Total</th></tr>
         </thead>
         <tbody>
           <% @recent_orders.each do |order| %>
             <tr>
-              <td><%= link_to order.number, admin_order_path(order), class: "underline" %></td>
+              <td><%= link_to "##{order.number}", admin_order_path(order), class: "admin-link" %></td>
+              <td class="admin-muted"><%= order.created_at.strftime("%b %-d, %H:%M") %></td>
               <td><%= order.customer_name %></td>
-              <td><%= order.total_display %></td>
-              <td><%= order.status_label %></td>
+              <td><%= admin_badge(order.status) %></td>
+              <td class="is-numeric"><%= order.total_display %></td>
             </tr>
           <% end %>
         </tbody>
       </table>
+      <% if @recent_orders.empty? %>
+        <p class="admin-empty">No orders yet. They'll show up here as soon as customers check out.</p>
+      <% end %>
     </div>
   </section>
 
-  <section>
-    <h2 class="mb-4 text-lg font-medium">Low stock</h2>
-    <div class="overflow-hidden rounded border border-line bg-paper">
-      <table class="admin-table">
-        <thead>
-          <tr><th>Product</th><th>Stock</th></tr>
-        </thead>
-        <tbody>
-          <% @low_stock.each do |product| %>
-            <tr>
-              <td><%= link_to product.name, edit_admin_product_path(product), class: "underline" %></td>
-              <td><%= product.stock %></td>
-            </tr>
-          <% end %>
-          <% if @low_stock.empty? %>
-            <tr><td colspan="2" class="text-ink-faint">All good</td></tr>
-          <% end %>
-        </tbody>
-      </table>
+  <section class="admin-card">
+    <div class="admin-card__header">
+      <h2 class="admin-card__title">Low stock</h2>
+      <%= link_to "Products", admin_products_path, class: "admin-btn-plain" %>
     </div>
+    <ul class="pb-2">
+      <% @low_stock.each do |product| %>
+        <li>
+          <%= link_to edit_admin_product_path(product), class: "flex items-center gap-3 px-4 py-2 hover:bg-[#f7f7f7]" do %>
+            <%= admin_thumb(product_image_url(product)) %>
+            <span class="min-w-0 flex-1 truncate font-medium"><%= product.name %></span>
+            <span class="admin-badge <%= product.stock.zero? ? "admin-badge--critical" : "admin-badge--warning" %>"><%= product.stock %> left</span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+    <% if @low_stock.empty? %>
+      <p class="admin-empty">Everything is well stocked.</p>
+    <% end %>
   </section>
 </div>

@@ -28,7 +28,7 @@ module Admin
     private
 
     def set_product
-      @product = current_store.products.find(params[:product_id])
+      @product = current_store.products.find_by!(slug: params[:product_id])
     end
 
     def variant_params

@@ -5,43 +5,69 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="min-h-screen bg-[#ececec] font-sans text-ink antialiased" style="font-family: 'DM Sans', sans-serif">
+  <body class="admin-body">
     <% if session[:user_id] %>
-      <div class="flex min-h-screen">
-        <aside class="hidden w-52 shrink-0 border-r border-neutral-300 bg-white px-4 py-6 md:block">
-          <p class="text-sm font-semibold tracking-wide">MOREA</p>
-          <p class="mt-0.5 text-[10px] uppercase tracking-wider text-neutral-500">Admin</p>
-          <nav class="mt-8 space-y-2 text-sm">
-            <%= link_to "Dashboard", admin_root_path, class: "admin-nav-link" %>
-            <%= link_to "Orders", admin_orders_path, class: "admin-nav-link" %>
-            <%= link_to "Products", admin_products_path, class: "admin-nav-link" %>
-            <%= link_to "Inventory", admin_products_path, class: "admin-nav-link" %>
-            <%= link_to "Collections", admin_collections_path, class: "admin-nav-link" %>
-            <%= link_to "Customers", admin_customers_path, class: "admin-nav-link" %>
-            <%= link_to "Settings", edit_admin_store_path, class: "admin-nav-link" %>
-            <%= link_to "View storefront", localized_root_path(locale: :fr), class: "admin-nav-link", target: "_blank" %>
-            <%= button_to "Sign out", admin_logout_path, method: :delete, class: "admin-nav-link mt-6 text-left" %>
+      <div class="admin-shell" data-controller="admin-menu">
+        <header class="admin-topbar">
+          <div class="flex items-center gap-2">
+            <button type="button" class="admin-topbar__menu md:hidden" data-action="admin-menu#toggle" aria-label="Menu">
+              <%= admin_icon(:menu) %>
+            </button>
+            <%= link_to admin_root_path, class: "admin-topbar__brand" do %>
+              <span class="admin-topbar__logo">M</span>
+              <span>Morea</span>
+            <% end %>
+          </div>
+
+          <%= form_with url: admin_orders_path, method: :get, class: "admin-topbar__search" do %>
+            <%= admin_icon(:search, size: 16) %>
+            <%= search_field_tag :q, params[:q], placeholder: "Search orders", "aria-label": "Search orders" %>
+          <% end %>
+
+          <div class="admin-topbar__account">
+            <span class="admin-avatar"><%= current_store&.name.to_s.first.presence || "M" %></span>
+            <span class="hidden sm:inline"><%= current_store&.name || "Morea" %></span>
+          </div>
+        </header>
+
+        <aside class="admin-sidebar" data-admin-menu-target="sidebar">
+          <nav class="admin-sidebar__nav">
+            <%= admin_nav_link "Home", admin_root_path, icon: :home, active: controller_name == "dashboard" %>
+            <%= admin_nav_link "Orders", admin_orders_path, icon: :orders, active: controller_name == "orders" %>
+            <%= admin_nav_link "Products", admin_products_path, icon: :products, active: controller_name.in?(%w[products variants]) %>
+            <%= admin_nav_link "Collections", admin_collections_path, icon: :collections, active: controller_name == "collections" %>
+            <%= admin_nav_link "Customers", admin_customers_path, icon: :customers, active: controller_name == "customers" %>
+
+            <p class="admin-sidebar__heading">Sales channels</p>
+            <%= admin_nav_link "Online Store", localized_root_path(locale: :fr), icon: :store, target: "_blank", rel: "noopener" %>
           </nav>
+
+          <div class="admin-sidebar__footer">
+            <%= admin_nav_link "Settings", edit_admin_store_path, icon: :settings, active: controller_name == "stores" %>
+            <%= button_to admin_logout_path, method: :delete, class: "admin-nav-item w-full" do %>
+              <%= admin_icon(:logout) %><span>Sign out</span>
+            <% end %>
+          </div>
         </aside>
-        <div class="flex-1">
-          <header class="flex items-center justify-between border-b border-neutral-300 bg-white px-4 py-3 md:hidden">
-            <p class="text-sm font-semibold">MOREA Admin</p>
-            <%= link_to "Menu", admin_root_path, class: "text-sm" %>
-          </header>
-          <div class="px-4 py-5 md:px-6">
-            <% if notice.present? %><p class="mb-4 text-sm text-neutral-600"><%= notice %></p><% end %>
-            <% if alert.present? %><p class="mb-4 text-sm text-red-700"><%= alert %></p><% end %>
+        <div class="admin-scrim md:hidden" data-action="click->admin-menu#close"></div>
+
+        <main class="admin-main">
+          <div class="admin-page">
+            <% if notice.present? %><div class="admin-banner admin-banner--success"><%= notice %></div><% end %>
+            <% if alert.present? %><div class="admin-banner admin-banner--critical"><%= alert %></div><% end %>
             <%= yield %>
           </div>
-        </div>
+        </main>
       </div>
     <% else %>
-      <div class="mx-auto flex min-h-screen max-w-sm items-center px-4">
+      <div class="flex min-h-screen items-center justify-center px-4">
         <%= yield %>
       </div>
     <% end %>

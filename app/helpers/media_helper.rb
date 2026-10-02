@@ -18,6 +18,12 @@ module MediaHelper
     end
   end
 
+  # Editorial cover dropped at public/images/collections/<slug>/cover.jpg
+  def collection_cover_url(collection)
+    path = "images/collections/#{collection.slug}/cover.jpg"
+    "/#{path}" if Rails.public_path.join(path).exist?
+  end
+
   def object_image_tag(url, alt:, widths: [640, 960, 1280, 1600], sizes: "(max-width: 768px) 100vw, 50vw", css_class: "h-full w-full object-cover", loading: "lazy", fetchpriority: nil)
     return placeholder_frame("Image forthcoming") if url.blank?
 

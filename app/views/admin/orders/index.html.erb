@@ -1,31 +1,45 @@
 <% content_for :title, "Orders — Admin" %>
 
-<div class="mb-8 flex flex-wrap items-center justify-between gap-4">
-  <h1 class="text-2xl font-medium">Orders</h1>
-  <div class="flex flex-wrap gap-2">
-    <%= link_to "All", admin_orders_path, class: "admin-chip #{'is-active' if @status.blank?}" %>
-    <% Order::STATUSES.each do |status| %>
-      <%= link_to status.humanize, admin_orders_path(status: status), class: "admin-chip #{'is-active' if @status == status}" %>
-    <% end %>
-  </div>
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">Orders</h1>
 </div>
 
-<div class="overflow-hidden rounded border border-line bg-paper">
-  <table class="admin-table">
-    <thead>
-      <tr><th>Order</th><th>Customer</th><th>Phone</th><th>City</th><th>Total</th><th>Status</th></tr>
-    </thead>
-    <tbody>
-      <% @orders.each do |order| %>
-        <tr>
-          <td><%= link_to order.number, admin_order_path(order), class: "underline" %></td>
-          <td><%= order.customer_name %></td>
-          <td><%= order.customer_phone %></td>
-          <td><%= order.customer_city %></td>
-          <td><%= order.total_display %></td>
-          <td><%= order.status_label %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+<div class="admin-card">
+  <nav class="admin-tabs" aria-label="Filter orders">
+    <%= link_to "All", admin_orders_path(q: params[:q].presence), class: "admin-tab #{'is-active' if @status.blank?}" %>
+    <% Order::STATUSES.each do |status| %>
+      <%= link_to status.humanize, admin_orders_path(status: status, q: params[:q].presence), class: "admin-tab #{'is-active' if @status == status}" %>
+    <% end %>
+  </nav>
+
+  <% if params[:q].present? %>
+    <div class="flex items-center justify-between gap-3 border-b border-[#ebebeb] px-4 py-2 text-[13px]">
+      <span class="admin-muted">Results for “<%= params[:q] %>”</span>
+      <%= link_to "Clear search", admin_orders_path(status: @status.presence), class: "admin-btn-plain" %>
+    </div>
+  <% end %>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr><th>Order</th><th>Date</th><th>Customer</th><th>Phone</th><th>City</th><th>Status</th><th class="is-numeric">Total</th></tr>
+      </thead>
+      <tbody>
+        <% @orders.each do |order| %>
+          <tr>
+            <td><%= link_to "##{order.number}", admin_order_path(order), class: "admin-link" %></td>
+            <td class="admin-muted"><%= order.created_at.strftime("%b %-d, %H:%M") %></td>
+            <td><%= order.customer_name %></td>
+            <td class="admin-muted"><%= order.customer_phone %></td>
+            <td class="admin-muted"><%= order.customer_city %></td>
+            <td><%= admin_badge(order.status) %></td>
+            <td class="is-numeric"><%= order.total_display %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @orders.empty? %>
+      <p class="admin-empty">No orders match these filters.</p>
+    <% end %>
+  </div>
 </div>

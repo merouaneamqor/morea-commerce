@@ -1,18 +1,28 @@
-<% content_for :title, "Sign in — Admin" %>
+<% content_for :title, "Log in — Admin" %>
 
-<div class="w-full">
-  <p class="font-display text-3xl tracking-wide">Morea Admin</p>
-  <p class="mt-2 text-sm text-ink-faint">Orders, catalog, and COD for morea.website</p>
+<div class="w-full max-w-[24rem]">
+  <div class="admin-card">
+    <div class="p-8">
+      <span class="admin-topbar__logo !h-10 !w-10 !text-base">M</span>
+      <h1 class="mt-6 text-xl font-bold text-[#303030]">Log in</h1>
+      <p class="admin-muted mt-1">Continue to Morea admin</p>
 
-  <%= form_with url: admin_login_path, method: :post, class: "mt-10 space-y-6" do %>
-    <div>
-      <label class="text-xs uppercase tracking-wider text-ink-faint">Email</label>
-      <%= email_field_tag :email, params[:email], required: true, class: "admin-input" %>
+      <% if alert.present? %>
+        <div class="admin-banner admin-banner--critical mt-6 mb-0"><%= alert %></div>
+      <% end %>
+
+      <%= form_with url: admin_login_path, method: :post, class: "mt-6 space-y-4" do %>
+        <div>
+          <%= label_tag :email, "Email", class: "admin-label" %>
+          <%= email_field_tag :email, params[:email], required: true, autocomplete: "username", class: "admin-input !min-h-10" %>
+        </div>
+        <div>
+          <%= label_tag :password, "Password", class: "admin-label" %>
+          <%= password_field_tag :password, nil, required: true, autocomplete: "current-password", class: "admin-input !min-h-10" %>
+        </div>
+        <%= submit_tag "Log in", class: "admin-btn !h-10 w-full" %>
+      <% end %>
     </div>
-    <div>
-      <label class="text-xs uppercase tracking-wider text-ink-faint">Password</label>
-      <%= password_field_tag :password, nil, required: true, class: "admin-input" %>
-    </div>
-    <%= submit_tag "Sign in", class: "admin-btn cursor-pointer" %>
-  <% end %>
+  </div>
+  <p class="admin-subdued mt-4 text-center text-xs">Orders, catalog and COD for morea.website</p>
 </div>

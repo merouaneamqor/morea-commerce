@@ -3,7 +3,7 @@ module Admin
     before_action :set_product, only: %i[show edit update destroy]
 
     def index
-      @products = current_store.products.includes(:translations).order(:position, :name)
+      @products = current_store.products.includes(:translations, :product_variants, images_attachments: :blob).order(:position, :name)
     end
 
     def show
@@ -48,7 +48,7 @@ module Admin
     private
 
     def set_product
-      @product = current_store.products.includes(:translations).find(params[:id])
+      @product = current_store.products.includes(:translations).find_by!(slug: params[:id])
     end
 
     def product_params

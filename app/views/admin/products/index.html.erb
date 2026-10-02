@@ -1,29 +1,48 @@
 <% content_for :title, "Products — Admin" %>
 
-<div class="mb-8 flex items-center justify-between">
-  <h1 class="text-2xl font-medium">Products</h1>
-  <%= link_to "+ Add product", new_admin_product_path, class: "admin-btn" %>
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">Products</h1>
+  <%= link_to "Add product", new_admin_product_path, class: "admin-btn" %>
 </div>
 
-<div class="overflow-hidden rounded border border-line bg-paper">
-  <table class="admin-table">
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Price</th>
-        <th>Stock</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @products.each do |product| %>
+<div class="admin-card">
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
         <tr>
-          <td><%= link_to product.name, edit_admin_product_path(product), class: "underline" %></td>
-          <td><%= product.price_display %></td>
-          <td><%= product.track_inventory ? product.stock : "—" %></td>
-          <td><%= product.status %></td>
+          <th>Product</th>
+          <th>Status</th>
+          <th>Inventory</th>
+          <th class="is-numeric">Price</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% @products.each do |product| %>
+          <tr>
+            <td>
+              <%= link_to edit_admin_product_path(product), class: "flex items-center gap-3" do %>
+                <%= admin_thumb(product_image_url(product)) %>
+                <span class="admin-link"><%= product.name %></span>
+              <% end %>
+            </td>
+            <td><%= admin_badge(product.status) %></td>
+            <td>
+              <% if product.track_inventory %>
+                <span class="<%= "text-[#8e0b21]" if product.stock.to_i <= 5 %>"><%= product.stock %> in stock</span>
+                <% if product.product_variants.size.positive? %>
+                  <span class="admin-muted">for <%= pluralize(product.product_variants.size, "variant", locale: :en) %></span>
+                <% end %>
+              <% else %>
+                <span class="admin-muted">Inventory not tracked</span>
+              <% end %>
+            </td>
+            <td class="is-numeric"><%= product.price_display %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @products.empty? %>
+      <p class="admin-empty">Add your first product to start selling.</p>
+    <% end %>
+  </div>
 </div>

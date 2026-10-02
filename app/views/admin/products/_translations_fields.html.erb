@@ -1,27 +1,14 @@
 <%# Shared translation fields for Product — nested under form builder `f` %>
 <% @product.build_missing_translations! %>
 
-<section class="space-y-4 border-t border-line pt-8">
-  <h2 class="text-lg font-medium">Languages</h2>
-  <ul class="flex flex-wrap gap-4 text-sm">
-    <% Morea::Locales::AVAILABLE.each do |locale| %>
-      <li class="flex items-center gap-2">
-        <span><%= Morea::Locales.code_for(locale) %> <%= Morea::Locales.label_for(locale) %></span>
-        <% if @product.locale_complete?(locale) %>
-          <span class="text-ink" title="Complete">✓</span>
-        <% else %>
-          <span class="text-ink-faint" title="Missing">—</span>
-        <% end %>
-      </li>
-    <% end %>
-  </ul>
-  <p class="text-xs text-ink-faint">A missing translation falls back to French on the storefront.</p>
-</section>
-
 <%= f.fields_for :translations, @product.translations.sort_by { |t| Morea::Locales::AVAILABLE.map(&:to_s).index(t.locale) || 99 } do |tf| %>
   <% locale = tf.object.locale %>
-  <section class="space-y-4 border-t border-line pt-8">
-    <h2 class="text-lg font-medium"><%= Morea::Locales.label_for(locale) %></h2>
+  <details class="admin-card admin-disclosure" <%= "open" if locale == "fr" %>>
+    <summary class="admin-card__header admin-disclosure__summary">
+      <h2 class="admin-card__title"><%= Morea::Locales.label_for(locale) %></h2>
+      <% if @product.locale_complete?(locale) %><span class="admin-badge admin-badge--success">Complete</span><% else %><span class="admin-badge admin-badge--attention">Missing</span><% end %>
+    </summary>
+    <div class="space-y-4 px-4 pb-4">
     <%= tf.hidden_field :id if tf.object.persisted? %>
     <%= tf.hidden_field :locale %>
     <div>
@@ -48,7 +35,7 @@
       <%= tf.label :movement, class: "admin-label" %>
       <%= tf.text_area :movement, rows: 2, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
     </div>
-    <div class="grid gap-6 md:grid-cols-2">
+    <div class="admin-field-grid">
       <div>
         <%= tf.label :dimensions, class: "admin-label" %>
         <%= tf.text_field :dimensions, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
@@ -62,7 +49,7 @@
       <%= tf.label :care, class: "admin-label" %>
       <%= tf.text_area :care, rows: 2, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
     </div>
-    <div class="grid gap-6 md:grid-cols-2">
+    <div class="admin-field-grid">
       <div>
         <%= tf.label :seo_title, class: "admin-label" %>
         <%= tf.text_field :seo_title, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
@@ -72,5 +59,6 @@
         <%= tf.text_field :seo_description, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
       </div>
     </div>
-  </section>
+    </div>
+  </details>
 <% end %>

@@ -30,7 +30,7 @@ class HomeController < ApplicationController
 
     used = []
     @store.collections.published.order(:position).includes(:translations).limit(3).filter_map do |collection|
-      cover_url = public_image_url("collections/#{collection.slug}/cover.jpg")
+      cover_url = helpers.collection_cover_url(collection)
       unless cover_url
         products = collection.products.active.to_a
         product = products.find { |p| used.exclude?(p.id) } || products.first

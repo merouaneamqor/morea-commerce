@@ -1,22 +1,57 @@
 <% content_for :title, "#{@customer.name} — Admin" %>
 
-<%= link_to "← Customers", admin_customers_path, class: "text-sm text-ink-faint" %>
-<h1 class="mt-4 text-2xl font-medium"><%= @customer.name %></h1>
-<p class="mt-2 text-sm text-ink-soft"><%= @customer.phone %> · <%= @customer.city %></p>
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to admin_customers_path, class: "admin-back", "aria-label": "Back to customers" do %><%= admin_icon(:back) %><% end %>
+    <h1 class="admin-page-header__title"><%= @customer.name %></h1>
+  </div>
+</div>
 
-<h2 class="mb-4 mt-10 text-lg font-medium">Orders</h2>
-<div class="overflow-hidden rounded border border-line bg-paper">
-  <table class="admin-table">
-    <thead><tr><th>Order</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
-    <tbody>
-      <% @orders.each do |order| %>
-        <tr>
-          <td><%= link_to order.number, admin_order_path(order), class: "underline" %></td>
-          <td><%= order.total_display %></td>
-          <td><%= order.status_label %></td>
-          <td><%= order.created_at.strftime("%d/%m/%Y") %></td>
-        </tr>
+<div class="admin-card mb-4">
+  <div class="grid grid-cols-2 divide-x divide-[#ebebeb]">
+    <div class="p-4">
+      <p class="admin-metric__label">Amount spent</p>
+      <p class="admin-metric__value"><%= money(@orders.reject { |o| o.status == "cancelled" }.sum(&:total_cents), current_store.currency) %></p>
+    </div>
+    <div class="p-4">
+      <p class="admin-metric__label">Orders</p>
+      <p class="admin-metric__value"><%= @orders.size %></p>
+    </div>
+  </div>
+</div>
+
+<div class="admin-layout">
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Orders</h2></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Order</th><th>Date</th><th>Status</th><th class="is-numeric">Total</th></tr></thead>
+        <tbody>
+          <% @orders.each do |order| %>
+            <tr>
+              <td><%= link_to "##{order.number}", admin_order_path(order), class: "admin-link" %></td>
+              <td class="admin-muted"><%= order.created_at.strftime("%b %-d, %Y") %></td>
+              <td><%= admin_badge(order.status) %></td>
+              <td class="is-numeric"><%= order.total_display %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <% if @orders.empty? %>
+        <p class="admin-empty">This customer hasn't placed an order yet.</p>
       <% end %>
-    </tbody>
-  </table>
+    </div>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Customer</h2></div>
+    <div class="px-4 pb-4">
+      <p class="admin-card__title mb-1">Contact information</p>
+      <p class="admin-link--blue"><%= link_to @customer.phone, "tel:#{@customer.phone}" %></p>
+    </div>
+    <div class="admin-card__section">
+      <p class="admin-card__title mb-1">Location</p>
+      <p class="admin-muted"><%= @customer.city.presence || "—" %></p>
+    </div>
+  </section>
 </div>

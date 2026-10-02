@@ -1,13 +1,19 @@
 <% content_for :title, "Store settings — Admin" %>
 
-<h1 class="text-2xl font-medium">Store settings</h1>
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">Settings</h1>
+  <button type="submit" form="store-form" class="admin-btn">Save</button>
+</div>
 
-<%= form_with model: @store, url: admin_store_path, method: :patch, class: "mt-8 max-w-2xl space-y-6" do |f| %>
+<%= form_with model: @store, url: admin_store_path, method: :patch, id: "store-form", class: "admin-stack" do |f| %>
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Store details</h2></div>
+    <div class="space-y-4 px-4 pb-4">
   <div>
-    <%= f.label :name, class: "admin-label" %>
+    <%= f.label :name, "Store name", class: "admin-label" %>
     <%= f.text_field :name, class: "admin-input" %>
   </div>
-  <div class="grid gap-6 md:grid-cols-2">
+  <div class="admin-field-grid">
     <div>
       <%= f.label :phone, class: "admin-label" %>
       <%= f.text_field :phone, class: "admin-input" %>
@@ -22,32 +28,39 @@
     </div>
   </div>
 
+    </div>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Home page</h2></div>
+    <div class="space-y-4 px-4 pb-4">
   <div>
     <%= f.label :campaign_image_url, "Campaign image URL", class: "admin-label" %>
     <%= f.text_field :campaign_image_url, class: "admin-input" %>
   </div>
+  <div class="admin-field-grid">
+  <div>
+    <%= f.label :featured_product_id, "Featured product", class: "admin-label" %>
+    <%= f.collection_select :featured_product_id, @store.products.active.order(:name), :id, :name, { include_blank: true }, class: "admin-input" %>
+  </div>
+  <div>
+    <%= f.label :featured_collection_id, "Featured collection", class: "admin-label" %>
+    <%= f.collection_select :featured_collection_id, @store.collections.published, :id, :name, { include_blank: true }, class: "admin-input" %>
+  </div>
+  </div>
+    </div>
+  </section>
 
   <% @store.build_missing_translations! %>
-  <section class="space-y-4 border-t border-line pt-8">
-    <h2 class="text-lg font-medium">Languages</h2>
-    <ul class="flex flex-wrap gap-4 text-sm">
-      <% Morea::Locales::AVAILABLE.each do |locale| %>
-        <li class="flex items-center gap-2">
-          <span><%= Morea::Locales.code_for(locale) %> <%= Morea::Locales.label_for(locale) %></span>
-          <% if @store.locale_complete?(locale) %>
-            <span class="text-ink">✓</span>
-          <% else %>
-            <span class="text-ink-faint">—</span>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
-  </section>
 
   <%= f.fields_for :translations, @store.translations.sort_by { |t| Morea::Locales::AVAILABLE.map(&:to_s).index(t.locale) || 99 } do |tf| %>
     <% locale = tf.object.locale %>
-    <section class="space-y-4 border-t border-line pt-8">
-      <h2 class="text-lg font-medium"><%= Morea::Locales.label_for(locale) %></h2>
+    <details class="admin-card admin-disclosure" <%= "open" if locale == "fr" %>>
+      <summary class="admin-card__header admin-disclosure__summary">
+        <h2 class="admin-card__title"><%= Morea::Locales.label_for(locale) %></h2>
+        <% if @store.locale_complete?(locale) %><span class="admin-badge admin-badge--success">Complete</span><% else %><span class="admin-badge admin-badge--attention">Missing</span><% end %>
+      </summary>
+      <div class="space-y-4 px-4 pb-4">
       <%= tf.hidden_field :id if tf.object.persisted? %>
       <%= tf.hidden_field :locale %>
       <div>
@@ -66,7 +79,7 @@
         <%= tf.label :cod_note, class: "admin-label" %>
         <%= tf.text_area :cod_note, rows: 2, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
       </div>
-      <div class="grid gap-6 md:grid-cols-2">
+      <div class="admin-field-grid">
         <div>
           <%= tf.label :campaign_title, class: "admin-label" %>
           <%= tf.text_field :campaign_title, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
@@ -80,16 +93,11 @@
           <%= tf.text_field :campaign_cta, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
         </div>
       </div>
-    </section>
+      </div>
+    </details>
   <% end %>
 
-  <div>
-    <%= f.label :featured_product_id, "Featured product", class: "admin-label" %>
-    <%= f.collection_select :featured_product_id, @store.products.active.order(:name), :id, :name, { include_blank: true }, class: "admin-input" %>
+  <div class="flex justify-end">
+    <%= f.submit "Save", class: "admin-btn" %>
   </div>
-  <div>
-    <%= f.label :featured_collection_id, "Featured collection", class: "admin-label" %>
-    <%= f.collection_select :featured_collection_id, @store.collections.published, :id, :name, { include_blank: true }, class: "admin-input" %>
-  </div>
-  <%= f.submit "Save settings", class: "admin-btn cursor-pointer" %>
 <% end %>

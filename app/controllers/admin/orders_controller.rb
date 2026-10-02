@@ -6,6 +6,10 @@ module Admin
       @status = params[:status]
       @orders = current_store.orders.recent.includes(:customer)
       @orders = @orders.by_status(@status) if @status.present?
+      if params[:q].present?
+        q = "%#{Order.sanitize_sql_like(params[:q].strip)}%"
+        @orders = @orders.where("number ILIKE :q OR customer_name ILIKE :q OR customer_phone ILIKE :q", q: q)
+      end
     end
 
     def show

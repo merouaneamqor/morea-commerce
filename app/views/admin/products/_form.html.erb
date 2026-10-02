@@ -31,8 +31,11 @@
           <% if @product.images.attached? || @product.image_url.present? %>
             <div class="flex flex-wrap gap-2">
               <% if @product.images.attached? %>
-                <% @product.images.each do |image| %>
-                  <span class="admin-thumb !h-20 !w-20"><%= image_tag rails_blob_path(image, only_path: true), alt: "" %></span>
+                <% @product.images.each_with_index do |image, i| %>
+                  <label class="flex cursor-pointer flex-col items-center gap-1 text-xs text-[#616161]">
+                    <span class="admin-thumb !h-20 !w-20"><%= image_tag rails_blob_path(image, only_path: true), alt: "" %></span>
+                    <span><%= check_box_tag "product[remove_image_ids][]", image.id, false, class: "h-3.5 w-3.5 accent-[#303030]" %> <%= i.zero? ? "Main · remove" : "Remove" %></span>
+                  </label>
                 <% end %>
               <% else %>
                 <% [@product.image_url, @product.detail_image_url].compact_blank.each do |url| %>
@@ -43,7 +46,7 @@
           <% end %>
           <label class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#8a8a8a] px-4 py-6 text-center hover:bg-[#f7f7f7]">
             <span class="admin-btn-secondary pointer-events-none">Upload new</span>
-            <span class="admin-help">Accepts images, multiple allowed</span>
+            <span class="admin-help">Accepts images, multiple allowed. The first image is shown in the store — tick “remove” on old ones to replace them.</span>
             <%= f.file_field :images, multiple: true, direct_upload: false, accept: "image/*", class: "sr-only" %>
           </label>
           <div class="admin-field-grid">

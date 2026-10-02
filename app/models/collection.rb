@@ -5,6 +5,7 @@ class Collection < ApplicationRecord
   has_many :collection_products, -> { order(:position) }, dependent: :destroy
   has_many :products, through: :collection_products
   has_many :translations, class_name: "CollectionTranslation", dependent: :destroy, inverse_of: :collection
+  has_one_attached :image
 
   accepts_nested_attributes_for :translations, allow_destroy: false
 

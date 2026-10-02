@@ -29,6 +29,7 @@ module Admin
     def update
       if @collection.update(collection_params)
         sync_products
+        remove_image
         redirect_to edit_admin_collection_path(@collection), notice: "Collection saved."
       else
         @collection.build_missing_translations!
@@ -49,9 +50,13 @@ module Admin
 
     def collection_params
       params.require(:collection).permit(
-        :slug, :published, :position,
+        :slug, :published, :position, :image,
         translations_attributes: %i[id locale name subtitle description]
       )
+    end
+
+    def remove_image
+      @collection.image.purge_later if params[:collection][:remove_image] == "1" && params[:collection][:image].blank?
     end
 
     def sync_products

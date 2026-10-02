@@ -48,8 +48,10 @@ module Translatable
   end
 
   def build_missing_translations!
-    Morea::Locales::AVAILABLE.each do |locale|
-      translations.find_or_initialize_by(locale: locale.to_s)
+    # Checks loaded/built translations too: find_or_initialize_by only queries the DB,
+    # so calling this twice on a new record used to build every locale twice
+    Morea::Locales::AVAILABLE.map(&:to_s).each do |locale|
+      translations.build(locale: locale) unless translations.any? { |t| t.locale == locale }
     end
     self
   end

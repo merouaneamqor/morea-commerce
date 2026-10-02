@@ -18,7 +18,7 @@ module Admin
     def create
       @product = current_store.products.new(product_params)
       if @product.save
-        attach_images
+        update_images
         redirect_to edit_admin_product_path(@product), notice: "Product created."
       else
         @product.build_missing_translations!
@@ -32,7 +32,7 @@ module Admin
 
     def update
       if @product.update(product_params)
-        attach_images
+        update_images
         redirect_to edit_admin_product_path(@product), notice: "Product saved."
       else
         @product.build_missing_translations!
@@ -64,12 +64,12 @@ module Admin
       )
     end
 
-    def attach_images
-      return unless params[:product][:images].present?
+    def update_images
+      remove_ids = Array(params[:product][:remove_image_ids]).compact_blank.map(&:to_i)
+      @product.images.where(id: remove_ids).find_each(&:purge_later) if remove_ids.any?
 
-      Array(params[:product][:images]).reject(&:blank?).each do |image|
-        @product.images.attach(image)
-      end
+      images = Array(params[:product][:images]).compact_blank
+      @product.images.attach(images) if images.any?
     end
   end
 end

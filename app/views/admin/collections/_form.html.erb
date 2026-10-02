@@ -36,6 +36,23 @@
 
     <div class="admin-stack">
       <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Cover image</h2></div>
+        <div class="space-y-3 px-4 pb-4">
+          <% if (cover = collection_cover_url(@collection)) %>
+            <span class="admin-thumb !h-32 !w-full"><%= image_tag cover, alt: "", class: "h-full w-full object-cover" %></span>
+            <% if @collection.image.attached? %>
+              <label class="admin-check"><%= check_box_tag "collection[remove_image]", "1", false %> Remove cover</label>
+            <% end %>
+          <% end %>
+          <label class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#8a8a8a] px-4 py-6 text-center hover:bg-[#f7f7f7]">
+            <span class="admin-btn-secondary pointer-events-none"><%= @collection.image.attached? ? "Replace image" : "Upload image" %></span>
+            <span class="admin-help">Shown on collection tiles. Without one, a product photo is used.</span>
+            <%= f.file_field :image, direct_upload: false, accept: "image/*", class: "sr-only" %>
+          </label>
+        </div>
+      </section>
+
+      <section class="admin-card">
         <div class="admin-card__header"><h2 class="admin-card__title">Publishing</h2></div>
         <div class="px-4 pb-4">
           <label class="admin-check"><%= f.check_box :published %> Visible on Online Store</label>

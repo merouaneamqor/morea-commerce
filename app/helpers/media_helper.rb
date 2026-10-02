@@ -18,8 +18,10 @@ module MediaHelper
     end
   end
 
-  # Editorial cover dropped at public/images/collections/<slug>/cover.jpg
+  # Cover uploaded in admin, else an editorial cover dropped at public/images/collections/<slug>/cover.jpg
   def collection_cover_url(collection)
+    return rails_blob_path(collection.image, only_path: true) if collection.image.attached?
+
     path = "images/collections/#{collection.slug}/cover.jpg"
     "/#{path}" if Rails.public_path.join(path).exist?
   end

@@ -1,0 +1,8 @@
+<nav class="admin-card mb-4 admin-tabs !border-0" aria-label="Online Store">
+  <%= link_to "Customize", admin_home_sections_path, class: "admin-tab #{'is-active' if controller_name == 'home_sections'}" %>
+  <%= link_to "Pages", admin_pages_path, class: "admin-tab #{'is-active' if controller_name == 'pages'}" %>
+  <%= link_to "Navigation", admin_menu_items_path, class: "admin-tab #{'is-active' if controller_name == 'menu_items'}" %>
+  <%= link_to localized_root_path(locale: :fr), class: "admin-tab ms-auto inline-flex items-center gap-1.5", target: "_blank", rel: "noopener" do %>
+    View store <%= admin_icon(:external, size: 14) %>
+  <% end %>
+</nav>

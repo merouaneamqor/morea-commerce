@@ -1,0 +1,41 @@
+<% content_for :title, "Navigation — Online Store" %>
+
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">Navigation</h1>
+</div>
+
+<%= render "admin/shared/online_store_tabs" %>
+
+<div class="admin-stack">
+  <% MenuItem::MENUS.each do |menu, title| %>
+    <% items = @items.fetch(menu, []) %>
+    <section class="admin-card">
+      <div class="admin-card__header">
+        <div>
+          <h2 class="admin-card__title"><%= title %></h2>
+          <p class="admin-muted"><%= menu == "header" ? "Links in the storefront header" : "Links in the footer “Information” column" %></p>
+        </div>
+        <%= link_to "Add menu item", new_admin_menu_item_path(menu: menu), class: "admin-btn-secondary" %>
+      </div>
+      <ol>
+        <% items.each_with_index do |item, i| %>
+          <li class="flex items-center gap-3 border-t border-[#ebebeb] px-4 py-3">
+            <span class="admin-badge admin-badge--neutral tabular-nums"><%= i + 1 %></span>
+            <div class="min-w-0 flex-1">
+              <%= link_to item.label.presence || "(no label)", edit_admin_menu_item_path(item), class: "admin-link" %>
+              <p class="admin-muted truncate"><%= store_link_path(item.link).to_s.sub(%r{\A/fr}, "") %></p>
+            </div>
+            <div class="flex items-center gap-1">
+              <%= button_to "↑", move_admin_menu_item_path(item, direction: "up"), method: :patch, class: "admin-btn-secondary !w-8 !px-0", disabled: i.zero?, "aria-label": "Move up" %>
+              <%= button_to "↓", move_admin_menu_item_path(item, direction: "down"), method: :patch, class: "admin-btn-secondary !w-8 !px-0", disabled: i == items.size - 1, "aria-label": "Move down" %>
+              <%= button_to "Remove", admin_menu_item_path(item), method: :delete, class: "admin-btn-plain admin-btn-plain--critical ms-2", form: { data: { turbo_confirm: "Remove this menu item?" } } %>
+            </div>
+          </li>
+        <% end %>
+      </ol>
+      <% if items.empty? %>
+        <p class="admin-empty border-t border-[#ebebeb]">This menu is empty.</p>
+      <% end %>
+    </section>
+  <% end %>
+</div>

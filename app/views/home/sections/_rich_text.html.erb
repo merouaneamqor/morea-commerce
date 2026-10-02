@@ -1,0 +1,16 @@
+<% if section.body.present? %>
+  <section class="home-manifesto <%= "home-manifesto--plain" if section.image_url.blank? %>" data-controller="reveal">
+    <% if section.image_url.present? %>
+      <%= image_tag section.image_url, alt: "", class: "home-manifesto__media", loading: "lazy", decoding: "async" %>
+    <% end %>
+    <div class="home-manifesto__copy">
+      <% if section.subheading.present? %>
+        <p class="landing-eyebrow landing-eyebrow--light justify-center"><%= section.subheading %></p>
+      <% end %>
+      <blockquote class="home-manifesto__quote"><%= section.body %></blockquote>
+      <% if section.button_label.present? && store_link_path(section.link) %>
+        <%= link_to section.button_label, store_link_path(section.link), class: "maison-cta maison-cta-light mt-12" %>
+      <% end %>
+    </div>
+  </section>
+<% end %>

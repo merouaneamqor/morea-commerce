@@ -1,0 +1,12 @@
+<% content_for :title, "#{@page.seo_title.presence || @page.title} — #{current_store.name}" %>
+<% content_for :meta_description, @page.seo_description.presence || @page.body.to_s.truncate(155) %>
+
+<article class="store-page">
+  <header class="store-page__head" data-controller="reveal">
+    <p class="landing-eyebrow justify-center"><%= current_store.name %></p>
+    <h1 class="store-page__title"><%= @page.title %></h1>
+  </header>
+  <div class="store-page__body" data-controller="reveal" data-reveal-delay-value="120">
+    <%= simple_format @page.body %>
+  </div>
+</article>

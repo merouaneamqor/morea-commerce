@@ -1,6 +1,6 @@
 class ProductsController < ApplicationController
   SIZE_ORDER = %w[XS S M L XL XXL].freeze
-  COLOR_ORDER = ["Rose poudré", "Blush", "Taupe", "Sand", "Noir", "Black", "Ink"].freeze
+  COLOR_ORDER = [ "Rose poudré", "Blush", "Taupe", "Sand", "Noir", "Black", "Ink" ].freeze
 
   def show
     @product = current_store.products.active.includes(:collections, :product_variants, :translations).find_by!(slug: params[:slug])
@@ -11,6 +11,9 @@ class ProductsController < ApplicationController
       render :landing
     else
       @eyebrow = "MOREA ACTIVE"
+      @collection = @product.collections.published.order(:position).first
+      @gallery = product_gallery
+      @related = related_products
     end
   end
 
@@ -28,8 +31,18 @@ class ProductsController < ApplicationController
         stock: v.stock
       }
     end.sort_by do |v|
-      [SIZE_ORDER.index(v[:size].to_s.upcase) || 99, COLOR_ORDER.index(v[:color].to_s) || 99]
+      [ SIZE_ORDER.index(v[:size].to_s.upcase) || 99, COLOR_ORDER.index(v[:color].to_s) || 99 ]
     end
+  end
+
+  def product_gallery
+    uploaded = @product.images.map { |image| helpers.rails_blob_path(image, only_path: true) }
+    (uploaded + [ @product.image_url, @product.detail_image_url ]).compact_blank.uniq.presence || [ nil ]
+  end
+
+  def related_products
+    scope = @collection ? @collection.products : current_store.products
+    scope.active.where.not(id: @product.id).includes(:translations, images_attachments: :blob).limit(4)
   end
 
   def landing_page?

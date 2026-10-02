@@ -63,6 +63,11 @@
       <div class="space-y-4 px-4 pb-4">
       <%= tf.hidden_field :id if tf.object.persisted? %>
       <%= tf.hidden_field :locale %>
+      <div id="announcement<%= "-#{locale}" unless locale == "fr" %>">
+        <%= tf.label :announcement, "Announcement bar", class: "admin-label" %>
+        <%= tf.text_field :announcement, class: "admin-input", placeholder: "Leave empty to hide the bar", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
+        <p class="admin-help">Shown above the header on every page.</p>
+      </div>
       <div>
         <%= tf.label :tagline, class: "admin-label" %>
         <%= tf.text_field :tagline, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>

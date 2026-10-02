@@ -1,0 +1,52 @@
+<% content_for :title, (@page.persisted? ? @page.title : "Add page") + " — Online Store" %>
+
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to admin_pages_path, class: "admin-back", "aria-label": "Back to pages" do %><%= admin_icon(:back) %><% end %>
+    <h1 class="admin-page-header__title"><%= @page.persisted? ? @page.title : "Add page" %></h1>
+  </div>
+  <div class="flex items-center gap-2">
+    <% if @page.persisted? && @page.published? %>
+      <%= link_to "View", page_path(@page.slug_was || @page.slug, locale: :fr), class: "admin-btn-secondary", target: "_blank", rel: "noopener" %>
+    <% end %>
+    <button type="submit" form="page-form" class="admin-btn">Save</button>
+  </div>
+</div>
+
+<%= form_with model: @page, url: (@page.persisted? ? admin_page_path(@page.slug_was || @page.slug) : admin_pages_path), id: "page-form" do |f| %>
+  <% if @page.errors.any? %>
+    <div class="admin-banner admin-banner--critical"><%= @page.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <div class="admin-layout">
+    <div class="admin-stack">
+      <%= render "admin/shared/translation_cards", f: f, record: @page,
+            fields: [[:title, "Title", :field], [:body, "Content", :area, 14, "Separate paragraphs with a blank line."],
+                     [:seo_title, "SEO title", :field], [:seo_description, "SEO description", :area, 2]] %>
+    </div>
+
+    <div class="admin-stack">
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Visibility</h2></div>
+        <div class="px-4 pb-4">
+          <label class="admin-check"><%= f.check_box :published %> Visible on Online Store</label>
+        </div>
+      </section>
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Search engine listing</h2></div>
+        <div class="px-4 pb-4">
+          <%= f.label :slug, "URL handle", class: "admin-label" %>
+          <%= f.text_field :slug, class: "admin-input", placeholder: "generated from the title" %>
+          <p class="admin-help">morea.website/fr/pages/<%= @page.slug.presence || "…" %></p>
+        </div>
+      </section>
+    </div>
+  </div>
+<% end %>
+
+<% if @page.persisted? %>
+  <div class="mt-6 flex justify-between border-t border-[#e3e3e3] pt-4">
+    <%= button_to "Delete page", admin_page_path(@page.slug_was || @page.slug), method: :delete, form: { data: { turbo_confirm: "Delete this page? Menu links to it will stop working." } }, class: "admin-btn-critical" %>
+    <button type="submit" form="page-form" class="admin-btn">Save</button>
+  </div>
+<% end %>

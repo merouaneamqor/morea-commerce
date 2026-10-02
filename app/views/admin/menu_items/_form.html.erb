@@ -1,0 +1,33 @@
+<% content_for :title, (@item.persisted? ? "Edit menu item" : "Add menu item") + " — Navigation" %>
+
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to admin_menu_items_path, class: "admin-back", "aria-label": "Back to navigation" do %><%= admin_icon(:back) %><% end %>
+    <h1 class="admin-page-header__title"><%= @item.persisted? ? (@item.label.presence || "Menu item") : "Add menu item" %></h1>
+  </div>
+  <button type="submit" form="menu-item-form" class="admin-btn">Save</button>
+</div>
+
+<%= form_with model: [:admin, @item], id: "menu-item-form" do |f| %>
+  <% if @item.errors.any? %>
+    <div class="admin-banner admin-banner--critical"><%= @item.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <div class="admin-layout">
+    <div class="admin-stack">
+      <%= render "admin/shared/translation_cards", f: f, record: @item, fields: [[:label, "Label", :field]] %>
+    </div>
+    <div class="admin-stack">
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Link</h2></div>
+        <div class="space-y-4 px-4 pb-4">
+          <div>
+            <%= f.label :menu, "Menu", class: "admin-label" %>
+            <%= f.select :menu, MenuItem::MENUS.map { |k, v| [v, k] }, {}, class: "admin-input" %>
+          </div>
+          <%= render "admin/shared/link_picker", f: f, record: @item, label: "Links to" %>
+        </div>
+      </section>
+    </div>
+  </div>
+<% end %>

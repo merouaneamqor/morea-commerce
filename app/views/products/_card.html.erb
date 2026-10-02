@@ -1,0 +1,27 @@
+<%# Product card used on the home page, collections and related products %>
+<% alt_url = product.detail_image_url.presence %>
+<%= link_to product_path(product), class: "home-card" do %>
+  <div class="home-card__media object-frame aspect-[3/4]">
+    <%= product_image_tag product, sizes: local_assigns.fetch(:sizes, "(max-width: 768px) 50vw, 25vw") %>
+    <% if alt_url && alt_url != product_image_url(product) %>
+      <%= image_tag alt_url, alt: "", class: "home-card__alt", loading: "lazy", decoding: "async" %>
+    <% end %>
+    <% if !product.available? %>
+      <span class="home-card__badge"><%= t("product.sold_out") %></span>
+    <% elsif product.compare_at_cents.to_i > product.price_cents %>
+      <span class="home-card__badge home-card__badge--sale"><%= t("product.sale") %></span>
+    <% end %>
+  </div>
+  <div class="home-card__meta">
+    <% if local_assigns[:index] %>
+      <span class="landing-gallery__index"><%= format("%02d", index + 1) %></span>
+    <% end %>
+    <p class="home-card__name <%= "col-span-2" unless local_assigns[:index] %>"><%= product.name %></p>
+    <p class="home-card__price <%= "!col-start-1 col-span-2" unless local_assigns[:index] %>">
+      <%= product.price_display %>
+      <% if product.compare_at_cents.to_i > product.price_cents %>
+        <s class="ms-2 opacity-60"><%= product.compare_at_display %></s>
+      <% end %>
+    </p>
+  </div>
+<% end %>

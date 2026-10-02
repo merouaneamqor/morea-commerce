@@ -1,0 +1,18 @@
+<% products = section.products.to_a %>
+<% if products.any? %>
+  <section class="home-section">
+    <header class="home-section__head" data-controller="reveal">
+      <div>
+        <p class="landing-eyebrow"><%= section.subheading.presence || section.collection&.name || t("shop.selected") %></p>
+        <h2 class="home-section__title"><%= section.heading %></h2>
+      </div>
+      <%= link_to t("home.view_all"), (section.collection ? collection_path(section.collection) : collections_path), class: "maison-cta" %>
+    </header>
+
+    <div class="home-products" data-controller="reveal" data-reveal-delay-value="120">
+      <% products.each_with_index do |product, i| %>
+        <%= render "products/card", product: product, index: i, sizes: "(max-width: 768px) 50vw, 25vw" %>
+      <% end %>
+    </div>
+  </section>
+<% end %>

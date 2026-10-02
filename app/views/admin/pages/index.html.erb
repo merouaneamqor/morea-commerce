@@ -1,0 +1,29 @@
+<% content_for :title, "Pages — Online Store" %>
+
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">Pages</h1>
+  <%= link_to "Add page", new_admin_page_path, class: "admin-btn" %>
+</div>
+
+<%= render "admin/shared/online_store_tabs" %>
+
+<div class="admin-card">
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead><tr><th>Title</th><th>Visibility</th><th>URL</th><th class="is-numeric">Updated</th></tr></thead>
+      <tbody>
+        <% @pages.each do |page| %>
+          <tr>
+            <td><%= link_to page.title, edit_admin_page_path(page), class: "admin-link" %></td>
+            <td><%= page.published? ? admin_badge(:active, label: "Visible") : admin_badge(:archived, label: "Hidden") %></td>
+            <td class="admin-muted">/pages/<%= page.slug %></td>
+            <td class="is-numeric admin-muted"><%= page.updated_at.strftime("%b %-d, %Y") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @pages.empty? %>
+      <p class="admin-empty">Add pages like About, Shipping or Returns and link them from your menus.</p>
+    <% end %>
+  </div>
+</div>

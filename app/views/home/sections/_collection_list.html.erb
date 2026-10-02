@@ -1,0 +1,12 @@
+<% tiles = collection_tiles(current_store.collections.published.order(:position).includes(:translations).limit(section.item_limit(3))) %>
+<% if tiles.any? %>
+  <section class="home-section home-section--flush">
+    <header class="home-section__head" data-controller="reveal">
+      <div>
+        <% if section.subheading.present? %><p class="landing-eyebrow"><%= section.subheading %></p><% end %>
+        <h2 class="home-section__title"><%= section.heading %></h2>
+      </div>
+    </header>
+    <%= render "collections/tiles", tiles: tiles %>
+  </section>
+<% end %>

@@ -46,7 +46,15 @@
             <%= admin_nav_link "Customers", admin_customers_path, icon: :customers, active: controller_name == "customers" %>
 
             <p class="admin-sidebar__heading">Sales channels</p>
-            <%= admin_nav_link "Online Store", localized_root_path(locale: :fr), icon: :store, target: "_blank", rel: "noopener" %>
+            <% online_store = controller_name.in?(%w[home_sections pages menu_items]) %>
+            <%= admin_nav_link "Online Store", admin_home_sections_path, icon: :store, active: online_store %>
+            <% if online_store %>
+              <div class="admin-subnav">
+                <%= link_to "Customize", admin_home_sections_path, class: "admin-subnav__item #{'is-active' if controller_name == 'home_sections'}" %>
+                <%= link_to "Pages", admin_pages_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pages'}" %>
+                <%= link_to "Navigation", admin_menu_items_path, class: "admin-subnav__item #{'is-active' if controller_name == 'menu_items'}" %>
+              </div>
+            <% end %>
           </nav>
 
           <div class="admin-sidebar__footer">

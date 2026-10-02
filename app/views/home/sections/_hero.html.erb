@@ -1,0 +1,31 @@
+<section class="campaign-hero">
+  <div class="campaign-hero__media">
+    <% if section.image_url.present? %>
+      <%= object_image_tag section.image_url,
+            alt: section.heading.to_s,
+            sizes: "100vw",
+            widths: [640, 960, 1440, 1920],
+            loading: first ? "eager" : "lazy",
+            fetchpriority: (first ? "high" : nil),
+            css_class: "h-full w-full object-cover" %>
+    <% else %>
+      <div class="h-full w-full bg-stone-deep"></div>
+    <% end %>
+  </div>
+  <div class="campaign-hero__veil"></div>
+
+  <div class="campaign-hero__content" data-controller="reveal">
+    <% if section.subheading.present? %>
+      <p class="landing-eyebrow landing-eyebrow--light"><%= section.subheading %></p>
+    <% end %>
+    <%= content_tag (first ? :h1 : :h2), section.heading, class: "campaign-hero__title" %>
+    <div class="campaign-hero__actions">
+      <% if section.button_label.present? && store_link_path(section.link) %>
+        <%= link_to store_link_path(section.link), class: "campaign-btn" do %>
+          <span><%= section.button_label %></span>
+        <% end %>
+      <% end %>
+      <%= link_to t("home.view_all"), collections_path, class: "maison-cta maison-cta-light" %>
+    </div>
+  </div>
+</section>

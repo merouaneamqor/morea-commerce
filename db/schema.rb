@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_01_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_02_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -139,6 +139,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_170000) do
     t.index ["store_id"], name: "index_discounts_on_store_id"
   end
 
+  create_table "home_section_translations", force: :cascade do |t|
+    t.bigint "home_section_id", null: false
+    t.string "locale", null: false
+    t.string "heading"
+    t.string "subheading"
+    t.text "body"
+    t.string "button_label"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["home_section_id", "locale"], name: "index_home_section_translations_on_home_section_id_and_locale", unique: true
+    t.index ["home_section_id"], name: "index_home_section_translations_on_home_section_id"
+  end
+
+  create_table "home_sections", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "kind", null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "visible", default: true, null: false
+    t.jsonb "settings", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id", "position"], name: "index_home_sections_on_store_id_and_position"
+    t.index ["store_id"], name: "index_home_sections_on_store_id"
+  end
+
   create_table "inventory_movements", force: :cascade do |t|
     t.bigint "product_id", null: false
     t.bigint "product_variant_id"
@@ -151,6 +176,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_170000) do
     t.index ["order_id"], name: "index_inventory_movements_on_order_id"
     t.index ["product_id"], name: "index_inventory_movements_on_product_id"
     t.index ["product_variant_id"], name: "index_inventory_movements_on_product_variant_id"
+  end
+
+  create_table "menu_item_translations", force: :cascade do |t|
+    t.bigint "menu_item_id", null: false
+    t.string "locale", null: false
+    t.string "label"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["menu_item_id", "locale"], name: "index_menu_item_translations_on_menu_item_id_and_locale", unique: true
+    t.index ["menu_item_id"], name: "index_menu_item_translations_on_menu_item_id"
+  end
+
+  create_table "menu_items", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "menu", null: false
+    t.integer "position", default: 0, null: false
+    t.string "link", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id", "menu", "position"], name: "index_menu_items_on_store_id_and_menu_and_position"
+    t.index ["store_id"], name: "index_menu_items_on_store_id"
   end
 
   create_table "order_items", force: :cascade do |t|
@@ -196,6 +242,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_170000) do
     t.index ["number"], name: "index_orders_on_number", unique: true
     t.index ["status"], name: "index_orders_on_status"
     t.index ["store_id"], name: "index_orders_on_store_id"
+  end
+
+  create_table "page_translations", force: :cascade do |t|
+    t.bigint "page_id", null: false
+    t.string "locale", null: false
+    t.string "title"
+    t.text "body"
+    t.string "seo_title"
+    t.string "seo_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["page_id", "locale"], name: "index_page_translations_on_page_id_and_locale", unique: true
+    t.index ["page_id"], name: "index_page_translations_on_page_id"
+  end
+
+  create_table "pages", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "slug", null: false
+    t.boolean "published", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id", "slug"], name: "index_pages_on_store_id_and_slug", unique: true
+    t.index ["store_id"], name: "index_pages_on_store_id"
   end
 
   create_table "product_translations", force: :cascade do |t|
@@ -279,6 +348,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_170000) do
     t.string "campaign_cta"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "announcement"
     t.index ["store_id", "locale"], name: "index_store_translations_on_store_id_and_locale", unique: true
     t.index ["store_id"], name: "index_store_translations_on_store_id"
   end
@@ -327,14 +397,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_01_170000) do
   add_foreign_key "collections", "stores"
   add_foreign_key "customers", "stores"
   add_foreign_key "discounts", "stores"
+  add_foreign_key "home_section_translations", "home_sections"
+  add_foreign_key "home_sections", "stores"
   add_foreign_key "inventory_movements", "orders"
   add_foreign_key "inventory_movements", "product_variants"
   add_foreign_key "inventory_movements", "products"
+  add_foreign_key "menu_item_translations", "menu_items"
+  add_foreign_key "menu_items", "stores"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "product_variants"
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "customers"
   add_foreign_key "orders", "stores"
+  add_foreign_key "page_translations", "pages"
+  add_foreign_key "pages", "stores"
   add_foreign_key "product_translations", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "stores"

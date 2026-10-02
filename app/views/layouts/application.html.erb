@@ -22,18 +22,38 @@
   </head>
 
   <% body = yield %>
-  <body class="min-h-screen min-h-dvh <%= "has-mobile-buy" if content_for?(:mobile_buy) %> <%= "is-rtl" if rtl? %>">
-    <header class="maison-nav <%= "is-over-hero" if content_for?(:hero_nav) %> <%= "is-split-hero" if content_for?(:split_hero_nav) %>"
-            data-controller="nav-scroll">
-      <%= render "shared/brand_lockup" %>
-      <nav class="flex items-center gap-5 md:gap-8">
-        <%= link_to t("nav.shop"), collections_path, class: "maison-link" %>
-        <%= link_to cart_path, class: "maison-link" do %>
-          <%= t("nav.bag") %><% if cart_count.positive? %><span class="ms-1 opacity-70"><%= cart_count %></span><% end %>
-        <% end %>
-        <%= render "shared/locale_switcher" %>
-      </nav>
-    </header>
+  <body class="min-h-screen min-h-dvh <%= "has-mobile-buy" if content_for?(:mobile_buy) %> <%= "is-rtl" if rtl? %> <%= "has-announcement" if current_store&.announcement.present? %>"
+        data-controller="cart-drawer">
+    <div class="site-header">
+      <% if current_store&.announcement.present? %>
+        <p class="announcement-bar"><%= current_store.announcement %></p>
+      <% end %>
+      <header class="maison-nav <%= "is-over-hero" if content_for?(:hero_nav) %> <%= "is-split-hero" if content_for?(:split_hero_nav) %>"
+              data-controller="nav-scroll">
+        <div class="flex items-center gap-8">
+          <%= render "shared/brand_lockup" %>
+          <nav class="maison-nav__menu" aria-label="<%= t("nav.main_menu") %>">
+            <% store_menu("header").each do |item| %>
+              <%= store_menu_link item, class: "maison-link" %>
+            <% end %>
+          </nav>
+        </div>
+        <nav class="maison-nav__actions">
+          <details class="mobile-menu md:hidden">
+            <summary class="maison-link cursor-pointer list-none"><%= t("nav.menu") %></summary>
+            <div class="mobile-menu__panel">
+              <% store_menu("header").each do |item| %>
+                <%= store_menu_link item, class: "mobile-menu__link" %>
+              <% end %>
+            </div>
+          </details>
+          <%= link_to cart_path, class: "maison-link", data: { action: "cart-drawer#open" } do %>
+            <%= t("nav.bag") %><%= render "carts/count" %>
+          <% end %>
+          <%= render "shared/locale_switcher" %>
+        </nav>
+      </header>
+    </div>
 
     <% if notice.present? %>
       <div class="flash" data-controller="reveal"><%= notice %></div>
@@ -46,23 +66,9 @@
       <%= body %>
     </main>
 
-    <footer class="morea-packaging border-t border-line px-5 py-12 text-center md:px-10 md:py-14"
-            style="padding-bottom: max(3rem, calc(env(safe-area-inset-bottom) + 2rem))">
-      <div class="morea-packaging__mark mx-auto text-ink" aria-hidden="true">
-        <%= render "shared/wordmark_svg" %>
-      </div>
-      <p class="mt-5 text-[10px] uppercase tracking-[0.32em] text-ink-faint md:tracking-[0.4em]">
-        <%= t("store.footer_tagline") %>
-      </p>
-      <p class="mt-3 text-[10px] uppercase tracking-[0.22em] text-ink-faint">
-        <%= current_store&.cod_label || t("store.default_campaign_cta") %>
-      </p>
-      <div class="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[10px] uppercase tracking-[0.22em] text-ink-faint">
-        <%= link_to t("nav.track_order"), track_orders_path, class: "hover:text-ink" %>
-        <%= link_to "@morea.style", "https://www.instagram.com/morea.style/",
-              class: "hover:text-ink", target: "_blank", rel: "noopener noreferrer" %>
-        <span>morea.website</span>
-      </div>
-    </footer>
+    <%= render "shared/footer" %>
+    <% if current_cart && controller_name != "checkouts" %>
+      <%= render "carts/drawer", cart: current_cart %>
+    <% end %>
   </body>
 </html>

@@ -1,0 +1,11 @@
+<% if section.ticker_items.any? %>
+  <div class="home-ticker" aria-hidden="true">
+    <div class="home-ticker__track">
+      <% 2.times do %>
+        <% section.ticker_items.each do |item| %>
+          <span class="home-ticker__item"><%= item %></span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

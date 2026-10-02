@@ -2,6 +2,12 @@
 
 puts "Seeding Morea Commerce..."
 
+MenuItemTranslation.delete_all
+MenuItem.delete_all
+PageTranslation.delete_all
+Page.delete_all
+HomeSectionTranslation.delete_all
+HomeSection.delete_all
 OrderItem.delete_all
 InventoryMovement.delete_all
 Order.delete_all
@@ -436,6 +442,7 @@ end
 
 featured = store.products.find_by!(slug: "essential-set")
 store.update!(featured_product: featured, featured_collection: essentials)
+store.reload.install_online_store_defaults!
 
 puts "Admin: admin@morea.website / morea123"
 puts "Store: #{store.name} — #{store.products.count} products — locales fr/en/ar"

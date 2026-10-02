@@ -8,10 +8,13 @@ class Store < ApplicationRecord
   has_many :carts, dependent: :destroy
   has_many :discounts, dependent: :destroy
   has_many :translations, class_name: "StoreTranslation", dependent: :destroy, inverse_of: :store
+  has_many :home_sections, dependent: :destroy
+  has_many :pages, dependent: :destroy
+  has_many :menu_items, dependent: :destroy
 
   accepts_nested_attributes_for :translations, allow_destroy: false
 
-  translates :tagline, :about, :cod_label, :cod_note, :campaign_title, :campaign_season, :campaign_cta
+  translates :tagline, :about, :cod_label, :cod_note, :campaign_title, :campaign_season, :campaign_cta, :announcement
 
   belongs_to :featured_product, class_name: "Product", optional: true
   belongs_to :featured_collection, class_name: "Collection", optional: true
@@ -37,5 +40,17 @@ class Store < ApplicationRecord
 
   def campaign_button
     campaign_cta.presence || I18n.t("store.default_campaign_cta")
+  end
+
+  # Saved home sections, or the built-in defaults (unsaved) until the theme is installed
+  def home_sections_for_display
+    sections = home_sections.visible.ordered.includes(:translations).to_a
+    return sections if home_sections.exists?
+
+    OnlineStoreDefaults.new(self).home_sections
+  end
+
+  def install_online_store_defaults!
+    OnlineStoreDefaults.new(self).install!
   end
 end

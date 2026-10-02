@@ -1,0 +1,83 @@
+<% content_for :title, "#{@section.label} — Online Store" %>
+<% field_labels = { heading: ["Heading", :field], subheading: ["Eyebrow (small text above the heading)", :field], body: [(@section.kind == "ticker" ? "Items — one per line" : "Text"), :area], button_label: ["Button label", :field] } %>
+
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to admin_home_sections_path, class: "admin-back", "aria-label": "Back to Online Store" do %><%= admin_icon(:back) %><% end %>
+    <h1 class="admin-page-header__title"><%= @section.label %>
+      <% if @section.persisted? && !@section.visible %><%= admin_badge(:archived, label: "Hidden") %><% end %>
+    </h1>
+  </div>
+  <div class="flex items-center gap-2">
+    <%= link_to "View store", localized_root_path(locale: :fr), class: "admin-btn-secondary", target: "_blank", rel: "noopener" %>
+    <button type="submit" form="section-form" class="admin-btn">Save</button>
+  </div>
+</div>
+
+<%= form_with model: [:admin, @section], id: "section-form" do |f| %>
+  <%= f.hidden_field :kind if @section.new_record? %>
+  <% if @section.errors.any? %>
+    <div class="admin-banner admin-banner--critical"><%= @section.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <div class="admin-layout">
+    <div class="admin-stack">
+      <%= render "admin/shared/translation_cards", f: f, record: @section, title: "Content",
+            fields: @section.text_fields.map { |attr| [attr, *field_labels.fetch(attr), (6 if attr == :body)] } %>
+    </div>
+
+    <div class="admin-stack">
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Visibility</h2></div>
+        <div class="px-4 pb-4">
+          <label class="admin-check"><%= f.check_box :visible %> Show on home page</label>
+        </div>
+      </section>
+
+      <% if @section.setting_fields.any? %>
+        <section class="admin-card">
+          <div class="admin-card__header"><h2 class="admin-card__title">Settings</h2></div>
+          <div class="space-y-4 px-4 pb-4">
+            <% if @section.setting_fields.include?(:image_url) %>
+              <div>
+                <%= f.label :image_url, "Image URL", class: "admin-label" %>
+                <% if @section.image_url.present? %>
+                  <div class="mb-2 overflow-hidden rounded-lg"><%= image_tag @section.image_url, alt: "", class: "aspect-[16/10] w-full object-cover" %></div>
+                <% end %>
+                <%= f.text_field :image_url, class: "admin-input", placeholder: "/images/… or https://…" %>
+              </div>
+            <% end %>
+            <% if @section.setting_fields.include?(:image_position) %>
+              <div>
+                <%= f.label :image_position, "Image position", class: "admin-label" %>
+                <%= f.select :image_position, [["Image first", "left"], ["Image second", "right"]], {}, class: "admin-input" %>
+              </div>
+            <% end %>
+            <% if @section.setting_fields.include?(:link) %>
+              <%= render "admin/shared/link_picker", f: f, record: @section, label: "Button link", blank: true %>
+            <% end %>
+            <% if @section.setting_fields.include?(:collection_id) %>
+              <div>
+                <%= f.label :collection_id, "Collection", class: "admin-label" %>
+                <%= f.select :collection_id, current_store.collections.order(:position).map { |c| [c.name, c.id.to_s] }, { include_blank: "Featured collection (from Settings)" }, class: "admin-input" %>
+              </div>
+            <% end %>
+            <% if @section.setting_fields.include?(:limit) %>
+              <div>
+                <%= f.label :limit, (@section.kind == "collection_list" ? "Collections to show" : "Products to show"), class: "admin-label" %>
+                <%= f.number_field :limit, min: 1, max: 12, class: "admin-input" %>
+              </div>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<% if @section.persisted? %>
+  <div class="mt-6 flex justify-between border-t border-[#e3e3e3] pt-4">
+    <%= button_to "Remove section", admin_home_section_path(@section), method: :delete, form: { data: { turbo_confirm: "Remove this section from the home page?" } }, class: "admin-btn-critical" %>
+    <button type="submit" form="section-form" class="admin-btn">Save</button>
+  </div>
+<% end %>

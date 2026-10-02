@@ -1,6 +1,6 @@
 <%# Discreet header locale control — FR⌄ / EN⌄ / AR⌄ %>
 <% current = current_locale.to_sym %>
-<div class="locale-switcher relative" data-controller="locale-switcher">
+<div class="locale-switcher relative <%= "is-dropup" if local_assigns[:dropup] %>" data-controller="locale-switcher">
   <button type="button"
           class="maison-link inline-flex items-center gap-1"
           data-locale-switcher-target="button"

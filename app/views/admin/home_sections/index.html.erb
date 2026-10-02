@@ -1,0 +1,62 @@
+<% content_for :title, "Customize — Online Store" %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Online Store</h1>
+    <p class="admin-page-header__meta">Arrange the sections of your home page</p>
+  </div>
+  <%= form_with url: new_admin_home_section_path, method: :get, class: "flex items-center gap-2" do %>
+    <%= select_tag :kind, options_for_select(HomeSection::KINDS.map { |k, label| [label, k] }), class: "admin-input !w-auto" %>
+    <%= submit_tag "Add section", class: "admin-btn", name: nil %>
+  <% end %>
+</div>
+
+<%= render "admin/shared/online_store_tabs" %>
+
+<div class="admin-layout">
+  <section class="admin-card">
+    <div class="admin-card__header">
+      <h2 class="admin-card__title">Home page</h2>
+      <span class="admin-muted"><%= pluralize(@sections.size, "section", locale: :en) %></span>
+    </div>
+
+    <div class="flex items-center gap-3 border-t border-[#ebebeb] px-4 py-3">
+      <span class="admin-thumb !h-8 !w-8"><%= admin_icon(:menu, size: 14) %></span>
+      <div class="min-w-0 flex-1">
+        <p class="font-semibold">Announcement bar</p>
+        <p class="admin-muted truncate"><%= current_store.announcement.presence || "Hidden — no text set" %></p>
+      </div>
+      <%= link_to "Edit", edit_admin_store_path(anchor: "announcement"), class: "admin-btn-secondary" %>
+    </div>
+
+    <ol>
+      <% @sections.each_with_index do |section, i| %>
+        <li class="flex items-center gap-3 border-t border-[#ebebeb] px-4 py-3 <%= "opacity-60" unless section.visible %>">
+          <span class="admin-badge admin-badge--neutral tabular-nums"><%= i + 1 %></span>
+          <div class="min-w-0 flex-1">
+            <%= link_to section.label, edit_admin_home_section_path(section), class: "admin-link" %>
+            <p class="admin-muted truncate"><%= section.preview_text || "—" %></p>
+          </div>
+          <% unless section.visible %><%= admin_badge(:archived, label: "Hidden") %><% end %>
+          <div class="flex items-center gap-1">
+            <%= button_to "↑", move_admin_home_section_path(section, direction: "up"), method: :patch, class: "admin-btn-secondary !w-8 !px-0", disabled: i.zero?, title: "Move up", "aria-label": "Move up" %>
+            <%= button_to "↓", move_admin_home_section_path(section, direction: "down"), method: :patch, class: "admin-btn-secondary !w-8 !px-0", disabled: i == @sections.size - 1, title: "Move down", "aria-label": "Move down" %>
+            <%= button_to (section.visible ? "Hide" : "Show"), toggle_admin_home_section_path(section), method: :patch, class: "admin-btn-secondary" %>
+          </div>
+        </li>
+      <% end %>
+    </ol>
+    <% if @sections.empty? %>
+      <p class="admin-empty">No sections yet. Add one to start building your home page.</p>
+    <% end %>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">How it works</h2></div>
+    <div class="space-y-3 px-4 pb-4 admin-muted">
+      <p>Sections appear on the home page from top to bottom in this order. Use the arrows to reorder, <strong>Hide</strong> to take one off the page without losing it.</p>
+      <p>Each section has text for French, English and Arabic. Empty translations fall back to French.</p>
+      <p>Menus and content pages live under <%= link_to "Navigation", admin_menu_items_path, class: "admin-link--blue" %> and <%= link_to "Pages", admin_pages_path, class: "admin-link--blue" %>.</p>
+    </div>
+  </section>
+</div>

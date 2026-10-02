@@ -1,0 +1,6 @@
+<%# Link select + custom URL for StoreLinkable records %>
+<div class="space-y-2">
+  <%= f.label :link, local_assigns.fetch(:label, "Link"), class: "admin-label" %>
+  <%= f.select :link, store_link_options(current_store, record.link), { include_blank: local_assigns.fetch(:blank, false) }, class: "admin-input" %>
+  <%= f.text_field :custom_url, value: (record.link if record.custom_link?), placeholder: "https://… (used when Custom URL is selected)", class: "admin-input" %>
+</div>

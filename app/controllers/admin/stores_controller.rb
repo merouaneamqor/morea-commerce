@@ -24,7 +24,7 @@ module Admin
         :campaign_image_url,
         translations_attributes: %i[
           id locale tagline about cod_label cod_note
-          campaign_title campaign_season campaign_cta
+          campaign_title campaign_season campaign_cta announcement
         ]
       )
     end

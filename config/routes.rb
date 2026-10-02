@@ -16,10 +16,11 @@ Rails.application.routes.draw do
 
   root to: redirect("/fr")
 
-  scope "/:locale", locale: /fr|en|ar/, defaults: { locale: "fr" } do
+  scope "/:locale", locale: /fr|en|ar/ do
     get "/", to: "home#index", as: :localized_root
     resources :collections, only: %i[index show], param: :slug
     resources :products, only: %i[show], param: :slug
+    resources :pages, only: %i[show], param: :slug
 
     resource :cart, only: %i[show] do
       post :add_item
@@ -53,5 +54,17 @@ Rails.application.routes.draw do
       end
     end
     resources :customers, only: %i[index show]
+
+    # Online Store
+    resources :home_sections, except: %i[show] do
+      member do
+        patch :move
+        patch :toggle
+      end
+    end
+    resources :pages, except: %i[show]
+    resources :menu_items, except: %i[show] do
+      member { patch :move }
+    end
   end
 end

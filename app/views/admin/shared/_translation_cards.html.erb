@@ -1,0 +1,26 @@
+<%# Per-language cards (French open). fields: [[attr, label, :field|:area, rows, help]] %>
+<%= f.fields_for :translations, record.translations.sort_by { |t| Morea::Locales::AVAILABLE.map(&:to_s).index(t.locale) || 99 } do |tf| %>
+  <% locale = tf.object.locale %>
+  <details class="admin-card admin-disclosure" <%= "open" if locale == "fr" %>>
+    <summary class="admin-card__header admin-disclosure__summary">
+      <h2 class="admin-card__title"><%= local_assigns[:title] ? "#{title} · " : "" %><%= Morea::Locales.label_for(locale) %></h2>
+      <% if record.locale_complete?(locale) %><span class="admin-badge admin-badge--success">Complete</span><% else %><span class="admin-badge admin-badge--attention">Missing</span><% end %>
+    </summary>
+    <div class="space-y-4 px-4 pb-4">
+      <%= tf.hidden_field :id if tf.object.persisted? %>
+      <%= tf.hidden_field :locale %>
+      <% fields.each do |attr, label, type, rows, help| %>
+        <div>
+          <%= tf.label attr, label, class: "admin-label" %>
+          <% if type == :area %>
+            <%= tf.text_area attr, rows: rows || 4, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
+          <% else %>
+            <%= tf.text_field attr, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
+          <% end %>
+          <% if help %><p class="admin-help"><%= help %></p><% end %>
+        </div>
+      <% end %>
+      <% if locale != "fr" %><p class="admin-help">Empty fields fall back to French on the storefront.</p><% end %>
+    </div>
+  </details>
+<% end %>

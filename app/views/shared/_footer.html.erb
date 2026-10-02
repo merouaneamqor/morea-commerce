@@ -1,0 +1,41 @@
+<footer class="site-footer" style="padding-bottom: max(2.5rem, calc(env(safe-area-inset-bottom) + 1.5rem))">
+  <div class="site-footer__grid">
+    <div class="site-footer__brand">
+      <div class="morea-packaging__mark text-ink" aria-hidden="true">
+        <%= render "shared/wordmark_svg" %>
+      </div>
+      <p class="mt-5 text-[10px] uppercase tracking-[0.32em] text-ink-faint"><%= t("store.footer_tagline") %></p>
+      <% if current_store&.tagline.present? %>
+        <p class="mt-4 max-w-xs font-display text-lg italic text-ink-soft"><%= current_store.tagline %></p>
+      <% end %>
+    </div>
+
+    <% if store_menu("footer").any? %>
+      <nav class="site-footer__col" aria-label="<%= t("footer.information") %>">
+        <p class="site-footer__heading"><%= t("footer.information") %></p>
+        <% store_menu("footer").each do |item| %>
+          <%= store_menu_link item, class: "site-footer__link" %>
+        <% end %>
+      </nav>
+    <% end %>
+
+    <div class="site-footer__col">
+      <p class="site-footer__heading"><%= t("footer.customer_care") %></p>
+      <% if current_store&.phone.present? %>
+        <%= link_to current_store.phone, "tel:#{current_store.phone.delete(" ")}", class: "site-footer__link", dir: "ltr" %>
+      <% end %>
+      <% if current_store&.email.present? %>
+        <%= mail_to current_store.email, current_store.email, class: "site-footer__link" %>
+      <% end %>
+      <% if current_store&.cod_note.present? %>
+        <p class="mt-2 max-w-xs text-xs leading-6 text-ink-faint"><%= current_store.cod_note %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="site-footer__bottom">
+    <p>© <%= Date.current.year %> <%= current_store&.name || "Morea" %></p>
+    <p class="site-footer__pay"><%= current_store&.cod_label || t("store.default_campaign_cta") %></p>
+    <%= render "shared/locale_switcher", dropup: true %>
+  </div>
+</footer>

@@ -4,14 +4,15 @@ class Order < ApplicationRecord
   has_many :order_items, dependent: :destroy
   has_many :inventory_movements, dependent: :nullify
 
-  STATUSES = %w[new confirmed preparing shipped delivered cancelled].freeze
+  STATUSES = %w[new confirmed preparing shipped delivered cancelled returned].freeze
   TRANSITIONS = {
     "new" => %w[confirmed cancelled],
     "confirmed" => %w[preparing cancelled],
     "preparing" => %w[shipped cancelled],
-    "shipped" => %w[delivered],
+    "shipped" => %w[delivered returned],
     "delivered" => [],
-    "cancelled" => []
+    "cancelled" => [],
+    "returned" => []
   }.freeze
 
   validates :number, :status, :customer_name, :customer_phone, :customer_city, :customer_address, presence: true
@@ -45,13 +46,37 @@ class Order < ApplicationRecord
         restore_inventory! if %w[confirmed preparing shipped].include?(status)
         self.cancelled_at = Time.current
         self.cancel_reason = reason
+      when "returned"
+        restore_inventory!(reason: "order_returned")
+        self.returned_at = Time.current
+        self.cancel_reason = reason
       end
 
       update!(status: new_status)
     end
 
     OrderStatusJob.perform_later(id)
+    enqueue_sendit_sync(new_status)
     self
+  end
+
+  FLOW = %w[new confirmed preparing shipped delivered].freeze
+
+  # Step forward through allowed transitions until `target` (never backwards)
+  def advance_to!(target)
+    return self unless FLOW.include?(target) && FLOW.include?(status)
+
+    while FLOW.index(status) < FLOW.index(target)
+      next_status = FLOW[FLOW.index(status) + 1]
+      break unless can_transition_to?(next_status)
+
+      transition_to!(next_status)
+    end
+    self
+  end
+
+  def sendit_label
+    Sendit::Sync.label(sendit_status) if sendit_status.present?
   end
 
   def self.cancel_rate
@@ -70,6 +95,16 @@ class Order < ApplicationRecord
   end
 
   private
+
+  def enqueue_sendit_sync(new_status)
+    return unless Sendit::Client.configured?
+
+    if new_status == "confirmed" && sendit_code.blank?
+      SenditSyncJob.perform_later(id, "push")
+    elsif new_status == "cancelled" && sendit_code.present? && sendit_status != "CANCELED"
+      SenditSyncJob.perform_later(id, "cancel")
+    end
+  end
 
   def assign_number
     return if number.present?
@@ -100,7 +135,7 @@ class Order < ApplicationRecord
     end
   end
 
-  def restore_inventory!
+  def restore_inventory!(reason: "order_cancelled")
     order_items.includes(:product, :product_variant).each do |item|
       target = item.product_variant || item.product
       next unless item.product.track_inventory
@@ -110,7 +145,7 @@ class Order < ApplicationRecord
         product: item.product,
         product_variant: item.product_variant,
         quantity: item.quantity,
-        reason: "order_cancelled",
+        reason: reason,
         note: "Order #{number}"
       )
     end

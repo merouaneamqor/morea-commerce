@@ -31,6 +31,20 @@
     </div>
   </section>
 
+  <section class="admin-card" id="shipping">
+    <div class="admin-card__header"><h2 class="admin-card__title">Shipping · Sendit</h2></div>
+    <div class="space-y-2 px-4 pb-4">
+      <% if Sendit::Client.configured? %>
+        <% pickup = (Sendit::Districts.pickup_cities rescue []) %>
+        <%= f.label :sendit_pickup_district_id, "Pickup city", class: "admin-label" %>
+        <%= f.select :sendit_pickup_district_id, pickup.map { |d| [ d[:name], d[:id] ] }, { include_blank: "Choose where Sendit collects your parcels" }, class: "admin-input" %>
+        <p class="admin-help">Required by Sendit to create parcels. Confirmed orders are sent automatically and synced every 15 minutes.</p>
+      <% else %>
+        <p class="admin-muted">Set <code>SENDIT_PUBLIC_KEY</code> and <code>SENDIT_SECRET_KEY</code> to connect Sendit.</p>
+      <% end %>
+    </div>
+  </section>
+
   <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">Home page</h2></div>
     <div class="space-y-4 px-4 pb-4">

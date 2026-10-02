@@ -5,6 +5,8 @@ require "sidekiq/web"
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
+  post "webhooks/sendit", to: "webhooks/sendit#create", as: :sendit_webhook
+
   namespace :api do
     resources :orders, only: [] do
       member do
@@ -49,7 +51,12 @@ Rails.application.routes.draw do
     end
     resources :collections
     resources :orders, only: %i[index show update] do
+      collection do
+        post :sendit_sync_all
+      end
       member do
+        post :sendit
+        get :sendit_label
         patch :transition
       end
     end

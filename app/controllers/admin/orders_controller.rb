@@ -1,6 +1,6 @@
 module Admin
   class OrdersController < BaseController
-    before_action :set_order, only: %i[show update transition]
+    before_action :set_order, only: %i[show update transition sendit sendit_label]
 
     def index
       @status = params[:status]
@@ -28,6 +28,43 @@ module Admin
       redirect_to admin_order_path(@order), notice: "Order marked as #{params[:to_status]}."
     rescue ArgumentError, StandardError => e
       redirect_to admin_order_path(@order), alert: e.message
+    end
+
+    # Send / retry / refresh / cancel the Sendit parcel for one order
+    def sendit
+      return redirect_to(admin_order_path(@order), alert: "Sendit is not configured.") unless Sendit::Client.configured?
+
+      if params[:district_id].present?
+        district = Sendit::Districts.find(params[:district_id])
+        @order.update!(sendit_district_id: district&.dig(:id), sendit_district_name: district&.dig(:name))
+      end
+
+      sync = Sendit::Sync.new(@order)
+      case params[:op]
+      when "cancel" then sync.cancel!
+      when "refresh" then sync.refresh!
+      else sync.push!
+      end
+
+      if @order.reload.sendit_error.present?
+        redirect_to admin_order_path(@order), alert: "Sendit: #{@order.sendit_error}"
+      else
+        redirect_to admin_order_path(@order), notice: "Sendit: parcel #{@order.sendit_code} — #{@order.sendit_label}."
+      end
+    end
+
+    def sendit_label
+      url = Sendit::Sync.new(@order).label_url
+      url.present? ? redirect_to(url, allow_other_host: true) : redirect_to(admin_order_path(@order), alert: "No Sendit label yet.")
+    rescue Sendit::Client::Error => e
+      redirect_to admin_order_path(@order), alert: "Sendit: #{e.message}"
+    end
+
+    def sendit_sync_all
+      return redirect_to(admin_orders_path, alert: "Sendit is not configured.") unless Sendit::Client.configured?
+
+      count = Sendit::Sync.enqueue_all(current_store.orders)
+      redirect_to admin_orders_path, notice: "Syncing #{count} orders with Sendit in the background."
     end
 
     private

@@ -1,0 +1,7 @@
+# sidekiq-cron jobs, loaded by config/initializers/sidekiq.rb
+sendit_poll:
+  cron: "<%= ENV.fetch("SENDIT_POLL_CRON", "*/15 * * * *") %>"
+  class: "SenditPollJob"
+  queue: default
+  active_job: true
+  description: "Refresh Sendit parcels (shipped, unreachable, refused, returns)"

@@ -6,6 +6,7 @@ module AdminHelper
     "shipped" => "info",
     "delivered" => "success",
     "cancelled" => "neutral",
+    "returned" => "critical",
     "active" => "success",
     "draft" => "info",
     "archived" => "neutral"
@@ -38,6 +39,31 @@ module AdminHelper
     tag.span(class: "admin-badge admin-badge--#{tone}") do
       tag.span(class: "admin-badge__dot") + (label || status.to_s.humanize)
     end
+  end
+
+  SENDIT_TONES = {
+    "PENDING" => "neutral", "TO_PREPARE" => "attention", "TO_PICKUP" => "attention", "NEW_DESTINATION" => "warning",
+    "PICKEDUP" => "info", "WAREHOUSE" => "info", "TRANSIT" => "info", "DISTRIBUTED" => "info", "DELIVERING" => "info",
+    "UNREACHABLE" => "warning", "POSTPONED" => "warning", "DELIVERED" => "success", "CANCELED" => "neutral", "REJECTED" => "critical"
+  }.freeze
+
+  def sendit_badge(order)
+    return admin_badge(:error, label: "Sync error", tone: "critical") if order.sendit_error.present? && order.sendit_code.blank?
+    return if order.sendit_status.blank?
+
+    status = Sendit::Sync.normalize_status(order.sendit_status)
+    admin_badge(status, label: order.sendit_label, tone: SENDIT_TONES.fetch(status, "neutral"))
+  end
+
+  # Sendit districts grouped by city for a <select>, the order's likely city first
+  def sendit_district_options(order)
+    districts = Sendit::Districts.all
+    likely = Sendit::Districts.candidates(city: order.customer_city, districts: districts)
+    groups = districts.group_by { |d| d[:ville] }.sort_by(&:first).map { |ville, ds| [ ville, ds.map { |d| [ d[:name], d[:id] ] } ] }
+    groups.unshift([ "Suggested for “#{order.customer_city}”", likely.map { |d| [ d[:name], d[:id] ] } ]) if likely.any?
+    grouped_options_for_select(groups, order.sendit_district_id)
+  rescue Sendit::Client::Error
+    ""
   end
 
   def admin_nav_link(label, path, icon:, active: false, **options)

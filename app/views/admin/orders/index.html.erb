@@ -2,6 +2,9 @@
 
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Orders</h1>
+  <% if Sendit::Client.configured? %>
+    <%= button_to "Sync with Sendit", sendit_sync_all_admin_orders_path, class: "admin-btn-secondary" %>
+  <% end %>
 </div>
 
 <div class="admin-card">
@@ -22,7 +25,7 @@
   <div class="admin-table-wrap">
     <table class="admin-table">
       <thead>
-        <tr><th>Order</th><th>Date</th><th>Customer</th><th>Phone</th><th>City</th><th>Status</th><th class="is-numeric">Total</th></tr>
+        <tr><th>Order</th><th>Date</th><th>Customer</th><th>Phone</th><th>City</th><th>Status</th><th>Sendit</th><th class="is-numeric">Total</th></tr>
       </thead>
       <tbody>
         <% @orders.each do |order| %>
@@ -33,6 +36,7 @@
             <td class="admin-muted"><%= order.customer_phone %></td>
             <td class="admin-muted"><%= order.customer_city %></td>
             <td><%= admin_badge(order.status) %></td>
+            <td><%= sendit_badge(order) || tag.span("—", class: "admin-subdued") %></td>
             <td class="is-numeric"><%= order.total_display %></td>
           </tr>
         <% end %>

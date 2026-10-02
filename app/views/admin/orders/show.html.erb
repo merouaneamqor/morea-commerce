@@ -10,7 +10,7 @@
   </div>
 
   <div class="flex flex-wrap items-center gap-2">
-    <% Order::TRANSITIONS.fetch(@order.status, []).reject { |s| s == "cancelled" }.each do |next_status| %>
+    <% Order::TRANSITIONS.fetch(@order.status, []).reject { |s| s.in?(%w[cancelled returned]) }.each do |next_status| %>
       <%= button_to "Mark as #{next_status}",
             transition_admin_order_path(@order),
             method: :patch,
@@ -70,11 +70,13 @@
     <section class="admin-card">
       <div class="admin-card__header"><h2 class="admin-card__title">Timeline</h2></div>
       <div class="px-4 pb-4">
-        <% current_index = Order::STATUSES.index(@order.status) %>
+        <% flow = Order::FLOW.dup %>
+        <% flow = flow.first(4) + [ "returned" ] if @order.status == "returned" %>
+        <% flow = [ "new", "cancelled" ] if @order.status == "cancelled" %>
+        <% current_index = flow.index(@order.status) || 0 %>
         <ol class="admin-timeline">
-          <% Order::STATUSES.each_with_index do |status, i| %>
-            <% next if status == "cancelled" && @order.status != "cancelled" %>
-            <% state = status == @order.status ? "is-current" : (@order.status != "cancelled" && i < current_index ? "is-done" : "") %>
+          <% flow.each_with_index do |status, i| %>
+            <% state = status == @order.status ? "is-current" : (i < current_index ? "is-done" : "") %>
             <li class="admin-timeline__item <%= state %>"><%= status.humanize %></li>
           <% end %>
         </ol>
@@ -112,6 +114,8 @@
         <p class="admin-muted"><%= @order.customer_name %><br><%= @order.customer_address %><br><%= @order.customer_city %></p>
       </div>
     </section>
+
+    <%= render "sendit_card", order: @order %>
 
     <% if Order::TRANSITIONS.fetch(@order.status, []).include?("cancelled") %>
       <section class="admin-card">

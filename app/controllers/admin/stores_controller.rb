@@ -21,7 +21,7 @@ module Admin
       params.require(:store).permit(
         :name, :slug, :phone, :email, :currency,
         :featured_product_id, :featured_collection_id,
-        :campaign_image_url,
+        :campaign_image_url, :sendit_pickup_district_id,
         translations_attributes: %i[
           id locale tagline about cod_label cod_note
           campaign_title campaign_season campaign_cta announcement

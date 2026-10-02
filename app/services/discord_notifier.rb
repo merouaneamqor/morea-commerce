@@ -12,6 +12,30 @@ class DiscordNotifier
     new.notify_new_order(order)
   end
 
+  def self.notify_delivery_update(order, status_text)
+    new.notify_delivery_update(order, status_text)
+  end
+
+  # Sendit parcel needs attention (customer unreachable, postponed, refused) or came back
+  def notify_delivery_update(order, status_text)
+    url = ENV[WEBHOOK_ENV].to_s.strip
+    return false if url.blank?
+
+    fields = [
+      { name: "Customer", value: order.customer_name.to_s.truncate(256), inline: true },
+      { name: "Phone", value: order.customer_phone.to_s.truncate(256), inline: true },
+      { name: "Parcel", value: order.sendit_code.to_s, inline: true }
+    ]
+    fields << { name: "Courier note", value: order.sendit_message.to_s.truncate(1024) } if order.sendit_message.present?
+    fields << { name: "Next attempt", value: order.sendit_deliver_by.to_s, inline: true } if order.sendit_deliver_by.present?
+
+    post_json(url, {
+      username: "Morea",
+      content: "Sendit update for **#{order.number}**: #{status_text}",
+      embeds: [ { title: "Order #{order.number} — #{status_text}", url: admin_order_url(order), color: 0xe0a100, fields: fields } ]
+    })
+  end
+
   def notify_new_order(order)
     url = ENV[WEBHOOK_ENV].to_s.strip
     if url.blank?

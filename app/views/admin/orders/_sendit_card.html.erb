@@ -1,0 +1,56 @@
+<section class="admin-card">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title">Sendit</h2>
+    <%= sendit_badge(order) %>
+  </div>
+
+  <% if !Sendit::Client.configured? %>
+    <p class="admin-muted px-4 pb-4">Set <code>SENDIT_PUBLIC_KEY</code> and <code>SENDIT_SECRET_KEY</code> to sync orders with Sendit.</p>
+  <% else %>
+    <div class="space-y-3 px-4 pb-4">
+      <% if order.sendit_error.present? %>
+        <div class="admin-banner admin-banner--critical !mb-0">
+          <%= order.sendit_error %>
+          <% if order.store.sendit_pickup_district_id.blank? && ENV["SENDIT_PICKUP_DISTRICT_ID"].blank? %>
+            <%= link_to "Open Settings", edit_admin_store_path(anchor: "shipping"), class: "ms-1 underline" %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if order.sendit_code.present? %>
+        <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+          <dt class="admin-muted">Parcel</dt><dd class="font-semibold tabular-nums"><%= order.sendit_code %></dd>
+          <dt class="admin-muted">City</dt><dd><%= order.sendit_district_name || "—" %></dd>
+          <% if order.sendit_fee.present? %><dt class="admin-muted">Fee</dt><dd><%= number_with_precision(order.sendit_fee, precision: 0) %> MAD</dd><% end %>
+          <% if order.sendit_deliver_by.present? %><dt class="admin-muted">Next attempt</dt><dd><%= order.sendit_deliver_by.strftime("%b %-d, %Y") %></dd><% end %>
+          <% if order.sendit_return_status.present? %><dt class="admin-muted">Return</dt><dd><%= admin_badge(:returned, label: Sendit::Sync.return_label(order.sendit_return_status), tone: (Sendit::Sync::RETURN_DONE.include?(order.sendit_return_status) ? "success" : "warning")) %></dd><% end %>
+          <% if order.sendit_message.present? %><dt class="admin-muted">Courier note</dt><dd><%= order.sendit_message %></dd><% end %>
+          <% if order.sendit_synced_at.present? %><dt class="admin-muted">Synced</dt><dd class="admin-muted"><%= order.sendit_synced_at.strftime("%b %-d, %H:%M") %></dd><% end %>
+        </dl>
+        <div class="flex flex-wrap gap-2 pt-1">
+          <%= link_to "Print label", sendit_label_admin_order_path(order), class: "admin-btn-secondary", target: "_blank", rel: "noopener" %>
+          <%= button_to "Refresh", sendit_admin_order_path(order, op: "refresh"), class: "admin-btn-secondary" %>
+          <% if Sendit::Sync.new(order).cancellable? && Sendit::Sync.normalize_status(order.sendit_status) != "CANCELED" %>
+            <%= button_to "Delete parcel", sendit_admin_order_path(order, op: "cancel"), class: "admin-btn-plain admin-btn-plain--critical",
+                  form: { data: { turbo_confirm: "Delete parcel #{order.sendit_code} on Sendit?" } } %>
+          <% end %>
+        </div>
+      <% elsif order.status.in?(%w[confirmed preparing]) || order.sendit_error.present? %>
+        <%= form_with url: sendit_admin_order_path(order), method: :post, class: "space-y-3" do %>
+          <div>
+            <%= label_tag :district_id, "Sendit city", class: "admin-label" %>
+            <%= select_tag :district_id, sendit_district_options(order), include_blank: "Match automatically from “#{order.customer_city}”", class: "admin-input" %>
+            <p class="admin-help">Sendit needs its own city/neighbourhood. Leave on automatic unless matching failed.</p>
+          </div>
+          <%= submit_tag (order.sendit_error.present? ? "Retry sending to Sendit" : "Send to Sendit"), class: "admin-btn w-full" %>
+        <% end %>
+      <% else %>
+        <p class="admin-muted">Not sent yet — the parcel is created on Sendit automatically when the order is confirmed.</p>
+        <% unless order.status.in?(%w[cancelled returned delivered]) %>
+          <%= button_to "Send to Sendit now", sendit_admin_order_path(order), class: "admin-btn-secondary mt-3 w-full",
+                form: { data: { turbo_confirm: "Create the Sendit parcel before confirming the order?" } } %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</section>

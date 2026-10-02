@@ -11,6 +11,7 @@ gem "tailwindcss-rails"
 gem "bcrypt", "~> 3.1.7"
 gem "redis", ">= 4.0.1"
 gem "sidekiq", "~> 8.0"
+gem "sidekiq-cron", "~> 2.3"
 
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 

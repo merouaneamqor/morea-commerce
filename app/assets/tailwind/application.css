@@ -228,7 +228,7 @@
   }
 
   .campaign-hero__media img {
-    @apply h-full w-full object-cover object-[center_18%];
+    @apply h-full w-full object-cover object-[72%_18%] md:object-[center_18%];
   }
 
   @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {

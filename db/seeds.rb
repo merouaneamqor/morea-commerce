@@ -40,7 +40,7 @@ store.assign_attributes(
   phone: "0522000000",
   email: "hello@morea.website",
   currency: "MAD",
-  campaign_image_url: "/images/products/essential-set/lifestyle.jpg"
+  campaign_image_url: "/images/editorial/campaign-hero.jpg"
 )
 store.save!
 Store.where.not(id: store.id).find_each(&:destroy)

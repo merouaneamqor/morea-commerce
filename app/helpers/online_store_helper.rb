@@ -1,15 +1,17 @@
 module OnlineStoreHelper
-  # Resolve a StoreLinkable reference to a localized storefront path
-  def store_link_path(link)
+  # Resolve a StoreLinkable reference to a localized storefront path.
+  # Pass `locale:` outside the storefront (admin has no locale in its URLs).
+  def store_link_path(link, locale: I18n.locale)
+    opts = { locale: locale }
     case link.to_s
     when "", nil then nil
-    when "home" then localized_root_path
-    when "collections" then collections_path
-    when "cart" then cart_path
-    when "track" then track_orders_path
-    when /\Acollection:([\w-]+)\z/ then collection_path($1)
-    when /\Aproduct:([\w-]+)\z/ then product_path($1)
-    when /\Apage:([\w-]+)\z/ then page_path($1)
+    when "home" then localized_root_path(opts)
+    when "collections" then collections_path(opts)
+    when "cart" then cart_path(opts)
+    when "track" then track_orders_path(opts)
+    when /\Acollection:([\w-]+)\z/ then collection_path($1, opts)
+    when /\Aproduct:([\w-]+)\z/ then product_path($1, opts)
+    when /\Apage:([\w-]+)\z/ then page_path($1, opts)
     else link
     end
   end

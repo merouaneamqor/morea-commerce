@@ -23,7 +23,7 @@
             <span class="admin-badge admin-badge--neutral tabular-nums"><%= i + 1 %></span>
             <div class="min-w-0 flex-1">
               <%= link_to item.label.presence || "(no label)", edit_admin_menu_item_path(item), class: "admin-link" %>
-              <p class="admin-muted truncate"><%= store_link_path(item.link).to_s.sub(%r{\A/fr}, "") %></p>
+              <p class="admin-muted truncate"><%= store_link_path(item.link, locale: :fr).to_s.sub(%r{\A/fr}, "") %></p>
             </div>
             <div class="flex items-center gap-1">
               <%= button_to "↑", move_admin_menu_item_path(item, direction: "up"), method: :patch, class: "admin-btn-secondary !w-8 !px-0", disabled: i.zero?, "aria-label": "Move up" %>

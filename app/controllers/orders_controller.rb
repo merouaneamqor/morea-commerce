@@ -11,7 +11,7 @@ class OrdersController < ApplicationController
     if order && order.customer_phone.to_s.gsub(/[^\d]/, "").end_with?(params[:phone].to_s.gsub(/[^\d]/, "").last(8))
       redirect_to order_path(order.number)
     else
-      redirect_to track_orders_path, alert: "We couldn’t find that order. Check the number and phone."
+      redirect_to track_orders_path, alert: t("orders.not_found")
     end
   end
 end

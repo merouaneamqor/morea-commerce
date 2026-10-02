@@ -60,7 +60,7 @@
           <div class="checkout-alert" role="alert">
             <p class="text-[10px] uppercase tracking-[0.22em] text-ink"><%= t("checkout.form_errors") %></p>
             <ul class="mt-2 list-disc space-y-1 ps-5 text-sm text-ink-soft">
-              <% @checkout.errors.full_messages.each do |message| %>
+              <% @checkout.errors.map(&:message).uniq.each do |message| %>
                 <li><%= message %></li>
               <% end %>
             </ul>
@@ -71,26 +71,44 @@
           <legend class="checkout-panel__title"><%= t("checkout.delivery_details") %></legend>
           <p class="checkout-panel__hint"><%= t("checkout.delivery_hint") %></p>
 
-          <div class="mt-6 grid gap-5 sm:grid-cols-2">
+          <% cities = Checkout.cities %>
+          <div class="mt-6 grid gap-5 sm:grid-cols-2"
+               <% if cities.any? %>data-controller="checkout-city" data-checkout-city-districts-value="<%= Checkout.districts_by_city.to_json %>"<% end %>>
             <div class="checkout-field sm:col-span-2">
               <%= f.label :name, t("checkout.full_name"), class: "checkout-label" %>
               <%= f.text_field :name, required: true, autocomplete: "name", class: "checkout-input", placeholder: t("checkout.placeholders.name") %>
             </div>
 
-            <div class="checkout-field">
+            <div class="checkout-field sm:col-span-2">
               <%= f.label :phone, t("checkout.phone"), class: "checkout-label" %>
-              <%= f.telephone_field :phone, required: true, autocomplete: "tel", inputmode: "tel", class: "checkout-input", placeholder: t("checkout.placeholders.phone") %>
+              <div class="checkout-phone" dir="ltr">
+                <span class="checkout-phone__prefix" aria-hidden="true">+212</span>
+                <%= f.telephone_field :phone, required: true, autocomplete: "tel-national", inputmode: "tel", class: "checkout-input checkout-phone__input", placeholder: t("checkout.placeholders.phone") %>
+              </div>
               <p class="checkout-help"><%= t("checkout.phone_help") %></p>
             </div>
 
             <div class="checkout-field">
               <%= f.label :city, t("checkout.city"), class: "checkout-label" %>
-              <%= f.text_field :city, required: true, autocomplete: "address-level2", class: "checkout-input", placeholder: t("checkout.placeholders.city") %>
+              <% if cities.any? %>
+                <%= f.select :city, options_for_select(cities, @checkout.city), { include_blank: t("checkout.choose_city") },
+                      required: true, autocomplete: "address-level2", class: "checkout-input checkout-select",
+                      data: { checkout_city_target: "city", action: "checkout-city#update" } %>
+              <% else %>
+                <%= f.text_field :city, required: true, autocomplete: "address-level2", class: "checkout-input", placeholder: t("checkout.placeholders.city") %>
+              <% end %>
+            </div>
+
+            <div class="checkout-field">
+              <%= f.label :district, t("checkout.district"), class: "checkout-label" %>
+              <%= f.text_field :district, autocomplete: "address-level3", class: "checkout-input", placeholder: t("checkout.placeholders.district"),
+                    list: "checkout-districts", data: { checkout_city_target: "district" } %>
+              <datalist id="checkout-districts" data-checkout-city-target="options"></datalist>
             </div>
 
             <div class="checkout-field sm:col-span-2">
               <%= f.label :address, t("checkout.address"), class: "checkout-label" %>
-              <%= f.text_area :address, required: true, autocomplete: "street-address", rows: 3, class: "checkout-input checkout-input--area", placeholder: t("checkout.placeholders.address") %>
+              <%= f.text_area :address, required: true, autocomplete: "street-address", rows: 2, class: "checkout-input checkout-input--area", placeholder: t("checkout.placeholders.address") %>
             </div>
 
             <div class="checkout-field sm:col-span-2">
@@ -105,8 +123,14 @@
             <span class="text-[10px] uppercase tracking-[0.22em] text-ink-faint"><%= t("checkout.total") %></span>
             <span class="font-display text-3xl text-ink"><%= money(@cart.subtotal_cents, current_store.currency) %></span>
           </div>
-          <%= f.submit t("checkout.confirm"), class: "maison-button w-full cursor-pointer text-center" %>
-          <p class="mt-4 text-center text-xs leading-5 text-ink-soft lg:text-start lg:text-sm lg:leading-6"><%= t("checkout.confirm_hint") %></p>
+          <%= f.button type: "submit", class: "maison-button checkout-submit__button w-full cursor-pointer text-center", data: { turbo_submits_with: t("checkout.placing") } do %>
+            <%= t("checkout.confirm_with_total", total: money(@cart.subtotal_cents, current_store.currency)) %>
+          <% end %>
+          <ul class="checkout-reassure">
+            <li><%= t("checkout.reassure.cod") %></li>
+            <li><%= t("checkout.reassure.no_prepay") %></li>
+            <li><%= t("checkout.reassure.confirm_call") %></li>
+          </ul>
         </div>
       <% end %>
     </div>

@@ -26,6 +26,15 @@ class Store < ApplicationRecord
     order(:id).first
   end
 
+  # wa.me link to the store's WhatsApp ("06 12 34 56 78" -> https://wa.me/212612345678)
+  def whatsapp_url(text = nil)
+    phone = Phonelib.parse(whatsapp)
+    return unless phone.valid?
+
+    url = "https://wa.me/#{phone.e164.delete("+")}"
+    text.present? ? "#{url}?text=#{ERB::Util.url_encode(text)}" : url
+  end
+
   def campaign_image
     campaign_image_url.presence || featured_product&.image_url || featured_product&.detail_image_url
   end

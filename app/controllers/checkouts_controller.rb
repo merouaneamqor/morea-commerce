@@ -9,6 +9,7 @@ class CheckoutsController < ApplicationController
       name: params[:name],
       phone: params[:phone],
       city: params[:city],
+      district: params[:district],
       address: params[:address]
     )
   end
@@ -21,7 +22,7 @@ class CheckoutsController < ApplicationController
     if @checkout.valid?
       order = @checkout.place_order!
       session.delete(:cart_token)
-      redirect_to order_path(order.number), notice: "Order confirmed. Pay on delivery."
+      redirect_to order_path(order.number), notice: t("checkout.placed")
     else
       render :show, status: :unprocessable_entity
     end
@@ -30,12 +31,12 @@ class CheckoutsController < ApplicationController
   private
 
   def checkout_params
-    params.require(:checkout).permit(:name, :phone, :city, :address, :notes)
+    params.require(:checkout).permit(:name, :phone, :city, :district, :address, :notes)
   end
 
   def require_cart_items!
     return unless current_cart.empty?
 
-    redirect_to cart_path, alert: "Your bag is empty."
+    redirect_to cart_path, alert: t("checkout.errors.empty_cart")
   end
 end

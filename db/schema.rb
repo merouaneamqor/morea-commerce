@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_02_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_02_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -248,6 +248,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_160000) do
     t.datetime "sendit_synced_at"
     t.string "sendit_return_status"
     t.datetime "returned_at"
+    t.string "customer_district"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["customer_phone"], name: "index_orders_on_customer_phone"
     t.index ["number"], name: "index_orders_on_number", unique: true
@@ -384,6 +385,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_160000) do
     t.string "campaign_image_url"
     t.string "campaign_cta"
     t.integer "sendit_pickup_district_id"
+    t.string "whatsapp"
     t.index ["slug"], name: "index_stores_on_slug", unique: true
   end
 

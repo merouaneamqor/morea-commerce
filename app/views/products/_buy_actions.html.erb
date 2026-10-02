@@ -1,0 +1,30 @@
+<%# Quantity, COD "order now" (straight to checkout), add to bag and WhatsApp help.
+    buttons_class hides the buttons where a sticky mobile bar takes over. %>
+<% buttons_class = local_assigns.fetch(:buttons_class, "") %>
+
+<div>
+  <p class="landing-buy__label"><%= t("product.quantity") %></p>
+  <div class="qty-stepper mt-4" data-controller="quantity">
+    <button type="button" class="qty-stepper__btn" data-action="quantity#decrement" aria-label="<%= t("product.decrease") %>">−</button>
+    <%= number_field_tag :quantity, 1, min: 1, max: 10, inputmode: "numeric", class: "qty-stepper__input",
+          aria: { label: t("product.quantity") }, data: { quantity_target: "input" } %>
+    <button type="button" class="qty-stepper__btn" data-action="quantity#increment" aria-label="<%= t("product.increase") %>">+</button>
+  </div>
+</div>
+
+<div class="space-y-3 <%= buttons_class %>">
+  <%= button_tag type: "submit", name: "checkout", value: "1", class: "maison-button pdp-order-btn w-full cursor-pointer text-center" do %>
+    <span class="block"><%= t("product.order_now") %></span>
+    <span class="pdp-order-btn__sub"><%= t("product.pay_on_delivery") %></span>
+  <% end %>
+  <%= button_tag type: "submit", class: "landing-ghost-btn !mt-0 w-full cursor-pointer justify-center" do %>
+    <span><%= t("product.add_to_bag") %></span>
+  <% end %>
+</div>
+
+<% if (wa = current_store.whatsapp_url(t("product.whatsapp_message", product: product.name, url: product_url(product)))) %>
+  <%= link_to wa, class: "whatsapp-link", target: "_blank", rel: "noopener" do %>
+    <%= render "shared/whatsapp_icon" %>
+    <span><%= t("product.whatsapp_question") %></span>
+  <% end %>
+<% end %>

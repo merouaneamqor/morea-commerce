@@ -19,7 +19,7 @@ module Admin
 
     def store_params
       params.require(:store).permit(
-        :name, :slug, :phone, :email, :currency,
+        :name, :slug, :phone, :whatsapp, :email, :currency,
         :featured_product_id, :featured_collection_id,
         :campaign_image_url, :sendit_pickup_district_id,
         translations_attributes: %i[

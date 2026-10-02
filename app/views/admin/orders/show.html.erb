@@ -111,7 +111,7 @@
       </div>
       <div class="admin-card__section">
         <p class="admin-card__title mb-1">Shipping address</p>
-        <p class="admin-muted"><%= @order.customer_name %><br><%= @order.customer_address %><br><%= @order.customer_city %></p>
+        <p class="admin-muted"><%= @order.customer_name %><br><%= @order.customer_address %><br><% if @order.customer_district.present? %><%= @order.customer_district %><br><% end %><%= @order.customer_city %></p>
       </div>
     </section>
 

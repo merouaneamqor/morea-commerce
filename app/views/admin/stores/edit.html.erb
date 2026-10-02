@@ -19,6 +19,11 @@
       <%= f.text_field :phone, class: "admin-input" %>
     </div>
     <div>
+      <%= f.label :whatsapp, "WhatsApp", class: "admin-label" %>
+      <%= f.text_field :whatsapp, class: "admin-input", placeholder: "06 12 34 56 78" %>
+      <p class="admin-help">Adds WhatsApp buttons to product and order pages. Leave empty to hide them.</p>
+    </div>
+    <div>
       <%= f.label :email, class: "admin-label" %>
       <%= f.email_field :email, class: "admin-input" %>
     </div>

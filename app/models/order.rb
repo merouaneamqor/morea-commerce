@@ -25,6 +25,11 @@ class Order < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :by_status, ->(status) { where(status: status) if status.present? }
 
+  # Street address with the quartier, as the courier needs it
+  def delivery_address
+    [ customer_address, customer_district ].compact_blank.join(", ")
+  end
+
   def can_transition_to?(new_status)
     TRANSITIONS.fetch(status, []).include?(new_status.to_s)
   end

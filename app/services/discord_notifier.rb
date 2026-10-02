@@ -67,6 +67,7 @@ class DiscordNotifier
       { name: "Customer", value: order.customer_name.to_s.truncate(256), inline: true },
       { name: "Phone", value: order.customer_phone.to_s.truncate(256), inline: true },
       { name: "City", value: order.customer_city.to_s.truncate(256), inline: true },
+      { name: "Quartier", value: order.customer_district.presence&.truncate(256) || "—", inline: true },
       { name: "Address", value: order.customer_address.to_s.truncate(1024) },
       { name: "Items", value: items.presence&.truncate(1024) || "—" },
       { name: "Total", value: money(order.total_cents, order.currency), inline: true },

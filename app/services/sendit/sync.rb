@@ -166,7 +166,7 @@ module Sendit
       if order.sendit_district_id.present?
         Districts.find(order.sendit_district_id) || { id: order.sendit_district_id, name: order.sendit_district_name }
       else
-        Districts.match(city: order.customer_city, address: order.customer_address) ||
+        Districts.match(city: order.customer_city, address: "#{order.customer_district} #{order.customer_address}") ||
           raise(Client::Error, "No Sendit city matches “#{order.customer_city}”. Choose the Sendit city on the order, then retry.")
       end
     end
@@ -177,7 +177,7 @@ module Sendit
         district_id: district[:id],
         name: order.customer_name,
         amount: (order.total_cents / 100.0).round(2),
-        address: order.customer_address,
+        address: order.delivery_address,
         phone: local_phone(order.customer_phone),
         comment: order.notes.to_s.truncate(250).presence,
         reference: order.number,

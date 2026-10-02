@@ -71,7 +71,6 @@
             variant_picker_variants_value: @variant_payload
           } : {}) do %>
       <%= hidden_field_tag :product_id, @product.id %>
-      <%= hidden_field_tag :quantity, 1 %>
 
       <header class="landing-buy__head">
         <p class="landing-eyebrow"><%= t("landing.eyebrow") %></p>
@@ -123,7 +122,9 @@
         <% end %>
       <% end %>
 
-      <%= button_tag t("product.add_to_bag"), type: "submit", class: "maison-button w-full cursor-pointer text-center" %>
+      <div class="space-y-6">
+        <%= render "products/buy_actions", product: @product %>
+      </div>
 
       <ul class="landing-trust" role="list">
         <li class="landing-trust__item">

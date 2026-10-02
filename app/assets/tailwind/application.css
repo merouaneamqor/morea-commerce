@@ -1268,6 +1268,91 @@
     @apply border border-line bg-paper px-5 py-5;
   }
 
+  .checkout-submit__button {
+    @apply py-5 text-[11px];
+  }
+
+  .checkout-reassure {
+    @apply mt-4 flex flex-col gap-1.5 text-xs leading-5 text-ink-soft sm:flex-row sm:flex-wrap sm:gap-x-5;
+  }
+
+  .checkout-reassure li::before {
+    content: "✓";
+    @apply me-2 text-brass;
+  }
+
+  .checkout-phone {
+    @apply flex;
+  }
+
+  .checkout-phone__prefix {
+    @apply inline-flex shrink-0 items-center border border-e-0 border-line bg-stone-deep px-3 text-sm text-ink-soft;
+  }
+
+  .checkout-phone__input {
+    @apply min-w-0 flex-1;
+  }
+
+  .checkout-select {
+    @apply cursor-pointer appearance-none bg-no-repeat pe-9;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a4340' stroke-width='1.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 0.85rem center;
+  }
+
+  .is-rtl .checkout-select {
+    background-position: left 0.85rem center;
+  }
+
+  /* ——— COD buy actions (product pages) ——— */
+  .qty-stepper {
+    @apply inline-flex h-12 items-stretch border border-line;
+  }
+
+  .qty-stepper__btn {
+    @apply w-12 cursor-pointer text-lg text-ink-soft transition hover:bg-stone-deep hover:text-ink;
+  }
+
+  .qty-stepper__input {
+    @apply w-12 border-x border-line bg-transparent text-center text-sm text-ink outline-none;
+    -moz-appearance: textfield;
+  }
+
+  .qty-stepper__input::-webkit-inner-spin-button,
+  .qty-stepper__input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .pdp-order-btn {
+    @apply py-4;
+  }
+
+  .pdp-order-btn__sub {
+    @apply mt-1.5 block text-[9px] tracking-[0.2em] opacity-70;
+  }
+
+  .whatsapp-link {
+    @apply inline-flex items-center gap-2.5 text-[10px] uppercase tracking-[0.2em] text-ink-soft underline-offset-4 transition hover:text-ink hover:underline;
+    min-height: 2.75rem;
+  }
+
+  .mobile-buy-bar__bag {
+    @apply inline-flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center border border-ink text-ink;
+  }
+
+  /* ——— Order confirmation ——— */
+  .order-done__mark {
+    @apply inline-flex h-14 w-14 items-center justify-center rounded-full border border-brass text-brass;
+  }
+
+  .order-done__due {
+    @apply mt-8 flex items-baseline justify-between gap-4 border border-ink/15 bg-paper px-5 py-5;
+  }
+
+  .order-done__next {
+    @apply mt-6 space-y-3 border border-line bg-stone-floor px-5 py-5 text-sm leading-6 text-ink-soft;
+  }
+
   /* ——— Nav states ——— */
   .maison-nav {
     transition: background-color 0.6s ease, color 0.6s ease, border-color 0.6s ease, padding 0.6s ease;

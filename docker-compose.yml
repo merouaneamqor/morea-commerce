@@ -45,6 +45,7 @@ services:
       SENDIT_PUBLIC_KEY: ${SENDIT_PUBLIC_KEY:-}
       SENDIT_SECRET_KEY: ${SENDIT_SECRET_KEY:-}
       SENDIT_PICKUP_DISTRICT_ID: ${SENDIT_PICKUP_DISTRICT_ID:-}
+      CLOUDINARY_URL: ${CLOUDINARY_URL:-}
       APP_HOST: localhost:3010
     depends_on:
       db:
@@ -72,6 +73,7 @@ services:
       SENDIT_PUBLIC_KEY: ${SENDIT_PUBLIC_KEY:-}
       SENDIT_SECRET_KEY: ${SENDIT_SECRET_KEY:-}
       SENDIT_PICKUP_DISTRICT_ID: ${SENDIT_PICKUP_DISTRICT_ID:-}
+      CLOUDINARY_URL: ${CLOUDINARY_URL:-}
       APP_HOST: localhost:3010
     depends_on:
       db:

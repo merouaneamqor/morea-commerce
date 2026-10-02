@@ -6,6 +6,7 @@
   <% end %>
 <% end %>
 
+<%# ——— Campaign ——— %>
 <section class="campaign-hero">
   <div class="campaign-hero__media">
     <% if @store&.campaign_image.present? %>
@@ -23,39 +24,101 @@
   <div class="campaign-hero__veil"></div>
 
   <div class="campaign-hero__content" data-controller="reveal">
-    <div class="campaign-wordmark" aria-hidden="true">
-      <%= render "shared/wordmark_svg" %>
+    <p class="landing-eyebrow landing-eyebrow--light">
+      <%= @store&.campaign_heading %> · <%= @store&.campaign_subheading %>
+    </p>
+    <h1 class="campaign-hero__title"><%= @store&.tagline.presence || t("store.tagline_fallback") %></h1>
+    <div class="campaign-hero__actions">
+      <%= link_to @campaign_target, class: "campaign-btn" do %>
+        <span><%= @store&.campaign_button || t("store.default_campaign_cta") %></span>
+      <% end %>
+      <%= link_to t("home.view_all"), collections_path, class: "maison-cta maison-cta-light" %>
     </div>
-    <span class="sr-only">Morea</span>
-    <p class="mt-8 text-[10px] uppercase tracking-[0.32em] opacity-80 md:mt-10 md:tracking-[0.4em]">
-      <%= @store&.campaign_heading %>
-    </p>
-    <p class="mt-2 font-display text-2xl tracking-[0.14em] md:mt-3 md:text-4xl md:tracking-[0.18em]">
-      <%= @store&.campaign_subheading %>
-    </p>
-    <%= link_to (@store&.campaign_button || t("store.default_campaign_cta")), @campaign_target,
-          class: "maison-cta maison-cta-light mt-10 justify-center md:mt-12" %>
   </div>
 </section>
 
-<% if @collection_products.any? %>
-  <section class="mx-auto max-w-6xl px-5 py-16 md:px-10 md:py-28">
-    <div class="mb-10 text-center md:mb-16" data-controller="reveal">
-      <p class="text-[10px] uppercase tracking-[0.32em] text-brass"><%= @collection&.name || t("shop.selected") %></p>
-      <p class="mx-auto mt-3 max-w-sm text-sm leading-7 text-ink-soft md:mt-4"><%= @collection&.subtitle %></p>
-    </div>
+<%# ——— Service ticker ——— %>
+<div class="home-ticker" aria-hidden="true">
+  <div class="home-ticker__track">
+    <% 2.times do %>
+      <% [t("landing.trust.delivery"), t("landing.trust.returns"), t("store.footer_tagline"), @store&.campaign_subheading].compact.each do |item| %>
+        <span class="home-ticker__item"><%= item %></span>
+      <% end %>
+    <% end %>
+  </div>
+</div>
 
-    <div class="grid gap-10 sm:grid-cols-2 md:grid-cols-3 md:gap-12">
-      <% @collection_products.each do |product| %>
-        <%= link_to product_path(product), class: "block space-y-4 md:space-y-5" do %>
-          <div class="object-frame aspect-[3/4]">
-            <%= product_image_tag product, sizes: "(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw" %>
+<%# ——— Selection ——— %>
+<% if @collection_products.any? %>
+  <section class="home-section">
+    <header class="home-section__head" data-controller="reveal">
+      <div>
+        <p class="landing-eyebrow"><%= @collection&.name || t("shop.selected") %></p>
+        <h2 class="home-section__title"><%= t("home.selection_title") %></h2>
+      </div>
+      <%= link_to t("home.view_all"), (@collection ? collection_path(@collection) : collections_path), class: "maison-cta" %>
+    </header>
+
+    <div class="home-products" data-controller="reveal" data-reveal-delay-value="120">
+      <% @collection_products.each_with_index do |product, i| %>
+        <%= link_to product_path(product), class: "home-card" do %>
+          <div class="home-card__media object-frame aspect-[3/4]">
+            <%= product_image_tag product, sizes: "(max-width: 768px) 50vw, 25vw" %>
+            <% if product.detail_image_url.present? && product.detail_image_url != product_image_url(product) %>
+              <%= image_tag product.detail_image_url, alt: "", class: "home-card__alt", loading: "lazy", decoding: "async" %>
+            <% end %>
           </div>
-          <div class="space-y-1 text-center">
-            <p class="font-display text-xl text-ink md:text-2xl"><%= product.name %></p>
-            <p class="text-[10px] uppercase tracking-[0.22em] text-ink-faint"><%= product.price_display %></p>
+          <div class="home-card__meta">
+            <span class="landing-gallery__index"><%= format("%02d", i + 1) %></span>
+            <p class="home-card__name"><%= product.name %></p>
+            <p class="home-card__price"><%= product.price_display %></p>
           </div>
         <% end %>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<%# ——— Collections ——— %>
+<% if @collection_tiles.any? %>
+  <section class="home-section home-section--flush">
+    <header class="home-section__head" data-controller="reveal">
+      <div>
+        <p class="landing-eyebrow"><%= t("shop.collections") %></p>
+        <h2 class="home-section__title"><%= t("home.collections_title") %></h2>
+      </div>
+    </header>
+
+    <div class="home-tiles">
+      <% @collection_tiles.each_with_index do |(collection, cover_url), i| %>
+        <%= link_to collection_path(collection), class: "home-tile object-frame" do %>
+          <%= image_tag cover_url, alt: collection.name, class: "h-full w-full object-cover", loading: "lazy", decoding: "async" %>
+          <span class="home-tile__veil" aria-hidden="true"></span>
+          <span class="home-tile__copy">
+            <span class="home-tile__index"><%= format("%02d", i + 1) %></span>
+            <span class="home-tile__name"><%= collection.name %></span>
+            <% if collection.subtitle.present? %>
+              <span class="home-tile__subtitle"><%= collection.subtitle %></span>
+            <% end %>
+            <span class="maison-cta maison-cta-light mt-6"><%= t("home.explore") %></span>
+          </span>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<%# ——— Manifesto ——— %>
+<% if @store&.about.present? %>
+  <section class="home-manifesto" data-controller="reveal">
+    <% if @manifesto_image %>
+      <%= image_tag @manifesto_image, alt: "", class: "home-manifesto__media", loading: "lazy", decoding: "async" %>
+    <% end %>
+    <div class="home-manifesto__copy">
+      <p class="landing-eyebrow landing-eyebrow--light justify-center"><%= t("landing.story_eyebrow") %></p>
+      <blockquote class="home-manifesto__quote"><%= @store.about %></blockquote>
+      <% if @featured %>
+        <%= link_to @store.campaign_button, product_path(@featured), class: "maison-cta maison-cta-light mt-12" %>
       <% end %>
     </div>
   </section>

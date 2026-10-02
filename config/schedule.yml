@@ -1,7 +1,13 @@
-# sidekiq-cron jobs, loaded by config/initializers/sidekiq.rb
+# sidekiq-cron jobs, loaded automatically when Sidekiq boots.
+# On Render the Sendit sync runs as a separate Cron Job (the free web service
+# sleeps), so SENDIT_EXTERNAL_CRON=1 turns the in-process schedule off there.
+<% if ENV["SENDIT_EXTERNAL_CRON"].present? %>
+{}
+<% else %>
 sendit_poll:
   cron: "<%= ENV.fetch("SENDIT_POLL_CRON", "*/15 * * * *") %>"
   class: "SenditPollJob"
   queue: default
   active_job: true
   description: "Refresh Sendit parcels (shipped, unreachable, refused, returns)"
+<% end %>

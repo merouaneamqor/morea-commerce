@@ -25,8 +25,11 @@ StoreTranslation.delete_all
 
 user = User.find_or_initialize_by(email: "admin@morea.website")
 user.name = "Morea Admin"
-user.password = "morea123"
-user.password_confirmation = "morea123"
+# Only set the default password when creating the admin — reseeding keeps a changed password
+if user.new_record?
+  user.password = "morea123"
+  user.password_confirmation = "morea123"
+end
 user.admin = true
 user.save!
 User.where(email: "admin@maison.ma").find_each(&:destroy)

@@ -12,15 +12,26 @@ module MediaHelper
 
   def product_image_url(product)
     if product.images.attached?
-      rails_blob_path(product.ordered_images.first, only_path: true)
+      media_url(product.ordered_images.first)
     else
       product.image_url.presence || product.detail_image_url
     end
   end
 
+  # Second uploaded image (card hover), else the detail image URL
+  def product_alt_image_url(product)
+    second = product.ordered_images.second if product.images.attached?
+    second ? media_url(second) : product.detail_image_url.presence
+  end
+
+  # Delivery URL for an uploaded image, with its batch edits (see MediaUrl)
+  def media_url(attachment)
+    MediaUrl.for(attachment, store: respond_to?(:current_store, true) ? current_store : nil)
+  end
+
   # Cover uploaded in admin, else an editorial cover dropped at public/images/collections/<slug>/cover.jpg
   def collection_cover_url(collection)
-    return rails_blob_path(collection.image, only_path: true) if collection.image.attached?
+    return media_url(collection.image) if collection.image.attached?
 
     path = "images/collections/#{collection.slug}/cover.jpg"
     "/#{path}" if Rails.public_path.join(path).exist?
@@ -45,6 +56,7 @@ module MediaHelper
 
   def cdn_image_url(url, width:, quality: 75)
     return url if url.blank?
+    return MediaUrl.sized(url, width: width) if url.include?("res.cloudinary.com/")
     return url unless url.include?("images.unsplash.com")
 
     uri = URI.parse(url)

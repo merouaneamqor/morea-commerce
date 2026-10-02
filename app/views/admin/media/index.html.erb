@@ -1,0 +1,104 @@
+<% content_for :title, "Media — Admin" %>
+
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">Media</h1>
+</div>
+
+<div class="admin-stack">
+  <%# ——— Bulk upload ——— %>
+  <section class="admin-card">
+    <div class="admin-card__header">
+      <h2 class="admin-card__title">Bulk upload</h2>
+    </div>
+    <%= form_with url: admin_media_upload_path, method: :post, multipart: true, class: "space-y-4 px-4 pb-4",
+          data: { controller: "bulk-upload", bulk_upload_products_value: @product_options.to_json } do %>
+      <label class="admin-dropzone" data-bulk-upload-target="zone"
+             data-action="dragover->bulk-upload#over dragleave->bulk-upload#leave drop->bulk-upload#drop">
+        <span class="admin-btn-secondary pointer-events-none">Choose images</span>
+        <span class="admin-help">
+          or drop a batch here. Files are matched to products by name — <code>essential-set-1.jpg</code>,
+          <code>essential-set_2.png</code> go to “essential-set”. Check the matches, then upload.
+        </span>
+        <input type="file" name="files[]" multiple accept="image/*" class="sr-only"
+               data-bulk-upload-target="input" data-action="change->bulk-upload#pick">
+      </label>
+
+      <div class="admin-table-wrap hidden" data-bulk-upload-target="table">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Image</th><th>File</th><th>Product</th><th></th></tr>
+          </thead>
+          <tbody data-bulk-upload-target="rows"></tbody>
+        </table>
+      </div>
+
+      <div class="flex items-center justify-between gap-4">
+        <p class="admin-help" data-bulk-upload-target="summary"></p>
+        <button type="submit" class="admin-btn" disabled data-bulk-upload-target="submit" data-turbo-submits-with="Uploading…">Upload</button>
+      </div>
+    <% end %>
+  </section>
+
+  <%# ——— Library + batch edits ——— %>
+  <%= form_with url: admin_media_edits_path, method: :post, data: { controller: "bulk-select" } do %>
+    <section class="admin-card">
+      <div class="admin-card__header flex-wrap gap-3">
+        <h2 class="admin-card__title">Product images</h2>
+        <label class="admin-check ms-auto">
+          <input type="checkbox" class="h-4 w-4 accent-[#303030]" data-action="bulk-select#toggleAll" data-bulk-select-target="all"> Select all
+        </label>
+      </div>
+
+      <div class="admin-media-actions" data-bulk-select-target="bar">
+        <span class="admin-help" data-bulk-select-target="count">Select images to edit them together.</span>
+        <div class="flex flex-wrap gap-2">
+          <% MediaUrl::EDITS.each do |key, label| %>
+            <button type="submit" name="edit" value="<%= key %>" class="admin-btn-secondary" disabled data-bulk-select-target="action"><%= label %></button>
+          <% end %>
+          <button type="submit" name="edit" value="clear" class="admin-btn-secondary" disabled data-bulk-select-target="action"
+                  data-turbo-confirm="Restore the selected images to their originals?">Restore original</button>
+        </div>
+      </div>
+
+      <% with_images = @products.select { |p| p.images.attached? } %>
+      <% if with_images.empty? %>
+        <p class="admin-muted px-4 pb-4">No uploaded images yet — use bulk upload above.</p>
+      <% end %>
+
+      <% with_images.each do |product| %>
+        <div class="border-t border-[#ebebeb] px-4 py-4">
+          <div class="mb-3 flex items-center gap-3">
+            <label class="admin-check">
+              <input type="checkbox" class="h-4 w-4 accent-[#303030]" data-action="bulk-select#toggleGroup" data-group="<%= product.id %>">
+              <span class="font-medium"><%= product.name %></span>
+            </label>
+            <%= link_to "Edit product", edit_admin_product_path(product), class: "admin-link text-xs" %>
+          </div>
+          <ul class="admin-media-grid admin-media-library sm:!grid-cols-6">
+            <% product.ordered_images.each_with_index do |image, i| %>
+              <% edits = MediaUrl.edits(image.blob) %>
+              <li class="admin-media-item admin-media-item--pending">
+                <label class="cursor-pointer">
+                  <%= image_tag MediaUrl.sized(media_url(image), width: 320), alt: "", loading: "lazy" %>
+                  <span class="absolute start-1.5 top-1.5">
+                    <input type="checkbox" name="attachment_ids[]" value="<%= image.id %>" class="h-4 w-4 accent-[#303030]"
+                           data-bulk-select-target="box" data-group="<%= product.id %>" data-action="bulk-select#update">
+                  </span>
+                  <span class="admin-media-item__bar flex-wrap">
+                    <%= i.zero? ? "Main" : "##{i + 1}" %>
+                    <% if !MediaUrl.cloudinary?(image.blob) %>
+                      <span class="admin-badge" title="Stored on local disk — re-upload to edit">Local</span>
+                    <% end %>
+                    <% edits.each do |edit| %>
+                      <span class="admin-badge admin-badge--info"><%= MediaUrl::EDITS[edit] %></span>
+                    <% end %>
+                  </span>
+                </label>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </section>
+  <% end %>
+</div>

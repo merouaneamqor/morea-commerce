@@ -1187,6 +1187,19 @@
     @apply inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#303030] hover:bg-[#e3e3e3];
   }
 
+  .admin-btn:disabled,
+  .admin-btn-secondary:disabled {
+    @apply cursor-not-allowed opacity-45;
+  }
+
+  .admin-media-library img {
+    @apply aspect-[3/4] bg-[#f1f1f1] object-contain;
+  }
+
+  .admin-media-actions {
+    @apply sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-t border-[#ebebeb] bg-white px-4 py-3;
+  }
+
   .admin-media-item__remove {
     @apply inline-flex cursor-pointer items-center gap-1;
   }

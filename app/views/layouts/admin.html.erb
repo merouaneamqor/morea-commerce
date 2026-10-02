@@ -43,6 +43,7 @@
             <%= admin_nav_link "Orders", admin_orders_path, icon: :orders, active: controller_name == "orders" %>
             <%= admin_nav_link "Products", admin_products_path, icon: :products, active: controller_name.in?(%w[products variants]) %>
             <%= admin_nav_link "Collections", admin_collections_path, icon: :collections, active: controller_name == "collections" %>
+            <%= admin_nav_link "Media", admin_media_path, icon: :image, active: controller_name == "media" %>
             <%= admin_nav_link "Customers", admin_customers_path, icon: :customers, active: controller_name == "customers" %>
 
             <p class="admin-sidebar__heading">Sales channels</p>

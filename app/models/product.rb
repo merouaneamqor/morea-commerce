@@ -88,7 +88,7 @@ class Product < ApplicationRecord
 
   def primary_image_url
     if images.attached?
-      Rails.application.routes.url_helpers.rails_blob_url(ordered_images.first, only_path: true)
+      MediaUrl.for(ordered_images.first, store: store)
     else
       image_url
     end

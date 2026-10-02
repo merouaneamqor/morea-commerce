@@ -35,7 +35,7 @@
                   <li class="admin-media-item" draggable="true" data-media-target="item"
                       data-action="dragstart->media#dragStart dragend->media#dragEnd">
                     <%= hidden_field_tag "product[image_order][]", image.id, id: nil %>
-                    <%= image_tag rails_blob_path(image, only_path: true), alt: "", draggable: false %>
+                    <%= image_tag MediaUrl.sized(media_url(image), width: 320), alt: "", draggable: false %>
                     <span class="admin-media-item__main">Main</span>
                     <span class="admin-media-item__bar">
                       <button type="button" class="admin-media-item__btn" data-action="media#moveEarlier" aria-label="Move earlier">←</button>

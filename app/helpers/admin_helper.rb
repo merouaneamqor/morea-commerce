@@ -74,7 +74,7 @@ module AdminHelper
 
   def admin_thumb(url)
     tag.span(class: "admin-thumb") do
-      url.present? ? image_tag(url, alt: "", loading: "lazy") : admin_icon(:image, size: 16)
+      url.present? ? image_tag(MediaUrl.sized(url, width: 160), alt: "", loading: "lazy") : admin_icon(:image, size: 16)
     end
   end
 end

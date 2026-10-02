@@ -50,6 +50,9 @@ Rails.application.routes.draw do
       resources :variants, only: %i[create update destroy]
     end
     resources :collections
+    get "media", to: "media#index", as: :media
+    post "media/upload", to: "media#upload", as: :media_upload
+    post "media/edits", to: "media#edits", as: :media_edits
     resources :orders, only: %i[index show update] do
       collection do
         post :sendit_sync_all

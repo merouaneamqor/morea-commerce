@@ -39,7 +39,7 @@
         <div class="admin-card__header"><h2 class="admin-card__title">Cover image</h2></div>
         <div class="space-y-3 px-4 pb-4" data-controller="media">
           <% if (cover = collection_cover_url(@collection)) %>
-            <span class="admin-thumb !h-32 !w-full"><%= image_tag cover, alt: "", class: "h-full w-full object-cover" %></span>
+            <span class="admin-thumb !h-32 !w-full"><%= image_tag MediaUrl.sized(cover, width: 640), alt: "", class: "h-full w-full object-cover" %></span>
             <% if @collection.image.attached? %>
               <label class="admin-check"><%= check_box_tag "collection[remove_image]", "1", false %> Remove cover</label>
             <% end %>

@@ -1,7 +1,7 @@
 <div class="home-tiles">
   <% tiles.each_with_index do |(collection, cover_url), i| %>
     <%= link_to collection_path(collection), class: "home-tile object-frame" do %>
-      <%= image_tag cover_url, alt: collection.name, class: "h-full w-full object-cover", loading: "lazy", decoding: "async" %>
+      <%= object_image_tag cover_url, alt: collection.name, widths: [640, 960, 1280], sizes: "(max-width: 768px) 100vw, 33vw" %>
       <span class="home-tile__veil" aria-hidden="true"></span>
       <span class="home-tile__copy">
         <span class="home-tile__index"><%= format("%02d", i + 1) %></span>

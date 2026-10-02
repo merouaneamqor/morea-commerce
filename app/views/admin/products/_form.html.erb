@@ -28,27 +28,42 @@
       <section class="admin-card">
         <div class="admin-card__header"><h2 class="admin-card__title">Media</h2></div>
         <div class="space-y-4 px-4 pb-4">
-          <% if @product.images.attached? || @product.image_url.present? %>
-            <div class="flex flex-wrap gap-2">
-              <% if @product.images.attached? %>
-                <% @product.images.each_with_index do |image, i| %>
-                  <label class="flex cursor-pointer flex-col items-center gap-1 text-xs text-[#616161]">
-                    <span class="admin-thumb !h-20 !w-20"><%= image_tag rails_blob_path(image, only_path: true), alt: "" %></span>
-                    <span><%= check_box_tag "product[remove_image_ids][]", image.id, false, class: "h-3.5 w-3.5 accent-[#303030]" %> <%= i.zero? ? "Main · remove" : "Remove" %></span>
-                  </label>
+          <div class="space-y-4" data-controller="media">
+            <% if @product.images.attached? %>
+              <ul class="admin-media-grid" data-media-target="list" data-action="dragover->media#dragOver drop->media#drop">
+                <% @product.ordered_images.each do |image| %>
+                  <li class="admin-media-item" draggable="true" data-media-target="item"
+                      data-action="dragstart->media#dragStart dragend->media#dragEnd">
+                    <%= hidden_field_tag "product[image_order][]", image.id, id: nil %>
+                    <%= image_tag rails_blob_path(image, only_path: true), alt: "", draggable: false %>
+                    <span class="admin-media-item__main">Main</span>
+                    <span class="admin-media-item__bar">
+                      <button type="button" class="admin-media-item__btn" data-action="media#moveEarlier" aria-label="Move earlier">←</button>
+                      <label class="admin-media-item__remove" title="Remove on save">
+                        <%= check_box_tag "product[remove_image_ids][]", image.id, false, id: nil, class: "h-3.5 w-3.5 accent-[#303030]" %> Remove
+                      </label>
+                      <button type="button" class="admin-media-item__btn" data-action="media#moveLater" aria-label="Move later">→</button>
+                    </span>
+                  </li>
                 <% end %>
-              <% else %>
+              </ul>
+            <% elsif @product.image_url.present? %>
+              <div class="flex flex-wrap gap-2">
                 <% [@product.image_url, @product.detail_image_url].compact_blank.each do |url| %>
                   <span class="admin-thumb !h-20 !w-20"><%= image_tag url, alt: "" %></span>
                 <% end %>
-              <% end %>
-            </div>
-          <% end %>
-          <label class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#8a8a8a] px-4 py-6 text-center hover:bg-[#f7f7f7]">
-            <span class="admin-btn-secondary pointer-events-none">Upload new</span>
-            <span class="admin-help">Accepts images, multiple allowed. The first image is shown in the store — tick “remove” on old ones to replace them.</span>
-            <%= f.file_field :images, multiple: true, direct_upload: false, accept: "image/*", class: "sr-only" %>
-          </label>
+              </div>
+            <% end %>
+
+            <label class="admin-dropzone" data-media-target="zone"
+                   data-action="dragover->media#zoneOver dragleave->media#zoneLeave drop->media#zoneDrop">
+              <span class="admin-btn-secondary pointer-events-none">Upload images</span>
+              <span class="admin-help">or drop images here. Drag thumbnails to reorder — the first is the main image.</span>
+              <%= f.file_field :images, multiple: true, direct_upload: false, accept: "image/*", class: "sr-only",
+                    data: { media_target: "input", action: "change->media#renderPreviews" } %>
+            </label>
+            <ul class="admin-media-grid empty:hidden" data-media-target="previews"></ul>
+          </div>
           <div class="admin-field-grid">
             <div>
               <%= f.label :image_url, "Image URL", class: "admin-label" %>

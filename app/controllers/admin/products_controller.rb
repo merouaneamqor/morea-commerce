@@ -64,12 +64,17 @@ module Admin
       )
     end
 
+    # Remove ticked images, attach uploads, then save the dragged order (new uploads go last)
     def update_images
       remove_ids = Array(params[:product][:remove_image_ids]).compact_blank.map(&:to_i)
       @product.images.where(id: remove_ids).find_each(&:purge_later) if remove_ids.any?
 
       images = Array(params[:product][:images]).compact_blank
       @product.images.attach(images) if images.any?
+
+      ids = @product.images_attachments.reload.order(:id).ids
+      order = Array(params[:product][:image_order]).compact_blank.map(&:to_i) & ids
+      @product.update_column(:image_order, order + (ids - order))
     end
   end
 end

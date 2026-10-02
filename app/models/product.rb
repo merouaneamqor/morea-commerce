@@ -81,9 +81,14 @@ class Product < ApplicationRecord
     nil
   end
 
+  # Images in the order set in admin; ones not yet ordered follow by upload order
+  def ordered_images
+    images.sort_by { |image| [ image_order.index(image.id) || image_order.size, image.id ] }
+  end
+
   def primary_image_url
     if images.attached?
-      Rails.application.routes.url_helpers.rails_blob_url(images.first, only_path: true)
+      Rails.application.routes.url_helpers.rails_blob_url(ordered_images.first, only_path: true)
     else
       image_url
     end

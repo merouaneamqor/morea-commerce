@@ -37,18 +37,21 @@
     <div class="admin-stack">
       <section class="admin-card">
         <div class="admin-card__header"><h2 class="admin-card__title">Cover image</h2></div>
-        <div class="space-y-3 px-4 pb-4">
+        <div class="space-y-3 px-4 pb-4" data-controller="media">
           <% if (cover = collection_cover_url(@collection)) %>
             <span class="admin-thumb !h-32 !w-full"><%= image_tag cover, alt: "", class: "h-full w-full object-cover" %></span>
             <% if @collection.image.attached? %>
               <label class="admin-check"><%= check_box_tag "collection[remove_image]", "1", false %> Remove cover</label>
             <% end %>
           <% end %>
-          <label class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#8a8a8a] px-4 py-6 text-center hover:bg-[#f7f7f7]">
+          <label class="admin-dropzone" data-media-target="zone"
+                 data-action="dragover->media#zoneOver dragleave->media#zoneLeave drop->media#zoneDrop">
             <span class="admin-btn-secondary pointer-events-none"><%= @collection.image.attached? ? "Replace image" : "Upload image" %></span>
-            <span class="admin-help">Shown on collection tiles. Without one, a product photo is used.</span>
-            <%= f.file_field :image, direct_upload: false, accept: "image/*", class: "sr-only" %>
+            <span class="admin-help">or drop an image here. Shown on collection tiles; without one, a product photo is used.</span>
+            <%= f.file_field :image, direct_upload: false, accept: "image/*", class: "sr-only",
+                  data: { media_target: "input", action: "change->media#renderPreviews" } %>
           </label>
+          <ul class="admin-media-grid empty:hidden" data-media-target="previews"></ul>
         </div>
       </section>
 

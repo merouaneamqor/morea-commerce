@@ -36,7 +36,7 @@ class ProductsController < ApplicationController
   end
 
   def product_gallery
-    uploaded = @product.images.map { |image| helpers.rails_blob_path(image, only_path: true) }
+    uploaded = @product.ordered_images.map { |image| helpers.rails_blob_path(image, only_path: true) }
     (uploaded + [ @product.image_url, @product.detail_image_url ]).compact_blank.uniq.presence || [ nil ]
   end
 

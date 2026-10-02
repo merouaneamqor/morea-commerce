@@ -1138,6 +1138,59 @@
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
   }
 
+  .admin-dropzone {
+    @apply flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[#8a8a8a] px-4 py-6 text-center transition hover:bg-[#f7f7f7];
+  }
+
+  .admin-dropzone.is-dragover {
+    @apply border-[#303030] bg-[#f1f1f1];
+  }
+
+  .admin-media-grid {
+    @apply grid grid-cols-3 gap-2 sm:grid-cols-4;
+  }
+
+  .admin-media-item {
+    @apply relative flex flex-col overflow-hidden rounded-lg bg-[#f7f7f7];
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  }
+
+  .admin-media-item[draggable="true"] {
+    @apply cursor-grab;
+  }
+
+  .admin-media-item.is-dragging {
+    @apply opacity-40;
+  }
+
+  .admin-media-item:first-child:not(.admin-media-item--pending) {
+    box-shadow: inset 0 0 0 2px #303030;
+  }
+
+  .admin-media-item img {
+    @apply aspect-square w-full object-cover;
+  }
+
+  .admin-media-item__main {
+    @apply absolute start-1.5 top-1.5 hidden rounded bg-[#303030] px-1.5 py-0.5 text-[10px] font-medium text-white;
+  }
+
+  .admin-media-item:first-child .admin-media-item__main {
+    @apply block;
+  }
+
+  .admin-media-item__bar {
+    @apply flex items-center justify-between gap-1 px-1 py-1 text-[11px] text-[#616161];
+  }
+
+  .admin-media-item__btn {
+    @apply inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded text-[#303030] hover:bg-[#e3e3e3];
+  }
+
+  .admin-media-item__remove {
+    @apply inline-flex cursor-pointer items-center gap-1;
+  }
+
   .admin-thumb img {
     @apply h-full w-full object-cover;
   }

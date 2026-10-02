@@ -12,7 +12,7 @@ module MediaHelper
 
   def product_image_url(product)
     if product.images.attached?
-      rails_blob_path(product.images.first, only_path: true)
+      rails_blob_path(product.ordered_images.first, only_path: true)
     else
       product.image_url.presence || product.detail_image_url
     end

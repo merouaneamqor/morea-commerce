@@ -3,13 +3,40 @@
 class Checkout
   include ActiveModel::Model
 
-  attr_accessor :name, :phone, :city, :district, :address, :notes, :discount_code, :cart, :store
+  attr_accessor :name, :phone, :phone_country, :city, :district, :address, :notes, :discount_code, :cart, :store
 
   validate :required_fields
-  validate :phone_must_be_moroccan
+  validate :phone_must_be_valid
   validate :cart_must_have_items
   validate :discount_must_be_valid
   validate :district_must_be_valid
+
+  # [dial label, ISO country] — default Morocco; diaspora-friendly codes
+  PHONE_COUNTRIES = [
+    [ "+212", "MA" ],
+    [ "+213", "DZ" ],
+    [ "+216", "TN" ],
+    [ "+33", "FR" ],
+    [ "+34", "ES" ],
+    [ "+351", "PT" ],
+    [ "+32", "BE" ],
+    [ "+31", "NL" ],
+    [ "+49", "DE" ],
+    [ "+39", "IT" ],
+    [ "+44", "GB" ],
+    [ "+1", "US" ],
+    [ "+971", "AE" ],
+    [ "+966", "SA" ],
+    [ "+974", "QA" ],
+    [ "+965", "KW" ],
+    [ "+961", "LB" ],
+    [ "+962", "JO" ],
+    [ "+20", "EG" ]
+  ].freeze
+
+  def phone_country
+    @phone_country.presence || "MA"
+  end
 
   def subtotal_cents
     cart&.subtotal_cents.to_i
@@ -46,10 +73,17 @@ class Checkout
   end
 
 
-  # "06 12 34 56 78", "00212612345678", "+212 6…" -> "+212612345678"; nil unless a valid Moroccan number
-  def self.normalize_phone(value)
-    phone = Phonelib.parse(value, "MA")
-    phone.e164 if phone.valid_for_country?("MA")
+  # "06 12 34 56 78", "+212 6…", French mobiles, etc. → E.164; nil if invalid
+  def self.normalize_phone(value, country: "MA")
+    raw = value.to_s.strip
+    return if raw.blank?
+
+    phone = if raw.start_with?("+", "00")
+      Phonelib.parse(raw)
+    else
+      Phonelib.parse(raw, country.presence || "MA")
+    end
+    phone.e164 if phone.valid?
   end
 
   # Sendit cities for the checkout dropdown, empty when Sendit isn't reachable
@@ -86,7 +120,7 @@ class Checkout
   def place_order!
     validate!
     order = nil
-    phone_number = self.class.normalize_phone(phone)
+    phone_number = self.class.normalize_phone(phone, country: phone_country)
 
     ActiveRecord::Base.transaction do
       customer = Customer.find_or_create_from_checkout!(
@@ -173,8 +207,8 @@ class Checkout
     end
   end
 
-  def phone_must_be_moroccan
-    return if phone.blank? || self.class.normalize_phone(phone)
+  def phone_must_be_valid
+    return if phone.blank? || self.class.normalize_phone(phone, country: phone_country)
 
     errors.add(:phone, :invalid, message: I18n.t("checkout.errors.phone_format"))
   end

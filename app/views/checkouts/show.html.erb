@@ -20,6 +20,7 @@
          data-checkout-city-discount-value="<%= @checkout.discount_cents %>"
          data-checkout-city-free-threshold-value="<%= current_store.free_shipping_threshold_cents.to_i %>"
          data-checkout-city-currency-value="<%= current_store.currency %>"
+         data-checkout-city-locale-value="<%= "#{I18n.locale}-MA" %>"
          data-checkout-city-free-label-value="<%= t("checkout.shipping_free") %>"
          data-checkout-city-pending-label-value="<%= t("checkout.shipping_pending") %>"
          data-checkout-city-confirm-template-value="<%= t("checkout.confirm_with_total", total: "%{total}") %>"

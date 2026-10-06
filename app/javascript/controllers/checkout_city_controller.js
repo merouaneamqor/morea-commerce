@@ -29,7 +29,8 @@ export default class extends Controller {
     pendingLabel: String,
     confirmTemplate: String,
     chooseDistrict: String,
-    noMatch: String
+    noMatch: String,
+    locale: { type: String, default: "fr-MA" }
   }
 
   connect() {
@@ -405,7 +406,7 @@ export default class extends Controller {
   }
 
   formatMoney(cents) {
-    const amount = Math.round(Number(cents) / 100).toLocaleString("fr-MA")
+    const amount = Math.round(Number(cents) / 100).toLocaleString(this.localeValue)
     return `${amount} ${this.currencyValue}`
   }
 }

@@ -152,7 +152,7 @@
                 </div>
                 <div>
                   <%= vf.label :price_dh, "Price override (#{@product.currency})", class: "admin-label" %>
-                  <%= number_field_tag "product_variant[price_dh]", variant.price_cents.present? ? variant.price_cents / 100 : nil, class: "admin-input", min: 0, placeholder: "Product price" %>
+                  <%= vf.number_field :price_dh, class: "admin-input", min: 0, step: 1, placeholder: "Product price" %>
                 </div>
                 <div>
                   <%= vf.label :option1_name, "Option 1 name", class: "admin-label" %>

@@ -44,7 +44,8 @@ module Sendit
       return unless Client.configured?
       return if city.blank?
 
-      match = self.match(city: city, address: "#{district} #{address}")
+      # Same address priority as Checkout#sendit_district (quartier wins over free-text)
+      match = self.match(city: city, address: district.presence || address.to_s)
       price = match&.dig(:price).presence || price_for_city(city)
       return if price.blank?
 

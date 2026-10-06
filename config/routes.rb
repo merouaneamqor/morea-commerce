@@ -48,8 +48,11 @@ Rails.application.routes.draw do
     resource :store, only: %i[edit update]
     resources :products do
       resources :variants, only: %i[create update destroy]
+      resources :inventory, only: %i[create]
     end
     resources :collections
+    resources :discounts, except: %i[show]
+    resources :users, path: "staff", except: %i[show]
     get "media", to: "media#index", as: :media
     post "media/upload", to: "media#upload", as: :media_upload
     post "media/edits", to: "media#edits", as: :media_edits
@@ -63,7 +66,7 @@ Rails.application.routes.draw do
         patch :transition
       end
     end
-    resources :customers, only: %i[index show]
+    resources :customers, only: %i[index show edit update]
 
     # Online Store
     resources :home_sections, except: %i[show] do

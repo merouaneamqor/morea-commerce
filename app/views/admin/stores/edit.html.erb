@@ -38,17 +38,66 @@
 
   <section class="admin-card" id="shipping">
     <div class="admin-card__header"><h2 class="admin-card__title">Shipping · Sendit</h2></div>
-    <div class="space-y-2 px-4 pb-4">
+    <div class="space-y-4 px-4 pb-4">
       <% if Sendit::Client.configured? %>
+        <% rates = (Sendit::Districts.shipping_cents_by_city rescue {}) %>
+        <p class="admin-help">
+          Delivery fees come from Sendit by city (<%= rates.size %> cities cached).
+          Checkout updates the fee when the customer picks a city.
+        </p>
+        <% if rates.any? %>
+          <details class="admin-disclosure">
+            <summary class="admin-label cursor-pointer">View Sendit city rates</summary>
+            <ul class="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm text-[#616161]">
+              <% rates.sort_by(&:first).each do |city, cents| %>
+                <li class="flex justify-between gap-4 border-b border-[#ebebeb] py-1">
+                  <span><%= city %></span>
+                  <span class="tabular-nums"><%= money(cents, @store.currency) %></span>
+                </li>
+              <% end %>
+            </ul>
+          </details>
+        <% end %>
+
         <% pickup = (Sendit::Districts.pickup_cities rescue []) %>
         <%= f.label :sendit_pickup_district_id, "Pickup city", class: "admin-label" %>
         <%= f.select :sendit_pickup_district_id, pickup.map { |d| [ d[:name], d[:id] ] }, { include_blank: "Choose where Sendit collects your parcels" }, class: "admin-input" %>
         <p class="admin-help">Required by Sendit to create parcels. Confirmed orders are sent automatically and synced every 15 minutes.</p>
+        <div class="admin-field-grid">
+          <label class="admin-check"><%= f.check_box :sendit_allow_open %> Allow customer to open the parcel</label>
+          <label class="admin-check"><%= f.check_box :sendit_allow_try %> Allow customer to try on</label>
+        </div>
+        <div>
+          <%= f.label :free_shipping_threshold_dh, "Free shipping from (#{@store.currency})", class: "admin-label" %>
+          <%= f.number_field :free_shipping_threshold_dh, class: "admin-input", min: 1, placeholder: "Optional" %>
+          <p class="admin-help">Waives the Sendit city fee once the cart reaches this amount. Leave empty to always charge.</p>
+        </div>
       <% else %>
-        <p class="admin-muted">Set <code>SENDIT_PUBLIC_KEY</code> and <code>SENDIT_SECRET_KEY</code> to connect Sendit.</p>
+        <p class="admin-muted">Set <code>SENDIT_PUBLIC_KEY</code> and <code>SENDIT_SECRET_KEY</code> to load city rates from Sendit.</p>
+        <div class="admin-field-grid">
+          <div>
+            <%= f.label :shipping_dh, "Fallback shipping fee (#{@store.currency})", class: "admin-label" %>
+            <%= f.number_field :shipping_dh, class: "admin-input", min: 0 %>
+            <p class="admin-help">Used only while Sendit is disconnected.</p>
+          </div>
+          <div>
+            <%= f.label :free_shipping_threshold_dh, "Free shipping from (#{@store.currency})", class: "admin-label" %>
+            <%= f.number_field :free_shipping_threshold_dh, class: "admin-input", min: 1, placeholder: "Optional" %>
+          </div>
+        </div>
       <% end %>
     </div>
   </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Inventory alerts</h2></div>
+    <div class="px-4 pb-4">
+      <%= f.label :low_stock_threshold, "Low-stock threshold", class: "admin-label" %>
+      <%= f.number_field :low_stock_threshold, class: "admin-input", min: 0 %>
+      <p class="admin-help">Products at or below this quantity appear on the Home dashboard.</p>
+    </div>
+  </section>
+
 
   <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">Home page</h2></div>

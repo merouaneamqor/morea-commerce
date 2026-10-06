@@ -4,25 +4,31 @@
   <h1 class="admin-page-header__title">Customers</h1>
 </div>
 
+<%= form_with url: admin_customers_path, method: :get, class: "admin-topbar__search mb-4 max-w-md" do %>
+  <%= admin_icon(:search, size: 16) %>
+  <%= search_field_tag :q, params[:q], placeholder: "Search customers", "aria-label": "Search customers", class: "admin-input !border-0 !shadow-none" %>
+<% end %>
+
 <div class="admin-card">
   <div class="admin-table-wrap">
     <table class="admin-table">
-      <thead><tr><th>Customer name</th><th>Phone</th><th>Location</th><th class="is-numeric">Orders</th></tr></thead>
-      <tbody>
-        <% @customers.each do |customer| %>
-          <tr>
-            <td>
-              <%= link_to admin_customer_path(customer), class: "flex items-center gap-3" do %>
-                <span class="admin-avatar !h-8 !w-8 !rounded-full"><%= customer.name.to_s.first.upcase %></span>
-                <span class="admin-link"><%= customer.name %></span>
-              <% end %>
-            </td>
-            <td class="admin-muted"><%= customer.phone %></td>
-            <td class="admin-muted"><%= customer.city %></td>
-            <td class="is-numeric"><%= pluralize(customer.orders_count, "order", locale: :en) %></td>
-          </tr>
-        <% end %>
-      </tbody>
+    <thead><tr><th>Customer name</th><th>Phone</th><th>Email</th><th>Location</th><th class="is-numeric">Orders</th></tr></thead>
+    <tbody>
+      <% @customers.each do |customer| %>
+        <tr>
+          <td>
+            <%= link_to admin_customer_path(customer), class: "flex items-center gap-3" do %>
+              <span class="admin-avatar !h-8 !w-8 !rounded-full"><%= customer.name.to_s.first.upcase %></span>
+              <span class="admin-link"><%= customer.name %></span>
+            <% end %>
+          </td>
+          <td class="admin-muted"><%= customer.phone %></td>
+          <td class="admin-muted"><%= customer.email.presence || "—" %></td>
+          <td class="admin-muted"><%= customer.city %></td>
+          <td class="is-numeric"><%= pluralize(customer.orders_count, "order", locale: :en) %></td>
+        </tr>
+      <% end %>
+    </tbody>
     </table>
     <% if @customers.empty? %>
       <p class="admin-empty">Customers appear here after their first order.</p>

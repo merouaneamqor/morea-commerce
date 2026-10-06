@@ -32,10 +32,15 @@ module Admin
     end
 
     def variant_params
-      params.require(:product_variant).permit(
+      attrs = params.require(:product_variant).permit(
         :name, :sku, :option1_name, :option1_value, :option2_name, :option2_value,
-        :price_cents, :stock, :active
+        :price_cents, :price_dh, :stock, :active
       )
+      if attrs.key?(:price_dh)
+        dh = attrs.delete(:price_dh)
+        attrs[:price_cents] = dh.present? ? dh.to_i * 100 : nil
+      end
+      attrs
     end
   end
 end

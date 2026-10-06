@@ -1,6 +1,37 @@
 <% content_for :title, "#{t("checkout.title")} — #{current_store.name}" %>
 
-<section class="checkout-page mx-auto max-w-6xl px-5 pb-28 pt-28 md:px-10 md:pb-32 md:pt-32">
+<%
+  cities = Checkout.cities
+  rates = Sendit::Districts.shipping_cents_by_city
+  checkout_city_attrs = if cities.any?
+    {
+      controller: "checkout-city",
+      checkout_city_districts_value: Checkout.districts_by_city.to_json,
+      checkout_city_rates_value: rates.to_json,
+      checkout_city_subtotal_value: @checkout.subtotal_cents,
+      checkout_city_discount_value: @checkout.discount_cents,
+      checkout_city_free_threshold_value: current_store.free_shipping_threshold_cents.to_i,
+      checkout_city_currency_value: current_store.currency,
+      checkout_city_free_label_value: t("checkout.shipping_free"),
+      checkout_city_pending_label_value: t("checkout.shipping_pending"),
+      checkout_city_confirm_template_value: t("checkout.confirm_with_total", total: "%{total}"),
+      checkout_city_choose_district_value: t("checkout.choose_district")
+    }
+  end
+%>
+
+<section class="checkout-page mx-auto max-w-6xl px-5 pb-28 pt-28 md:px-10 md:pb-32 md:pt-32"
+         <% if checkout_city_attrs %>data-controller="<%= checkout_city_attrs[:controller] %>"
+         data-checkout-city-districts-value="<%= checkout_city_attrs[:checkout_city_districts_value] %>"
+         data-checkout-city-rates-value="<%= checkout_city_attrs[:checkout_city_rates_value] %>"
+         data-checkout-city-subtotal-value="<%= checkout_city_attrs[:checkout_city_subtotal_value] %>"
+         data-checkout-city-discount-value="<%= checkout_city_attrs[:checkout_city_discount_value] %>"
+         data-checkout-city-free-threshold-value="<%= checkout_city_attrs[:checkout_city_free_threshold_value] %>"
+         data-checkout-city-currency-value="<%= checkout_city_attrs[:checkout_city_currency_value] %>"
+         data-checkout-city-free-label-value="<%= checkout_city_attrs[:checkout_city_free_label_value] %>"
+         data-checkout-city-pending-label-value="<%= checkout_city_attrs[:checkout_city_pending_label_value] %>"
+         data-checkout-city-confirm-template-value="<%= checkout_city_attrs[:checkout_city_confirm_template_value] %>"
+         data-checkout-city-choose-district-value="<%= checkout_city_attrs[:checkout_city_choose_district_value] %>"<% end %>>
   <header class="max-w-2xl">
     <p class="text-[10px] uppercase tracking-[0.28em] text-brass"><%= t("checkout.step_label") %></p>
     <h1 class="mt-3 font-display text-3xl text-ink md:text-5xl"><%= t("checkout.title") %></h1>
@@ -39,15 +70,35 @@
                   · <%= money(item.unit_price_cents, item.product.currency) %>
                 </p>
               </div>
-              <p class="shrink-0 text-sm text-ink"><%= money(item.line_total_cents, current_store.currency) %></p>
+              <p class="font-display text-lg text-ink"><%= money(item.line_total_cents, current_store.currency) %></p>
             </li>
           <% end %>
         </ul>
 
-        <div class="mt-6 border-t border-line pt-5">
+        <div class="mt-6 border-t border-line pt-5 space-y-3">
           <div class="flex items-baseline justify-between gap-4">
+            <span class="text-[10px] uppercase tracking-[0.22em] text-ink-faint"><%= t("checkout.subtotal") %></span>
+            <span class="font-display text-lg text-ink"><%= money(@checkout.subtotal_cents, current_store.currency) %></span>
+          </div>
+          <% if @checkout.discount_cents.positive? %>
+            <div class="flex items-baseline justify-between gap-4">
+              <span class="text-[10px] uppercase tracking-[0.22em] text-ink-faint"><%= t("checkout.discount") %></span>
+              <span class="font-display text-lg text-ink">−<%= money(@checkout.discount_cents, current_store.currency) %></span>
+            </div>
+          <% end %>
+          <div class="flex items-baseline justify-between gap-4">
+            <span class="text-[10px] uppercase tracking-[0.22em] text-ink-faint"><%= t("checkout.shipping") %></span>
+            <span class="font-display text-lg text-ink" data-checkout-city-target="shipping">
+              <% if @checkout.city.present? %>
+                <%= @checkout.shipping_cents.zero? ? t("checkout.shipping_free") : money(@checkout.shipping_cents, current_store.currency) %>
+              <% else %>
+                <%= t("checkout.shipping_pending") %>
+              <% end %>
+            </span>
+          </div>
+          <div class="flex items-baseline justify-between gap-4 border-t border-line pt-3">
             <span class="text-[10px] uppercase tracking-[0.22em] text-ink-faint"><%= t("checkout.total") %></span>
-            <span class="font-display text-3xl text-ink"><%= money(@cart.subtotal_cents, current_store.currency) %></span>
+            <span class="font-display text-3xl text-ink" data-checkout-city-target="total"><%= money(@checkout.total_cents, current_store.currency) %></span>
           </div>
           <p class="mt-3 text-xs leading-5 text-ink-soft"><%= t("checkout.total_note") %></p>
         </div>
@@ -71,9 +122,7 @@
           <legend class="checkout-panel__title"><%= t("checkout.delivery_details") %></legend>
           <p class="checkout-panel__hint"><%= t("checkout.delivery_hint") %></p>
 
-          <% cities = Checkout.cities %>
-          <div class="mt-6 grid gap-5 sm:grid-cols-2"
-               <% if cities.any? %>data-controller="checkout-city" data-checkout-city-districts-value="<%= Checkout.districts_by_city.to_json %>"<% end %>>
+          <div class="mt-6 grid gap-5 sm:grid-cols-2">
             <div class="checkout-field sm:col-span-2">
               <%= f.label :name, t("checkout.full_name"), class: "checkout-label" %>
               <%= f.text_field :name, required: true, autocomplete: "name", class: "checkout-input", placeholder: t("checkout.placeholders.name") %>
@@ -99,11 +148,21 @@
               <% end %>
             </div>
 
-            <div class="checkout-field">
+            <% district_required = @checkout.district_required? %>
+            <% district_options = Checkout.districts_by_city[@checkout.city].to_a %>
+            <div class="checkout-field" data-checkout-city-target="districtField" <%= "hidden" unless district_required %>>
               <%= f.label :district, t("checkout.district"), class: "checkout-label" %>
-              <%= f.text_field :district, autocomplete: "address-level3", class: "checkout-input", placeholder: t("checkout.placeholders.district"),
-                    list: "checkout-districts", data: { checkout_city_target: "district" } %>
-              <datalist id="checkout-districts" data-checkout-city-target="options"></datalist>
+              <%= f.select :district,
+                    options_for_select(district_options, @checkout.district),
+                    { include_blank: t("checkout.choose_district") },
+                    required: district_required,
+                    disabled: !district_required,
+                    autocomplete: "address-level3",
+                    class: "checkout-input checkout-select",
+                    data: { checkout_city_target: "district", action: "checkout-city#update" } %>
+              <p class="checkout-help" data-checkout-city-target="districtHelp" <%= "hidden" unless district_required %>>
+                <%= t("checkout.district_help") %>
+              </p>
             </div>
 
             <div class="checkout-field sm:col-span-2">
@@ -115,16 +174,21 @@
               <%= f.label :notes, "#{t("checkout.notes")} (#{t("checkout.optional")})", class: "checkout-label" %>
               <%= f.text_area :notes, rows: 2, class: "checkout-input checkout-input--area", placeholder: t("checkout.placeholders.notes") %>
             </div>
+
+            <div class="checkout-field sm:col-span-2">
+              <%= f.label :discount_code, "#{t("checkout.discount_code")} (#{t("checkout.optional")})", class: "checkout-label" %>
+              <%= f.text_field :discount_code, class: "checkout-input", placeholder: t("checkout.placeholders.discount_code"), autocomplete: "off" %>
+            </div>
           </div>
         </fieldset>
 
         <div class="checkout-submit">
           <div class="mb-5 flex items-baseline justify-between gap-4 lg:hidden">
             <span class="text-[10px] uppercase tracking-[0.22em] text-ink-faint"><%= t("checkout.total") %></span>
-            <span class="font-display text-3xl text-ink"><%= money(@cart.subtotal_cents, current_store.currency) %></span>
+            <span class="font-display text-3xl text-ink" data-checkout-city-target="mobileTotal"><%= money(@checkout.total_cents, current_store.currency) %></span>
           </div>
           <%= f.button type: "submit", class: "maison-button checkout-submit__button w-full cursor-pointer text-center", data: { turbo_submits_with: t("checkout.placing") } do %>
-            <%= t("checkout.confirm_with_total", total: money(@cart.subtotal_cents, current_store.currency)) %>
+            <span data-checkout-city-target="submitLabel"><%= t("checkout.confirm_with_total", total: money(@checkout.total_cents, current_store.currency)) %></span>
           <% end %>
           <ul class="checkout-reassure">
             <li><%= t("checkout.reassure.cod") %></li>

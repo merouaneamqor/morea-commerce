@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   def show
-    @order = current_store.orders.find_by!(number: params[:number])
+    @order = current_store.orders.includes(order_items: { product: { images_attachments: :blob } }).find_by!(number: params[:number])
   end
 
   def track

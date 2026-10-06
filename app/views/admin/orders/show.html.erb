@@ -10,15 +10,17 @@
   </div>
 
   <div class="flex flex-wrap items-center gap-2">
-    <% Order::TRANSITIONS.fetch(@order.status, []).reject { |s| s.in?(%w[cancelled returned]) }.each do |next_status| %>
+    <% Order::TRANSITIONS.fetch(@order.status, []).reject { |s| s == "cancelled" }.each do |next_status| %>
       <%= button_to "Mark as #{next_status}",
             transition_admin_order_path(@order),
             method: :patch,
             params: { to_status: next_status },
-            class: "admin-btn" %>
+            class: next_status == "returned" ? "admin-btn-secondary" : "admin-btn",
+            form: (next_status == "returned" ? { data: { turbo_confirm: "Mark ##{@order.number} as returned and restore stock?" } } : {}) %>
     <% end %>
   </div>
 </div>
+
 
 <div class="admin-layout">
   <div class="admin-stack">
@@ -52,18 +54,26 @@
           <div class="admin-summary-row">
             <span>Subtotal</span>
             <span class="admin-muted"><%= pluralize(@order.order_items.sum(&:quantity), "item", locale: :en) %></span>
-            <span class="tabular-nums"><%= @order.total_display %></span>
+            <span class="tabular-nums"><%= money(@order.subtotal_cents, @order.currency) %></span>
           </div>
+          <% if @order.discount_cents.to_i.positive? %>
+            <div class="admin-summary-row">
+              <span>Discount</span>
+              <span class="admin-muted"><%= @order.discount_code.presence || "—" %></span>
+              <span class="tabular-nums">−<%= money(@order.discount_cents, @order.currency) %></span>
+            </div>
+          <% end %>
           <div class="admin-summary-row">
             <span>Shipping</span>
             <span class="admin-muted">Cash on delivery</span>
-            <span class="tabular-nums">—</span>
+            <span class="tabular-nums"><%= @order.shipping_cents.to_i.zero? ? "Free" : money(@order.shipping_cents, @order.currency) %></span>
           </div>
           <div class="admin-summary-row mt-1 border-t border-[#ebebeb] pt-2 font-semibold">
             <span>Total</span>
             <span class="tabular-nums"><%= @order.total_display %></span>
           </div>
         </div>
+
       </div>
     </section>
 

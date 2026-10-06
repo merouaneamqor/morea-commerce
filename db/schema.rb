@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_02_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -249,6 +249,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_190000) do
     t.string "sendit_return_status"
     t.datetime "returned_at"
     t.string "customer_district"
+    t.integer "discount_cents", default: 0, null: false
+    t.string "discount_code"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["customer_phone"], name: "index_orders_on_customer_phone"
     t.index ["number"], name: "index_orders_on_number", unique: true
@@ -387,6 +389,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_190000) do
     t.string "campaign_cta"
     t.integer "sendit_pickup_district_id"
     t.string "whatsapp"
+    t.integer "shipping_cents", default: 0, null: false
+    t.integer "free_shipping_threshold_cents"
+    t.boolean "sendit_allow_open", default: true, null: false
+    t.boolean "sendit_allow_try", default: true, null: false
+    t.integer "low_stock_threshold", default: 5, null: false
     t.index ["slug"], name: "index_stores_on_slug", unique: true
   end
 

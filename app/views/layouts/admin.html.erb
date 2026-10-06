@@ -41,8 +41,9 @@
           <nav class="admin-sidebar__nav">
             <%= admin_nav_link "Home", admin_root_path, icon: :home, active: controller_name == "dashboard" %>
             <%= admin_nav_link "Orders", admin_orders_path, icon: :orders, active: controller_name == "orders" %>
-            <%= admin_nav_link "Products", admin_products_path, icon: :products, active: controller_name.in?(%w[products variants]) %>
+            <%= admin_nav_link "Products", admin_products_path, icon: :products, active: controller_name.in?(%w[products variants inventory]) %>
             <%= admin_nav_link "Collections", admin_collections_path, icon: :collections, active: controller_name == "collections" %>
+            <%= admin_nav_link "Discounts", admin_discounts_path, icon: :discounts, active: controller_name == "discounts" %>
             <%= admin_nav_link "Media", admin_media_path, icon: :image, active: controller_name == "media" %>
             <%= admin_nav_link "Customers", admin_customers_path, icon: :customers, active: controller_name == "customers" %>
 
@@ -60,6 +61,7 @@
 
           <div class="admin-sidebar__footer">
             <%= admin_nav_link "Settings", edit_admin_store_path, icon: :settings, active: controller_name == "stores" %>
+            <%= admin_nav_link "Staff", admin_users_path, icon: :staff, active: controller_name == "users" %>
             <%= button_to admin_logout_path, method: :delete, class: "admin-nav-item w-full" do %>
               <%= admin_icon(:logout) %><span>Sign out</span>
             <% end %>

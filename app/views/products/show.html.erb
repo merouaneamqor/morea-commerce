@@ -34,7 +34,7 @@
         <div class="mt-5 flex flex-wrap items-baseline gap-3">
           <p class="pdp__price"><%= @product.price_display %></p>
           <% if @product.compare_at_cents.to_i > @product.price_cents %>
-            <s class="text-sm text-ink-faint"><%= @product.compare_at_display %></s>
+            <s class="pdp__price-compare"><%= @product.compare_at_display %></s>
             <span class="home-card__badge home-card__badge--sale !static"><%= t("product.sale") %></span>
           <% end %>
         </div>
@@ -163,7 +163,7 @@
   <div class="flex items-center gap-4">
     <div class="min-w-0 flex-1">
       <p class="truncate font-display text-lg text-ink"><%= @product.name %></p>
-      <p class="text-[10px] uppercase tracking-[0.18em] text-ink-faint"><%= @product.price_display %></p>
+      <p class="font-display text-base text-ink"><%= @product.price_display %></p>
     </div>
     <button type="submit" form="pdp-add-form" class="mobile-buy-bar__bag" aria-label="<%= t("product.add_to_bag") %>" title="<%= t("product.add_to_bag") %>">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>

@@ -21,10 +21,42 @@ class Store < ApplicationRecord
 
   validates :name, :slug, presence: true
   validates :slug, uniqueness: true
+  validates :shipping_cents, :low_stock_threshold, numericality: { greater_than_or_equal_to: 0 }
+  validates :free_shipping_threshold_cents, numericality: { greater_than: 0 }, allow_nil: true
 
   def self.current
     order(:id).first
   end
+
+  def shipping_dh
+    shipping_cents.to_i / 100
+  end
+
+  def shipping_dh=(value)
+    self.shipping_cents = value.to_i * 100
+  end
+
+  def free_shipping_threshold_dh
+    free_shipping_threshold_cents.to_i / 100 if free_shipping_threshold_cents.present?
+  end
+
+  def free_shipping_threshold_dh=(value)
+    self.free_shipping_threshold_cents = value.present? ? value.to_i * 100 : nil
+  end
+
+  # Flat fee, or free once the cart subtotal reaches the optional threshold.
+  # Prefer Sendit city rates at checkout — this is the offline fallback.
+  def shipping_cents_for(subtotal_cents)
+    return 0 if free_shipping?(subtotal_cents)
+
+    shipping_cents.to_i
+  end
+
+  def free_shipping?(subtotal_cents)
+    threshold = free_shipping_threshold_cents
+    threshold.present? && subtotal_cents.to_i >= threshold
+  end
+
 
   # wa.me link to the store's WhatsApp ("06 12 34 56 78" -> https://wa.me/212612345678)
   def whatsapp_url(text = nil)

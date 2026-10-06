@@ -181,8 +181,8 @@ module Sendit
         phone: local_phone(order.customer_phone),
         comment: order.notes.to_s.truncate(250).presence,
         reference: order.number,
-        allow_open: ENV.fetch("SENDIT_ALLOW_OPEN", "1").to_i,
-        allow_try: ENV.fetch("SENDIT_ALLOW_TRY", "1").to_i,
+        allow_open: order.store.sendit_allow_open? ? 1 : 0,
+        allow_try: order.store.sendit_allow_try? ? 1 : 0,
         products_from_stock: 0,
         products: order.order_items.map { |i| [ i.product_name, i.variant_name.presence ].compact.join(" ") + " x#{i.quantity}" }.join("; "),
         option_exchange: 0

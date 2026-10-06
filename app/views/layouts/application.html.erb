@@ -39,21 +39,32 @@
           </nav>
         </div>
         <nav class="maison-nav__actions">
-          <details class="mobile-menu md:hidden">
-            <summary class="maison-link cursor-pointer list-none"><%= t("nav.menu") %></summary>
-            <div class="mobile-menu__panel">
-              <% store_menu("header").each do |item| %>
-                <%= store_menu_link item, class: "mobile-menu__link" %>
-              <% end %>
-            </div>
-          </details>
-          <%= link_to cart_path, class: "maison-link", data: { action: "cart-drawer#open" } do %>
-            <%= t("nav.bag") %><%= render "carts/count" %>
+          <button type="button"
+                  class="maison-link cursor-pointer md:hidden"
+                  onclick="document.getElementById('mobile-nav').showModal()"
+                  aria-haspopup="dialog"
+                  aria-controls="mobile-nav"><%= t("nav.menu") %></button>
+          <%= link_to cart_path, class: "maison-link bag-link", data: { action: "cart-drawer#open" } do %>
+            <span><%= t("nav.bag") %></span><%= render "carts/count" %>
           <% end %>
           <%= render "shared/locale_switcher" %>
         </nav>
       </header>
     </div>
+
+    <dialog id="mobile-nav" class="mobile-menu__panel md:hidden" aria-label="<%= t("nav.main_menu") %>">
+      <div class="mobile-menu__head">
+        <%= render "shared/brand_lockup" %>
+        <button type="button" class="mobile-menu__close" onclick="this.closest('dialog').close()" aria-label="<%= t("cart.close") %>">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 4l12 12M16 4 4 16"/></svg>
+        </button>
+      </div>
+      <nav class="mobile-menu__nav" aria-label="<%= t("nav.main_menu") %>">
+        <% store_menu("header").each do |item| %>
+          <%= store_menu_link item, class: "mobile-menu__link", onclick: "document.getElementById('mobile-nav').close()" %>
+        <% end %>
+      </nav>
+    </dialog>
 
     <% if notice.present? %>
       <div class="flash" data-controller="reveal"><%= notice %></div>

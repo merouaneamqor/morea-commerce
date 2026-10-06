@@ -5,6 +5,7 @@
     <%= link_to admin_customers_path, class: "admin-back", "aria-label": "Back to customers" do %><%= admin_icon(:back) %><% end %>
     <h1 class="admin-page-header__title"><%= @customer.name %></h1>
   </div>
+  <%= link_to "Edit", edit_admin_customer_path(@customer), class: "admin-btn-secondary" %>
 </div>
 
 <div class="admin-card mb-4">
@@ -43,15 +44,40 @@
     </div>
   </section>
 
-  <section class="admin-card">
-    <div class="admin-card__header"><h2 class="admin-card__title">Customer</h2></div>
-    <div class="px-4 pb-4">
-      <p class="admin-card__title mb-1">Contact information</p>
-      <p class="admin-link--blue"><%= link_to @customer.phone, "tel:#{@customer.phone}" %></p>
-    </div>
-    <div class="admin-card__section">
-      <p class="admin-card__title mb-1">Location</p>
-      <p class="admin-muted"><%= @customer.city.presence || "—" %></p>
-    </div>
-  </section>
+  <div class="admin-stack">
+    <section class="admin-card">
+      <div class="admin-card__header"><h2 class="admin-card__title">Customer</h2></div>
+      <div class="px-4 pb-4">
+        <p class="admin-card__title mb-1">Contact information</p>
+        <p class="admin-link--blue"><%= link_to @customer.phone, "tel:#{@customer.phone}" %></p>
+        <% if @customer.email.present? %>
+          <p class="admin-link--blue mt-1"><%= mail_to @customer.email %></p>
+        <% end %>
+      </div>
+      <div class="admin-card__section">
+        <p class="admin-card__title mb-1">Location</p>
+        <p class="admin-muted"><%= @customer.city.presence || "—" %></p>
+      </div>
+    </section>
+
+    <section class="admin-card">
+      <div class="admin-card__header"><h2 class="admin-card__title">Addresses</h2></div>
+      <% if @addresses.any? %>
+        <ul class="divide-y divide-[#ebebeb]">
+          <% @addresses.each do |address| %>
+            <li class="px-4 py-3">
+              <p class="font-medium">
+                <%= address.line1 %>
+                <% if address.default? %><span class="admin-badge admin-badge--neutral ms-1">Default</span><% end %>
+              </p>
+              <% if address.line2.present? %><p class="admin-muted"><%= address.line2 %></p><% end %>
+              <p class="admin-muted"><%= address.city %></p>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="admin-empty">No saved addresses yet.</p>
+      <% end %>
+    </section>
+  </div>
 </div>

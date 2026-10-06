@@ -1,5 +1,6 @@
 <% content_for :title, "#{@collection.name} — #{current_store.name}" %>
 <% content_for :meta_description, @collection.description.presence || @collection.subtitle %>
+<% cover_url = collection_cover_url(@collection) %>
 
 <section class="collection-page">
   <header class="collection-page__head" data-controller="reveal">
@@ -13,6 +14,17 @@
       <p class="mx-auto mt-5 max-w-xl text-sm leading-7 text-ink-soft"><%= @collection.description %></p>
     <% end %>
   </header>
+
+  <% if cover_url.present? %>
+    <div class="collection-page__banner object-frame" data-controller="reveal">
+      <%= object_image_tag cover_url,
+            alt: @collection.name,
+            sizes: "100vw",
+            widths: [960, 1440, 1920],
+            loading: "eager",
+            fetchpriority: "high" %>
+    </div>
+  <% end %>
 
   <%= form_with url: collection_path(@collection), method: :get, class: "collection-toolbar", data: { controller: "auto-submit", turbo_action: "replace" } do %>
     <label class="collection-toolbar__filter">

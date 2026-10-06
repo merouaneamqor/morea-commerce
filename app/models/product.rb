@@ -76,7 +76,8 @@ class Product < ApplicationRecord
 
     qty = available_stock
     return I18n.t("product.sold_out") if qty <= 0
-    return I18n.t("product.only_left", count: qty) if qty <= 5
+    threshold = store&.low_stock_threshold || 5
+    return I18n.t("product.only_left", count: qty) if qty <= threshold
 
     nil
   end

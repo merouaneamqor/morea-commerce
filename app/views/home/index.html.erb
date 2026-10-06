@@ -10,4 +10,17 @@
 
 <% @sections.each_with_index do |section, index| %>
   <%= render "home/sections/#{section.kind}", section: section, first: index.zero? %>
+  <% if index.zero? && section.kind == "hero" %>
+    <section class="home-trust" aria-label="<%= t("landing.trust.strip_label") %>">
+      <div class="home-trust__item">
+        <p class="home-trust__label"><%= current_store&.cod_label.presence || t("landing.trust.cod") %></p>
+      </div>
+      <div class="home-trust__item">
+        <p class="home-trust__label"><%= t("landing.trust.ship") %></p>
+      </div>
+      <div class="home-trust__item">
+        <p class="home-trust__label"><%= t("landing.trust.returns") %></p>
+      </div>
+    </section>
+  <% end %>
 <% end %>

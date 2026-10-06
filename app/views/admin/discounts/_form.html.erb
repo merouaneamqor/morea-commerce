@@ -1,0 +1,58 @@
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to admin_discounts_path, class: "admin-back", "aria-label": "Back to discounts" do %><%= admin_icon(:back) %><% end %>
+    <h1 class="admin-page-header__title"><%= @discount.persisted? ? @discount.code : "Add discount" %></h1>
+  </div>
+  <button type="submit" form="discount-form" class="admin-btn">Save</button>
+</div>
+
+<%= form_with model: [:admin, @discount], id: "discount-form", class: "admin-stack" do |f| %>
+  <% if @discount.errors.any? %>
+    <div class="admin-banner admin-banner--critical"><%= @discount.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Discount</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <div class="admin-field-grid">
+        <div>
+          <%= f.label :code, class: "admin-label" %>
+          <%= f.text_field :code, class: "admin-input", required: true, placeholder: "WELCOME10" %>
+        </div>
+        <div>
+          <%= f.label :discount_type, "Type", class: "admin-label" %>
+          <%= f.select :discount_type, Discount::TYPES.map { |t| [ t.humanize, t ] }, {}, class: "admin-input" %>
+        </div>
+        <div>
+          <%= f.label :value, "Value", class: "admin-label" %>
+          <%= f.number_field :value, class: "admin-input", required: true, min: 1 %>
+          <p class="admin-help">Percent (1–100) or fixed amount in <%= current_store.currency %>.</p>
+        </div>
+        <div class="flex items-end pb-1">
+          <label class="admin-check"><%= f.check_box :active %> Active</label>
+        </div>
+      </div>
+      <div class="admin-field-grid">
+        <div>
+          <%= f.label :starts_at, "Starts at", class: "admin-label" %>
+          <%= f.datetime_local_field :starts_at, class: "admin-input" %>
+        </div>
+        <div>
+          <%= f.label :ends_at, "Ends at", class: "admin-label" %>
+          <%= f.datetime_local_field :ends_at, class: "admin-input" %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flex justify-between">
+    <% if @discount.persisted? %>
+      <%= button_to "Delete", admin_discount_path(@discount), method: :delete,
+            form: { data: { turbo_confirm: "Delete this discount?" } },
+            class: "admin-btn-critical" %>
+    <% else %>
+      <span></span>
+    <% end %>
+    <%= f.submit "Save", class: "admin-btn" %>
+  </div>
+<% end %>

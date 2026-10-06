@@ -1,0 +1,30 @@
+<% content_for :title, "Staff — Admin" %>
+
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">Staff</h1>
+  <%= link_to "Invite staff", new_admin_user_path, class: "admin-btn" %>
+</div>
+
+<div class="admin-card">
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead><tr><th>Name</th><th>Email</th><th>Role</th><th></th></tr></thead>
+      <tbody>
+        <% @users.each do |user| %>
+          <tr>
+            <td class="font-medium"><%= link_to user.name.presence || "—", edit_admin_user_path(user), class: "admin-link" %></td>
+            <td class="admin-muted"><%= user.email %></td>
+            <td><%= user.admin? ? admin_badge(:active, label: "Admin", tone: "success") : admin_badge(:draft, label: "Staff", tone: "info") %></td>
+            <td class="is-numeric">
+              <% unless user == current_user %>
+                <%= button_to "Delete", admin_user_path(user), method: :delete,
+                      form: { data: { turbo_confirm: "Delete #{user.email}?" } },
+                      class: "admin-btn-plain admin-btn-plain--critical" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

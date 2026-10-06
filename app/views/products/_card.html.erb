@@ -11,17 +11,20 @@
     <% elsif product.compare_at_cents.to_i > product.price_cents %>
       <span class="home-card__badge home-card__badge--sale"><%= t("product.sale") %></span>
     <% end %>
+    <span class="home-card__view"><%= t("product.view") %></span>
   </div>
   <div class="home-card__meta">
     <% if local_assigns[:index] %>
-      <span class="landing-gallery__index"><%= format("%02d", index + 1) %></span>
+      <span class="home-card__index"><%= format("%02d", index + 1) %></span>
     <% end %>
-    <p class="home-card__name <%= "col-span-2" unless local_assigns[:index] %>"><%= product.name %></p>
-    <p class="home-card__price <%= "!col-start-1 col-span-2" unless local_assigns[:index] %>">
-      <%= product.price_display %>
-      <% if product.compare_at_cents.to_i > product.price_cents %>
-        <s class="ms-2 opacity-60"><%= product.compare_at_display %></s>
-      <% end %>
-    </p>
+    <div class="home-card__meta-row">
+      <p class="home-card__name"><%= product.name %></p>
+      <p class="home-card__price">
+        <%= product.price_display %>
+        <% if product.compare_at_cents.to_i > product.price_cents %>
+          <s><%= product.compare_at_display %></s>
+        <% end %>
+      </p>
+    </div>
   </div>
 <% end %>

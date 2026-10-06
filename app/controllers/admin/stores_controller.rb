@@ -22,11 +22,14 @@ module Admin
         :name, :slug, :phone, :whatsapp, :email, :currency,
         :featured_product_id, :featured_collection_id,
         :campaign_image_url, :sendit_pickup_district_id,
+        :shipping_dh, :free_shipping_threshold_dh,
+        :sendit_allow_open, :sendit_allow_try, :low_stock_threshold,
         translations_attributes: %i[
           id locale tagline about cod_label cod_note
           campaign_title campaign_season campaign_cta announcement
         ]
       )
     end
+
   end
 end

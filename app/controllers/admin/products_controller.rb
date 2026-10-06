@@ -28,6 +28,7 @@ module Admin
 
     def edit
       @product.build_missing_translations!
+      @inventory_movements = @product.inventory_movements.includes(:product_variant, :order).order(created_at: :desc).limit(50)
     end
 
     def update
@@ -36,6 +37,7 @@ module Admin
         redirect_to edit_admin_product_path(@product), notice: "Product saved."
       else
         @product.build_missing_translations!
+        @inventory_movements = @product.inventory_movements.includes(:product_variant, :order).order(created_at: :desc).limit(50)
         render :edit, status: :unprocessable_entity
       end
     end

@@ -91,6 +91,7 @@
           </div>
         </div>
       </section>
+
     </div>
 
     <div class="admin-stack">
@@ -133,32 +134,135 @@
     <section class="admin-card">
       <div class="admin-card__header"><h2 class="admin-card__title">Variants</h2></div>
       <% if @product.product_variants.any? %>
+        <div class="space-y-4 px-4 pb-4">
+          <% @product.product_variants.order(:id).each do |variant| %>
+            <%= form_with model: variant, url: admin_product_variant_path(@product, variant), method: :patch, scope: :product_variant, class: "rounded-lg border border-[#ebebeb] p-3 space-y-3" do |vf| %>
+              <div class="admin-field-grid">
+                <div>
+                  <%= vf.label :name, class: "admin-label" %>
+                  <%= vf.text_field :name, class: "admin-input", required: true %>
+                </div>
+                <div>
+                  <%= vf.label :sku, class: "admin-label" %>
+                  <%= vf.text_field :sku, class: "admin-input" %>
+                </div>
+                <div>
+                  <%= vf.label :stock, "Stock", class: "admin-label" %>
+                  <%= vf.number_field :stock, class: "admin-input", min: 0 %>
+                </div>
+                <div>
+                  <%= vf.label :price_dh, "Price override (#{@product.currency})", class: "admin-label" %>
+                  <%= number_field_tag "product_variant[price_dh]", variant.price_cents.present? ? variant.price_cents / 100 : nil, class: "admin-input", min: 0, placeholder: "Product price" %>
+                </div>
+                <div>
+                  <%= vf.label :option1_name, "Option 1 name", class: "admin-label" %>
+                  <%= vf.text_field :option1_name, class: "admin-input", placeholder: "Size" %>
+                </div>
+                <div>
+                  <%= vf.label :option1_value, "Option 1 value", class: "admin-label" %>
+                  <%= vf.text_field :option1_value, class: "admin-input", placeholder: "M" %>
+                </div>
+                <div>
+                  <%= vf.label :option2_name, "Option 2 name", class: "admin-label" %>
+                  <%= vf.text_field :option2_name, class: "admin-input", placeholder: "Color" %>
+                </div>
+                <div>
+                  <%= vf.label :option2_value, "Option 2 value", class: "admin-label" %>
+                  <%= vf.text_field :option2_value, class: "admin-input", placeholder: "Noir" %>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label class="admin-check"><%= vf.check_box :active %> Active</label>
+                <div class="flex gap-2">
+                  <%= vf.submit "Save variant", class: "admin-btn-secondary" %>
+                  <%= button_to "Remove", admin_product_variant_path(@product, variant), method: :delete,
+                        form: { data: { turbo_confirm: "Remove this variant?" } },
+                        class: "admin-btn-plain admin-btn-plain--critical" %>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+      <%= form_with model: ProductVariant.new, url: admin_product_variants_path(@product), scope: :product_variant, class: "admin-card__section space-y-3" do |vf| %>
+        <p class="admin-label">Add variant</p>
+        <div class="admin-field-grid">
+          <%= vf.text_field :name, placeholder: "Name, e.g. M / Noir", class: "admin-input", required: true %>
+          <%= vf.text_field :sku, placeholder: "SKU", class: "admin-input" %>
+          <%= vf.number_field :stock, placeholder: "Qty", class: "admin-input", value: 0, min: 0 %>
+          <%= number_field_tag "product_variant[price_dh]", nil, class: "admin-input", min: 0, placeholder: "Price override" %>
+          <%= vf.text_field :option1_name, placeholder: "Option 1 name", class: "admin-input" %>
+          <%= vf.text_field :option1_value, placeholder: "Option 1 value", class: "admin-input" %>
+          <%= vf.text_field :option2_name, placeholder: "Option 2 name", class: "admin-input" %>
+          <%= vf.text_field :option2_value, placeholder: "Option 2 value", class: "admin-input" %>
+        </div>
+        <label class="admin-check"><%= vf.check_box :active, checked: true %> Active</label>
+        <%= vf.submit "Add variant", class: "admin-btn-secondary" %>
+      <% end %>
+    </section>
+
+    <section class="admin-card">
+      <div class="admin-card__header"><h2 class="admin-card__title">Inventory history</h2></div>
+      <%= form_with url: admin_product_inventory_index_path(@product), method: :post, class: "space-y-3 border-b border-[#ebebeb] px-4 pb-4" do %>
+        <p class="admin-label">Manual adjustment</p>
+        <div class="admin-field-grid">
+          <% if @product.product_variants.any? %>
+            <div>
+              <label class="admin-label" for="product_variant_id">Apply to</label>
+              <select name="product_variant_id" id="product_variant_id" class="admin-input">
+                <option value="">Product stock</option>
+                <% @product.product_variants.order(:id).each do |variant| %>
+                  <option value="<%= variant.id %>"><%= variant.display_name %> (<%= variant.stock %>)</option>
+                <% end %>
+              </select>
+            </div>
+          <% end %>
+          <div>
+            <label class="admin-label" for="quantity">Quantity change</label>
+            <%= number_field_tag :quantity, nil, class: "admin-input", required: true, placeholder: "+5 or -2" %>
+          </div>
+          <div>
+            <label class="admin-label" for="reason">Reason</label>
+            <%= select_tag :reason,
+                  options_for_select([
+                    [ "Manual adjustment", "manual_adjustment" ],
+                    [ "Received stock", "received" ],
+                    [ "Damaged / loss", "damaged" ],
+                    [ "Correction", "correction" ]
+                  ]),
+                  class: "admin-input" %>
+          </div>
+          <div>
+            <label class="admin-label" for="note">Note</label>
+            <%= text_field_tag :note, nil, class: "admin-input", placeholder: "Optional" %>
+          </div>
+        </div>
+        <%= submit_tag "Adjust stock", class: "admin-btn-secondary" %>
+      <% end %>
+
+      <% if @inventory_movements&.any? %>
         <div class="admin-table-wrap">
           <table class="admin-table">
-            <thead><tr><th>Variant</th><th>SKU</th><th class="is-numeric">Available</th><th></th></tr></thead>
+            <thead><tr><th>When</th><th>Change</th><th>Reason</th><th>Note</th></tr></thead>
             <tbody>
-              <% @product.product_variants.each do |variant| %>
+              <% @inventory_movements.each do |movement| %>
                 <tr>
-                  <td class="font-medium"><%= variant.display_name %></td>
-                  <td class="admin-muted"><%= variant.sku.presence || "—" %></td>
-                  <td class="is-numeric"><%= variant.stock %></td>
-                  <td class="is-numeric">
-                    <%= button_to "Remove", admin_product_variant_path(@product, variant), method: :delete, class: "admin-btn-plain admin-btn-plain--critical" %>
+                  <td class="admin-muted"><%= movement.created_at.strftime("%b %-d, %Y %H:%M") %></td>
+                  <td class="tabular-nums <%= movement.quantity.negative? ? "text-red-700" : "text-green-700" %>">
+                    <%= movement.quantity.positive? ? "+" : "" %><%= movement.quantity %>
+                    <% if movement.product_variant %><span class="admin-muted"> · <%= movement.product_variant.display_name %></span><% end %>
                   </td>
+                  <td><%= movement.reason.to_s.humanize %></td>
+                  <td class="admin-muted"><%= movement.note.presence || "—" %></td>
                 </tr>
               <% end %>
             </tbody>
           </table>
         </div>
-      <% end %>
-      <%= form_with model: ProductVariant.new, url: admin_product_variants_path(@product), scope: :product_variant, class: "admin-card__section grid gap-2 md:grid-cols-[1fr_8rem_6rem_auto]" do |vf| %>
-        <%= vf.text_field :name, placeholder: "Name, e.g. M / Noir", class: "admin-input", required: true %>
-        <%= vf.text_field :sku, placeholder: "SKU", class: "admin-input" %>
-        <%= vf.number_field :stock, placeholder: "Qty", class: "admin-input", value: 0 %>
-        <%= vf.submit "Add variant", class: "admin-btn-secondary" %>
+      <% else %>
+        <p class="admin-empty">No movements yet. Confirming or cancelling orders writes history here.</p>
       <% end %>
     </section>
-    <div></div>
   </div>
 
   <div class="mt-6 flex justify-between border-t border-[#e3e3e3] pt-4">

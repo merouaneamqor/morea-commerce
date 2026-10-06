@@ -5,7 +5,8 @@ module Admin
       @counts = Order::STATUSES.index_with { |s| @orders.by_status(s).count }
       @cancel_rate = @orders.cancel_rate
       @recent_orders = @orders.recent.limit(8)
-      @low_stock = current_store.products.active.low_stock.includes(:product_variants)
+      @low_stock = current_store.products.active.low_stock(current_store.low_stock_threshold).includes(:product_variants)
+
     end
   end
 end

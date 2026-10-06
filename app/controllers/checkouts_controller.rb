@@ -10,7 +10,10 @@ class CheckoutsController < ApplicationController
       phone: params[:phone],
       city: params[:city],
       district: params[:district],
-      address: params[:address]
+      address: params[:address],
+      discount_code: params[:discount_code],
+      cart: @cart,
+      store: current_store
     )
   end
 
@@ -31,7 +34,7 @@ class CheckoutsController < ApplicationController
   private
 
   def checkout_params
-    params.require(:checkout).permit(:name, :phone, :city, :district, :address, :notes)
+    params.require(:checkout).permit(:name, :phone, :city, :district, :address, :notes, :discount_code)
   end
 
   def require_cart_items!

@@ -27,14 +27,26 @@
     <% end %>
   <% end %>
 
-  <div class="mt-10 space-y-3 border-y border-line py-6 text-sm md:py-8">
+  <ul class="order-done__items">
     <% @order.order_items.each do |item| %>
-      <div class="flex justify-between gap-4">
-        <span class="min-w-0"><%= item.product_name %><%= " — #{item.variant_name}" if item.variant_name %> × <%= item.quantity %></span>
-        <span class="shrink-0"><%= money(item.total_cents, @order.currency) %></span>
-      </div>
+      <li class="order-done__item">
+        <div class="object-frame aspect-[3/4] w-16 shrink-0 sm:w-20">
+          <% if item.product %>
+            <%= product_image_tag item.product, sizes: "80px", widths: [160, 240], alt: item.product_name %>
+          <% else %>
+            <div class="h-full w-full bg-stone-deep"></div>
+          <% end %>
+        </div>
+        <div class="order-done__item-meta">
+          <p class="font-display text-lg leading-snug text-ink">
+            <%= item.product_name %><%= " — #{item.variant_name}" if item.variant_name %>
+          </p>
+          <p class="text-[10px] uppercase tracking-[0.18em] text-ink-faint">× <%= item.quantity %></p>
+        </div>
+        <p class="order-done__item-price"><%= money(item.total_cents, @order.currency) %></p>
+      </li>
     <% end %>
-  </div>
+  </ul>
 
   <div class="mt-8 space-y-4 text-sm text-ink-soft">
     <p><span class="text-[10px] uppercase tracking-[0.18em] text-ink-faint"><%= t("orders.status") %></span><br><%= @order.status_label %></p>

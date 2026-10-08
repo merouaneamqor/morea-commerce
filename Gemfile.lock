@@ -201,7 +201,7 @@ GEM
     parser (3.3.12.0)
       ast (~> 2.4.1)
       racc
-    pg (1.6.3-x86_64-linux)
+    pg (1.7.0-x86_64-linux)
     phonelib (0.10.27)
     pp (0.6.4)
       prettyprint
@@ -367,7 +367,7 @@ DEPENDENCIES
   importmap-rails
   jwt (~> 2.10)
   kamal
-  pg (~> 1.5)
+  pg (~> 1.7)
   phonelib (~> 0.10)
   propshaft
   puma (>= 5.0)

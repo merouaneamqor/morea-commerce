@@ -41,6 +41,14 @@ Then open http://atelier.lvh.me:3010 (local). In production, add `{slug}.ollazen
 
 `APP_BASE_DOMAIN=ollazen.com` in production. Locally docker-compose uses `lvh.me`.
 
+### Platform billing
+
+Each store has monthly/yearly billing fields. Super admins issue **manual invoices** from Platform → store → Invoices (draft → issue → mark paid / void). Overdue issued invoices set the store to `past_due` and show a soft banner in store admin; the storefront stays online.
+
+```bash
+docker compose exec web bin/rails morea:billing:sync_past_due
+```
+
 ## Stack
 
 Rails 8 · Hotwire · Tailwind · PostgreSQL · Redis · Sidekiq

@@ -42,6 +42,13 @@
   </section>
 
   <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Billing</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <%= render "billing_fields", f: f %>
+    </div>
+  </section>
+
+  <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">First admin</h2></div>
     <div class="space-y-4 px-4 pb-4">
       <div class="admin-field-grid">

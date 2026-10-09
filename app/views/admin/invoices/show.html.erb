@@ -1,0 +1,76 @@
+<% content_for :title, "#{@invoice.number} — #{@store.name}" %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= @invoice.number %></h1>
+    <p class="admin-page-header__meta">
+      <%= @store.name %> · <%= @invoice.status.humanize %>
+      <% if @invoice.overdue? %> · Overdue<% end %>
+    </p>
+  </div>
+  <div class="flex flex-wrap gap-2 justify-end">
+    <%= link_to "All invoices", admin_tenant_invoices_path(@store), class: "admin-btn-secondary" %>
+    <% if @invoice.status == "draft" %>
+      <%= button_to "Issue", issue_admin_tenant_invoice_path(@store, @invoice), method: :post, class: "admin-btn" %>
+    <% end %>
+    <% if @invoice.status == "issued" %>
+      <%= button_to "Mark paid", mark_paid_admin_tenant_invoice_path(@store, @invoice), method: :post, class: "admin-btn" %>
+    <% end %>
+    <% if @invoice.status.in?(%w[draft issued]) %>
+      <%= button_to "Void", void_admin_tenant_invoice_path(@store, @invoice), method: :post, class: "admin-btn-secondary", form: { data: { turbo_confirm: "Void this invoice?" } } %>
+    <% end %>
+  </div>
+</div>
+
+<section class="admin-card print:shadow-none">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title">Invoice</h2>
+    <button type="button" class="admin-btn-plain" onclick="window.print()">Print</button>
+  </div>
+  <div class="space-y-4 px-4 pb-4">
+    <div class="admin-field-grid">
+      <div>
+        <p class="admin-label">Store</p>
+        <p><%= @store.name %> (<%= @store.slug %>)</p>
+      </div>
+      <div>
+        <p class="admin-label">Status</p>
+        <p><%= @invoice.status.humanize %></p>
+      </div>
+      <div>
+        <p class="admin-label">Amount</p>
+        <p class="tabular-nums font-semibold"><%= money(@invoice.amount_cents, "MAD") %></p>
+      </div>
+      <div>
+        <p class="admin-label">Interval</p>
+        <p><%= @invoice.billing_interval.humanize %></p>
+      </div>
+      <div>
+        <p class="admin-label">Period</p>
+        <p>
+          <%= @invoice.period_starts_on.strftime("%b %-d, %Y") %>
+          –
+          <%= @invoice.period_ends_on.strftime("%b %-d, %Y") %>
+        </p>
+      </div>
+      <div>
+        <p class="admin-label">Due</p>
+        <p><%= @invoice.due_on&.strftime("%b %-d, %Y") || "—" %></p>
+      </div>
+      <div>
+        <p class="admin-label">Issued</p>
+        <p><%= @invoice.issued_at&.strftime("%b %-d, %Y %H:%M") || "—" %></p>
+      </div>
+      <div>
+        <p class="admin-label">Paid</p>
+        <p><%= @invoice.paid_at&.strftime("%b %-d, %Y %H:%M") || "—" %></p>
+      </div>
+    </div>
+    <% if @invoice.notes.present? %>
+      <div>
+        <p class="admin-label">Notes</p>
+        <p class="whitespace-pre-wrap"><%= @invoice.notes %></p>
+      </div>
+    <% end %>
+  </div>
+</section>

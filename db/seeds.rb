@@ -7,7 +7,11 @@ store.assign_attributes(
   name: "Morea",
   phone: "0522000000",
   email: "hello@morea.website",
-  currency: "MAD"
+  currency: "MAD",
+  billing_interval: "yearly",
+  billing_status: "active",
+  billing_amount_cents: 480_000,
+  billing_period_ends_on: Date.current + 1.year
 )
 store.save!
 
@@ -452,7 +456,16 @@ featured = store.products.find_by!(slug: "essential-set")
 store.update!(featured_product: featured, featured_collection: essentials)
 store.reload.install_online_store_defaults!
 
+# Sample platform invoice (draft) for SaaS billing demos
+unless store.invoices.exists?
+  Invoice.build_for_store(store).tap do |invoice|
+    invoice.notes = "Sample yearly subscription invoice"
+    invoice.save!
+  end
+end
+
 puts "Admin: admin@morea.website / morea123"
 puts "Super: super@morea.website / morea123 (all stores)"
 puts "Store: #{store.name} — #{store.origin} — #{store.products.count} products — locales fr/en/ar"
+puts "Invoices: #{store.invoices.count} (platform → store → Invoices)"
 puts "Done."

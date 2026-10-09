@@ -1,0 +1,29 @@
+<% content_for :title, "Billing — #{@store.name}" %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Billing</h1>
+    <p class="admin-page-header__meta"><%= @store.name %> · <%= @store.slug %>.<%= Store.base_domain %></p>
+  </div>
+  <%= link_to "Back", admin_platform_path, class: "admin-btn-secondary" %>
+</div>
+
+<%= form_with model: @store, url: admin_tenant_path(@store), method: :patch, class: "admin-stack" do |f| %>
+  <% if @store.errors.any? %>
+    <div class="admin-banner admin-banner--critical">
+      <%= @store.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Subscription</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <%= render "billing_fields", f: f %>
+    </div>
+  </section>
+
+  <div class="flex justify-end gap-2">
+    <%= link_to "Open invoices", admin_tenant_invoices_path(@store), class: "admin-btn-secondary" %>
+    <%= f.submit "Save billing", class: "admin-btn" %>
+  </div>
+<% end %>

@@ -44,10 +44,12 @@
         <tr>
           <th>Store</th>
           <th>Slug</th>
+          <th>Billing</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Period ends</th>
           <th>Staff</th>
           <th>Orders</th>
-          <th>Products</th>
-          <th>Created</th>
           <th></th>
         </tr>
       </thead>
@@ -56,11 +58,21 @@
           <tr>
             <td class="font-semibold"><%= store.name %></td>
             <td class="admin-muted tabular-nums"><%= store.slug %></td>
+            <td><%= store.billing_interval.humanize %></td>
+            <td class="tabular-nums"><%= money(store.billing_amount_cents, "MAD") %></td>
+            <td><%= store.billing_status.humanize %></td>
+            <td class="admin-muted">
+              <%= store.billing_period_ends_on&.strftime("%b %-d, %Y") || "—" %>
+            </td>
             <td class="tabular-nums"><%= store.users.size %></td>
             <td class="tabular-nums"><%= store.orders.count %></td>
-            <td class="tabular-nums"><%= store.products.count %></td>
-            <td class="admin-muted"><%= store.created_at.strftime("%b %-d, %Y") %></td>
             <td class="text-right whitespace-nowrap">
+              <%= link_to edit_admin_tenant_path(store), class: "admin-btn-plain" do %>
+                Billing
+              <% end %>
+              <%= link_to admin_tenant_invoices_path(store), class: "admin-btn-plain" do %>
+                Invoices<% if store.invoices.overdue.any? %> (<%= store.invoices.overdue.count %>)<% end %>
+              <% end %>
               <%= button_to "Open admin", enter_admin_tenant_path(store), method: :post, class: "admin-btn-secondary inline" %>
               <%= link_to "Storefront", store.origin, class: "admin-btn-plain", target: "_blank", rel: "noopener" %>
             </td>

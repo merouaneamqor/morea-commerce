@@ -1,0 +1,56 @@
+<% content_for :title, "New invoice — #{@store.name}" %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">New invoice</h1>
+    <p class="admin-page-header__meta"><%= @store.name %> · draft from current billing</p>
+  </div>
+  <%= link_to "Back", admin_tenant_invoices_path(@store), class: "admin-btn-secondary" %>
+</div>
+
+<%= form_with model: @invoice, url: admin_tenant_invoices_path(@store), class: "admin-stack" do |f| %>
+  <% if @invoice.errors.any? %>
+    <div class="admin-banner admin-banner--critical">
+      <%= @invoice.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Draft</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <div class="admin-field-grid">
+        <div>
+          <%= f.label :amount_dh, "Amount (DH)", class: "admin-label" %>
+          <%= f.number_field :amount_dh, class: "admin-input", min: 0, step: 1 %>
+        </div>
+        <div>
+          <%= f.label :billing_interval, "Interval", class: "admin-label" %>
+          <%= f.select :billing_interval,
+            Store::BILLING_INTERVALS.map { |i| [i.humanize, i] },
+            {},
+            class: "admin-input" %>
+        </div>
+        <div>
+          <%= f.label :period_starts_on, "Period starts", class: "admin-label" %>
+          <%= f.date_field :period_starts_on, class: "admin-input", required: true %>
+        </div>
+        <div>
+          <%= f.label :period_ends_on, "Period ends", class: "admin-label" %>
+          <%= f.date_field :period_ends_on, class: "admin-input", required: true %>
+        </div>
+        <div>
+          <%= f.label :due_on, "Due date", class: "admin-label" %>
+          <%= f.date_field :due_on, class: "admin-input" %>
+        </div>
+        <div class="sm:col-span-2">
+          <%= f.label :notes, class: "admin-label" %>
+          <%= f.text_area :notes, class: "admin-input", rows: 3 %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flex justify-end">
+    <%= f.submit "Create draft", class: "admin-btn" %>
+  </div>
+<% end %>

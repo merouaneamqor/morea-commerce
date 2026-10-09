@@ -2,8 +2,9 @@ module Admin
   class BaseController < ApplicationController
     layout "admin"
     before_action :require_admin!
+    before_action :sync_store_billing_past_due!
 
-    helper_method :current_user
+    helper_method :current_user, :store_billing_past_due?
 
     private
 
@@ -21,6 +22,16 @@ module Admin
       return if super_admin?
 
       redirect_to(current_user ? admin_root_path : admin_login_path, alert: "Super admin access required.")
+    end
+
+    def sync_store_billing_past_due!
+      return unless current_store
+
+      current_store.sync_billing_past_due!
+    end
+
+    def store_billing_past_due?
+      current_store&.billing_past_due?
     end
   end
 end

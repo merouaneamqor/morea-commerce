@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_09_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_09_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -176,6 +176,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_180000) do
     t.index ["order_id"], name: "index_inventory_movements_on_order_id"
     t.index ["product_id"], name: "index_inventory_movements_on_product_id"
     t.index ["product_variant_id"], name: "index_inventory_movements_on_product_variant_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "number", null: false
+    t.string "status", default: "draft", null: false
+    t.integer "amount_cents", default: 0, null: false
+    t.string "billing_interval", null: false
+    t.date "period_starts_on", null: false
+    t.date "period_ends_on", null: false
+    t.date "due_on"
+    t.datetime "issued_at"
+    t.datetime "paid_at"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["number"], name: "index_invoices_on_number", unique: true
+    t.index ["status", "due_on"], name: "index_invoices_on_status_and_due_on"
+    t.index ["status"], name: "index_invoices_on_status"
+    t.index ["store_id"], name: "index_invoices_on_store_id"
   end
 
   create_table "menu_item_translations", force: :cascade do |t|
@@ -400,6 +420,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_180000) do
     t.text "sendit_secret_key"
     t.text "sendit_webhook_secret"
     t.text "discord_orders_webhook_url"
+    t.string "billing_interval", default: "monthly", null: false
+    t.string "billing_status", default: "active", null: false
+    t.integer "billing_amount_cents", default: 0, null: false
+    t.date "billing_period_ends_on"
+    t.index ["billing_interval"], name: "index_stores_on_billing_interval"
+    t.index ["billing_status"], name: "index_stores_on_billing_status"
     t.index ["slug"], name: "index_stores_on_slug", unique: true
   end
 
@@ -435,6 +461,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_180000) do
   add_foreign_key "inventory_movements", "orders"
   add_foreign_key "inventory_movements", "product_variants"
   add_foreign_key "inventory_movements", "products"
+  add_foreign_key "invoices", "stores"
   add_foreign_key "menu_item_translations", "menu_items"
   add_foreign_key "menu_items", "stores"
   add_foreign_key "order_items", "orders"

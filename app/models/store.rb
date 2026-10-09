@@ -2,6 +2,8 @@ class Store < ApplicationRecord
   include Translatable
 
   RESERVED_SUBDOMAINS = %w[www app admin api].freeze
+  BILLING_INTERVALS = %w[monthly yearly].freeze
+  BILLING_STATUSES = %w[trial active past_due canceled].freeze
 
   has_many :products, dependent: :destroy
   has_many :collections, dependent: :destroy
@@ -14,6 +16,7 @@ class Store < ApplicationRecord
   has_many :home_sections, dependent: :destroy
   has_many :pages, dependent: :destroy
   has_many :menu_items, dependent: :destroy
+  has_many :invoices, dependent: :destroy
 
   accepts_nested_attributes_for :translations, allow_destroy: false
 
@@ -27,11 +30,15 @@ class Store < ApplicationRecord
   validates :slug, exclusion: { in: RESERVED_SUBDOMAINS }
   validates :shipping_cents, :low_stock_threshold, numericality: { greater_than_or_equal_to: 0 }
   validates :free_shipping_threshold_cents, numericality: { greater_than: 0 }, allow_nil: true
+  validates :billing_amount_cents, numericality: { greater_than_or_equal_to: 0 }
+  validates :billing_interval, inclusion: { in: BILLING_INTERVALS }
+  validates :billing_status, inclusion: { in: BILLING_STATUSES }
   validates :meta_pixel_id, format: { with: /\A\d{5,20}\z/, message: "must be 5–20 digits" }, allow_blank: true
   validates :tiktok_pixel_id, format: { with: /\A[A-Za-z0-9]{10,40}\z/, message: "must be 10–40 letters or numbers" }, allow_blank: true
 
   before_validation :normalize_pixel_ids
   before_validation :normalize_slug
+  before_validation :assign_default_billing_period_end, on: :create
 
   scope :with_sendit, -> {
     where.not(sendit_public_key: [ nil, "" ]).where.not(sendit_secret_key: [ nil, "" ])
@@ -110,6 +117,25 @@ class Store < ApplicationRecord
     self.free_shipping_threshold_cents = value.present? ? value.to_i * 100 : nil
   end
 
+  def billing_amount_dh
+    billing_amount_cents.to_i / 100
+  end
+
+  def billing_amount_dh=(value)
+    self.billing_amount_cents = value.to_i * 100
+  end
+
+  def billing_past_due?
+    billing_status == "past_due" || invoices.overdue.exists?
+  end
+
+  def sync_billing_past_due!
+    return unless invoices.overdue.exists?
+    return if billing_status == "past_due"
+
+    update!(billing_status: "past_due")
+  end
+
   # Flat fee, or free once the cart subtotal reaches the optional threshold.
   # Prefer Sendit city rates at checkout — this is the offline fallback.
   def shipping_cents_for(subtotal_cents)
@@ -170,5 +196,15 @@ class Store < ApplicationRecord
   def normalize_pixel_ids
     self.meta_pixel_id = meta_pixel_id.to_s.strip.presence
     self.tiktok_pixel_id = tiktok_pixel_id.to_s.strip.presence
+  end
+
+  def assign_default_billing_period_end
+    return if billing_period_ends_on.present?
+
+    self.billing_period_ends_on =
+      case billing_interval
+      when "yearly" then Date.current + 1.year
+      else Date.current + 1.month
+      end
   end
 end

@@ -46,9 +46,16 @@ Rails.application.routes.draw do
 
     root to: "dashboard#show"
     get "platform", to: "platform#show", as: :platform
-    resources :tenants, only: %i[index new create] do
+    resources :tenants, only: %i[index new create edit update] do
       member do
         post :enter
+      end
+      resources :invoices, only: %i[index new create show] do
+        member do
+          post :issue
+          post :mark_paid
+          post :void
+        end
       end
     end
     resource :store, only: %i[edit update]

@@ -84,6 +84,11 @@
 
         <main class="admin-main">
           <div class="admin-page">
+            <% if store_billing_past_due? %>
+              <div class="admin-banner admin-banner--critical">
+                Subscription payment is overdue. Your storefront stays online, but renew with the platform owner to clear billing.
+              </div>
+            <% end %>
             <% if notice.present? %><div class="admin-banner admin-banner--success"><%= notice %></div><% end %>
             <% if alert.present? %><div class="admin-banner admin-banner--critical"><%= alert %></div><% end %>
             <%= yield %>

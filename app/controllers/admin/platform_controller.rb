@@ -8,7 +8,7 @@ module Admin
     before_action :enter_platform_mode
 
     def show
-      @stores = Store.order(:name).includes(:users)
+      @stores = Store.order(:name).includes(:users, :invoices)
       @store_count = @stores.size
       @orders_scope = Order.all
       @orders_total = @orders_scope.count

@@ -1,0 +1,55 @@
+<% content_for :title, "Invoices — #{@store.name}" %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Invoices</h1>
+    <p class="admin-page-header__meta"><%= @store.name %> · <%= @store.slug %></p>
+  </div>
+  <div class="flex gap-2">
+    <%= link_to "Billing", edit_admin_tenant_path(@store), class: "admin-btn-secondary" %>
+    <%= link_to "New invoice", new_admin_tenant_invoice_path(@store), class: "admin-btn" %>
+  </div>
+</div>
+
+<section class="admin-card">
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Number</th>
+          <th>Status</th>
+          <th>Amount</th>
+          <th>Interval</th>
+          <th>Period</th>
+          <th>Due</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @invoices.each do |invoice| %>
+          <tr>
+            <td class="font-semibold tabular-nums"><%= invoice.number %></td>
+            <td>
+              <%= invoice.status.humanize %>
+              <% if invoice.overdue? %><span class="admin-muted"> · Overdue</span><% end %>
+            </td>
+            <td class="tabular-nums"><%= money(invoice.amount_cents, "MAD") %></td>
+            <td><%= invoice.billing_interval.humanize %></td>
+            <td class="admin-muted">
+              <%= invoice.period_starts_on.strftime("%b %-d, %Y") %>
+              –
+              <%= invoice.period_ends_on.strftime("%b %-d, %Y") %>
+            </td>
+            <td class="admin-muted"><%= invoice.due_on&.strftime("%b %-d, %Y") || "—" %></td>
+            <td class="text-right">
+              <%= link_to "Open", admin_tenant_invoice_path(@store, invoice), class: "admin-btn-plain" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @invoices.empty? %>
+      <p class="admin-empty">No invoices yet. Create a draft from the store billing amount.</p>
+    <% end %>
+  </div>
+</section>

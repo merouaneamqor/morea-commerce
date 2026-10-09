@@ -1,0 +1,25 @@
+<div class="admin-field-grid">
+  <div>
+    <%= f.label :billing_interval, "Interval", class: "admin-label" %>
+    <%= f.select :billing_interval,
+      Store::BILLING_INTERVALS.map { |i| [i.humanize, i] },
+      {},
+      class: "admin-input" %>
+  </div>
+  <div>
+    <%= f.label :billing_status, "Status", class: "admin-label" %>
+    <%= f.select :billing_status,
+      Store::BILLING_STATUSES.map { |s| [s.humanize, s] },
+      {},
+      class: "admin-input" %>
+  </div>
+  <div>
+    <%= f.label :billing_amount_dh, "Amount (DH)", class: "admin-label" %>
+    <%= f.number_field :billing_amount_dh, class: "admin-input", min: 0, step: 1 %>
+  </div>
+  <div>
+    <%= f.label :billing_period_ends_on, "Period ends", class: "admin-label" %>
+    <%= f.date_field :billing_period_ends_on, class: "admin-input" %>
+    <p class="admin-help">Leave blank on create to auto-set from interval.</p>
+  </div>
+</div>

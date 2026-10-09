@@ -5,15 +5,20 @@ module Admin
   class TenantsController < BaseController
     layout "admin_platform"
     before_action :require_super_admin!
-    before_action :enter_platform_mode, only: %i[index new create]
-    before_action :set_store, only: :enter
+    before_action :enter_platform_mode, only: %i[index new create edit update]
+    before_action :set_store, only: %i[edit update enter]
 
     def index
       redirect_to admin_platform_path
     end
 
     def new
-      @store = Store.new(currency: "MAD")
+      @store = Store.new(
+        currency: "MAD",
+        billing_interval: "monthly",
+        billing_status: "trial",
+        billing_amount_cents: 0
+      )
     end
 
     def create
@@ -43,6 +48,17 @@ module Admin
       render :new, status: :unprocessable_entity
     end
 
+    def edit
+    end
+
+    def update
+      if @store.update(billing_params)
+        redirect_to admin_platform_path, notice: "Billing updated for #{@store.name}."
+      else
+        render :edit, status: :unprocessable_entity
+      end
+    end
+
     # Switch into store-ops mode, then open that store's admin (may be another subdomain).
     def enter
       session[:admin_mode] = "store"
@@ -64,7 +80,16 @@ module Admin
     end
 
     def store_params
-      params.require(:store).permit(:name, :slug, :email, :phone, :currency)
+      params.require(:store).permit(
+        :name, :slug, :email, :phone, :currency,
+        :billing_interval, :billing_status, :billing_amount_dh, :billing_period_ends_on
+      )
+    end
+
+    def billing_params
+      params.require(:store).permit(
+        :billing_interval, :billing_status, :billing_amount_dh, :billing_period_ends_on
+      )
     end
   end
 end

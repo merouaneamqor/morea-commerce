@@ -1,0 +1,207 @@
+<% lines = local_assigns.fetch(:line_items, []) %>
+<% currency = (@order.currency.presence || current_store.currency) %>
+<% shipping_dh = (@order.shipping_cents.to_i / 100.0) %>
+<% discount_dh = @order.discount_code.blank? ? (@order.discount_cents.to_i / 100.0) : 0 %>
+<% cities = Checkout.cities(current_store) %>
+<% districts_by_city = Checkout.districts_by_city(current_store) %>
+<% district_required = Checkout.district_required_for?(@order.customer_city, store: current_store) %>
+<% district_options = districts_by_city[@order.customer_city].to_a %>
+<% rates = Sendit::Districts.shipping_cents_by_city(store: current_store) %>
+<% city_data = {
+  controller: "order-lines checkout-city",
+  order_lines_search_url_value: product_search_admin_orders_path,
+  order_lines_currency_value: currency,
+  action: "submit->checkout-city#validateCity",
+  checkout_city_subtotal_value: @order.subtotal_cents.to_i,
+  checkout_city_discount_value: @order.discount_cents.to_i,
+  checkout_city_free_threshold_value: current_store.free_shipping_threshold_cents.to_i,
+  checkout_city_currency_value: currency,
+  checkout_city_locale_value: "en-MA",
+  checkout_city_free_label_value: "Free",
+  checkout_city_pending_label_value: "Select a city",
+  checkout_city_confirm_template_value: "%{total}",
+  checkout_city_choose_district_value: "Choose district",
+  checkout_city_no_match_value: "No matching city"
+} %>
+<% if cities.any?
+  city_data.merge!(
+    checkout_city_cities_value: cities,
+    checkout_city_districts_value: districts_by_city,
+    checkout_city_rates_value: rates
+  )
+end %>
+
+<%= form_with model: [:admin, @order], url: (@order.persisted? ? admin_order_path(@order) : admin_orders_path),
+      class: "admin-stack",
+      data: city_data do |f| %>
+
+  <% if local_assigns[:editor_errors]&.any? %>
+    <div class="admin-banner admin-banner--critical"><%= editor_errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Customer</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <div class="admin-field-grid">
+        <div>
+          <%= label_tag "order[name]", "Name", class: "admin-label" %>
+          <%= text_field_tag "order[name]", @order.customer_name, class: "admin-input", required: true %>
+        </div>
+        <div>
+          <%= label_tag "order[phone]", "Phone", class: "admin-label" %>
+          <%= telephone_field_tag "order[phone]", @order.customer_phone, class: "admin-input", required: true %>
+        </div>
+        <div data-checkout-city-target="cityField">
+          <%= label_tag "order[city]", "City", class: "admin-label" %>
+          <% if cities.any? %>
+            <div class="admin-combobox" data-checkout-city-target="combobox">
+              <%= text_field_tag "order[city]", @order.customer_city,
+                    required: true,
+                    autocomplete: "shipping address-level2",
+                    class: "admin-input",
+                    role: "combobox",
+                    aria: { autocomplete: "list", expanded: false, controls: "admin-order-city-list" },
+                    placeholder: "Start typing a city…",
+                    data: {
+                      checkout_city_target: "city",
+                      action: [
+                        "input->checkout-city#onCityInput",
+                        "change->checkout-city#onCityChange",
+                        "animationstart->checkout-city#onAutofillAnimation",
+                        "focus->checkout-city#openCities",
+                        "keydown->checkout-city#onCityKeydown",
+                        "blur->checkout-city#onCityBlur"
+                      ].join(" ")
+                    } %>
+              <ul id="admin-order-city-list"
+                  class="admin-combobox__list"
+                  role="listbox"
+                  hidden
+                  data-checkout-city-target="cityList"></ul>
+            </div>
+            <p class="admin-help">Same Sendit cities as the storefront checkout.</p>
+          <% else %>
+            <%= text_field_tag "order[city]", @order.customer_city, class: "admin-input", required: true,
+                  data: { checkout_city_target: "city", action: "input->checkout-city#update" } %>
+            <p class="admin-help">Sendit cities unavailable — type the city manually.</p>
+          <% end %>
+        </div>
+        <div data-checkout-city-target="districtField" <%= "hidden" unless district_required %>>
+          <%= label_tag "order[district]", "District / quartier", class: "admin-label" %>
+          <%= select_tag "order[district]",
+                options_for_select(district_options, @order.customer_district),
+                include_blank: "Choose district",
+                required: district_required,
+                disabled: !district_required,
+                class: "admin-input",
+                data: { checkout_city_target: "district", action: "checkout-city#update" } %>
+          <p class="admin-help" data-checkout-city-target="districtHelp" <%= "hidden" unless district_required %>>
+            Required for cities with multiple Sendit neighbourhoods.
+          </p>
+        </div>
+      </div>
+      <div>
+        <%= label_tag "order[address]", "Address", class: "admin-label" %>
+        <%= text_field_tag "order[address]", @order.customer_address, class: "admin-input", required: true %>
+      </div>
+    </div>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header">
+      <h2 class="admin-card__title">Products</h2>
+      <span class="admin-muted tabular-nums" data-order-lines-target="total">—</span>
+    </div>
+    <div class="space-y-3 px-4 pb-4">
+      <div class="relative">
+        <%= text_field_tag :product_q, nil,
+              class: "admin-input",
+              placeholder: "Search products to add…",
+              autocomplete: "off",
+              data: {
+                order_lines_target: "query",
+                action: "input->order-lines#search"
+              } %>
+        <div class="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-[#ebebeb] bg-white shadow-lg"
+             data-order-lines-target="results" hidden></div>
+      </div>
+
+      <p class="admin-muted text-[13px]" data-order-lines-target="empty" <%= "hidden" if lines.any? %>>No products yet.</p>
+      <ul class="divide-y divide-[#ebebeb] rounded-lg border border-[#ebebeb]" data-order-lines-target="list">
+        <% lines.each_with_index do |line, i| %>
+          <li class="flex items-center gap-3 px-3 py-2"
+              data-order-line
+              data-product-id="<%= line[:product_id] %>"
+              data-variant-id="<%= line[:product_variant_id] %>"
+              data-price-cents="<%= line[:unit_price_cents] %>">
+            <input type="hidden" name="order[lines][<%= i %>][product_id]" value="<%= line[:product_id] %>">
+            <input type="hidden" name="order[lines][<%= i %>][product_variant_id]" value="<%= line[:product_variant_id] %>">
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-[13px] font-medium"><%= line[:label] %></p>
+              <p class="admin-muted tabular-nums"><%= money(line[:unit_price_cents], currency) %></p>
+            </div>
+            <input type="number" name="order[lines][<%= i %>][quantity]" value="<%= line[:quantity] %>" min="1"
+                   class="admin-input w-20 text-center" data-qty data-action="input->order-lines#recalc">
+            <span class="w-24 text-end tabular-nums text-[13px]" data-line-total><%= money(line[:unit_price_cents].to_i * line[:quantity].to_i, currency) %></span>
+            <button type="button" class="admin-btn-plain admin-btn-plain--critical" data-action="order-lines#remove">Remove</button>
+          </li>
+        <% end %>
+      </ul>
+
+      <template data-order-lines-target="template">
+        <li class="flex items-center gap-3 px-3 py-2"
+            data-order-line
+            data-product-id="__PRODUCT_ID__"
+            data-variant-id="__VARIANT_ID__"
+            data-price-cents="__PRICE__">
+          <input type="hidden" name="order[lines][__INDEX__][product_id]" value="__PRODUCT_ID__">
+          <input type="hidden" name="order[lines][__INDEX__][product_variant_id]" value="__VARIANT_ID__">
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-[13px] font-medium">__LABEL__</p>
+            <p class="admin-muted tabular-nums">__PRICE_DISPLAY__</p>
+          </div>
+          <input type="number" name="order[lines][__INDEX__][quantity]" value="__QTY__" min="1"
+                 class="admin-input w-20 text-center" data-qty data-action="input->order-lines#recalc">
+          <span class="w-24 text-end tabular-nums text-[13px]" data-line-total>__PRICE_DISPLAY__</span>
+          <button type="button" class="admin-btn-plain admin-btn-plain--critical" data-action="order-lines#remove">Remove</button>
+        </li>
+      </template>
+    </div>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Payment</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <div class="admin-field-grid">
+        <div>
+          <%= label_tag "order[shipping_dh]", "Shipping (#{currency})", class: "admin-label" %>
+          <%= number_field_tag "order[shipping_dh]", shipping_dh, step: 1, min: 0, class: "admin-input",
+                data: { checkout_city_target: "shippingInput" } %>
+          <p class="admin-help">Filled from Sendit city rates; you can override.</p>
+        </div>
+        <div>
+          <%= label_tag "order[discount_code]", "Discount code", class: "admin-label" %>
+          <%= text_field_tag "order[discount_code]", @order.discount_code, class: "admin-input", placeholder: "Optional" %>
+        </div>
+        <div>
+          <%= label_tag "order[discount_dh]", "Manual discount (#{currency})", class: "admin-label" %>
+          <%= number_field_tag "order[discount_dh]", discount_dh, step: 1, min: 0, class: "admin-input" %>
+          <p class="admin-help">Used when no discount code is set.</p>
+        </div>
+        <div>
+          <%= label_tag "order[tags]", "Tags", class: "admin-label" %>
+          <%= text_field_tag "order[tags]", @order.tags, class: "admin-input", placeholder: "vip, rush, gift" %>
+        </div>
+      </div>
+      <div>
+        <%= label_tag "order[notes]", "Notes", class: "admin-label" %>
+        <%= text_area_tag "order[notes]", @order.notes, rows: 3, class: "admin-input" %>
+      </div>
+    </div>
+  </section>
+
+  <div class="flex justify-end gap-2">
+    <%= link_to "Cancel", (@order.persisted? ? admin_order_path(@order) : admin_orders_path), class: "admin-btn-secondary" %>
+    <%= f.submit (@order.persisted? ? "Save order" : "Create order"), class: "admin-btn" %>
+  </div>
+<% end %>

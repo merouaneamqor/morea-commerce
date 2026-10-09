@@ -3,57 +3,124 @@
 module Sendit
   # Keeps an Order and its Sendit parcel ("colis") in step
   class Sync
+    # Official codes from GET /all-status-deliveries (API returns TOPICKUP; we normalize to TO_PICKUP)
     LABELS = {
-      "PENDING" => "En attente", "TO_PREPARE" => "À préparer", "NEW_DESTINATION" => "À changer",
-      "TO_PICKUP" => "Ramassage en cours", "PICKEDUP" => "Ramassé", "WAREHOUSE" => "Entrepôt",
-      "TRANSIT" => "En transit", "DISTRIBUTED" => "Distribué", "UNREACHABLE" => "Injoignable",
-      "POSTPONED" => "Reporté", "DELIVERING" => "En cours de livraison", "DELIVERED" => "Livré",
-      "CANCELED" => "Annulé", "REJECTED" => "Refusé"
+      "PENDING" => "En attente",
+      "TO_PREPARE" => "À préparer",
+      "NEW_DESTINATION" => "À changer",
+      "TO_PICKUP" => "Ramassage en cours",
+      "PICKEDUP" => "Ramassé",
+      "WAREHOUSE" => "Entrepôt",
+      "TRANSIT" => "En transit",
+      "DISTRIBUTED" => "Distribué",
+      "UNREACHABLE" => "Injoignable",
+      "POSTPONED" => "Reporté",
+      "DELIVERING" => "En cours de livraison",
+      "DELIVERED" => "Livré",
+      "CANCELED" => "Annulé",
+      "REJECTED" => "Refusé"
     }.freeze
 
     RETURN_LABELS = {
-      "RETOUR_PENDING" => "Retour en attente", "TORETURN" => "Retour en route", "RETURN_WAREHOUSE" => "Retour à l'entrepôt",
-      "RETURN_TOCHECK" => "Retour à vérifier", "RETURN_STOCK" => "Retour en stock", "RETURN_SELLER" => "Retourné au vendeur"
+      "RETOUR_PENDING" => "Retour en attente",
+      "TORETURN" => "Retour en route",
+      "RETURN_WAREHOUSE" => "Retour à l'entrepôt",
+      "RETURN_TOCHECK" => "Retour à vérifier",
+      "RETURN_STOCK" => "Retour en stock",
+      "RETURN_SELLER" => "Retourné au vendeur"
     }.freeze
     RETURN_DONE = %w[RETURN_STOCK RETURN_SELLER].freeze
 
-    # Statuses worth a Discord alert (the customer isn't answering, refused, or the return came back)
-    ALERT_STATUSES = %w[UNREACHABLE POSTPONED REJECTED].freeze
+    # Discord when the courier can't finish or the address must change
+    ALERT_STATUSES = %w[NEW_DESTINATION UNREACHABLE POSTPONED REJECTED].freeze
 
-    # Furthest order status each Sendit status implies (orders never move backwards)
+    # Morea order status each Sendit code implies (orders never move backwards on FLOW).
     ORDER_STATUS = {
-      "TO_PICKUP" => "preparing", "PICKEDUP" => "shipped", "WAREHOUSE" => "shipped", "TRANSIT" => "shipped",
-      "DISTRIBUTED" => "shipped", "DELIVERING" => "shipped", "UNREACHABLE" => "shipped", "POSTPONED" => "shipped",
-      "DELIVERED" => "delivered", "CANCELED" => "cancelled", "REJECTED" => "returned"
+      "PENDING" => "confirmed",               # parcel exists ⇒ at least confirmed
+      "TO_PREPARE" => "preparing",
+      "NEW_DESTINATION" => "address_issue",
+      "TO_PICKUP" => "awaiting_pickup",
+      "PICKEDUP" => "picked_up",
+      "WAREHOUSE" => "in_transit",
+      "TRANSIT" => "in_transit",
+      "DISTRIBUTED" => "out_for_delivery",
+      "UNREACHABLE" => "unreachable",
+      "POSTPONED" => "postponed",
+      "DELIVERING" => "out_for_delivery",
+      "DELIVERED" => "delivered",
+      "CANCELED" => "cancelled",
+      "REJECTED" => "returned"
     }.freeze
 
     FINAL = %w[DELIVERED CANCELED REJECTED].freeze
+    STATUSES = LABELS.keys.freeze
 
     def self.normalize_status(status)
       status = status.to_s.upcase
-      status == "TOPICKUP" ? "TO_PICKUP" : status
+      case status
+      when "TOPICKUP" then "TO_PICKUP"
+      when "CANCELLED" then "CANCELED"
+      else status
+      end
     end
 
     def self.label(status)
-      LABELS.fetch(normalize_status(status), status.to_s.humanize)
+      key = normalize_status(status)
+      LABELS.fetch(key, status.to_s.humanize)
     end
 
     def self.return_label(status)
       RETURN_LABELS.fetch(status.to_s.upcase, status.to_s.humanize) if status.present?
     end
 
+    # Refresh French labels from Sendit when reachable (falls back to LABELS)
+    def self.labels_for(store)
+      return LABELS unless Client.configured?(store)
+
+      Rails.cache.fetch("sendit:status_labels:store:#{store.id}", expires_in: 1.day) do
+        remote = Client.new(store).all_status_deliveries
+        next LABELS if remote.blank?
+
+        LABELS.merge(remote.transform_keys { |k| normalize_status(k) }.slice(*STATUSES))
+      end
+    rescue StandardError => e
+      Rails.logger.warn("[Sendit] status labels unavailable: #{e.message}")
+      LABELS
+    end
+
     # Orders that should have a parcel but don't, parcels still on the road,
     # and refused/cancelled parcels whose return hasn't reached the seller yet
     def self.pending_orders(scope = Order.all)
-      to_push = scope.where(status: %w[confirmed preparing], sendit_code: nil)
-      in_progress = scope.where.not(sendit_code: nil).where("sendit_status IS NULL OR sendit_status NOT IN (?)", FINAL)
+      to_push = scope.where(status: %w[confirmed preparing awaiting_pickup address_issue], sendit_code: nil)
+      # Skip local terminals — no point refreshing a delivered/cancelled order forever
+      in_progress = scope.where.not(sendit_code: nil)
+                         .where("sendit_status IS NULL OR sendit_status NOT IN (?)", FINAL)
+                         .where.not(status: %w[delivered cancelled returned])
       returning = scope.where.not(sendit_code: nil).where(sendit_status: %w[REJECTED CANCELED])
                        .where("sendit_return_status IS NULL OR sendit_return_status NOT IN (?)", RETURN_DONE)
                        .where.not(status: "cancelled")
       [ to_push, in_progress.or(returning) ]
     end
 
+    # Re-project local status from already-stored Sendit codes (no API call).
+    # Used after mapping changes and at the start of enqueue_all.
+    def self.reapply_stored!(scope = Order.all)
+      scope.where.not(sendit_status: [ nil, "" ]).find_each do |order|
+        next if order.status.in?(%w[delivered cancelled])
+
+        new(order).apply_status!(
+          order.sendit_status,
+          message: order.sendit_message,
+          fee: order.sendit_fee,
+          return_status: order.sendit_return_status
+        )
+      rescue StandardError => e
+        Rails.logger.warn("[Sendit] reapply failed for #{order.number}: #{e.message}")
+      end
+    end
+
     def self.enqueue_all(scope = Order.all)
+      reapply_stored!(scope)
       to_push, to_refresh = pending_orders(scope)
       to_push.find_each { |o| SenditSyncJob.perform_later(o.id, "push") }
       to_refresh.find_each { |o| SenditSyncJob.perform_later(o.id, "refresh") }
@@ -103,6 +170,20 @@ module Sendit
       fail!(e.message)
     end
 
+    # Push address / amount / products to a parcel that hasn't left the warehouse yet
+    def update!
+      return order if order.sendit_code.blank?
+      return fail!("Parcel #{order.sendit_code} is already #{self.class.label(order.sendit_status)} — update it from Sendit.") unless cancellable?
+
+      district = resolve_district!
+      data = @client.update_delivery(order.sendit_code, delivery_payload(district))
+      order.update!(sendit_error: nil, sendit_district_id: district[:id], sendit_district_name: district[:name], sendit_synced_at: Time.current)
+      apply_remote!(data) if data.is_a?(Hash) && data["status"].present?
+      order
+    rescue Client::Error => e
+      fail!(e.message)
+    end
+
     def cancellable?
       order.sendit_status.blank? || %w[PENDING TO_PREPARE].include?(self.class.normalize_status(order.sendit_status))
     end
@@ -127,15 +208,27 @@ module Sendit
         sendit_synced_at: Time.current
       )
 
-      target = ORDER_STATUS[status]
-      if target == "cancelled" && order.can_transition_to?("cancelled")
-        order.transition_to!("cancelled", reason: message.presence || "Annulé par Sendit")
-      elsif target.in?(%w[cancelled returned])
-        # Refused at the door, or cancelled after pickup: the parcel comes back
-        order.advance_to!("shipped")
-        order.transition_to!("returned", reason: message.presence || self.class.label(status)) if order.can_transition_to?("returned")
+      target = ORDER_STATUS.fetch(status, :unknown)
+      ret = order.sendit_return_status.to_s.upcase
+      if order.status != "cancelled" && RETURN_LABELS.key?(ret)
+        target = "returned"
+      end
+
+      reason = message.presence || self.class.label(status)
+      if target == :unknown
+        Rails.logger.warn("[Sendit] Unknown status #{status.inspect} for #{order.number}")
+      elsif target == "cancelled"
+        if order.can_transition_to?("cancelled")
+          order.transition_to!("cancelled", reason: reason, source: :sendit)
+        elsif order.status != "cancelled"
+          # Already with courier — cancel on Sendit means the parcel is coming back
+          order.move_to_status!("returned", reason: reason)
+        end
+      elsif target == "returned"
+        order.advance_to!("picked_up")
+        order.move_to_status!("returned", reason: reason)
       elsif target
-        order.advance_to!(target)
+        order.move_to_status!(target, reason: reason)
       end
 
       alert_if_notable(previous)

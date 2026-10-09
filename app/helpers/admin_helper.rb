@@ -3,6 +3,13 @@ module AdminHelper
     "new" => "attention",
     "confirmed" => "info",
     "preparing" => "warning",
+    "awaiting_pickup" => "attention",
+    "picked_up" => "info",
+    "in_transit" => "info",
+    "out_for_delivery" => "info",
+    "unreachable" => "warning",
+    "postponed" => "warning",
+    "address_issue" => "warning",
     "shipped" => "info",
     "delivered" => "success",
     "cancelled" => "neutral",
@@ -38,15 +45,28 @@ module AdminHelper
 
   def admin_badge(status, label: nil, tone: nil)
     tone ||= BADGE_TONES.fetch(status.to_s, "neutral")
+    label ||= Order::STATUS_LABELS[status.to_s] || status.to_s.humanize
     tag.span(class: "admin-badge admin-badge--#{tone}") do
-      tag.span(class: "admin-badge__dot") + (label || status.to_s.humanize)
+      tag.span(class: "admin-badge__dot") + label
     end
   end
 
+  # Badge tones for every official Sendit delivery status (GET /all-status-deliveries)
   SENDIT_TONES = {
-    "PENDING" => "neutral", "TO_PREPARE" => "attention", "TO_PICKUP" => "attention", "NEW_DESTINATION" => "warning",
-    "PICKEDUP" => "info", "WAREHOUSE" => "info", "TRANSIT" => "info", "DISTRIBUTED" => "info", "DELIVERING" => "info",
-    "UNREACHABLE" => "warning", "POSTPONED" => "warning", "DELIVERED" => "success", "CANCELED" => "neutral", "REJECTED" => "critical"
+    "PENDING" => "neutral",
+    "TO_PREPARE" => "attention",
+    "NEW_DESTINATION" => "warning",
+    "TO_PICKUP" => "attention",
+    "PICKEDUP" => "info",
+    "WAREHOUSE" => "info",
+    "TRANSIT" => "info",
+    "DISTRIBUTED" => "info",
+    "UNREACHABLE" => "warning",
+    "POSTPONED" => "warning",
+    "DELIVERING" => "info",
+    "DELIVERED" => "success",
+    "CANCELED" => "neutral",
+    "REJECTED" => "critical"
   }.freeze
 
   def sendit_badge(order)

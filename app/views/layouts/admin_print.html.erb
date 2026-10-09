@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for?(:title) ? yield(:title) : "Print" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <style>
+      @media print {
+        .no-print { display: none !important; }
+        body { background: white; }
+      }
+    </style>
+  </head>
+  <body class="bg-white text-[#303030]">
+    <div class="mx-auto max-w-2xl p-6">
+      <div class="no-print mb-4 flex items-center justify-between gap-3">
+        <%= link_to "Back to order", admin_order_path(@order), class: "admin-btn-secondary" %>
+        <button type="button" class="admin-btn" onclick="window.print()">Print</button>
+      </div>
+      <%= yield %>
+    </div>
+  </body>
+</html>

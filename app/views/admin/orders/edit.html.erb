@@ -1,0 +1,13 @@
+<% content_for :title, "Edit ##{@order.number} — Admin" %>
+
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to admin_order_path(@order), class: "admin-back", "aria-label": "Back to order" do %><%= admin_icon(:back) %><% end %>
+    <div>
+      <h1 class="admin-page-header__title">Edit #<%= @order.number %></h1>
+      <p class="admin-page-header__meta"><%= admin_badge(@order.status) %></p>
+    </div>
+  </div>
+</div>
+
+<%= render "form", line_items: @line_items, editor_errors: @editor_errors %>

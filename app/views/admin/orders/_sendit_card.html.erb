@@ -8,6 +8,7 @@
     <p class="admin-muted px-4 pb-4">Add your Sendit API keys in <%= link_to "Settings", edit_admin_store_path(anchor: "integrations"), class: "underline" %> to sync orders.</p>
   <% else %>
     <div class="space-y-3 px-4 pb-4">
+      <p class="admin-muted text-[12px]">Sendit owns delivery status. Confirm or cancel here; everything else follows the courier (auto every 15 min, or Refresh). “En attente” means the order is confirmed and the parcel is waiting on Sendit — not unconfirmed.</p>
       <% if order.sendit_error.present? %>
         <div class="admin-banner admin-banner--critical !mb-0">
           <%= order.sendit_error %>
@@ -35,7 +36,7 @@
                   form: { data: { turbo_confirm: "Delete parcel #{order.sendit_code} on Sendit?" } } %>
           <% end %>
         </div>
-      <% elsif order.status.in?(%w[confirmed preparing]) || order.sendit_error.present? %>
+      <% elsif order.status.in?(%w[confirmed preparing awaiting_pickup address_issue]) || order.sendit_error.present? %>
         <%= form_with url: sendit_admin_order_path(order), method: :post, class: "space-y-3" do %>
           <div>
             <%= label_tag :district_id, "Sendit city", class: "admin-label" %>

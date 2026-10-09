@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_09_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_09_220000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -219,6 +219,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_200000) do
     t.index ["store_id"], name: "index_menu_items_on_store_id"
   end
 
+  create_table "order_events", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.bigint "user_id"
+    t.string "kind", null: false
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_events_on_order_id"
+    t.index ["user_id"], name: "index_order_events_on_user_id"
+  end
+
   create_table "order_items", force: :cascade do |t|
     t.bigint "order_id", null: false
     t.bigint "product_id", null: false
@@ -271,6 +282,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_200000) do
     t.string "customer_district"
     t.integer "discount_cents", default: 0, null: false
     t.string "discount_code"
+    t.datetime "archived_at"
+    t.string "tags"
+    t.index ["archived_at"], name: "index_orders_on_archived_at"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["customer_phone"], name: "index_orders_on_customer_phone"
     t.index ["status"], name: "index_orders_on_status"
@@ -464,6 +478,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_200000) do
   add_foreign_key "invoices", "stores"
   add_foreign_key "menu_item_translations", "menu_items"
   add_foreign_key "menu_items", "stores"
+  add_foreign_key "order_events", "orders"
+  add_foreign_key "order_events", "users"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "product_variants"
   add_foreign_key "order_items", "products"

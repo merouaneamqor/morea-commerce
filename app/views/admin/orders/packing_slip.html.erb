@@ -1,0 +1,71 @@
+<% content_for :title, "Packing slip ##{@order.number}" %>
+
+<div class="space-y-6">
+  <header class="flex items-start justify-between gap-4 border-b border-[#ebebeb] pb-4">
+    <div>
+      <p class="text-xs uppercase tracking-wide text-[#616161]">Packing slip</p>
+      <h1 class="text-2xl font-semibold">#<%= @order.number %></h1>
+      <p class="mt-1 text-[13px] text-[#616161]"><%= @order.created_at.strftime("%B %-d, %Y at %H:%M") %></p>
+    </div>
+    <div class="text-end">
+      <p class="font-semibold"><%= current_store.name %></p>
+      <p class="text-[13px] text-[#616161]">Cash on delivery</p>
+    </div>
+  </header>
+
+  <section class="grid gap-6 sm:grid-cols-2">
+    <div>
+      <h2 class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#616161]">Ship to</h2>
+      <p class="font-medium"><%= @order.customer_name %></p>
+      <p class="text-[13px]"><%= @order.customer_phone %></p>
+      <p class="mt-2 text-[13px]">
+        <%= @order.customer_address %><br>
+        <% if @order.customer_district.present? %><%= @order.customer_district %><br><% end %>
+        <%= @order.customer_city %>
+      </p>
+    </div>
+    <div>
+      <h2 class="mb-1 text-xs font-semibold uppercase tracking-wide text-[#616161]">Order</h2>
+      <p class="text-[13px]">Status: <%= @order.status.humanize %></p>
+      <% if @order.tags.present? %>
+        <p class="text-[13px]">Tags: <%= @order.tags %></p>
+      <% end %>
+      <% if @order.notes.present? %>
+        <p class="mt-2 text-[13px]">Notes: <%= @order.notes %></p>
+      <% end %>
+    </div>
+  </section>
+
+  <table class="w-full text-left text-[13px]">
+    <thead>
+      <tr class="border-b border-[#ebebeb]">
+        <th class="py-2 font-medium">Item</th>
+        <th class="py-2 font-medium">Qty</th>
+        <th class="py-2 text-end font-medium">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @order.order_items.each do |item| %>
+        <tr class="border-b border-[#f1f1f1]">
+          <td class="py-2">
+            <span class="font-medium"><%= item.product_name %></span>
+            <% if item.variant_name.present? %>
+              <span class="text-[#616161]"> — <%= item.variant_name %></span>
+            <% end %>
+          </td>
+          <td class="py-2 tabular-nums"><%= item.quantity %></td>
+          <td class="py-2 text-end tabular-nums"><%= money(item.total_cents, @order.currency) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="ml-auto w-64 space-y-1 text-[13px]">
+    <div class="flex justify-between"><span>Subtotal</span><span class="tabular-nums"><%= money(@order.subtotal_cents, @order.currency) %></span></div>
+    <% if @order.discount_cents.to_i.positive? %>
+      <div class="flex justify-between"><span>Discount</span><span class="tabular-nums">−<%= money(@order.discount_cents, @order.currency) %></span></div>
+    <% end %>
+    <div class="flex justify-between"><span>Shipping</span><span class="tabular-nums"><%= @order.shipping_cents.to_i.zero? ? "Free" : money(@order.shipping_cents, @order.currency) %></span></div>
+    <div class="flex justify-between border-t border-[#ebebeb] pt-2 text-base font-semibold"><span>Collect</span><span class="tabular-nums"><%= @order.total_display %></span></div>
+  </div>
+</div>

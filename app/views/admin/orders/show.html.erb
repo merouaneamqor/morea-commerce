@@ -4,20 +4,51 @@
   <div class="flex items-center gap-2">
     <%= link_to admin_orders_path, class: "admin-back", "aria-label": "Back to orders" do %><%= admin_icon(:back) %><% end %>
     <div>
-      <h1 class="admin-page-header__title">#<%= @order.number %> <%= admin_badge(@order.status) %></h1>
-      <p class="admin-page-header__meta"><%= @order.created_at.strftime("%B %-d, %Y at %H:%M") %> · Cash on delivery</p>
+      <h1 class="admin-page-header__title">
+        #<%= @order.number %> <%= admin_badge(@order.status) %>
+        <% if @order.archived? %><%= admin_badge(:archived, label: "Archived", tone: "neutral") %><% end %>
+      </h1>
+      <p class="admin-page-header__meta">
+        <%= @order.created_at.strftime("%B %-d, %Y at %H:%M") %> · Cash on delivery
+        <% if current_store.sendit_configured? %>
+          · Sendit is the source of truth for delivery
+        <% end %>
+      </p>
     </div>
   </div>
 
   <div class="flex flex-wrap items-center gap-2">
-    <% Order::TRANSITIONS.fetch(@order.status, []).reject { |s| s == "cancelled" }.each do |next_status| %>
-      <%= button_to "Mark as #{next_status}",
+    <% @order.staff_transitions.reject { |s| s == "cancelled" }.each do |next_status| %>
+      <% confirm = (next_status == "returned" ? "Mark ##{@order.number} as returned and restore stock?" : nil) %>
+      <%= button_to "Mark as #{Order::STATUS_LABELS.fetch(next_status, next_status.humanize).downcase}",
             transition_admin_order_path(@order),
             method: :patch,
             params: { to_status: next_status },
             class: next_status == "returned" ? "admin-btn-secondary" : "admin-btn",
-            form: (next_status == "returned" ? { data: { turbo_confirm: "Mark ##{@order.number} as returned and restore stock?" } } : {}) %>
+            form: (confirm ? { data: { turbo_confirm: confirm } } : {}) %>
     <% end %>
+    <% if current_store.sendit_configured? && @order.sendit_code.present? && !@order.status.in?(%w[delivered cancelled returned]) %>
+      <%= button_to "Refresh Sendit", sendit_admin_order_path(@order, op: "refresh"), class: "admin-btn-secondary" %>
+    <% end %>
+
+    <details class="relative">
+      <summary class="admin-btn-secondary list-none cursor-pointer">More actions</summary>
+      <div class="absolute end-0 z-20 mt-1 min-w-[12rem] overflow-hidden rounded-lg border border-[#ebebeb] bg-white py-1 shadow-lg">
+        <% if @order.editable? %>
+          <%= link_to "Edit order", edit_admin_order_path(@order), class: "block px-3 py-2 text-[13px] hover:bg-[#f7f7f7]" %>
+        <% else %>
+          <p class="px-3 py-2 text-[12px] text-[#616161]"><%= @order.edit_lock_reason %></p>
+        <% end %>
+        <%= link_to "Print packing slip", packing_slip_admin_order_path(@order), class: "block px-3 py-2 text-[13px] hover:bg-[#f7f7f7]", target: "_blank" %>
+        <%= button_to "Duplicate", duplicate_admin_order_path(@order), method: :post, class: "block w-full px-3 py-2 text-start text-[13px] hover:bg-[#f7f7f7]" %>
+        <% if @order.archived? %>
+          <%= button_to "Unarchive", unarchive_admin_order_path(@order), method: :post, class: "block w-full px-3 py-2 text-start text-[13px] hover:bg-[#f7f7f7]" %>
+        <% else %>
+          <%= button_to "Archive", archive_admin_order_path(@order), method: :post, class: "block w-full px-3 py-2 text-start text-[13px] hover:bg-[#f7f7f7]",
+                form: { data: { turbo_confirm: "Archive order ##{@order.number}?" } } %>
+        <% end %>
+      </div>
+    </details>
   </div>
 </div>
 
@@ -27,6 +58,9 @@
     <section class="admin-card">
       <div class="admin-card__header">
         <h2 class="admin-card__title flex items-center gap-2"><%= admin_badge(@order.status) %></h2>
+        <% if @order.editable? %>
+          <%= link_to "Edit", edit_admin_order_path(@order), class: "admin-btn-plain" %>
+        <% end %>
       </div>
       <ul>
         <% @order.order_items.each do |item| %>
@@ -80,18 +114,54 @@
     <section class="admin-card">
       <div class="admin-card__header"><h2 class="admin-card__title">Timeline</h2></div>
       <div class="px-4 pb-4">
-        <% flow = Order::FLOW.dup %>
-        <% flow = flow.first(4) + [ "returned" ] if @order.status == "returned" %>
-        <% flow = [ "new", "cancelled" ] if @order.status == "cancelled" %>
+        <% if Order::PROBLEM_STATUSES.include?(@order.status) %>
+          <% resume = Order::PROBLEM_RESUME.fetch(@order.status) %>
+          <% flow = Order::FLOW.first(Order::FLOW.index(resume) + 1) + [ @order.status ] %>
+        <% elsif @order.status == "returned" %>
+          <% flow = Order::FLOW.first(Order::FLOW.index("picked_up") + 1) + [ "returned" ] %>
+        <% elsif @order.status == "cancelled" %>
+          <% flow = [ "new", "cancelled" ] %>
+        <% else %>
+          <% flow = Order::FLOW.dup %>
+        <% end %>
         <% current_index = flow.index(@order.status) || 0 %>
         <ol class="admin-timeline">
           <% flow.each_with_index do |status, i| %>
             <% state = status == @order.status ? "is-current" : (i < current_index ? "is-done" : "") %>
-            <li class="admin-timeline__item <%= state %>"><%= status.humanize %></li>
+            <li class="admin-timeline__item <%= state %>"><%= Order::STATUS_LABELS.fetch(status, status.humanize) %></li>
           <% end %>
         </ol>
         <% if @order.cancel_reason.present? %>
           <p class="admin-help mt-3">Cancel reason: <%= @order.cancel_reason %></p>
+        <% end %>
+
+        <%= form_with url: comments_admin_order_path(@order), method: :post, class: "mt-4 space-y-2" do %>
+          <%= text_area_tag :body, nil, rows: 2, class: "admin-input", placeholder: "Leave a comment for the team…" %>
+          <%= submit_tag "Post comment", class: "admin-btn-secondary" %>
+        <% end %>
+
+        <% if @events.any? %>
+          <ul class="mt-4 space-y-3 border-t border-[#ebebeb] pt-4">
+            <% @events.each do |event| %>
+              <li class="text-[13px]">
+                <div class="flex items-baseline justify-between gap-2">
+                  <span class="font-medium">
+                    <% if event.kind == "comment" %>
+                      <%= event.user&.name.presence || event.user&.email || "Staff" %>
+                    <% else %>
+                      <%= event.kind.humanize %>
+                    <% end %>
+                  </span>
+                  <span class="admin-muted shrink-0"><%= event.created_at.strftime("%b %-d, %H:%M") %></span>
+                </div>
+                <p class="mt-0.5 text-[#303030]"><%= event.body %></p>
+                <% if event.kind == "comment" && event.user.blank? %>
+                <% elsif event.kind != "comment" && event.user.present? %>
+                  <p class="admin-muted text-xs">by <%= event.user.name.presence || event.user.email %></p>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
         <% end %>
       </div>
     </section>
@@ -107,7 +177,28 @@
     </section>
 
     <section class="admin-card">
-      <div class="admin-card__header"><h2 class="admin-card__title">Customer</h2></div>
+      <div class="admin-card__header"><h2 class="admin-card__title">Tags</h2></div>
+      <%= form_with url: tags_admin_order_path(@order), method: :patch, class: "space-y-3 px-4 pb-4" do %>
+        <%= text_field_tag :tags, @order.tags, class: "admin-input", placeholder: "vip, rush, gift" %>
+        <p class="admin-help">Comma-separated labels for filtering.</p>
+        <%= submit_tag "Save tags", class: "admin-btn-secondary" %>
+      <% end %>
+      <% if @order.tag_list.any? %>
+        <div class="flex flex-wrap gap-1 px-4 pb-4">
+          <% @order.tag_list.each do |tag| %>
+            <span class="admin-badge admin-badge--neutral"><%= tag %></span>
+          <% end %>
+        </div>
+      <% end %>
+    </section>
+
+    <section class="admin-card">
+      <div class="admin-card__header">
+        <h2 class="admin-card__title">Customer</h2>
+        <% if @order.editable? %>
+          <%= link_to "Edit", edit_admin_order_path(@order), class: "admin-btn-plain" %>
+        <% end %>
+      </div>
       <div class="admin-dl px-4 pb-4">
         <% if @order.customer %>
           <%= link_to @order.customer_name, admin_customer_path(@order.customer), class: "admin-link--blue" %>
@@ -127,13 +218,14 @@
 
     <%= render "sendit_card", order: @order %>
 
-    <% if Order::TRANSITIONS.fetch(@order.status, []).include?("cancelled") %>
+    <% if @order.staff_transitions.include?("cancelled") %>
       <section class="admin-card">
         <div class="admin-card__header"><h2 class="admin-card__title">Cancel order</h2></div>
         <%= form_with url: transition_admin_order_path(@order), method: :patch, class: "space-y-3 px-4 pb-4" do %>
           <%= hidden_field_tag :to_status, "cancelled" %>
           <%= text_field_tag :cancel_reason, nil, placeholder: "Reason (optional)", class: "admin-input" %>
-          <%= submit_tag "Cancel order", class: "admin-btn-critical", data: { turbo_confirm: "Cancel order ##{@order.number}?" } %>
+          <% cancel_hint = current_store.sendit_configured? && @order.sendit_code.present? ? " Also cancels the Sendit parcel if it hasn’t been picked up." : "" %>
+          <%= submit_tag "Cancel order", class: "admin-btn-critical", data: { turbo_confirm: "Cancel order ##{@order.number}?#{cancel_hint}" } %>
         <% end %>
       </section>
     <% end %>

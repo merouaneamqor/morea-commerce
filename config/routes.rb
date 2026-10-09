@@ -70,14 +70,21 @@ Rails.application.routes.draw do
     get "media", to: "media#index", as: :media
     post "media/upload", to: "media#upload", as: :media_upload
     post "media/edits", to: "media#edits", as: :media_edits
-    resources :orders, only: %i[index show update] do
+    resources :orders, only: %i[index show new create edit update] do
       collection do
         post :sendit_sync_all
+        get :product_search
       end
       member do
         post :sendit
         get :sendit_label
         patch :transition
+        post :duplicate
+        post :archive
+        post :unarchive
+        get :packing_slip
+        post :comments
+        patch :tags
       end
     end
     resources :customers, only: %i[index show edit update]

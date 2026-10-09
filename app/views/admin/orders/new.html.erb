@@ -1,0 +1,10 @@
+<% content_for :title, "Create order — Admin" %>
+
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to admin_orders_path, class: "admin-back", "aria-label": "Back to orders" do %><%= admin_icon(:back) %><% end %>
+    <h1 class="admin-page-header__title">Create order</h1>
+  </div>
+</div>
+
+<%= render "form", line_items: @line_items, editor_errors: @editor_errors %>

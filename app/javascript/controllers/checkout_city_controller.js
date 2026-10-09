@@ -11,6 +11,7 @@ export default class extends Controller {
     "districtHelp",
     "cityField",
     "shipping",
+    "shippingInput",
     "total",
     "mobileTotal",
     "bagPreview",
@@ -385,6 +386,9 @@ export default class extends Controller {
     const confirmText = this.confirmTemplateValue.replace("%{total}", totalText)
 
     if (this.hasShippingTarget) this.shippingTarget.textContent = shippingText
+    if (this.hasShippingInputTarget && shipping != null) {
+      this.shippingInputTarget.value = String(Math.round(shipping / 100))
+    }
     if (this.hasTotalTarget) this.totalTarget.textContent = totalText
     if (this.hasMobileTotalTarget) this.mobileTotalTarget.textContent = totalText
     if (this.hasBagPreviewTarget) this.bagPreviewTarget.textContent = totalText

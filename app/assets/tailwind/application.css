@@ -1166,6 +1166,14 @@
     @apply text-[#8e0b21];
   }
 
+  details > summary {
+    list-style: none;
+  }
+
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+
   .admin-label {
     @apply mb-1 block text-[13px] font-medium text-[#303030];
   }
@@ -1610,9 +1618,30 @@
     to { opacity: 1; }
   }
 
-  .checkout-combobox .checkout-input:-webkit-autofill {
+  .checkout-combobox .checkout-input:-webkit-autofill,
+  .admin-combobox .admin-input:-webkit-autofill {
     animation-name: checkout-autofill;
     animation-duration: 0.001s;
+  }
+
+  .admin-combobox {
+    @apply relative;
+  }
+
+  .admin-combobox__list {
+    @apply absolute inset-x-0 top-[calc(100%+0.25rem)] z-30 max-h-56 overflow-auto rounded-lg border border-[#ebebeb] bg-white shadow-lg;
+  }
+
+  .admin-combobox .checkout-combobox__option {
+    @apply cursor-pointer px-3 py-2 text-[13px] text-[#303030] transition hover:bg-[#f7f7f7];
+  }
+
+  .admin-combobox .checkout-combobox__option.is-active {
+    @apply bg-[#f7f7f7];
+  }
+
+  .admin-combobox .checkout-combobox__empty {
+    @apply px-3 py-2 text-[13px] text-[#616161];
   }
 
   .checkout-lines {

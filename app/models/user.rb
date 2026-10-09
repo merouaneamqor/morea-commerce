@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   # Super admins may be platform-only (no store) or also staff on a home store.
   belongs_to :store, optional: true
+  has_many :order_events, dependent: :nullify
 
   scope :super_admins, -> { where(super_admin: true) }
 

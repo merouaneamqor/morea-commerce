@@ -8,15 +8,19 @@ module Admin
     private
 
     def current_user
-      return @current_user if defined?(@current_user)
-
-      @current_user = current_store&.users&.find_by(id: session[:user_id]) if session[:user_id]
+      current_admin_user
     end
 
     def require_admin!
-      return if current_user&.admin?
+      return if current_user&.super_admin? || current_user&.admin?
 
       redirect_to admin_login_path, alert: "Please sign in."
+    end
+
+    def require_super_admin!
+      return if super_admin?
+
+      redirect_to(current_user ? admin_root_path : admin_login_path, alert: "Super admin access required.")
     end
   end
 end

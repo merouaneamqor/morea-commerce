@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for?(:title) ? yield(:title) : "Platform — Morea" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="admin-body">
+    <% if current_admin_user %>
+      <div class="admin-shell" data-controller="admin-menu">
+        <header class="admin-topbar">
+          <div class="flex items-center gap-2">
+            <button type="button" class="admin-topbar__menu md:hidden" data-action="admin-menu#toggle" aria-label="Menu">
+              <%= admin_icon(:menu) %>
+            </button>
+            <%= link_to admin_platform_path, class: "admin-topbar__brand" do %>
+              <span class="admin-topbar__logo">P</span>
+              <span>Platform</span>
+            <% end %>
+          </div>
+
+          <div class="admin-topbar__account">
+            <span class="admin-avatar"><%= current_admin_user.name.to_s.first.presence || "S" %></span>
+            <span class="hidden sm:inline"><%= current_admin_user.name.presence || current_admin_user.email %></span>
+          </div>
+        </header>
+
+        <aside class="admin-sidebar" data-admin-menu-target="sidebar">
+          <nav class="admin-sidebar__nav">
+            <%= admin_nav_link "Home", admin_platform_path, icon: :home, active: controller_name == "platform" %>
+            <%= admin_nav_link "Stores", admin_platform_path(anchor: "stores"), icon: :store, active: false %>
+            <%= admin_nav_link "New store", new_admin_tenant_path, icon: :products, active: controller_name == "tenants" %>
+          </nav>
+
+          <div class="admin-sidebar__footer">
+            <%= button_to admin_logout_path, method: :delete, class: "admin-nav-item w-full" do %>
+              <%= admin_icon(:logout) %><span>Sign out</span>
+            <% end %>
+          </div>
+        </aside>
+        <div class="admin-scrim md:hidden" data-action="click->admin-menu#close"></div>
+
+        <main class="admin-main">
+          <div class="admin-page">
+            <% if notice.present? %><div class="admin-banner admin-banner--success"><%= notice %></div><% end %>
+            <% if alert.present? %><div class="admin-banner admin-banner--critical"><%= alert %></div><% end %>
+            <%= yield %>
+          </div>
+        </main>
+      </div>
+    <% else %>
+      <div class="flex min-h-screen items-center justify-center px-4">
+        <%= yield %>
+      </div>
+    <% end %>
+  </body>
+</html>

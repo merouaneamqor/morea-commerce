@@ -3,7 +3,8 @@
 Luxury modest sportswear storefront + COD admin for Morocco.
 
 **Storefront:** fashion-house UX (campaign homepage, editorial PDP, restrained blush).  
-**Admin:** dense and operational — not luxurious.
+**Store admin:** dense and operational — not luxurious.  
+**Platform:** SaaS owner home for super admins (all tenants).
 
 Stores are subdomain tenants. Each store has its own catalog, staff, orders, and Sendit/Discord credentials.
 
@@ -13,14 +14,18 @@ Stores are subdomain tenants. Each store has its own catalog, staff, orders, and
 docker compose up --build
 ```
 
-- Storefront: http://morea.lvh.me:3010
-- Admin: http://morea.lvh.me:3010/admin — `admin@morea.website` / `morea123`
+- Storefront: http://morea.lvh.me:3010 (or http://localhost:3010)
+- Store admin: http://localhost:3010/admin — store staff land on the COD **Home**
+- Platform (super admin): same login with `admin@morea.website` / `morea123` — lands on **/admin/platform** (stores + SaaS metrics). Use **Open admin** on a tenant for store ops, then **Platform** to return.
+- Platform-only account: `super@morea.website` / `morea123`
 
 ```bash
 docker compose exec web bin/rails db:migrate db:seed
 ```
 
 ### Create another tenant
+
+From the platform UI (**New store**), or:
 
 ```bash
 docker compose exec web env \

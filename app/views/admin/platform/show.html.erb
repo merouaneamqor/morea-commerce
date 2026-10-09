@@ -1,0 +1,75 @@
+<% content_for :title, "Platform — Admin" %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Platform</h1>
+    <p class="admin-page-header__meta">SaaS overview across all store tenants</p>
+  </div>
+  <%= link_to "New store", new_admin_tenant_path, class: "admin-btn" %>
+</div>
+
+<div class="admin-card mb-4">
+  <div class="grid grid-cols-2 divide-[#ebebeb] sm:grid-cols-3 lg:grid-cols-5 lg:divide-x [&>*]:border-[#ebebeb] max-lg:[&>*]:border-b">
+    <div class="p-4">
+      <p class="admin-metric__label">Stores</p>
+      <p class="admin-metric__value"><%= @store_count %></p>
+    </div>
+    <div class="p-4">
+      <p class="admin-metric__label">Orders</p>
+      <p class="admin-metric__value"><%= @orders_total %></p>
+    </div>
+    <div class="p-4">
+      <p class="admin-metric__label">Orders today</p>
+      <p class="admin-metric__value"><%= @orders_today %></p>
+    </div>
+    <div class="p-4">
+      <p class="admin-metric__label">Revenue (ex. cancelled)</p>
+      <p class="admin-metric__value"><%= money(@revenue_cents, "MAD") %></p>
+    </div>
+    <div class="p-4">
+      <p class="admin-metric__label">Store staff</p>
+      <p class="admin-metric__value"><%= @staff_count %></p>
+    </div>
+  </div>
+</div>
+
+<section class="admin-card" id="stores">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title">Stores</h2>
+    <%= link_to "New store", new_admin_tenant_path, class: "admin-btn-plain" %>
+  </div>
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Store</th>
+          <th>Slug</th>
+          <th>Staff</th>
+          <th>Orders</th>
+          <th>Products</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @stores.each do |store| %>
+          <tr>
+            <td class="font-semibold"><%= store.name %></td>
+            <td class="admin-muted tabular-nums"><%= store.slug %></td>
+            <td class="tabular-nums"><%= store.users.size %></td>
+            <td class="tabular-nums"><%= store.orders.count %></td>
+            <td class="tabular-nums"><%= store.products.count %></td>
+            <td class="admin-muted"><%= store.created_at.strftime("%b %-d, %Y") %></td>
+            <td class="text-right whitespace-nowrap">
+              <%= button_to "Open admin", enter_admin_tenant_path(store), method: :post, class: "admin-btn-secondary inline" %>
+              <%= link_to "Storefront", store.origin, class: "admin-btn-plain", target: "_blank", rel: "noopener" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @stores.empty? %>
+      <p class="admin-empty">No stores yet. Create the first tenant to get started.</p>
+    <% end %>
+  </div>
+</section>

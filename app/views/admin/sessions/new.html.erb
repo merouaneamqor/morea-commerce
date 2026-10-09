@@ -5,7 +5,7 @@
     <div class="p-8">
       <span class="admin-topbar__logo !h-10 !w-10 !text-base">M</span>
       <h1 class="mt-6 text-xl font-bold text-[#303030]">Log in</h1>
-      <p class="admin-muted mt-1">Continue to Morea admin</p>
+      <p class="admin-muted mt-1">Continue to <%= current_store&.name || "store" %> admin</p>
 
       <% if alert.present? %>
         <div class="admin-banner admin-banner--critical mt-6 mb-0"><%= alert %></div>

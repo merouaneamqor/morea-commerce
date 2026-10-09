@@ -1,0 +1,63 @@
+<% content_for :title, "New store — Admin" %>
+
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">New store</h1>
+  <%= link_to "Back", admin_platform_path, class: "admin-btn-secondary" %>
+</div>
+
+<%= form_with model: @store, url: admin_tenants_path, class: "admin-stack" do |f| %>
+  <% if @store.errors.any? %>
+    <div class="admin-banner admin-banner--critical">
+      <%= @store.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Store</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <div class="admin-field-grid">
+        <div>
+          <%= f.label :name, class: "admin-label" %>
+          <%= f.text_field :name, class: "admin-input", required: true %>
+        </div>
+        <div>
+          <%= f.label :slug, "Subdomain", class: "admin-label" %>
+          <%= f.text_field :slug, class: "admin-input", required: true, placeholder: "atelier" %>
+          <p class="admin-help">Opens as <%= "….#{Store.base_domain}" %></p>
+        </div>
+        <div>
+          <%= f.label :email, class: "admin-label" %>
+          <%= f.email_field :email, class: "admin-input" %>
+        </div>
+        <div>
+          <%= f.label :phone, class: "admin-label" %>
+          <%= f.text_field :phone, class: "admin-input" %>
+        </div>
+        <div>
+          <%= f.label :currency, class: "admin-label" %>
+          <%= f.text_field :currency, class: "admin-input" %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">First admin</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <div class="admin-field-grid">
+        <div>
+          <label class="admin-label" for="admin_email">Email</label>
+          <input class="admin-input" type="email" name="admin[email]" id="admin_email" required>
+        </div>
+        <div>
+          <label class="admin-label" for="admin_password">Password</label>
+          <input class="admin-input" type="password" name="admin[password]" id="admin_password" required autocomplete="new-password">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flex justify-end">
+    <%= f.submit "Create store", class: "admin-btn" %>
+  </div>
+<% end %>

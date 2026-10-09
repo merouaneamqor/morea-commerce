@@ -43,8 +43,15 @@ class Store < ApplicationRecord
 
   def self.find_by_host(host)
     hostname = host.to_s.downcase.split(":").first
+    return if hostname.blank?
+
+    # Local docker/dev without a subdomain still opens the default store
+    if Rails.env.local? && %w[localhost 127.0.0.1].include?(hostname)
+      return find_by(slug: ENV.fetch("DEFAULT_STORE_SLUG", "morea"))
+    end
+
     domain = base_domain.downcase
-    return if hostname.blank? || hostname == domain
+    return if hostname == domain
 
     suffix = ".#{domain}"
     return unless hostname.end_with?(suffix)
@@ -54,6 +61,7 @@ class Store < ApplicationRecord
 
     find_by(slug: slug)
   end
+
 
   def pixels_configured?
     meta_pixel_id.present? || tiktok_pixel_id.present?

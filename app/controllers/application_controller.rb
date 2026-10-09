@@ -2,10 +2,11 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
   stale_when_importmap_changes
 
+  before_action :configure_session_domain
   before_action :set_current_store
   before_action :set_locale
 
-  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?
+  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?
 
   def default_url_options
     return {} if is_a?(Admin::BaseController) || controller_path.start_with?("admin")
@@ -14,6 +15,17 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  # Share the session across store subdomains for super admins. Leave the cookie
+  # host-only on localhost — browsers reject Domain=.lvh.me there and CSRF breaks.
+  def configure_session_domain
+    base = Store.base_domain
+    if request.host == base || request.host.end_with?(".#{base}")
+      request.session_options[:domain] = ".#{base}"
+    else
+      request.session_options[:domain] = nil
+    end
+  end
 
   def set_current_store
     Current.store = Store.find_by_host(request.host)
@@ -58,5 +70,18 @@ class ApplicationController < ActionController::Base
 
   def require_store!
     redirect_to localized_root_path, alert: t("store.preparing") unless current_store
+  end
+
+  # Store staff for this host, or a platform super admin (any host).
+  def current_admin_user
+    return @current_admin_user if defined?(@current_admin_user)
+    return @current_admin_user = nil unless session[:user_id]
+
+    @current_admin_user = current_store&.users&.find_by(id: session[:user_id]) ||
+      User.super_admins.find_by(id: session[:user_id])
+  end
+
+  def super_admin?
+    current_admin_user&.super_admin?
   end
 end

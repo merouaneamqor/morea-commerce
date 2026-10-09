@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title><%= content_for?(:title) ? yield(:title) : "Admin — Morea" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : "Admin — #{current_store&.name || "Store"}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -13,7 +13,7 @@
     <%= javascript_importmap_tags %>
   </head>
   <body class="admin-body">
-    <% if session[:user_id] %>
+    <% if current_admin_user %>
       <div class="admin-shell" data-controller="admin-menu">
         <header class="admin-topbar">
           <div class="flex items-center gap-2">
@@ -21,8 +21,8 @@
               <%= admin_icon(:menu) %>
             </button>
             <%= link_to admin_root_path, class: "admin-topbar__brand" do %>
-              <span class="admin-topbar__logo">M</span>
-              <span>Morea</span>
+              <span class="admin-topbar__logo"><%= current_store&.name.to_s.first.presence || "M" %></span>
+              <span><%= current_store&.name || "Store" %></span>
             <% end %>
           </div>
 
@@ -31,9 +31,12 @@
             <%= search_field_tag :q, params[:q], placeholder: "Search orders", "aria-label": "Search orders" %>
           <% end %>
 
-          <div class="admin-topbar__account">
+          <div class="admin-topbar__account gap-3">
+            <% if super_admin? %>
+              <%= link_to "Platform", admin_platform_path, class: "admin-btn-plain hidden sm:inline" %>
+            <% end %>
             <span class="admin-avatar"><%= current_store&.name.to_s.first.presence || "M" %></span>
-            <span class="hidden sm:inline"><%= current_store&.name || "Morea" %></span>
+            <span class="hidden sm:inline"><%= current_store&.name || "Store" %></span>
           </div>
         </header>
 
@@ -60,6 +63,9 @@
           </nav>
 
           <div class="admin-sidebar__footer">
+            <% if super_admin? %>
+              <%= admin_nav_link "Platform", admin_platform_path, icon: :external, active: false %>
+            <% end %>
             <% settings_open = controller_name.in?(%w[stores pixels]) %>
             <%= admin_nav_link "Settings", edit_admin_store_path, icon: :settings, active: settings_open %>
             <% if settings_open %>

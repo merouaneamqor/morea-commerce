@@ -46,8 +46,21 @@ if user.new_record?
   user.password_confirmation = "morea123"
 end
 user.admin = true
+user.super_admin = true
 user.save!
 store.users.where(email: "admin@maison.ma").find_each(&:destroy)
+
+# Platform-only super admin (no home store) — optional second account
+super_admin = User.super_admins.where(store_id: nil).find_or_initialize_by(email: "super@morea.website")
+super_admin.name = "Platform Super Admin"
+super_admin.admin = true
+super_admin.super_admin = true
+super_admin.store = nil
+if super_admin.new_record?
+  super_admin.password = "morea123"
+  super_admin.password_confirmation = "morea123"
+end
+super_admin.save!
 
 store.translations.destroy_all
 [
@@ -440,5 +453,6 @@ store.update!(featured_product: featured, featured_collection: essentials)
 store.reload.install_online_store_defaults!
 
 puts "Admin: admin@morea.website / morea123"
+puts "Super: super@morea.website / morea123 (all stores)"
 puts "Store: #{store.name} — #{store.origin} — #{store.products.count} products — locales fr/en/ar"
 puts "Done."

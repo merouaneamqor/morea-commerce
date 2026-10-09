@@ -45,6 +45,12 @@ Rails.application.routes.draw do
     delete "logout", to: "sessions#destroy"
 
     root to: "dashboard#show"
+    get "platform", to: "platform#show", as: :platform
+    resources :tenants, only: %i[index new create] do
+      member do
+        post :enter
+      end
+    end
     resource :store, only: %i[edit update]
     resource :pixels, only: %i[edit update], controller: "pixels"
     resources :products do

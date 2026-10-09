@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_09_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_09_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -410,7 +410,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_170000) do
     t.boolean "admin", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "store_id", null: false
+    t.bigint "store_id"
+    t.boolean "super_admin", default: false, null: false
+    t.index ["email"], name: "index_users_on_email_super_admin", unique: true, where: "(super_admin = true)"
     t.index ["store_id", "email"], name: "index_users_on_store_id_and_email", unique: true
     t.index ["store_id"], name: "index_users_on_store_id"
   end

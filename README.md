@@ -15,10 +15,12 @@ docker compose up --build
 ```
 
 - Local storefront: http://morea.lvh.me:3010 (or http://localhost:3010)
-- Production base domain: **ollazen.com** (tenants at `{slug}.ollazen.com`, e.g. https://morea.ollazen.com)
-- Store admin: `/admin` — store staff land on the COD **Home**
-- Platform (super admin): `admin@morea.website` / `morea123` — lands on **/admin/platform**. Use **Open admin** on a tenant for store ops, then **Platform** to return.
-- Platform-only account: `super@morea.website` / `morea123`
+- Production: **ollazen.com**
+  - Platform: https://ollazen.com/admin
+  - Store example: https://morea.ollazen.com
+  - New tenants: `https://{slug}.ollazen.com` (DNS wildcard already set)
+- Super admin: `admin@morea.website` / `morea123` → **/admin/platform**
+- Platform-only: `super@morea.website` / `morea123`
 
 ```bash
 docker compose exec web bin/rails db:migrate db:seed
@@ -35,7 +37,7 @@ docker compose exec web env \
   bin/rails tenants:create
 ```
 
-Then open http://atelier.lvh.me:3010 (local) or https://atelier.ollazen.com (prod — add that hostname as a Custom Domain on the Render `morea` service; Free plan needs one domain per store, DNS `*.ollazen.com` is already set).
+Then open http://atelier.lvh.me:3010 (local). In production, add `{slug}.ollazen.com` as a Custom Domain on the Render `morea` service (or add `*.ollazen.com` + root if on a plan that supports wildcards).
 
 `APP_BASE_DOMAIN=ollazen.com` in production. Locally docker-compose uses `lvh.me`.
 

@@ -13,7 +13,7 @@ services:
       - key: RAILS_ENV
         value: production
       - key: APP_HOST
-        value: morea.ollazen.com
+        value: ollazen.com
       - key: APP_BASE_DOMAIN
         value: ollazen.com
       - key: RAILS_MASTER_KEY

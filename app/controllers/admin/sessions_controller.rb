@@ -8,7 +8,7 @@ module Admin
 
     def create
       email = params[:email].to_s.strip.downcase
-      user = current_store.users.find_by(email: email) || User.super_admins.find_by(email: email)
+      user = current_store&.users&.find_by(email: email) || User.super_admins.find_by(email: email)
 
       if user&.authenticate(params[:password])
         session[:user_id] = user.id

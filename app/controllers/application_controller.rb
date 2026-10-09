@@ -20,7 +20,8 @@ class ApplicationController < ActionController::Base
   # host-only on localhost — browsers reject Domain=.lvh.me there and CSRF breaks.
   def configure_session_domain
     base = Store.base_domain
-    if request.host == base || request.host.end_with?(".#{base}")
+    host = request.host
+    if host == base || host == "www.#{base}" || host.end_with?(".#{base}")
       request.session_options[:domain] = ".#{base}"
     else
       request.session_options[:domain] = nil
@@ -28,10 +29,31 @@ class ApplicationController < ActionController::Base
   end
 
   def set_current_store
+    if Store.apex_host?(request.host)
+      Current.store = nil
+      return if apex_request_allowed?
+
+      default = Store.find_by(slug: ENV.fetch("DEFAULT_STORE_SLUG", "morea"))
+      if default
+        return redirect_to("#{default.origin}#{request.fullpath}", allow_other_host: true, status: :moved_permanently)
+      end
+
+      return render template: "stores/missing", layout: "bare", status: :not_found
+    end
+
     Current.store = Store.find_by_host(request.host)
     return if Current.store
 
     render template: "stores/missing", layout: "bare", status: :not_found
+  end
+
+  # Apex (ollazen.com / www) hosts the SaaS platform, not a storefront.
+  def apex_request_allowed?
+    path = request.path
+    path == "/up" ||
+      path.start_with?("/admin") ||
+      path.start_with?("/webhooks") ||
+      path.start_with?("/api")
   end
 
   def set_locale

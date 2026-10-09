@@ -41,6 +41,12 @@ class Store < ApplicationRecord
     ENV.fetch("APP_BASE_DOMAIN") { Rails.env.local? ? "lvh.me" : "localhost" }
   end
 
+  def self.apex_host?(host)
+    hostname = host.to_s.downcase.split(":").first
+    domain = base_domain.downcase
+    hostname == domain || hostname == "www.#{domain}"
+  end
+
   def self.find_by_host(host)
     hostname = host.to_s.downcase.split(":").first
     return if hostname.blank?
@@ -51,7 +57,7 @@ class Store < ApplicationRecord
     end
 
     domain = base_domain.downcase
-    return if hostname == domain
+    return if apex_host?(hostname)
 
     suffix = ".#{domain}"
     return unless hostname.end_with?(suffix)
@@ -61,6 +67,7 @@ class Store < ApplicationRecord
 
     find_by(slug: slug)
   end
+
 
 
   def pixels_configured?

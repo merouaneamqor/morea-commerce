@@ -13,9 +13,9 @@ services:
       - key: RAILS_ENV
         value: production
       - key: APP_HOST
-        value: morea-d53h.onrender.com
+        value: morea.ollazen.com
       - key: APP_BASE_DOMAIN
-        sync: false
+        value: ollazen.com
       - key: RAILS_MASTER_KEY
         sync: false
       - key: DISCORD_ORDERS_WEBHOOK_URL

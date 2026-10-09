@@ -14,9 +14,10 @@ Stores are subdomain tenants. Each store has its own catalog, staff, orders, and
 docker compose up --build
 ```
 
-- Storefront: http://morea.lvh.me:3010 (or http://localhost:3010)
-- Store admin: http://localhost:3010/admin — store staff land on the COD **Home**
-- Platform (super admin): same login with `admin@morea.website` / `morea123` — lands on **/admin/platform** (stores + SaaS metrics). Use **Open admin** on a tenant for store ops, then **Platform** to return.
+- Local storefront: http://morea.lvh.me:3010 (or http://localhost:3010)
+- Production base domain: **ollazen.com** (tenants at `{slug}.ollazen.com`, e.g. https://morea.ollazen.com)
+- Store admin: `/admin` — store staff land on the COD **Home**
+- Platform (super admin): `admin@morea.website` / `morea123` — lands on **/admin/platform**. Use **Open admin** on a tenant for store ops, then **Platform** to return.
 - Platform-only account: `super@morea.website` / `morea123`
 
 ```bash
@@ -34,9 +35,9 @@ docker compose exec web env \
   bin/rails tenants:create
 ```
 
-Then open http://atelier.lvh.me:3010
+Then open http://atelier.lvh.me:3010 (local) or https://atelier.ollazen.com (prod — add that hostname as a Custom Domain on the Render `morea` service; Free plan needs one domain per store, DNS `*.ollazen.com` is already set).
 
-Set `APP_BASE_DOMAIN` (and `APP_PORT` locally) so Discord links and webhooks use the right host. In production, point a wildcard DNS record at the app (`*.example.com`).
+`APP_BASE_DOMAIN=ollazen.com` in production. Locally docker-compose uses `lvh.me`.
 
 ## Stack
 

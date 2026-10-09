@@ -10,11 +10,12 @@ class MediaWarmupJob < ApplicationJob
   class Pending < StandardError; end
   retry_on Pending, wait: 10.seconds, attempts: 8
 
-  def perform(blob_id)
+  def perform(blob_id, store_id = nil)
     blob = ActiveStorage::Blob.find_by(id: blob_id)
     return unless blob && MediaUrl.cloudinary?(blob)
 
-    url = MediaUrl.sized(blob.url(transformation: MediaUrl.transformation(MediaUrl.edits(blob), store: Store.current)), width: 960)
+    store = Store.find_by(id: store_id) if store_id
+    url = MediaUrl.sized(blob.url(transformation: MediaUrl.transformation(MediaUrl.edits(blob), store: store)), width: 960)
     response = Net::HTTP.get_response(URI(url))
     raise Pending, "#{response.code} for blob #{blob_id}" if response.code == "423"
   end

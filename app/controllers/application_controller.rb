@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
   stale_when_importmap_changes
 
+  before_action :set_current_store
   before_action :set_locale
 
   helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?
@@ -13,6 +14,13 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def set_current_store
+    Current.store = Store.find_by_host(request.host)
+    return if Current.store
+
+    render template: "stores/missing", layout: "bare", status: :not_found
+  end
 
   def set_locale
     locale = params[:locale].presence || Morea::Locales::DEFAULT
@@ -29,7 +37,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_store
-    @current_store ||= Store.current
+    Current.store
   end
 
   def current_cart

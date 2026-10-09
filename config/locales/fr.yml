@@ -1,6 +1,9 @@
 fr:
   store:
     preparing: "La boutique se prépare."
+    missing_eyebrow: "Boutique multi-tenant"
+    missing_title: "Boutique introuvable"
+    missing_body: "Ouvrez votre boutique sur son sous-domaine, par exemple morea.%{domain}."
     default_campaign_title: "Nouvelle collection"
     default_campaign_cta: "Découvrir Morea"
     tagline_fallback: "Sportswear pudique de luxe pour femmes actives."

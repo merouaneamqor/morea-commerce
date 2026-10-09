@@ -40,13 +40,15 @@ services:
       BINDING: "0.0.0.0"
       DATABASE_URL: postgres://maison:maison@db:5432/maison_development
       REDIS_URL: redis://redis:6379/0
-      DISCORD_ORDERS_WEBHOOK_URL: ${DISCORD_ORDERS_WEBHOOK_URL:-}
       ORDERS_JWT_SECRET: ${ORDERS_JWT_SECRET:-morea-dev-orders-jwt}
+      CLOUDINARY_URL: ${CLOUDINARY_URL:-}
+      APP_BASE_DOMAIN: lvh.me
+      APP_PORT: "3010"
+      # One-time migration copies these onto the Morea store if present
+      DISCORD_ORDERS_WEBHOOK_URL: ${DISCORD_ORDERS_WEBHOOK_URL:-}
       SENDIT_PUBLIC_KEY: ${SENDIT_PUBLIC_KEY:-}
       SENDIT_SECRET_KEY: ${SENDIT_SECRET_KEY:-}
-      SENDIT_PICKUP_DISTRICT_ID: ${SENDIT_PICKUP_DISTRICT_ID:-}
-      CLOUDINARY_URL: ${CLOUDINARY_URL:-}
-      APP_HOST: localhost:3010
+      SENDIT_WEBHOOK_SECRET: ${SENDIT_WEBHOOK_SECRET:-}
     depends_on:
       db:
         condition: service_healthy
@@ -68,13 +70,14 @@ services:
       RAILS_ENV: development
       DATABASE_URL: postgres://maison:maison@db:5432/maison_development
       REDIS_URL: redis://redis:6379/0
-      DISCORD_ORDERS_WEBHOOK_URL: ${DISCORD_ORDERS_WEBHOOK_URL:-}
       ORDERS_JWT_SECRET: ${ORDERS_JWT_SECRET:-morea-dev-orders-jwt}
+      CLOUDINARY_URL: ${CLOUDINARY_URL:-}
+      APP_BASE_DOMAIN: lvh.me
+      APP_PORT: "3010"
+      DISCORD_ORDERS_WEBHOOK_URL: ${DISCORD_ORDERS_WEBHOOK_URL:-}
       SENDIT_PUBLIC_KEY: ${SENDIT_PUBLIC_KEY:-}
       SENDIT_SECRET_KEY: ${SENDIT_SECRET_KEY:-}
-      SENDIT_PICKUP_DISTRICT_ID: ${SENDIT_PICKUP_DISTRICT_ID:-}
-      CLOUDINARY_URL: ${CLOUDINARY_URL:-}
-      APP_HOST: localhost:3010
+      SENDIT_WEBHOOK_SECRET: ${SENDIT_WEBHOOK_SECRET:-}
     depends_on:
       db:
         condition: service_healthy

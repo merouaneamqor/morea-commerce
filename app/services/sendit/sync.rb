@@ -60,9 +60,9 @@ module Sendit
       to_push.count + to_refresh.count
     end
 
-    def initialize(order, client: Client.new)
+    def initialize(order, client: nil)
       @order = order
-      @client = client
+      @client = client || Client.new(order.store)
     end
 
     attr_reader :order
@@ -164,9 +164,9 @@ module Sendit
 
     def resolve_district!
       if order.sendit_district_id.present?
-        Districts.find(order.sendit_district_id) || { id: order.sendit_district_id, name: order.sendit_district_name }
+        Districts.find(order.sendit_district_id, store: order.store) || { id: order.sendit_district_id, name: order.sendit_district_name }
       else
-        Districts.match(city: order.customer_city, address: "#{order.customer_district} #{order.customer_address}") ||
+        Districts.match(store: order.store, city: order.customer_city, address: "#{order.customer_district} #{order.customer_address}") ||
           raise(Client::Error, "No Sendit city matches “#{order.customer_city}”. Choose the Sendit city on the order, then retry.")
       end
     end
@@ -190,7 +190,7 @@ module Sendit
     end
 
     def pickup_district_id
-      order.store.sendit_pickup_district_id.presence || ENV["SENDIT_PICKUP_DISTRICT_ID"].presence&.to_i
+      order.store.sendit_pickup_district_id.presence
     end
 
     # +212 6 12 34 56 78 -> 0612345678

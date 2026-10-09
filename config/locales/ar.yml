@@ -1,6 +1,9 @@
 ar:
   store:
     preparing: "المتجر قيد التحضير."
+    missing_eyebrow: "متجر متعدد المستأجرين"
+    missing_title: "المتجر غير موجود"
+    missing_body: "افتحي متجرك على النطاق الفرعي، مثل morea.%{domain}."
     default_campaign_title: "مجموعة جديدة"
     default_campaign_cta: "اكتشفوا موريا"
     tagline_fallback: "ملابس رياضية محتشمة فاخرة للنساء النشيطات."

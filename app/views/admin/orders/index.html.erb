@@ -2,7 +2,7 @@
 
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Orders</h1>
-  <% if Sendit::Client.configured? %>
+  <% if current_store.sendit_configured? %>
     <%= button_to "Sync with Sendit", sendit_sync_all_admin_orders_path, class: "admin-btn-secondary" %>
   <% end %>
 </div>

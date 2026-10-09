@@ -4,14 +4,14 @@
     <%= sendit_badge(order) %>
   </div>
 
-  <% if !Sendit::Client.configured? %>
-    <p class="admin-muted px-4 pb-4">Set <code>SENDIT_PUBLIC_KEY</code> and <code>SENDIT_SECRET_KEY</code> to sync orders with Sendit.</p>
+  <% if !order.store.sendit_configured? %>
+    <p class="admin-muted px-4 pb-4">Add your Sendit API keys in <%= link_to "Settings", edit_admin_store_path(anchor: "integrations"), class: "underline" %> to sync orders.</p>
   <% else %>
     <div class="space-y-3 px-4 pb-4">
       <% if order.sendit_error.present? %>
         <div class="admin-banner admin-banner--critical !mb-0">
           <%= order.sendit_error %>
-          <% if order.store.sendit_pickup_district_id.blank? && ENV["SENDIT_PICKUP_DISTRICT_ID"].blank? %>
+          <% if order.store.sendit_pickup_district_id.blank? %>
             <%= link_to "Open Settings", edit_admin_store_path(anchor: "shipping"), class: "ms-1 underline" %>
           <% end %>
         </div>

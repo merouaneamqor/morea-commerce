@@ -18,7 +18,7 @@ module Api
     private
 
     def set_order
-      @order = Order.find(params[:id])
+      @order = current_store.orders.find(params[:id])
     end
 
     def apply_transition!(to_status, success_title:, success_message:, reason: nil)

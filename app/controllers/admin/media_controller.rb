@@ -38,7 +38,7 @@ module Admin
                                                     record_id: current_store.products.select(:id))
       cloud, local = attachments.partition { |a| MediaUrl.cloudinary?(a.blob) }
       cloud.each { |a| MediaUrl.apply!(a.blob, edit) }
-      cloud.each { |a| MediaWarmupJob.perform_later(a.blob_id) } if edit == "remove_bg"
+      cloud.each { |a| MediaWarmupJob.perform_later(a.blob_id, current_store.id) } if edit == "remove_bg"
 
       label = edit == "clear" ? "Edits cleared" : "#{MediaUrl::EDITS[edit]} applied"
       notice = "#{label} on #{cloud.size} #{"image".pluralize(cloud.size)}."

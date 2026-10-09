@@ -59,7 +59,7 @@ module AdminHelper
 
   # Sendit districts grouped by city for a <select>, the order's likely city first
   def sendit_district_options(order)
-    districts = Sendit::Districts.all
+    districts = Sendit::Districts.all(store: order.store)
     likely = Sendit::Districts.candidates(city: order.customer_city, districts: districts)
     groups = districts.group_by { |d| d[:ville] }.sort_by(&:first).map { |ville, ds| [ ville, ds.map { |d| [ d[:name], d[:id] ] } ] }
     groups.unshift([ "Suggested for “#{order.customer_city}”", likely.map { |d| [ d[:name], d[:id] ] } ]) if likely.any?

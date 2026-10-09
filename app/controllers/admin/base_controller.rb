@@ -8,7 +8,9 @@ module Admin
     private
 
     def current_user
-      @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
+      return @current_user if defined?(@current_user)
+
+      @current_user = current_store&.users&.find_by(id: session[:user_id]) if session[:user_id]
     end
 
     def require_admin!

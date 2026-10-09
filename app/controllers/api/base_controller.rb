@@ -4,6 +4,10 @@ module Api
   class BaseController < ActionController::Base
     skip_forgery_protection
 
+    before_action :set_current_store
+
+    helper_method :current_store
+
     rescue_from OrderActionToken::InvalidToken do |error|
       respond_with_result(ok: false, title: "Invalid link", message: error.message, status: :unauthorized)
     end
@@ -13,6 +17,22 @@ module Api
     end
 
     private
+
+    def set_current_store
+      Current.store = Store.find_by_host(request.host)
+      return if Current.store
+
+      respond_with_result(
+        ok: false,
+        title: "Store not found",
+        message: "Open this link on your store subdomain.",
+        status: :not_found
+      )
+    end
+
+    def current_store
+      Current.store
+    end
 
     def respond_with_result(ok:, title:, message:, status:, order: nil)
       @ok = ok

@@ -1,12 +1,12 @@
 <% content_for :title, "#{t("checkout.title")} — #{current_store.name}" %>
 
 <%
-  cities = Checkout.cities
-  rates = Sendit::Districts.shipping_cents_by_city
+  cities = Checkout.cities(current_store)
+  rates = Sendit::Districts.shipping_cents_by_city(store: current_store)
   item_count = @items.sum(&:quantity)
   bag_preview_total = money(@checkout.total_cents, current_store.currency)
   district_required = @checkout.district_required?
-  district_options = Checkout.districts_by_city[@checkout.city].to_a
+  district_options = Checkout.districts_by_city(current_store)[@checkout.city].to_a
 %>
 <%= pixel_event_tag "InitiateCheckout", cart_pixel_payload(@cart).merge(value: pixel_value(@checkout.total_cents)) %>
 
@@ -14,7 +14,7 @@
          data-controller="checkout-city"
          <% if cities.any? %>
          data-checkout-city-cities-value="<%= cities.to_json %>"
-         data-checkout-city-districts-value="<%= Checkout.districts_by_city.to_json %>"
+         data-checkout-city-districts-value="<%= Checkout.districts_by_city(current_store).to_json %>"
          data-checkout-city-rates-value="<%= rates.to_json %>"
          <% end %>
          data-checkout-city-subtotal-value="<%= @checkout.subtotal_cents %>"

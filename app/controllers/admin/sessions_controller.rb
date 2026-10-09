@@ -3,11 +3,11 @@ module Admin
     layout "admin"
 
     def new
-      redirect_to admin_root_path if session[:user_id] && User.exists?(session[:user_id])
+      redirect_to admin_root_path if current_store && session[:user_id] && current_store.users.exists?(session[:user_id])
     end
 
     def create
-      user = User.find_by(email: params[:email].to_s.strip.downcase)
+      user = current_store.users.find_by(email: params[:email].to_s.strip.downcase)
       if user&.authenticate(params[:password])
         session[:user_id] = user.id
         redirect_to admin_root_path, notice: "Welcome back."

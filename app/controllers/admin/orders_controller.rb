@@ -32,10 +32,10 @@ module Admin
 
     # Send / retry / refresh / cancel the Sendit parcel for one order
     def sendit
-      return redirect_to(admin_order_path(@order), alert: "Sendit is not configured.") unless Sendit::Client.configured?
+      return redirect_to(admin_order_path(@order), alert: "Sendit is not configured.") unless current_store.sendit_configured?
 
       if params[:district_id].present?
-        district = Sendit::Districts.find(params[:district_id])
+        district = Sendit::Districts.find(params[:district_id], store: current_store)
         @order.update!(sendit_district_id: district&.dig(:id), sendit_district_name: district&.dig(:name))
       end
 
@@ -61,7 +61,7 @@ module Admin
     end
 
     def sendit_sync_all
-      return redirect_to(admin_orders_path, alert: "Sendit is not configured.") unless Sendit::Client.configured?
+      return redirect_to(admin_orders_path, alert: "Sendit is not configured.") unless current_store.sendit_configured?
 
       count = Sendit::Sync.enqueue_all(current_store.orders)
       redirect_to admin_orders_path, notice: "Syncing #{count} orders with Sendit in the background."

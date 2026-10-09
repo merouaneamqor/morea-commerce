@@ -2,38 +2,6 @@
 
 puts "Seeding Morea Commerce..."
 
-MenuItemTranslation.delete_all
-MenuItem.delete_all
-PageTranslation.delete_all
-Page.delete_all
-HomeSectionTranslation.delete_all
-HomeSection.delete_all
-OrderItem.delete_all
-InventoryMovement.delete_all
-Order.delete_all
-CartItem.delete_all
-Cart.delete_all
-Address.delete_all
-Customer.delete_all
-CollectionProduct.delete_all
-ProductVariant.delete_all
-ProductTranslation.delete_all
-Product.delete_all
-CollectionTranslation.delete_all
-Collection.delete_all
-StoreTranslation.delete_all
-
-user = User.find_or_initialize_by(email: "admin@morea.website")
-user.name = "Morea Admin"
-# Only set the default password when creating the admin — reseeding keeps a changed password
-if user.new_record?
-  user.password = "morea123"
-  user.password_confirmation = "morea123"
-end
-user.admin = true
-user.save!
-User.where(email: "admin@maison.ma").find_each(&:destroy)
-
 store = Store.find_or_initialize_by(slug: "morea")
 store.assign_attributes(
   name: "Morea",
@@ -42,7 +10,44 @@ store.assign_attributes(
   currency: "MAD"
 )
 store.save!
-Store.where.not(id: store.id).find_each(&:destroy)
+
+# Wipe Morea content only — other tenants and their staff stay intact
+MenuItemTranslation.where(menu_item_id: store.menu_items.select(:id)).delete_all
+MenuItem.where(store_id: store.id).delete_all
+PageTranslation.where(page_id: store.pages.select(:id)).delete_all
+Page.where(store_id: store.id).delete_all
+HomeSectionTranslation.where(home_section_id: store.home_sections.select(:id)).delete_all
+HomeSection.where(store_id: store.id).delete_all
+OrderItem.where(order_id: store.orders.select(:id)).delete_all
+InventoryMovement.where(order_id: store.orders.select(:id)).or(
+  InventoryMovement.where(product_id: store.products.select(:id))
+).delete_all
+Order.where(store_id: store.id).delete_all
+CartItem.where(cart_id: store.carts.select(:id)).delete_all
+Cart.where(store_id: store.id).delete_all
+Address.where(customer_id: store.customers.select(:id)).delete_all
+Customer.where(store_id: store.id).delete_all
+Discount.where(store_id: store.id).delete_all
+CollectionProduct.where(collection_id: store.collections.select(:id)).or(
+  CollectionProduct.where(product_id: store.products.select(:id))
+).delete_all
+ProductVariant.where(product_id: store.products.select(:id)).delete_all
+ProductTranslation.where(product_id: store.products.select(:id)).delete_all
+Product.where(store_id: store.id).delete_all
+CollectionTranslation.where(collection_id: store.collections.select(:id)).delete_all
+Collection.where(store_id: store.id).delete_all
+StoreTranslation.where(store_id: store.id).delete_all
+
+user = store.users.find_or_initialize_by(email: "admin@morea.website")
+user.name = "Morea Admin"
+# Only set the default password when creating the admin — reseeding keeps a changed password
+if user.new_record?
+  user.password = "morea123"
+  user.password_confirmation = "morea123"
+end
+user.admin = true
+user.save!
+store.users.where(email: "admin@maison.ma").find_each(&:destroy)
 
 store.translations.destroy_all
 [
@@ -435,5 +440,5 @@ store.update!(featured_product: featured, featured_collection: essentials)
 store.reload.install_online_store_defaults!
 
 puts "Admin: admin@morea.website / morea123"
-puts "Store: #{store.name} — #{store.products.count} products — locales fr/en/ar"
+puts "Store: #{store.name} — #{store.origin} — #{store.products.count} products — locales fr/en/ar"
 puts "Done."

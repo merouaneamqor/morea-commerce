@@ -2,7 +2,7 @@ class Cart < ApplicationRecord
   belongs_to :store
   has_many :cart_items, dependent: :destroy
 
-  validates :token, presence: true, uniqueness: true
+  validates :token, presence: true, uniqueness: { scope: :store_id }
 
   before_validation :ensure_token, on: :create
 

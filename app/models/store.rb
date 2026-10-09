@@ -1,12 +1,15 @@
 class Store < ApplicationRecord
   include Translatable
 
+  RESERVED_SUBDOMAINS = %w[www app admin api].freeze
+
   has_many :products, dependent: :destroy
   has_many :collections, dependent: :destroy
   has_many :customers, dependent: :destroy
   has_many :orders, dependent: :destroy
   has_many :carts, dependent: :destroy
   has_many :discounts, dependent: :destroy
+  has_many :users, dependent: :destroy
   has_many :translations, class_name: "StoreTranslation", dependent: :destroy, inverse_of: :store
   has_many :home_sections, dependent: :destroy
   has_many :pages, dependent: :destroy
@@ -20,13 +23,37 @@ class Store < ApplicationRecord
   belongs_to :featured_collection, class_name: "Collection", optional: true
 
   validates :name, :slug, presence: true
-  validates :slug, uniqueness: true
+  validates :slug, uniqueness: true, format: { with: /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/, message: "must be lowercase letters, numbers, and hyphens" }
+  validates :slug, exclusion: { in: RESERVED_SUBDOMAINS }
   validates :shipping_cents, :low_stock_threshold, numericality: { greater_than_or_equal_to: 0 }
   validates :free_shipping_threshold_cents, numericality: { greater_than: 0 }, allow_nil: true
   validates :meta_pixel_id, format: { with: /\A\d{5,20}\z/, message: "must be 5–20 digits" }, allow_blank: true
   validates :tiktok_pixel_id, format: { with: /\A[A-Za-z0-9]{10,40}\z/, message: "must be 10–40 letters or numbers" }, allow_blank: true
 
   before_validation :normalize_pixel_ids
+  before_validation :normalize_slug
+
+  scope :with_sendit, -> {
+    where.not(sendit_public_key: [ nil, "" ]).where.not(sendit_secret_key: [ nil, "" ])
+  }
+
+  def self.base_domain
+    ENV.fetch("APP_BASE_DOMAIN") { Rails.env.local? ? "lvh.me" : "localhost" }
+  end
+
+  def self.find_by_host(host)
+    hostname = host.to_s.downcase.split(":").first
+    domain = base_domain.downcase
+    return if hostname.blank? || hostname == domain
+
+    suffix = ".#{domain}"
+    return unless hostname.end_with?(suffix)
+
+    slug = hostname.delete_suffix(suffix)
+    return if slug.blank? || slug.include?(".") || RESERVED_SUBDOMAINS.include?(slug)
+
+    find_by(slug: slug)
+  end
 
   def pixels_configured?
     meta_pixel_id.present? || tiktok_pixel_id.present?
@@ -40,9 +67,16 @@ class Store < ApplicationRecord
     end
   end
 
+  def sendit_configured?
+    sendit_public_key.present? && sendit_secret_key.present?
+  end
 
-  def self.current
-    order(:id).first
+  def origin
+    protocol = Rails.env.local? ? "http" : "https"
+    host = "#{slug}.#{self.class.base_domain}"
+    port = ENV["APP_PORT"].presence
+    host = "#{host}:#{port}" if port.present?
+    "#{protocol}://#{host}"
   end
 
   def shipping_dh
@@ -114,9 +148,12 @@ class Store < ApplicationRecord
 
   private
 
+  def normalize_slug
+    self.slug = slug.to_s.strip.downcase.presence
+  end
+
   def normalize_pixel_ids
     self.meta_pixel_id = meta_pixel_id.to_s.strip.presence
     self.tiktok_pixel_id = tiktok_pixel_id.to_s.strip.presence
   end
 end
-

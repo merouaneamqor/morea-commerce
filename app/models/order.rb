@@ -16,7 +16,8 @@ class Order < ApplicationRecord
   }.freeze
 
   validates :number, :status, :customer_name, :customer_phone, :customer_city, :customer_address, presence: true
-  validates :number, uniqueness: true
+  validates :number, uniqueness: { scope: :store_id }
+  validates :sendit_code, uniqueness: { scope: :store_id }, allow_nil: true
   validates :status, inclusion: { in: STATUSES }
   validates :total_cents, numericality: { greater_than_or_equal_to: 0 }
 
@@ -102,7 +103,7 @@ class Order < ApplicationRecord
   private
 
   def enqueue_sendit_sync(new_status)
-    return unless Sendit::Client.configured?
+    return unless store.sendit_configured?
 
     if new_status == "confirmed" && sendit_code.blank?
       SenditSyncJob.perform_later(id, "push")
@@ -116,7 +117,7 @@ class Order < ApplicationRecord
 
     loop do
       self.number = format("M%06d", SecureRandom.random_number(1_000_000))
-      break unless Order.exists?(number: number)
+      break unless store.orders.exists?(number: number)
     end
   end
 

@@ -5,10 +5,15 @@ module Sendit
   # and matched against the free-text city/address customers type at checkout.
   # Each district includes Sendit's delivery `price` (MAD) used for checkout shipping.
   class Districts
-    CACHE_KEY = "sendit:districts:v2"
+    def self.cache_key(store)
+      "sendit:districts:v2:store:#{store.id}"
+    end
 
-    def self.all(client: Client.new)
-      Rails.cache.fetch(CACHE_KEY, expires_in: 1.day) do
+    def self.all(store:, client: nil)
+      raise ArgumentError, "Store is required" unless store
+
+      client ||= Client.new(store)
+      Rails.cache.fetch(cache_key(store), expires_in: 1.day) do
         rows = []
         page = 1
         loop do
@@ -29,24 +34,27 @@ module Sendit
       end
     end
 
-    def self.pickup_cities(client: Client.new)
-      Rails.cache.fetch("#{CACHE_KEY}:pickup", expires_in: 1.day) do
+    def self.pickup_cities(store:, client: nil)
+      raise ArgumentError, "Store is required" unless store
+
+      client ||= Client.new(store)
+      Rails.cache.fetch("#{cache_key(store)}:pickup", expires_in: 1.day) do
         client.pickup_cities.map { |d| { id: d["id"].to_i, name: d["name"].to_s } }.sort_by { |d| d[:name] }
       end
     end
 
-    def self.find(id)
-      all.find { |d| d[:id] == id.to_i }
+    def self.find(id, store:)
+      all(store: store).find { |d| d[:id] == id.to_i }
     end
 
     # MAD amount → cents. Prefer an exact district match, else the city's tariff.
-    def self.shipping_cents_for(city:, district: nil, address: "")
-      return unless Client.configured?
+    def self.shipping_cents_for(store:, city:, district: nil, address: "")
+      return unless Client.configured?(store)
       return if city.blank?
 
       # Same address priority as Checkout#sendit_district (quartier wins over free-text)
-      match = self.match(city: city, address: district.presence || address.to_s)
-      price = match&.dig(:price).presence || price_for_city(city)
+      match = self.match(store: store, city: city, address: district.presence || address.to_s)
+      price = match&.dig(:price).presence || price_for_city(store: store, city: city)
       return if price.blank?
 
       (price.to_d * 100).to_i
@@ -56,10 +64,10 @@ module Sendit
     end
 
     # { "Casablanca" => 1900, "Rabat" => 3500, … } for the checkout form
-    def self.shipping_cents_by_city
-      return {} unless Client.configured?
+    def self.shipping_cents_by_city(store:)
+      return {} unless Client.configured?(store)
 
-      all.each_with_object({}) do |d, map|
+      all(store: store).each_with_object({}) do |d, map|
         next if d[:ville].blank? || d[:price].blank?
 
         map[d[:ville]] ||= (d[:price].to_d * 100).to_i
@@ -69,21 +77,22 @@ module Sendit
       {}
     end
 
-    def self.price_for_city(city)
+    def self.price_for_city(store:, city:)
       city_n = I18n.transliterate(city.to_s).downcase.gsub(/[^a-z0-9]+/, " ").squish
-      row = all.find { |d|
+      row = all(store: store).find { |d|
         I18n.transliterate(d[:ville].to_s).downcase.gsub(/[^a-z0-9]+/, " ").squish == city_n
       }
       row&.dig(:price)
     end
 
     # Best district for a city + address, or nil when it can't be decided safely
-    def self.match(city:, address: "", districts: all)
+    def self.match(store:, city:, address: "", districts: nil)
+      districts ||= all(store: store)
       new(districts).match(city, address)
     end
 
     # Districts of the city the customer typed (typo-tolerant), for the admin picker
-    def self.candidates(city:, districts: all)
+    def self.candidates(city:, districts:)
       new(districts).candidates(city)
     end
 

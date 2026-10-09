@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_09_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_09_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -71,8 +71,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_160000) do
     t.string "token", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["store_id", "token"], name: "index_carts_on_store_id_and_token", unique: true
     t.index ["store_id"], name: "index_carts_on_store_id"
-    t.index ["token"], name: "index_carts_on_token", unique: true
   end
 
   create_table "collection_products", force: :cascade do |t|
@@ -253,9 +253,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_160000) do
     t.string "discount_code"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["customer_phone"], name: "index_orders_on_customer_phone"
-    t.index ["number"], name: "index_orders_on_number", unique: true
-    t.index ["sendit_code"], name: "index_orders_on_sendit_code", unique: true
     t.index ["status"], name: "index_orders_on_status"
+    t.index ["store_id", "number"], name: "index_orders_on_store_id_and_number", unique: true
+    t.index ["store_id", "sendit_code"], name: "index_orders_on_store_id_and_sendit_code", unique: true, where: "(sendit_code IS NOT NULL)"
     t.index ["store_id"], name: "index_orders_on_store_id"
   end
 
@@ -396,6 +396,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_160000) do
     t.integer "low_stock_threshold", default: 5, null: false
     t.string "meta_pixel_id"
     t.string "tiktok_pixel_id"
+    t.text "sendit_public_key"
+    t.text "sendit_secret_key"
+    t.text "sendit_webhook_secret"
+    t.text "discord_orders_webhook_url"
     t.index ["slug"], name: "index_stores_on_slug", unique: true
   end
 
@@ -406,7 +410,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_160000) do
     t.boolean "admin", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
+    t.bigint "store_id", null: false
+    t.index ["store_id", "email"], name: "index_users_on_store_id_and_email", unique: true
+    t.index ["store_id"], name: "index_users_on_store_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -440,4 +446,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_09_160000) do
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "stores"
   add_foreign_key "store_translations", "stores"
+  add_foreign_key "users", "stores"
 end

@@ -3,15 +3,15 @@ module Admin
     before_action :set_user, only: %i[edit update destroy]
 
     def index
-      @users = User.order(:email)
+      @users = current_store.users.order(:email)
     end
 
     def new
-      @user = User.new(admin: true)
+      @user = current_store.users.new(admin: true)
     end
 
     def create
-      @user = User.new(user_params)
+      @user = current_store.users.new(user_params)
       if @user.save
         redirect_to admin_users_path, notice: "Staff account created."
       else
@@ -36,7 +36,7 @@ module Admin
     def destroy
       if @user == current_user
         redirect_to admin_users_path, alert: "You cannot delete your own account."
-      elsif User.where(admin: true).where.not(id: @user.id).none?
+      elsif current_store.users.where(admin: true).where.not(id: @user.id).none?
         redirect_to admin_users_path, alert: "Keep at least one admin account."
       else
         @user.destroy!
@@ -47,7 +47,7 @@ module Admin
     private
 
     def set_user
-      @user = User.find(params[:id])
+      @user = current_store.users.find(params[:id])
     end
 
     def user_params

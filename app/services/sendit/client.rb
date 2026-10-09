@@ -16,10 +16,13 @@ module Sendit
       end
     end
 
-    TOKEN_CACHE_KEY = "sendit:token"
+    def self.configured?(store)
+      store&.sendit_configured?
+    end
 
-    def self.configured?
-      ENV["SENDIT_PUBLIC_KEY"].present? && ENV["SENDIT_SECRET_KEY"].present?
+    def initialize(store)
+      @store = store
+      raise ArgumentError, "Store is required" unless @store
     end
 
     def base_url
@@ -37,6 +40,12 @@ module Sendit
 
     private
 
+    attr_reader :store
+
+    def token_cache_key
+      "sendit:token:store:#{store.id}"
+    end
+
     def unwrap(json)
       json["data"].is_a?(Hash) ? json["data"] : json
     end
@@ -47,7 +56,7 @@ module Sendit
 
       response = perform(method, uri, body, token)
       if response.code.to_i == 401 && !retried
-        Rails.cache.delete(TOKEN_CACHE_KEY)
+        Rails.cache.delete(token_cache_key)
         return request(method, path, body, query, retried: true)
       end
 
@@ -55,9 +64,9 @@ module Sendit
     end
 
     def token
-      Rails.cache.fetch(TOKEN_CACHE_KEY, expires_in: 6.hours) do
+      Rails.cache.fetch(token_cache_key, expires_in: 6.hours) do
         response = perform(:post, URI.join(base_url, "login"),
-                           { public_key: ENV.fetch("SENDIT_PUBLIC_KEY"), secret_key: ENV.fetch("SENDIT_SECRET_KEY") }, nil)
+                           { public_key: store.sendit_public_key, secret_key: store.sendit_secret_key }, nil)
         parse!(response).dig("data", "token").presence || raise(Error.new("Sendit login returned no token"))
       end
     end

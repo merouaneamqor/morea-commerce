@@ -1,6 +1,9 @@
 en:
   store:
     preparing: "Store is being prepared."
+    missing_eyebrow: "Multi-tenant storefront"
+    missing_title: "Store not found"
+    missing_body: "Open your store on its subdomain, for example morea.%{domain}."
     default_campaign_title: "New Collection"
     default_campaign_cta: "Discover Morea"
     tagline_fallback: "Luxury modest sportswear for active women."

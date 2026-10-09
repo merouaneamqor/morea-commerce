@@ -36,11 +36,37 @@
     </div>
   </section>
 
+  <section class="admin-card" id="integrations">
+    <div class="admin-card__header"><h2 class="admin-card__title">Integrations</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <p class="admin-help">Keys belong to this store only. Leave a field blank to keep the saved value.</p>
+      <div class="admin-field-grid">
+        <div>
+          <%= f.label :sendit_public_key, "Sendit public key", class: "admin-label" %>
+          <%= f.password_field :sendit_public_key, class: "admin-input", autocomplete: "off", value: "", placeholder: (@store.sendit_public_key.present? ? "•••••••• (saved)" : "") %>
+        </div>
+        <div>
+          <%= f.label :sendit_secret_key, "Sendit secret key", class: "admin-label" %>
+          <%= f.password_field :sendit_secret_key, class: "admin-input", autocomplete: "off", value: "", placeholder: (@store.sendit_secret_key.present? ? "•••••••• (saved)" : "") %>
+        </div>
+        <div>
+          <%= f.label :sendit_webhook_secret, "Sendit webhook secret", class: "admin-label" %>
+          <%= f.password_field :sendit_webhook_secret, class: "admin-input", autocomplete: "off", value: "", placeholder: (@store.sendit_webhook_secret.present? ? "•••••••• (saved)" : "") %>
+          <p class="admin-help">Webhook URL: <code><%= "#{@store.origin}/webhooks/sendit/#{@store.slug}" %></code></p>
+        </div>
+        <div class="md:col-span-2">
+          <%= f.label :discord_orders_webhook_url, "Discord orders webhook URL", class: "admin-label" %>
+          <%= f.password_field :discord_orders_webhook_url, class: "admin-input", autocomplete: "off", value: "", placeholder: (@store.discord_orders_webhook_url.present? ? "•••••••• (saved)" : "https://discord.com/api/webhooks/…") %>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="admin-card" id="shipping">
     <div class="admin-card__header"><h2 class="admin-card__title">Shipping · Sendit</h2></div>
     <div class="space-y-4 px-4 pb-4">
-      <% if Sendit::Client.configured? %>
-        <% rates = (Sendit::Districts.shipping_cents_by_city rescue {}) %>
+      <% if @store.sendit_configured? %>
+        <% rates = (Sendit::Districts.shipping_cents_by_city(store: @store) rescue {}) %>
         <p class="admin-help">
           Delivery fees come from Sendit by city (<%= rates.size %> cities cached).
           Checkout updates the fee when the customer picks a city.
@@ -59,7 +85,7 @@
           </details>
         <% end %>
 
-        <% pickup = (Sendit::Districts.pickup_cities rescue []) %>
+        <% pickup = (Sendit::Districts.pickup_cities(store: @store) rescue []) %>
         <%= f.label :sendit_pickup_district_id, "Pickup city", class: "admin-label" %>
         <%= f.select :sendit_pickup_district_id, pickup.map { |d| [ d[:name], d[:id] ] }, { include_blank: "Choose where Sendit collects your parcels" }, class: "admin-input" %>
         <p class="admin-help">Required by Sendit to create parcels. Confirmed orders are sent automatically and synced every 15 minutes.</p>
@@ -73,7 +99,7 @@
           <p class="admin-help">Waives the Sendit city fee once the cart reaches this amount. Leave empty to always charge.</p>
         </div>
       <% else %>
-        <p class="admin-muted">Set <code>SENDIT_PUBLIC_KEY</code> and <code>SENDIT_SECRET_KEY</code> to load city rates from Sendit.</p>
+        <p class="admin-muted">Add Sendit API keys under Integrations to load city rates from Sendit.</p>
         <div class="admin-field-grid">
           <div>
             <%= f.label :shipping_dh, "Fallback shipping fee (#{@store.currency})", class: "admin-label" %>

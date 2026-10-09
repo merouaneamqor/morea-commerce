@@ -1,0 +1,7 @@
+<% content_for :title, t("store.missing_title") %>
+
+<main class="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center px-6 text-center">
+  <p class="text-xs uppercase tracking-[0.2em] text-ink-faint"><%= t("store.missing_eyebrow") %></p>
+  <h1 class="mt-4 font-display text-3xl text-ink"><%= t("store.missing_title") %></h1>
+  <p class="mt-4 text-sm leading-6 text-ink-soft"><%= t("store.missing_body", domain: Store.base_domain) %></p>
+</main>

@@ -6,8 +6,6 @@ require "json"
 require "cgi"
 
 class DiscordNotifier
-  WEBHOOK_ENV = "DISCORD_ORDERS_WEBHOOK_URL"
-
   def self.notify_new_order(order)
     new.notify_new_order(order)
   end
@@ -18,7 +16,7 @@ class DiscordNotifier
 
   # Sendit parcel needs attention (customer unreachable, postponed, refused) or came back
   def notify_delivery_update(order, status_text)
-    url = ENV[WEBHOOK_ENV].to_s.strip
+    url = webhook_url(order)
     return false if url.blank?
 
     fields = [
@@ -30,21 +28,21 @@ class DiscordNotifier
     fields << { name: "Next attempt", value: order.sendit_deliver_by.to_s, inline: true } if order.sendit_deliver_by.present?
 
     post_json(url, {
-      username: "Morea",
+      username: order.store&.name.presence || "Store",
       content: "Sendit update for **#{order.number}**: #{status_text}",
       embeds: [ { title: "Order #{order.number} — #{status_text}", url: admin_order_url(order), color: 0xe0a100, fields: fields } ]
     })
   end
 
   def notify_new_order(order)
-    url = ENV[WEBHOOK_ENV].to_s.strip
+    url = webhook_url(order)
     if url.blank?
-      Rails.logger.info("[DiscordNotifier] Skipping — #{WEBHOOK_ENV} not set")
+      Rails.logger.info("[DiscordNotifier] Skipping — Discord webhook not set for store #{order.store_id}")
       return false
     end
 
     payload = {
-      username: "Morea",
+      username: order.store&.name.presence || "Store",
       content: "New COD order **#{order.number}** — validate or reject:",
       embeds: [ order_embed(order) ],
       components: [ action_row(order) ]
@@ -54,6 +52,10 @@ class DiscordNotifier
   end
 
   private
+
+  def webhook_url(order)
+    order.store&.discord_orders_webhook_url.to_s.strip.presence
+  end
 
   def order_embed(order)
     items = order.order_items.map do |item|
@@ -84,7 +86,7 @@ class DiscordNotifier
       color: 0x9a6f72,
       fields: fields,
       timestamp: order.created_at&.iso8601,
-      footer: { text: order.store&.name || "Morea" }
+      footer: { text: order.store&.name || "Store" }
     }
   end
 
@@ -110,7 +112,7 @@ class DiscordNotifier
 
   def action_url(order, action)
     token = OrderActionToken.issue(order: order, action: action)
-    "#{app_origin}/api/orders/#{order.id}/#{action}?token=#{CGI.escape(token)}"
+    "#{app_origin(order)}/api/orders/#{order.id}/#{action}?token=#{CGI.escape(token)}"
   end
 
   def money(cents, currency)
@@ -118,13 +120,11 @@ class DiscordNotifier
   end
 
   def admin_order_url(order)
-    "#{app_origin}/admin/orders/#{order.id}"
+    "#{app_origin(order)}/admin/orders/#{order.id}"
   end
 
-  def app_origin
-    host = ENV.fetch("APP_HOST", "localhost:3010")
-    protocol = host.include?("localhost") ? "http" : "https"
-    "#{protocol}://#{host}"
+  def app_origin(order)
+    order.store.origin
   end
 
   def post_json(url, payload)

@@ -81,5 +81,9 @@ Rails.application.configure do
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   config.hosts << /.*\.onrender\.com/
+  if (base = ENV["APP_BASE_DOMAIN"].presence)
+    config.hosts << base
+    config.hosts << /.*\.#{Regexp.escape(base)}/
+  end
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

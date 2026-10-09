@@ -6,9 +6,12 @@ class SenditPollJob < ApplicationJob
   queue_as :default
 
   def perform
-    return unless Sendit::Client.configured?
-
-    count = Sendit::Sync.enqueue_all
-    Rails.logger.info("[SenditPollJob] queued #{count} orders")
+    total = 0
+    Store.with_sendit.find_each do |store|
+      count = Sendit::Sync.enqueue_all(store.orders)
+      total += count
+      Rails.logger.info("[SenditPollJob] store=#{store.slug} queued #{count} orders")
+    end
+    Rails.logger.info("[SenditPollJob] queued #{total} orders total")
   end
 end

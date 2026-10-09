@@ -224,7 +224,7 @@
         <%= form_with url: transition_admin_order_path(@order), method: :patch, class: "space-y-3 px-4 pb-4" do %>
           <%= hidden_field_tag :to_status, "cancelled" %>
           <%= text_field_tag :cancel_reason, nil, placeholder: "Reason (optional)", class: "admin-input" %>
-          <% cancel_hint = current_store.sendit_configured? && @order.sendit_code.present? ? " Also cancels the Sendit parcel if it hasn’t been picked up." : "" %>
+          <% cancel_hint = current_store.sendit_configured? && @order.sendit_code.present? ? " This also deletes the parcel on Sendit." : "" %>
           <%= submit_tag "Cancel order", class: "admin-btn-critical", data: { turbo_confirm: "Cancel order ##{@order.number}?#{cancel_hint}" } %>
         <% end %>
       </section>

@@ -137,6 +137,7 @@ module Sendit
     # Create the parcel on Sendit (idempotent: skipped when the order already has one)
     def push!
       return order if order.sendit_code.present?
+      return order if order.status.in?(%w[cancelled returned delivered])
 
       district = resolve_district!
       raise Client::Error, "Choose the Sendit pickup city in Settings › Shipping before sending parcels." if pickup_district_id.blank?
@@ -150,6 +151,7 @@ module Sendit
     end
 
     def refresh!
+      return order if order.sendit_code.blank? && order.status.in?(%w[cancelled returned delivered])
       return push! if order.sendit_code.blank?
 
       apply_remote!(@client.delivery(order.sendit_code))
@@ -158,16 +160,26 @@ module Sendit
       fail!(e.message)
     end
 
-    # Remove the parcel if Sendit hasn't collected it yet
-    def cancel!
+    # Remove the parcel if Sendit hasn't collected it yet.
+    # bang: true raises so Morea cancel can abort when the courier delete fails.
+    def cancel!(bang: false)
       return order if order.sendit_code.blank?
-      return fail!("Parcel #{order.sendit_code} is already #{self.class.label(order.sendit_status)} — cancel it from Sendit.") unless cancellable?
+      return order if self.class.normalize_status(order.sendit_status) == "CANCELED"
+
+      unless cancellable?
+        msg = "Parcel #{order.sendit_code} is already #{self.class.label(order.sendit_status)} — cancel it from Sendit."
+        fail!(msg)
+        raise Client::Error, msg if bang
+        return order
+      end
 
       @client.delete_delivery(order.sendit_code)
       order.update!(sendit_status: "CANCELED", sendit_error: nil, sendit_synced_at: Time.current)
       order
     rescue Client::Error => e
       fail!(e.message)
+      raise if bang
+      order
     end
 
     # Push address / amount / products to a parcel that hasn't left the warehouse yet
@@ -185,7 +197,8 @@ module Sendit
     end
 
     def cancellable?
-      order.sendit_status.blank? || %w[PENDING TO_PREPARE].include?(self.class.normalize_status(order.sendit_status))
+      status = self.class.normalize_status(order.sendit_status)
+      status.blank? || %w[PENDING TO_PREPARE TO_PICKUP NEW_DESTINATION].include?(status)
     end
 
     def label_url

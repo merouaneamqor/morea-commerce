@@ -166,6 +166,9 @@ class Order < ApplicationRecord
     end
     raise ArgumentError, "Invalid transition #{status} → #{new_status}" unless can_transition_to?(new_status)
 
+    # Staff/API cancel must delete the Sendit parcel first, or abort the cancel
+    delete_sendit_parcel_for_cancel! if new_status == "cancelled" && source == :staff
+
     apply_status_change!(new_status, reason: reason, user: user)
   end
 
@@ -284,12 +287,23 @@ class Order < ApplicationRecord
     end
   end
 
+  def delete_sendit_parcel_for_cancel!
+    return unless store.sendit_configured?
+    return if sendit_code.blank?
+    return if Sendit::Sync.normalize_status(sendit_status) == "CANCELED"
+
+    Sendit::Sync.new(self).cancel!(bang: true)
+  rescue Sendit::Client::Error => e
+    raise ArgumentError, "Could not delete Sendit parcel #{sendit_code}: #{e.message}"
+  end
+
   def enqueue_sendit_sync(new_status)
     return unless store.sendit_configured?
 
     if new_status == "confirmed" && sendit_code.blank?
       SenditSyncJob.perform_later(id, "push")
-    elsif new_status == "cancelled" && sendit_code.present? && sendit_status != "CANCELED"
+    elsif new_status == "cancelled" && sendit_code.present? && Sendit::Sync.normalize_status(sendit_status) != "CANCELED"
+      # Safety net if cancel arrived without going through transition_to!(source: :staff)
       SenditSyncJob.perform_later(id, "cancel")
     end
   end

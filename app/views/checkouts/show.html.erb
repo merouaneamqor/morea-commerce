@@ -8,6 +8,7 @@
   district_required = @checkout.district_required?
   district_options = Checkout.districts_by_city[@checkout.city].to_a
 %>
+<%= pixel_event_tag "InitiateCheckout", cart_pixel_payload(@cart).merge(value: pixel_value(@checkout.total_cents)) %>
 
 <section class="checkout-page"
          data-controller="checkout-city"

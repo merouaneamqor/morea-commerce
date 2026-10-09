@@ -1,0 +1,46 @@
+<% content_for :title, "Pixels — Admin" %>
+
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">Pixels</h1>
+  <button type="submit" form="pixels-form" class="admin-btn">Save</button>
+</div>
+
+<%= form_with model: @store, url: admin_pixels_path, method: :patch, id: "pixels-form", class: "admin-stack" do |f| %>
+  <% if @store.errors.any? %>
+    <div class="admin-banner admin-banner--critical">
+      <%= @store.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Meta Pixel</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <div>
+        <%= f.label :meta_pixel_id, "Pixel ID", class: "admin-label" %>
+        <%= f.text_field :meta_pixel_id, class: "admin-input", placeholder: "123456789012345", autocomplete: "off", inputmode: "numeric" %>
+        <p class="admin-help">Events Manager → Data sources → your pixel → ID. Digits only. Leave blank to disconnect.</p>
+      </div>
+      <% if @store.meta_pixel_id.present? %>
+        <p class="admin-muted">Connected — PageView, ViewContent, AddToCart, InitiateCheckout, and Purchase fire on the storefront.</p>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">TikTok Pixel</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <div>
+        <%= f.label :tiktok_pixel_id, "Pixel ID", class: "admin-label" %>
+        <%= f.text_field :tiktok_pixel_id, class: "admin-input", placeholder: "CXXXXXXXXXXXXXXXXXX", autocomplete: "off" %>
+        <p class="admin-help">TikTok Events Manager → pixel → ID. Letters and numbers. Leave blank to disconnect.</p>
+      </div>
+      <% if @store.tiktok_pixel_id.present? %>
+        <p class="admin-muted">Connected — page, ViewContent, AddToCart, InitiateCheckout, and CompletePayment fire on the storefront.</p>
+      <% end %>
+    </div>
+  </section>
+
+  <div class="flex justify-end">
+    <%= f.submit "Save", class: "admin-btn" %>
+  </div>
+<% end %>

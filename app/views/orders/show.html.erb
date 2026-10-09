@@ -1,4 +1,7 @@
 <% content_for :title, "#{t("orders.order")} #{@order.number} — #{current_store.name}" %>
+<% if @pixel_purchase %>
+  <%= pixel_event_tag "Purchase", order_pixel_payload(@order) %>
+<% end %>
 
 <section class="mx-auto max-w-xl px-5 pb-24 pt-28 md:px-12 md:pb-28 md:pt-32" data-controller="reveal">
   <span class="order-done__mark" aria-hidden="true">

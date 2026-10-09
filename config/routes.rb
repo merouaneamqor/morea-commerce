@@ -46,6 +46,7 @@ Rails.application.routes.draw do
 
     root to: "dashboard#show"
     resource :store, only: %i[edit update]
+    resource :pixels, only: %i[edit update], controller: "pixels"
     resources :products do
       resources :variants, only: %i[create update destroy]
       resources :inventory, only: %i[create]

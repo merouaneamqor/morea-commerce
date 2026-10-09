@@ -60,7 +60,14 @@
           </nav>
 
           <div class="admin-sidebar__footer">
-            <%= admin_nav_link "Settings", edit_admin_store_path, icon: :settings, active: controller_name == "stores" %>
+            <% settings_open = controller_name.in?(%w[stores pixels]) %>
+            <%= admin_nav_link "Settings", edit_admin_store_path, icon: :settings, active: settings_open %>
+            <% if settings_open %>
+              <div class="admin-subnav">
+                <%= link_to "General", edit_admin_store_path, class: "admin-subnav__item #{'is-active' if controller_name == 'stores'}" %>
+                <%= link_to "Pixels", edit_admin_pixels_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pixels'}" %>
+              </div>
+            <% end %>
             <%= admin_nav_link "Staff", admin_users_path, icon: :staff, active: controller_name == "users" %>
             <%= button_to admin_logout_path, method: :delete, class: "admin-nav-item w-full" do %>
               <%= admin_icon(:logout) %><span>Sign out</span>

@@ -19,11 +19,13 @@
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%= render "shared/pixels" %>
   </head>
 
   <% body = yield %>
   <body class="min-h-screen min-h-dvh <%= "has-mobile-buy" if content_for?(:mobile_buy) %> <%= "is-rtl" if rtl? %> <%= "has-announcement" if current_store&.announcement.present? %>"
         data-controller="cart-drawer">
+    <%= render "shared/pixel_bridge" %>
     <div class="site-header">
       <% if current_store&.announcement.present? %>
         <p class="announcement-bar"><%= current_store.announcement %></p>

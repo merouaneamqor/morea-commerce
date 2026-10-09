@@ -23,6 +23,23 @@ class Store < ApplicationRecord
   validates :slug, uniqueness: true
   validates :shipping_cents, :low_stock_threshold, numericality: { greater_than_or_equal_to: 0 }
   validates :free_shipping_threshold_cents, numericality: { greater_than: 0 }, allow_nil: true
+  validates :meta_pixel_id, format: { with: /\A\d{5,20}\z/, message: "must be 5–20 digits" }, allow_blank: true
+  validates :tiktok_pixel_id, format: { with: /\A[A-Za-z0-9]{10,40}\z/, message: "must be 10–40 letters or numbers" }, allow_blank: true
+
+  before_validation :normalize_pixel_ids
+
+  def pixels_configured?
+    meta_pixel_id.present? || tiktok_pixel_id.present?
+  end
+
+  # Meta and TikTok expect ISO currency codes; storefront display uses DH.
+  def pixel_currency
+    case currency.to_s.upcase
+    when "DH", "MAD" then "MAD"
+    else currency.to_s.upcase.presence || "MAD"
+    end
+  end
+
 
   def self.current
     order(:id).first
@@ -94,4 +111,12 @@ class Store < ApplicationRecord
   def install_online_store_defaults!
     OnlineStoreDefaults.new(self).install!
   end
+
+  private
+
+  def normalize_pixel_ids
+    self.meta_pixel_id = meta_pixel_id.to_s.strip.presence
+    self.tiktok_pixel_id = tiktok_pixel_id.to_s.strip.presence
+  end
 end
+

@@ -1,6 +1,7 @@
 <% content_for :title, "#{@product.seo_title.presence || @product.name} — #{current_store.name}" %>
 <% content_for :meta_description, @product.seo_description.presence || @product.short_description %>
 <% content_for :mobile_buy, "1" %>
+<%= pixel_event_tag "ViewContent", product_pixel_payload(@product) %>
 
 <article class="pdp pdp-mobile-pad">
   <nav class="pdp__crumbs" aria-label="Breadcrumb">

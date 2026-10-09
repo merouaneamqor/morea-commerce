@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_09_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -394,6 +394,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_180000) do
     t.boolean "sendit_allow_open", default: true, null: false
     t.boolean "sendit_allow_try", default: true, null: false
     t.integer "low_stock_threshold", default: 5, null: false
+    t.string "meta_pixel_id"
+    t.string "tiktok_pixel_id"
     t.index ["slug"], name: "index_stores_on_slug", unique: true
   end
 

@@ -1,0 +1,9 @@
+<% return unless current_store&.pixels_configured? %>
+
+<%= tag.div id: "pixel-root",
+      data: {
+        controller: "pixels",
+        pixels_meta_id_value: current_store.meta_pixel_id.to_s,
+        pixels_tiktok_id_value: current_store.tiktok_pixel_id.to_s
+      } %>
+<div id="pixel-events"></div>

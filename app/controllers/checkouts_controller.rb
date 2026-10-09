@@ -25,6 +25,7 @@ class CheckoutsController < ApplicationController
     if @checkout.valid?
       order = @checkout.place_order!
       session.delete(:cart_token)
+      session[:pixel_purchase_order_id] = order.id
       redirect_to order_path(order.number), notice: t("checkout.placed")
     else
       render :show, status: :unprocessable_entity

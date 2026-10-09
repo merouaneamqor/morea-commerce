@@ -160,26 +160,25 @@ module Sendit
       fail!(e.message)
     end
 
-    # Remove the parcel if Sendit hasn't collected it yet.
-    # bang: true raises so Morea cancel can abort when the courier delete fails.
-    def cancel!(bang: false)
+    # Remove the parcel if Sendit hasn't collected it yet (called after Morea cancel).
+    def cancel!
       return order if order.sendit_code.blank?
       return order if self.class.normalize_status(order.sendit_status) == "CANCELED"
 
       unless cancellable?
-        msg = "Parcel #{order.sendit_code} is already #{self.class.label(order.sendit_status)} — cancel it from Sendit."
-        fail!(msg)
-        raise Client::Error, msg if bang
-        return order
+        return fail!("Parcel #{order.sendit_code} is already #{self.class.label(order.sendit_status)} — cancel it from Sendit.")
       end
 
       @client.delete_delivery(order.sendit_code)
-      order.update!(sendit_status: "CANCELED", sendit_error: nil, sendit_synced_at: Time.current)
+      mark_sendit_canceled!
       order
     rescue Client::Error => e
+      # Already gone on Sendit — treat as deleted
+      if e.message.to_s.match?(/non trouv|not found|404/i) || e.status.to_i == 404
+        mark_sendit_canceled!
+        return order
+      end
       fail!(e.message)
-      raise if bang
-      order
     end
 
     # Push address / amount / products to a parcel that hasn't left the warehouse yet
@@ -304,6 +303,10 @@ module Sendit
       digits = phone.to_s.gsub(/\D/, "")
       digits = "0#{digits.delete_prefix("212")}" if digits.start_with?("212") && digits.length == 12
       digits
+    end
+
+    def mark_sendit_canceled!
+      order.update!(sendit_status: "CANCELED", sendit_error: nil, sendit_synced_at: Time.current)
     end
 
     def fail!(message)

@@ -39,10 +39,14 @@ services:
           name: morea-redis
           type: keyvalue
           property: connectionString
-      # Recolor is installed into this service by bin/render-build.sh and
-      # started on 127.0.0.1:8000. Leave RECOLOR_SERVICE_URL unset.
+      # Same service. bin/render-start.sh listens here and the Rails client
+      # restarts it if the process is down.
+      - key: RECOLOR_SERVICE_URL
+        value: http://127.0.0.1:8000
       - key: RECOLOR_TIMEOUT
         value: "120"
+      - key: RECOLOR_MAX_EDGE
+        value: "1000"
 
 databases:
   - name: morea-db

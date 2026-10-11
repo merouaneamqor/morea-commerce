@@ -130,6 +130,9 @@
 <% end %>
 
 <% if @product.persisted? %>
+  <div class="mt-4">
+    <%= render "colorways" %>
+  </div>
   <div class="admin-layout mt-4">
     <section class="admin-card">
       <div class="admin-card__header"><h2 class="admin-card__title">Variants</h2></div>

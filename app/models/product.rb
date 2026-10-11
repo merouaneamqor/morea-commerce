@@ -3,6 +3,7 @@ class Product < ApplicationRecord
 
   belongs_to :store
   has_many :product_variants, dependent: :destroy
+  has_many :product_colorways, dependent: :destroy
   has_many :collection_products, dependent: :destroy
   has_many :collections, through: :collection_products
   has_many :cart_items, dependent: :destroy

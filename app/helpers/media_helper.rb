@@ -91,7 +91,9 @@ module MediaHelper
 
   def color_hex(name)
     {
+      "baby pink" => "#f4c2c2",
       "blush" => "#f8cdd0",
+      "ocean blue" => "#1f4e79",
       "rose poudré" => "#d9a8ab",
       "rose poudre" => "#d9a8ab",
       "sand" => "#d6c3b0",

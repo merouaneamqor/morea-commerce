@@ -69,6 +69,12 @@ Rails.application.routes.draw do
     resources :products do
       resources :variants, only: %i[create update destroy]
       resources :inventory, only: %i[create]
+      resources :color_variants, only: %i[create destroy] do
+        member do
+          post :attach_to_product
+          post :assign_variant
+        end
+      end
     end
     resources :collections
     resources :discounts, except: %i[show]

@@ -1,5 +1,6 @@
 class ProductVariant < ApplicationRecord
   belongs_to :product
+  has_one_attached :image
   has_many :cart_items, dependent: :nullify
   has_many :order_items, dependent: :nullify
   has_many :inventory_movements, dependent: :nullify

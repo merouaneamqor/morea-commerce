@@ -8,6 +8,7 @@ class Product < ApplicationRecord
   has_many :cart_items, dependent: :destroy
   has_many :order_items, dependent: :restrict_with_exception
   has_many :inventory_movements, dependent: :destroy
+  has_many :product_color_variants, dependent: :destroy
   has_many :translations, class_name: "ProductTranslation", dependent: :destroy, inverse_of: :product
   has_many_attached :images
 

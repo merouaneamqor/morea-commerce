@@ -28,6 +28,7 @@ module Admin
 
     def edit
       @product.build_missing_translations!
+      @product.product_color_variants.load
       @inventory_movements = @product.inventory_movements.includes(:product_variant, :order).order(created_at: :desc).limit(50)
     end
 

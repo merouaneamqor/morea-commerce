@@ -131,6 +131,8 @@
 
 <% if @product.persisted? %>
   <div class="admin-layout mt-4">
+    <%= render "color_variants" %>
+
     <section class="admin-card">
       <div class="admin-card__header"><h2 class="admin-card__title">Variants</h2></div>
       <% if @product.product_variants.any? %>

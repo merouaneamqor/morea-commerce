@@ -1,0 +1,78 @@
+<section class="admin-card" id="color-variants">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title">Color variants (AI preview)</h2>
+  </div>
+  <div class="space-y-4 px-4 pb-4">
+    <p class="admin-help">
+      Segment the garment, recolor it in Lab space, and composite back onto the original photo.
+      Background, skin, and lighting stay untouched. Requires the
+      <code>recolor</code> service (<code>docker compose up recolor</code>).
+    </p>
+
+    <% if @product.images.attached? %>
+      <%= form_with url: admin_product_color_variants_path(@product), method: :post, class: "space-y-3 rounded-lg border border-[#ebebeb] p-3" do %>
+        <div class="admin-field-grid">
+          <div>
+            <label class="admin-label" for="source_attachment_id">Source image</label>
+            <select name="source_attachment_id" id="source_attachment_id" class="admin-input" required>
+              <% @product.ordered_images.each_with_index do |image, i| %>
+                <option value="<%= image.id %>"><%= i.zero? ? "Main" : "Image ##{ i + 1 }" %> — <%= image.filename %></option>
+              <% end %>
+            </select>
+          </div>
+          <div>
+            <label class="admin-label" for="hex_color">Target color</label>
+            <select name="hex_color" id="hex_color" class="admin-input">
+              <% ProductColorVariant::PRESET_COLORS.each do |key, hex| %>
+                <option value="<%= key %>"><%= key.humanize %> (<%= hex %>)</option>
+              <% end %>
+              <option value="#C4A484">Custom taupe</option>
+            </select>
+          </div>
+        </div>
+        <%= submit_tag "Generate preview", class: "admin-btn-secondary", data: { turbo_submits_with: "Queuing…" } %>
+      <% end %>
+    <% else %>
+      <p class="admin-muted">Upload at least one product image to generate color previews.</p>
+    <% end %>
+
+    <% previews = @product.product_color_variants.newest_first.includes(result_image_attachment: :blob) %>
+    <% if previews.any? %>
+      <ul class="admin-media-grid sm:!grid-cols-4">
+        <% previews.each do |preview| %>
+          <li class="admin-media-item admin-media-item--pending">
+            <% if preview.ready? && preview.result_image.attached? %>
+              <%= image_tag MediaUrl.sized(media_url(preview.result_image), width: 320), alt: preview.normalized_hex %>
+            <% else %>
+              <div class="flex aspect-[3/4] items-center justify-center bg-[#f7f7f7] text-xs text-[#707070] p-2 text-center">
+                <%= preview.status.humanize %>
+                <% if preview.failed? && preview.error_message.present? %>
+                  <span class="mt-1 block text-[10px] text-red-700"><%= preview.error_message %></span>
+                <% end %>
+              </div>
+            <% end %>
+            <span class="admin-media-item__bar flex-wrap gap-1">
+              <span class="admin-badge" style="background:<%= preview.normalized_hex %>; color:#fff; text-shadow:0 0 2px #000"><%= preview.normalized_hex %></span>
+              <% if preview.ready? %>
+                <%= button_to "Add to gallery", attach_to_product_admin_product_color_variant_path(@product, preview),
+                      method: :post, class: "admin-link text-[10px]" %>
+                <% if @product.product_variants.any? %>
+                  <%= form_with url: assign_variant_admin_product_color_variant_path(@product, preview), method: :post, class: "inline-flex items-center gap-1" do %>
+                    <select name="product_variant_id" class="admin-input !py-0 !text-[10px] max-w-[6rem]" required>
+                      <% @product.product_variants.order(:id).each do |v| %>
+                        <option value="<%= v.id %>"><%= v.display_name %></option>
+                      <% end %>
+                    </select>
+                    <%= submit_tag "→ variant", class: "admin-link text-[10px]" %>
+                  <% end %>
+                <% end %>
+              <% end %>
+              <%= button_to "Remove", admin_product_color_variant_path(@product, preview), method: :delete,
+                    form: { data: { turbo_confirm: "Remove this preview?" } }, class: "admin-link text-[10px] text-red-700" %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</section>

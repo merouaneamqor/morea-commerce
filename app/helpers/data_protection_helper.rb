@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DataProtectionHelper
-  TRACKING_CONSENT_COOKIE = :morea_tracking_consent
+  COOKIE_NOTICE_COOKIE = :morea_cookie_notice
 
   def privacy_page_path_for_store
     return unless current_store&.pages&.published&.exists?(slug: "privacy")
@@ -9,22 +9,12 @@ module DataProtectionHelper
     page_path("privacy")
   end
 
-  def tracking_consent_cookie
-    cookies[TRACKING_CONSENT_COOKIE].presence
+  def cookie_notice_seen?
+    cookies[COOKIE_NOTICE_COOKIE].present?
   end
 
-  def tracking_consent_granted?
-    return true unless current_store&.pixels_configured?
-
-    tracking_consent_cookie == "granted"
-  end
-
-  def tracking_consent_denied?
-    tracking_consent_cookie == "denied"
-  end
-
-  def tracking_consent_pending?
-    current_store&.pixels_configured? && tracking_consent_cookie.blank?
+  def cookie_notice_pending?
+    !cookie_notice_seen?
   end
 
   def checkout_data_protection_notice

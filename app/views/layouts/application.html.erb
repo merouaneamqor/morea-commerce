@@ -79,7 +79,7 @@
       <%= body %>
     </main>
 
-    <%= render "shared/cookie_consent" if tracking_consent_pending? %>
+    <%= render "shared/cookie_consent" if cookie_notice_pending? %>
     <%= render "shared/footer" %>
     <% if current_cart && controller_name != "checkouts" %>
       <%= render "carts/drawer", cart: current_cart %>

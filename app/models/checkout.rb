@@ -3,11 +3,9 @@
 class Checkout
   include ActiveModel::Model
 
-  attr_accessor :name, :phone, :phone_country, :city, :district, :address, :notes, :discount_code,
-                :data_processing_consent, :cart, :store
+  attr_accessor :name, :phone, :phone_country, :city, :district, :address, :notes, :discount_code, :cart, :store
 
   validate :required_fields
-  validate :data_processing_consent_must_be_accepted
   validate :phone_must_be_valid
   validate :cart_must_have_items
   validate :discount_must_be_valid
@@ -226,10 +224,5 @@ class Checkout
     errors.add(:discount_code, :invalid, message: I18n.t("checkout.errors.discount_code"))
   end
 
-  def data_processing_consent_must_be_accepted
-    return if ActiveModel::Type::Boolean.new.cast(data_processing_consent)
-
-    errors.add(:data_processing_consent, :accepted, message: I18n.t("checkout.errors.data_processing_consent"))
-  end
 end
 

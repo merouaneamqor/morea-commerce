@@ -1612,16 +1612,12 @@
     @apply px-3.5 py-3 text-sm text-ink-faint;
   }
 
-  .checkout-consent {
-    @apply flex items-start gap-3 text-sm leading-relaxed text-ink-soft;
+  .checkout-legal-note {
+    @apply text-xs leading-relaxed text-ink-faint;
   }
 
-  .checkout-consent__input {
-    @apply mt-1 h-4 w-4 shrink-0 cursor-pointer accent-ink;
-  }
-
-  .checkout-consent__link {
-    @apply text-ink underline decoration-line/60 underline-offset-2;
+  .checkout-legal-note__link {
+    @apply text-ink-soft underline decoration-line/60 underline-offset-2;
   }
 
   .cookie-consent {

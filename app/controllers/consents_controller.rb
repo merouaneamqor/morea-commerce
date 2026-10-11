@@ -2,9 +2,8 @@
 
 class ConsentsController < ApplicationController
   def tracking
-    status = params[:status].to_s == "deny" ? "denied" : "granted"
-    cookies[DataProtectionHelper::TRACKING_CONSENT_COOKIE] = {
-      value: status,
+    cookies[DataProtectionHelper::COOKIE_NOTICE_COOKIE] = {
+      value: "1",
       expires: 1.year.from_now,
       same_site: :lax,
       secure: !Rails.env.local?,

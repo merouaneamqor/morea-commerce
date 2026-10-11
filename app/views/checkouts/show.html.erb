@@ -180,20 +180,10 @@
           </div>
         </details>
 
-        <fieldset class="checkout-step checkout-step--legal">
-          <legend class="checkout-step__title"><%= t("data_protection.checkout_legend") %></legend>
-          <p class="checkout-step__hint"><%= checkout_data_protection_notice %></p>
-          <label class="checkout-consent">
-            <%= f.check_box :data_processing_consent,
-                  { required: true, class: "checkout-consent__input" },
-                  "1",
-                  "0" %>
-            <span class="checkout-consent__label">
-              <% privacy_link = privacy_page_path_for_store ? link_to(t("data_protection.privacy_policy"), privacy_page_path_for_store, class: "checkout-consent__link") : t("data_protection.privacy_policy") %>
-              <%= t("data_protection.checkout_consent_html", privacy_link: privacy_link).html_safe %>
-            </span>
-          </label>
-        </fieldset>
+        <p class="checkout-legal-note">
+          <% privacy_link = privacy_page_path_for_store ? link_to(t("data_protection.privacy_policy"), privacy_page_path_for_store, class: "checkout-legal-note__link") : t("data_protection.privacy_policy") %>
+          <%= t("data_protection.checkout_submit_notice_html", privacy_link: privacy_link).html_safe %>
+        </p>
 
         <div class="checkout-submit checkout-submit--desktop">
           <%= f.button type: "submit", class: "maison-button checkout-submit__button w-full cursor-pointer text-center", data: { turbo_submits_with: t("checkout.placing") } do %>

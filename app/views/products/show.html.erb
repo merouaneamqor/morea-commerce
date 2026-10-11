@@ -3,7 +3,10 @@
 <% content_for :mobile_buy, "1" %>
 <%= pixel_event_tag "ViewContent", product_pixel_payload(@product) %>
 
-<article class="pdp pdp-mobile-pad">
+<article class="pdp pdp-mobile-pad"
+         data-controller="colorway-gallery"
+         data-colorway-gallery-colorways-value="<%= @colorway_galleries.to_json %>"
+         data-action="variant-picker:color->colorway-gallery#show">
   <nav class="pdp__crumbs" aria-label="Breadcrumb">
     <%= link_to t("nav.home"), localized_root_path %>
     <span aria-hidden="true">/</span>
@@ -17,7 +20,7 @@
   <div class="pdp__grid">
     <div class="pdp__gallery" data-controller="reveal">
       <% @gallery.each_with_index do |url, i| %>
-        <div class="pdp__shot object-frame <%= "pdp__shot--lead" if i.zero? %>">
+        <div class="pdp__shot object-frame <%= "pdp__shot--lead" if i.zero? %>" data-colorway-gallery-target="shot">
           <%= object_image_tag url,
                 alt: (i.zero? ? @product.name : "#{@product.name} — #{i + 1}"),
                 sizes: (i.zero? ? "(max-width: 768px) 90vw, 58vw" : "(max-width: 768px) 90vw, 29vw"),

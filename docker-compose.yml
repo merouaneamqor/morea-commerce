@@ -25,6 +25,14 @@ services:
       timeout: 3s
       retries: 10
 
+  recolor:
+    build:
+      context: ./services/recolor
+    ports:
+      - "8000:8000"
+    environment:
+      RECOLOR_MAX_EDGE: "2000"
+
   web:
     build:
       context: .
@@ -49,11 +57,14 @@ services:
       SENDIT_PUBLIC_KEY: ${SENDIT_PUBLIC_KEY:-}
       SENDIT_SECRET_KEY: ${SENDIT_SECRET_KEY:-}
       SENDIT_WEBHOOK_SECRET: ${SENDIT_WEBHOOK_SECRET:-}
+      RECOLOR_SERVICE_URL: http://recolor:8000
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
+      recolor:
+        condition: service_started
     stdin_open: true
     tty: true
     command: bash -c "bundle install && bin/rails db:prepare && bin/rails runner 'load \"db/seeds.rb\" if Store.count.zero?' && bin/dev"

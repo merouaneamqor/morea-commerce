@@ -39,6 +39,9 @@ class Store < ApplicationRecord
   before_validation :normalize_pixel_ids
   before_validation :normalize_slug
   before_validation :assign_default_billing_period_end, on: :create
+  after_save :sync_privacy_policy_page, if: :privacy_settings_changed?
+
+  PRIVACY_SYNC_ATTRIBUTES = %i[legal_entity_name cndp_authorization privacy_rights_contact name email phone].freeze
 
   scope :with_sendit, -> {
     where.not(sendit_public_key: [ nil, "" ]).where.not(sendit_secret_key: [ nil, "" ])
@@ -79,6 +82,14 @@ class Store < ApplicationRecord
 
   def pixels_configured?
     meta_pixel_id.present? || tiktok_pixel_id.present?
+  end
+
+  def data_controller_name
+    legal_entity_name.presence || name
+  end
+
+  def privacy_rights_contact_display
+    privacy_rights_contact.presence || email.presence || phone.presence || "—"
   end
 
   # Meta and TikTok expect ISO currency codes; storefront display uses DH.
@@ -188,6 +199,14 @@ class Store < ApplicationRecord
   end
 
   private
+
+  def privacy_settings_changed?
+    PRIVACY_SYNC_ATTRIBUTES.any? { |attr| saved_change_to_attribute?(attr) }
+  end
+
+  def sync_privacy_policy_page
+    DataProtection::SyncPrivacyPage.call(self)
+  end
 
   def normalize_slug
     self.slug = slug.to_s.strip.downcase.presence

@@ -65,7 +65,8 @@ class OnlineStoreDefaults
         "fr" => { title: "Retours", body: "Vous disposez de 7 jours après réception pour nous retourner un article.\n\nContactez-nous au #{contact["fr"]} pour organiser le retour." },
         "en" => { title: "Returns", body: "You have 7 days after delivery to return an item.\n\nContact us at #{contact["en"]} to arrange your return." },
         "ar" => { title: "الإرجاع", body: "لديكم 7 أيام بعد الاستلام لإرجاع أي قطعة.\n\nتواصلوا معنا على #{contact["ar"]} لترتيب الإرجاع." }
-      })
+      }),
+      page("privacy", privacy_page_translations)
     ]
   end
 
@@ -77,6 +78,7 @@ class OnlineStoreDefaults
       [ "page:about", ->(loc) { { "fr" => "Notre histoire", "en" => "Our story", "ar" => "قصتنا" }[loc] } ]
     ].compact
     footer = [
+      [ "page:privacy", ->(loc) { Morea::PrivacyPolicy.menu_labels[loc] } ],
       [ "page:shipping", ->(loc) { { "fr" => "Livraison & paiement", "en" => "Shipping & payment", "ar" => "التوصيل والدفع" }[loc] } ],
       [ "page:returns", ->(loc) { { "fr" => "Retours", "en" => "Returns", "ar" => "الإرجاع" }[loc] } ],
       [ "track", ->(loc) { t(loc, "nav.track_order") } ],
@@ -114,5 +116,14 @@ class OnlineStoreDefaults
 
   def t(locale, key)
     I18n.t(key, locale: locale)
+  end
+
+  def privacy_page_translations
+    LOCALES.index_with do |loc|
+      {
+        title: Morea::PrivacyPolicy.titles[loc],
+        body: Morea::PrivacyPolicy.body_for(store, locale: loc)
+      }
+    end
   end
 end

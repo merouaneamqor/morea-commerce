@@ -22,6 +22,6 @@ class ProductVariant < ApplicationRecord
   end
 
   def display_name
-    name.presence || [option1_value, option2_value].compact.join(" / ")
+    name.presence || [ option1_value, option2_value ].compact.join(" / ")
   end
 end

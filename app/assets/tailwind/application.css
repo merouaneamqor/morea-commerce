@@ -871,7 +871,34 @@
   }
 
   .site-footer__grid {
-    @apply grid gap-12 md:grid-cols-[1.4fr_1fr_1fr];
+    @apply grid gap-8 md:grid-cols-[1.4fr_1fr_1fr] md:gap-12;
+  }
+
+  .site-footer__cols {
+    @apply flex flex-col gap-0 md:contents;
+  }
+
+  .site-footer__accordion {
+    @apply border-b border-line py-4 md:border-0 md:py-0;
+  }
+
+  .site-footer__accordion-summary {
+    @apply cursor-pointer list-none text-[10px] uppercase tracking-[0.32em] text-brass;
+  }
+
+  .site-footer__accordion-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .site-footer__accordion[open] .site-footer__col,
+  .site-footer__accordion[open] > .site-footer__col {
+    @apply mt-3 md:mt-0;
+  }
+
+  @media (min-width: 768px) {
+    .site-footer__accordion > summary {
+      display: none;
+    }
   }
 
   .site-footer__brand .morea-wordmark-type {
@@ -1610,6 +1637,68 @@
 
   .checkout-combobox__empty {
     @apply px-3.5 py-3 text-sm text-ink-faint;
+  }
+
+  .checkout-legal-note {
+    @apply text-xs leading-relaxed text-ink-faint;
+  }
+
+  .checkout-legal-note__link {
+    @apply text-ink-soft underline decoration-line/60 underline-offset-2;
+  }
+
+  body.has-cookie-notice {
+    padding-top: 3.25rem;
+  }
+
+  .cookie-consent {
+    @apply fixed inset-x-0 top-0 z-50 border-b border-line bg-paper/95 backdrop-blur-sm;
+    padding-top: max(0.5rem, env(safe-area-inset-top));
+  }
+
+  .cookie-consent__inner {
+    @apply mx-auto flex max-w-6xl flex-col gap-3 px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:py-3;
+  }
+
+  .cookie-consent__text {
+    @apply text-xs leading-relaxed text-ink-soft sm:text-sm;
+  }
+
+  .cookie-consent__link {
+    @apply ms-1 text-ink underline decoration-line/60 underline-offset-2;
+  }
+
+  .cookie-consent__button {
+    @apply shrink-0 cursor-pointer bg-ink px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-paper transition;
+  }
+
+  .checkout-phone__compact,
+  .checkout-phone__full {
+    @apply contents;
+  }
+
+  .checkout-phone__other {
+    @apply mt-2 cursor-pointer border-0 bg-transparent p-0 text-[10px] uppercase tracking-[0.18em] text-ink-faint underline-offset-2 hover:text-ink hover:underline;
+  }
+
+  .checkout-promo {
+    @apply space-y-2;
+  }
+
+  .checkout-promo__toggle {
+    @apply cursor-pointer border-0 bg-transparent p-0 text-[10px] uppercase tracking-[0.2em] text-ink-soft underline-offset-4 hover:text-ink hover:underline;
+  }
+
+  .checkout-promo__panel {
+    @apply pt-1;
+  }
+
+  .pdp-add-link {
+    @apply border-0 bg-transparent text-center text-[10px] uppercase tracking-[0.22em] text-ink-soft underline-offset-4 transition hover:text-ink hover:underline;
+  }
+
+  .mobile-buy-bar__stack {
+    @apply flex flex-col gap-2;
   }
 
   /* Detect browser autofill so city shipping/districts update */

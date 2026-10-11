@@ -14,7 +14,7 @@ class CartsController < ApplicationController
 
     return redirect_to(checkout_path) if params[:checkout].present?
 
-    pixel_event = if current_store.pixels_configured?
+    pixel_event = if helpers.pixels_enabled?
       {
         name: "AddToCart",
         payload: {

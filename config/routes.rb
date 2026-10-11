@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   post "webhooks/sendit/:store_slug", to: "webhooks/sendit#create", as: :sendit_webhook
+  post "consent/tracking", to: "consents#tracking", as: :tracking_consent
 
   namespace :api do
     resources :orders, only: [] do
@@ -16,7 +17,12 @@ Rails.application.routes.draw do
     end
   end
 
-  root to: redirect("/fr")
+  root to: redirect { |_params, request|
+    locale = request.cookie_jar[ApplicationController::LOCALE_COOKIE].to_s
+    locale = ApplicationController.browser_locale_from(request).to_s if locale.blank?
+    locale = "fr" unless Morea::Locales.available?(locale)
+    "/#{locale}"
+  }
 
   scope "/:locale", locale: /fr|en|ar/ do
     get "/", to: "home#index", as: :localized_root

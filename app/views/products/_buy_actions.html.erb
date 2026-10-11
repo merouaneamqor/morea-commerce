@@ -1,4 +1,4 @@
-<%# Quantity, COD "order now" (straight to checkout), add to bag and WhatsApp help.
+<%# Quantity, COD "order now" (straight to checkout), add to bag.
     buttons_class hides the buttons where a sticky mobile bar takes over. %>
 <% buttons_class = local_assigns.fetch(:buttons_class, "") %>
 
@@ -17,14 +17,7 @@
     <span class="block"><%= t("product.order_now") %></span>
     <span class="pdp-order-btn__sub"><%= t("product.pay_on_delivery") %></span>
   <% end %>
-  <%= button_tag type: "submit", class: "landing-ghost-btn !mt-0 w-full cursor-pointer justify-center" do %>
-    <span><%= t("product.add_to_bag") %></span>
+  <%= button_tag type: "submit", class: "pdp-add-link w-full cursor-pointer" do %>
+    <%= t("product.add_to_bag") %>
   <% end %>
 </div>
-
-<% if (wa = current_store.whatsapp_url(t("product.whatsapp_message", product: product.name, url: product_url(product)))) %>
-  <%= link_to wa, class: "whatsapp-link", target: "_blank", rel: "noopener" do %>
-    <%= render "shared/whatsapp_icon" %>
-    <span><%= t("product.whatsapp_question") %></span>
-  <% end %>
-<% end %>

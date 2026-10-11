@@ -46,4 +46,3 @@ module Morea
     config.i18n.fallbacks = true
   end
 end
-

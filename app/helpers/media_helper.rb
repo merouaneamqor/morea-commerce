@@ -1,5 +1,5 @@
 module MediaHelper
-  def product_image_tag(product, alt: nil, widths: [640, 960, 1280], sizes: "(max-width: 768px) 100vw, 50vw", css_class: "h-full w-full object-cover", loading: "lazy", fetchpriority: nil)
+  def product_image_tag(product, alt: nil, widths: [ 640, 960, 1280 ], sizes: "(max-width: 768px) 100vw, 50vw", css_class: "h-full w-full object-cover", loading: "lazy", fetchpriority: nil)
     url = product_image_url(product)
     return placeholder_frame("Image forthcoming") if url.blank?
 
@@ -31,7 +31,7 @@ module MediaHelper
     media_url(collection.image) if collection.image.attached?
   end
 
-  def object_image_tag(url, alt:, widths: [640, 960, 1280, 1600], sizes: "(max-width: 768px) 100vw, 50vw", css_class: "h-full w-full object-cover", loading: "lazy", fetchpriority: nil)
+  def object_image_tag(url, alt:, widths: [ 640, 960, 1280, 1600 ], sizes: "(max-width: 768px) 100vw, 50vw", css_class: "h-full w-full object-cover", loading: "lazy", fetchpriority: nil)
     return placeholder_frame("Image forthcoming") if url.blank?
 
     srcset = widths.map { |w| "#{cdn_image_url(url, width: w)} #{w}w" }.join(", ")
@@ -73,7 +73,7 @@ module MediaHelper
         rel: "preload",
         as: "image",
         href: cdn_image_url(url, width: 1280),
-        imagesrcset: [640, 960, 1280].map { |w| "#{cdn_image_url(url, width: w)} #{w}w" }.join(", "),
+        imagesrcset: [ 640, 960, 1280 ].map { |w| "#{cdn_image_url(url, width: w)} #{w}w" }.join(", "),
         imagesizes: "(max-width: 768px) 100vw, 58vw"
       )
     else

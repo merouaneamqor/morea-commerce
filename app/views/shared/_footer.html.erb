@@ -10,26 +10,34 @@
       <% end %>
     </div>
 
-    <% if store_menu("footer").any? %>
-      <nav class="site-footer__col" aria-label="<%= t("footer.information") %>">
-        <p class="site-footer__heading"><%= t("footer.information") %></p>
-        <% store_menu("footer").each do |item| %>
-          <%= store_menu_link item, class: "site-footer__link" %>
-        <% end %>
-      </nav>
-    <% end %>
+    <div class="site-footer__cols">
+      <% if store_menu("footer").any? %>
+        <details class="site-footer__accordion md:contents" open>
+          <summary class="site-footer__accordion-summary md:hidden"><%= t("footer.information") %></summary>
+          <nav class="site-footer__col" aria-label="<%= t("footer.information") %>">
+            <p class="site-footer__heading hidden md:block"><%= t("footer.information") %></p>
+            <% store_menu("footer").each do |item| %>
+              <%= store_menu_link item, class: "site-footer__link" %>
+            <% end %>
+          </nav>
+        </details>
+      <% end %>
 
-    <div class="site-footer__col">
-      <p class="site-footer__heading"><%= t("footer.customer_care") %></p>
-      <% if current_store&.phone.present? %>
-        <%= link_to current_store.phone, "tel:#{current_store.phone.delete(" ")}", class: "site-footer__link", dir: "ltr" %>
-      <% end %>
-      <% if current_store&.email.present? %>
-        <%= mail_to current_store.email, current_store.email, class: "site-footer__link" %>
-      <% end %>
-      <% if current_store&.cod_note.present? %>
-        <p class="mt-2 max-w-xs text-xs leading-6 text-ink-faint"><%= current_store.cod_note %></p>
-      <% end %>
+      <details class="site-footer__accordion md:contents" open>
+        <summary class="site-footer__accordion-summary md:hidden"><%= t("footer.customer_care") %></summary>
+        <div class="site-footer__col">
+          <p class="site-footer__heading hidden md:block"><%= t("footer.customer_care") %></p>
+          <% if current_store&.phone.present? %>
+            <%= link_to current_store.phone, "tel:#{current_store.phone.delete(" ")}", class: "site-footer__link", dir: "ltr" %>
+          <% end %>
+          <% if current_store&.email.present? %>
+            <%= mail_to current_store.email, current_store.email, class: "site-footer__link" %>
+          <% end %>
+          <% if current_store&.cod_note.present? %>
+            <p class="mt-2 max-w-xs text-xs leading-6 text-ink-faint"><%= current_store.cod_note %></p>
+          <% end %>
+        </div>
+      </details>
     </div>
   </div>
 

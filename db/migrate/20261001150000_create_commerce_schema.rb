@@ -38,7 +38,7 @@ class CreateCommerceSchema < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    add_index :collections, [:store_id, :slug], unique: true
+    add_index :collections, [ :store_id, :slug ], unique: true
 
     create_table :products do |t|
       t.references :store, null: false, foreign_key: true
@@ -66,7 +66,7 @@ class CreateCommerceSchema < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    add_index :products, [:store_id, :slug], unique: true
+    add_index :products, [ :store_id, :slug ], unique: true
     add_index :products, :status
     add_index :products, :featured
 
@@ -92,7 +92,7 @@ class CreateCommerceSchema < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    add_index :collection_products, [:collection_id, :product_id], unique: true
+    add_index :collection_products, [ :collection_id, :product_id ], unique: true
 
     create_table :customers do |t|
       t.references :store, null: false, foreign_key: true
@@ -104,7 +104,7 @@ class CreateCommerceSchema < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    add_index :customers, [:store_id, :phone], unique: true
+    add_index :customers, [ :store_id, :phone ], unique: true
 
     create_table :addresses do |t|
       t.references :customer, null: false, foreign_key: true
@@ -196,6 +196,6 @@ class CreateCommerceSchema < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    add_index :discounts, [:store_id, :code], unique: true
+    add_index :discounts, [ :store_id, :code ], unique: true
   end
 end

@@ -152,7 +152,7 @@ catalog = [
     compare_at_dh: 999,
     stock: 48,
     featured: true,
-    collections: [essentials, premium],
+    collections: [ essentials, premium ],
     translations: {
       "fr" => {
         name: "L'Essentiel Set",
@@ -207,7 +207,7 @@ catalog = [
     slug: "longline-performance-top",
     price_dh: 349,
     stock: 40,
-    collections: [essentials, casual],
+    collections: [ essentials, casual ],
     translations: {
       "fr" => {
         name: "Top performance longline",
@@ -243,7 +243,7 @@ catalog = [
     slug: "wide-leg-motion-pant",
     price_dh: 429,
     stock: 28,
-    collections: [essentials, premium],
+    collections: [ essentials, premium ],
     translations: {
       "fr" => {
         name: "Pantalon motion wide-leg",
@@ -273,7 +273,7 @@ catalog = [
     slug: "sports-hijab",
     price_dh: 199,
     stock: 60,
-    collections: [essentials],
+    collections: [ essentials ],
     translations: {
       "fr" => {
         name: "Hijab sport",
@@ -316,7 +316,7 @@ catalog = [
     slug: "oversized-studio-jacket",
     price_dh: 599,
     stock: 18,
-    collections: [premium, casual],
+    collections: [ premium, casual ],
     translations: {
       "fr" => {
         name: "Veste studio oversized",
@@ -346,7 +346,7 @@ catalog = [
     slug: "soft-day-set",
     price_dh: 699,
     stock: 15,
-    collections: [casual],
+    collections: [ casual ],
     translations: {
       "fr" => {
         name: "Ensemble Soft Day",
@@ -376,7 +376,7 @@ catalog = [
     slug: "premium-training-set",
     price_dh: 999,
     stock: 10,
-    collections: [premium],
+    collections: [ premium ],
     translations: {
       "fr" => {
         name: "Ensemble training premium",

@@ -7,6 +7,7 @@
   bag_preview_total = money(@checkout.total_cents, current_store.currency)
   district_required = @checkout.district_required?
   district_options = Checkout.districts_by_city(current_store)[@checkout.city].to_a
+  foreign_phone = @checkout.phone_country.present? && @checkout.phone_country != "MA"
 %>
 <%= pixel_event_tag "InitiateCheckout", cart_pixel_payload(@cart).merge(value: pixel_value(@checkout.total_cents)) %>
 
@@ -31,12 +32,7 @@
   <header class="checkout-hero">
     <p class="checkout-hero__eyebrow"><%= t("checkout.step_label") %></p>
     <h1 class="checkout-hero__title"><%= t("checkout.title") %></h1>
-    <p class="checkout-hero__subtitle"><%= t("checkout.subtitle") %></p>
-    <p class="checkout-cod-strip">
-      <span><%= current_store.cod_label %></span>
-      <span class="checkout-cod-strip__dot" aria-hidden="true"></span>
-      <span><%= t("checkout.no_prepay") %></span>
-    </p>
+    <p class="checkout-hero__subtitle"><%= t("checkout.subtitle_short") %></p>
   </header>
 
   <details class="checkout-bag-mobile lg:hidden">
@@ -71,7 +67,14 @@
   <div class="checkout-grid">
     <div class="checkout-form-col">
       <%= form_with model: @checkout, url: checkout_path, method: :post, class: "checkout-form",
-            html: { id: "checkout-form", data: { action: "submit->checkout-city#validateCity" } } do |f| %>
+            html: {
+              id: "checkout-form",
+              data: {
+                controller: "checkout-recall checkout-extras phone-country",
+                checkout_recall_store_value: current_store.slug,
+                action: "submit->checkout-city#validateCity"
+              }
+            } do |f| %>
         <% if @checkout.errors.any? %>
           <div class="checkout-alert" role="alert">
             <p class="text-[10px] uppercase tracking-[0.22em] text-ink"><%= t("checkout.form_errors") %></p>
@@ -93,14 +96,25 @@
             <div class="checkout-field">
               <%= f.label :phone, t("checkout.phone"), class: "checkout-label" %>
               <div class="checkout-phone" dir="ltr">
-                <%= f.select :phone_country,
-                      options_for_select(Checkout::PHONE_COUNTRIES, @checkout.phone_country),
-                      {},
-                      class: "checkout-phone__prefix checkout-select",
-                      autocomplete: "tel-country-code",
-                      aria: { label: t("checkout.phone_country") } %>
+                <div class="checkout-phone__compact" data-phone-country-target="compact" <%= "hidden" if foreign_phone %>>
+                  <%= f.hidden_field :phone_country, value: "MA", disabled: foreign_phone, data: { phone_country_target: "maCountry" } %>
+                  <span class="checkout-phone__prefix" aria-hidden="true">+212</span>
+                </div>
+                <div class="checkout-phone__full" data-phone-country-target="full" <%= "hidden" unless foreign_phone %>>
+                  <%= f.select :phone_country,
+                        options_for_select(Checkout::PHONE_COUNTRIES, @checkout.phone_country.presence || "MA"),
+                        {},
+                        class: "checkout-phone__prefix checkout-select",
+                        autocomplete: "tel-country-code",
+                        disabled: !foreign_phone,
+                        aria: { label: t("checkout.phone_country") },
+                        data: { phone_country_target: "countrySelect" } %>
+                </div>
                 <%= f.telephone_field :phone, required: true, autocomplete: "tel-national", inputmode: "tel", class: "checkout-input checkout-phone__input", placeholder: t("checkout.placeholders.phone") %>
               </div>
+              <button type="button" class="checkout-phone__other" data-phone-country-target="compact" data-action="phone-country#expand" <%= "hidden" if foreign_phone %>>
+                <%= t("checkout.other_country") %>
+              </button>
               <p class="checkout-help"><%= t("checkout.phone_help") %></p>
             </div>
           </div>
@@ -166,29 +180,28 @@
           </div>
         </fieldset>
 
-        <details class="checkout-extras" <%= "open" if @checkout.notes.present? || @checkout.discount_code.present? %>>
-          <summary class="checkout-extras__summary"><%= t("checkout.optional_extras") %></summary>
-          <div class="checkout-fields mt-4">
-            <div class="checkout-field sm:col-span-2">
-              <%= f.label :notes, "#{t("checkout.notes")} (#{t("checkout.optional")})", class: "checkout-label" %>
-              <%= f.text_area :notes, rows: 2, class: "checkout-input checkout-input--area", placeholder: t("checkout.placeholders.notes") %>
-            </div>
-            <div class="checkout-field sm:col-span-2">
-              <%= f.label :discount_code, "#{t("checkout.discount_code")} (#{t("checkout.optional")})", class: "checkout-label" %>
-              <%= f.text_field :discount_code, class: "checkout-input", placeholder: t("checkout.placeholders.discount_code"), autocomplete: "off" %>
-            </div>
+        <div class="checkout-field sm:col-span-2">
+          <%= f.text_area :notes, rows: 2, class: "checkout-input checkout-input--area", placeholder: t("checkout.placeholders.notes_optional") %>
+        </div>
+        <div class="checkout-promo">
+          <button type="button" class="checkout-promo__toggle" data-action="checkout-extras#togglePromo">
+            <%= t("checkout.add_promo_code") %>
+          </button>
+          <div class="checkout-promo__panel" data-checkout-extras-target="promoPanel" <%= "hidden" unless @checkout.discount_code.present? %>>
+            <%= f.label :discount_code, t("checkout.discount_code"), class: "checkout-label" %>
+            <%= f.text_field :discount_code, class: "checkout-input mt-2", placeholder: t("checkout.placeholders.discount_code"), autocomplete: "off" %>
           </div>
-        </details>
+        </div>
+
+        <p class="checkout-legal-note">
+          <% privacy_link = privacy_page_path_for_store ? link_to(t("data_protection.privacy_policy"), privacy_page_path_for_store, class: "checkout-legal-note__link") : t("data_protection.privacy_policy") %>
+          <%= t("data_protection.checkout_submit_notice_html", privacy_link: privacy_link).html_safe %>
+        </p>
 
         <div class="checkout-submit checkout-submit--desktop">
           <%= f.button type: "submit", class: "maison-button checkout-submit__button w-full cursor-pointer text-center", data: { turbo_submits_with: t("checkout.placing") } do %>
             <span data-checkout-city-target="submitLabel"><%= t("checkout.confirm_with_total", total: money(@checkout.total_cents, current_store.currency)) %></span>
           <% end %>
-          <ul class="checkout-reassure">
-            <li><%= t("checkout.reassure.cod") %></li>
-            <li><%= t("checkout.reassure.no_prepay") %></li>
-            <li><%= t("checkout.reassure.confirm_call") %></li>
-          </ul>
         </div>
       <% end %>
     </div>
@@ -250,10 +263,6 @@
   </div>
 
   <div class="checkout-sticky lg:hidden">
-    <ul class="checkout-reassure checkout-reassure--compact">
-      <li><%= t("checkout.reassure.cod") %></li>
-      <li><%= t("checkout.reassure.confirm_call") %></li>
-    </ul>
     <div class="checkout-sticky__bar">
       <div>
         <p class="text-[10px] uppercase tracking-[0.2em] text-ink-faint"><%= t("checkout.total") %></p>

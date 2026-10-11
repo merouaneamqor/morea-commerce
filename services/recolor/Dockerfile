@@ -12,4 +12,5 @@ RUN useradd --create-home --uid 1000 recolor
 USER recolor
 
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Render sets PORT. Local Compose leaves it unset and keeps 8000.
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}

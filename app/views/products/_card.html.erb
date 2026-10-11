@@ -17,14 +17,12 @@
     <% if local_assigns[:index] %>
       <span class="home-card__index"><%= format("%02d", index + 1) %></span>
     <% end %>
-    <div class="home-card__meta-row">
-      <p class="home-card__name"><%= product.name %></p>
-      <p class="home-card__price">
-        <%= product.price_display %>
-        <% if product.compare_at_cents.to_i > product.price_cents %>
-          <s><%= product.compare_at_display %></s>
-        <% end %>
-      </p>
-    </div>
+    <p class="home-card__name"><%= product.name %></p>
+    <p class="home-card__price">
+      <%= product.price_display %>
+      <% if product.compare_at_cents.to_i > product.price_cents %>
+        <s><%= product.compare_at_display %></s>
+      <% end %>
+    </p>
   </div>
 <% end %>

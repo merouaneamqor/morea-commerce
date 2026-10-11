@@ -82,7 +82,7 @@ module MediaHelper
   end
 
   def placeholder_frame(text)
-    tag.div(class: "flex h-full w-full items-center justify-center bg-stone-deep text-[11px] uppercase tracking-[0.2em] text-ink-faint") { text }
+    tag.div(class: "placeholder-frame", role: "img", aria: { label: text })
   end
 
   def money(cents, currency = "MAD")

@@ -20,9 +20,9 @@
     <div class="home-card__meta-row">
       <p class="home-card__name"><%= product.name %></p>
       <p class="home-card__price">
-        <%= product.price_display %>
+        <span><%= product.price_display %></span>
         <% if product.compare_at_cents.to_i > product.price_cents %>
-          <s><%= product.compare_at_display %></s>
+          <s class="home-card__compare"><%= product.compare_at_display %></s>
         <% end %>
       </p>
     </div>

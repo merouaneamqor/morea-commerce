@@ -1,9 +1,51 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/fonts/dm-sans/dm-sans-latin-300-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/dm-sans/dm-sans-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/dm-sans/dm-sans-latin-400-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/dm-sans/dm-sans-latin-500-normal.woff2") format("woff2");
+}
+
+/* Licensed Lux webfont: add public/fonts/lux/lux-regular.woff2 then uncomment.
+@font-face {
+  font-family: "Lux";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/lux/lux-regular.woff2") format("woff2");
+}
+*/
+
 @theme {
-  --font-display: "Cormorant Garamond", "Times New Roman", serif;
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-arabic: "Noto Naskh Arabic", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Lux", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Lux", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: "Noto Naskh Arabic", "Lux", "DM Sans", ui-sans-serif, system-ui, sans-serif;
 
   --color-stone-floor: #f7f5f2;
   --color-stone-deep: #ebe7e2;
@@ -433,19 +475,19 @@
   }
 
   .home-card__meta-row {
-    @apply flex items-baseline justify-between gap-3;
+    @apply flex flex-col gap-2;
   }
 
   .home-card__name {
-    @apply min-w-0 font-display text-lg leading-snug text-ink md:text-xl;
+    @apply font-sans text-[13px] font-normal leading-snug tracking-[0.02em] text-ink md:text-sm;
   }
 
   .home-card__price {
-    @apply shrink-0 font-display text-base leading-none text-ink md:text-lg;
+    @apply flex flex-wrap items-baseline gap-x-2 gap-y-0 font-sans text-[13px] tabular-nums leading-none text-ink md:text-sm;
   }
 
-  .home-card__price s {
-    @apply ms-2 text-sm text-ink-faint;
+  .home-card__compare {
+    @apply text-xs font-normal text-ink-faint;
   }
 
   .home-card__index {

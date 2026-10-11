@@ -8,8 +8,7 @@ class ApplicationController < ActionController::Base
   before_action :set_current_store
   before_action :set_locale
 
-  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?,
-                :cookie_notice_pending?, :privacy_page_path_for_store, :pixels_enabled?
+  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?
 
   def default_url_options
     return {} if is_a?(Admin::BaseController) || controller_path.start_with?("admin")

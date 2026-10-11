@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
     <title><%= @title %> — Morea</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400&family=Luxurious+Roman&display=swap" rel="stylesheet">
     <style>
       :root {
         --ink: #1a1716;
@@ -24,6 +27,7 @@
         background: var(--stone);
         color: var(--ink);
         font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+        font-synthesis: none;
       }
       .card {
         width: min(28rem, 100%);
@@ -40,7 +44,7 @@
       }
       h1 {
         margin-top: 0.75rem;
-        font-family: "Cormorant Garamond", Georgia, serif;
+        font-family: "Luxurious Roman", Palatino, serif;
         font-size: 2rem;
         font-weight: 400;
         color: <%= @ok ? "var(--ok)" : "var(--bad)" %>;

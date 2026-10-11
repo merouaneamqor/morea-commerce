@@ -112,6 +112,9 @@ fr:
     title: "Finaliser la commande"
     step_label: "Presque fini"
     subtitle: "Quelques infos — on confirme par téléphone, vous payez à la livraison."
+    subtitle_short: "Téléphone et adresse — paiement à la livraison."
+    other_country: "Autre pays"
+    add_promo_code: "Ajouter un code promo"
     payment_method: "Mode de paiement"
     no_prepay: "Sans paiement en ligne"
     contact_details: "Contact"
@@ -174,6 +177,7 @@ fr:
       notes: "Horaires, point de repère…"
       district: "Ex. Maarif"
       discount_code: "WELCOME10"
+      notes_optional: "Notes pour la livraison (facultatif)"
   orders:
     track_title: "Suivre une commande"
     track_hint: "Entrez votre numéro de commande et votre téléphone."
@@ -195,6 +199,7 @@ fr:
     open_whatsapp: "Ouvrir WhatsApp"
     whatsapp_message: "Bonjour, je viens de passer la commande %{number} (%{total})."
     not_found: "Commande introuvable. Vérifiez le numéro et le téléphone."
+    track_this_order: "Suivre cette commande"
   footer:
     information: "Informations"
     customer_care: "Service client"
@@ -206,7 +211,7 @@ fr:
     cookie_ok: "Compris"
     checkout_notice: "Conformément à la loi n° 09-08, vous disposez d’un droit d’accès, de rectification et, pour motif légitime, d’opposition au traitement de vos données personnelles."
     checkout_notice_with_cndp: "Conformément à la loi n° 09-08, vous disposez d’un droit d’accès, de rectification et, pour motif légitime, d’opposition au traitement de vos données personnelles. Ce traitement a été notifié à la CNDP sous le n° %{number}."
-    checkout_submit_notice_html: "En validant votre commande, vous acceptez la %{privacy_link} et le traitement de vos données pour gérer votre achat."
+    checkout_submit_notice_html: "En commandant, vous acceptez notre %{privacy_link}."
     track_notice: "Nous utilisons votre numéro de commande et votre téléphone uniquement pour retrouver le suivi de votre achat."
   privacy_policy:
     purposes: "la gestion et la livraison de vos commandes, la relation client (confirmation par téléphone), le suivi de commande et, le cas échéant, la lutte contre la fraude."

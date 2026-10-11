@@ -53,9 +53,8 @@
           <p class="text-[10px] uppercase tracking-[0.24em] text-ink-soft"><%= t("cart.subtotal") %></p>
           <p class="font-display text-2xl text-ink"><%= money(cart.subtotal_cents, current_store.currency) %></p>
         </div>
-        <p class="mt-2 text-xs leading-5 text-ink-faint"><%= current_store.cod_label %> · <%= t("landing.trust.returns") %></p>
         <%= link_to t("cart.checkout"), checkout_path, class: "maison-button mt-5 block w-full text-center", data: { turbo_frame: "_top" } %>
-        <%= link_to t("cart.view_bag"), cart_path, class: "mt-4 block text-center text-[10px] uppercase tracking-[0.24em] text-ink-soft hover:text-ink" %>
+        <%= link_to t("cart.view_bag"), cart_path, class: "mt-3 block text-center text-[10px] uppercase tracking-[0.24em] text-ink-soft hover:text-ink", data: { turbo_frame: "_top" } %>
       </footer>
     <% end %>
   </aside>

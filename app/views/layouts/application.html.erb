@@ -23,7 +23,7 @@
   </head>
 
   <% body = yield %>
-  <body class="min-h-screen min-h-dvh <%= "has-mobile-buy" if content_for?(:mobile_buy) %> <%= "is-rtl" if rtl? %> <%= "has-announcement" if current_store&.announcement.present? %>"
+  <body class="min-h-screen min-h-dvh <%= "has-mobile-buy" if content_for?(:mobile_buy) %> <%= "is-rtl" if rtl? %> <%= "has-announcement" if current_store&.announcement.present? %> <%= "has-cookie-notice" if cookie_notice_pending? %>"
         data-controller="cart-drawer">
     <%= render "shared/pixel_bridge" %>
     <div class="site-header">

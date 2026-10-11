@@ -112,6 +112,9 @@ en:
     title: "Complete your order"
     step_label: "Almost there"
     subtitle: "A few details — we confirm by phone, you pay on delivery."
+    subtitle_short: "Phone and address — pay on delivery."
+    other_country: "Other country"
+    add_promo_code: "Add a promo code"
     payment_method: "Payment method"
     no_prepay: "No online payment"
     contact_details: "Contact"
@@ -174,6 +177,7 @@ en:
       notes: "Preferred hours, landmark…"
       district: "E.g. Maarif"
       discount_code: "WELCOME10"
+      notes_optional: "Delivery notes (optional)"
   orders:
     track_title: "Track order"
     track_hint: "Enter your order number and phone."
@@ -195,6 +199,7 @@ en:
     open_whatsapp: "Open WhatsApp"
     whatsapp_message: "Hello, I just placed order %{number} (%{total})."
     not_found: "We couldn’t find that order. Check the number and phone."
+    track_this_order: "Track this order"
   footer:
     information: "Information"
     customer_care: "Customer care"
@@ -206,7 +211,7 @@ en:
     cookie_ok: "Got it"
     checkout_notice: "Under Moroccan Law 09-08, you have the right to access, rectify and, on legitimate grounds, object to the processing of your personal data."
     checkout_notice_with_cndp: "Under Moroccan Law 09-08, you have the right to access, rectify and, on legitimate grounds, object to the processing of your personal data. This processing was notified to the CNDP under no. %{number}."
-    checkout_submit_notice_html: "By placing your order, you accept our %{privacy_link} and the processing of your data to fulfil your purchase."
+    checkout_submit_notice_html: "By placing your order, you accept our %{privacy_link}."
     track_notice: "We use your order number and phone only to look up your purchase."
   privacy_policy:
     purposes: "order fulfilment and delivery, customer care (phone confirmation), order tracking and, where applicable, fraud prevention."

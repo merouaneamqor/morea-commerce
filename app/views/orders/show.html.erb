@@ -57,8 +57,11 @@
     <p><span class="text-[10px] uppercase tracking-[0.18em] text-ink-faint"><%= t("orders.phone") %></span><br><span dir="ltr"><%= Phonelib.parse(@order.customer_phone).national %></span></p>
   </div>
 
+  <% track_phone = Phonelib.parse(@order.customer_phone) %>
   <div class="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:gap-6 md:mt-12">
     <%= link_to t("orders.continue_browsing"), localized_root_path, class: "maison-cta" %>
-    <%= link_to t("orders.track_order"), track_orders_path, class: "maison-link self-start pt-1" %>
+    <%= link_to t("orders.track_this_order"),
+          track_orders_path(number: @order.number, phone: (track_phone.valid? ? track_phone.national(false) : @order.customer_phone)),
+          class: "maison-link self-start pt-1" %>
   </div>
 </section>

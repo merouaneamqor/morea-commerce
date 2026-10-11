@@ -8,11 +8,11 @@
   <%= form_with url: lookup_orders_path, method: :post, class: "mt-8 space-y-7 md:mt-10 md:space-y-8" do %>
     <div class="space-y-2">
       <label class="text-[10px] uppercase tracking-[0.2em] text-ink-faint"><%= t("orders.order_number") %></label>
-      <%= text_field_tag :number, params[:number], required: true, placeholder: "M000000", autocomplete: "off", class: "w-full border-0 border-b border-line bg-transparent py-3 text-base outline-none md:text-sm" %>
+      <%= text_field_tag :number, params[:number].presence, required: true, placeholder: "M000000", autocomplete: "off", class: "w-full border-0 border-b border-line bg-transparent py-3 text-base outline-none md:text-sm" %>
     </div>
     <div class="space-y-2">
       <label class="text-[10px] uppercase tracking-[0.2em] text-ink-faint"><%= t("orders.phone") %></label>
-      <%= telephone_field_tag :phone, params[:phone], required: true, autocomplete: "tel", inputmode: "tel", class: "w-full border-0 border-b border-line bg-transparent py-3 text-base outline-none md:text-sm" %>
+      <%= telephone_field_tag :phone, params[:phone].presence, required: true, autocomplete: "tel", inputmode: "tel", class: "w-full border-0 border-b border-line bg-transparent py-3 text-base outline-none md:text-sm" %>
     </div>
     <%= submit_tag t("orders.find"), class: "maison-button w-full cursor-pointer text-center" %>
   <% end %>

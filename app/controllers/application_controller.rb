@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  LOCALE_COOKIE = :morea_locale
+
   allow_browser versions: :modern
   stale_when_importmap_changes
 
@@ -7,7 +9,7 @@ class ApplicationController < ActionController::Base
   before_action :set_locale
 
   helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?,
-                :cookie_notice_pending?, :privacy_page_path_for_store, :checkout_data_protection_notice, :pixels_enabled?
+                :cookie_notice_pending?, :privacy_page_path_for_store, :pixels_enabled?
 
   def default_url_options
     return {} if is_a?(Admin::BaseController) || controller_path.start_with?("admin")
@@ -58,9 +60,23 @@ class ApplicationController < ActionController::Base
   end
 
   def set_locale
-    locale = params[:locale].presence || Morea::Locales::DEFAULT
-    locale = Morea::Locales::DEFAULT unless Morea::Locales.available?(locale)
+    locale =
+      if params[:locale].present?
+        normalize_locale(params[:locale])
+      else
+        cookies[LOCALE_COOKIE].presence || browser_locale_preference
+      end
+    locale = normalize_locale(locale)
+    persist_locale_cookie(locale) if params[:locale].present? || cookies[LOCALE_COOKIE].blank?
     I18n.locale = locale
+  end
+
+  def self.browser_locale_from(request)
+    header = request.env["HTTP_ACCEPT_LANGUAGE"].to_s.downcase
+    return :ar if header.match?(/\bar(?:[-_;,]|$)/)
+    return :en if header.match?(/\ben(?:[-_;,]|$)/)
+
+    Morea::Locales::DEFAULT
   end
 
   def current_locale
@@ -106,5 +122,23 @@ class ApplicationController < ActionController::Base
 
   def super_admin?
     current_admin_user&.super_admin?
+  end
+
+  def normalize_locale(locale)
+    locale = locale.to_sym
+    Morea::Locales.available?(locale) ? locale : Morea::Locales::DEFAULT
+  end
+
+  def browser_locale_preference
+    self.class.browser_locale_from(request)
+  end
+
+  def persist_locale_cookie(locale)
+    cookies[LOCALE_COOKIE] = {
+      value: locale.to_s,
+      expires: 1.year.from_now,
+      same_site: :lax,
+      secure: !Rails.env.local?
+    }
   end
 end

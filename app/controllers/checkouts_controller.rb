@@ -1,4 +1,6 @@
 class CheckoutsController < ApplicationController
+  include DeliveryRecall
+
   before_action :require_store!
   before_action :require_cart_items!
 
@@ -6,14 +8,15 @@ class CheckoutsController < ApplicationController
     @cart = current_cart
     @items = @cart.cart_items.includes(:product, :product_variant)
     @checkout = Checkout.new(
-      name: params[:name],
-      phone: params[:phone],
-      city: params[:city],
-      district: params[:district],
-      address: params[:address],
-      discount_code: params[:discount_code],
-      cart: @cart,
-      store: current_store
+      delivery_recall_attributes(
+        name: params[:name],
+        phone: params[:phone],
+        phone_country: params[:phone_country],
+        city: params[:city],
+        district: params[:district],
+        address: params[:address],
+        discount_code: params[:discount_code]
+      ).merge(cart: @cart, store: current_store)
     )
   end
 
@@ -24,6 +27,7 @@ class CheckoutsController < ApplicationController
 
     if @checkout.valid?
       order = @checkout.place_order!
+      remember_delivery_from_checkout!(@checkout)
       session.delete(:cart_token)
       session[:pixel_purchase_order_id] = order.id
       redirect_to order_path(order.number), notice: t("checkout.placed")

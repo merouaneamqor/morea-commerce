@@ -39,6 +39,9 @@ class Store < ApplicationRecord
   before_validation :normalize_pixel_ids
   before_validation :normalize_slug
   before_validation :assign_default_billing_period_end, on: :create
+  after_save :sync_privacy_policy_page, if: :privacy_settings_changed?
+
+  PRIVACY_SYNC_ATTRIBUTES = %i[legal_entity_name cndp_authorization privacy_rights_contact name email phone].freeze
 
   scope :with_sendit, -> {
     where.not(sendit_public_key: [ nil, "" ]).where.not(sendit_secret_key: [ nil, "" ])
@@ -196,6 +199,14 @@ class Store < ApplicationRecord
   end
 
   private
+
+  def privacy_settings_changed?
+    PRIVACY_SYNC_ATTRIBUTES.any? { |attr| saved_change_to_attribute?(attr) }
+  end
+
+  def sync_privacy_policy_page
+    DataProtection::SyncPrivacyPage.call(self)
+  end
 
   def normalize_slug
     self.slug = slug.to_s.strip.downcase.presence

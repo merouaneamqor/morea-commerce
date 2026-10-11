@@ -17,11 +17,4 @@ module DataProtectionHelper
     !cookie_notice_seen?
   end
 
-  def checkout_data_protection_notice
-    if current_store.cndp_authorization.present?
-      t("data_protection.checkout_notice_with_cndp", number: current_store.cndp_authorization)
-    else
-      t("data_protection.checkout_notice")
-    end
-  end
 end

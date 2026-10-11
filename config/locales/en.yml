@@ -165,6 +165,7 @@ en:
       district_invalid: "Choose a neighborhood from the list."
       empty_cart: "Your bag is empty."
       discount_code: "This discount code is invalid or expired."
+      data_processing_consent: "Please accept personal data processing to continue."
     form_errors: "Please fix"
     placeholders:
       name: "e.g. Sara Benali"
@@ -198,3 +199,45 @@ en:
   footer:
     information: "Information"
     customer_care: "Customer care"
+  data_protection:
+    privacy_policy: "privacy policy"
+    cookie_title: "Cookies & analytics"
+    cookie_body: "This store may use measurement cookies (Meta, TikTok) only if you accept. You can refuse without affecting your order."
+    cookie_policy_link: "Learn how we use your data"
+    cookie_accept: "Accept"
+    cookie_deny: "Refuse"
+    checkout_legend: "Personal data"
+    checkout_notice: "Under Moroccan Law 09-08, you have the right to access, rectify and, on legitimate grounds, object to the processing of your personal data."
+    checkout_notice_with_cndp: "Under Moroccan Law 09-08, you have the right to access, rectify and, on legitimate grounds, object to the processing of your personal data. This processing was notified to the CNDP under no. %{number}."
+    checkout_consent_html: "I consent to the processing of my personal data to fulfil my order, in accordance with the %{privacy_link}."
+    track_notice: "We use your order number and phone only to look up your purchase."
+  privacy_policy:
+    purposes: "order fulfilment and delivery, customer care (phone confirmation), order tracking and, where applicable, fraud prevention."
+    cndp_authorized: "This processing was notified to and authorized by the CNDP under receipt or authorization no. %{number}."
+    cndp_pending: "The data controller undertakes to notify this processing to Morocco’s CNDP (Commission Nationale de contrôle de la protection des données à caractère personnel) as required by Law 09-08."
+    cookies_section: "Strictly necessary cookies power your bag and session. Measurement cookies (Meta Pixel, TikTok Pixel) are placed only after you explicitly accept them via the banner on this site. You can refuse them at any time by clearing your browser cookies or refusing on your next visit."
+    retention: "Order-related data is kept only as long as needed for delivery, applicable legal and accounting obligations, then archived or deleted proportionately."
+    prospecting: "Your data is not used for direct marketing without your prior consent. You may object at any time by contacting the address below."
+    recipients:
+      store_staff: "• The store team (order processing)"
+      sendit: "• Sendit (shipping within Morocco)"
+      hosting: "• The site’s hosting provider (secured infrastructure)"
+    body: |
+      %{controller}
+
+      Information collected on %{site} is processed for %{purposes}
+
+      Data recipients:
+      %{recipients}
+
+      Fields marked as required at checkout (name, phone, delivery address) are needed to process and deliver your order. Other fields are optional.
+
+      %{cndp_clause}
+
+      To exercise your rights of access, rectification and objection, contact: %{contact}
+
+      %{cookies}
+
+      %{retention}
+
+      %{prospecting}

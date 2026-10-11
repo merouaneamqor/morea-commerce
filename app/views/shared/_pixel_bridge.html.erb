@@ -1,4 +1,4 @@
-<% return unless current_store&.pixels_configured? %>
+<% return unless pixels_enabled? %>
 
 <%= tag.div id: "pixel-root",
       data: {

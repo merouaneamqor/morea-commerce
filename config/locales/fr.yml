@@ -165,6 +165,7 @@ fr:
       district_invalid: "Choisissez un quartier de la liste."
       empty_cart: "Votre panier est vide."
       discount_code: "Ce code promo est invalide ou expiré."
+      data_processing_consent: "Veuillez accepter le traitement de vos données pour continuer."
     form_errors: "Veuillez corriger"
     placeholders:
       name: "Ex. Sara Benali"
@@ -198,3 +199,45 @@ fr:
   footer:
     information: "Informations"
     customer_care: "Service client"
+  data_protection:
+    privacy_policy: "politique de confidentialité"
+    cookie_title: "Cookies et mesure d’audience"
+    cookie_body: "Ce site utilise des cookies de mesure (Meta, TikTok) uniquement si vous l’acceptez. Vous pouvez refuser sans impact sur votre commande."
+    cookie_policy_link: "En savoir plus sur vos données"
+    cookie_accept: "Accepter"
+    cookie_deny: "Refuser"
+    checkout_legend: "Données personnelles"
+    checkout_notice: "Conformément à la loi n° 09-08, vous disposez d’un droit d’accès, de rectification et, pour motif légitime, d’opposition au traitement de vos données personnelles."
+    checkout_notice_with_cndp: "Conformément à la loi n° 09-08, vous disposez d’un droit d’accès, de rectification et, pour motif légitime, d’opposition au traitement de vos données personnelles. Ce traitement a été notifié à la CNDP sous le n° %{number}."
+    checkout_consent_html: "Je consens au traitement de mes données personnelles pour gérer ma commande, conformément à la %{privacy_link}."
+    track_notice: "Nous utilisons votre numéro de commande et votre téléphone uniquement pour retrouver le suivi de votre achat."
+  privacy_policy:
+    purposes: "la gestion et la livraison de vos commandes, la relation client (confirmation par téléphone), le suivi de commande et, le cas échéant, la lutte contre la fraude."
+    cndp_authorized: "Ce traitement a été notifié et autorisé par la CNDP au titre du récépissé ou de l’autorisation n° %{number}."
+    cndp_pending: "Le responsable du traitement s’engage à notifier ce traitement à la Commission Nationale de contrôle de la protection des données à caractère personnel (CNDP) conformément à la loi 09-08."
+    cookies_section: "Des cookies techniques sont nécessaires au panier et à la session. Les cookies de mesure (Meta Pixel, TikTok Pixel) ne sont déposés qu’après votre consentement explicite via le bandeau affiché sur le site. Vous pouvez refuser ces cookies à tout moment en effaçant les cookies de votre navigateur ou en refusant lors de votre prochaine visite."
+    retention: "Les données liées à une commande sont conservées le temps nécessaire à la livraison, aux obligations comptables et légales applicables, puis archivées ou supprimées de manière proportionnée."
+    prospecting: "Vos données ne sont pas utilisées à des fins de prospection commerciale sans votre consentement préalable. Vous pouvez vous opposer à tout moment en contactant le service indiqué ci-dessous."
+    recipients:
+      store_staff: "• L’équipe de la boutique (traitement des commandes)"
+      sendit: "• Sendit (transport et livraison au Maroc)"
+      hosting: "• L’hébergeur technique du site (infrastructure sécurisée)"
+    body: |
+      %{controller}
+
+      Les informations recueillies sur %{site} font l’objet d’un traitement informatique destiné à %{purposes}
+
+      Destinataires des données :
+      %{recipients}
+
+      Les champs marqués comme obligatoires au moment de la commande (nom, téléphone, adresse de livraison) sont nécessaires pour traiter et livrer votre commande. Les autres champs sont facultatifs.
+
+      %{cndp_clause}
+
+      Vous pouvez exercer vos droits d’accès, de rectification et d’opposition en contactant : %{contact}
+
+      %{cookies}
+
+      %{retention}
+
+      %{prospecting}

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   post "webhooks/sendit/:store_slug", to: "webhooks/sendit#create", as: :sendit_webhook
+  post "consent/tracking", to: "consents#tracking", as: :tracking_consent
 
   namespace :api do
     resources :orders, only: [] do

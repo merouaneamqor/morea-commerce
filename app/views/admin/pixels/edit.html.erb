@@ -6,6 +6,10 @@
 </div>
 
 <%= form_with model: @store, url: admin_pixels_path, method: :patch, id: "pixels-form", class: "admin-stack" do |f| %>
+  <p class="admin-help">
+    Meta and TikTok pixels use cookies and personal data. Under Moroccan Law 09-08 (CNDP), visitors must give prior consent before these scripts load.
+    This storefront shows a consent banner when a pixel is connected.
+  </p>
   <% if @store.errors.any? %>
     <div class="admin-banner admin-banner--critical">
       <%= @store.errors.full_messages.to_sentence %>

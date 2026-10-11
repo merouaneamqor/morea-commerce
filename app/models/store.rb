@@ -81,6 +81,14 @@ class Store < ApplicationRecord
     meta_pixel_id.present? || tiktok_pixel_id.present?
   end
 
+  def data_controller_name
+    legal_entity_name.presence || name
+  end
+
+  def privacy_rights_contact_display
+    privacy_rights_contact.presence || email.presence || phone.presence || "—"
+  end
+
   # Meta and TikTok expect ISO currency codes; storefront display uses DH.
   def pixel_currency
     case currency.to_s.upcase

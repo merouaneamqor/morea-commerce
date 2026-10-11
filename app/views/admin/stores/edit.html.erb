@@ -36,6 +36,39 @@
     </div>
   </section>
 
+  <section class="admin-card" id="data-protection">
+    <div class="admin-card__header"><h2 class="admin-card__title">Data protection (Morocco Law 09-08 / CNDP)</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <p class="admin-help">
+        Moroccan law requires notifying the CNDP before processing personal data on your storefront, and a transfer request if data is hosted outside Morocco.
+        Enter your CNDP receipt or authorization number once you receive it — it appears on checkout and in your privacy page.
+      </p>
+      <div class="admin-field-grid">
+        <div class="md:col-span-2">
+          <%= f.label :legal_entity_name, "Data controller (legal name)", class: "admin-label" %>
+          <%= f.text_field :legal_entity_name, class: "admin-input", placeholder: @store.name %>
+          <p class="admin-help">Shown in your privacy policy. Leave blank to use the store name.</p>
+        </div>
+        <div>
+          <%= f.label :cndp_authorization, "CNDP receipt / authorization no.", class: "admin-label" %>
+          <%= f.text_field :cndp_authorization, class: "admin-input", placeholder: "e.g. D-PO-…" %>
+        </div>
+        <div>
+          <%= f.label :privacy_rights_contact, "Contact for data rights", class: "admin-label" %>
+          <%= f.text_field :privacy_rights_contact, class: "admin-input", placeholder: @store.email.presence || "privacy@example.com" %>
+          <p class="admin-help">Access, rectification and opposition requests (email or postal address).</p>
+        </div>
+      </div>
+      <% privacy_page = @store.pages.find_by(slug: "privacy") %>
+      <% if privacy_page %>
+        <p class="admin-help">
+          Privacy page:
+          <%= link_to "Edit in Online Store → Pages", edit_admin_page_path(privacy_page), class: "admin-link" %>
+        </p>
+      <% end %>
+    </div>
+  </section>
+
   <section class="admin-card" id="integrations">
     <div class="admin-card__header"><h2 class="admin-card__title">Integrations</h2></div>
     <div class="space-y-4 px-4 pb-4">

@@ -26,6 +26,7 @@ module Admin
         :sendit_allow_open, :sendit_allow_try, :low_stock_threshold,
         :sendit_public_key, :sendit_secret_key, :sendit_webhook_secret,
         :discord_orders_webhook_url,
+        :legal_entity_name, :cndp_authorization, :privacy_rights_contact,
         translations_attributes: %i[
           id locale tagline about cod_label cod_note
           campaign_title campaign_season campaign_cta announcement

@@ -1612,6 +1612,54 @@
     @apply px-3.5 py-3 text-sm text-ink-faint;
   }
 
+  .checkout-consent {
+    @apply flex items-start gap-3 text-sm leading-relaxed text-ink-soft;
+  }
+
+  .checkout-consent__input {
+    @apply mt-1 h-4 w-4 shrink-0 cursor-pointer accent-ink;
+  }
+
+  .checkout-consent__link {
+    @apply text-ink underline decoration-line/60 underline-offset-2;
+  }
+
+  .cookie-consent {
+    @apply fixed inset-x-0 bottom-0 z-50 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2;
+  }
+
+  .cookie-consent__panel {
+    @apply mx-auto max-w-2xl border border-line bg-paper p-5 shadow-[0_16px_48px_rgba(26,23,22,0.12)];
+  }
+
+  .cookie-consent__title {
+    @apply text-[10px] uppercase tracking-[0.22em] text-ink;
+  }
+
+  .cookie-consent__text {
+    @apply mt-2 text-sm leading-relaxed text-ink-soft;
+  }
+
+  .cookie-consent__link {
+    @apply text-ink underline decoration-line/60 underline-offset-2;
+  }
+
+  .cookie-consent__actions {
+    @apply mt-4 flex flex-wrap gap-3;
+  }
+
+  .cookie-consent__button {
+    @apply cursor-pointer px-4 py-2.5 text-[10px] uppercase tracking-[0.2em] transition;
+  }
+
+  .cookie-consent__button--primary {
+    @apply bg-ink text-paper;
+  }
+
+  .cookie-consent__button--ghost {
+    @apply border border-line text-ink;
+  }
+
   /* Detect browser autofill so city shipping/districts update */
   @keyframes checkout-autofill {
     from { opacity: 0.99; }

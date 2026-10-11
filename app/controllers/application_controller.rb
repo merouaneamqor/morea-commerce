@@ -6,7 +6,9 @@ class ApplicationController < ActionController::Base
   before_action :set_current_store
   before_action :set_locale
 
-  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?
+  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?,
+                :tracking_consent_granted?, :tracking_consent_pending?, :tracking_consent_denied?,
+                :privacy_page_path_for_store, :checkout_data_protection_notice, :pixels_enabled?
 
   def default_url_options
     return {} if is_a?(Admin::BaseController) || controller_path.start_with?("admin")

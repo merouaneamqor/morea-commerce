@@ -1,4 +1,4 @@
-<% return unless current_store&.pixels_configured? %>
+<% return unless pixels_enabled? %>
 
 <% if current_store.meta_pixel_id.present? %>
   <script>

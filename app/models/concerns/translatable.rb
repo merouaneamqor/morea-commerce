@@ -59,7 +59,7 @@ module Translatable
   private
 
   def translated_value(attr)
-    locales_to_try = [I18n.locale.to_s, Morea::Locales::DEFAULT.to_s].uniq
+    locales_to_try = [ I18n.locale.to_s, Morea::Locales::DEFAULT.to_s ].uniq
     locales_to_try.each do |locale|
       value = translation_for(locale)&.public_send(attr)
       return value if value.present?

@@ -11,6 +11,6 @@ class CartItem < ApplicationRecord
   end
 
   def display_name
-    [product.name, product_variant&.display_name].compact.join(" — ")
+    [ product.name, product_variant&.display_name ].compact.join(" — ")
   end
 end

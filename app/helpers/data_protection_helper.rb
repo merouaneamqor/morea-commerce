@@ -16,5 +16,4 @@ module DataProtectionHelper
   def cookie_notice_pending?
     !cookie_notice_seen?
   end
-
 end

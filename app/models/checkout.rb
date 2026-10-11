@@ -223,6 +223,4 @@ class Checkout
 
     errors.add(:discount_code, :invalid, message: I18n.t("checkout.errors.discount_code"))
   end
-
 end
-

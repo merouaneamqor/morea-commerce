@@ -69,9 +69,6 @@ Rails.application.routes.draw do
     resources :products do
       resources :variants, only: %i[create update destroy]
       resources :inventory, only: %i[create]
-      resources :colorways, only: %i[create destroy] do
-        collection { post :preview }
-      end
     end
     resources :collections
     resources :discounts, except: %i[show]

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_11_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_11_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -316,21 +316,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_11_120000) do
     t.index ["store_id"], name: "index_pages_on_store_id"
   end
 
-  create_table "product_colorways", force: :cascade do |t|
-    t.bigint "product_id", null: false
-    t.bigint "source_attachment_id", null: false
-    t.string "name", null: false
-    t.string "hex", null: false
-    t.string "prompt"
-    t.jsonb "points", default: [], null: false
-    t.jsonb "report", default: {}, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["product_id", "source_attachment_id", "hex"], name: "index_product_colorways_on_source_and_hex", unique: true
-    t.index ["product_id"], name: "index_product_colorways_on_product_id"
-    t.index ["source_attachment_id"], name: "index_product_colorways_on_source_attachment_id"
-  end
-
   create_table "product_translations", force: :cascade do |t|
     t.bigint "product_id", null: false
     t.string "locale", null: false
@@ -505,8 +490,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_11_120000) do
   add_foreign_key "orders", "stores"
   add_foreign_key "page_translations", "pages"
   add_foreign_key "pages", "stores"
-  add_foreign_key "product_colorways", "active_storage_attachments", column: "source_attachment_id", on_delete: :cascade
-  add_foreign_key "product_colorways", "products"
   add_foreign_key "product_translations", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "stores"

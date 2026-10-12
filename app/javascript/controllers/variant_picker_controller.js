@@ -53,8 +53,6 @@ export default class extends Controller {
     if (this.hasVariantIdTarget) {
       this.variantIdTarget.value = match ? match.id : ""
     }
-
-    this.dispatch("color", { detail: { color: this.selectedColor } })
   }
 
   firstAvailableSize() {

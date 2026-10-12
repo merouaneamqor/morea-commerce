@@ -1,6 +1,6 @@
 class ProductsController < ApplicationController
   SIZE_ORDER = %w[XS S M L XL XXL].freeze
-  COLOR_ORDER = [ "Rose poudré", "Blush", "Baby pink", "Taupe", "Sand", "Ocean blue", "Noir", "Black", "Ink" ].freeze
+  COLOR_ORDER = [ "Rose poudré", "Blush", "Taupe", "Sand", "Noir", "Black", "Ink" ].freeze
 
   def show
     @product = current_store.products.active.includes(:collections, :product_variants, :translations).find_by!(slug: params[:slug])
@@ -9,7 +9,6 @@ class ProductsController < ApplicationController
     @eyebrow = "MOREA ACTIVE"
     @collection = @product.collections.published.order(:position).first
     @gallery = product_gallery
-    @colorway_galleries = gallery_colorways
     @related = related_products
   end
 
@@ -33,22 +32,6 @@ class ProductsController < ApplicationController
 
   def product_gallery
     @product.ordered_images.map { |image| helpers.media_url(image) }.presence || [ nil ]
-  end
-
-  # Color name => gallery URLs aligned with ordered images. Nil keeps the original shot.
-  def gallery_colorways
-    images = @product.ordered_images
-    return {} if images.empty?
-
-    @product.product_colorways.includes(image_attachment: :blob).each_with_object({}) do |colorway, galleries|
-      next unless colorway.image.attached?
-
-      index = images.index { |image| image.id == colorway.source_attachment_id }
-      next if index.nil?
-
-      galleries[colorway.name] ||= Array.new(images.size)
-      galleries[colorway.name][index] = helpers.media_url(colorway.image)
-    end
   end
 
   def related_products

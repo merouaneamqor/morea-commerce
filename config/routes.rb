@@ -16,6 +16,10 @@ Rails.application.routes.draw do
   get "/.well-known/oauth-authorization-server", to: "oauth/metadata#authorization_server"
   get "/.well-known/oauth-authorization-server/mcp", to: "oauth/metadata#authorization_server"
   get "/.well-known/openid-configuration", to: "oauth/metadata#authorization_server"
+  get "/.well-known/agent-skills/index.json", to: "skills#index"
+  get "/.well-known/agent-skills/morea-catalog/SKILL.md", to: "skills#show"
+  get "/.well-known/skills/index.json", to: "skills#legacy_index"
+  get "/.well-known/skills/morea-catalog/SKILL.md", to: "skills#show"
 
   get "/oauth/authorize", to: "oauth/authorizations#show", as: :oauth_authorize
   post "/oauth/authorize", to: "oauth/authorizations#create"

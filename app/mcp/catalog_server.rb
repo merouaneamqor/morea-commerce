@@ -41,6 +41,7 @@ class CatalogServer
         Prices are whole currency units (priceDh), not cents. Locales are fr, en, and ar; create with a fr name.
         Deletes require confirm: true. Images are base64 or a public http(s) URL (jpeg, png, webp, gif, 8MB, 4 per call).
         GraphQL is POST /graphql on this host with the same Bearer token. Query { guide } returns the same manual.
+        Install that manual with npx skills add on this host. The file is /.well-known/agent-skills/morea-catalog/SKILL.md.
       TEXT
       tools: TOOLS,
       resources: [ CatalogGuideResource ],

@@ -57,6 +57,16 @@
   </section>
 
   <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Install the skill</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <p class="admin-help">
+        Coding agents install the operating manual from this store, then connect with the URL above.
+      </p>
+      <pre class="admin-input overflow-x-auto whitespace-pre-wrap text-sm">npx skills add <%= request.base_url %></pre>
+    </div>
+  </section>
+
+  <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">GraphQL</h2></div>
     <div class="space-y-4 px-4 pb-4">
       <p class="admin-help">Same token. <code>POST <%= @graphql_url %></code>. Query <code>{ guide }</code> for the usage manual.</p>

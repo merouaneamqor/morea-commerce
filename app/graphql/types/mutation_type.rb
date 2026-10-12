@@ -18,5 +18,20 @@ module Types
     field :set_product_variants, mutation: Mutations::SetProductVariants
     field :delete_product_variants, mutation: Mutations::DeleteProductVariants
     field :cancel_order, mutation: Mutations::CancelOrder
+    field :update_checkout, mutation: Mutations::Storefront::UpdateCheckout
+    field :update_marketing, mutation: Mutations::Storefront::UpdateMarketing
+    field :update_shipping, mutation: Mutations::Storefront::UpdateShipping
+    field :sync_shipping, mutation: Mutations::Storefront::SyncShipping
+    field :install_theme, mutation: Mutations::Storefront::InstallTheme
+    field :upsert_discount, mutation: Mutations::Storefront::UpsertDiscount
+    field :delete_discount, mutation: Mutations::Storefront::DeleteDiscount
+    field :upsert_customer, mutation: Mutations::Storefront::UpsertCustomer
+    field :import_csv, mutation: Mutations::Storefront::ImportCsv
+    field :upsert_home_section, mutation: Mutations::Storefront::UpsertHomeSection
+    field :delete_home_section, mutation: Mutations::Storefront::DeleteHomeSection
+    field :upsert_page, mutation: Mutations::Storefront::UpsertPage
+    field :delete_page, mutation: Mutations::Storefront::DeletePage
+    field :upsert_menu_item, mutation: Mutations::Storefront::UpsertMenuItem
+    field :delete_menu_item, mutation: Mutations::Storefront::DeleteMenuItem
   end
 end

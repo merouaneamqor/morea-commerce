@@ -25,7 +25,31 @@ class CatalogServer
     CatalogTools::GetOrder,
     CatalogTools::CancelOrder,
     CatalogTools::SetProductVariants,
-    CatalogTools::DeleteProductVariants
+    CatalogTools::DeleteProductVariants,
+    CatalogTools::Storefront::GetStoreSettings,
+    CatalogTools::Storefront::UpdateCheckout,
+    CatalogTools::Storefront::UpdateMarketing,
+    CatalogTools::Storefront::UpdateShipping,
+    CatalogTools::Storefront::SyncShipping,
+    CatalogTools::Storefront::InstallTheme,
+    CatalogTools::Storefront::ListDiscounts,
+    CatalogTools::Storefront::UpsertDiscount,
+    CatalogTools::Storefront::DeleteDiscount,
+    CatalogTools::Storefront::ListAbandonedCarts,
+    CatalogTools::Storefront::ListCustomers,
+    CatalogTools::Storefront::GetCustomer,
+    CatalogTools::Storefront::UpsertCustomer,
+    CatalogTools::Storefront::ExportCsv,
+    CatalogTools::Storefront::ImportCsv,
+    CatalogTools::Storefront::ListHomeSections,
+    CatalogTools::Storefront::UpsertHomeSection,
+    CatalogTools::Storefront::DeleteHomeSection,
+    CatalogTools::Storefront::ListPages,
+    CatalogTools::Storefront::UpsertPage,
+    CatalogTools::Storefront::DeletePage,
+    CatalogTools::Storefront::ListMenuItems,
+    CatalogTools::Storefront::UpsertMenuItem,
+    CatalogTools::Storefront::DeleteMenuItem
   ].freeze
 
   def self.build(store:)
@@ -39,6 +63,7 @@ class CatalogServer
         You manage one Morea store's products, collections, variants, and delivery numbers. Read the resource morea://catalog before the first write.
         Use store_stats, product_stats, list_orders, get_order, and cancel_order for strategy. Delivered revenue is cash collected.
         cancel_order needs confirm: true and only works before pickup.
+        Checkout is cash on delivery. Shipping is Sendit. Coupons, customers, CSV, pixels, and the home page are their own tools. There is no card gateway, email campaign, or custom domain.
         coverUrl and the attached cover photo are the storefront image. Do not replace them with a web search.
         Prices are whole currency units (priceDh), not cents. Locales are fr, en, and ar; create with a fr name.
         Deletes require confirm: true. Images are base64 or a public http(s) URL (jpeg, png, webp, gif, 8MB, 4 per call).

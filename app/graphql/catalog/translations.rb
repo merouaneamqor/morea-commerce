@@ -21,9 +21,10 @@ module Catalog
         end
       end
 
-      default_name = record.translations.detect { |item| item.locale == Morea::Locales::DEFAULT.to_s }&.name
-      default_name = record.translations.map(&:name).find(&:present?) if default_name.blank?
-      record.name = default_name if default_name.present? && record.name.blank?
+      named = record.translations.select { |item| item.respond_to?(:name) }
+      default_name = named.detect { |item| item.locale == Morea::Locales::DEFAULT.to_s }&.name
+      default_name = named.map(&:name).find(&:present?) if default_name.blank?
+      record.name = default_name if default_name.present? && record.respond_to?(:name=) && record.name.blank?
     end
   end
 end

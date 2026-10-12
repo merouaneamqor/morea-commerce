@@ -39,6 +39,25 @@ module Types
     field :order, Analytics::OrderType, null: true do
       argument :number, String, required: true
     end
+    field :store_settings, Storefront::SettingsType, null: false
+    field :discounts, [ Storefront::DiscountType ], null: false
+    field :customers, [ Storefront::CustomerType ], null: false do
+      argument :query, String, required: false
+      argument :limit, Integer, required: false
+    end
+    field :customer, Storefront::CustomerType, null: true do
+      argument :phone, String, required: true
+    end
+    field :abandoned_carts, [ Storefront::AbandonedCartType ], null: false do
+      argument :older_than_hours, Integer, required: false
+      argument :limit, Integer, required: false
+    end
+    field :home_sections, [ Storefront::SectionType ], null: false
+    field :pages, [ Storefront::PageType ], null: false
+    field :menu_items, [ Storefront::MenuItemType ], null: false
+    field :export_csv, Storefront::CsvExportType, null: false do
+      argument :kind, String, required: true
+    end
 
     def guide
       CatalogGuide.text
@@ -87,6 +106,47 @@ module Types
       Catalog::Analytics.order(store, number)
     end
 
+    def store_settings
+      store
+    end
+
+    def discounts
+      store.discounts.order(active: :desc, code: :asc)
+    end
+
+    def customers(query: nil, limit: nil)
+      scope = store.customers.order(orders_count: :desc, name: :asc)
+      if query.present?
+        term = "%#{ActiveRecord::Base.sanitize_sql_like(query)}%"
+        scope = scope.where("name ILIKE :term OR phone ILIKE :term OR email ILIKE :term OR city ILIKE :term", term: term)
+      end
+      scope.limit(clamp_limit(limit))
+    end
+
+    def customer(phone:)
+      store.customers.includes(:addresses).find_by(phone: Catalog::StoreOps.normalize_phone(phone))
+    end
+
+    def abandoned_carts(older_than_hours: nil, limit: nil)
+      store_ops { Catalog::StoreOps.abandoned_carts(store, older_than_hours: older_than_hours, limit: limit) }
+    end
+
+    def home_sections
+      store.home_sections.ordered.includes(:translations)
+    end
+
+    def pages
+      store.pages.includes(:translations).order(:slug)
+    end
+
+    def menu_items
+      store.menu_items.ordered.includes(:translations)
+    end
+
+    def export_csv(kind:)
+      store_ops { Catalog::StoreOps.export_csv(store, kind: kind) }
+    end
+
     private
 
     def store
@@ -96,6 +156,12 @@ module Types
     def analytics
       yield
     rescue Catalog::Analytics::Error => e
+      raise GraphQL::ExecutionError, e.message
+    end
+
+    def store_ops
+      yield
+    rescue Catalog::StoreOps::Error => e
       raise GraphQL::ExecutionError, e.message
     end
 

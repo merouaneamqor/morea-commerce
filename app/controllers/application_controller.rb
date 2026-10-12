@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
   before_action :set_current_store
   before_action :set_locale
 
-  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?
+  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?, :store_billing_past_due?
 
   def default_url_options
     return {} if is_a?(Admin::BaseController) || controller_path.start_with?("admin")
@@ -125,6 +125,10 @@ class ApplicationController < ActionController::Base
 
   def super_admin?
     current_admin_user&.super_admin?
+  end
+
+  def store_billing_past_due?
+    current_store&.billing_past_due?
   end
 
   def normalize_locale(locale)

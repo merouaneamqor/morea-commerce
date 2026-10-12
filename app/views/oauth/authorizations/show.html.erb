@@ -1,0 +1,15 @@
+<% content_for :title, "Connect agent — Admin" %>
+
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">Connect agent</h1>
+</div>
+
+<section class="admin-card">
+  <div class="space-y-4 px-4 py-4">
+    <p class="admin-help">
+      <strong><%= @client.client_name %></strong> wants to manage products and collections for
+      <strong><%= @store.name %></strong>.
+    </p>
+    <%= button_to "Allow", oauth_authorize_path, method: :post, class: "admin-btn" %>
+  </div>
+</section>

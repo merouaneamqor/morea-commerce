@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_12_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -217,6 +217,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_150000) do
     t.datetime "updated_at", null: false
     t.index ["store_id", "menu", "position"], name: "index_menu_items_on_store_id_and_menu_and_position"
     t.index ["store_id"], name: "index_menu_items_on_store_id"
+  end
+
+  create_table "oauth_access_tokens", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "token_digest", null: false
+    t.string "refresh_digest", null: false
+    t.string "client_id", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "refresh_expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["refresh_digest"], name: "index_oauth_access_tokens_on_refresh_digest", unique: true
+    t.index ["store_id"], name: "index_oauth_access_tokens_on_store_id"
+    t.index ["token_digest"], name: "index_oauth_access_tokens_on_token_digest", unique: true
+  end
+
+  create_table "oauth_clients", force: :cascade do |t|
+    t.string "client_id", null: false
+    t.string "client_name"
+    t.string "redirect_uris", default: [], null: false, array: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_oauth_clients_on_client_id", unique: true
   end
 
   create_table "order_events", force: :cascade do |t|
@@ -485,6 +508,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_150000) do
   add_foreign_key "invoices", "stores"
   add_foreign_key "menu_item_translations", "menu_items"
   add_foreign_key "menu_items", "stores"
+  add_foreign_key "oauth_access_tokens", "stores"
   add_foreign_key "order_events", "orders"
   add_foreign_key "order_events", "users"
   add_foreign_key "order_items", "orders"

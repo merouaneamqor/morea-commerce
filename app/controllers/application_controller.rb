@@ -56,6 +56,8 @@ class ApplicationController < ActionController::Base
       path == "/graphql" ||
       path == "/mcp" ||
       path.start_with?("/admin") ||
+      path.start_with?("/oauth") ||
+      path.start_with?("/.well-known") ||
       path.start_with?("/webhooks") ||
       path.start_with?("/api")
   end

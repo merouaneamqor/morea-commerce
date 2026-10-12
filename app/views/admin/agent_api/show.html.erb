@@ -9,8 +9,8 @@
     <div class="admin-card__header"><h2 class="admin-card__title">Credentials</h2></div>
     <div class="space-y-4 px-4 pb-4">
       <p class="admin-help">
-        This token lets an agent manage products and collections for <%= @store.name %> only.
-        It is shown once. Send it as <code>Authorization: Bearer</code>.
+        Paste <code><%= @mcp_url %></code> into the agent. It will ask you to sign in to <%= @store.name %>.
+        A pasted token is only needed if the agent asks for a header instead of opening a login.
       </p>
       <% if @store.api_token_last_four.present? %>
         <p class="admin-help">Current token ends in <code><%= @store.api_token_last_four %></code>.</p>

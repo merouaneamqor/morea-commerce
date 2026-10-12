@@ -33,6 +33,9 @@ module Admin
     end
 
     def after_login_path_for(user)
+      return_to = session.delete(:return_to).to_s
+      return return_to if return_to.start_with?("/") && !return_to.start_with?("//")
+
       user&.super_admin? ? admin_platform_path : admin_root_path
     end
   end

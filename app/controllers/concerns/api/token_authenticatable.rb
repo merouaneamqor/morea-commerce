@@ -16,13 +16,14 @@ module Api
 
     def authenticate_api_token!
       token = bearer_token
-      store = Store.find_by_api_token(token)
+      store = Store.find_by_api_token(token) || OauthAccessToken.authenticate(token)&.store
       if store
         @current_api_store = store
         Current.store = store
         return
       end
 
+      response.set_header("WWW-Authenticate", %(Bearer realm="morea", resource_metadata="#{request.base_url}/.well-known/oauth-protected-resource/mcp"))
       render json: { errors: [ { message: "Unauthorized" } ] }, status: :unauthorized
     end
 

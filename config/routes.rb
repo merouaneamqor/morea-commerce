@@ -11,6 +11,19 @@ Rails.application.routes.draw do
   post "/graphql", to: "graphql#execute"
   match "/mcp", to: "mcp#handle", via: %i[get post delete]
 
+  get "/.well-known/oauth-protected-resource", to: "oauth/metadata#protected_resource"
+  get "/.well-known/oauth-protected-resource/mcp", to: "oauth/metadata#protected_resource"
+  get "/.well-known/oauth-authorization-server", to: "oauth/metadata#authorization_server"
+  get "/.well-known/oauth-authorization-server/mcp", to: "oauth/metadata#authorization_server"
+  get "/.well-known/openid-configuration", to: "oauth/metadata#authorization_server"
+
+  get "/oauth/authorize", to: "oauth/authorizations#show", as: :oauth_authorize
+  post "/oauth/authorize", to: "oauth/authorizations#create"
+  post "/oauth/token", to: "oauth/tokens#create"
+  match "/oauth/token", to: "oauth/tokens#preflight", via: :options
+  post "/oauth/register", to: "oauth/registrations#create"
+  match "/oauth/register", to: "oauth/registrations#preflight", via: :options
+
   namespace :api do
     resources :orders, only: [] do
       member do

@@ -4,7 +4,7 @@ class CatalogGuide
   TEXT = <<~MD.freeze
     # Morea catalog
 
-    You are connected to one store. The Bearer token already selected it. Do not ask for a store id, and do not query another store.
+    You are connected to one store. Sign-in or the Bearer token already selected it. Do not ask for a store id, and do not query another store.
 
     Prefer the MCP tools. This manual is the resource `morea://catalog` and the GraphQL query `{ guide }`.
     GraphQL is `POST /graphql` on this host with `Authorization: Bearer <token>`, `Content-Type: application/json`, and body `{ "query": "...", "variables": {} }`.

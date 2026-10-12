@@ -23,6 +23,7 @@ class CatalogServer
     CatalogTools::ProductStats,
     CatalogTools::ListOrders,
     CatalogTools::GetOrder,
+    CatalogTools::CancelOrder,
     CatalogTools::SetProductVariants,
     CatalogTools::DeleteProductVariants
   ].freeze
@@ -36,7 +37,8 @@ class CatalogServer
       icons: icons_for(store),
       instructions: <<~TEXT.squish,
         You manage one Morea store's products, collections, variants, and delivery numbers. Read the resource morea://catalog before the first write.
-        Use store_stats, product_stats, list_orders, and get_order for strategy. Delivered revenue is cash collected.
+        Use store_stats, product_stats, list_orders, get_order, and cancel_order for strategy. Delivered revenue is cash collected.
+        cancel_order needs confirm: true and only works before pickup.
         coverUrl and the attached cover photo are the storefront image. Do not replace them with a web search.
         Prices are whole currency units (priceDh), not cents. Locales are fr, en, and ar; create with a fr name.
         Deletes require confirm: true. Images are base64 or a public http(s) URL (jpeg, png, webp, gif, 8MB, 4 per call).

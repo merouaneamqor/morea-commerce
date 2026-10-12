@@ -17,5 +17,6 @@ module Types
     field :remove_collection_image, mutation: Mutations::RemoveCollectionImage
     field :set_product_variants, mutation: Mutations::SetProductVariants
     field :delete_product_variants, mutation: Mutations::DeleteProductVariants
+    field :cancel_order, mutation: Mutations::CancelOrder
   end
 end

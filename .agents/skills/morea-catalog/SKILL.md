@@ -1,6 +1,6 @@
 ---
 name: morea-catalog
-description: Operate one Morea store's products, collections, variants, cover photos, and delivery orders through its remote MCP. Use when the user mentions Morea, ollazen.com, a store catalog, COD orders, delivery stats, list_orders, product variants, or connecting an agent to a store.
+description: Operate one Morea store's products, collections, variants, cover photos, and delivery orders through its remote MCP, including cancelling an order before pickup. Use when the user mentions Morea, ollazen.com, a store catalog, COD orders, delivery stats, list_orders, cancel_order, product variants, or connecting an agent to a store.
 ---
 
 # Morea catalog
@@ -58,7 +58,8 @@ If `list_orders` or `get_order` is missing, that chat kept an older tool list. O
 
 ## Analytics
 
-- `store_stats`, `product_stats`, `list_orders`, `get_order`. Read only. `since` and `until` are `YYYY-MM-DD`. They default to the last 30 days and cannot span more than 366 days. Order lists are not date-filtered unless you pass a date.
+- `store_stats`, `product_stats`, `list_orders`, `get_order` are read only. `cancel_order` cancels one order by `number` and needs `confirm: true`. An optional `reason` is stored on the order. Cancel works from `new`, `confirmed`, `preparing`, `awaiting_pickup`, and `address_issue`. It restores reserved stock and deletes a Sendit parcel that has not left the warehouse. After pickup, say the order cannot be cancelled from its current status.
+- `since` and `until` are `YYYY-MM-DD`. They default to the last 30 days and cannot span more than 366 days. Order lists are not date-filtered unless you pass a date.
 - Placed numbers use `created_at`. Delivered numbers use `delivered_at` and are the cash collected. Cancel and return rates are among orders placed in the window.
 - `pipeline` is how many orders are in each status right now, including `address_issue`, `unreachable`, and `postponed`.
 - Money is whole currency units (`revenueDh`), same as `priceDh`.
@@ -70,7 +71,7 @@ If `list_orders` or `get_order` is missing, that chat kept an older tool list. O
 
 Products: `list_products` (`query`, `status`, `limit` 1–100, default 50), `get_product`, `create_product`, `update_product`, `delete_product`, `set_product_collections`, `set_product_variants`, `delete_product_variants`.
 
-Analytics: `store_stats`, `product_stats` (`slug` optional), `list_orders` (`status`, `city`, `since`, `until`, `limit`), `get_order` (`number`).
+Analytics: `store_stats`, `product_stats` (`slug` optional), `list_orders` (`status`, `city`, `since`, `until`, `limit`), `get_order` (`number`), `cancel_order` (`number`, `confirm`, `reason`).
 
 Collections: `list_collections` (`published`, `limit`), `get_collection`, `create_collection`, `update_collection`, `delete_collection`, `set_collection_products`.
 

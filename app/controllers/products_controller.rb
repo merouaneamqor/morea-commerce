@@ -1,7 +1,4 @@
 class ProductsController < ApplicationController
-  SIZE_ORDER = %w[XS S M L XL XXL].freeze
-  COLOR_ORDER = [ "Rose poudré", "Blush", "Taupe", "Sand", "Noir", "Black", "Ink" ].freeze
-
   def show
     @product = current_store.products.active.includes(:collections, :product_variants, :translations).find_by!(slug: params[:slug])
     prepare_variants!
@@ -16,17 +13,23 @@ class ProductsController < ApplicationController
 
   def prepare_variants!
     @variants = @product.product_variants.active.order(:name)
-    @sizes = ordered_sizes(@variants.map { |v| v.option1_value.presence || size_from_name(v) }.compact.uniq)
-    @colors = ordered_colors(@variants.map { |v| v.option2_value.presence || color_from_name(v) }.compact.uniq)
+    @sizes = ordered_sizes(@variants.map { |v| v.size_value || size_from_name(v) }.compact.uniq)
+    @colors = @variants.map { |v| v.color_value || color_from_name(v) }.compact.uniq
+    @color_hexes = @variants.each_with_object({}) do |v, map|
+      color = v.color_value || color_from_name(v)
+      next if color.blank?
+
+      map[color] ||= v.color_hex.presence
+    end
     @variant_payload = @variants.map do |v|
       {
         id: v.id,
-        size: v.option1_value.presence || size_from_name(v),
-        color: v.option2_value.presence || color_from_name(v),
+        size: v.size_value || size_from_name(v),
+        color: v.color_value || color_from_name(v),
         stock: v.stock
       }
     end.sort_by do |v|
-      [ SIZE_ORDER.index(v[:size].to_s.upcase) || 99, COLOR_ORDER.index(v[:color].to_s) || 99 ]
+      [ ProductVariant.size_rank(v[:size]), v[:color].to_s.downcase ]
     end
   end
 
@@ -40,13 +43,10 @@ class ProductsController < ApplicationController
   end
 
   def ordered_sizes(sizes)
-    sizes.sort_by { |s| SIZE_ORDER.index(s.to_s.upcase) || 99 }
+    sizes.sort_by { |s| ProductVariant.size_rank(s) }
   end
 
-  def ordered_colors(colors)
-    colors.sort_by { |c| COLOR_ORDER.index(c.to_s) || COLOR_ORDER.map(&:downcase).index(c.to_s.downcase) || 99 }
-  end
-
+  # Legacy fallback when option columns were empty and name held "Size / Color".
   def size_from_name(variant)
     variant.name.to_s.split(" / ").first.presence
   end

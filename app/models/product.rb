@@ -71,6 +71,25 @@ class Product < ApplicationRecord
     product_variants.active.sum(:stock)
   end
 
+  # Size checklist presets live on ProductVariant::SIZE_OPTIONS (option1).
+  def variant_sizes
+    product_variants.filter_map(&:size_value).uniq
+  end
+  alias_method :variant_size_values, :variant_sizes
+
+  def variant_color_names
+    product_variants.filter_map(&:color_value).uniq
+  end
+  alias_method :variant_color_values, :variant_color_names
+
+  # Unique colors with stored hex — for the admin color editor (empty when none yet).
+  def variant_colors
+    variant_color_names.map do |name|
+      sample = product_variants.find { |v| v.color_value == name }
+      { name: name, hex: sample&.color_hex.presence }
+    end
+  end
+
   def scarcity_label
     return unless track_inventory
 

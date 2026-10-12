@@ -28,9 +28,10 @@
             <td><%= admin_badge(product.status) %></td>
             <td>
               <% if product.track_inventory %>
-                <span class="<%= "text-[#8e0b21]" if product.stock.to_i <= 5 %>"><%= product.stock %> in stock</span>
+                <% qty = product.available_stock %>
+                <span class="<%= "text-[#8e0b21]" if qty <= 5 %>"><%= qty %> in stock</span>
                 <% if product.product_variants.size.positive? %>
-                  <span class="admin-muted">for <%= pluralize(product.product_variants.size, "variant", locale: :en) %></span>
+                  <span class="admin-muted">across <%= pluralize(product.product_variants.size, "variant", locale: :en) %></span>
                 <% end %>
               <% else %>
                 <span class="admin-muted">Inventory not tracked</span>

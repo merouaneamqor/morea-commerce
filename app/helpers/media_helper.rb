@@ -89,19 +89,9 @@ module MediaHelper
     "#{(cents.to_i / 100).to_fs(:delimited)} #{currency}"
   end
 
-  def color_hex(name)
-    {
-      "blush" => "#f8cdd0",
-      "rose poudré" => "#d9a8ab",
-      "rose poudre" => "#d9a8ab",
-      "sand" => "#d6c3b0",
-      "taupe" => "#9a8b7a",
-      "ink" => "#1a1716",
-      "noir" => "#1a1716",
-      "black" => "#1a1716",
-      "white" => "#faf9f7",
-      "rose" => "#e8b4b8",
-      "cognac" => "#8b5a3c"
-    }[name.to_s.downcase] || "#c4b8b0"
+  def color_hex(_name = nil, stored: nil)
+    ProductVariant.normalize_hex(stored) || ProductVariant::PLACEHOLDER_HEX
   end
 end
+
+

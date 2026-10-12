@@ -1,0 +1,193 @@
+<%# locals: product %>
+<% variants = product.product_variants.order(:id) %>
+<% selected_sizes = product.variant_sizes %>
+<% variant_colors = product.variant_colors %>
+<% size_options = ProductVariant::SIZE_OPTIONS %>
+
+<section class="admin-card"
+         data-controller="variant-matrix"
+         data-variant-matrix-size-order-value="<%= size_options.to_json %>"
+         data-variant-matrix-placeholder-hex-value="<%= ProductVariant::PLACEHOLDER_HEX %>">
+  <div class="admin-card__header"><h2 class="admin-card__title">Variants</h2></div>
+
+  <%= form_with url: bulk_update_admin_product_variants_path(product), method: :patch, class: "space-y-4" do %>
+    <div class="space-y-4 px-4">
+      <p class="admin-help">Pick sizes and add colors, then generate the missing combinations. Leave colors empty for size-only products.</p>
+
+      <div>
+        <p class="admin-label">Sizes</p>
+        <div class="flex flex-wrap gap-2" data-variant-matrix-target="sizeList">
+          <% size_options.each do |size| %>
+            <label class="admin-check rounded-lg border border-[#ebebeb] px-3 py-2">
+              <input type="checkbox" value="<%= size %>"
+                     data-variant-matrix-target="sizeOption"
+                     data-action="change->variant-matrix#syncSizes"
+                     <%= "checked" if selected_sizes.include?(size) %>>
+              <%= size %>
+            </label>
+          <% end %>
+          <% selected_sizes.reject { |s| size_options.include?(s) }.each do |size| %>
+            <span class="inline-flex items-center gap-2 rounded-lg border border-[#ebebeb] px-3 py-2 text-[13px]"
+                  data-variant-matrix-size-chip data-size="<%= size %>">
+              <%= size %>
+              <button type="button" class="admin-btn-plain admin-btn-plain--critical text-xs"
+                      data-action="variant-matrix#removeSizeChip" aria-label="Remove <%= size %>">×</button>
+            </span>
+          <% end %>
+        </div>
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          <input type="text" class="admin-input" style="max-width: 10rem" placeholder="Custom size"
+                 data-variant-matrix-target="customSize"
+                 data-action="keydown.enter->variant-matrix#addCustomSize:prevent">
+          <button type="button" class="admin-btn-secondary" data-action="variant-matrix#addCustomSize">Add size</button>
+        </div>
+      </div>
+
+      <div>
+        <p class="admin-label">Colors</p>
+        <div class="space-y-2" data-variant-matrix-target="colorList">
+          <% variant_colors.each do |color| %>
+            <div class="flex flex-wrap items-center gap-2" data-variant-matrix-color-row>
+              <input type="color" value="<%= color[:hex].presence || "#ffffff" %>"
+                     class="h-9 w-10 cursor-pointer rounded border border-[#ebebeb] bg-white p-0.5"
+                     data-field="hex-picker" data-action="input->variant-matrix#syncColorPicker" title="Pick color">
+              <input type="text" value="<%= color[:hex] %>" class="admin-input font-mono" style="max-width: 7rem"
+                     data-field="hex" data-action="input->variant-matrix#syncColorHex" placeholder="#000000" maxlength="7">
+              <input type="text" value="<%= color[:name] %>" class="admin-input" style="min-width: 10rem; flex: 1"
+                     data-field="name" placeholder="Color name" data-action="change->variant-matrix#syncColorNames">
+              <button type="button" class="admin-btn-plain admin-btn-plain--critical" data-action="variant-matrix#removeColor">Remove</button>
+            </div>
+          <% end %>
+        </div>
+        <button type="button" class="admin-btn-secondary mt-2" data-action="variant-matrix#addColor">Add color</button>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <button type="button" class="admin-btn-secondary" data-action="variant-matrix#generate">Generate missing</button>
+        <div class="flex items-center gap-2">
+          <label class="admin-label mb-0" for="variant_group_by">Group by</label>
+          <select id="variant_group_by" class="admin-input" style="width: auto; min-width: 8rem"
+                  data-variant-matrix-target="groupBy"
+                  data-action="change->variant-matrix#regroup">
+            <option value="none">None</option>
+            <option value="size" selected>Size</option>
+            <option value="color">Color</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div data-variant-matrix-target="destroyIds"></div>
+
+    <div class="admin-table-wrap border-t border-[#ebebeb]">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Variant</th>
+            <th>SKU</th>
+            <th>Price override</th>
+            <th>Stock</th>
+            <th>Active</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody data-variant-matrix-target="tbody">
+          <% variants.each_with_index do |variant, index| %>
+            <tr data-variant-matrix-row
+                data-variant-id="<%= variant.id %>"
+                data-size="<%= variant.option1_value %>"
+                data-color="<%= variant.option2_value %>"
+                data-color-hex="<%= variant.swatch_hex if variant.color_value.present? %>">
+              <td>
+                <div class="flex items-center gap-2">
+                  <% if variant.color_value.present? %>
+                    <span class="inline-block h-4 w-4 shrink-0 rounded-full border border-[#ebebeb]"
+                          style="background: <%= variant.swatch_hex %>"
+                          data-field="swatch" title="<%= variant.color_value %>"></span>
+                  <% end %>
+                  <span class="font-medium"><%= variant.display_name %></span>
+                </div>
+                <input type="hidden" name="variants[<%= index %>][id]" value="<%= variant.id %>">
+                <input type="hidden" name="variants[<%= index %>][option1_value]" value="<%= variant.option1_value %>" data-field="option1_value">
+                <input type="hidden" name="variants[<%= index %>][option2_value]" value="<%= variant.option2_value %>" data-field="option2_value">
+                <input type="hidden" name="variants[<%= index %>][color_hex]" value="<%= variant.color_hex %>" data-field="color_hex">
+              </td>
+              <td>
+                <input type="text" name="variants[<%= index %>][sku]" value="<%= variant.sku %>" class="admin-input" placeholder="SKU">
+              </td>
+              <td>
+                <input type="number" name="variants[<%= index %>][price_dh]" value="<%= variant.price_dh %>"
+                       class="admin-input" min="0" step="1" placeholder="<%= product.currency %>">
+              </td>
+              <td>
+                <input type="number" name="variants[<%= index %>][stock]" value="<%= variant.stock %>"
+                       class="admin-input" min="0" style="max-width: 6rem">
+              </td>
+              <td>
+                <input type="hidden" name="variants[<%= index %>][active]" value="0">
+                <label class="admin-check">
+                  <input type="checkbox" name="variants[<%= index %>][active]" value="1" <%= "checked" if variant.active %>>
+                </label>
+              </td>
+              <td>
+                <button type="button" class="admin-btn-plain admin-btn-plain--critical" data-action="variant-matrix#remove">Remove</button>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      <p class="admin-empty px-4 py-6" data-variant-matrix-target="empty" <%= "hidden" if variants.any? %>>
+        No variants yet. Add sizes and colors above, then generate.
+      </p>
+    </div>
+
+    <template data-variant-matrix-target="colorTemplate">
+      <div class="flex flex-wrap items-center gap-2" data-variant-matrix-color-row>
+        <input type="color" value="#ffffff" class="h-9 w-10 cursor-pointer rounded border border-[#ebebeb] bg-white p-0.5"
+               data-field="hex-picker" data-action="input->variant-matrix#syncColorPicker" title="Pick color">
+        <input type="text" value="" class="admin-input font-mono" style="max-width: 7rem"
+               data-field="hex" data-action="input->variant-matrix#syncColorHex" placeholder="#000000" maxlength="7">
+        <input type="text" value="" class="admin-input" style="min-width: 10rem; flex: 1"
+               data-field="name" placeholder="Color name" data-action="change->variant-matrix#syncColorNames">
+        <button type="button" class="admin-btn-plain admin-btn-plain--critical" data-action="variant-matrix#removeColor">Remove</button>
+      </div>
+    </template>
+
+    <template data-variant-matrix-target="rowTemplate">
+      <tr data-variant-matrix-row data-size="__SIZE__" data-color="__COLOR__" data-color-hex="__HEX__">
+        <td>
+          <div class="flex items-center gap-2">
+            <span class="inline-block h-4 w-4 shrink-0 rounded-full border border-[#ebebeb] __SWATCH_HIDDEN__"
+                  style="background: __HEX__" data-field="swatch"></span>
+            <span class="font-medium">__NAME__</span>
+          </div>
+          <input type="hidden" name="variants[__INDEX__][option1_value]" value="__SIZE__" data-field="option1_value">
+          <input type="hidden" name="variants[__INDEX__][option2_value]" value="__COLOR__" data-field="option2_value">
+          <input type="hidden" name="variants[__INDEX__][color_hex]" value="__HEX__" data-field="color_hex">
+        </td>
+        <td>
+          <input type="text" name="variants[__INDEX__][sku]" class="admin-input" placeholder="SKU">
+        </td>
+        <td>
+          <input type="number" name="variants[__INDEX__][price_dh]" class="admin-input" min="0" step="1" placeholder="<%= product.currency %>">
+        </td>
+        <td>
+          <input type="number" name="variants[__INDEX__][stock]" value="0" class="admin-input" min="0" style="max-width: 6rem">
+        </td>
+        <td>
+          <input type="hidden" name="variants[__INDEX__][active]" value="0">
+          <label class="admin-check">
+            <input type="checkbox" name="variants[__INDEX__][active]" value="1" checked>
+          </label>
+        </td>
+        <td>
+          <button type="button" class="admin-btn-plain admin-btn-plain--critical" data-action="variant-matrix#remove">Remove</button>
+        </td>
+      </tr>
+    </template>
+
+    <div class="flex justify-end border-t border-[#ebebeb] px-4 py-3">
+      <%= submit_tag "Save variants", class: "admin-btn" %>
+    </div>
+  <% end %>
+</section>

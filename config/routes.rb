@@ -67,7 +67,11 @@ Rails.application.routes.draw do
     resource :store, only: %i[edit update]
     resource :pixels, only: %i[edit update], controller: "pixels"
     resources :products do
-      resources :variants, only: %i[create update destroy]
+      resources :variants, only: %i[create update destroy] do
+        collection do
+          patch :bulk_update
+        end
+      end
       resources :inventory, only: %i[create]
     end
     resources :collections

@@ -25,6 +25,20 @@ module Admin
       redirect_to edit_admin_product_path(@product), notice: "Variant removed."
     end
 
+    def bulk_update
+      result = Admin::Variants::BulkUpdater.new(
+        product: @product,
+        rows: variant_rows,
+        destroy_ids: params[:destroy_ids]
+      ).call
+
+      if result.success?
+        redirect_to edit_admin_product_path(@product), notice: result.message
+      else
+        redirect_to edit_admin_product_path(@product), alert: result.message
+      end
+    end
+
     private
 
     def set_product
@@ -34,13 +48,27 @@ module Admin
     def variant_params
       attrs = params.require(:product_variant).permit(
         :name, :sku, :option1_name, :option1_value, :option2_name, :option2_value,
-        :price_cents, :price_dh, :stock, :active
+        :color_hex, :price_cents, :price_dh, :stock, :active
       )
       if attrs.key?(:price_dh)
         dh = attrs.delete(:price_dh)
         attrs[:price_cents] = dh.present? ? dh.to_i * 100 : nil
       end
       attrs
+    end
+
+    def variant_rows
+      raw = params[:variants]
+      list = case raw
+      when ActionController::Parameters, Hash then raw.values
+      when Array then raw
+      else []
+      end
+
+      list.map do |row|
+        h = row.respond_to?(:to_unsafe_h) ? row.to_unsafe_h : row.to_h
+        h.with_indifferent_access
+      end
     end
   end
 end

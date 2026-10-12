@@ -72,7 +72,7 @@
                             data-color="<%= color %>"
                             data-action="variant-picker#selectColor"
                             aria-label="<%= color %>">
-                      <span class="landing-swatch__dot" style="background: <%= color_hex(color) %>"></span>
+                      <span class="landing-swatch__dot" style="background: <%= color_hex(color, stored: @color_hexes[color]) %>"></span>
                     </button>
                   <% end %>
                 </div>

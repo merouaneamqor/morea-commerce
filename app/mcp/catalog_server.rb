@@ -51,7 +51,17 @@ class CatalogServer
     CatalogTools::Storefront::DeletePage,
     CatalogTools::Storefront::ListMenuItems,
     CatalogTools::Storefront::UpsertMenuItem,
-    CatalogTools::Storefront::DeleteMenuItem
+    CatalogTools::Storefront::DeleteMenuItem,
+    CatalogTools::Autonomy::GetStoreProfile,
+    CatalogTools::Autonomy::GetFullCatalog,
+    CatalogTools::Autonomy::AuditStore,
+    CatalogTools::Autonomy::GetProductSchema,
+    CatalogTools::Autonomy::ValidateProduct,
+    CatalogTools::Autonomy::SuggestCollectionStructure,
+    CatalogTools::Autonomy::PreviewChangeset,
+    CatalogTools::Autonomy::ApplyChangeset,
+    CatalogTools::Autonomy::VerifyChangeset,
+    CatalogTools::Autonomy::RollbackChangeset
   ].freeze
 
   def self.build(store:)
@@ -62,7 +72,11 @@ class CatalogServer
       website_url: store.origin,
       icons: icons_for(store),
       instructions: <<~TEXT.squish,
-        You manage one Morea store. Create and update products directly. A missing MCP resource is not an error and must not block a write.
+        You manage one Morea store. Prefer audit → plan → execute → verify for multi-product work.
+        Start with get_store_profile, get_full_catalog or audit_store, then preview_changeset, apply_changeset, verify_changeset.
+        Level 1 content fixes apply automatically. Level 2 (prices, slugs, structural collection changes) needs approveLevel2.
+        Level 3 deletes need approveLevel3 and confirm: true. Use rollback_changeset when a bad apply must be undone.
+        Create and update products directly for single edits. A missing MCP resource is not an error and must not block a write.
         A draft is create_product with status draft, stock 0, priceDh in whole currency units, a fr translation name, and collectionSlugs such as ["essentials"].
         The full manual is the tool read_catalog_guide. GraphQL { guide } returns the same text.
         Use store_stats, product_stats, list_orders, get_order, and cancel_order for strategy. Delivered revenue is cash collected.

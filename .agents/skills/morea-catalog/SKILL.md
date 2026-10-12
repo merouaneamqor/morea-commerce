@@ -85,9 +85,34 @@ The home page is `list_home_sections`, `upsert_home_section`, and `delete_home_s
 - Product stock in stats is the sellable stock: variant stock when variants exist, otherwise the product stock. `lowStock` uses the store threshold.
 - Do not invent order numbers, cities, or totals. If `list_orders` is not in the tool list, say so and ask for a new chat.
 
+## Autonomy (audit → plan → execute → verify)
+
+For multi-product store work, do not ask the merchant which tool to call. Prefer this loop:
+
+1. `get_store_profile` — brand tone, languages, pricing rules, approval policies.
+2. `get_full_catalog` or `audit_store` — inspect the catalog and prioritized issues.
+3. `get_product_schema` / `validate_product` — know editable fields and check one product.
+4. `suggest_collection_structure` — optional navigation recommendations.
+5. `preview_changeset` — build a batch plan; read `maxLevel` and per-op approval.
+6. `apply_changeset` — apply the token. Level 2 needs `approveLevel2: true`. Level 3 needs `approveLevel3: true`.
+7. `verify_changeset` — re-read saved data and report failures.
+8. `rollback_changeset` — restore previous values when snapshots allow it (deletes cannot be recreated).
+
+Approval levels (enforced server-side):
+
+- Level 1 automatic: content, translations, SEO, assign to existing collections, store profile updates.
+- Level 2 preview first: prices, slugs, create/rename collections, replace collection membership.
+- Level 3 restricted: delete product or collection (`confirm: true` on the op, plus `approveLevel3`).
+
+Changeset operation `type` values: `update_product`, `set_product_collections`, `create_collection`, `update_collection`, `set_collection_products`, `delete_product`, `delete_collection`, `update_store_profile`.
+
+Example `update_product` op: `{ "type": "update_product", "slug": "robe-lin", "attrs": { "translations": [{ "locale": "fr", "shortDescription": "…" }] } }`.
+
 ## MCP tools
 
 Products: `read_catalog_guide`, `list_products` (`query`, `status`, `limit` 1–100, default 50), `get_product`, `create_product`, `update_product`, `delete_product`, `set_product_collections`, `set_product_variants`, `delete_product_variants`.
+
+Autonomy: `get_store_profile`, `get_full_catalog` (`page`, `perPage`, `status`), `audit_store` (`status`, `limit`), `get_product_schema`, `validate_product` (`slug`), `suggest_collection_structure` (`limit`), `preview_changeset` (`operations`, `summary`), `apply_changeset` (`token`, `approveLevel2`, `approveLevel3`), `verify_changeset` (`token`), `rollback_changeset` (`token`).
 
 Analytics: `store_stats`, `product_stats` (`slug` optional), `list_orders` (`status`, `city`, `since`, `until`, `limit`), `get_order` (`number`), `cancel_order` (`number`, `confirm`, `reason`).
 

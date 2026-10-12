@@ -63,8 +63,80 @@ module Types
       argument :kind, String, required: true
     end
 
+    field :store_profile, GraphQL::Types::JSON, null: false,
+          description: "Brand guidelines, locales, pricing rules, and agent approval policies for this store."
+    field :full_catalog, Autonomy::FullCatalogType, null: false do
+      argument :page, Integer, required: false
+      argument :per_page, Integer, required: false
+      argument :status, String, required: false
+    end
+    field :audit_store, Autonomy::AuditReportType, null: false do
+      argument :status, String, required: false
+      argument :limit, Integer, required: false
+    end
+    field :product_schema, GraphQL::Types::JSON, null: false
+    field :validate_product, Autonomy::ValidateProductResultType, null: false do
+      argument :slug, String, required: true
+    end
+    field :suggest_collection_structure, Autonomy::CollectionSuggestionReportType, null: false do
+      argument :limit, Integer, required: false
+    end
+    field :changeset, Autonomy::ChangesetType, null: true do
+      argument :token, String, required: true
+    end
+
     def guide
       CatalogGuide.text
+    end
+
+    def store_profile
+      Catalog::Autonomy.profile_for(store)
+    end
+
+    def full_catalog(page: nil, per_page: nil, status: nil)
+      page_number = [ page.to_i, 1 ].max
+      page_number = 1 if page.to_i <= 0
+      size = per_page.to_i
+      size = 50 if size <= 0
+      size = size.clamp(1, 100)
+
+      scope = store.products.includes(:translations, :collections, :product_variants)
+      scope = scope.where(status: status) if status.present?
+      total = scope.count
+      products = scope.order(:position, :name).offset((page_number - 1) * size).limit(size)
+      collections = store.collections.includes(:translations, :products).order(:position, :name)
+
+      {
+        page: page_number,
+        per_page: size,
+        product_total: total,
+        collection_total: collections.size,
+        has_more_products: (page_number * size) < total,
+        products: products,
+        collections: collections
+      }
+    end
+
+    def audit_store(status: nil, limit: nil)
+      Catalog::Audit.store(store, status: status, limit: limit)
+    end
+
+    def product_schema
+      Catalog::Autonomy.product_schema
+    end
+
+    def validate_product(slug:)
+      Catalog::ValidateProduct.call(store, slug: slug)
+    end
+
+    def suggest_collection_structure(limit: nil)
+      Catalog::SuggestCollections.call(store, limit: limit)
+    end
+
+    def changeset(token:)
+      Catalog::Changesets.present(store.agent_changesets.find_by!(token: token))
+    rescue ActiveRecord::RecordNotFound
+      nil
     end
 
     def products(query: nil, status: nil, limit: nil)

@@ -6,7 +6,7 @@ module Catalog
 
     def assign!(record, entries)
       Array(entries).each do |entry|
-        attrs = entry.to_h.symbolize_keys
+        attrs = normalize_entry(entry)
         locale = attrs[:locale].to_s
         next unless Morea::Locales.available?(locale)
 
@@ -25,6 +25,11 @@ module Catalog
       default_name = named.detect { |item| item.locale == Morea::Locales::DEFAULT.to_s }&.name
       default_name = named.map(&:name).find(&:present?) if default_name.blank?
       record.name = default_name if default_name.present? && record.respond_to?(:name=) && record.name.blank?
+    end
+
+    def normalize_entry(entry)
+      raw = entry.to_h.transform_keys { |key| key.to_s.underscore.to_sym }
+      raw
     end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_12_220000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "agent_changesets", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "token", null: false
+    t.string "status", default: "previewed", null: false
+    t.string "summary"
+    t.jsonb "operations", default: [], null: false
+    t.jsonb "preview", default: {}, null: false
+    t.jsonb "snapshots", default: [], null: false
+    t.jsonb "results", default: {}, null: false
+    t.jsonb "verification", default: {}, null: false
+    t.integer "max_level", default: 1, null: false
+    t.datetime "applied_at"
+    t.datetime "verified_at"
+    t.datetime "rolled_back_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_agent_changesets_on_status"
+    t.index ["store_id", "token"], name: "index_agent_changesets_on_store_id_and_token", unique: true
+    t.index ["store_id"], name: "index_agent_changesets_on_store_id"
   end
 
   create_table "addresses", force: :cascade do |t|
@@ -467,6 +488,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
     t.string "privacy_rights_contact"
     t.string "api_token_digest"
     t.string "api_token_last_four"
+    t.jsonb "agent_profile", default: {}, null: false
     t.index ["api_token_digest"], name: "index_stores_on_api_token_digest", unique: true
     t.index ["billing_interval"], name: "index_stores_on_billing_interval"
     t.index ["billing_status"], name: "index_stores_on_billing_status"
@@ -497,6 +519,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
   add_foreign_key "collection_products", "collections"
   add_foreign_key "collection_products", "products"
   add_foreign_key "collection_translations", "collections"
+  add_foreign_key "agent_changesets", "stores"
   add_foreign_key "collections", "stores"
   add_foreign_key "customers", "stores"
   add_foreign_key "discounts", "stores"

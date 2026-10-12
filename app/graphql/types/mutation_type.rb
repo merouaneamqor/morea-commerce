@@ -33,5 +33,10 @@ module Types
     field :delete_page, mutation: Mutations::Storefront::DeletePage
     field :upsert_menu_item, mutation: Mutations::Storefront::UpsertMenuItem
     field :delete_menu_item, mutation: Mutations::Storefront::DeleteMenuItem
+    field :preview_changeset, mutation: Mutations::Autonomy::PreviewChangeset
+    field :apply_changeset, mutation: Mutations::Autonomy::ApplyChangeset
+    field :verify_changeset, mutation: Mutations::Autonomy::VerifyChangeset
+    field :rollback_changeset, mutation: Mutations::Autonomy::RollbackChangeset
+    field :update_store_profile, mutation: Mutations::Autonomy::UpdateStoreProfile
   end
 end

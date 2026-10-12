@@ -39,7 +39,7 @@ class CatalogExecutor
     translations { locale name subtitle description }
   GQL
 
-  def self.call(store:, query:, variables: {})
+  def self.call(store:, query:, variables: {}, include_covers: true)
     result = MoreaSchema.execute(
       query,
       variables: variables.deep_stringify_keys,
@@ -47,12 +47,12 @@ class CatalogExecutor
     )
     payload = result.to_h
     errored = payload["errors"].present? || payload_errors?(payload)
-    MCP::Tool::Response.new(response_content(payload, errored), error: errored)
+    MCP::Tool::Response.new(response_content(payload, errored, include_covers: include_covers), error: errored)
   end
 
-  def self.response_content(payload, errored)
+  def self.response_content(payload, errored, include_covers: true)
     parts = [ { type: "text", text: JSON.generate(payload) } ]
-    return parts if errored
+    return parts if errored || !include_covers
 
     cover_entries(payload).each do |entry|
       bytes = Catalog::Images.jpeg_bytes(entry[:url])

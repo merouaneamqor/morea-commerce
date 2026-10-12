@@ -4,8 +4,32 @@ class CatalogExecutor
   PRODUCT_FIELDS = <<~GQL.squish
     id slug status priceDh compareAtDh currency sku stock trackInventory featured position collectionSlugs
     coverUrl
+    variants { id size color colorHex sku stock active priceDh }
     images { id filename url position }
     translations { locale name shortDescription story material fit movement dimensions origin care seoTitle seoDescription }
+  GQL
+
+  STATS_FIELDS = <<~GQL.squish
+    from to placedCount placedRevenueDh shippingDh discountDh averageOrderDh
+    deliveredCount deliveredRevenueDh deliveryRate cancelRate returnRate
+    byStatus { status count }
+    pipeline { status count }
+    byCity { city orders delivered deliveryRate revenueDh }
+    byDay { date placed delivered revenueDh }
+  GQL
+
+  PRODUCT_STAT_FIELDS = <<~GQL.squish
+    slug name status priceDh stock stockValueDh lowStock
+    unitsPlaced unitsDelivered unitsCancelled unitsReturned
+    revenuePlacedDh revenueDeliveredDh orders
+    variants { name unitsPlaced unitsDelivered stock }
+  GQL
+
+  ORDER_FIELDS = <<~GQL.squish
+    number status createdAt confirmedAt shippedAt deliveredAt cancelledAt returnedAt
+    city district subtotalDh shippingDh discountDh totalDh discountCode notes
+    sendit { code status feeDh deliverBy error }
+    items { productSlug productName variantName quantity unitPriceDh totalDh }
   GQL
 
   COLLECTION_FIELDS = <<~GQL.squish

@@ -18,7 +18,9 @@ class CatalogGuide
     - Slugs are unique per store. Unknown slugs come back in `errors`.
     - Status is `draft`, `active`, or `archived`. New products default to `draft`.
     - `set_product_collections` and `set_collection_products` replace the full membership. Pass `[]` to clear it. Order of `productSlugs` is the collection order.
-    - Variants and inventory movements are not available here. Stock is the product `stock` field.
+    - Variants are size and color. `set_product_variants` upserts by that pair; omit a row to leave it. `delete_product_variants` needs `confirm: true`. A blank `priceDh` uses the product price.
+    - When a product has variants, the storefront sells the sum of active variant stock. Change that stock, not the product `stock` field.
+    - Inventory movements are not available here.
 
     ## Images
 
@@ -34,9 +36,20 @@ class CatalogGuide
     - New product images are appended. `reorder_product_images` takes attachment ids; the first id is the cover. Ids you omit stay after the ones you list.
     - Remove images by the `id` returned on `images` / `image`.
 
+    ## Analytics
+
+    - `store_stats`, `product_stats`, `list_orders`, `get_order`. Read only. `since` and `until` are `YYYY-MM-DD`. They default to the last 30 days and cannot span more than 366 days. Order lists are not date-filtered unless you pass a date.
+    - Placed numbers use `created_at`. Delivered numbers use `delivered_at` and are the cash collected. Cancel and return rates are among orders placed in the window.
+    - `pipeline` is how many orders are in each status right now, including `address_issue`, `unreachable`, and `postponed`.
+    - Money is whole currency units (`revenueDh`), same as `priceDh`.
+    - Orders include city, district, totals, Sendit status, and line items. They do not include phone, street address, or email.
+    - Product stock in stats is the sellable stock: variant stock when variants exist, otherwise the product stock. `lowStock` uses the store threshold.
+
     ## MCP tools
 
-    Products: `list_products` (`query`, `status`, `limit` 1–100, default 50), `get_product`, `create_product`, `update_product`, `delete_product`, `set_product_collections`.
+    Products: `list_products` (`query`, `status`, `limit` 1–100, default 50), `get_product`, `create_product`, `update_product`, `delete_product`, `set_product_collections`, `set_product_variants`, `delete_product_variants`.
+
+    Analytics: `store_stats`, `product_stats` (`slug` optional), `list_orders` (`status`, `city`, `since`, `until`, `limit`), `get_order` (`number`).
 
     Collections: `list_collections` (`published`, `limit`), `get_collection`, `create_collection`, `update_collection`, `delete_collection`, `set_collection_products`.
 

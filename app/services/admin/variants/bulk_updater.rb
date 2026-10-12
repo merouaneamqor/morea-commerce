@@ -3,6 +3,7 @@
 module Admin
   module Variants
     # Persists the admin variant matrix: destroy selected rows, upsert by size×color key.
+    # Save alone must not recreate destroyed variants; Generate can re-add combos later.
     class BulkUpdater
       Result = Struct.new(:ok, :message, keyword_init: true) do
         def success?
@@ -20,7 +21,7 @@ module Admin
         existing_by_key = @product.product_variants.index_by(&:option_key)
 
         ActiveRecord::Base.transaction do
-          destroy_marked!
+          destroy_marked!(existing_by_key)
           upsert_rows!(existing_by_key)
         end
 
@@ -31,9 +32,13 @@ module Admin
 
       private
 
-      def destroy_marked!
+      def destroy_marked!(existing_by_key)
         @destroy_ids.each do |id|
-          @product.product_variants.find_by(id: id)&.destroy!
+          variant = @product.product_variants.find_by(id: id)
+          next unless variant
+
+          existing_by_key.delete(variant.option_key)
+          variant.destroy!
         end
       end
 
@@ -41,6 +46,7 @@ module Admin
         seen_keys = Set.new
 
         @rows.each do |row|
+          row = row.with_indifferent_access
           attrs = normalize_row(row)
           key = [ attrs[:option1_value].to_s, attrs[:option2_value].to_s ]
           next if key.all?(&:blank?)
@@ -48,9 +54,17 @@ module Admin
 
           seen_keys << key
 
-          variant = row[:id].present? ? @product.product_variants.find_by(id: row[:id]) : nil
+          row_id = row[:id].to_i
+          # Row still pointing at a destroyed id (stale DOM) — do not recreate.
+          next if row_id.positive? && @destroy_ids.include?(row_id)
+
+          variant = row_id.positive? ? @product.product_variants.find_by(id: row_id) : nil
           variant ||= existing_by_key[key]
-          next if variant&.persisted? && @destroy_ids.include?(variant.id)
+
+          # Drop stale in-memory records left over from destroy (or identity-map quirks).
+          if variant && (@destroy_ids.include?(variant.id) || variant.destroyed? || !variant.persisted?)
+            variant = nil
+          end
 
           variant ||= @product.product_variants.new
           existing_by_key[key] = variant

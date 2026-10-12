@@ -314,10 +314,16 @@ export default class extends Controller {
   }
 
   appendDestroyId(id) {
+    if (!this.hasDestroyIdsTarget) return
+    const value = String(id)
+    const already = Array.from(this.destroyIdsTarget.querySelectorAll('input[name="destroy_ids[]"]'))
+      .some((input) => input.value === value)
+    if (already) return
+
     const input = document.createElement("input")
     input.type = "hidden"
     input.name = "destroy_ids[]"
-    input.value = id
+    input.value = value
     this.destroyIdsTarget.appendChild(input)
   }
 

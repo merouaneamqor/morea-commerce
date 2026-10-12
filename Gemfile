@@ -33,6 +33,6 @@ group :development do
   gem "web-console"
 end
 
-gem "jwt", "~> 2.10"
+gem "jwt", "~> 3.3"
 gem "graphql", "~> 2.4"
 gem "mcp"

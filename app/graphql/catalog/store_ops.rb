@@ -128,13 +128,17 @@ module Catalog
     end
 
     def abandoned_carts(store, older_than_hours:, limit:)
-      hours = older_than_hours.to_i
-      hours = 1 if older_than_hours.nil?
+      hours = older_than_hours.nil? ? Cart::RECENT_HOURS : older_than_hours.to_i
       raise Error, "olderThanHours must be between 0 and 720." unless hours.between?(0, 720)
 
-      cutoff = hours.zero? ? Time.current + 1.second : hours.hours.ago
-      ids = store.carts.joins(:cart_items).where(carts: { updated_at: ...cutoff }).select(:id)
-      store.carts.where(id: ids).includes(cart_items: [ :product, :product_variant ]).order(updated_at: :desc).limit(clamp(limit))
+      open_carts(store.carts.stale(hours: hours), limit)
+    end
+
+    def active_carts(store, within_hours:, limit:)
+      hours = within_hours.nil? ? Cart::RECENT_HOURS : within_hours.to_i
+      raise Error, "withinHours must be between 1 and 720." unless hours.between?(1, 720)
+
+      open_carts(store.carts.recent(hours: hours), limit)
     end
 
     def export_csv(store, kind:)
@@ -303,6 +307,10 @@ module Catalog
 
     def normalize_phone(value)
       value.to_s.gsub(/[^\d+]/, "")
+    end
+
+    def open_carts(scope, limit)
+      scope.includes(cart_items: { product: :translations, product_variant: [] }).limit(clamp(limit))
     end
 
     def clamp(limit)

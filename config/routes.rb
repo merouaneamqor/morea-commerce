@@ -122,6 +122,7 @@ Rails.application.routes.draw do
       end
     end
     resources :customers, only: %i[index show edit update]
+    resources :carts, only: %i[index show]
 
     # Online Store
     resources :home_sections, except: %i[show] do

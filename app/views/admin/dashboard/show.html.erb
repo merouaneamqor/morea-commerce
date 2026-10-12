@@ -3,7 +3,10 @@
 <div class="admin-page-header">
   <div>
     <h1 class="admin-page-header__title">Home</h1>
-    <p class="admin-page-header__meta">Cash-on-delivery orders across all channels</p>
+    <p class="admin-page-header__meta">
+      Cash-on-delivery orders across all channels
+      · <%= link_to pluralize(@active_carts, "active cart"), admin_carts_path, class: "admin-link" %>
+    </p>
   </div>
   <%= link_to admin_orders_path, class: "admin-btn-secondary" do %>View orders<% end %>
 </div>

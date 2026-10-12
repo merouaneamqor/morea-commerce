@@ -8,6 +8,7 @@ module Admin
       @cancel_rate = @orders.cancel_rate
       @recent_orders = @orders.recent.limit(8)
       @low_stock = current_store.products.active.low_stock(current_store.low_stock_threshold).includes(:product_variants)
+      @active_carts = current_store.carts.recent.count
     end
   end
 end

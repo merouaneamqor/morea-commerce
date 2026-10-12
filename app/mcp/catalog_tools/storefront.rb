@@ -221,6 +221,31 @@ module CatalogTools
       end
     end
 
+    class ListActiveCarts < MCP::Tool
+      description "List carts that still have items and were updated within withinHours (default 1). These are shoppers still building a bag. Carts are anonymous: there is no email or phone."
+      input_schema(
+        properties: {
+          withinHours: { type: "integer", description: "1-720, default 1" },
+          limit: { type: "integer", description: "1-100, default 50" }
+        }
+      )
+
+      def self.call(server_context:, **attrs)
+        CatalogExecutor.call(
+          store: server_context.fetch(:store),
+          query: <<~GQL,
+            query($withinHours: Int, $limit: Int) {
+              activeCarts(withinHours: $withinHours, limit: $limit) {
+                updatedAt itemCount subtotalDh
+                items { productSlug productName variantName quantity unitPriceDh totalDh }
+              }
+            }
+          GQL
+          variables: attrs.compact
+        )
+      end
+    end
+
     class ListAbandonedCarts < MCP::Tool
       description "List carts that still have items and have not been updated for olderThanHours (default 1, 0 means all). Carts are anonymous: there is no email or phone to send a recovery message."
       input_schema(

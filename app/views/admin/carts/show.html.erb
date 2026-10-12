@@ -1,0 +1,52 @@
+<% content_for :title, "Cart — Admin" %>
+
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to admin_carts_path(view: @cart.active? ? nil : "abandoned"), class: "admin-back", "aria-label": "Back to carts" do %><%= admin_icon(:back) %><% end %>
+    <div>
+      <h1 class="admin-page-header__title">Cart</h1>
+      <p class="admin-page-header__meta">Updated <%= @cart.updated_at.strftime("%b %-d, %Y %H:%M") %></p>
+    </div>
+  </div>
+  <%= admin_badge(@cart.active? ? :active : :archived, label: @cart.active? ? "Active" : "Abandoned") %>
+</div>
+
+<div class="admin-card">
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Variant</th>
+          <th class="is-numeric">Qty</th>
+          <th class="is-numeric">Price</th>
+          <th class="is-numeric">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @cart.cart_items.each do |item| %>
+          <tr>
+            <td>
+              <% if item.product %>
+                <%= link_to item.product.name, edit_admin_product_path(item.product), class: "admin-link" %>
+              <% else %>
+                Removed product
+              <% end %>
+            </td>
+            <td class="admin-muted"><%= item.product_variant&.display_name.presence || "—" %></td>
+            <td class="is-numeric"><%= item.quantity %></td>
+            <td class="is-numeric"><%= money(item.unit_price_cents, current_store.currency) %></td>
+            <td class="is-numeric"><%= money(item.line_total_cents, current_store.currency) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @cart.cart_items.empty? %>
+      <p class="admin-empty">This cart has no items.</p>
+    <% end %>
+  </div>
+  <div class="flex items-baseline justify-between border-t border-[#ebebeb] px-4 py-4">
+    <p class="admin-metric__label">Subtotal</p>
+    <p class="admin-metric__value"><%= money(@cart.subtotal_cents, current_store.currency) %></p>
+  </div>
+</div>

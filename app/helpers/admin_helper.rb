@@ -22,6 +22,7 @@ module AdminHelper
   ICONS = {
     home: '<path d="M3 10.5 10 4l7 6.5V17a1 1 0 0 1-1 1h-3.5v-5h-5v5H4a1 1 0 0 1-1-1z"/>',
     orders: '<path d="M4 3h12l-1 14H5z"/><path d="M7.5 7a2.5 2.5 0 0 0 5 0"/>',
+    carts: '<path d="M3 5h2l1.2 9h9.6L17 7H6"/><circle cx="8" cy="16.5" r="1.2"/><circle cx="14" cy="16.5" r="1.2"/>',
     products: '<path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="m3 6 7 3.5L17 6M10 9.5v8"/>',
     collections: '<rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/>',
     discounts: '<path d="M3.5 10.5 10.5 3.5l6 6-7 7z"/><circle cx="7.5" cy="7.5" r="1.2"/>',

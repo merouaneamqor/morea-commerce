@@ -36,6 +36,7 @@ class CatalogServer
     CatalogTools::Storefront::ListDiscounts,
     CatalogTools::Storefront::UpsertDiscount,
     CatalogTools::Storefront::DeleteDiscount,
+    CatalogTools::Storefront::ListActiveCarts,
     CatalogTools::Storefront::ListAbandonedCarts,
     CatalogTools::Storefront::ListCustomers,
     CatalogTools::Storefront::GetCustomer,

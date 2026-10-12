@@ -44,6 +44,7 @@
           <nav class="admin-sidebar__nav">
             <%= admin_nav_link "Home", admin_root_path, icon: :home, active: controller_name == "dashboard" %>
             <%= admin_nav_link "Orders", admin_orders_path, icon: :orders, active: controller_name == "orders" %>
+            <%= admin_nav_link "Carts", admin_carts_path, icon: :carts, active: controller_name == "carts" %>
             <%= admin_nav_link "Products", admin_products_path, icon: :products, active: controller_name.in?(%w[products variants inventory]) %>
             <%= admin_nav_link "Collections", admin_collections_path, icon: :collections, active: controller_name == "collections" %>
             <%= admin_nav_link "Discounts", admin_discounts_path, icon: :discounts, active: controller_name == "discounts" %>

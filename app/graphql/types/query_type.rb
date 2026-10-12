@@ -52,6 +52,10 @@ module Types
       argument :older_than_hours, Integer, required: false
       argument :limit, Integer, required: false
     end
+    field :active_carts, [ Storefront::AbandonedCartType ], null: false do
+      argument :within_hours, Integer, required: false
+      argument :limit, Integer, required: false
+    end
     field :home_sections, [ Storefront::SectionType ], null: false
     field :pages, [ Storefront::PageType ], null: false
     field :menu_items, [ Storefront::MenuItemType ], null: false
@@ -129,6 +133,10 @@ module Types
 
     def abandoned_carts(older_than_hours: nil, limit: nil)
       store_ops { Catalog::StoreOps.abandoned_carts(store, older_than_hours: older_than_hours, limit: limit) }
+    end
+
+    def active_carts(within_hours: nil, limit: nil)
+      store_ops { Catalog::StoreOps.active_carts(store, within_hours: within_hours, limit: limit) }
     end
 
     def home_sections

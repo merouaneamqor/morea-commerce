@@ -1,0 +1,52 @@
+<% content_for :title, "Carts — Admin" %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Carts</h1>
+    <p class="admin-page-header__meta">Anonymous bags that still have items. Active means updated in the last hour.</p>
+  </div>
+</div>
+
+<div class="admin-card">
+  <nav class="admin-tabs" aria-label="Filter carts">
+    <%= link_to "Active", admin_carts_path, class: "admin-tab #{'is-active' if @view == 'active'}" %>
+    <%= link_to "Abandoned", admin_carts_path(view: "abandoned"), class: "admin-tab #{'is-active' if @view == 'abandoned'}" %>
+  </nav>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Updated</th>
+          <th>Items</th>
+          <th class="is-numeric">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @carts.each do |cart| %>
+          <tr>
+            <td>
+              <%= link_to admin_cart_path(cart), class: "admin-link" do %>
+                <%= cart.updated_at.strftime("%b %-d, %H:%M") %>
+              <% end %>
+            </td>
+            <td>
+              <p><%= cart.item_count %></p>
+              <p class="admin-muted mt-1 max-w-md truncate"><%= cart.cart_items.map(&:display_name).join(", ") %></p>
+            </td>
+            <td class="is-numeric"><%= money(cart.subtotal_cents, current_store.currency) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @carts.empty? %>
+      <p class="admin-empty">
+        <% if @view == "active" %>
+          No carts updated in the last hour.
+        <% else %>
+          No older carts with items.
+        <% end %>
+      </p>
+    <% end %>
+  </div>
+</div>

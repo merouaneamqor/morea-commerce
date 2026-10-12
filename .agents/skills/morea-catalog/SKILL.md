@@ -37,7 +37,7 @@ Sendit is the shipping provider. `update_shipping` sets the API keys, pickup dis
 
 Coupons: `list_discounts`, `upsert_discount`, `delete_discount`. `discountType` is `percent` or `fixed`.
 
-`list_abandoned_carts` shows carts that still have items. Those carts have no phone or email, so there is no recovery message to send.
+`list_active_carts` shows carts that still have items and were updated within `withinHours` (default 1). `list_abandoned_carts` shows carts that still have items and have not been updated for `olderThanHours` (default 1). Those carts have no phone or email, so there is no recovery message to send.
 
 Customers: `list_customers`, `get_customer`, `upsert_customer`. These include phone and email. Order tools still leave phone, street address, and email out.
 
@@ -95,7 +95,7 @@ Collections: `list_collections` (`published`, `limit`), `get_collection`, `creat
 
 Images: `add_product_images`, `remove_product_images`, `reorder_product_images`, `set_collection_image`, `remove_collection_image`.
 
-Store: `get_store_settings`, `update_checkout`, `update_marketing`, `update_shipping`, `sync_shipping`, `list_discounts`, `upsert_discount`, `delete_discount`, `list_abandoned_carts`, `list_customers`, `get_customer`, `upsert_customer`, `export_csv`, `import_csv`, `list_home_sections`, `upsert_home_section`, `delete_home_section`, `list_pages`, `upsert_page`, `delete_page`, `list_menu_items`, `upsert_menu_item`, `delete_menu_item`, `install_theme`.
+Store: `get_store_settings`, `update_checkout`, `update_marketing`, `update_shipping`, `sync_shipping`, `list_discounts`, `upsert_discount`, `delete_discount`, `list_active_carts`, `list_abandoned_carts`, `list_customers`, `get_customer`, `upsert_customer`, `export_csv`, `import_csv`, `list_home_sections`, `upsert_home_section`, `delete_home_section`, `list_pages`, `upsert_page`, `delete_page`, `list_menu_items`, `upsert_menu_item`, `delete_menu_item`, `install_theme`.
 
 Read `errors` in the tool result before assuming a write worked.
 

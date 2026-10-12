@@ -43,7 +43,7 @@ module Oauth
         redirect_uri: @query[:redirect_uri],
         code_challenge: @query[:code_challenge]
       )
-      redirect_to callback_url(@query[:redirect_uri], code: code, state: @query[:state]), allow_other_host: true
+      redirect_to callback_url(@query[:redirect_uri], code: code, state: @query[:state]), allow_other_host: true, status: :see_other
     end
 
     private

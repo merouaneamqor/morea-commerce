@@ -1,0 +1,44 @@
+<% content_for :title, "#{@page.title} sections — Online Store" %>
+
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to edit_admin_page_path(@page), class: "admin-back", "aria-label": "Back to page" do %><%= admin_icon(:back) %><% end %>
+    <div>
+      <h1 class="admin-page-header__title"><%= @page.title %></h1>
+      <p class="admin-page-header__meta">Landing page sections</p>
+    </div>
+  </div>
+  <%= form_with url: new_admin_page_section_path(@page), method: :get, class: "flex items-center gap-2" do %>
+    <%= select_tag :kind, options_for_select(PageSection::KINDS.map { |k, label| [ label, k ] }), class: "admin-input !w-auto" %>
+    <%= submit_tag "Add section", class: "admin-btn", name: nil %>
+  <% end %>
+</div>
+
+<%= render "admin/shared/online_store_tabs" %>
+
+<section class="admin-card">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title">Sections</h2>
+    <span class="admin-muted"><%= pluralize(@sections.size, "section", locale: :en) %></span>
+  </div>
+  <ol>
+    <% @sections.each_with_index do |section, i| %>
+      <li class="flex items-center gap-3 border-t border-[#ebebeb] px-4 py-3 <%= "opacity-60" unless section.visible %>">
+        <span class="admin-badge admin-badge--neutral tabular-nums"><%= i + 1 %></span>
+        <div class="min-w-0 flex-1">
+          <%= link_to section.label, edit_admin_page_section_path(@page, section), class: "admin-link" %>
+          <p class="admin-muted truncate"><%= section.preview_text || "—" %></p>
+        </div>
+        <% unless section.visible %><%= admin_badge(:archived, label: "Hidden") %><% end %>
+        <div class="flex items-center gap-1">
+          <%= button_to "↑", move_admin_page_section_path(@page, section, direction: "up"), method: :patch, class: "admin-btn-secondary !w-8 !px-0", disabled: i.zero? %>
+          <%= button_to "↓", move_admin_page_section_path(@page, section, direction: "down"), method: :patch, class: "admin-btn-secondary !w-8 !px-0", disabled: i == @sections.size - 1 %>
+          <%= button_to (section.visible? ? "Hide" : "Show"), toggle_admin_page_section_path(@page, section), method: :patch, class: "admin-btn-secondary" %>
+        </div>
+      </li>
+    <% end %>
+  </ol>
+  <% if @sections.empty? %>
+    <p class="admin-empty">No sections yet. Add a hero or rich text block to start this landing page.</p>
+  <% end %>
+</section>

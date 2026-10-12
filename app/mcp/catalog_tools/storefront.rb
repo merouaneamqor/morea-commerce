@@ -383,24 +383,24 @@ module CatalogTools
     end
 
     class ListHomeSections < MCP::Tool
-      description "List home-page builder blocks in storefront order. kind is hero, ticker, featured_collection, collection_list, image_with_text, or rich_text."
+      description "List home-page builder blocks in storefront order. Prefer get_home_layout for the full builder view. kind is hero, ticker, featured_collection, collection_list, image_with_text, or rich_text."
 
       def self.call(server_context:)
         CatalogExecutor.call(
           store: server_context.fetch(:store),
           query: <<~GQL
-            query { homeSections { id kind position visible imageUrl link collectionSlug limit imagePosition translations { locale heading subheading body buttonLabel } } }
+            query { homeSections { id kind label position visible imageUrl imageSrc link collectionSlug limit imagePosition translations { locale heading subheading body buttonLabel } } }
           GQL
         )
       end
     end
 
     class UpsertHomeSection < MCP::Tool
-      description "Add or update a home-page block. A new block needs kind. link is home, collections, cart, track, collection:slug, product:slug, page:slug, or a URL. imagePosition is left or right."
+      description "Add a new home-page section (omit id, pass kind) or edit an existing one (pass id from get_home_layout). Omitted fields stay unchanged. link is home, collections, cart, track, collection:slug, product:slug, page:slug, or a URL. imagePosition is left or right."
       input_schema(
         properties: {
-          id: { type: "string" },
-          kind: { type: "string", enum: %w[hero ticker featured_collection collection_list image_with_text rich_text] },
+          id: { type: "string", description: "Existing section id to edit. Omit to add a new section." },
+          kind: { type: "string", enum: %w[hero ticker featured_collection collection_list image_with_text rich_text], description: "Required when adding a new section." },
           visible: { type: "boolean" },
           position: { type: "integer" },
           imageUrl: { type: "string" },
@@ -408,7 +408,7 @@ module CatalogTools
           collectionSlug: { type: "string" },
           limit: { type: "integer" },
           imagePosition: { type: "string", enum: %w[left right] },
-          translations: { type: "array", items: { type: "object" } }
+          translations: { type: "array", items: { type: "object" }, description: "locale plus heading, subheading, body, buttonLabel" }
         }
       )
 
@@ -423,7 +423,10 @@ module CatalogTools
               upsertHomeSection(
                 id: $id, kind: $kind, visible: $visible, position: $position, imageUrl: $imageUrl, link: $link,
                 collectionSlug: $collectionSlug, limit: $limit, imagePosition: $imagePosition, translations: $translations
-              ) { section { id kind position visible } errors }
+              ) {
+                section { id kind label position visible imageUrl imageSrc link collectionSlug limit imagePosition translations { locale heading subheading body buttonLabel } }
+                errors
+              }
             }
           GQL
           variables: attrs.compact
@@ -448,23 +451,24 @@ module CatalogTools
     end
 
     class ListPages < MCP::Tool
-      description "List content pages such as about, shipping, and privacy."
+      description "List content and landing pages. template is content or landing. Prefer list_landing_pages / get_landing_page for landing builders."
 
       def self.call(server_context:)
         CatalogExecutor.call(
           store: server_context.fetch(:store),
-          query: "query { pages { slug published translations { locale title body seoTitle seoDescription } } }"
+          query: "query { pages { slug published template translations { locale title body seoTitle seoDescription } } }"
         )
       end
     end
 
     class UpsertPage < MCP::Tool
-      description "Create or update a content page. Pass slug to update. A new page needs a fr title. newSlug renames. The privacy page cannot be renamed."
+      description "Create or update a page. Pass slug to update. A new page needs a fr title. newSlug renames. template is content or landing. Prefer upsert_landing_page for campaign landings."
       input_schema(
         properties: {
           slug: { type: "string" },
           newSlug: { type: "string" },
           published: { type: "boolean" },
+          template: { type: "string", enum: %w[content landing] },
           translations: { type: "array", items: { type: "object" }, description: "locale, title, body, seoTitle, seoDescription" }
         }
       )
@@ -473,9 +477,9 @@ module CatalogTools
         CatalogExecutor.call(
           store: server_context.fetch(:store),
           query: <<~GQL,
-            mutation($slug: String, $newSlug: String, $published: Boolean, $translations: [StorefrontPageCopyInput!]) {
-              upsertPage(slug: $slug, newSlug: $newSlug, published: $published, translations: $translations) {
-                page { slug published }
+            mutation($slug: String, $newSlug: String, $published: Boolean, $template: String, $translations: [StorefrontPageCopyInput!]) {
+              upsertPage(slug: $slug, newSlug: $newSlug, published: $published, template: $template, translations: $translations) {
+                page { slug published template }
                 errors
               }
             }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_12_230000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "agent_changesets", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "token", null: false
+    t.string "status", default: "previewed", null: false
+    t.string "summary"
+    t.jsonb "operations", default: [], null: false
+    t.jsonb "preview", default: {}, null: false
+    t.jsonb "snapshots", default: [], null: false
+    t.jsonb "results", default: {}, null: false
+    t.jsonb "verification", default: {}, null: false
+    t.integer "max_level", default: 1, null: false
+    t.datetime "applied_at"
+    t.datetime "verified_at"
+    t.datetime "rolled_back_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_agent_changesets_on_status"
+    t.index ["store_id", "token"], name: "index_agent_changesets_on_store_id_and_token", unique: true
+    t.index ["store_id"], name: "index_agent_changesets_on_store_id"
   end
 
   create_table "addresses", force: :cascade do |t|
@@ -316,6 +337,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
     t.index ["store_id"], name: "index_orders_on_store_id"
   end
 
+  create_table "page_section_translations", force: :cascade do |t|
+    t.bigint "page_section_id", null: false
+    t.string "locale", null: false
+    t.string "heading"
+    t.string "subheading"
+    t.text "body"
+    t.string "button_label"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["page_section_id", "locale"], name: "index_page_section_translations_on_page_section_and_locale", unique: true
+    t.index ["page_section_id"], name: "index_page_section_translations_on_page_section_id"
+  end
+
+  create_table "page_sections", force: :cascade do |t|
+    t.bigint "page_id", null: false
+    t.string "kind", null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "visible", default: true, null: false
+    t.jsonb "settings", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["page_id", "position"], name: "index_page_sections_on_page_id_and_position"
+    t.index ["page_id"], name: "index_page_sections_on_page_id"
+  end
+
   create_table "page_translations", force: :cascade do |t|
     t.bigint "page_id", null: false
     t.string "locale", null: false
@@ -335,7 +381,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
     t.boolean "published", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "template", default: "content", null: false
     t.index ["store_id", "slug"], name: "index_pages_on_store_id_and_slug", unique: true
+    t.index ["store_id", "template"], name: "index_pages_on_store_id_and_template"
     t.index ["store_id"], name: "index_pages_on_store_id"
   end
 
@@ -467,6 +515,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
     t.string "privacy_rights_contact"
     t.string "api_token_digest"
     t.string "api_token_last_four"
+    t.jsonb "agent_profile", default: {}, null: false
     t.index ["api_token_digest"], name: "index_stores_on_api_token_digest", unique: true
     t.index ["billing_interval"], name: "index_stores_on_billing_interval"
     t.index ["billing_status"], name: "index_stores_on_billing_status"
@@ -497,6 +546,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
   add_foreign_key "collection_products", "collections"
   add_foreign_key "collection_products", "products"
   add_foreign_key "collection_translations", "collections"
+  add_foreign_key "agent_changesets", "stores"
   add_foreign_key "collections", "stores"
   add_foreign_key "customers", "stores"
   add_foreign_key "discounts", "stores"
@@ -516,6 +566,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_12_160000) do
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "customers"
   add_foreign_key "orders", "stores"
+  add_foreign_key "page_section_translations", "page_sections"
+  add_foreign_key "page_sections", "pages"
   add_foreign_key "page_translations", "pages"
   add_foreign_key "pages", "stores"
   add_foreign_key "product_translations", "products"

@@ -202,6 +202,7 @@ module Mutations
       argument :slug, String, required: false
       argument :new_slug, String, required: false
       argument :published, Boolean, required: false
+      argument :template, String, required: false
       argument :translations, [ Types::Storefront::PageCopyInput ], required: false
 
       field :page, Types::Storefront::PageType, null: true

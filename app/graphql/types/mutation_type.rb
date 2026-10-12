@@ -33,5 +33,18 @@ module Types
     field :delete_page, mutation: Mutations::Storefront::DeletePage
     field :upsert_menu_item, mutation: Mutations::Storefront::UpsertMenuItem
     field :delete_menu_item, mutation: Mutations::Storefront::DeleteMenuItem
+    field :preview_changeset, mutation: Mutations::Autonomy::PreviewChangeset
+    field :apply_changeset, mutation: Mutations::Autonomy::ApplyChangeset
+    field :verify_changeset, mutation: Mutations::Autonomy::VerifyChangeset
+    field :rollback_changeset, mutation: Mutations::Autonomy::RollbackChangeset
+    field :update_store_profile, mutation: Mutations::Autonomy::UpdateStoreProfile
+    field :reorder_home_sections, mutation: Mutations::Builders::ReorderHomeSections
+    field :set_home_layout, mutation: Mutations::Builders::SetHomeLayout
+    field :upsert_landing_page, mutation: Mutations::Builders::UpsertLandingPage
+    field :delete_landing_page, mutation: Mutations::Builders::DeleteLandingPage
+    field :upsert_landing_section, mutation: Mutations::Builders::UpsertLandingSection
+    field :delete_landing_section, mutation: Mutations::Builders::DeleteLandingSection
+    field :reorder_landing_sections, mutation: Mutations::Builders::ReorderLandingSections
+    field :set_landing_layout, mutation: Mutations::Builders::SetLandingLayout
   end
 end

@@ -131,7 +131,14 @@ Rails.application.routes.draw do
         patch :toggle
       end
     end
-    resources :pages, except: %i[show]
+    resources :pages, except: %i[show] do
+      resources :sections, controller: "page_sections", except: %i[show] do
+        member do
+          patch :move
+          patch :toggle
+        end
+      end
+    end
     resources :menu_items, except: %i[show] do
       member { patch :move }
     end

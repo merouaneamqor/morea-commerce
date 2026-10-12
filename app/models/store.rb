@@ -17,6 +17,7 @@ class Store < ApplicationRecord
   has_many :pages, dependent: :destroy
   has_many :menu_items, dependent: :destroy
   has_many :invoices, dependent: :destroy
+  has_many :agent_changesets, dependent: :destroy
 
   accepts_nested_attributes_for :translations, allow_destroy: false
 

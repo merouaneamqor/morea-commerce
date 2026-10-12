@@ -234,6 +234,12 @@ module Catalog
       end
       page.published = attrs[:published] unless attrs[:published].nil?
       page.slug = attrs[:new_slug] if attrs[:new_slug].present?
+      if attrs[:template].present?
+        raise Error, "template must be content or landing." unless Page::TEMPLATES.key?(attrs[:template].to_s)
+        raise Error, "The privacy page stays a content page." if page.slug == "privacy" && attrs[:template].to_s == "landing"
+
+        page.template = attrs[:template].to_s
+      end
       Translations.assign!(page, attrs[:translations]) if attrs[:translations]
       raise Error, "A new page needs a fr title." if page.new_record? && page.title.blank?
 

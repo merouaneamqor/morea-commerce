@@ -13,7 +13,6 @@ module Recolor
     def self.recolor(...) = new.recolor(...)
 
     def recolor(image_bytes:, filename:, content_type:, hex:, prompt: nil, points: nil)
-      ensure_local_service!
       uri = URI.parse("#{base_url}/v1/recolor")
       boundary = "recolor#{SecureRandom.hex(12)}"
       body = multipart(boundary, hex:, prompt:, points:, image_bytes:, filename:, content_type:)
@@ -60,105 +59,9 @@ module Recolor
       raise Error, unavailable_message
     end
 
-    # Git deploys do not apply Render blueprint env vars. When RECOLOR_SERVICE_URL
-    # is unset in production, start the OpenCV app installed by bin/render-build.sh.
-    def ensure_local_service!
-      return unless local_service?
-
-      File.open(lock_path, File::RDWR | File::CREAT, 0o644) do |lock|
-        lock.flock(File::LOCK_EX)
-        return if local_healthy?
-
-        Rails.logger.info("Starting the local recolor service")
-        spawn_local_service!
-        wait_until_local_healthy!
-      end
-    end
-
-    def local_service?
-      Rails.env.production? && ENV["RECOLOR_SERVICE_URL"].blank?
-    end
-
-    def spawn_local_service!
-      python = Rails.root.join(".venv/bin/python")
-      raise Error, "The recolor runtime is missing on this server." unless python.file? && python.executable?
-
-      pid = Process.spawn(
-        local_service_env,
-        python.to_s, "-m", "uvicorn", "app.main:app",
-        "--app-dir", Rails.root.join("services/recolor").to_s,
-        "--host", "127.0.0.1",
-        "--port", "8000",
-        "--log-level", "warning",
-        local_service_options
-      )
-      Process.detach(pid)
-      File.write(pid_path, pid.to_s)
-    rescue Errno::ENOENT, ArgumentError
-      raise Error, "The recolor runtime is missing on this server."
-    end
-
-    def local_service_env
-      ENV.to_h.merge(
-        "RECOLOR_MAX_EDGE" => ENV.fetch("RECOLOR_MAX_EDGE", "1000"),
-        "OMP_NUM_THREADS" => "1",
-        "OPENBLAS_NUM_THREADS" => "1",
-        "MKL_NUM_THREADS" => "1"
-      )
-    end
-
-    def local_service_options
-      {
-        chdir: Rails.root.to_s,
-        out: [ Rails.root.join("log/recolor.log").to_s, "a" ],
-        err: [ :child, :out ],
-        pgroup: true
-      }
-    end
-
-    def wait_until_local_healthy!
-      deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + 45
-      until local_healthy?
-        unless local_process_alive?
-          raise Error, "The recolor service failed to start. Try again in a minute."
-        end
-        if Process.clock_gettime(Process::CLOCK_MONOTONIC) > deadline
-          raise Error, "The recolor service failed to start. Try again in a minute."
-        end
-
-        sleep 0.4
-      end
-    end
-
-    def local_healthy?
-      uri = URI("http://127.0.0.1:8000/health")
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.open_timeout = 1
-      http.read_timeout = 1
-      http.get(uri.request_uri).is_a?(Net::HTTPSuccess)
-    rescue StandardError
-      false
-    end
-
-    def local_process_alive?
-      pid = Integer(File.read(pid_path))
-      Process.kill(0, pid)
-      true
-    rescue Errno::ENOENT, Errno::ESRCH, ArgumentError
-      false
-    end
-
-    def lock_path
-      Rails.root.join("tmp/pids/recolor.lock")
-    end
-
-    def pid_path
-      Rails.root.join("tmp/pids/recolor.pid")
-    end
-
     def unavailable_message
       return "The recolor service is not running. Start it with docker compose, then try again." unless Rails.env.production?
-      return "The recolor service failed to start. Try again in a minute." if ENV["RECOLOR_SERVICE_URL"].blank?
+      return "The recolor service is not configured. Sync the Render blueprint so RECOLOR_SERVICE_URL is set." if ENV["RECOLOR_SERVICE_URL"].blank?
 
       "The recolor service did not respond. On Render it can take a minute to wake up. Try again."
     end

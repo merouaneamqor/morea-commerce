@@ -7,7 +7,7 @@ description: Operate one Morea store through its remote MCP: catalog, variants, 
 
 You are connected to one store. Sign-in or the Bearer token already selected it. Do not ask for a store id, and do not query another store.
 
-Prefer the MCP tools. This manual is the resource `morea://catalog`, the GraphQL query `{ guide }`, and the installable skill `morea-catalog`.
+Prefer the MCP tools. The manual is the tool `read_catalog_guide`. A client that does not show the resource `morea://catalog` can still create and update products.
 
 ## Install
 
@@ -87,7 +87,7 @@ The home page is `list_home_sections`, `upsert_home_section`, and `delete_home_s
 
 ## MCP tools
 
-Products: `list_products` (`query`, `status`, `limit` 1–100, default 50), `get_product`, `create_product`, `update_product`, `delete_product`, `set_product_collections`, `set_product_variants`, `delete_product_variants`.
+Products: `read_catalog_guide`, `list_products` (`query`, `status`, `limit` 1–100, default 50), `get_product`, `create_product`, `update_product`, `delete_product`, `set_product_collections`, `set_product_variants`, `delete_product_variants`.
 
 Analytics: `store_stats`, `product_stats` (`slug` optional), `list_orders` (`status`, `city`, `since`, `until`, `limit`), `get_order` (`number`), `cancel_order` (`number`, `confirm`, `reason`).
 

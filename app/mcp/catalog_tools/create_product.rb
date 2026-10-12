@@ -2,7 +2,7 @@
 
 module CatalogTools
   class CreateProduct < MCP::Tool
-    description "Create a product. priceDh is the price in whole currency units. Include a fr translation name."
+    description "Create a product. priceDh is the price in whole currency units. Include a fr translation name. status draft and stock 0 are valid. collectionSlugs attaches existing collections, for example essentials. No resource read is required first."
     input_schema(
       properties: {
         priceDh: { type: "integer" },

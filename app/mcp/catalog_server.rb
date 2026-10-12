@@ -2,6 +2,7 @@
 
 class CatalogServer
   TOOLS = [
+    CatalogTools::ReadCatalogGuide,
     CatalogTools::ListProducts,
     CatalogTools::GetProduct,
     CatalogTools::CreateProduct,
@@ -60,7 +61,9 @@ class CatalogServer
       website_url: store.origin,
       icons: icons_for(store),
       instructions: <<~TEXT.squish,
-        You manage one Morea store's products, collections, variants, and delivery numbers. Read the resource morea://catalog before the first write.
+        You manage one Morea store. Create and update products directly. A missing MCP resource is not an error and must not block a write.
+        A draft is create_product with status draft, stock 0, priceDh in whole currency units, a fr translation name, and collectionSlugs such as ["essentials"].
+        The full manual is the tool read_catalog_guide. GraphQL { guide } returns the same text.
         Use store_stats, product_stats, list_orders, get_order, and cancel_order for strategy. Delivered revenue is cash collected.
         cancel_order needs confirm: true and only works before pickup.
         Checkout is cash on delivery. Shipping is Sendit. Coupons, customers, CSV, pixels, and the home page are their own tools. There is no card gateway, email campaign, or custom domain.

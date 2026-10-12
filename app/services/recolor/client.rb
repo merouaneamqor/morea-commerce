@@ -60,8 +60,8 @@ module Recolor
       raise Error, unavailable_message
     end
 
-    # Production recolor runs in this dyno. A loopback RECOLOR_SERVICE_URL, or a
-    # blank one, means start the OpenCV app installed by bin/render-build.sh.
+    # Git deploys do not apply Render blueprint env vars. When RECOLOR_SERVICE_URL
+    # is unset in production, start the OpenCV app installed by bin/render-build.sh.
     def ensure_local_service!
       return unless local_service?
 
@@ -76,10 +76,7 @@ module Recolor
     end
 
     def local_service?
-      return false unless Rails.env.production?
-
-      raw = ENV["RECOLOR_SERVICE_URL"].to_s.strip
-      raw.blank? || raw.match?(%r{\Ahttps?://(127\.0\.0\.1|localhost)(?::\d+)?/?\z}i)
+      Rails.env.production? && ENV["RECOLOR_SERVICE_URL"].blank?
     end
 
     def spawn_local_service!
@@ -161,7 +158,7 @@ module Recolor
 
     def unavailable_message
       return "The recolor service is not running. Start it with docker compose, then try again." unless Rails.env.production?
-      return "The recolor service failed to start. Try again in a minute." if local_service?
+      return "The recolor service failed to start. Try again in a minute." if ENV["RECOLOR_SERVICE_URL"].blank?
 
       "The recolor service did not respond. On Render it can take a minute to wake up. Try again."
     end

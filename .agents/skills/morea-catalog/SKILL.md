@@ -45,7 +45,7 @@ Marketing tags are `update_marketing` (Meta and TikTok pixel ids). There is no e
 
 `export_csv` and `import_csv` cover products, customers, and discounts. Export also covers orders, without phone or street address. Import needs `confirm: true`.
 
-The home page is `list_home_sections`, `upsert_home_section`, and `delete_home_section`. Pages and header/footer links have the same list, upsert, and delete tools. `install_theme` fills only the parts that are still empty. The public host is the store subdomain. Custom domains are not a setting.
+The home page builder is `get_home_layout`, `set_home_layout`, `reorder_home_sections`, plus `upsert_home_section` / `delete_home_section`. Landing pages use the same section kinds via `upsert_landing_page` and `set_landing_layout` (public URL `/:locale/pages/:slug`). Content pages stay on `list_pages` / `upsert_page`. Header/footer links are menu tools. `install_theme` fills only the parts that are still empty. The public host is the store subdomain. Custom domains are not a setting.
 
 ## Rules
 
@@ -108,11 +108,33 @@ Changeset operation `type` values: `update_product`, `set_product_collections`, 
 
 Example `update_product` op: `{ "type": "update_product", "slug": "robe-lin", "attrs": { "translations": [{ "locale": "fr", "shortDescription": "…" }] } }`.
 
+## Home page & landing page builders
+
+Section kinds (home and landing): `hero`, `ticker`, `featured_collection`, `collection_list`, `image_with_text`, `rich_text`. Call `get_section_schema` for fields per kind.
+
+Home:
+
+1. `get_home_layout` — ordered sections, preview URLs, whether defaults are still virtual.
+2. `set_home_layout` — ordered `sections` array; `replace: true` drops omitted ids.
+3. `reorder_home_sections` — `ids` in the new order.
+4. Or edit one block with `upsert_home_section` / `delete_home_section`.
+
+Landing pages (`template: landing`):
+
+1. `upsert_landing_page` — create/update title, SEO, published (needs fr title).
+2. `get_landing_page` / `list_landing_pages`.
+3. `set_landing_layout` or `upsert_landing_section` + `reorder_landing_sections`.
+4. Link from menus with `page:slug`. Public path is `/:locale/pages/:slug`.
+
+Content pages (`about`, `shipping`, `privacy`) stay `template: content` with a single body. Privacy cannot become a landing page.
+
 ## MCP tools
 
 Products: `read_catalog_guide`, `list_products` (`query`, `status`, `limit` 1–100, default 50), `get_product`, `create_product`, `update_product`, `delete_product`, `set_product_collections`, `set_product_variants`, `delete_product_variants`.
 
 Autonomy: `get_store_profile`, `get_full_catalog` (`page`, `perPage`, `status`), `audit_store` (`status`, `limit`), `get_product_schema`, `validate_product` (`slug`), `suggest_collection_structure` (`limit`), `preview_changeset` (`operations`, `summary`), `apply_changeset` (`token`, `approveLevel2`, `approveLevel3`), `verify_changeset` (`token`), `rollback_changeset` (`token`).
+
+Builders: `get_section_schema`, `get_home_layout`, `reorder_home_sections` (`ids`), `set_home_layout` (`sections`, `replace`), `list_landing_pages`, `get_landing_page` (`slug`), `upsert_landing_page`, `delete_landing_page`, `upsert_landing_section` (`pageSlug`), `delete_landing_section`, `reorder_landing_sections`, `set_landing_layout`.
 
 Analytics: `store_stats`, `product_stats` (`slug` optional), `list_orders` (`status`, `city`, `since`, `until`, `limit`), `get_order` (`number`), `cancel_order` (`number`, `confirm`, `reason`).
 
@@ -120,7 +142,7 @@ Collections: `list_collections` (`published`, `limit`), `get_collection`, `creat
 
 Images: `add_product_images`, `remove_product_images`, `reorder_product_images`, `set_collection_image`, `remove_collection_image`.
 
-Store: `get_store_settings`, `update_checkout`, `update_marketing`, `update_shipping`, `sync_shipping`, `list_discounts`, `upsert_discount`, `delete_discount`, `list_active_carts`, `list_abandoned_carts`, `list_customers`, `get_customer`, `upsert_customer`, `export_csv`, `import_csv`, `list_home_sections`, `upsert_home_section`, `delete_home_section`, `list_pages`, `upsert_page`, `delete_page`, `list_menu_items`, `upsert_menu_item`, `delete_menu_item`, `install_theme`.
+Store: `get_store_settings`, `update_checkout`, `update_marketing`, `update_shipping`, `sync_shipping`, `list_discounts`, `upsert_discount`, `delete_discount`, `list_active_carts`, `list_abandoned_carts`, `list_customers`, `get_customer`, `upsert_customer`, `export_csv`, `import_csv`, `list_home_sections`, `upsert_home_section`, `delete_home_section`, `list_pages`, `upsert_page` (`template` content|landing), `delete_page`, `list_menu_items`, `upsert_menu_item`, `delete_menu_item`, `install_theme`.
 
 Read `errors` in the tool result before assuming a write worked.
 

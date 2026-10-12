@@ -59,6 +59,12 @@ module Types
     field :home_sections, [ Storefront::SectionType ], null: false
     field :pages, [ Storefront::PageType ], null: false
     field :menu_items, [ Storefront::MenuItemType ], null: false
+    field :section_schema, GraphQL::Types::JSON, null: false
+    field :home_layout, Builders::HomeLayoutType, null: false
+    field :landing_pages, [ Builders::LandingPageType ], null: false
+    field :landing_page, Builders::LandingPageType, null: true do
+      argument :slug, String, required: true
+    end
     field :export_csv, Storefront::CsvExportType, null: false do
       argument :kind, String, required: true
     end
@@ -221,6 +227,24 @@ module Types
 
     def menu_items
       store.menu_items.ordered.includes(:translations)
+    end
+
+    def section_schema
+      Catalog::Builders.section_schema
+    end
+
+    def home_layout
+      Catalog::Builders.home_layout(store)
+    end
+
+    def landing_pages
+      Catalog::Builders.landing_pages(store)
+    end
+
+    def landing_page(slug:)
+      Catalog::Builders.landing_page(store, slug: slug)
+    rescue Catalog::Builders::Error
+      nil
     end
 
     def export_csv(kind:)

@@ -3,5 +3,6 @@ class PagesController < ApplicationController
 
   def show
     @page = current_store.pages.published.includes(:translations).find_by!(slug: params[:slug])
+    @sections = @page.landing? ? @page.sections_for_display.to_a : []
   end
 end

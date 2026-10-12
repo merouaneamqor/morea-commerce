@@ -10,11 +10,17 @@
 <div class="admin-card">
   <div class="admin-table-wrap">
     <table class="admin-table">
-      <thead><tr><th>Title</th><th>Visibility</th><th>URL</th><th class="is-numeric">Updated</th></tr></thead>
+      <thead><tr><th>Title</th><th>Type</th><th>Visibility</th><th>URL</th><th class="is-numeric">Updated</th></tr></thead>
       <tbody>
         <% @pages.each do |page| %>
           <tr>
-            <td><%= link_to page.title, edit_admin_page_path(page), class: "admin-link" %></td>
+            <td>
+              <%= link_to page.title, edit_admin_page_path(page), class: "admin-link" %>
+              <% if page.landing? %>
+                <div class="mt-1"><%= link_to "Sections", admin_page_sections_path(page), class: "admin-link--blue text-sm" %></div>
+              <% end %>
+            </td>
+            <td class="admin-muted"><%= page.landing? ? "Landing" : "Content" %></td>
             <td><%= page.published? ? admin_badge(:active, label: "Visible") : admin_badge(:archived, label: "Hidden") %></td>
             <td class="admin-muted">/pages/<%= page.slug %></td>
             <td class="is-numeric admin-muted"><%= page.updated_at.strftime("%b %-d, %Y") %></td>
@@ -23,7 +29,7 @@
       </tbody>
     </table>
     <% if @pages.empty? %>
-      <p class="admin-empty">Add pages like About, Shipping or Returns and link them from your menus.</p>
+      <p class="admin-empty">Add content pages (About, Shipping) or landing pages built from sections, then link them from Navigation.</p>
     <% end %>
   </div>
 </div>

@@ -155,9 +155,11 @@ module Types
     class SectionType < BaseObject
       field :id, ID, null: false
       field :kind, String, null: false
+      field :label, String, null: false
       field :position, Integer, null: false
       field :visible, Boolean, null: false
       field :image_url, String, null: true
+      field :image_src, String, null: true
       field :link, String, null: true
       field :collection_slug, String, null: true
       field :limit, Integer, null: true
@@ -166,6 +168,14 @@ module Types
 
       def image_url
         object.image_url.presence
+      end
+
+      def image_src
+        object.image_src
+      end
+
+      def label
+        object.label
       end
 
       def collection_slug
@@ -192,6 +202,7 @@ module Types
     class PageType < BaseObject
       field :slug, String, null: false
       field :published, Boolean, null: false
+      field :template, String, null: false
       field :translations, [ PageCopyType ], null: false
 
       def translations

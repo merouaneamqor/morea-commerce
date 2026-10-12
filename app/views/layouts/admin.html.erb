@@ -52,7 +52,7 @@
             <%= admin_nav_link "Customers", admin_customers_path, icon: :customers, active: controller_name == "customers" %>
 
             <p class="admin-sidebar__heading">Sales channels</p>
-            <% online_store = controller_name.in?(%w[home_sections pages menu_items]) %>
+            <% online_store = controller_name.in?(%w[home_sections pages page_sections menu_items]) %>
             <%= admin_nav_link "Online Store", admin_home_sections_path, icon: :store, active: online_store %>
             <% if online_store %>
               <div class="admin-subnav">

@@ -383,13 +383,13 @@ module CatalogTools
     end
 
     class ListHomeSections < MCP::Tool
-      description "List home-page builder blocks in storefront order. kind is hero, ticker, featured_collection, collection_list, image_with_text, or rich_text."
+      description "List home-page builder blocks in storefront order. Prefer get_home_layout for the full builder view. kind is hero, ticker, featured_collection, collection_list, image_with_text, or rich_text."
 
       def self.call(server_context:)
         CatalogExecutor.call(
           store: server_context.fetch(:store),
           query: <<~GQL
-            query { homeSections { id kind position visible imageUrl link collectionSlug limit imagePosition translations { locale heading subheading body buttonLabel } } }
+            query { homeSections { id kind label position visible imageUrl imageSrc link collectionSlug limit imagePosition translations { locale heading subheading body buttonLabel } } }
           GQL
         )
       end
@@ -448,23 +448,24 @@ module CatalogTools
     end
 
     class ListPages < MCP::Tool
-      description "List content pages such as about, shipping, and privacy."
+      description "List content and landing pages. template is content or landing. Prefer list_landing_pages / get_landing_page for landing builders."
 
       def self.call(server_context:)
         CatalogExecutor.call(
           store: server_context.fetch(:store),
-          query: "query { pages { slug published translations { locale title body seoTitle seoDescription } } }"
+          query: "query { pages { slug published template translations { locale title body seoTitle seoDescription } } }"
         )
       end
     end
 
     class UpsertPage < MCP::Tool
-      description "Create or update a content page. Pass slug to update. A new page needs a fr title. newSlug renames. The privacy page cannot be renamed."
+      description "Create or update a page. Pass slug to update. A new page needs a fr title. newSlug renames. template is content or landing. Prefer upsert_landing_page for campaign landings."
       input_schema(
         properties: {
           slug: { type: "string" },
           newSlug: { type: "string" },
           published: { type: "boolean" },
+          template: { type: "string", enum: %w[content landing] },
           translations: { type: "array", items: { type: "object" }, description: "locale, title, body, seoTitle, seoDescription" }
         }
       )
@@ -473,9 +474,9 @@ module CatalogTools
         CatalogExecutor.call(
           store: server_context.fetch(:store),
           query: <<~GQL,
-            mutation($slug: String, $newSlug: String, $published: Boolean, $translations: [StorefrontPageCopyInput!]) {
-              upsertPage(slug: $slug, newSlug: $newSlug, published: $published, translations: $translations) {
-                page { slug published }
+            mutation($slug: String, $newSlug: String, $published: Boolean, $template: String, $translations: [StorefrontPageCopyInput!]) {
+              upsertPage(slug: $slug, newSlug: $newSlug, published: $published, template: $template, translations: $translations) {
+                page { slug published template }
                 errors
               }
             }

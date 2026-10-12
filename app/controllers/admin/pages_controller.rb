@@ -3,7 +3,7 @@ module Admin
     before_action :set_page, only: %i[edit update destroy]
 
     def index
-      @pages = current_store.pages.includes(:translations).order(:created_at)
+      @pages = current_store.pages.includes(:translations, :page_sections).order(:created_at)
     end
 
     def new
@@ -46,7 +46,7 @@ module Admin
     end
 
     def page_params
-      params.require(:page).permit(:slug, :published, translations_attributes: %i[id locale title body seo_title seo_description])
+      params.require(:page).permit(:slug, :published, :template, translations_attributes: %i[id locale title body seo_title seo_description])
     end
   end
 end

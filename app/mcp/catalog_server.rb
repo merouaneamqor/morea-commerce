@@ -32,6 +32,7 @@ class CatalogServer
       name: "morea",
       title: "Morea catalog",
       version: "1.0.0",
+      icons: icons_for(store),
       instructions: <<~TEXT.squish,
         You manage one Morea store's products, collections, variants, and delivery numbers. Read the resource morea://catalog before the first write.
         Use store_stats, product_stats, list_orders, and get_order for strategy. Delivered revenue is cash collected.
@@ -44,5 +45,13 @@ class CatalogServer
       resources: [ CatalogGuideResource ],
       server_context: { store: store }
     )
+  end
+
+  def self.icons_for(store)
+    base = store.origin
+    [
+      { src: "#{base}/icon-128.png", mime_type: "image/png", sizes: [ "128x128" ] },
+      { src: "#{base}/icon-48.png", mime_type: "image/png", sizes: [ "48x48" ] }
+    ]
   end
 end

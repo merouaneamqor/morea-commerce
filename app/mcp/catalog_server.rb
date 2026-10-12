@@ -32,6 +32,7 @@ class CatalogServer
       name: "morea",
       title: "Morea catalog",
       version: "1.0.0",
+      website_url: store.origin,
       icons: icons_for(store),
       instructions: <<~TEXT.squish,
         You manage one Morea store's products, collections, variants, and delivery numbers. Read the resource morea://catalog before the first write.

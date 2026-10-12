@@ -53,6 +53,8 @@ class ApplicationController < ActionController::Base
   def apex_request_allowed?
     path = request.path
     path == "/up" ||
+      path == "/graphql" ||
+      path == "/mcp" ||
       path.start_with?("/admin") ||
       path.start_with?("/webhooks") ||
       path.start_with?("/api")

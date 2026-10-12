@@ -1,0 +1,69 @@
+<% content_for :title, "Agent API — Admin" %>
+
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">Agent API</h1>
+</div>
+
+<div class="admin-stack">
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Credentials</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <p class="admin-help">
+        This token lets an agent manage products and collections for <%= @store.name %> only.
+        It is shown once. Send it as <code>Authorization: Bearer</code>.
+      </p>
+      <% if @store.api_token_last_four.present? %>
+        <p class="admin-help">Current token ends in <code><%= @store.api_token_last_four %></code>.</p>
+      <% else %>
+        <p class="admin-help">No API token yet.</p>
+      <% end %>
+      <% if @token.present? %>
+        <p class="admin-help">Copy this token now. It will not be shown again.</p>
+        <pre class="admin-input overflow-x-auto whitespace-pre-wrap text-sm"><%= @token %></pre>
+      <% end %>
+      <div class="flex flex-wrap gap-2">
+        <%= button_to (@store.api_token_digest.present? ? "Regenerate token" : "Generate token"),
+              token_admin_agent_api_path,
+              method: :post,
+              class: "admin-btn",
+              form: { data: { turbo_confirm: "This replaces any existing token. Agents using the old token will stop working." } } %>
+        <% if @store.api_token_digest.present? %>
+          <%= button_to "Revoke",
+                token_admin_agent_api_path,
+                method: :delete,
+                class: "admin-btn",
+                form: { data: { turbo_confirm: "Revoke the API token?" } } %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Connect an agent (MCP)</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <p class="admin-help">
+        Paste this into the agent’s MCP settings. The agent receives the catalog guide when it connects
+        (<code>morea://catalog</code>). Replace the token if you are not looking at a freshly generated one.
+      </p>
+      <pre class="admin-input overflow-x-auto whitespace-pre-wrap text-sm"><%= JSON.pretty_generate(
+        mcpServers: {
+          morea: {
+            url: @mcp_url,
+            headers: { Authorization: "Bearer #{@token.presence || "<store_api_token>"}" }
+          }
+        }
+      ) %></pre>
+    </div>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">GraphQL</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <p class="admin-help">Same token. <code>POST <%= @graphql_url %></code>. Query <code>{ guide }</code> for the usage manual.</p>
+      <pre class="admin-input overflow-x-auto whitespace-pre-wrap text-sm">curl <%= @graphql_url %> \
+  -H "Authorization: Bearer <%= @token.presence || "<store_api_token>" %>" \
+  -H "Content-Type: application/json" \
+  -d '{"query":"{ guide }"}'</pre>
+    </div>
+  </section>
+</div>

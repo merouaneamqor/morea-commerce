@@ -198,6 +198,30 @@ class Store < ApplicationRecord
     OnlineStoreDefaults.new(self).install!
   end
 
+  def self.find_by_api_token(token)
+    return if token.blank?
+
+    find_by(api_token_digest: digest_api_token(token))
+  end
+
+  def self.digest_api_token(token)
+    Digest::SHA256.hexdigest(token.to_s)
+  end
+
+  # Returns the plaintext token once. Only the digest is stored.
+  def generate_api_token!
+    token = "morea_#{SecureRandom.urlsafe_base64(32)}"
+    update!(
+      api_token_digest: self.class.digest_api_token(token),
+      api_token_last_four: token.last(4)
+    )
+    token
+  end
+
+  def revoke_api_token!
+    update!(api_token_digest: nil, api_token_last_four: nil)
+  end
+
   private
 
   def privacy_settings_changed?

@@ -34,3 +34,5 @@ group :development do
 end
 
 gem "jwt", "~> 2.10"
+gem "graphql", "~> 2.4"
+gem "mcp"

@@ -66,12 +66,13 @@
             <% if super_admin? %>
               <%= admin_nav_link "Platform", admin_platform_path, icon: :external, active: false %>
             <% end %>
-            <% settings_open = controller_name.in?(%w[stores pixels]) %>
+            <% settings_open = controller_name.in?(%w[stores pixels agent_api]) %>
             <%= admin_nav_link "Settings", edit_admin_store_path, icon: :settings, active: settings_open %>
             <% if settings_open %>
               <div class="admin-subnav">
                 <%= link_to "General", edit_admin_store_path, class: "admin-subnav__item #{'is-active' if controller_name == 'stores'}" %>
                 <%= link_to "Pixels", edit_admin_pixels_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pixels'}" %>
+                <%= link_to "Agent API", admin_agent_api_path, class: "admin-subnav__item #{'is-active' if controller_name == 'agent_api'}" %>
               </div>
             <% end %>
             <%= admin_nav_link "Staff", admin_users_path, icon: :staff, active: controller_name == "users" %>

@@ -49,6 +49,18 @@ Each store has monthly/yearly billing fields. Super admins issue **manual invoic
 docker compose exec web bin/rails morea:billing:sync_past_due
 ```
 
+## Agent API (GraphQL + MCP)
+
+Store owners get the token, MCP snippet, and GraphQL URL under **Admin → Settings → Agent API**.
+
+```bash
+docker compose exec web bin/rails stores:api_token[morea]
+```
+
+The token is shown once and selects the store. Send `Authorization: Bearer <token>`.
+
+Connected agents should read the MCP resource `morea://catalog` before writing. The same manual is the GraphQL query `{ guide }`. It covers prices (`priceDh` as whole units), fr/en/ar translations, deletes (`confirm: true`), and image uploads.
+
 ## Stack
 
 Rails 8 · Hotwire · Tailwind · PostgreSQL · Redis · Sidekiq

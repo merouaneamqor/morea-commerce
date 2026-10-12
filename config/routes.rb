@@ -8,6 +8,9 @@ Rails.application.routes.draw do
   post "webhooks/sendit/:store_slug", to: "webhooks/sendit#create", as: :sendit_webhook
   post "consent/tracking", to: "consents#tracking", as: :tracking_consent
 
+  post "/graphql", to: "graphql#execute"
+  match "/mcp", to: "mcp#handle", via: %i[get post delete]
+
   namespace :api do
     resources :orders, only: [] do
       member do
@@ -65,6 +68,10 @@ Rails.application.routes.draw do
       end
     end
     resource :store, only: %i[edit update]
+    resource :agent_api, only: :show, controller: "agent_api" do
+      post :token, action: :generate_token
+      delete :token, action: :revoke_token
+    end
     resource :pixels, only: %i[edit update], controller: "pixels"
     resources :products do
       resources :variants, only: %i[create update destroy] do

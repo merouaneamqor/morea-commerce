@@ -10,6 +10,6 @@
       <strong><%= @client.client_name %></strong> wants to manage products and collections for
       <strong><%= @store.name %></strong>.
     </p>
-    <%= button_to "Allow", oauth_authorize_path, method: :post, class: "admin-btn" %>
+    <%= button_to "Allow", oauth_authorize_path, method: :post, class: "admin-btn", params: { ticket: @ticket } %>
   </div>
 </section>

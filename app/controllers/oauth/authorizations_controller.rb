@@ -5,13 +5,8 @@ module Oauth
     layout "admin"
 
     def show
-      @query = oauth_query
-      unless oauth_client&.allows_redirect?(@query[:redirect_uri])
-        render :invalid, status: :bad_request
-        return
-      end
-      @query[:code_challenge_method] = "S256" if @query[:code_challenge_method].blank?
-      unless @query[:code_challenge].present? && @query[:code_challenge_method] == "S256"
+      @query = resolve_query
+      unless valid_query?
         render :invalid, status: :bad_request
         return
       end
@@ -20,7 +15,7 @@ module Oauth
         return
       end
       unless current_admin_user
-        session[:return_to] = request.fullpath
+        session[:return_to] = oauth_authorize_path(ticket: @ticket)
         redirect_to admin_login_path
         return
       end
@@ -30,37 +25,57 @@ module Oauth
     end
 
     def create
-      query = session_query
-      client = OauthClient.find_by(client_id: query[:client_id])
-      unless client&.allows_redirect?(query[:redirect_uri]) && current_store && current_admin_user
+      @query = Tickets.read(params[:ticket])
+      @ticket = params[:ticket]
+      unless current_store && current_admin_user
+        session[:return_to] = oauth_authorize_path(ticket: @ticket) if @ticket.present?
         redirect_to admin_login_path, alert: "Sign in on your store to connect an agent."
+        return
+      end
+      unless valid_query?
+        render :invalid, status: :bad_request
         return
       end
 
       code = Codes.issue(
         store: current_store,
-        client_id: client.client_id,
-        redirect_uri: query[:redirect_uri],
-        code_challenge: query[:code_challenge]
+        client_id: oauth_client.client_id,
+        redirect_uri: @query[:redirect_uri],
+        code_challenge: @query[:code_challenge]
       )
-      session.delete(:oauth_query)
-      redirect_to callback_url(query[:redirect_uri], code: code, state: query[:state]), allow_other_host: true
+      redirect_to callback_url(@query[:redirect_uri], code: code, state: @query[:state]), allow_other_host: true
     end
 
     private
 
-    def oauth_query
-      query = params.permit(:client_id, :redirect_uri, :code_challenge, :code_challenge_method, :state, :scope, :resource).to_h.symbolize_keys
-      session[:oauth_query] = query
-      query
+    def resolve_query
+      if params[:ticket].present?
+        @ticket = params[:ticket]
+        Tickets.read(@ticket)
+      else
+        query = permitted_query
+        return if query[:client_id].blank?
+
+        @ticket = Tickets.issue(query)
+        query
+      end
     end
 
-    def session_query
-      (session[:oauth_query] || {}).symbolize_keys
+    def permitted_query
+      params.permit(
+        :client_id, :redirect_uri, :code_challenge, :code_challenge_method, :state, :scope, :resource
+      ).to_h.symbolize_keys
+    end
+
+    def valid_query?
+      return false unless @query && oauth_client&.allows_redirect?(@query[:redirect_uri])
+
+      @query[:code_challenge_method] = "S256" if @query[:code_challenge_method].blank?
+      @query[:code_challenge].present? && @query[:code_challenge_method] == "S256"
     end
 
     def oauth_client
-      OauthClient.find_by(client_id: @query[:client_id])
+      OauthClient.find_by(client_id: @query&.dig(:client_id))
     end
 
     def callback_url(redirect_uri, code:, state:)

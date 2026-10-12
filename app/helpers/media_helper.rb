@@ -93,5 +93,3 @@ module MediaHelper
     ProductVariant.normalize_hex(stored) || ProductVariant::PLACEHOLDER_HEX
   end
 end
-
-

@@ -396,11 +396,11 @@ module CatalogTools
     end
 
     class UpsertHomeSection < MCP::Tool
-      description "Add or update a home-page block. A new block needs kind. link is home, collections, cart, track, collection:slug, product:slug, page:slug, or a URL. imagePosition is left or right."
+      description "Add a new home-page section (omit id, pass kind) or edit an existing one (pass id from get_home_layout). Omitted fields stay unchanged. link is home, collections, cart, track, collection:slug, product:slug, page:slug, or a URL. imagePosition is left or right."
       input_schema(
         properties: {
-          id: { type: "string" },
-          kind: { type: "string", enum: %w[hero ticker featured_collection collection_list image_with_text rich_text] },
+          id: { type: "string", description: "Existing section id to edit. Omit to add a new section." },
+          kind: { type: "string", enum: %w[hero ticker featured_collection collection_list image_with_text rich_text], description: "Required when adding a new section." },
           visible: { type: "boolean" },
           position: { type: "integer" },
           imageUrl: { type: "string" },
@@ -408,7 +408,7 @@ module CatalogTools
           collectionSlug: { type: "string" },
           limit: { type: "integer" },
           imagePosition: { type: "string", enum: %w[left right] },
-          translations: { type: "array", items: { type: "object" } }
+          translations: { type: "array", items: { type: "object" }, description: "locale plus heading, subheading, body, buttonLabel" }
         }
       )
 
@@ -423,7 +423,10 @@ module CatalogTools
               upsertHomeSection(
                 id: $id, kind: $kind, visible: $visible, position: $position, imageUrl: $imageUrl, link: $link,
                 collectionSlug: $collectionSlug, limit: $limit, imagePosition: $imagePosition, translations: $translations
-              ) { section { id kind position visible } errors }
+              ) {
+                section { id kind label position visible imageUrl imageSrc link collectionSlug limit imagePosition translations { locale heading subheading body buttonLabel } }
+                errors
+              }
             }
           GQL
           variables: attrs.compact

@@ -115,16 +115,18 @@ Section kinds (home and landing): `hero`, `ticker`, `featured_collection`, `coll
 Home:
 
 1. `get_home_layout` — ordered sections, preview URLs, whether defaults are still virtual.
-2. `set_home_layout` — ordered `sections` array; `replace: true` drops omitted ids.
-3. `reorder_home_sections` — `ids` in the new order.
-4. Or edit one block with `upsert_home_section` / `delete_home_section`.
+2. **Add a section:** `upsert_home_section` with `kind` and no `id` (e.g. `{ "kind": "hero", "translations": [{ "locale": "fr", "heading": "…" }] }`).
+3. **Edit a section:** `upsert_home_section` with `id` from the layout; omit fields you are not changing.
+4. `set_home_layout` — ordered `sections` array (mix of new items without `id` and edits with `id`); `replace: true` drops omitted ids.
+5. `reorder_home_sections` — `ids` in the new order. `delete_home_section` needs `confirm: true`.
 
 Landing pages (`template: landing`):
 
 1. `upsert_landing_page` — create/update title, SEO, published (needs fr title).
 2. `get_landing_page` / `list_landing_pages`.
-3. `set_landing_layout` or `upsert_landing_section` + `reorder_landing_sections`.
-4. Link from menus with `page:slug`. Public path is `/:locale/pages/:slug`.
+3. **Add:** `upsert_landing_section` with `pageSlug` + `kind` (no `id`). **Edit:** same tool with `id`.
+4. Or rewrite with `set_landing_layout` / `reorder_landing_sections`.
+5. Link from menus with `page:slug`. Public path is `/:locale/pages/:slug`.
 
 Content pages (`about`, `shipping`, `privacy`) stay `template: content` with a single body. Privacy cannot become a landing page.
 

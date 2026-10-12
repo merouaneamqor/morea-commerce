@@ -177,12 +177,12 @@ module CatalogTools
     end
 
     class UpsertLandingSection < MCP::Tool
-      description "Add or update a section on a landing page. New sections need kind. Same kinds/fields as the home page builder."
+      description "Add a new landing-page section (omit id, pass kind) or edit an existing one (pass id from get_landing_page). Same kinds/fields as the home page builder."
       input_schema(
         properties: {
           pageSlug: { type: "string" },
-          id: { type: "string" },
-          kind: { type: "string", enum: %w[hero ticker featured_collection collection_list image_with_text rich_text] },
+          id: { type: "string", description: "Existing section id to edit. Omit to add a new section." },
+          kind: { type: "string", enum: %w[hero ticker featured_collection collection_list image_with_text rich_text], description: "Required when adding a new section." },
           visible: { type: "boolean" },
           position: { type: "integer" },
           imageUrl: { type: "string" },
@@ -190,7 +190,7 @@ module CatalogTools
           collectionSlug: { type: "string" },
           limit: { type: "integer" },
           imagePosition: { type: "string", enum: %w[left right] },
-          translations: { type: "array", items: { type: "object" } }
+          translations: { type: "array", items: { type: "object" }, description: "locale plus heading, subheading, body, buttonLabel" }
         },
         required: [ "pageSlug" ]
       )

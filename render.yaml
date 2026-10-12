@@ -39,35 +39,6 @@ services:
           name: morea-redis
           type: keyvalue
           property: connectionString
-      - key: RECOLOR_SERVICE_URL
-        fromService:
-          name: morea-recolor
-          type: web
-          envVarKey: RENDER_EXTERNAL_URL
-      - key: RECOLOR_TOKEN
-        fromService:
-          name: morea-recolor
-          type: web
-          envVarKey: RECOLOR_TOKEN
-      - key: RECOLOR_TIMEOUT
-        value: "120"
-
-  # OpenCV recolor. Free web services cannot receive private-network traffic,
-  # so this one is public and Rails calls its Render URL with RECOLOR_TOKEN.
-  - type: web
-    name: morea-recolor
-    runtime: docker
-    plan: free
-    region: frankfurt
-    branch: main
-    dockerfilePath: ./services/recolor/Dockerfile
-    dockerContext: ./services/recolor
-    healthCheckPath: /health
-    envVars:
-      - key: RECOLOR_TOKEN
-        generateValue: true
-      - key: RECOLOR_MAX_EDGE
-        value: "1400"
 
 databases:
   - name: morea-db

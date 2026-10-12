@@ -155,26 +155,6 @@ def test_blank_backdrop_is_rejected():
         run(np.full((80, 80, 3), 180, np.uint8), "#1F4E79")
 
 
-def test_token_guards_recolor_but_not_health(monkeypatch):
-    monkeypatch.setenv("RECOLOR_TOKEN", "secret")
-    client = TestClient(app)
-    assert client.get("/health").status_code == 200
-
-    png = io.BytesIO()
-    Image.new("RGB", (8, 8), (180, 180, 180)).save(png, format="PNG")
-    files = {"image": ("blank.png", png.getvalue(), "image/png")}
-    denied = client.post("/v1/recolor", files=files, data={"color": "#111111"})
-    assert denied.status_code == 401
-
-    allowed = client.post(
-        "/v1/recolor",
-        headers={"Authorization": "Bearer secret"},
-        files=files,
-        data={"color": "nope"},
-    )
-    assert allowed.status_code == 422
-
-
 def test_http_rejects_a_bad_color():
     client = TestClient(app)
     png = io.BytesIO()

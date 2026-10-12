@@ -5,10 +5,8 @@ prompt ("the matching workout set"), and optional click points.
 """
 
 import base64
-import hmac
 import io
 import json
-import os
 
 import cv2
 import numpy as np
@@ -26,20 +24,6 @@ MAX_BYTES = 15 * 1024 * 1024
 @app.get("/health")
 def health() -> dict:
     return {"ok": True}
-
-
-def _authorized(header: str) -> bool:
-    token = os.environ.get("RECOLOR_TOKEN", "").strip()
-    if not token:
-        return True
-    return hmac.compare_digest(header, f"Bearer {token}")
-
-
-@app.middleware("http")
-async def require_token(request, call_next):
-    if request.url.path != "/health" and not _authorized(request.headers.get("authorization", "")):
-        return JSONResponse(status_code=401, content={"error": "Unauthorized"})
-    return await call_next(request)
 
 
 def _decode_image(data: bytes) -> np.ndarray:

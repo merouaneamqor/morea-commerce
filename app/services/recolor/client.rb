@@ -18,9 +18,6 @@ module Recolor
       body = multipart(boundary, hex:, prompt:, points:, image_bytes:, filename:, content_type:)
       response = post(uri, body, boundary)
       payload = parse(response)
-      if response.code.to_i.in?([ 502, 503, 504 ])
-        raise Error, "The recolor service is waking up. Wait a minute and try again."
-      end
       raise Error, payload["error"].presence || "Recolor failed." unless response.is_a?(Net::HTTPSuccess)
 
       Result.new(
@@ -35,35 +32,21 @@ module Recolor
     private
 
     def base_url
-      raw = ENV["RECOLOR_SERVICE_URL"].to_s.strip.chomp("/")
-      return "http://127.0.0.1:8000" if raw.blank?
-      return raw if raw.match?(%r{\Ahttps?://}i)
-      # host:port is the Render private-network address. A bare hostname is public.
-      return "http://#{raw}" if raw.match?(/:\d+\z/)
-
-      "https://#{raw}"
+      ENV.fetch("RECOLOR_SERVICE_URL", "http://127.0.0.1:8000").chomp("/")
     end
 
     def post(uri, body, boundary)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = uri.scheme == "https"
-      http.open_timeout = 10
-      http.read_timeout = Integer(ENV.fetch("RECOLOR_TIMEOUT", Rails.env.production? ? "120" : "45"))
+      http.open_timeout = 3
+      http.read_timeout = Integer(ENV.fetch("RECOLOR_TIMEOUT", 45))
       request = Net::HTTP::Post.new(uri)
       request["Content-Type"] = "multipart/form-data; boundary=#{boundary}"
       request["Accept"] = "application/json"
-      request["Authorization"] = "Bearer #{ENV['RECOLOR_TOKEN']}" if ENV["RECOLOR_TOKEN"].present?
       request.body = body
       http.request(request)
     rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError, Net::OpenTimeout, Net::ReadTimeout
-      raise Error, unavailable_message
-    end
-
-    def unavailable_message
-      return "The recolor service is not running. Start it with docker compose, then try again." unless Rails.env.production?
-      return "The recolor service is not configured. Sync the Render blueprint so RECOLOR_SERVICE_URL is set." if ENV["RECOLOR_SERVICE_URL"].blank?
-
-      "The recolor service did not respond. On Render it can take a minute to wake up. Try again."
+      raise Error, "The recolor service is not running. Start it with docker compose, then try again."
     end
 
     def parse(response)

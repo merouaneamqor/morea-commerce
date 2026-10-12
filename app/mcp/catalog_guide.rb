@@ -22,6 +22,10 @@ class CatalogGuide
 
     ## Images
 
+    - `coverUrl` is the photo shown on the store. Display that image. Do not search the web or substitute another photo.
+    - A collection with no uploaded cover uses its first product photo as `coverUrl`. `image` is null in that case; that is not a missing product photo.
+    - Product `images` are the gallery in storefront order. Position 0 is the cover. Later images are alternate shots, not replacements for the cover.
+    - Returned image URLs are JPEG. Tool results also include the cover bytes.
     - Product images: `add_product_images`, `remove_product_images`, `reorder_product_images`.
     - Collection cover: `set_collection_image`, `remove_collection_image`.
     - Each image is `base64` (raw or a `data:` URL) or a public `http`/`https` `url`. Also pass `filename` and `contentType` when you have them.

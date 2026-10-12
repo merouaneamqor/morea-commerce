@@ -81,9 +81,26 @@ module Catalog
 
     def absolute_url(attachment, store)
       url = MediaUrl.for(attachment, store: store)
-      return url if url.to_s.start_with?("http://", "https://")
+      url = "#{store.origin}#{url}" unless url.to_s.start_with?("http://", "https://")
+      MediaUrl.delivery(url, width: 1200)
+    end
 
-      "#{store.origin}#{url}"
+    def jpeg_bytes(url, width: 480)
+      uri = URI.parse(MediaUrl.delivery(url, width: width))
+      return unless uri.is_a?(URI::HTTPS) && uri.host == "res.cloudinary.com"
+
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+      http.open_timeout = 3
+      http.read_timeout = 8
+      response = http.request(Net::HTTP::Get.new(uri))
+      return unless response.is_a?(Net::HTTPSuccess)
+      return if response.body.bytesize > 300_000
+      return unless response["content-type"].to_s.include?("image/jpeg")
+
+      response.body
+    rescue StandardError
+      nil
     end
 
     def io_for(upload)

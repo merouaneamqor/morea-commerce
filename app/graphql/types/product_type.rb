@@ -15,10 +15,16 @@ module Types
     field :position, Integer, null: false
     field :translations, [ ProductTranslationType ], null: false
     field :collection_slugs, [ String ], null: false
+    field :cover_url, String, null: true, description: "Photo shown on the store. Same file as the first image."
     field :images, [ ImageType ], null: false
 
     def collection_slugs
       object.collections.map(&:slug)
+    end
+
+    def cover_url
+      attachment = object.ordered_images.first
+      Catalog::Images.absolute_url(attachment, object.store) if attachment
     end
 
     def images

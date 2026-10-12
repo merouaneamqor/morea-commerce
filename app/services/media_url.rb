@@ -72,8 +72,21 @@ module MediaUrl
 
   # Resize + modern format/quality for a Cloudinary delivery URL, after any edits
   def sized(url, width:)
-    return url unless url.to_s.include?("res.cloudinary.com/") && url.include?("/image/upload/")
+    return url unless cloudinary_delivery?(url)
 
     url.sub(%r{/(v\d+/)}, "/c_limit,f_auto,q_auto,w_#{width}/\\1")
+  end
+
+  # JPEG the storefront crop, at a fixed width. Format does not depend on the client.
+  def delivery(url, width:)
+    return url unless cloudinary_delivery?(url)
+
+    width = width.to_i.clamp(1, 2000)
+    bare = url.sub(%r{/c_limit,f_jpg,q_auto,w_\d+/}, "/")
+    bare.sub(%r{/(v\d+/)}, "/c_limit,f_jpg,q_auto,w_#{width}/\\1")
+  end
+
+  def cloudinary_delivery?(url)
+    url.to_s.include?("res.cloudinary.com/") && url.include?("/image/upload/")
   end
 end

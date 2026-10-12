@@ -28,6 +28,7 @@ class CatalogServer
       version: "1.0.0",
       instructions: <<~TEXT.squish,
         You manage one Morea store's products and collections. Read the resource morea://catalog before the first write.
+        coverUrl and the attached cover photo are the storefront image. Do not replace them with a web search.
         Prices are whole currency units (priceDh), not cents. Locales are fr, en, and ar; create with a fr name.
         Deletes require confirm: true. Images are base64 or a public http(s) URL (jpeg, png, webp, gif, 8MB, 4 per call).
         GraphQL is POST /graphql on this host with the same Bearer token. Query { guide } returns the same manual.

@@ -3,12 +3,14 @@
 class CatalogExecutor
   PRODUCT_FIELDS = <<~GQL.squish
     id slug status priceDh compareAtDh currency sku stock trackInventory featured position collectionSlugs
+    coverUrl
     images { id filename url position }
     translations { locale name shortDescription story material fit movement dimensions origin care seoTitle seoDescription }
   GQL
 
   COLLECTION_FIELDS = <<~GQL.squish
     id slug published position productSlugs
+    coverUrl
     image { id filename url position }
     translations { locale name subtitle description }
   GQL
@@ -21,10 +23,48 @@ class CatalogExecutor
     )
     payload = result.to_h
     errored = payload["errors"].present? || payload_errors?(payload)
-    MCP::Tool::Response.new(
-      [ { type: "text", text: JSON.generate(payload) } ],
-      error: errored
-    )
+    MCP::Tool::Response.new(response_content(payload, errored), error: errored)
+  end
+
+  def self.response_content(payload, errored)
+    parts = [ { type: "text", text: JSON.generate(payload) } ]
+    return parts if errored
+
+    cover_entries(payload).each do |entry|
+      bytes = Catalog::Images.jpeg_bytes(entry[:url])
+      next unless bytes
+
+      parts << { type: "text", text: "Cover photo for #{entry[:kind]} #{entry[:slug]}. This is the storefront image." }
+      parts << { type: "image", data: Base64.strict_encode64(bytes), mimeType: "image/jpeg" }
+    end
+    parts
+  end
+
+  def self.cover_entries(payload)
+    data = payload["data"]
+    return [] unless data.is_a?(Hash)
+
+    entries = []
+    collect = lambda do |kind, record|
+      return unless record.is_a?(Hash)
+
+      entries << { kind: kind, slug: record["slug"], url: record["coverUrl"] }
+    end
+
+    Array(data["products"]).each { |record| collect.call("product", record) }
+    collect.call("product", data["product"])
+    Array(data["collections"]).each { |record| collect.call("collection", record) }
+    collect.call("collection", data["collection"])
+    data.each_value do |value|
+      next unless value.is_a?(Hash)
+
+      collect.call("product", value["product"])
+      collect.call("collection", value["collection"])
+    end
+
+    entries.select { |entry| entry[:slug].present? && entry[:url].present? }
+      .uniq { |entry| [ entry[:kind], entry[:slug] ] }
+      .first(8)
   end
 
   def self.payload_errors?(payload)

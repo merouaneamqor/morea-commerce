@@ -139,8 +139,28 @@ module Catalog
         ]
       end
 
-      variants = product.product_variants.select(&:active?)
-      if variants.any?
+      if product.product_variants.any?
+        variants = product.product_variants.select(&:active?)
+        # Sellable stock is the sum of active variants only. When every variant is
+        # inactive, report zero sellable stock instead of the unused product.stock.
+        return [
+          Level.new(
+            slug: product.slug,
+            name: product.name,
+            status: product.status,
+            track_inventory: true,
+            sku: product.sku,
+            size: nil,
+            color: nil,
+            variant_id: nil,
+            stock: 0,
+            sellable_stock: 0,
+            low_stock: true,
+            stock_value_dh: 0,
+            price_dh: price
+          )
+        ] if variants.empty?
+
         return variants.sort_by { |variant| [ ProductVariant.size_rank(variant.size_value), variant.color_value.to_s ] }.map do |variant|
           stock = variant.stock
           Level.new(

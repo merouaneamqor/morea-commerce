@@ -322,6 +322,10 @@ module Catalog
       attrs = stringify_keys(op["attrs"] || op.except("type", "slug"))
       desired_stock = attrs.key?("stock") ? attrs["stock"] : nil
 
+      if !desired_stock.nil? && product.product_variants.any?
+        return [ snapshot, { "ok" => false, "errors" => [ "Product has variants; use set_stock or adjust_stock for variant inventory" ] } ]
+      end
+
       product.slug = attrs["newSlug"] if attrs["newSlug"].present?
       product.status = attrs["status"] if attrs["status"].present?
       product.price_dh = attrs["priceDh"] unless attrs["priceDh"].nil?
@@ -338,11 +342,7 @@ module Catalog
         return [ snapshot, { "ok" => false, "type" => "update_product", "slug" => op["slug"], "errors" => product.errors.full_messages } ]
       end
 
-      if !desired_stock.nil? && product.product_variants.any?
-        return [ snapshot, { "ok" => false, "errors" => [ "Product has variants; use set_stock or adjust_stock for variant inventory" ] } ]
-      end
-
-      if !desired_stock.nil? && product.product_variants.empty?
+      if !desired_stock.nil?
         ::Inventory::Adjuster.set!(
           product: product,
           stock: desired_stock,

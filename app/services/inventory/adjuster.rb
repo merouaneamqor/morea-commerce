@@ -91,6 +91,7 @@ module Inventory
         color: color,
         variant_id: variant_id
       )
+      require_variant_target!(target_variant)
       target = target_variant || @product
       previous = target.stock
       new_stock = previous + qty
@@ -122,6 +123,7 @@ module Inventory
         color: color,
         variant_id: variant_id
       )
+      require_variant_target!(target_variant)
       target = target_variant || @product
       delta = absolute - target.stock
       return Result.new(product: @product, movement: nil, previous_stock: target.stock, stock: absolute) if delta.zero?
@@ -132,6 +134,15 @@ module Inventory
         note: note.presence || "Set stock to #{absolute}",
         variant: target_variant
       )
+    end
+
+    private
+
+    def require_variant_target!(target_variant)
+      return if target_variant
+      return if @product.product_variants.empty?
+
+      raise Error, "Product has variants; pass size+color or variantId to target one."
     end
   end
 end

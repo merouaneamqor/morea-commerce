@@ -70,7 +70,9 @@ The home page builder is `get_home_layout`, `set_home_layout`, `reorder_home_sec
 5. `set_stock` — absolute on-hand + ledger delta (default reason `correction`).
 6. `export_csv` with `kind: "inventory"` — CSV of current levels.
 
-Stock cannot go below zero. Confirming an order decrements on-hand stock; there is no separate soft-reserve column.
+Stock cannot go below zero. Confirming an order decrements on-hand stock; there is no separate soft-reserve column. Products with variants require `size`+`color` or `variantId` on stock writes. When every variant is inactive, sellable stock is reported as 0.
+
+Local A-to-Z smoke (happy path + edge cases): `bin/rails runner script/mcp_inventory_smoke.rb [store_slug]`.
 
 ## Images
 

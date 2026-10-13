@@ -14,12 +14,34 @@ module Catalog
 
           variant = product.product_variants.find { |item| item.option_key == [ size.to_s, color.to_s ] }
           variant ||= product.product_variants.new
-          assign(variant, attrs, size, color)
+          was_new = variant.new_record?
+          desired_stock = attrs.key?(:stock) ? attrs[:stock].to_i : nil
+          assign(variant, attrs, size, color, apply_stock: was_new || !attrs.key?(:stock))
           variant.save!
+
+          if was_new && variant.stock.positive?
+            ::Inventory::Adjuster.ledger!(
+              product: product,
+              variant: variant,
+              quantity: variant.stock,
+              reason: "received",
+              note: "Initial variant stock via set_product_variants"
+            )
+          elsif !desired_stock.nil? && !was_new
+            ::Inventory::Adjuster.set!(
+              product: product,
+              variant: variant,
+              stock: desired_stock,
+              reason: "correction",
+              note: "Variant stock set via set_product_variants"
+            )
+          end
         end
       end
       product.product_variants.reset
       product
+    rescue ::Inventory::Adjuster::Error => e
+      raise Error, e.message
     end
 
     def self.delete!(product, ids:, keys:, confirm:)
@@ -48,14 +70,16 @@ module Catalog
       product
     end
 
-    def self.assign(variant, attrs, size, color)
+    def self.assign(variant, attrs, size, color, apply_stock: true)
       variant.option1_name = size.present? ? ProductVariant::SIZE_OPTION_NAME : nil
       variant.option1_value = size
       variant.option2_name = color.present? ? ProductVariant::COLOR_OPTION_NAME : nil
       variant.option2_value = color
       variant.color_hex = color.present? ? ProductVariant.normalize_hex(attrs[:color_hex]) : nil if attrs.key?(:color_hex) || variant.new_record?
       variant.sku = text(attrs[:sku]) if attrs.key?(:sku) || variant.new_record?
-      variant.stock = attrs[:stock].nil? ? 0 : attrs[:stock].to_i if attrs.key?(:stock) || variant.new_record?
+      if apply_stock && (attrs.key?(:stock) || variant.new_record?)
+        variant.stock = attrs[:stock].nil? ? 0 : attrs[:stock].to_i
+      end
       if attrs.key?(:active) || variant.new_record?
         variant.active = attrs.key?(:active) ? ActiveModel::Type::Boolean.new.cast(attrs[:active]) : true
       end

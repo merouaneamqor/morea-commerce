@@ -346,29 +346,20 @@ module Orders
         next unless product.track_inventory
 
         variant = key[1].present? ? product.product_variants.find(key[1]) : nil
-        target = variant || product
 
-        if delta.positive?
-          raise Error, "Insufficient stock for #{product.name}" if target.stock < delta
-
-          target.update!(stock: target.stock - delta)
-          order.inventory_movements.create!(
+        begin
+          Inventory::Adjuster.adjust!(
             product: product,
-            product_variant: variant,
+            variant: variant,
             quantity: -delta,
             reason: "order_edited",
-            note: "Order #{order.number}"
+            note: "Order #{order.number}",
+            order: order
           )
-        else
-          restore = -delta
-          target.update!(stock: target.stock + restore)
-          order.inventory_movements.create!(
-            product: product,
-            product_variant: variant,
-            quantity: restore,
-            reason: "order_edited",
-            note: "Order #{order.number}"
-          )
+        rescue Inventory::Adjuster::Error => e
+          raise Error, "Insufficient stock for #{product.name}" if e.message.include?("below zero")
+
+          raise Error, e.message
         end
       end
     end

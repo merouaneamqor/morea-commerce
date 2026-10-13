@@ -138,13 +138,13 @@ module CatalogTools
     end
 
     class PreviewChangeset < MCP::Tool
-      description "Build a change plan without writing. operations is an array of {type, ...}. Types: update_product, set_product_collections, create_collection, update_collection, set_collection_products, delete_product, delete_collection, update_store_profile. Returns a token, per-op approval level, and diffs."
+      description "Build a change plan without writing. operations is an array of {type, ...}. Types: create_product, update_product, set_product_collections, create_collection, update_collection, set_collection_products, delete_product, delete_collection, update_store_profile, adjust_stock, set_stock. Returns a token, per-op approval level, and diffs."
       input_schema(
         properties: {
           operations: {
             type: "array",
             items: { type: "object" },
-            description: "Each op needs type. update_product: slug + attrs. set_product_collections: slug + collectionSlugs. create_collection: translations (+ slug, productSlugs). deletes need confirm: true."
+            description: "Each op needs type. create_product: priceDh + translations. update_product: slug + attrs. adjust_stock: slug + quantity + reason. set_stock: slug + stock. set_product_collections: slug + collectionSlugs. create_collection: translations (+ slug, productSlugs). deletes need confirm: true."
           },
           summary: { type: "string" }
         },

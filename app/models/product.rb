@@ -28,7 +28,15 @@ class Product < ApplicationRecord
 
   scope :active, -> { where(status: "active") }
   scope :featured, -> { where(featured: true) }
-  scope :low_stock, ->(threshold = 5) { where(track_inventory: true).where("stock <= ?", threshold) }
+  scope :low_stock, lambda { |threshold = 5|
+    where(track_inventory: true)
+      .left_outer_joins(:product_variants)
+      .where(
+        "(product_variants.id IS NULL AND products.stock <= :threshold) OR (product_variants.active = TRUE AND product_variants.stock <= :threshold)",
+        threshold: threshold
+      )
+      .distinct
+  }
 
   def to_param
     slug

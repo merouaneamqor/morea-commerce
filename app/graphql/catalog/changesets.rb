@@ -5,6 +5,7 @@ module Catalog
     class Error < StandardError; end
 
     ALLOWED_TYPES = %w[
+      create_product
       update_product
       set_product_collections
       create_collection
@@ -13,6 +14,8 @@ module Catalog
       delete_product
       delete_collection
       update_store_profile
+      adjust_stock
+      set_stock
     ].freeze
 
     module_function
@@ -148,6 +151,7 @@ module Catalog
       type = op["type"].to_s
       level = case type
       when "update_product" then product_update_level(op)
+      when "create_product", "adjust_stock", "set_stock" then 2
       when "set_product_collections" then 1
       when "create_collection", "update_collection", "set_collection_products" then 2
       when "delete_product", "delete_collection" then 3
@@ -194,12 +198,22 @@ module Catalog
 
     def preview_diff(store, op)
       case op["type"]
+      when "create_product"
+        { "after" => op.except("type") }
       when "update_product"
         product = store.products.includes(:translations).find_by(slug: op["slug"])
         return { "error" => "Product not found: #{op['slug']}" } unless product
 
         attrs = op["attrs"] || op.except("type", "slug")
         { "before" => product_snapshot(product), "attrs" => attrs }
+      when "adjust_stock", "set_stock"
+        product = store.products.includes(:product_variants).find_by(slug: op["slug"])
+        return { "error" => "Product not found: #{op['slug']}" } unless product
+
+        {
+          "before" => inventory_snapshot(product, op),
+          "attrs" => op.except("type")
+        }
       when "set_product_collections"
         product = store.products.includes(:collections).find_by(slug: op["slug"])
         return { "error" => "Product not found: #{op['slug']}" } unless product
@@ -229,9 +243,17 @@ module Catalog
     def validate_op(store, op)
       errors = []
       case op["type"]
-      when "update_product", "set_product_collections", "delete_product"
+      when "create_product"
+        errors << "priceDh is required" if op["priceDh"].nil?
+        errors << "translations with fr name are required" if Array(op["translations"]).none? { |t| t["locale"] == "fr" && t["name"].present? }
+      when "update_product", "set_product_collections", "delete_product", "adjust_stock", "set_stock"
         errors << "Product not found: #{op['slug']}" unless store.products.exists?(slug: op["slug"])
         errors << "delete_product requires confirm: true" if op["type"] == "delete_product" && op["confirm"] != true
+        if op["type"] == "adjust_stock"
+          errors << "quantity must be a non-zero integer" if op["quantity"].to_i.zero?
+          errors << "reason is required" if op["reason"].to_s.strip.blank?
+        end
+        errors << "stock is required" if op["type"] == "set_stock" && op["stock"].nil?
       when "update_collection", "set_collection_products", "delete_collection"
         errors << "Collection not found: #{op['slug']}" unless store.collections.exists?(slug: op["slug"])
         errors << "delete_collection requires confirm: true" if op["type"] == "delete_collection" && op["confirm"] != true
@@ -243,6 +265,7 @@ module Catalog
 
     def apply_one!(store, op)
       case op["type"]
+      when "create_product" then apply_create_product!(store, op)
       when "update_product" then apply_update_product!(store, op)
       when "set_product_collections" then apply_set_product_collections!(store, op)
       when "create_collection" then apply_create_collection!(store, op)
@@ -251,15 +274,53 @@ module Catalog
       when "delete_product" then apply_delete_product!(store, op)
       when "delete_collection" then apply_delete_collection!(store, op)
       when "update_store_profile" then apply_update_profile!(store, op)
+      when "adjust_stock" then apply_adjust_stock!(store, op)
+      when "set_stock" then apply_set_stock!(store, op)
       else
         raise Error, "Unsupported operation: #{op['type']}"
       end
     end
 
+    def apply_create_product!(store, op)
+      product = store.products.new(
+        status: op["status"].presence || "draft",
+        currency: op["currency"].presence || store.currency,
+        stock: op["stock"] || 0,
+        track_inventory: op.key?("trackInventory") ? op["trackInventory"] : true,
+        featured: op["featured"] || false,
+        position: op["position"] || 0,
+        sku: op["sku"].presence
+      )
+      product.price_dh = op["priceDh"]
+      product.compare_at_dh = op["compareAtDh"] if op["compareAtDh"]
+      product.slug = op["slug"] if op["slug"].present?
+      Catalog::Translations.assign!(product, normalize_translations(op["translations"]))
+      snapshot = { "type" => "create_product", "slug" => product.slug, "created" => true }
+
+      return [ snapshot, { "ok" => false, "errors" => product.errors.full_messages } ] unless product.save
+
+      if op["collectionSlugs"]
+        ids, missing = Catalog::Membership.collection_ids_for(store, op["collectionSlugs"])
+        return [ snapshot, { "ok" => false, "errors" => missing.map { |slug| "Unknown collection: #{slug}" } } ] if missing.any?
+
+        Catalog::Membership.apply_collections!(product, ids)
+      end
+      if product.stock.positive?
+        ::Inventory::Adjuster.ledger!(
+          product: product,
+          quantity: product.stock,
+          reason: "received",
+          note: "Initial stock via create_product changeset"
+        )
+      end
+      [ snapshot.merge("slug" => product.slug), { "ok" => true, "type" => "create_product", "slug" => product.slug, "errors" => [] } ]
+    end
+
     def apply_update_product!(store, op)
-      product = store.products.includes(:translations).find_by!(slug: op["slug"])
+      product = store.products.includes(:translations, :product_variants).find_by!(slug: op["slug"])
       snapshot = { "type" => "update_product", "slug" => product.slug, "before" => product_snapshot(product) }
       attrs = stringify_keys(op["attrs"] || op.except("type", "slug"))
+      desired_stock = attrs.key?("stock") ? attrs["stock"] : nil
 
       product.slug = attrs["newSlug"] if attrs["newSlug"].present?
       product.status = attrs["status"] if attrs["status"].present?
@@ -268,17 +329,65 @@ module Catalog
       product.compare_at_dh = attrs["compareAtDh"] unless attrs["compareAtDh"].nil?
       product.currency = attrs["currency"] if attrs["currency"].present?
       product.sku = attrs["sku"].presence if attrs.key?("sku") && !attrs["sku"].nil?
-      product.stock = attrs["stock"] unless attrs["stock"].nil?
       product.track_inventory = attrs["trackInventory"] unless attrs["trackInventory"].nil?
       product.featured = attrs["featured"] unless attrs["featured"].nil?
       product.position = attrs["position"] unless attrs["position"].nil?
       Catalog::Translations.assign!(product, normalize_translations(attrs["translations"])) if attrs["translations"]
 
-      if product.save
-        [ snapshot, { "ok" => true, "type" => "update_product", "slug" => product.slug, "errors" => [] } ]
-      else
-        [ snapshot, { "ok" => false, "type" => "update_product", "slug" => op["slug"], "errors" => product.errors.full_messages } ]
+      unless product.save
+        return [ snapshot, { "ok" => false, "type" => "update_product", "slug" => op["slug"], "errors" => product.errors.full_messages } ]
       end
+
+      if !desired_stock.nil? && product.product_variants.any?
+        return [ snapshot, { "ok" => false, "errors" => [ "Product has variants; use set_stock or adjust_stock for variant inventory" ] } ]
+      end
+
+      if !desired_stock.nil? && product.product_variants.empty?
+        ::Inventory::Adjuster.set!(
+          product: product,
+          stock: desired_stock,
+          reason: "correction",
+          note: "Stock set via update_product changeset"
+        )
+      end
+
+      [ snapshot, { "ok" => true, "type" => "update_product", "slug" => product.slug, "errors" => [] } ]
+    rescue ::Inventory::Adjuster::Error => e
+      [ snapshot, { "ok" => false, "type" => "update_product", "slug" => op["slug"], "errors" => [ e.message ] } ]
+    end
+
+    def apply_adjust_stock!(store, op)
+      product = store.products.includes(:product_variants).find_by!(slug: op["slug"])
+      snapshot = { "type" => "adjust_stock", "slug" => product.slug, "before" => inventory_snapshot(product, op) }
+      result = ::Inventory::Adjuster.adjust!(
+        product: product,
+        quantity: op["quantity"],
+        reason: op["reason"],
+        note: op["note"],
+        size: op["size"],
+        color: op["color"],
+        variant_id: op["variantId"]
+      )
+      [ snapshot, { "ok" => true, "type" => "adjust_stock", "slug" => product.slug, "stock" => result.stock, "errors" => [] } ]
+    rescue ::Inventory::Adjuster::Error => e
+      [ snapshot, { "ok" => false, "type" => "adjust_stock", "slug" => op["slug"], "errors" => [ e.message ] } ]
+    end
+
+    def apply_set_stock!(store, op)
+      product = store.products.includes(:product_variants).find_by!(slug: op["slug"])
+      snapshot = { "type" => "set_stock", "slug" => product.slug, "before" => inventory_snapshot(product, op) }
+      result = ::Inventory::Adjuster.set!(
+        product: product,
+        stock: op["stock"],
+        reason: op["reason"].presence || "correction",
+        note: op["note"],
+        size: op["size"],
+        color: op["color"],
+        variant_id: op["variantId"]
+      )
+      [ snapshot, { "ok" => true, "type" => "set_stock", "slug" => product.slug, "stock" => result.stock, "errors" => [] } ]
+    rescue ::Inventory::Adjuster::Error => e
+      [ snapshot, { "ok" => false, "type" => "set_stock", "slug" => op["slug"], "errors" => [ e.message ] } ]
     end
 
     def apply_set_product_collections!(store, op)
@@ -369,6 +478,13 @@ module Catalog
 
     def verify_one(store, op)
       case op["type"]
+      when "create_product"
+        slug = op["slug"].presence
+        if slug
+          store.products.exists?(slug: slug) ? ok_check(op) : fail_check(op, "Product was not created")
+        else
+          ok_check(op)
+        end
       when "update_product"
         product = store.products.includes(:translations).find_by(slug: op["newSlug"].presence || op.dig("attrs", "newSlug").presence || op["slug"])
         return fail_check(op, "Product missing after update") unless product
@@ -379,6 +495,20 @@ module Catalog
         end
         if attrs["status"] && product.status != attrs["status"]
           return fail_check(op, "status expected #{attrs['status']} got #{product.status}")
+        end
+        if attrs.key?("stock") && product.product_variants.empty? && product.stock != attrs["stock"].to_i
+          return fail_check(op, "stock expected #{attrs['stock']} got #{product.stock}")
+        end
+        ok_check(op)
+      when "adjust_stock", "set_stock"
+        product = store.products.includes(:product_variants).find_by(slug: op["slug"])
+        return fail_check(op, "Product missing") unless product
+
+        target = inventory_target(product, op)
+        return fail_check(op, "Variant not found") unless target
+
+        if op["type"] == "set_stock" && target.stock != op["stock"].to_i
+          return fail_check(op, "stock expected #{op['stock']} got #{target.stock}")
         end
         ok_check(op)
       when "set_product_collections"
@@ -413,12 +543,33 @@ module Catalog
 
     def restore_one!(store, snapshot)
       case snapshot["type"]
+      when "create_product"
+        store.products.find_by(slug: snapshot["slug"])&.destroy!
       when "update_product"
         product = store.products.includes(:translations).find_by(slug: snapshot.dig("before", "slug")) ||
           store.products.includes(:translations).find_by(slug: snapshot["slug"])
         raise Error, "Cannot rollback missing product #{snapshot['slug']}" unless product
 
         restore_product!(product, snapshot["before"])
+      when "adjust_stock", "set_stock"
+        product = store.products.includes(:product_variants).find_by!(slug: snapshot["slug"])
+        before = snapshot["before"] || {}
+        target = if before["variantId"].present?
+          product.product_variants.find_by(id: before["variantId"])
+        elsif before["size"].present? || before["color"].present?
+          ::Inventory::Adjuster.resolve_variant!(product, size: before["size"], color: before["color"])
+        else
+          product
+        end
+        raise Error, "Cannot rollback inventory for missing target on #{snapshot['slug']}" unless target
+
+        ::Inventory::Adjuster.set!(
+          product: product,
+          variant: (target == product ? nil : target),
+          stock: before.fetch("stock"),
+          reason: "correction",
+          note: "Rollback changeset inventory"
+        )
       when "set_product_collections"
         product = store.products.find_by!(slug: snapshot["slug"])
         ids, = Catalog::Membership.collection_ids_for(store, snapshot["before"])
@@ -447,18 +598,27 @@ module Catalog
     end
 
     def restore_product!(product, before)
+      previous_stock = product.stock
       product.slug = before["slug"]
       product.status = before["status"]
       product.price_dh = before["priceDh"]
       product.compare_at_dh = before["compareAtDh"]
       product.currency = before["currency"]
       product.sku = before["sku"]
-      product.stock = before["stock"]
       product.track_inventory = before["trackInventory"]
       product.featured = before["featured"]
       product.position = before["position"]
       Catalog::Translations.assign!(product, normalize_translations(before["translations"]))
       product.save!
+      return if product.product_variants.any?
+      return if before["stock"].nil? || before["stock"].to_i == previous_stock
+
+      ::Inventory::Adjuster.set!(
+        product: product,
+        stock: before["stock"],
+        reason: "correction",
+        note: "Rollback product stock"
+      )
     end
 
     def restore_collection!(collection, before)
@@ -528,6 +688,32 @@ module Catalog
           }
         end
       }
+    end
+
+    def inventory_snapshot(product, op)
+      target = inventory_target(product, op)
+      {
+        "slug" => product.slug,
+        "stock" => target&.stock,
+        "size" => op["size"],
+        "color" => op["color"],
+        "variantId" => op["variantId"].presence || (target.is_a?(ProductVariant) ? target.id.to_s : nil)
+      }
+    end
+
+    def inventory_target(product, op)
+      if op["variantId"].present? || op["size"].present? || op["color"].present?
+        ::Inventory::Adjuster.resolve_variant!(
+          product,
+          size: op["size"],
+          color: op["color"],
+          variant_id: op["variantId"]
+        )
+      else
+        product
+      end
+    rescue ::Inventory::Adjuster::Error
+      nil
     end
 
     def collection_snapshot(collection)

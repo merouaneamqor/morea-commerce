@@ -27,6 +27,12 @@ class CatalogServer
     CatalogTools::CancelOrder,
     CatalogTools::SetProductVariants,
     CatalogTools::DeleteProductVariants,
+    CatalogTools::Inventory::ListInventory,
+    CatalogTools::Inventory::ListLowStock,
+    CatalogTools::Inventory::InventorySummary,
+    CatalogTools::Inventory::ListInventoryMovements,
+    CatalogTools::Inventory::AdjustStock,
+    CatalogTools::Inventory::SetStock,
     CatalogTools::Storefront::GetStoreSettings,
     CatalogTools::Storefront::UpdateCheckout,
     CatalogTools::Storefront::UpdateMarketing,
@@ -92,6 +98,8 @@ class CatalogServer
         Level 3 deletes need approveLevel3 and confirm: true. Use rollback_changeset when a bad apply must be undone.
         Create and update products directly for single edits. A missing MCP resource is not an error and must not block a write.
         A draft is create_product with status draft, stock 0, priceDh in whole currency units, a fr translation name, and collectionSlugs such as ["essentials"].
+        Inventory: list_inventory, list_low_stock, inventory_summary, list_inventory_movements, adjust_stock, set_stock.
+        Prefer adjust_stock for receives and damage; set_stock for absolute corrections. Both write ledger movements.
         The full manual is the tool read_catalog_guide. GraphQL { guide } returns the same text.
         Use store_stats, product_stats, list_orders, get_order, and cancel_order for strategy. Delivered revenue is cash collected.
         cancel_order needs confirm: true and only works before pickup.

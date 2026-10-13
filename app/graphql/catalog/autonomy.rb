@@ -68,19 +68,21 @@ module Catalog
           field("compareAtDh", "integer", required: false),
           field("currency", "string", required: false, default: "DH"),
           field("sku", "string", required: false, notes: "Empty string clears the SKU."),
-          field("stock", "integer", required: false, notes: "Ignored for sellable stock when variants exist."),
+          field("stock", "integer", required: false, notes: "Product-level only when there are no variants. Prefer adjust_stock/set_stock so the ledger records the change."),
           field("trackInventory", "boolean", required: false),
           field("featured", "boolean", required: false),
           field("position", "integer", required: false),
           field("collectionSlugs", "string[]", required: false, notes: "Full membership replace via set_product_collections."),
           field("translations", "object[]", required: true, notes: "Create needs fr name. Fields: #{PRODUCT_TRANSLATION_FIELDS.join(', ')}."),
-          field("variants", "object[]", required: false, notes: "size + color pairs via set_product_variants."),
+          field("variants", "object[]", required: false, notes: "size + color pairs via set_product_variants. Variant stock writes ledger movements."),
           field("images", "object[]", required: false, notes: "Gallery; position 0 is the cover.")
         ],
+        "inventoryTools" => %w[list_inventory list_low_stock inventory_summary list_inventory_movements adjust_stock set_stock],
+        "inventoryReasons" => InventoryMovement::MANUAL_REASONS,
         "translationFields" => PRODUCT_TRANSLATION_FIELDS,
         "approvalLevels" => {
           "1" => "Automatic content, translation, SEO, and assignment to existing collections",
-          "2" => "Preview first: prices, slugs, structural collection changes, variants",
+          "2" => "Preview first: prices, slugs, create product, structural collection changes, variants, stock adjusts",
           "3" => "Restricted: permanent deletes and other high-impact actions"
         }
       }

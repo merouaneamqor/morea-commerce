@@ -10,7 +10,7 @@ module Catalog
     Import = Data.define(:imported, :errors)
     MAX_IMPORT = 200
     MAX_EXPORT = 500
-    EXPORT_KINDS = %w[products orders customers discounts].freeze
+    EXPORT_KINDS = %w[products orders customers discounts inventory].freeze
     IMPORT_KINDS = %w[products customers discounts].freeze
 
     module_function
@@ -335,6 +335,22 @@ module Catalog
             "stock" => product.stock, "sku" => product.sku,
             "nameFr" => translation_name(product, "fr"), "nameEn" => translation_name(product, "en"),
             "nameAr" => translation_name(product, "ar")
+          }
+        end
+      when "inventory"
+        headers = %w[slug name status trackInventory sku size color stock lowStock stockValueDh]
+        rows = Catalog::Inventory.levels(store, limit: MAX_EXPORT + 1).map do |level|
+          {
+            "slug" => level.slug,
+            "name" => level.name,
+            "status" => level.status,
+            "trackInventory" => level.track_inventory,
+            "sku" => level.sku,
+            "size" => level.size,
+            "color" => level.color,
+            "stock" => level.stock,
+            "lowStock" => level.low_stock,
+            "stockValueDh" => level.stock_value_dh
           }
         end
       when "orders"

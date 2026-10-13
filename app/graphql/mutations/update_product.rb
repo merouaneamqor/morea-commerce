@@ -30,14 +30,28 @@ module Mutations
       product.compare_at_dh = attrs[:compare_at_dh] unless attrs[:compare_at_dh].nil?
       product.currency = attrs[:currency] if attrs[:currency].present?
       product.sku = attrs[:sku].presence if attrs.key?(:sku) && !attrs[:sku].nil?
-      product.stock = attrs[:stock] unless attrs[:stock].nil?
       product.track_inventory = attrs[:track_inventory] unless attrs[:track_inventory].nil?
       product.featured = attrs[:featured] unless attrs[:featured].nil?
       product.position = attrs[:position] unless attrs[:position].nil?
       Catalog::Translations.assign!(product, translations) if translations
 
-      product.save
-      payload(product, :product)
+      desired_stock = attrs[:stock]
+      return payload(product, :product) unless product.save
+
+      if !desired_stock.nil? && product.product_variants.empty?
+        Inventory::Adjuster.set!(
+          product: product,
+          stock: desired_stock,
+          reason: "correction",
+          note: "Stock set via update_product"
+        )
+      elsif !desired_stock.nil? && product.product_variants.any?
+        return failure("Product has variants; set variant stock with set_stock or set_product_variants").merge(product: product)
+      end
+
+      { product: product.reload, errors: [] }
+    rescue Inventory::Adjuster::Error => e
+      failure(e.message).merge(product: product)
     end
   end
 end

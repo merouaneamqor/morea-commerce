@@ -42,6 +42,14 @@ module Mutations
       return payload(product, :product) unless product.save
 
       Catalog::Membership.apply_collections!(product, ids) if collection_slugs
+      if product.stock.positive?
+        Inventory::Adjuster.ledger!(
+          product: product,
+          quantity: product.stock,
+          reason: "received",
+          note: "Initial stock via create_product"
+        )
+      end
       { product: product.reload, errors: [] }
     end
   end

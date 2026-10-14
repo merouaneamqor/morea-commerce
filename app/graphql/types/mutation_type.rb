@@ -18,6 +18,8 @@ module Types
     field :set_product_variants, mutation: Mutations::SetProductVariants
     field :delete_product_variants, mutation: Mutations::DeleteProductVariants
     field :cancel_order, mutation: Mutations::CancelOrder
+    field :adjust_stock, mutation: Mutations::AdjustStock
+    field :set_stock, mutation: Mutations::SetStock
     field :update_checkout, mutation: Mutations::Storefront::UpdateCheckout
     field :update_marketing, mutation: Mutations::Storefront::UpdateMarketing
     field :update_shipping, mutation: Mutations::Storefront::UpdateShipping

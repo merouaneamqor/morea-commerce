@@ -8,29 +8,17 @@ module Admin
       note = params[:note].to_s.strip.presence
       variant = @product.product_variants.find_by(id: params[:product_variant_id]) if params[:product_variant_id].present?
 
-      if quantity.zero?
-        redirect_to edit_admin_product_path(@product), alert: "Enter a non-zero quantity."
-        return
-      end
-
-      target = variant || @product
-      new_stock = target.stock + quantity
-      if new_stock.negative?
-        redirect_to edit_admin_product_path(@product), alert: "Stock cannot go below zero."
-        return
-      end
-
-      ActiveRecord::Base.transaction do
-        target.update!(stock: new_stock)
-        @product.inventory_movements.create!(
-          product_variant: variant,
-          quantity: quantity,
-          reason: reason,
-          note: note
-        )
-      end
+      Inventory::Adjuster.adjust!(
+        product: @product,
+        quantity: quantity,
+        reason: reason,
+        note: note,
+        variant: variant
+      )
 
       redirect_to edit_admin_product_path(@product), notice: "Stock adjusted."
+    rescue Inventory::Adjuster::Error => e
+      redirect_to edit_admin_product_path(@product), alert: e.message
     end
 
     private

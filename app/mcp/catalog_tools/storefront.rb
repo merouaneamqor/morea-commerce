@@ -343,9 +343,9 @@ module CatalogTools
     end
 
     class ExportCsv < MCP::Tool
-      description "Export products, orders, customers, or discounts as CSV text. Orders omit phone, street address, and email. At most 500 rows; truncated is true when more exist."
+      description "Export products, orders, customers, discounts, or inventory as CSV text. Inventory rows are sellable levels (variants when present). Orders omit phone, street address, and email. At most 500 rows; truncated is true when more exist."
       input_schema(
-        properties: { kind: { type: "string", enum: %w[products orders customers discounts] } },
+        properties: { kind: { type: "string", enum: %w[products orders customers discounts inventory] } },
         required: [ "kind" ]
       )
 

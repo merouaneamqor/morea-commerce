@@ -90,6 +90,23 @@ module Types
     field :changeset, Autonomy::ChangesetType, null: true do
       argument :token, String, required: true
     end
+    field :inventory_levels, [ Inventory::LevelType ], null: false do
+      argument :slug, String, required: false
+      argument :status, String, required: false
+      argument :low_stock_only, Boolean, required: false
+      argument :limit, Integer, required: false
+    end
+    field :inventory_movements, [ Inventory::MovementType ], null: false do
+      argument :slug, String, required: false
+      argument :reason, String, required: false
+      argument :since, GraphQL::Types::ISO8601Date, required: false
+      argument :until, GraphQL::Types::ISO8601Date, required: false, as: :until_on
+      argument :limit, Integer, required: false
+    end
+    field :inventory_summary, Inventory::SummaryType, null: false do
+      argument :since, GraphQL::Types::ISO8601Date, required: false
+      argument :until, GraphQL::Types::ISO8601Date, required: false, as: :until_on
+    end
 
     def guide
       CatalogGuide.text
@@ -251,6 +268,18 @@ module Types
       store_ops { Catalog::StoreOps.export_csv(store, kind: kind) }
     end
 
+    def inventory_levels(slug: nil, status: nil, low_stock_only: nil, limit: nil)
+      inventory { Catalog::Inventory.levels(store, slug: slug, status: status, low_stock_only: low_stock_only, limit: limit) }
+    end
+
+    def inventory_movements(slug: nil, reason: nil, since: nil, until_on: nil, limit: nil)
+      inventory { Catalog::Inventory.movements(store, slug: slug, reason: reason, since: since, until_on: until_on, limit: limit) }
+    end
+
+    def inventory_summary(since: nil, until_on: nil)
+      inventory { Catalog::Inventory.summary(store, since: since, until_on: until_on) }
+    end
+
     private
 
     def store
@@ -266,6 +295,12 @@ module Types
     def store_ops
       yield
     rescue Catalog::StoreOps::Error => e
+      raise GraphQL::ExecutionError, e.message
+    end
+
+    def inventory
+      yield
+    rescue Catalog::Inventory::Error, Catalog::Analytics::Error => e
       raise GraphQL::ExecutionError, e.message
     end
 

@@ -306,36 +306,34 @@ class Order < ApplicationRecord
 
   def reserve_inventory!
     order_items.includes(:product, :product_variant).each do |item|
-      target = item.product_variant || item.product
       next unless item.product.track_inventory
 
-      if target.stock < item.quantity
-        raise StandardError, "Insufficient stock for #{item.product_name}"
-      end
-
-      target.update!(stock: target.stock - item.quantity)
-      inventory_movements.create!(
+      Inventory::Adjuster.adjust!(
         product: item.product,
-        product_variant: item.product_variant,
+        variant: item.product_variant,
         quantity: -item.quantity,
         reason: "order_confirmed",
-        note: "Order #{number}"
+        note: "Order #{number}",
+        order: self
       )
+    rescue Inventory::Adjuster::Error => e
+      raise StandardError, "Insufficient stock for #{item.product_name}" if e.message.include?("below zero")
+
+      raise
     end
   end
 
   def restore_inventory!(reason: "order_cancelled")
     order_items.includes(:product, :product_variant).each do |item|
-      target = item.product_variant || item.product
       next unless item.product.track_inventory
 
-      target.update!(stock: target.stock + item.quantity)
-      inventory_movements.create!(
+      Inventory::Adjuster.adjust!(
         product: item.product,
-        product_variant: item.product_variant,
+        variant: item.product_variant,
         quantity: item.quantity,
         reason: reason,
-        note: "Order #{number}"
+        note: "Order #{number}",
+        order: self
       )
     end
   end

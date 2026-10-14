@@ -1,6 +1,6 @@
 ---
 name: morea-catalog
-description: Operate one Morea store through its remote MCP: catalog, variants, cover photos, delivery orders, cash on delivery checkout, Sendit shipping, coupons, customers, CSV, pixels, and the home page. Use when the user mentions Morea, ollazen.com, a store catalog, COD, discounts, customers, shipping, or connecting an agent to a store.
+description: Operate one Morea store through its remote MCP: catalog, product management, inventory tracking, variants, cover photos, delivery orders, cash on delivery checkout, Sendit shipping, coupons, customers, CSV, pixels, and the home page. Use when the user mentions Morea, ollazen.com, a store catalog, inventory, stock, COD, discounts, customers, shipping, or connecting an agent to a store.
 ---
 
 # Morea catalog
@@ -43,7 +43,7 @@ Customers: `list_customers`, `get_customer`, `upsert_customer`. These include ph
 
 Marketing tags are `update_marketing` (Meta and TikTok pixel ids). There is no email campaign.
 
-`export_csv` and `import_csv` cover products, customers, and discounts. Export also covers orders, without phone or street address. Import needs `confirm: true`.
+`export_csv` and `import_csv` cover products, customers, and discounts. Export also covers orders (without phone or street address) and inventory levels. Import needs `confirm: true`.
 
 The home page builder is `get_home_layout`, `set_home_layout`, `reorder_home_sections`, plus `upsert_home_section` / `delete_home_section`. Landing pages use the same section kinds via `upsert_landing_page` and `set_landing_layout` (public URL `/:locale/pages/:slug`). Content pages stay on `list_pages` / `upsert_page`. Header/footer links are menu tools. `install_theme` fills only the parts that are still empty. The public host is the store subdomain. Custom domains are not a setting.
 
@@ -57,8 +57,22 @@ The home page builder is `get_home_layout`, `set_home_layout`, `reorder_home_sec
 - Status is `draft`, `active`, or `archived`. New products default to `draft`.
 - `set_product_collections` and `set_collection_products` replace the full membership. Pass `[]` to clear it. Order of `productSlugs` is the collection order.
 - Variants are size and color. `set_product_variants` upserts by that pair; omit a row to leave it. `delete_product_variants` needs `confirm: true`. A blank `priceDh` uses the product price.
-- When a product has variants, the storefront sells the sum of active variant stock. Change that stock, not the product `stock` field.
-- Inventory movements are not available here.
+- When a product has variants, the storefront sells the sum of active variant stock. Change that stock with `adjust_stock` / `set_stock` (pass `size`+`color` or `variantId`), not the product `stock` field.
+- Prefer `adjust_stock` for receives and damage. Prefer `set_stock` for absolute corrections. Both write `inventory_movements`. `update_product`/`set_product_variants` stock changes also write ledger rows when they change on-hand quantity.
+- Manual write reasons: `manual_adjustment`, `received`, `damaged`, `correction`. Order lifecycle also writes `order_confirmed`, `order_cancelled`, `order_returned`, `order_edited` (read-only via `list_inventory_movements`).
+
+## Inventory
+
+1. `inventory_summary` — tracked counts, low/out-of-stock, total units/value, movement totals by reason.
+2. `list_inventory` / `list_low_stock` — current levels (one row per product, or per active variant).
+3. `list_inventory_movements` — ledger (`slug`, `reason`, `since`/`until`, `limit`).
+4. `adjust_stock` — signed delta + reason (+ optional note / variant targeting).
+5. `set_stock` — absolute on-hand + ledger delta (default reason `correction`).
+6. `export_csv` with `kind: "inventory"` — CSV of current levels.
+
+Stock cannot go below zero. Confirming an order decrements on-hand stock; there is no separate soft-reserve column. Products with variants require `size`+`color` or `variantId` on stock writes. When every variant is inactive, sellable stock is reported as 0.
+
+Local A-to-Z smoke (happy path + edge cases): `bin/rails runner script/mcp_inventory_smoke.rb [store_slug]`.
 
 ## Images
 
@@ -101,12 +115,14 @@ For multi-product store work, do not ask the merchant which tool to call. Prefer
 Approval levels (enforced server-side):
 
 - Level 1 automatic: content, translations, SEO, assign to existing collections, store profile updates.
-- Level 2 preview first: prices, slugs, create/rename collections, replace collection membership.
+- Level 2 preview first: prices, slugs, create product, create/rename collections, replace collection membership, `adjust_stock`, `set_stock`.
 - Level 3 restricted: delete product or collection (`confirm: true` on the op, plus `approveLevel3`).
 
-Changeset operation `type` values: `update_product`, `set_product_collections`, `create_collection`, `update_collection`, `set_collection_products`, `delete_product`, `delete_collection`, `update_store_profile`.
+Changeset operation `type` values: `create_product`, `update_product`, `set_product_collections`, `create_collection`, `update_collection`, `set_collection_products`, `delete_product`, `delete_collection`, `update_store_profile`, `adjust_stock`, `set_stock`.
 
 Example `update_product` op: `{ "type": "update_product", "slug": "robe-lin", "attrs": { "translations": [{ "locale": "fr", "shortDescription": "…" }] } }`.
+
+Example `adjust_stock` op: `{ "type": "adjust_stock", "slug": "robe-lin", "quantity": 5, "reason": "received", "note": "Supplier delivery", "size": "M", "color": "Noir" }`.
 
 ## Home page & landing page builders
 
@@ -133,6 +149,8 @@ Content pages (`about`, `shipping`, `privacy`) stay `template: content` with a s
 ## MCP tools
 
 Products: `read_catalog_guide`, `list_products` (`query`, `status`, `limit` 1–100, default 50), `get_product`, `create_product`, `update_product`, `delete_product`, `set_product_collections`, `set_product_variants`, `delete_product_variants`.
+
+Inventory: `list_inventory` (`slug`, `status`, `lowStockOnly`, `limit` 1–200), `list_low_stock`, `inventory_summary` (`since`, `until`), `list_inventory_movements` (`slug`, `reason`, `since`, `until`, `limit`), `adjust_stock` (`slug`, `quantity`, `reason`, optional `note`/`size`/`color`/`variantId`), `set_stock` (`slug`, `stock`, optional `reason`/`note`/variant targeting).
 
 Autonomy: `get_store_profile`, `get_full_catalog` (`page`, `perPage`, `status`), `audit_store` (`status`, `limit`), `get_product_schema`, `validate_product` (`slug`), `suggest_collection_structure` (`limit`), `preview_changeset` (`operations`, `summary`), `apply_changeset` (`token`, `approveLevel2`, `approveLevel3`), `verify_changeset` (`token`), `rollback_changeset` (`token`).
 

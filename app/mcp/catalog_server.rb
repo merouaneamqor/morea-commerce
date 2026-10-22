@@ -15,6 +15,8 @@ class CatalogServer
     CatalogTools::DeleteCollection,
     CatalogTools::SetCollectionProducts,
     CatalogTools::SetProductCollections,
+    CatalogTools::MediaLibrary::ListMedia,
+    CatalogTools::MediaLibrary::EditProductImages,
     CatalogTools::AddProductImages,
     CatalogTools::RemoveProductImages,
     CatalogTools::ReorderProductImages,

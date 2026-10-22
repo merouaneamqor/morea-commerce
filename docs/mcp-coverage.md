@@ -13,7 +13,7 @@ This assessment compares existing app controllers, GraphQL fields and registered
 | Storefront content | Pages, menus, home sections, landing page/layout builders | Verify preview and publish behavior against admin workflows |
 | Imports and exports | CSV import/export | Verify size limits, validation and failure reporting |
 | Brand and catalog autonomy | Profile, audit, suggestions, preview/apply/verify/rollback | Connected plugin currently exposes a subset of the repository's registered tools |
-| Media transformations | Admin crop, background removal and watermark | No corresponding MCP transformation tools identified |
+| Media transformations | Paginated media-library lookup and confirmed portrait/square crop, watermark, background-removal request and clear | Needs deployed-tool verification; background removal is asynchronous and consumes configured Cloudinary resources |
 | Staff | Admin staff CRUD | Needs dedicated authorized staff-management capabilities; store catalog tokens must not silently acquire platform privileges |
 | Platform tenants and billing | Admin tenant and invoice workflows | Needs separate platform authorization before exposing tenant creation, invoices and billing actions |
 | OAuth | Discovery, dynamic registration, PKCE, exchange and refresh | Hardenings prepared locally; full fresh ChatGPT authorization still needs interactive verification |

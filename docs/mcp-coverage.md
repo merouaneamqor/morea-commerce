@@ -8,7 +8,7 @@ This assessment compares existing app controllers, GraphQL fields and registered
 | Images | Upload, remove, reorder, collection cover; image URLs and cover previews | Gallery preview changes prepared locally; verify ChatGPT rendering after deployment |
 | Inventory | Levels, low stock, movements, adjustments | Run integration checks and verify discovery |
 | Customers | List, detail, upsert | Compare all admin fields and enforce customer data access policy |
-| Orders | List, detail, reporting, cancellation | Create/edit/duplicate, transitions, archive/unarchive, comments/tags, packing slips, Sendit actions and labels are admin features without corresponding MCP tools |
+| Orders | List, detail, reporting, cancellation; new order desk tools for create/edit/duplicate, transitions, archive/unarchive, comments/tags, structured packing slips and Sendit push/refresh/labels | New order tools require CI/deployment verification and refreshed ChatGPT tool discovery. Packing slips are structured data, not PDF files |
 | Discounts, shipping, checkout, marketing | Read/update tools and shipping synchronization | Verify per-setting field coverage and deployed behavior |
 | Storefront content | Pages, menus, home sections, landing page/layout builders | Verify preview and publish behavior against admin workflows |
 | Imports and exports | CSV import/export | Verify size limits, validation and failure reporting |

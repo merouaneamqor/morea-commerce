@@ -209,3 +209,17 @@ Delete:
 ```graphql
 mutation { deleteProduct(slug: "robe-lin", confirm: true) { deleted errors } }
 ```
+
+## Order desk
+
+- `create_order`: `attrs` requires customer name, phone, city, address and 1-100 `lines` (`productSlug`, `quantity`, `variantId` for variant products). Prices come from the current catalog. Amounts in `shippingDh` and `discountDh` are non-negative whole currency units. Creates a new COD order and can enqueue staff notifications.
+- `update_order`: partial `attrs` updates an editable order; supplied `lines` replace all lines. Existing contact/shipping stays unchanged when omitted. Confirmed inventory adjusts through the existing ledger. To replace a discount code with a manual amount, pass `discountCode: ""` with `discountDh`.
+- `duplicate_order`: new order number and status, same contact/items but current catalog pricing. Does not reserve stock until confirmation.
+- `transition_order`: use only `allowedTransitions` from `get_order_activity`. Confirmation reserves inventory and can trigger shipping. Courier-owned states remain controlled by Sendit. Cancellation stays on `cancel_order`.
+- `set_order_archived`, `update_order_tags` and `add_order_comment`: preserve records and write timeline events. Comments are internal; they do not contact customers.
+- `get_order_activity`: order desk details and up to 100 latest events. `includeContact` defaults false. `get_packing_slip` explicitly includes delivery contact information as structured data, not a PDF.
+- `manage_order_shipment`: `push` or `refresh` for a configured Sendit store. Push requires confirmed/unshipped status. `get_shipping_label` returns a parcel label URL.
+- All new order writes require `confirm: true`. Ask before cancelling, changing commercial order details, dispatching parcels or moving inventory unless the user's exact instruction already authorizes the action. Read-only inspection and creating a plan do not require confirmation.
+- Every order, product and variant is resolved within the authenticated store. Use customer personal details only when needed for the user's explicit task.
+
+GraphQL equivalents: `orderDesk(number:, includeContact:)`, `shippingLabel(number:)` and `manageOrder(action:, number:, attrs:, confirm:)`. The action allowlist is create/update/duplicate/transition/archive/unarchive/tags/comment/shipment; arbitrary method names and model attributes are rejected.

@@ -38,6 +38,7 @@ http.post "/mcp", params: { jsonrpc: "2.0", id: 1, method: "tools/list" }.to_jso
   headers: { "Authorization" => "Bearer #{rotated.first}", "Content-Type" => "application/json", "Accept" => "application/json, text/event-stream" }
 raise "OAuth token rejected by MCP" unless http.response.status == 200
 raise "Products tool missing" unless http.response.body.include?("list_products")
+raise "Variant image tools missing" unless http.response.body.include?("add_variant_images") && http.response.body.include?("remove_variant_images")
 
 payload = { "data" => { "product" => { "slug" => "gallery-test", "coverUrl" => "https://example.com/cover.jpg",
   "images" => [ { "url" => "https://example.com/cover.jpg", "position" => 0 },
@@ -46,4 +47,4 @@ entries = CatalogExecutor.cover_entries(payload)
 raise "Gallery association missing" unless entries.size == 2 && entries.last[:slug] == "gallery-test" && entries.last[:label].include?("back.jpg")
 parts = CatalogExecutor.response_content(payload, false)
 raise "Missing image fallback" unless parts.any? { |part| part[:text].to_s.include?("Image preview unavailable") }
-puts "OAuth PKCE, client binding, refresh, MCP auth, gallery association and fallback OK"
+puts "OAuth PKCE, client binding, refresh, MCP auth, variant image tools, gallery association and fallback OK"

@@ -33,24 +33,40 @@ module Catalog
     end
 
     def attach_product!(product, uploads)
+      attach!(product.images, uploads)
+      sync_order!(product)
+    end
+
+    def attach_variant!(variant, uploads)
+      attach!(variant.images, uploads)
+    end
+
+    def attach!(attachments, uploads)
       files = Array(uploads)
       raise Error, "No images" if files.empty?
       raise Error, "At most #{MAX_PER_CALL} images at a time" if files.size > MAX_PER_CALL
 
-      files.each { |upload| product.images.attach(io_for(upload)) }
-      sync_order!(product)
+      files.each { |upload| attachments.attach(io_for(upload)) }
     end
 
     def remove_product!(product, ids)
+      remove!(product.images_attachments, ids)
+      sync_order!(product)
+    end
+
+    def remove_variant!(variant, ids)
+      remove!(variant.images_attachments, ids)
+    end
+
+    def remove!(attachments_scope, ids)
       wanted = Array(ids).map(&:to_i).uniq
       raise Error, "No image ids" if wanted.empty?
 
-      attachments = product.images_attachments.where(id: wanted)
+      attachments = attachments_scope.where(id: wanted)
       missing = wanted - attachments.map(&:id)
       raise Error, "Unknown image ids: #{missing.join(", ")}" if missing.any?
 
       attachments.find_each(&:purge)
-      sync_order!(product)
     end
 
     def reorder_product!(product, ids)

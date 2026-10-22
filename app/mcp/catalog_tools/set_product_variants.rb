@@ -31,7 +31,7 @@ module CatalogTools
         query: <<~GQL,
           mutation($slug: String!, $variants: [VariantInput!]!) {
             setProductVariants(slug: $slug, variants: $variants) {
-              product { slug variants { id size color colorHex sku stock active priceDh } }
+              product { slug variants { id size color colorHex sku stock active priceDh images { id filename url position } } }
               errors
             }
           }

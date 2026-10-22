@@ -20,6 +20,8 @@ class CatalogServer
     CatalogTools::AddProductImages,
     CatalogTools::RemoveProductImages,
     CatalogTools::ReorderProductImages,
+    CatalogTools::AddVariantImages,
+    CatalogTools::RemoveVariantImages,
     CatalogTools::SetCollectionImage,
     CatalogTools::RemoveCollectionImage,
     CatalogTools::StoreStats,

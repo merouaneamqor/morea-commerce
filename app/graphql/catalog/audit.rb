@@ -150,7 +150,7 @@ module Catalog
     end
 
     def overlapping_collection_issues(collections)
-      pairs = collections.combination(2).filter_map do |left, right|
+      pairs = collections.to_a.combination(2).filter_map do |left, right|
         left_ids = left.products.map(&:id)
         right_ids = right.products.map(&:id)
         overlap = left_ids & right_ids

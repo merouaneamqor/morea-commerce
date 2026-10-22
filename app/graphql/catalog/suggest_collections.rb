@@ -51,7 +51,7 @@ module Catalog
         }
       end
 
-      collections.combination(2).each do |left, right|
+      collections.to_a.combination(2).each do |left, right|
         left_ids = left.products.map(&:id)
         right_ids = right.products.map(&:id)
         overlap = left_ids & right_ids

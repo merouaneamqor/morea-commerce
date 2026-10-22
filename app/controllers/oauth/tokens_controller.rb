@@ -4,6 +4,8 @@ module Oauth
   class TokensController < ActionController::API
     include Cors
 
+    before_action :prevent_token_caching
+
     def preflight
       head :no_content
     end
@@ -18,6 +20,11 @@ module Oauth
     end
 
     private
+
+    def prevent_token_caching
+      response.set_header("Cache-Control", "no-store")
+      response.set_header("Pragma", "no-cache")
+    end
 
     def authorization_code
       payload = Codes.take(params[:code])

@@ -180,7 +180,7 @@ GEM
       net-pop
       net-smtp
     marcel (1.2.1)
-    mcp (1.7.0)
+    mcp (1.8.0)
       json_schemer (>= 2.4)
     mini_magick (5.4.0)
       logger

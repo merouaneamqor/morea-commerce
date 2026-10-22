@@ -2,7 +2,7 @@
 
 module CatalogTools
   class ListProducts < MCP::Tool
-    description "List products in the authenticated store. Optional search and status filter."
+    description "List products in the authenticated store. Optional search and status filter. Includes all image URLs per product and up to 8 attached cover previews. Use get_product to inspect gallery photos."
     input_schema(
       properties: {
         query: { type: "string", description: "Search name or slug" },

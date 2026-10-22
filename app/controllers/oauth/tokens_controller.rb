@@ -23,7 +23,7 @@ module Oauth
       payload = Codes.take(params[:code])
       return oauth_error("invalid_grant", "Authorization code is invalid or expired") unless payload
       return oauth_error("invalid_grant", "redirect_uri mismatch") unless payload["redirect_uri"] == params[:redirect_uri]
-      return oauth_error("invalid_grant", "client_id mismatch") if params[:client_id].present? && payload["client_id"] != params[:client_id]
+      return oauth_error("invalid_grant", "client_id mismatch") unless payload["client_id"] == params[:client_id]
       return oauth_error("invalid_grant", "PKCE verification failed") unless Codes.s256?(params[:code_verifier], payload["code_challenge"])
 
       store = Store.find_by(id: payload["store_id"])
@@ -33,7 +33,7 @@ module Oauth
     end
 
     def refresh_token
-      pair = OauthAccessToken.rotate!(params[:refresh_token])
+      pair = OauthAccessToken.rotate!(params[:refresh_token], client_id: params[:client_id])
       return oauth_error("invalid_grant", "Refresh token is invalid or expired") unless pair
 
       render json: token_body(*pair)

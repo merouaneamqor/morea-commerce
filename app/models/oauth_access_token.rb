@@ -29,15 +29,17 @@ class OauthAccessToken < ApplicationRecord
     grant
   end
 
-  def self.rotate!(refresh_token)
+  def self.rotate!(refresh_token, client_id: nil)
     return if refresh_token.blank?
 
-    grant = find_by(refresh_digest: Store.digest_api_token(refresh_token))
-    return if grant.nil? || grant.refresh_expires_at.past?
+    transaction do
+      grant = lock.find_by(refresh_digest: Store.digest_api_token(refresh_token))
+      return if grant.nil? || grant.refresh_expires_at.past?
+      return if client_id.present? && grant.client_id != client_id
 
-    store = grant.store
-    client_id = grant.client_id
-    grant.destroy!
-    issue!(store: store, client_id: client_id)
+      pair = issue!(store: grant.store, client_id: grant.client_id)
+      grant.destroy!
+      pair
+    end
   end
 end

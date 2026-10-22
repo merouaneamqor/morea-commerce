@@ -128,7 +128,7 @@ GEM
       raabro (~> 1.4)
     globalid (1.4.0)
       activesupport (>= 6.1)
-    graphql (2.6.11)
+    graphql (2.6.12)
       base64
       fiber-storage
       logger
@@ -377,7 +377,7 @@ DEPENDENCIES
   bundler-audit
   cloudinary (~> 2.0)
   debug
-  graphql (~> 2.4)
+  graphql (~> 2.6)
   image_processing (~> 1.2)
   importmap-rails
   jwt (~> 2.10)

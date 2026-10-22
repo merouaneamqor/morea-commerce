@@ -17,7 +17,7 @@ This assessment compares existing app controllers, GraphQL fields and registered
 | Staff | Admin staff CRUD | Needs dedicated authorized staff-management capabilities; store catalog tokens must not silently acquire platform privileges |
 | Platform tenants and billing | Admin tenant and invoice workflows | Needs separate platform authorization before exposing tenant creation, invoices and billing actions |
 | OAuth | Discovery, dynamic registration, PKCE, exchange and refresh | Hardenings prepared locally; full fresh ChatGPT authorization still needs interactive verification |
-| Automation | Existing shipping jobs; new health/reporting and CI files | Not deployed; GitHub writes return 403. Reports require a securely configured Actions token |
+| Automation | Existing shipping jobs; new health/reporting and CI files | Branch pushed after GitHub access update; deployment awaits passing CI. Reports require a securely configured Actions token |
 
 ## Acceptance criteria for full existing-app management
 
@@ -32,6 +32,6 @@ This assessment compares existing app controllers, GraphQL fields and registered
 
 ## Blocking conditions
 
-GitHub repository metadata reported admin/write permission, but both git push and the connected GitHub create-branch operation returned HTTP 403. No changes have reached Render. Repository contents and Actions workflow write authorization must be restored before deployment and live verification. The current environment cannot read or configure repository Actions secrets (also HTTP 403).
+GitHub repository writes were initially denied with HTTP 403 and became available after the user updated access. The changes are on a pull request, pending CI and deployment verification. Repository Actions secret access still returns HTTP 403; the scheduled report needs MOREA_API_TOKEN configured securely in repository Actions secrets.
 
 The phrase “copy of Shopify” does not define a finite additional feature set. Payments, refunds, tax jurisdictions, markets, subscriptions, POS, app integrations and other Shopify capabilities require explicit requirements and provider choices; these were not established or implemented by this assessment.

@@ -12,6 +12,8 @@ module Types
     field :set_product_collections, mutation: Mutations::SetProductCollections
     field :add_product_images, mutation: Mutations::AddProductImages
     field :remove_product_images, mutation: Mutations::RemoveProductImages
+    field :add_variant_images, mutation: Mutations::AddVariantImages
+    field :remove_variant_images, mutation: Mutations::RemoveVariantImages
     field :reorder_product_images, mutation: Mutations::ReorderProductImages
     field :set_collection_image, mutation: Mutations::SetCollectionImage
     field :remove_collection_image, mutation: Mutations::RemoveCollectionImage

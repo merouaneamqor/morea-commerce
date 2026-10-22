@@ -81,6 +81,7 @@ Local A-to-Z smoke (happy path + edge cases): `bin/rails runner script/mcp_inven
 - Product `images` are the gallery in storefront order. Position 0 is the cover. Later images are alternate shots, not replacements for the cover.
 - Returned image URLs are JPEG. Tool results also include the cover bytes.
 - Product images: `add_product_images`, `remove_product_images`, `reorder_product_images`.
+- Variant images: `add_variant_images`, `remove_variant_images`. Get the variant id and its image ids from `get_product`. A variant gallery drives the storefront gallery after its color is selected.
 - Collection cover: `set_collection_image`, `remove_collection_image`.
 - Each image is `base64` (raw or a `data:` URL) or a public `http`/`https` `url`. Also pass `filename` and `contentType` when you have them.
 - Allowed types: `image/jpeg`, `image/png`, `image/webp`, `image/gif`. Max 8MB. Max 4 images per call.
@@ -160,7 +161,7 @@ Analytics: `store_stats`, `product_stats` (`slug` optional), `list_orders` (`sta
 
 Collections: `list_collections` (`published`, `limit`), `get_collection`, `create_collection`, `update_collection`, `delete_collection`, `set_collection_products`.
 
-Images: `add_product_images`, `remove_product_images`, `reorder_product_images`, `set_collection_image`, `remove_collection_image`.
+Images: `add_product_images`, `remove_product_images`, `reorder_product_images`, `add_variant_images`, `remove_variant_images`, `set_collection_image`, `remove_collection_image`.
 
 Store: `get_store_settings`, `update_checkout`, `update_marketing`, `update_shipping`, `sync_shipping`, `list_discounts`, `upsert_discount`, `delete_discount`, `list_active_carts`, `list_abandoned_carts`, `list_customers`, `get_customer`, `upsert_customer`, `export_csv`, `import_csv`, `list_home_sections`, `upsert_home_section`, `delete_home_section`, `list_pages`, `upsert_page` (`template` content|landing), `delete_page`, `list_menu_items`, `upsert_menu_item`, `delete_menu_item`, `install_theme`.
 

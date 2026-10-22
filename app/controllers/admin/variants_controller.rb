@@ -11,6 +11,10 @@ module Admin
       end
     end
 
+    def edit
+      @variant = @product.product_variants.find(params[:id])
+    end
+
     def update
       variant = @product.product_variants.find(params[:id])
       if variant.update(variant_params)

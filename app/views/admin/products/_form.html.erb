@@ -16,6 +16,11 @@
   </div>
 </div>
 
+<%# This separate form must stay outside the product form: nested forms break saves. %>
+<% if @product.persisted? %>
+  <div class="mb-4"><%= render "variants", product: @product %></div>
+<% end %>
+
 <%= form_with model: [:admin, @product], id: "product-form" do |f| %>
   <% if @product.errors.any? %>
     <div class="admin-banner admin-banner--critical"><%= @product.errors.full_messages.to_sentence %></div>
@@ -131,8 +136,6 @@
 
 <% if @product.persisted? %>
   <div class="admin-layout mt-4">
-    <%= render "variants", product: @product %>
-
     <section class="admin-card">
       <div class="admin-card__header"><h2 class="admin-card__title">Inventory history</h2></div>
       <%= form_with url: admin_product_inventory_index_path(@product), method: :post, class: "space-y-3 border-b border-[#ebebeb] px-4 pb-4" do %>

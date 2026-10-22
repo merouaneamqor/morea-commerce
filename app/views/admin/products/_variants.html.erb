@@ -8,7 +8,13 @@
          data-controller="variant-matrix"
          data-variant-matrix-size-order-value="<%= size_options.to_json %>"
          data-variant-matrix-placeholder-hex-value="<%= ProductVariant::PLACEHOLDER_HEX %>">
-  <div class="admin-card__header"><h2 class="admin-card__title">Variants</h2></div>
+  <div class="admin-card__header flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="admin-card__title">Variants</h2>
+      <p class="admin-help mt-1">Create sellable options, then set each variant’s media, price, and inventory.</p>
+    </div>
+    <span class="rounded-full bg-[#f1f1f1] px-3 py-1 text-sm font-medium text-[#616161]"><%= pluralize(variants.size, "variant") %></span>
+  </div>
 
   <%= form_with url: bulk_update_admin_product_variants_path(product), method: :patch, class: "space-y-4",
         html: { id: "product-variants-form" } do %>
@@ -16,10 +22,10 @@
     <div data-variant-matrix-target="destroyIds"></div>
 
     <div class="space-y-4 px-4">
-      <p class="admin-help">Pick sizes and add colors, then generate the missing combinations. Leave colors empty for size-only products.</p>
+      <p class="admin-help">1. Choose your options. 2. Generate combinations. 3. Select <strong>Edit</strong> on a variant to add its photos and finish setup.</p>
 
       <div>
-        <p class="admin-label">Sizes</p>
+        <p class="admin-label">Option 1 · Size</p>
         <div class="flex flex-wrap gap-2" data-variant-matrix-target="sizeList">
           <% size_options.each do |size| %>
             <label class="admin-check rounded-lg border border-[#ebebeb] px-3 py-2">
@@ -48,7 +54,7 @@
       </div>
 
       <div>
-        <p class="admin-label">Colors</p>
+        <p class="admin-label">Option 2 · Color</p>
         <div class="space-y-2" data-variant-matrix-target="colorList">
           <% variant_colors.each do |color| %>
             <div class="flex flex-wrap items-center gap-2" data-variant-matrix-color-row>
@@ -67,7 +73,7 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-3">
-        <button type="button" class="admin-btn-secondary" data-action="variant-matrix#generate">Generate missing</button>
+        <button type="button" class="admin-btn" data-action="variant-matrix#generate">Generate variants</button>
         <div class="flex items-center gap-2">
           <label class="admin-label mb-0" for="variant_group_by">Group by</label>
           <select id="variant_group_by" class="admin-input" style="width: auto; min-width: 8rem"
@@ -86,6 +92,7 @@
         <thead>
           <tr>
             <th>Variant</th>
+            <th>Media</th>
             <th>SKU</th>
             <th>Price override</th>
             <th>Stock</th>
@@ -115,6 +122,16 @@
                 <input type="hidden" name="variants[<%= index %>][color_hex]" value="<%= variant.color_hex %>" data-field="color_hex">
               </td>
               <td>
+                <%= link_to edit_admin_product_variant_path(product, variant), class: "inline-flex items-center gap-2 text-sm font-medium text-[#303030] underline underline-offset-4" do %>
+                  <% if variant.images.attached? %>
+                    <%= image_tag MediaUrl.sized(media_url(variant.ordered_images.first), width: 48), alt: "", class: "h-8 w-8 rounded object-cover" %>
+                    <span><%= pluralize(variant.images.count, "image") %></span>
+                  <% else %>
+                    <span class="rounded bg-[#f1f1f1] px-2 py-1">Add media</span>
+                  <% end %>
+                <% end %>
+              </td>
+              <td>
                 <input type="text" name="variants[<%= index %>][sku]" value="<%= variant.sku %>" class="admin-input" placeholder="SKU">
               </td>
               <td>
@@ -132,6 +149,7 @@
                 </label>
               </td>
               <td>
+                <%= link_to "Edit", edit_admin_product_variant_path(product, variant), class: "admin-btn-secondary mr-2" %>
                 <button type="button" class="admin-btn-plain admin-btn-plain--critical" data-action="variant-matrix#remove">Remove</button>
               </td>
             </tr>
@@ -139,7 +157,7 @@
         </tbody>
       </table>
       <p class="admin-empty px-4 py-6" data-variant-matrix-target="empty" <%= "hidden" if variants.any? %>>
-        No variants yet. Add sizes and colors above, then generate.
+        No variants yet. Choose an option above, then select Generate variants.
       </p>
     </div>
 
@@ -173,6 +191,7 @@
         <input type="hidden" name="variants[__INDEX__][option2_value]" value="__COLOR__" data-field="option2_value">
         <input type="hidden" name="variants[__INDEX__][color_hex]" value="__HEX__" data-field="color_hex">
       </td>
+      <td><span class="admin-muted text-sm">Save to add media</span></td>
       <td>
         <input type="text" name="variants[__INDEX__][sku]" class="admin-input" placeholder="SKU">
       </td>

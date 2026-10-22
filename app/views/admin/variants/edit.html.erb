@@ -11,27 +11,23 @@
   <button type="submit" form="variant-form" class="admin-btn">Save variant</button>
 </div>
 
-<%= form_with model: [:admin, @product, @variant], id: "variant-form" do |f| %>
-  <% if @variant.errors.any? %>
-    <div class="admin-banner admin-banner--critical mb-4"><%= @variant.errors.full_messages.to_sentence %></div>
-  <% end %>
-
+<%= form_with url: admin_product_variant_path(@product, @variant), method: :patch, scope: :product_variant, id: "variant-form" do %>
   <div class="admin-layout">
     <div class="admin-stack">
       <section class="admin-card">
         <div class="admin-card__header"><h2 class="admin-card__title">Options</h2></div>
         <div class="admin-field-grid px-4 pb-4">
           <div>
-            <%= f.label :option1_value, @variant.option1_name.presence || "Size", class: "admin-label" %>
-            <%= f.text_field :option1_value, class: "admin-input" %>
+            <%= label_tag "product_variant_option1_value", "Size", class: "admin-label" %>
+            <%= text_field_tag "product_variant[option1_value]", @variant.option1_value, class: "admin-input", id: "product_variant_option1_value" %>
           </div>
           <div>
-            <%= f.label :option2_value, @variant.option2_name.presence || "Color", class: "admin-label" %>
-            <%= f.text_field :option2_value, class: "admin-input" %>
+            <%= label_tag "product_variant_option2_value", "Color", class: "admin-label" %>
+            <%= text_field_tag "product_variant[option2_value]", @variant.option2_value, class: "admin-input", id: "product_variant_option2_value" %>
           </div>
           <div>
-            <%= f.label :color_hex, "Color swatch", class: "admin-label" %>
-            <%= f.text_field :color_hex, class: "admin-input", placeholder: "#000000" %>
+            <%= label_tag "product_variant_color_hex", "Color swatch", class: "admin-label" %>
+            <%= text_field_tag "product_variant[color_hex]", @variant.color_hex, class: "admin-input", id: "product_variant_color_hex", placeholder: "#000000" %>
           </div>
         </div>
       </section>
@@ -55,7 +51,7 @@
           <label class="admin-dropzone">
             <span class="admin-btn-secondary pointer-events-none">Upload images</span>
             <span class="admin-help">Add photos specific to <%= @variant.display_name %>.</span>
-            <%= f.file_field :images, multiple: true, direct_upload: false, accept: "image/*", class: "sr-only" %>
+            <%= file_field_tag "product_variant[images][]", multiple: true, direct_upload: false, accept: "image/*", class: "sr-only" %>
           </label>
         </div>
       </section>
@@ -65,8 +61,8 @@
       <section class="admin-card">
         <div class="admin-card__header"><h2 class="admin-card__title">Pricing</h2></div>
         <div class="px-4 pb-4">
-          <%= f.label :price_dh, "Price override", class: "admin-label" %>
-          <%= f.number_field :price_dh, class: "admin-input", min: 0, placeholder: "Uses product price" %>
+          <%= label_tag "product_variant_price_dh", "Price override", class: "admin-label" %>
+          <%= number_field_tag "product_variant[price_dh]", @variant.price_dh, class: "admin-input", id: "product_variant_price_dh", min: 0, placeholder: "Uses product price" %>
           <p class="admin-help">Leave blank to use the product price.</p>
         </div>
       </section>
@@ -75,14 +71,14 @@
         <div class="admin-card__header"><h2 class="admin-card__title">Inventory</h2></div>
         <div class="space-y-4 px-4 pb-4">
           <div>
-            <%= f.label :sku, "SKU", class: "admin-label" %>
-            <%= f.text_field :sku, class: "admin-input" %>
+            <%= label_tag "product_variant_sku", "SKU", class: "admin-label" %>
+            <%= text_field_tag "product_variant[sku]", @variant.sku, class: "admin-input", id: "product_variant_sku" %>
           </div>
           <div>
-            <%= f.label :stock, "Available", class: "admin-label" %>
-            <%= f.number_field :stock, class: "admin-input", min: 0 %>
+            <%= label_tag "product_variant_stock", "Available", class: "admin-label" %>
+            <%= number_field_tag "product_variant[stock]", @variant.stock, class: "admin-input", id: "product_variant_stock", min: 0 %>
           </div>
-          <label class="admin-check"><%= f.check_box :active %> Available for sale</label>
+          <label class="admin-check"><%= hidden_field_tag "product_variant[active]", "0" %><%= check_box_tag "product_variant[active]", "1", @variant.active %> Available for sale</label>
         </div>
       </section>
     </div>

@@ -91,7 +91,7 @@ Rails.application.routes.draw do
     end
     resource :pixels, only: %i[edit update], controller: "pixels"
     resources :products do
-      resources :variants, only: %i[create update destroy] do
+      resources :variants, only: %i[create edit update destroy] do
         collection do
           patch :bulk_update
         end

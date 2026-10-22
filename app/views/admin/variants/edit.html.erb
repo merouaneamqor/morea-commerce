@@ -1,0 +1,95 @@
+<% content_for :title, "Edit #{@variant.display_name} — #{@product.name} — Admin" %>
+
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to edit_admin_product_path(@product), class: "admin-back", "aria-label": "Back to product" do %><%= admin_icon(:back) %><% end %>
+    <div>
+      <p class="admin-muted text-sm"><%= @product.name %></p>
+      <h1 class="admin-page-header__title">Edit <%= @variant.display_name %></h1>
+    </div>
+  </div>
+  <button type="submit" form="variant-form" class="admin-btn">Save variant</button>
+</div>
+
+<%= form_with model: [:admin, @product, @variant], id: "variant-form" do |f| %>
+  <% if @variant.errors.any? %>
+    <div class="admin-banner admin-banner--critical mb-4"><%= @variant.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <div class="admin-layout">
+    <div class="admin-stack">
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Options</h2></div>
+        <div class="admin-field-grid px-4 pb-4">
+          <div>
+            <%= f.label :option1_value, @variant.option1_name.presence || "Size", class: "admin-label" %>
+            <%= f.text_field :option1_value, class: "admin-input" %>
+          </div>
+          <div>
+            <%= f.label :option2_value, @variant.option2_name.presence || "Color", class: "admin-label" %>
+            <%= f.text_field :option2_value, class: "admin-input" %>
+          </div>
+          <div>
+            <%= f.label :color_hex, "Color swatch", class: "admin-label" %>
+            <%= f.text_field :color_hex, class: "admin-input", placeholder: "#000000" %>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Media</h2></div>
+        <div class="space-y-4 px-4 pb-4">
+          <p class="admin-help">These images appear when this variant is selected on the storefront. They do not alter the product gallery.</p>
+          <% if @variant.images.attached? %>
+            <div class="admin-media-grid">
+              <% @variant.ordered_images.each do |image| %>
+                <div class="admin-media-item">
+                  <%= image_tag MediaUrl.sized(media_url(image), width: 320), alt: "" %>
+                  <label class="admin-media-item__bar admin-media-item__remove" title="Remove when saved">
+                    <%= check_box_tag "product_variant[remove_image_ids][]", image.id, false, id: nil, class: "h-3.5 w-3.5 accent-[#303030]" %> Remove
+                  </label>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+          <label class="admin-dropzone">
+            <span class="admin-btn-secondary pointer-events-none">Upload images</span>
+            <span class="admin-help">Add photos specific to <%= @variant.display_name %>.</span>
+            <%= f.file_field :images, multiple: true, direct_upload: false, accept: "image/*", class: "sr-only" %>
+          </label>
+        </div>
+      </section>
+    </div>
+
+    <div class="admin-stack">
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Pricing</h2></div>
+        <div class="px-4 pb-4">
+          <%= f.label :price_dh, "Price override", class: "admin-label" %>
+          <%= f.number_field :price_dh, class: "admin-input", min: 0, placeholder: "Uses product price" %>
+          <p class="admin-help">Leave blank to use the product price.</p>
+        </div>
+      </section>
+
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Inventory</h2></div>
+        <div class="space-y-4 px-4 pb-4">
+          <div>
+            <%= f.label :sku, "SKU", class: "admin-label" %>
+            <%= f.text_field :sku, class: "admin-input" %>
+          </div>
+          <div>
+            <%= f.label :stock, "Available", class: "admin-label" %>
+            <%= f.number_field :stock, class: "admin-input", min: 0 %>
+          </div>
+          <label class="admin-check"><%= f.check_box :active %> Available for sale</label>
+        </div>
+      </section>
+    </div>
+  </div>
+<% end %>
+
+<div class="mt-6 flex justify-between border-t border-[#e3e3e3] pt-4">
+  <%= button_to "Delete variant", admin_product_variant_path(@product, @variant), method: :delete, form: { data: { turbo_confirm: "Delete this variant?" } }, class: "admin-btn-critical" %>
+  <button type="submit" form="variant-form" class="admin-btn">Save variant</button>
+</div>

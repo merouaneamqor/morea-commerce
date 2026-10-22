@@ -281,7 +281,7 @@ export default class extends Controller {
     const tr = document.createElement("tr")
     tr.dataset.variantMatrixGroup = mode
     tr.innerHTML = `
-      <td colspan="6" class="!bg-[#f7f7f7]">
+      <td colspan="7" class="!bg-[#f7f7f7]">
         <div class="flex flex-wrap items-center justify-between gap-2 py-0.5">
           <span class="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-[#616161]">
             ${swatch}${this.escapeHtml(title)}

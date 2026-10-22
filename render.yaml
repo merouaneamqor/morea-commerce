@@ -9,6 +9,7 @@ services:
     branch: main
     buildCommand: chmod +x bin/render-build.sh bin/render-start.sh && bin/render-build.sh
     startCommand: bin/render-start.sh
+    healthCheckPath: /up
     envVars:
       - key: RAILS_ENV
         value: production

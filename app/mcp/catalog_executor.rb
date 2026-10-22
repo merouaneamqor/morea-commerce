@@ -56,10 +56,16 @@ class CatalogExecutor
 
     cover_entries(payload).each do |entry|
       bytes = Catalog::Images.jpeg_bytes(entry[:url])
-      next unless bytes
+      unless bytes
+        parts << { type: "text", text: "Image preview unavailable for #{entry[:kind]} #{entry[:slug]}. Original image URL: #{entry[:url]}" }
+        next
+      end
 
-      parts << { type: "text", text: "Cover photo for #{entry[:kind]} #{entry[:slug]}. This is the storefront image." }
+      parts << { type: "text", text: "#{entry[:label] || 'Cover photo'} for #{entry[:kind]} #{entry[:slug]}. Image URL: #{entry[:url]}" }
       parts << { type: "image", data: Base64.strict_encode64(bytes), mimeType: "image/jpeg" }
+    end
+    if cover_entries(payload).size == 8
+      parts << { type: "text", text: "At most 8 image previews are attached per response. All image URLs remain in the JSON. Use get_product for a product gallery." }
     end
     parts
   end
@@ -77,6 +83,16 @@ class CatalogExecutor
 
     Array(data["products"]).each { |record| collect.call("product", record) }
     collect.call("product", data["product"])
+    if data["product"].is_a?(Hash)
+      product = data["product"]
+      Array(product["images"]).each do |image|
+        next unless image.is_a?(Hash)
+        next if image["url"] == product["coverUrl"]
+
+        entries << { kind: "product", slug: product["slug"], url: image["url"],
+                     label: "Gallery image #{image['position'].to_i + 1} (#{image['filename']})" }
+      end
+    end
     Array(data["collections"]).each { |record| collect.call("collection", record) }
     collect.call("collection", data["collection"])
     data.each_value do |value|
@@ -87,7 +103,7 @@ class CatalogExecutor
     end
 
     entries.select { |entry| entry[:slug].present? && entry[:url].present? }
-      .uniq { |entry| [ entry[:kind], entry[:slug] ] }
+      .uniq { |entry| [ entry[:kind], entry[:slug], entry[:url] ] }
       .first(8)
   end
 

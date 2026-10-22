@@ -65,3 +65,50 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/maison_test
+      REDIS_URL: redis://localhost:6379/0
+      SECRET_KEY_BASE: ci-only-not-a-production-secret
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: maison_test
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Prepare isolated test database
+        run: bin/rails db:prepare
+      - name: Create isolated smoke-test store
+        run: bin/rails runner 'Store.find_or_create_by!(slug:"morea") { |s| s.name = "CI Store"; s.currency = "MAD" }'
+      - name: Check Rails autoloading
+        run: bin/rails zeitwerk:check
+      - name: Check catalog changesets and rollback
+        run: bin/rails runner script/autonomy_smoke.rb morea
+      - name: Check MCP tools and inventory lifecycle
+        run: bin/rails runner script/mcp_inventory_smoke.rb morea
+      - name: Check OAuth and product image responses
+        run: bin/rails runner script/oauth_images_smoke.rb
+  reporting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check authenticated report failures and credential handling
+        run: python -m unittest discover -s script -p 'test_*.py'

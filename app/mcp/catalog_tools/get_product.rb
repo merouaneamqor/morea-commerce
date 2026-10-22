@@ -2,7 +2,7 @@
 
 module CatalogTools
   class GetProduct < MCP::Tool
-    description "Get one product by slug."
+    description "Get one product by slug with all image URLs and up to 8 attached cover/gallery image previews. Each preview identifies its product and image URL."
     input_schema(
       properties: { slug: { type: "string" } },
       required: [ "slug" ]

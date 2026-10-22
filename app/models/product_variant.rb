@@ -6,6 +6,7 @@ class ProductVariant < ApplicationRecord
   PLACEHOLDER_HEX = "#c4b8b0"
 
   belongs_to :product
+  has_many_attached :images
   has_many :cart_items, dependent: :nullify
   has_many :order_items, dependent: :nullify
   has_many :inventory_movements, dependent: :nullify
@@ -61,6 +62,12 @@ class ProductVariant < ApplicationRecord
 
   def swatch_hex
     color_hex.presence || PLACEHOLDER_HEX
+  end
+
+  # Variant photos intentionally retain their upload order.  Unlike product
+  # photos, variants do not support drag-and-drop reordering yet.
+  def ordered_images
+    images.sort_by(&:id)
   end
 
   private

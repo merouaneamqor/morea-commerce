@@ -1,6 +1,11 @@
 class ProductsController < ApplicationController
   def show
-    @product = current_store.products.active.includes(:collections, :product_variants, :translations).find_by!(slug: params[:slug])
+    @product = current_store.products.active.includes(
+      :collections,
+      :translations,
+      images_attachments: :blob,
+      product_variants: { images_attachments: :blob }
+    ).find_by!(slug: params[:slug])
     prepare_variants!
 
     @eyebrow = "MOREA ACTIVE"
@@ -26,7 +31,8 @@ class ProductsController < ApplicationController
         id: v.id,
         size: v.size_value || size_from_name(v),
         color: v.color_value || color_from_name(v),
-        stock: v.stock
+        stock: v.stock,
+        images: variant_gallery(v)
       }
     end.sort_by do |v|
       [ ProductVariant.size_rank(v[:size]), v[:color].to_s.downcase ]
@@ -35,6 +41,20 @@ class ProductsController < ApplicationController
 
   def product_gallery
     @product.ordered_images.map { |image| helpers.media_url(image) }.presence || [ nil ]
+  end
+
+  def variant_gallery(variant)
+    # A color usually has several size variants. Let the merchant upload its
+    # gallery once to any one of them, while still allowing a size to override
+    # it with its own photos.
+    source = variant
+    if !source.images.attached? && variant.color_value.present?
+      source = @variants.find do |candidate|
+        candidate.color_value == variant.color_value && candidate.images.attached?
+      end || variant
+    end
+
+    source.ordered_images.filter_map { |image| helpers.media_url(image) }.presence
   end
 
   def related_products

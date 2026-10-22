@@ -148,6 +148,45 @@
     </div>
   <% end %>
 
+  <% if variants.any? %>
+    <div class="border-t border-[#ebebeb] px-4 py-5">
+      <h3 class="admin-card__title">Variant photos</h3>
+      <p class="admin-help mt-2">Photos added here replace the product gallery when a shopper selects this variant. For a color shared across sizes, upload once to any size and it will be used for that color unless another size has its own photos.</p>
+
+      <div class="mt-4 space-y-4">
+        <% variants.each do |variant| %>
+          <%= form_with model: [:admin, product, variant], class: "rounded-lg border border-[#ebebeb] p-4", multipart: true do |form| %>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <% if variant.color_value.present? %>
+                  <span class="inline-block h-4 w-4 rounded-full border border-[#ebebeb]" style="background: <%= variant.swatch_hex %>"></span>
+                <% end %>
+                <strong><%= variant.display_name %></strong>
+              </div>
+              <%= form.file_field :images, multiple: true, accept: "image/*", class: "admin-input max-w-xs" %>
+            </div>
+
+            <% if variant.images.attached? %>
+              <div class="admin-media-grid mt-3">
+                <% variant.ordered_images.each do |image| %>
+                  <label class="admin-media-item">
+                    <%= image_tag MediaUrl.sized(media_url(image), width: 320), alt: variant.display_name %>
+                    <span class="admin-media-item__bar">
+                      <%= check_box_tag "product_variant[remove_image_ids][]", image.id %>
+                      Remove
+                    </span>
+                  </label>
+                <% end %>
+              </div>
+            <% end %>
+
+            <div class="mt-3 flex justify-end"><%= form.submit "Save photos", class: "admin-btn-secondary" %></div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <%# Templates outside the save form so placeholder inputs can never be submitted. %>
   <template data-variant-matrix-target="colorTemplate">
     <div class="flex flex-wrap items-center gap-2" data-variant-matrix-color-row>

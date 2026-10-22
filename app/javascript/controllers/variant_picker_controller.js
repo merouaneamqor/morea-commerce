@@ -53,6 +53,8 @@ export default class extends Controller {
     if (this.hasVariantIdTarget) {
       this.variantIdTarget.value = match ? match.id : ""
     }
+
+    this.dispatch("change", { detail: { variant: match || null } })
   }
 
   firstAvailableSize() {

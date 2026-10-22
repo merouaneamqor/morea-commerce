@@ -14,6 +14,7 @@ module Admin
     def update
       variant = @product.product_variants.find(params[:id])
       if variant.update(variant_params)
+        update_images(variant)
         redirect_to edit_admin_product_path(@product), notice: "Variant updated."
       else
         redirect_to edit_admin_product_path(@product), alert: variant.errors.full_messages.to_sentence
@@ -55,6 +56,14 @@ module Admin
         attrs[:price_cents] = dh.present? ? dh.to_i * 100 : nil
       end
       attrs
+    end
+
+    def update_images(variant)
+      remove_ids = Array(params[:product_variant][:remove_image_ids]).compact_blank.map(&:to_i)
+      variant.images.where(id: remove_ids).find_each(&:purge_later) if remove_ids.any?
+
+      images = Array(params[:product_variant][:images]).compact_blank
+      variant.images.attach(images) if images.any?
     end
 
     def variant_rows

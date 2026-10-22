@@ -4,6 +4,12 @@ module Types
   class QueryType < BaseObject
     description "Catalog for the store identified by the Bearer token."
 
+    field :media_library, GraphQL::Types::JSON, null: false do
+      argument :page, Integer, required: false, default_value: 1
+      argument :per_page, Integer, required: false, default_value: 30
+      argument :product_slug, String, required: false
+    end
+
     field :order_desk, GraphQL::Types::JSON, null: false do
       argument :number, String, required: true
       argument :include_contact, Boolean, required: false, default_value: false
@@ -286,6 +292,12 @@ module Types
 
     def inventory_summary(since: nil, until_on: nil)
       inventory { Catalog::Inventory.summary(store, since: since, until_on: until_on) }
+    end
+
+    def media_library(page: 1, per_page: 30, product_slug: nil)
+      Catalog::MediaLibrary.list(store, page: page, per_page: per_page, product_slug: product_slug)
+    rescue Catalog::MediaLibrary::Error => e
+      raise GraphQL::ExecutionError, e.message
     end
 
     def order_desk(number:, include_contact: false)

@@ -223,3 +223,7 @@ mutation { deleteProduct(slug: "robe-lin", confirm: true) { deleted errors } }
 - Every order, product and variant is resolved within the authenticated store. Use customer personal details only when needed for the user's explicit task.
 
 GraphQL equivalents: `orderDesk(number:, includeContact:)`, `shippingLabel(number:)` and `manageOrder(action:, number:, attrs:, confirm:)`. The action allowlist is create/update/duplicate/transition/archive/unarchive/tags/comment/shipment; arbitrary method names and model attributes are rejected.
+
+## Media library and edits
+
+`list_media(page:, perPage:, productSlug:)` returns paginated product attachment IDs, filenames, gallery positions, storage, edit metadata and URLs. `edit_product_images(attachmentIds:, edit:, confirm:)` supports portrait, square, watermark, remove_bg and clear, using the same transformations as the admin media library. Cloudinary storage is required. A batch with unknown, cross-store, non-Cloudinary or externally shared sources is rejected without applying metadata edits. Original files remain intact. Background removal is asynchronous, can consume Cloudinary quota, and returns processing=true; re-read product/gallery URLs and verify the actual images before claiming completion. Never run paid transformations on live store images merely to test the integration.

@@ -2,6 +2,9 @@
 
 raise "Smoke checks require the isolated test environment" unless Rails.env.test?
 
+# OAuth authorization codes need a cache; the default test NullStore discards them.
+Rails.cache = ActiveSupport::Cache::MemoryStore.new
+
 store = Store.find_by!(slug: "morea")
 client = OauthClient.register!(name: "CI MCP", redirect_uris: [ "https://chatgpt.com/connector/oauth/callback" ])
 verifier = SecureRandom.urlsafe_base64(48)

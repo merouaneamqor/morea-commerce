@@ -4,6 +4,14 @@ module Types
   class QueryType < BaseObject
     description "Catalog for the store identified by the Bearer token."
 
+    field :order_desk, GraphQL::Types::JSON, null: false do
+      argument :number, String, required: true
+      argument :include_contact, Boolean, required: false, default_value: false
+    end
+    field :shipping_label, GraphQL::Types::JSON, null: false do
+      argument :number, String, required: true
+    end
+
     field :guide, String, null: false, description: "How to use this API. Read it before writing."
     field :products, [ ProductType ], null: false do
       argument :query, String, required: false
@@ -278,6 +286,18 @@ module Types
 
     def inventory_summary(since: nil, until_on: nil)
       inventory { Catalog::Inventory.summary(store, since: since, until_on: until_on) }
+    end
+
+    def order_desk(number:, include_contact: false)
+      Catalog::OrderDesk.details(store, number: number, include_contact: include_contact)
+    rescue Catalog::OrderDesk::Error => e
+      raise GraphQL::ExecutionError, e.message
+    end
+
+    def shipping_label(number:)
+      Catalog::OrderDesk.label(store, number: number)
+    rescue Catalog::OrderDesk::Error => e
+      raise GraphQL::ExecutionError, e.message
     end
 
     private

@@ -25,6 +25,18 @@ class CatalogServer
     CatalogTools::ListOrders,
     CatalogTools::GetOrder,
     CatalogTools::CancelOrder,
+    CatalogTools::OrderDesk::CreateOrder,
+    CatalogTools::OrderDesk::UpdateOrder,
+    CatalogTools::OrderDesk::DuplicateOrder,
+    CatalogTools::OrderDesk::TransitionOrder,
+    CatalogTools::OrderDesk::SetOrderArchived,
+    CatalogTools::OrderDesk::UpdateOrderTags,
+    CatalogTools::OrderDesk::AddOrderComment,
+    CatalogTools::OrderDesk::GetOrderActivity,
+    CatalogTools::OrderDesk::GetPackingSlip,
+    CatalogTools::OrderDesk::ManageOrderShipment,
+    CatalogTools::OrderDesk::GetShippingLabel,
+
     CatalogTools::SetProductVariants,
     CatalogTools::DeleteProductVariants,
     CatalogTools::Inventory::ListInventory,
@@ -92,6 +104,8 @@ class CatalogServer
       instructions: <<~TEXT.squish,
         You manage one Morea store. Prefer audit → plan → execute → verify for multi-product work.
         Start with get_store_profile, get_full_catalog or audit_store, then preview_changeset, apply_changeset, verify_changeset.
+        Order desk: get_order_activity, create_order, update_order, duplicate_order, transition_order, set_order_archived.
+        All order desk writes require confirm: true. Customer contact is omitted unless explicitly requested.
         Home page builder: get_home_layout, set_home_layout, reorder_home_sections, upsert_home_section.
         Landing pages: upsert_landing_page, set_landing_layout / upsert_landing_section. Public path is /:locale/pages/:slug.
         Level 1 content fixes apply automatically. Level 2 (prices, slugs, structural collection changes) needs approveLevel2.

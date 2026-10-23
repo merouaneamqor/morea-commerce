@@ -20,9 +20,9 @@
 
   <div class="admin-layout">
     <div class="admin-stack">
-      <% body_help = @page.landing? ? "Optional intro text. Landing pages are built from sections." : "Separate paragraphs with a blank line." %>
+      <% body_help = @page.landing? ? "Optional intro text. Landing pages are built from sections." : "Markdown supported: ## heading, **bold**, *italic*, [link](https://…), - lists. Separate paragraphs with a blank line." %>
       <%= render "admin/shared/translation_cards", f: f, record: @page,
-            fields: [[:title, "Title", :field], [:body, (@page.landing? ? "Intro (optional)" : "Content"), :area, (@page.landing? ? 6 : 14), body_help],
+            fields: [[:title, "Title", :field], [:body, (@page.landing? ? "Intro (optional)" : "Content"), :markdown, (@page.landing? ? 6 : 14), body_help],
                      [:seo_title, "SEO title", :field], [:seo_description, "SEO description", :area, 2]] %>
     </div>
 

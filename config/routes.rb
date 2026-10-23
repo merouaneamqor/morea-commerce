@@ -132,6 +132,7 @@ Rails.application.routes.draw do
       end
     end
     resources :pages, except: %i[show] do
+      post :preview, on: :collection
       resources :sections, controller: "page_sections", except: %i[show] do
         member do
           patch :move

@@ -69,7 +69,7 @@ class Product < ApplicationRecord
   end
 
   def available?
-    status == "active" && (!track_inventory || stock.positive? || product_variants.active.exists?)
+    status == "active" && available_stock.positive?
   end
 
   def available_stock

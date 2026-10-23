@@ -1,4 +1,9 @@
 module OnlineStoreHelper
+  def storefront_policy(slug)
+    @storefront_policies ||= current_store.pages.published.includes(:translations).index_by(&:slug)
+    @storefront_policies[slug]
+  end
+
   # Resolve a StoreLinkable reference to a localized storefront path.
   # Pass `locale:` outside the storefront (admin has no locale in its URLs).
   def store_link_path(link, locale: I18n.locale)

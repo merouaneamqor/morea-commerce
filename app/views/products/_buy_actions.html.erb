@@ -13,11 +13,11 @@
 </div>
 
 <div class="space-y-3 <%= buttons_class %>">
-  <%= button_tag type: "submit", name: "checkout", value: "1", class: "maison-button pdp-order-btn w-full cursor-pointer text-center" do %>
-    <span class="block"><%= t("product.order_now") %></span>
+  <%= button_tag type: "submit", name: "checkout", value: "1", class: "maison-button pdp-order-btn w-full cursor-pointer text-center", disabled: !product.available?, data: { variant_picker_target: "purchaseButton" } do %>
+    <span class="block" data-variant-picker-target="orderLabel"><%= product.available? ? t("product.order_now") : t("product.sold_out") %></span>
     <span class="pdp-order-btn__sub"><%= t("product.pay_on_delivery") %></span>
   <% end %>
-  <%= button_tag type: "submit", class: "pdp-add-link w-full cursor-pointer" do %>
+  <%= button_tag type: "submit", class: "pdp-add-link w-full cursor-pointer", disabled: !product.available?, data: { variant_picker_target: "purchaseButton" } do %>
     <%= t("product.add_to_bag") %>
   <% end %>
 </div>

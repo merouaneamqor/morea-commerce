@@ -5,8 +5,11 @@
       <div>
         <p class="landing-eyebrow"><%= section.subheading.presence || section.collection&.name || t("shop.selected") %></p>
         <h2 class="home-section__title"><%= section.heading %></h2>
+        <% if section.collection&.description.present? %>
+          <div class="home-section__intro"><%= simple_format section.collection.description %></div>
+        <% end %>
       </div>
-      <%= link_to t("home.view_all"), (section.collection ? collection_path(section.collection) : collections_path), class: "maison-cta" %>
+      <%= link_to (section.collection ? t("merchandising.discover_collection") : t("home.view_all")), (section.collection ? collection_path(section.collection) : collections_path), class: "maison-cta" %>
     </header>
 
     <div class="home-products" data-controller="reveal" data-reveal-delay-value="120">

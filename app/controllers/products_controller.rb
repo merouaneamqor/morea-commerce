@@ -8,7 +8,7 @@ class ProductsController < ApplicationController
     ).find_by!(slug: params[:slug])
     prepare_variants!
 
-    @eyebrow = "MOREA ACTIVE"
+    @eyebrow = current_store.name
     @collection = @product.collections.published.order(:position).first
     @gallery = product_gallery
     @related = related_products
@@ -32,11 +32,14 @@ class ProductsController < ApplicationController
         size: v.size_value || size_from_name(v),
         color: v.color_value || color_from_name(v),
         stock: v.stock,
+        price: @product.format_money(v.unit_price_cents),
+        price_cents: v.unit_price_cents,
         images: variant_gallery(v)
       }
     end.sort_by do |v|
       [ ProductVariant.size_rank(v[:size]), v[:color].to_s.downcase ]
     end
+    @initial_variant = @variant_payload.find { |v| !@product.track_inventory || v[:stock].positive? } || @variant_payload.first
   end
 
   def product_gallery

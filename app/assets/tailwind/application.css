@@ -414,11 +414,47 @@
   }
 
   .home-section__head {
-    @apply mb-12 flex items-end justify-between gap-6 md:mb-16;
+    @apply mb-12 flex flex-col items-start justify-between gap-6 md:mb-16 md:flex-row md:items-end;
   }
 
   .home-section__title {
     @apply mt-5 font-display text-4xl font-light leading-[1.05] text-ink md:text-5xl lg:text-6xl;
+  }
+
+  .home-section__intro {
+    @apply mt-6 max-w-xl space-y-3 text-sm leading-7 text-ink-soft;
+  }
+
+  .home-services {
+    @apply grid gap-12 border-y border-line bg-stone-floor px-5 py-16 md:px-10 md:py-24 lg:grid-cols-3 lg:gap-16 lg:px-16;
+  }
+
+  .home-services__title {
+    @apply mt-5 font-display text-3xl font-light leading-tight text-ink md:text-4xl;
+  }
+
+  .home-services__body {
+    @apply mt-5 max-w-md text-sm leading-7 text-ink-soft;
+  }
+
+  .home-services__items {
+    @apply grid gap-8 sm:grid-cols-2 lg:col-span-2;
+  }
+
+  .home-services__item {
+    @apply flex flex-col items-start border-t border-line pt-6;
+  }
+
+  .home-services__item h3 {
+    @apply font-display text-xl text-ink;
+  }
+
+  .home-services__item p {
+    @apply mb-5 mt-3 max-w-sm text-sm leading-7 text-ink-soft;
+  }
+
+  .home-services__item a {
+    @apply mt-auto;
   }
 
   .home-products {
@@ -603,7 +639,7 @@
   }
 
   .pdp-mobile-pad {
-    @apply pb-28 md:pb-28;
+    @apply pb-40 md:pb-28;
   }
 
 
@@ -778,8 +814,41 @@
     @apply text-base text-ink-faint;
   }
 
+  .pdp__availability {
+    @apply mt-4 text-xs text-ink-soft;
+  }
+
+  .pdp__details-link {
+    @apply mt-4 inline-block text-xs text-ink underline underline-offset-4;
+  }
+
+  .pdp-advice {
+    @apply mt-8 border border-line bg-stone-floor p-5;
+  }
+
+  .pdp-advice__title {
+    @apply font-display text-xl text-ink;
+  }
+
+  .pdp-advice__body {
+    @apply mb-4 mt-2 text-sm leading-7 text-ink-soft;
+  }
+
+  .size-pill.is-unavailable {
+    @apply text-ink-faint line-through;
+  }
+
+  .landing-swatch.is-unavailable .landing-swatch__dot {
+    @apply opacity-30;
+  }
+
+  [data-variant-picker-target~="purchaseButton"]:disabled {
+    @apply cursor-not-allowed opacity-45;
+  }
+
   .pdp__accordions {
     @apply mt-10 border-t border-line;
+    scroll-margin-top: 8rem;
   }
 
   .pdp-accordion {

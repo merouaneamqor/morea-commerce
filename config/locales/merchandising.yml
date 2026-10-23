@@ -1,0 +1,48 @@
+fr:
+  merchandising:
+    breadcrumb: "Fil d'Ariane"
+    discover_collection: "Découvrir la collection"
+    available: "Disponible"
+    explore_details: "Explorer la matière, la coupe et les détails"
+    origin: "Origine"
+    services:
+      title: "À vos côtés, à chaque étape"
+      intro: "Le choix d’une pièce se prolonge par une attention aux détails de votre commande."
+      advice: "Un conseil pour choisir"
+      advice_body: "Une question sur la coupe, la taille ou les détails d’une pièce ? Échangez avec notre équipe."
+      contact: "Nous écrire sur WhatsApp"
+      payment_body: "Réglez votre commande à sa réception, sans paiement en ligne."
+      returns_body: "Consultez les conditions et les étapes pour organiser un retour."
+      conditions: "Consulter les conditions"
+en:
+  merchandising:
+    breadcrumb: "Breadcrumb"
+    discover_collection: "Discover the collection"
+    available: "Available"
+    explore_details: "Explore the fabric, fit and details"
+    origin: "Origin"
+    services:
+      title: "With you, at every step"
+      intro: "Choosing a piece continues with attention to the details of your order."
+      advice: "Help choosing your piece"
+      advice_body: "A question about fit, sizing or the details of a piece? Talk with our team."
+      contact: "Message us on WhatsApp"
+      payment_body: "Pay when your order arrives, with no online payment."
+      returns_body: "Read the conditions and steps for arranging a return."
+      conditions: "Read the conditions"
+ar:
+  merchandising:
+    breadcrumb: "مسار التصفح"
+    discover_collection: "اكتشفي المجموعة"
+    available: "متوفر"
+    explore_details: "اكتشفي القماش والقصة والتفاصيل"
+    origin: "المنشأ"
+    services:
+      title: "إلى جانبك في كل خطوة"
+      intro: "يمتد الاهتمام باختيار قطعتك إلى تفاصيل طلبك."
+      advice: "مساعدة في الاختيار"
+      advice_body: "هل لديك سؤال عن القصة أو المقاس أو تفاصيل قطعة؟ تواصلي مع فريقنا."
+      contact: "راسلينا على واتساب"
+      payment_body: "ادفعي عند استلام طلبك، دون دفع إلكتروني."
+      returns_body: "اطّلعي على شروط وخطوات ترتيب الإرجاع."
+      conditions: "اطّلعي على الشروط"

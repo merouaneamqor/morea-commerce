@@ -1,0 +1,37 @@
+<%# locals: product. Dialog lives outside any form; selection is committed to the owning form on Done. %>
+<% media = (product.ordered_images + product.product_variants.includes(images_attachments: :blob).flat_map(&:ordered_images)).uniq(&:blob_id) %>
+<dialog class="admin-media-dialog" data-media-picker-target="dialog" aria-labelledby="media-picker-title">
+  <div class="admin-media-dialog__header">
+    <h2 id="media-picker-title" data-media-picker-target="title">Select images</h2>
+    <button type="button" class="admin-media-close" data-action="media-picker#close" aria-label="Close image picker">×</button>
+  </div>
+  <div class="admin-media-dialog__tools">
+    <input type="search" class="admin-input" placeholder="Search images" aria-label="Search images" data-media-picker-target="search" data-action="input->media-picker#filter">
+    <p class="admin-help">Choose images from this product. The first selected image is the main photo.</p>
+  </div>
+  <div class="admin-media-dialog__body">
+    <% if media.any? %>
+      <div class="admin-media-choices">
+        <% media.each do |image| %>
+          <div class="admin-media-choice" data-media-picker-target="choice" data-blob-id="<%= image.blob_id %>" data-filename="<%= image.filename %>">
+            <button type="button" class="admin-media-choice__image" data-choice-toggle data-blob-id="<%= image.blob_id %>" data-action="media-picker#toggle" aria-pressed="false" aria-label="Select <%= image.filename %>">
+              <%= image_tag MediaUrl.sized(media_url(image), width: 320), alt: image.filename.to_s, loading: "lazy" %>
+              <span class="admin-media-choice__badge" data-choice-badge></span>
+            </button>
+            <span class="admin-media-choice__filename" title="<%= image.filename %>"><%= image.filename %></span>
+            <button type="button" class="admin-btn-plain" data-choice-main data-blob-id="<%= image.blob_id %>" data-action="media-picker#makeMain" hidden>Make main</button>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="admin-empty">No images yet. Upload and save product media first, then select images for a variant.</p>
+    <% end %>
+  </div>
+  <div class="admin-media-dialog__footer">
+    <span class="admin-muted" aria-live="polite" data-media-picker-target="count">0 selected</span>
+    <div class="flex gap-2">
+      <button type="button" class="admin-btn-secondary" data-action="media-picker#close">Cancel</button>
+      <button type="button" class="admin-btn" data-action="media-picker#done">Done</button>
+    </div>
+  </div>
+</dialog>

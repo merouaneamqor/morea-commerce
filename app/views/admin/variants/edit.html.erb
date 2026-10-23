@@ -11,7 +11,8 @@
   <button type="submit" form="variant-form" class="admin-btn">Save variant</button>
 </div>
 
-<%= form_with url: admin_product_variant_path(@product, @variant), method: :patch, scope: :product_variant, id: "variant-form" do %>
+<div data-controller="media-picker">
+<%= form_with url: admin_product_variant_path(@product, @variant), method: :patch, scope: :product_variant, id: "variant-form", html: { multipart: true } do %>
   <div class="admin-layout">
     <div class="admin-stack">
       <section class="admin-card">
@@ -34,25 +35,23 @@
 
       <section class="admin-card">
         <div class="admin-card__header"><h2 class="admin-card__title">Media</h2></div>
-        <div class="space-y-4 px-4 pb-4">
-          <p class="admin-help">These images appear when this variant is selected on the storefront. They do not alter the product gallery.</p>
-          <% if @variant.images.attached? %>
-            <div class="admin-media-grid">
-              <% @variant.ordered_images.each do |image| %>
-                <div class="admin-media-item">
-                  <%= image_tag MediaUrl.sized(media_url(image), width: 320), alt: "" %>
-                  <label class="admin-media-item__bar admin-media-item__remove" title="Remove when saved">
-                    <%= check_box_tag "product_variant[remove_image_ids][]", image.id, false, id: nil, class: "h-3.5 w-3.5 accent-[#303030]" %> Remove
-                  </label>
-                </div>
-              <% end %>
+        <div class="space-y-4 px-4 pb-4" data-controller="media">
+          <p class="admin-help">Choose from product images or upload new photos. The main photo appears when shoppers select this color.</p>
+          <div data-media-picker-owner>
+            <input type="hidden" name="product_variant[media_blob_ids]" value="<%= @variant.ordered_images.map { |image| image.blob_id.to_s }.to_json %>" data-media-picker-selection disabled>
+            <div class="admin-variant-media-summary">
+              <button type="button" class="admin-variant-image" data-name="<%= @variant.display_name %>" data-action="media-picker#open" aria-label="Select variant images">
+                <span data-media-picker-preview><% if @variant.images.attached? %><%= image_tag MediaUrl.sized(media_url(@variant.ordered_images.first), width: 160), alt: "Main photo" %><% else %>+<% end %></span>
+              </button>
+              <div><button type="button" class="admin-btn-secondary" data-name="<%= @variant.display_name %>" data-action="media-picker#open">Select existing</button><p class="admin-help" data-media-picker-status><%= pluralize(@variant.images.size, "image") %> · Save to apply changes</p></div>
             </div>
-          <% end %>
-          <label class="admin-dropzone">
-            <span class="admin-btn-secondary pointer-events-none">Upload images</span>
+          </div>
+          <label class="admin-dropzone" data-media-target="zone" data-action="dragover->media#zoneOver dragleave->media#zoneLeave drop->media#zoneDrop">
+            <span class="admin-btn-secondary pointer-events-none">Upload new</span>
             <span class="admin-help">Add photos specific to <%= @variant.display_name %>.</span>
-            <%= file_field_tag "product_variant[images][]", multiple: true, direct_upload: false, accept: "image/*", class: "sr-only" %>
+            <%= file_field_tag "product_variant[images][]", multiple: true, direct_upload: false, accept: "image/*", class: "sr-only", data: { media_target: "input", action: "change->media#addFiles" } %>
           </label>
+          <ul class="admin-media-grid empty:hidden" data-media-target="previews"></ul>
         </div>
       </section>
     </div>
@@ -84,6 +83,9 @@
     </div>
   </div>
 <% end %>
+
+<%= render "admin/products/media_picker", product: @product %>
+</div>
 
 <div class="mt-6 flex justify-between border-t border-[#e3e3e3] pt-4">
   <%= button_to "Delete variant", admin_product_variant_path(@product, @variant), method: :delete, form: { data: { turbo_confirm: "Delete this variant?" } }, class: "admin-btn-critical" %>

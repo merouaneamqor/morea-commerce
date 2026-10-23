@@ -28,6 +28,8 @@ module Admin
         Result.new(ok: true, message: "Variants saved.")
       rescue ActiveRecord::RecordInvalid => e
         Result.new(ok: false, message: e.record.errors.full_messages.to_sentence)
+      rescue MediaUpdater::Error => e
+        Result.new(ok: false, message: e.message)
       end
 
       private
@@ -70,6 +72,7 @@ module Admin
           existing_by_key[key] = variant
           variant.assign_attributes(attrs)
           variant.save!
+          MediaUpdater.replace!(variant, row[:media_blob_ids]) if row.key?(:media_blob_ids)
         end
       end
 

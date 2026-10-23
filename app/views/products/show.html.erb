@@ -5,7 +5,7 @@
 
 <article class="pdp pdp-mobile-pad"
          data-controller="variant-gallery"
-         data-action="variant-picker:change->variant-gallery#show">
+         data-action="variant-picker:change->variant-gallery#show turbo:before-cache@document->variant-gallery#restoreProductGallery">
   <nav class="pdp__crumbs" aria-label="Breadcrumb">
     <%= link_to t("nav.home"), localized_root_path %>
     <span aria-hidden="true">/</span>
@@ -17,9 +17,9 @@
   </nav>
 
   <div class="pdp__grid">
-    <div class="pdp__gallery" data-controller="reveal">
+    <div class="pdp__gallery" data-controller="reveal" data-variant-gallery-target="gallery">
       <% @gallery.each_with_index do |url, i| %>
-        <div class="pdp__shot object-frame <%= "pdp__shot--lead" if i.zero? %>" data-variant-gallery-target="shot">
+        <div class="pdp__shot object-frame <%= "pdp__shot--lead" if i.zero? %>">
           <%= object_image_tag url,
                 alt: (i.zero? ? @product.name : "#{@product.name} — #{i + 1}"),
                 sizes: (i.zero? ? "(max-width: 768px) 90vw, 58vw" : "(max-width: 768px) 90vw, 29vw"),
@@ -29,6 +29,12 @@
         </div>
       <% end %>
     </div>
+
+    <template data-variant-gallery-target="shotTemplate">
+      <div class="pdp__shot object-frame">
+        <img alt="<%= @product.name %>" class="h-full w-full object-cover" decoding="async">
+      </div>
+    </template>
 
     <div class="pdp__info" data-controller="reveal" data-reveal-delay-value="140">
       <div class="pdp__sticky">

@@ -1,17 +1,17 @@
 <%# locals: product %>
-<% variants = product.product_variants.order(:id) %>
+<% variants = product.product_variants.includes(images_attachments: :blob).order(:id) %>
 <% selected_sizes = product.variant_sizes %>
 <% variant_colors = product.variant_colors %>
 <% size_options = ProductVariant::SIZE_OPTIONS %>
 
 <section class="admin-card"
-         data-controller="variant-matrix"
+         data-controller="variant-matrix media-picker"
          data-variant-matrix-size-order-value="<%= size_options.to_json %>"
          data-variant-matrix-placeholder-hex-value="<%= ProductVariant::PLACEHOLDER_HEX %>">
   <div class="admin-card__header flex flex-wrap items-center justify-between gap-3">
     <div>
       <h2 class="admin-card__title">Variants</h2>
-      <p class="admin-help mt-1">Create sellable options, then set each variant’s media, price, and inventory.</p>
+      <p class="admin-help mt-1">Click a variant image to choose its photos. Sizes with the same color share photos unless you assign their own.</p>
     </div>
     <span class="rounded-full bg-[#f1f1f1] px-3 py-1 text-sm font-medium text-[#616161]"><%= pluralize(variants.size, "variant") %></span>
   </div>
@@ -22,8 +22,9 @@
     <div data-variant-matrix-target="destroyIds"></div>
 
     <div class="space-y-4 px-4">
-      <p class="admin-help">1. Choose your options. 2. Generate combinations. 3. Select <strong>Edit</strong> on a variant to add its photos and finish setup.</p>
-
+      <details class="admin-variant-options" <%= "open" if variants.empty? %>>
+      <summary>Edit options · sizes and colors</summary>
+      <div class="space-y-4 pt-4">
       <div>
         <p class="admin-label">Option 1 · Size</p>
         <div class="flex flex-wrap gap-2" data-variant-matrix-target="sizeList">
@@ -73,15 +74,20 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-3">
-        <button type="button" class="admin-btn" data-action="variant-matrix#generate">Generate variants</button>
+        <button type="button" class="admin-btn-secondary" data-action="variant-matrix#generate">Generate variants</button>
+      </div>
+      </div>
+      </details>
+      <div class="flex items-center justify-between gap-3">
+        <p class="admin-help">Changes apply when you save variants.</p>
         <div class="flex items-center gap-2">
           <label class="admin-label mb-0" for="variant_group_by">Group by</label>
           <select id="variant_group_by" class="admin-input" style="width: auto; min-width: 8rem"
                   data-variant-matrix-target="groupBy"
                   data-action="change->variant-matrix#regroup">
             <option value="none">None</option>
-            <option value="size" selected>Size</option>
-            <option value="color">Color</option>
+            <option value="size">Size</option>
+            <option value="color" selected>Color</option>
           </select>
         </div>
       </div>
@@ -102,7 +108,7 @@
         </thead>
         <tbody data-variant-matrix-target="tbody">
           <% variants.each_with_index do |variant, index| %>
-            <tr data-variant-matrix-row
+            <tr data-variant-matrix-row data-media-picker-owner
                 data-variant-id="<%= variant.id %>"
                 data-size="<%= variant.option1_value %>"
                 data-color="<%= variant.option2_value %>"
@@ -122,14 +128,13 @@
                 <input type="hidden" name="variants[<%= index %>][color_hex]" value="<%= variant.color_hex %>" data-field="color_hex">
               </td>
               <td>
-                <%= link_to edit_admin_product_variant_path(product, variant), class: "inline-flex items-center gap-2 text-sm font-medium text-[#303030] underline underline-offset-4" do %>
-                  <% if variant.images.attached? %>
-                    <%= image_tag MediaUrl.sized(media_url(variant.ordered_images.first), width: 48), alt: "", class: "h-8 w-8 rounded object-cover" %>
-                    <span><%= pluralize(variant.images.count, "image") %></span>
-                  <% else %>
-                    <span class="rounded bg-[#f1f1f1] px-2 py-1">Add media</span>
-                  <% end %>
-                <% end %>
+                <input type="hidden" name="variants[<%= index %>][media_blob_ids]" value="<%= variant.ordered_images.map { |image| image.blob_id.to_s }.to_json %>" data-media-picker-selection disabled>
+                <button type="button" class="admin-variant-image" data-name="<%= variant.display_name %>" data-action="media-picker#open" aria-label="Select images for <%= variant.display_name %>">
+                  <span data-media-picker-preview>
+                    <% if variant.images.attached? %><%= image_tag MediaUrl.sized(media_url(variant.ordered_images.first), width: 96), alt: "" %><% else %>+<% end %>
+                  </span>
+                </button>
+                <span class="admin-variant-media-status" data-media-picker-status><%= variant.images.attached? ? pluralize(variant.images.size, "image") : "Inherited" %></span>
               </td>
               <td>
                 <input type="text" name="variants[<%= index %>][sku]" value="<%= variant.sku %>" class="admin-input" placeholder="SKU">
@@ -165,6 +170,8 @@
       <%= submit_tag "Save variants", class: "admin-btn" %>
     </div>
   <% end %>
+
+  <%= render "admin/products/media_picker", product: product %>
 
   <%# Templates outside the save form so placeholder inputs can never be submitted. %>
   <template data-variant-matrix-target="colorTemplate">

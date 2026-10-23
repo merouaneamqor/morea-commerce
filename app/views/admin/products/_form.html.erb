@@ -16,11 +16,6 @@
   </div>
 </div>
 
-<%# This separate form must stay outside the product form: nested forms break saves. %>
-<% if @product.persisted? %>
-  <div class="mb-4"><%= render "variants", product: @product %></div>
-<% end %>
-
 <%= form_with model: [:admin, @product], id: "product-form" do |f| %>
   <% if @product.errors.any? %>
     <div class="admin-banner admin-banner--critical"><%= @product.errors.full_messages.to_sentence %></div>
@@ -33,35 +28,47 @@
       <section class="admin-card">
         <div class="admin-card__header"><h2 class="admin-card__title">Media</h2></div>
         <div class="space-y-4 px-4 pb-4">
-          <div class="space-y-4" data-controller="media">
-            <% if @product.images.attached? %>
+          <div class="admin-product-media space-y-4" data-controller="media">
+            <div class="admin-media-toolbar">
+              <span class="admin-help" data-media-target="selectionCount" aria-live="polite">Drag to reorder. First image is featured.</span>
+              <div class="flex gap-2">
+                <button type="button" class="admin-btn-secondary" data-media-target="mainButton" data-action="media#makeMain" disabled>Set as main</button>
+                <button type="button" class="admin-btn-secondary" data-media-target="removeButton" data-action="media#removeSelected" disabled>Remove</button>
+              </div>
+            </div>
               <ul class="admin-media-grid" data-media-target="list" data-action="dragover->media#dragOver drop->media#drop">
                 <% @product.ordered_images.each do |image| %>
                   <li class="admin-media-item" draggable="true" data-media-target="item"
                       data-action="dragstart->media#dragStart dragend->media#dragEnd">
                     <%= hidden_field_tag "product[image_order][]", image.id, id: nil %>
-                    <%= image_tag MediaUrl.sized(media_url(image), width: 320), alt: "", draggable: false %>
-                    <span class="admin-media-item__main">Main</span>
+                    <button type="button" class="admin-media-preview" data-action="media#preview" aria-label="Preview <%= image.filename %>">
+                      <%= image_tag MediaUrl.sized(media_url(image), width: 640), alt: image.filename.to_s, draggable: false %>
+                    </button>
+                    <span class="admin-media-item__main">Featured</span>
+                    <input type="checkbox" class="admin-media-select" aria-label="Select <%= image.filename %>" data-action="change->media#selectionChanged">
                     <span class="admin-media-item__bar">
                       <button type="button" class="admin-media-item__btn" data-action="media#moveEarlier" aria-label="Move earlier">←</button>
-                      <label class="admin-media-item__remove" title="Remove on save">
-                        <%= check_box_tag "product[remove_image_ids][]", image.id, false, id: nil, class: "h-3.5 w-3.5 accent-[#303030]" %> Remove
-                      </label>
+                      <span class="admin-media-filename" title="<%= image.filename %>"><%= image.filename %></span>
                       <button type="button" class="admin-media-item__btn" data-action="media#moveLater" aria-label="Move later">→</button>
                     </span>
                   </li>
                 <% end %>
               </ul>
-            <% end %>
+            <div data-media-target="removals"></div>
+            <p class="admin-help" data-media-target="undoNotice" hidden>Images will be removed when you save. <button type="button" class="admin-btn-plain" data-action="media#undoRemove">Undo</button></p>
 
             <label class="admin-dropzone" data-media-target="zone"
                    data-action="dragover->media#zoneOver dragleave->media#zoneLeave drop->media#zoneDrop">
-              <span class="admin-btn-secondary pointer-events-none">Upload images</span>
-              <span class="admin-help">or drop images here. Drag thumbnails to reorder — the first is the main image.</span>
+              <span class="admin-btn-secondary pointer-events-none">Upload new</span>
+              <span class="admin-help">Drop images here, or click to upload</span>
               <%= f.file_field :images, multiple: true, direct_upload: false, accept: "image/*", class: "sr-only",
-                    data: { media_target: "input", action: "change->media#renderPreviews" } %>
+                    data: { media_target: "input", action: "change->media#addFiles" } %>
             </label>
             <ul class="admin-media-grid empty:hidden" data-media-target="previews"></ul>
+            <dialog class="admin-media-dialog admin-media-viewer" data-media-target="viewer" aria-label="Image preview">
+              <div class="admin-media-dialog__header"><h2>Image preview</h2><button type="button" class="admin-media-close" data-action="media#closePreview" aria-label="Close preview">×</button></div>
+              <img data-media-target="viewerImage" alt="">
+            </dialog>
           </div>
         </div>
       </section>
@@ -135,6 +142,8 @@
 <% end %>
 
 <% if @product.persisted? %>
+  <%# Separate forms keep product and variant saves valid and predictable. %>
+  <div class="admin-layout mt-4"><div><%= render "variants", product: @product %></div></div>
   <div class="admin-layout mt-4">
     <section class="admin-card">
       <div class="admin-card__header"><h2 class="admin-card__title">Inventory history</h2></div>

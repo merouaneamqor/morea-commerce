@@ -4,7 +4,80 @@ import { Controller } from "@hotwired/stimulus"
 // existing images to reorder them. Each item carries a hidden input, so the
 // DOM order is the submitted order.
 export default class extends Controller {
-  static targets = ["list", "item", "input", "zone", "previews"]
+  static targets = ["list", "item", "input", "zone", "previews", "selectionCount", "mainButton", "removeButton", "removals", "undoNotice", "viewer", "viewerImage"]
+
+  connect() {
+    this.pendingFiles = []
+    this.selectionChanged()
+  }
+
+  selectedItems() {
+    return this.itemTargets.filter(item => item.querySelector(".admin-media-select")?.checked)
+  }
+
+  selectionChanged() {
+    if (!this.hasSelectionCountTarget) return
+    const count = this.selectedItems().length
+    this.selectionCountTarget.textContent = count ? `${count} selected` : "Drag to reorder. First image is featured."
+    this.mainButtonTarget.disabled = count !== 1
+    this.removeButtonTarget.disabled = count === 0
+    this.itemTargets.forEach(item => item.classList.toggle("is-selected", Boolean(item.querySelector(".admin-media-select")?.checked)))
+  }
+
+  makeMain() {
+    const item = this.selectedItems()[0]
+    if (item) this.listTarget.prepend(item)
+  }
+
+  removeSelected() {
+    this.removedItems = this.selectedItems().map(item => ({ item, index: this.itemTargets.indexOf(item) }))
+    this.removedItems.forEach(({ item }) => {
+      const input = document.createElement("input")
+      input.type = "hidden"
+      input.name = "product[remove_image_ids][]"
+      input.value = item.querySelector('input[name="product[image_order][]"]').value
+      this.removalsTarget.append(input)
+      item.remove()
+    })
+    this.undoNoticeTarget.hidden = false
+    this.selectionChanged()
+  }
+
+  undoRemove() {
+    this.removedItems?.forEach(({ item, index }) => {
+      const id = item.querySelector('input[name="product[image_order][]"]').value
+      Array.from(this.removalsTarget.children).find(input => input.value === id)?.remove()
+      item.querySelector(".admin-media-select").checked = false
+      this.listTarget.insertBefore(item, this.listTarget.children[index] || null)
+    })
+    this.removedItems = []
+    this.undoNoticeTarget.hidden = true
+    this.selectionChanged()
+  }
+
+  preview(event) {
+    const image = event.currentTarget.querySelector("img")
+    this.viewerImageTarget.src = image.src
+    this.viewerImageTarget.alt = image.alt
+    this.previewOpener = event.currentTarget
+    this.viewerTarget.showModal()
+  }
+
+  closePreview() {
+    this.viewerTarget.close()
+    this.previewOpener?.focus()
+  }
+
+  addFiles() {
+    const files = new DataTransfer()
+    const seen = new Set()
+    ;[...this.pendingFiles, ...this.inputTarget.files].forEach(file => {
+      const key = `${file.name}:${file.size}:${file.lastModified}`
+      if (file.type.startsWith("image/") && !seen.has(key)) { files.items.add(file); seen.add(key) }
+    })
+    this.inputTarget.files = files.files
+    this.renderPreviews()
+  }
 
   // ——— Upload zone ———
 
@@ -39,6 +112,7 @@ export default class extends Controller {
 
   renderPreviews() {
     if (!this.hasPreviewsTarget) return
+    this.pendingFiles = [...this.inputTarget.files]
 
     this.previewsTarget.replaceChildren(...[...this.inputTarget.files].map((file, index) => {
       const item = document.createElement("li")

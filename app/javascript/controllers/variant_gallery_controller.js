@@ -1,9 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Replaces the PDP gallery with the selected variant's photos. If a variant
-// has no photos, the original product gallery remains visible.
+// A color gallery can have any number of photos, even without product photos.
 export default class extends Controller {
-  static targets = ["shot"]
+  static targets = ["gallery", "shotTemplate"]
 
   show(event) {
     const urls = event.detail?.variant?.images
@@ -12,45 +11,30 @@ export default class extends Controller {
       return
     }
 
-    this.shotTargets.forEach((shot, index) => {
-      const image = this.imageFor(shot)
-      if (!image) return
+    const key = JSON.stringify(urls)
+    if (key === this.currentGalleryKey) return
 
-      this.rememberProductImage(image)
-      const url = urls[index]
-      if (url) {
-        image.src = url
-        image.removeAttribute("srcset")
-      } else {
-        this.restoreProductImage(image)
-      }
+    this.productShots ||= Array.from(this.galleryTarget.children, (shot) => shot.cloneNode(true))
+    const shots = urls.map((url, index) => {
+      const shot = this.shotTemplateTarget.content.firstElementChild.cloneNode(true)
+      const image = shot.querySelector("img")
+      const lead = index === 0
+      shot.classList.toggle("pdp__shot--lead", lead)
+      image.src = url
+      image.loading = lead ? "eager" : "lazy"
+      image.setAttribute("fetchpriority", lead ? "high" : "auto")
+      image.sizes = lead ? "(max-width: 768px) 90vw, 58vw" : "(max-width: 768px) 90vw, 29vw"
+      return shot
     })
+
+    this.galleryTarget.replaceChildren(...shots)
+    this.currentGalleryKey = key
   }
 
   restoreProductGallery() {
-    this.shotTargets.forEach((shot) => {
-      const image = this.imageFor(shot)
-      if (image) this.restoreProductImage(image)
-    })
-  }
+    if (!this.currentGalleryKey) return
 
-  imageFor(shot) {
-    return shot.querySelector("img")
-  }
-
-  rememberProductImage(image) {
-    if (image.dataset.variantGalleryOriginalSrc) return
-
-    image.dataset.variantGalleryOriginalSrc = image.getAttribute("src") || ""
-    image.dataset.variantGalleryOriginalSrcset = image.getAttribute("srcset") || ""
-  }
-
-  restoreProductImage(image) {
-    this.rememberProductImage(image)
-    image.src = image.dataset.variantGalleryOriginalSrc
-
-    const srcset = image.dataset.variantGalleryOriginalSrcset
-    if (srcset) image.setAttribute("srcset", srcset)
-    else image.removeAttribute("srcset")
+    this.galleryTarget.replaceChildren(...this.productShots.map((shot) => shot.cloneNode(true)))
+    this.currentGalleryKey = null
   }
 }

@@ -941,7 +941,7 @@
   }
 
   .store-page__head {
-    @apply mx-auto max-w-2xl text-center;
+    @apply mx-auto max-w-3xl text-center;
   }
 
   .store-page__title {
@@ -949,7 +949,7 @@
   }
 
   .store-page__body {
-    @apply mx-auto mt-14 max-w-xl space-y-5 text-[15px] leading-8 text-ink-soft;
+    @apply mx-auto mt-14 max-w-3xl space-y-5 text-[15px] leading-8 text-ink-soft;
   }
 
   .store-page__body h2,

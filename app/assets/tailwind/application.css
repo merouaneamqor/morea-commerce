@@ -941,7 +941,7 @@
   }
 
   .store-page__head {
-    @apply mx-auto max-w-2xl text-center;
+    @apply mx-auto max-w-3xl text-center;
   }
 
   .store-page__title {
@@ -949,7 +949,46 @@
   }
 
   .store-page__body {
-    @apply mx-auto mt-14 max-w-xl space-y-5 text-[15px] leading-8 text-ink-soft;
+    @apply mx-auto mt-14 max-w-3xl space-y-5 text-[15px] leading-8 text-ink-soft;
+  }
+
+  .store-page__body h2,
+  .store-page__body h3,
+  .store-page__body h4 {
+    @apply pt-6 font-display font-light leading-tight text-ink;
+  }
+
+  .store-page__body h2 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  .store-page__body h3 {
+    @apply text-2xl;
+  }
+
+  .store-page__body ul,
+  .store-page__body ol {
+    @apply ps-5;
+  }
+
+  .store-page__body ul {
+    @apply list-disc;
+  }
+
+  .store-page__body ol {
+    @apply list-decimal;
+  }
+
+  .store-page__body a {
+    @apply text-ink underline underline-offset-4;
+  }
+
+  .store-page__body blockquote {
+    @apply border-s border-brass ps-5 italic;
+  }
+
+  .store-page__body hr {
+    @apply border-line;
   }
 
   .store-page__body h2,

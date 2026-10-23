@@ -91,6 +91,8 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+      - name: Build stylesheets for rendered page checks
+        run: bin/rails tailwindcss:build
       - name: Prepare isolated test database
         run: bin/rails db:prepare
       - name: Create isolated smoke-test store

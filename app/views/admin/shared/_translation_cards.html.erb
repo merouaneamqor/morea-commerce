@@ -12,7 +12,16 @@
       <% fields.each do |attr, label, type, rows, help| %>
         <div>
           <%= tf.label attr, label, class: "admin-label" %>
-          <% if type == :area %>
+          <% if type == :markdown %>
+            <div class="md-editor" data-controller="markdown-editor" data-markdown-editor-url-value="<%= preview_admin_pages_path %>">
+              <div class="md-editor__tabs" role="tablist">
+                <button type="button" role="tab" class="md-editor__tab is-active" data-markdown-editor-target="writeTab" data-action="markdown-editor#write">Write</button>
+                <button type="button" role="tab" class="md-editor__tab" data-markdown-editor-target="previewTab" data-action="markdown-editor#preview">Preview</button>
+              </div>
+              <%= tf.text_area attr, rows: rows || 4, class: "admin-input md-editor__input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale, data: { markdown_editor_target: "input" } %>
+              <div class="md-editor__preview" hidden dir="<%= locale == "ar" ? "rtl" : "ltr" %>" lang="<%= locale %>" data-markdown-editor-target="output"></div>
+            </div>
+          <% elsif type == :area %>
             <%= tf.text_area attr, rows: rows || 4, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>
           <% else %>
             <%= tf.text_field attr, class: "admin-input", dir: (locale == "ar" ? "rtl" : "ltr"), lang: locale %>

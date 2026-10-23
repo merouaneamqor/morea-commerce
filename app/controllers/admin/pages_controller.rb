@@ -34,6 +34,10 @@ module Admin
       end
     end
 
+    def preview
+      render html: helpers.tag.div(Morea::Markdown.render(params[:body]), class: "store-page__body markdown-preview")
+    end
+
     def destroy
       @page.destroy!
       redirect_to admin_pages_path, notice: "Page deleted."

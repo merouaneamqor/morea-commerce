@@ -1335,6 +1335,34 @@
     @apply mb-1 block text-[13px] font-medium text-[#303030];
   }
 
+  .md-editor [hidden] {
+    display: none !important;
+  }
+
+  .md-editor__tabs {
+    @apply flex gap-1 border-b border-[#d4d4d4];
+  }
+
+  .md-editor__tab {
+    @apply -mb-px cursor-pointer rounded-t-md border border-transparent bg-transparent px-3 py-1.5 text-[13px] text-[#616161];
+  }
+
+  .md-editor__tab.is-active {
+    @apply border-[#d4d4d4] border-b-white bg-white font-medium text-[#303030];
+  }
+
+  .md-editor__input {
+    @apply rounded-t-none font-mono;
+  }
+
+  .md-editor__preview {
+    @apply min-h-[12rem] overflow-auto rounded-b-lg border border-t-0 border-[#8a8a8a] bg-white p-4;
+  }
+
+  .md-editor__preview .store-page__body {
+    @apply mt-0 max-w-none;
+  }
+
   .admin-help {
     @apply mt-1 text-[13px] text-[#616161];
   }

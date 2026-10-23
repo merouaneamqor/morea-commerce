@@ -51,11 +51,7 @@ class OnlineStoreDefaults
     contact = { "fr" => [ phone, email ].compact.join(" ou "), "en" => [ phone, email ].compact.join(" or "), "ar" => [ phone, email ].compact.join(" أو ") }
 
     [
-      page("about", {
-        "fr" => { title: "Notre histoire", body: store_text("fr", :about) },
-        "en" => { title: "Our story", body: store_text("en", :about) },
-        "ar" => { title: "قصتنا", body: store_text("ar", :about) }
-      }),
+      page("about", LOCALES.index_with { |loc| { title: Morea::OurStory::TITLES[loc], body: Morea::OurStory::BODIES[loc] } }),
       page("shipping", {
         "fr" => { title: "Livraison & paiement", body: "Nous livrons partout au Maroc.\n\nLe paiement se fait à la livraison. #{store_text("fr", :cod_note)}" },
         "en" => { title: "Shipping & payment", body: "We deliver across Morocco.\n\nYou pay on delivery. #{store_text("en", :cod_note)}" },

@@ -64,10 +64,8 @@ class ProductVariant < ApplicationRecord
     color_hex.presence || PLACEHOLDER_HEX
   end
 
-  # Variant photos intentionally retain their upload order.  Unlike product
-  # photos, variants do not support drag-and-drop reordering yet.
   def ordered_images
-    images.sort_by(&:id)
+    images.sort_by { |image| [ image_order.index(image.id) || image_order.size, image.id ] }
   end
 
   private

@@ -2,7 +2,7 @@
 
 module CatalogTools
   class AddVariantImages < MCP::Tool
-    description "Attach images to a product variant. Use variantId from get_product or set_product_variants. New images are appended; up to 4 images, 8MB each."
+    description "Attach images to a product variant. The first photo becomes the main storefront image when its color is selected. Sizes of the same color without photos share this gallery. Upload the main photo first. Use variantId from get_product or set_product_variants. New images are appended; up to 4 images, 8MB each."
     input_schema(
       properties: {
         slug: { type: "string" },

@@ -32,11 +32,13 @@ export default class extends Controller {
   render() {
     this.sizeButtonTargets.forEach((btn) => {
       btn.classList.toggle("is-active", btn.dataset.size === this.selectedSize)
+      btn.setAttribute("aria-pressed", String(btn.dataset.size === this.selectedSize))
     })
 
     this.colorButtonTargets.forEach((btn) => {
       const available = this.colorsFor(this.selectedSize).includes(btn.dataset.color)
       btn.classList.toggle("is-active", btn.dataset.color === this.selectedColor)
+      btn.setAttribute("aria-pressed", String(btn.dataset.color === this.selectedColor))
       btn.hidden = !available
     })
 

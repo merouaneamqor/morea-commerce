@@ -48,9 +48,10 @@ class ProductsController < ApplicationController
     # gallery once to any one of them, while still allowing a size to override
     # it with its own photos.
     source = variant
-    if !source.images.attached? && variant.color_value.present?
+    color = variant.color_value || color_from_name(variant)
+    if !source.images.attached? && color.present?
       source = @variants.find do |candidate|
-        candidate.color_value == variant.color_value && candidate.images.attached?
+        (candidate.color_value || color_from_name(candidate)) == color && candidate.images.attached?
       end || variant
     end
 

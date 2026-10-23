@@ -103,6 +103,8 @@ jobs:
         run: bin/rails runner script/mcp_inventory_smoke.rb morea
       - name: Check OAuth and product image responses
         run: bin/rails runner script/oauth_images_smoke.rb
+      - name: Check color galleries and admin/MCP photo uploads
+        run: bin/rails runner script/variant_gallery_smoke.rb
       - name: Check MCP order management and tenant isolation
         run: bin/rails runner script/mcp_order_desk_smoke.rb
       - name: Check MCP media library and transformation boundaries

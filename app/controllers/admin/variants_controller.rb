@@ -17,12 +17,16 @@ module Admin
 
     def update
       variant = @product.product_variants.find(params[:id])
-      if variant.update(variant_params)
+      ProductVariant.transaction do
+        variant.update!(variant_params)
+        if params[:product_variant].key?(:media_blob_ids)
+          Admin::Variants::MediaUpdater.replace!(variant, params[:product_variant][:media_blob_ids])
+        end
         update_images(variant)
-        redirect_to edit_admin_product_path(@product), notice: "Variant updated."
-      else
-        redirect_to edit_admin_product_path(@product), alert: variant.errors.full_messages.to_sentence
       end
+      redirect_to edit_admin_product_path(@product), notice: "Variant updated."
+    rescue ActiveRecord::RecordInvalid, Admin::Variants::MediaUpdater::Error => error
+      redirect_to edit_admin_product_path(@product), alert: error.message
     end
 
     def destroy

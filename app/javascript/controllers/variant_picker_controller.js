@@ -2,14 +2,21 @@ import { Controller } from "@hotwired/stimulus"
 
 // Size / color picker that resolves a product_variant_id
 export default class extends Controller {
-  static targets = ["variantId", "sizeButton", "colorButton", "colorLabel"]
+  static targets = ["variantId", "sizeButton", "colorButton", "colorLabel", "availability", "purchaseButton", "orderLabel", "price", "comparePrice"]
   static values = {
-    variants: Array
+    variants: Array,
+    trackInventory: Boolean,
+    availableLabel: String,
+    unavailableLabel: String,
+    orderLabel: String,
+    compareAt: Number
   }
 
   connect() {
-    this.selectedSize = this.firstAvailableSize()
-    this.selectedColor = this.firstAvailableColor(this.selectedSize)
+    if (!this.variantsValue.length) return
+    const initial = this.variantsValue.find((variant) => this.inStock(variant)) || this.variantsValue[0]
+    this.selectedSize = initial.size
+    this.selectedColor = initial.color
     this.render()
   }
 
@@ -31,6 +38,8 @@ export default class extends Controller {
 
   render() {
     this.sizeButtonTargets.forEach((btn) => {
+      const available = this.variantsValue.some((variant) => variant.size === btn.dataset.size && this.inStock(variant))
+      btn.classList.toggle("is-unavailable", !available)
       btn.classList.toggle("is-active", btn.dataset.size === this.selectedSize)
       btn.setAttribute("aria-pressed", String(btn.dataset.size === this.selectedSize))
     })
@@ -39,6 +48,9 @@ export default class extends Controller {
       const available = this.colorsFor(this.selectedSize).includes(btn.dataset.color)
       btn.classList.toggle("is-active", btn.dataset.color === this.selectedColor)
       btn.setAttribute("aria-pressed", String(btn.dataset.color === this.selectedColor))
+      btn.classList.toggle("is-unavailable", !this.variantsValue.some((variant) =>
+        (!this.selectedSize || variant.size === this.selectedSize) && variant.color === btn.dataset.color && this.inStock(variant)
+      ))
       btn.hidden = !available
     })
 
@@ -56,17 +68,28 @@ export default class extends Controller {
       this.variantIdTarget.value = match ? match.id : ""
     }
 
+    this.purchasable = !!match && this.inStock(match)
+    this.availabilityTargets.forEach((label) => {
+      label.textContent = this.purchasable ? this.availableLabelValue : this.unavailableLabelValue
+    })
+    this.purchaseButtonTargets.forEach((button) => { button.disabled = !this.purchasable })
+    this.orderLabelTargets.forEach((label) => {
+      label.textContent = this.purchasable ? this.orderLabelValue : this.unavailableLabelValue
+    })
+    if (match) {
+      this.priceTargets.forEach((label) => { label.textContent = match.price })
+      this.comparePriceTargets.forEach((label) => { label.hidden = this.compareAtValue <= match.price_cents })
+    }
+
     this.dispatch("change", { detail: { variant: match || null } })
   }
 
-  firstAvailableSize() {
-    const sizes = [...new Set(this.variantsValue.map((v) => v.size).filter(Boolean))]
-    return sizes[0] || null
+  inStock(variant) {
+    return !this.trackInventoryValue || variant.stock > 0
   }
 
-  firstAvailableColor(size) {
-    const colors = this.colorsFor(size)
-    return colors[0] || null
+  validate(event) {
+    if (this.variantsValue.length && !this.purchasable) event.preventDefault()
   }
 
   colorsFor(size) {

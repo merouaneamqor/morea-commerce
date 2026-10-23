@@ -1,0 +1,30 @@
+<section class="home-services" aria-labelledby="home-services-title">
+  <header class="home-services__intro">
+    <p class="landing-eyebrow"><%= current_store.name %></p>
+    <h2 id="home-services-title" class="home-services__title"><%= t("merchandising.services.title") %></h2>
+    <p class="home-services__body"><%= t("merchandising.services.intro") %></p>
+  </header>
+  <div class="home-services__items">
+    <% if (wa = current_store.whatsapp_url) %>
+      <div class="home-services__item">
+        <h3><%= t("merchandising.services.advice") %></h3>
+        <p><%= t("merchandising.services.advice_body") %></p>
+        <%= link_to t("merchandising.services.contact"), wa, class: "maison-cta", target: "_blank", rel: "noopener" %>
+      </div>
+    <% end %>
+    <div class="home-services__item">
+      <h3><%= current_store.cod_label.presence || t("landing.trust.cod") %></h3>
+      <p><%= current_store.cod_note.presence || t("merchandising.services.payment_body") %></p>
+      <% if (policy = storefront_policy("shipping")) %>
+        <%= link_to policy.title, page_path(policy), class: "maison-cta" %>
+      <% end %>
+    </div>
+    <% if (policy = storefront_policy("returns")) %>
+      <div class="home-services__item">
+        <h3><%= policy.title %></h3>
+        <p><%= t("merchandising.services.returns_body") %></p>
+        <%= link_to t("merchandising.services.conditions"), page_path(policy), class: "maison-cta" %>
+      </div>
+    <% end %>
+  </div>
+</section>

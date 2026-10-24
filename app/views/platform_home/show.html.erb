@@ -1,41 +1,136 @@
 <% content_for :title, t("platform_home.title") %>
+<% content_for :head do %>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<% end %>
+<% h = ->(key) { t("platform_home.#{key}") } %>
+<% sign_in_path = admin_login_path(locale: nil) %>
 
-<div dir="<%= rtl? ? "rtl" : "ltr" %>" class="flex min-h-screen flex-col">
-  <header class="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-6">
-    <span class="font-display text-2xl text-ink">Morea Commerce</span>
-    <nav class="flex items-center gap-4 text-xs uppercase tracking-[0.18em] text-ink-soft" aria-label="<%= t("platform_home.language") %>">
-      <% Morea::Locales::AVAILABLE.each do |locale| %>
-        <%= link_to locale.to_s.upcase, platform_home_path(locale: locale),
-              class: (locale.to_s == I18n.locale.to_s ? "text-ink underline underline-offset-4" : "hover:text-ink"),
-              "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
-      <% end %>
-    </nav>
+<div dir="<%= rtl? ? "rtl" : "ltr" %>" class="min-h-screen bg-white text-[#303030]" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
+  <header class="sticky top-0 z-20 border-b border-[#ebebeb] bg-white/90 backdrop-blur">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+      <a href="/" class="text-base font-semibold tracking-tight text-[#1a1a1a]">Morea Commerce</a>
+      <nav class="hidden items-center gap-6 text-sm text-[#616161] md:flex" aria-label="Primary">
+        <a class="hover:text-[#1a1a1a]" href="#journey"><%= h.("nav.journey") %></a>
+        <a class="hover:text-[#1a1a1a]" href="#features"><%= h.("nav.features") %></a>
+        <a class="hover:text-[#1a1a1a]" href="#integrations"><%= h.("nav.integrations") %></a>
+        <a class="hover:text-[#1a1a1a]" href="#faq"><%= h.("nav.faq") %></a>
+      </nav>
+      <div class="flex items-center gap-3 text-xs">
+        <div class="flex items-center gap-2 text-[#616161]" role="group" aria-label="<%= h.("language") %>">
+          <% Morea::Locales::AVAILABLE.each do |locale| %>
+            <%= link_to locale.to_s.upcase, platform_home_path(locale: locale),
+                  class: (locale.to_s == I18n.locale.to_s ? "font-semibold text-[#1a1a1a]" : "hover:text-[#1a1a1a]"),
+                  "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
+          <% end %>
+        </div>
+        <%= link_to h.("nav.sign_in"), sign_in_path, class: "rounded-lg bg-[#1a1a1a] px-3.5 py-2 text-sm font-medium text-white hover:bg-[#303030] focus:outline-2 focus:outline-offset-2 focus:outline-[#005bd3]" %>
+      </div>
+    </div>
   </header>
 
-  <main class="mx-auto w-full max-w-5xl flex-1 px-6 pb-16">
-    <section class="py-16 sm:py-24">
-      <p class="text-xs uppercase tracking-[0.2em] text-ink-faint"><%= t("platform_home.eyebrow") %></p>
-      <h1 class="mt-4 max-w-3xl font-display text-4xl leading-tight text-ink sm:text-6xl"><%= t("platform_home.headline") %></h1>
-      <p class="mt-6 max-w-2xl text-base leading-7 text-ink-soft"><%= t("platform_home.lead") %></p>
-      <div class="mt-8 flex flex-wrap items-center gap-4">
-        <%= link_to t("platform_home.sign_in"), admin_login_path(locale: nil),
-              class: "bg-ink px-6 py-3 text-xs uppercase tracking-[0.2em] text-paper hover:bg-ink-soft" %>
-        <p class="text-sm text-ink-faint"><%= t("platform_home.store_hint", domain: Store.base_domain) %></p>
+  <main>
+    <section class="bg-[#f7f7f7] px-4 py-16 sm:px-6 sm:py-24">
+      <div class="mx-auto max-w-4xl text-center">
+        <p class="inline-block rounded-full border border-[#e3e3e3] bg-white px-3 py-1 text-xs font-medium text-[#616161]"><%= h.("hero.eyebrow") %></p>
+        <h1 class="mt-6 text-4xl font-bold leading-[1.1] tracking-tight text-[#1a1a1a] sm:text-6xl"><%= h.("hero.headline") %></h1>
+        <p class="mx-auto mt-6 max-w-2xl text-base leading-7 text-[#616161] sm:text-lg"><%= h.("hero.lead") %></p>
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <%= link_to h.("hero.primary"), sign_in_path, class: "rounded-lg bg-[#1a1a1a] px-5 py-3 text-sm font-semibold text-white hover:bg-[#303030] focus:outline-2 focus:outline-offset-2 focus:outline-[#005bd3]" %>
+          <a href="#journey" class="rounded-lg border border-[#d4d4d4] bg-white px-5 py-3 text-sm font-semibold text-[#303030] hover:bg-[#fafafa]"><%= h.("hero.secondary") %></a>
+        </div>
+        <ul class="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[#616161]">
+          <% t("platform_home.hero.badges").each do |badge| %>
+            <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-[#005bd3]" aria-hidden="true"></span><%= badge %></li>
+          <% end %>
+        </ul>
+        <p class="mt-8 text-sm text-[#8a8a8a]"><%= t("platform_home.hero.store_hint", domain: Store.base_domain) %></p>
       </div>
     </section>
 
-    <section aria-labelledby="platform-features" class="border-t border-line pt-12">
-      <h2 id="platform-features" class="text-xs uppercase tracking-[0.2em] text-ink-faint"><%= t("platform_home.features_title") %></h2>
-      <ul class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        <% %w[storefronts cod confirmation shipping api languages].each do |key| %>
-          <li>
-            <h3 class="font-display text-xl text-ink"><%= t("platform_home.features.#{key}.title") %></h3>
-            <p class="mt-2 text-sm leading-6 text-ink-soft"><%= t("platform_home.features.#{key}.body") %></p>
+    <section id="journey" class="mx-auto max-w-6xl scroll-mt-16 px-4 py-16 sm:px-6 sm:py-20">
+      <h2 class="max-w-2xl text-3xl font-bold tracking-tight text-[#1a1a1a] sm:text-4xl"><%= h.("journey.title") %></h2>
+      <p class="mt-3 max-w-2xl text-[#616161]"><%= h.("journey.lead") %></p>
+      <ol class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <% t("platform_home.journey.steps").each_with_index do |step, i| %>
+          <li class="rounded-xl border border-[#ebebeb] bg-white p-5 shadow-[0_1px_0_rgba(26,26,26,0.04)]">
+            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-[#f1f1f1] text-xs font-semibold text-[#303030]"><%= i + 1 %></span>
+            <h3 class="mt-4 text-sm font-semibold text-[#1a1a1a]"><%= step[:title] %></h3>
+            <p class="mt-2 text-sm leading-6 text-[#616161]"><%= step[:body] %></p>
+          </li>
+        <% end %>
+      </ol>
+    </section>
+
+    <section class="bg-[#f1f1f1] px-4 py-16 sm:px-6" aria-labelledby="preview-title">
+      <div class="mx-auto max-w-4xl">
+        <h2 id="preview-title" class="text-center text-2xl font-bold tracking-tight text-[#1a1a1a] sm:text-3xl"><%= h.("preview.title") %></h2>
+        <div class="mt-8 rounded-2xl border border-[#e3e3e3] bg-white p-4 shadow-sm sm:p-6">
+          <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <% t("platform_home.preview.metrics").each do |metric| %>
+              <div class="rounded-xl border border-[#ebebeb] p-4">
+                <dt class="text-xs text-[#616161]"><%= metric[:label] %></dt>
+                <dd class="mt-2 text-2xl font-semibold text-[#1a1a1a]"><%= metric[:value] %></dd>
+              </div>
+            <% end %>
+          </dl>
+        </div>
+        <p class="mt-3 text-center text-xs text-[#8a8a8a]"><%= h.("preview.note") %></p>
+      </div>
+    </section>
+
+    <section id="features" class="mx-auto max-w-6xl scroll-mt-16 px-4 py-16 sm:px-6 sm:py-20">
+      <h2 class="max-w-2xl text-3xl font-bold tracking-tight text-[#1a1a1a] sm:text-4xl"><%= h.("features.title") %></h2>
+      <p class="mt-3 max-w-2xl text-[#616161]"><%= h.("features.lead") %></p>
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <% t("platform_home.features.items").each do |item| %>
+          <li class="rounded-xl border border-[#ebebeb] bg-[#fafafa] p-5">
+            <h3 class="text-sm font-semibold text-[#1a1a1a]"><%= item[:title] %></h3>
+            <p class="mt-2 text-sm leading-6 text-[#616161]"><%= item[:body] %></p>
           </li>
         <% end %>
       </ul>
     </section>
+
+    <section id="integrations" class="border-y border-[#ebebeb] bg-[#f7f7f7] px-4 py-16 sm:px-6">
+      <div class="mx-auto max-w-6xl">
+        <h2 class="text-2xl font-bold tracking-tight text-[#1a1a1a] sm:text-3xl"><%= h.("integrations.title") %></h2>
+        <p class="mt-3 text-[#616161]"><%= h.("integrations.lead") %></p>
+        <ul class="mt-8 flex flex-wrap gap-3">
+          <% t("platform_home.integrations.items").each do |name| %>
+            <li class="rounded-lg border border-[#e3e3e3] bg-white px-4 py-2 text-sm font-medium text-[#303030]"><%= name %></li>
+          <% end %>
+        </ul>
+      </div>
+    </section>
+
+    <section id="faq" class="mx-auto max-w-3xl scroll-mt-16 px-4 py-16 sm:px-6 sm:py-20">
+      <h2 class="text-3xl font-bold tracking-tight text-[#1a1a1a]"><%= h.("faq.title") %></h2>
+      <div class="mt-8 divide-y divide-[#ebebeb] border-y border-[#ebebeb]">
+        <% t("platform_home.faq.items").each do |item| %>
+          <details class="group py-4">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-[#1a1a1a]">
+              <%= item[:q] %>
+              <span class="text-[#8a8a8a] transition group-open:rotate-45" aria-hidden="true">+</span>
+            </summary>
+            <p class="mt-3 text-sm leading-6 text-[#616161]"><%= item[:a] %></p>
+          </details>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="px-4 pb-20 sm:px-6">
+      <div class="mx-auto max-w-4xl rounded-2xl bg-[#1a1a1a] px-6 py-14 text-center text-white">
+        <h2 class="text-3xl font-bold tracking-tight"><%= h.("cta.headline") %></h2>
+        <p class="mx-auto mt-3 max-w-xl text-[#b5b5b5]"><%= h.("cta.body") %></p>
+        <%= link_to h.("cta.button"), sign_in_path, class: "mt-8 inline-block rounded-lg bg-white px-5 py-3 text-sm font-semibold text-[#1a1a1a] hover:bg-[#f1f1f1] focus:outline-2 focus:outline-offset-2 focus:outline-white" %>
+      </div>
+    </section>
   </main>
 
-  <footer class="border-t border-line px-6 py-6 text-center text-xs text-ink-faint"><%= Store.base_domain %></footer>
+  <footer class="border-t border-[#ebebeb] px-4 py-8 sm:px-6">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 text-sm text-[#8a8a8a]">
+      <p><span class="font-semibold text-[#303030]">Morea Commerce</span> · <%= h.("footer.tagline") %> · <%= Store.base_domain %></p>
+      <%= link_to h.("footer.admin"), sign_in_path, class: "hover:text-[#1a1a1a]" %>
+    </div>
+  </footer>
 </div>

@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Luxurious+Roman&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= yield :head if content_for?(:head) %>
   </head>
   <body class="min-h-screen bg-[#f7f5f2] text-ink antialiased">
     <%= yield %>

@@ -246,28 +246,56 @@ en:
   platform_home:
     title: "Morea Commerce — multi-store commerce platform"
     language: "Language"
-    eyebrow: "Multi-store commerce platform"
-    headline: "Run cash-on-delivery stores from one platform."
-    lead: "Each store keeps its own storefront, catalog and checkout. Staff confirm orders, manage stock and ship from one admin."
-    sign_in: "Sign in to admin"
-    store_hint: "Looking for a store? Open it on its own address, for example your-store.%{domain}."
-    features_title: "What the platform provides"
+    nav: { journey: "How it works", features: "Features", integrations: "Integrations", faq: "FAQ", sign_in: "Sign in" }
+    hero:
+      eyebrow: "Multi-store commerce platform"
+      headline: "Run cash-on-delivery stores from one platform."
+      lead: "Each store keeps its own storefront, catalog and checkout. Your team confirms orders, manages stock and ships from a single admin."
+      primary: "Sign in to admin"
+      secondary: "See how an order flows"
+      store_hint: "Looking for a store? Open it on its own address, for example your-store.%{domain}."
+      badges: [ "Separate storefronts", "Cash on delivery", "French · English · Arabic", "API and MCP" ]
+    journey:
+      title: "One order, from checkout to delivery"
+      lead: "The same record follows an order through every step, so nobody works from a spreadsheet."
+      steps:
+        - { title: "Order placed", body: "A customer checks out on the storefront, or a connected tool sends the order through the API." }
+        - { title: "Confirmation", body: "Staff claim the order from a queue, call the customer and record the outcome or a callback time." }
+        - { title: "Stock reserved", body: "When an order is confirmed, its items are reserved so the same unit is not sold twice." }
+        - { title: "Shipped", body: "The order is sent to the connected carrier, and the label and tracking come back to the admin." }
+        - { title: "Delivered or returned", body: "Carrier updates move the order to delivered or returned, with the history kept on the order." }
+    preview:
+      title: "Your day at a glance"
+      note: "Illustration of the admin overview. The figures are examples, not real data."
+      metrics: [ { label: "New orders", value: "42" }, { label: "Confirmed", value: "31" }, { label: "Shipped", value: "27" }, { label: "Delivered", value: "19" } ]
     features:
-      storefronts:
-        title: "Separate storefronts"
-        body: "Every store has its own address, catalog, cart and customers, isolated from other stores."
-      cod:
-        title: "Cash-on-delivery checkout"
-        body: "Customers order without paying online, and stock is reserved when the order is confirmed."
-      confirmation:
-        title: "Order confirmation"
-        body: "A queue lets staff claim orders, call customers, schedule callbacks and record the outcome."
-      shipping:
-        title: "Shipping"
-        body: "Confirmed orders can be sent to the connected carrier and tracked from the admin."
-      api:
-        title: "API and automation"
-        body: "Store tokens, GraphQL and MCP let connected tools read and manage a store."
-      languages:
-        title: "French, English, Arabic"
-        body: "Storefronts support right-to-left Arabic as well as French and English."
+      title: "Everything a store team needs"
+      lead: "Built for stores that sell with cash on delivery."
+      items:
+        - { title: "Storefront per store", body: "Own address, catalog, collections, pages and cart. Stores are isolated from each other." }
+        - { title: "Order desk", body: "Create, edit, comment on, archive and duplicate orders, and print packing slips." }
+        - { title: "Confirmation queue", body: "Exclusive claims, callbacks, internal notes and clear outcomes for each order." }
+        - { title: "Products and stock", body: "Variants, colour galleries and a stock history for every movement." }
+        - { title: "Shipping", body: "Send orders to the connected carrier, print labels and sync delivery status." }
+        - { title: "Staff accounts", body: "Staff sign in to their own store, with expiring sessions and an audit trail." }
+        - { title: "Tracking pixels", body: "Add Meta and TikTok pixels per store." }
+        - { title: "API and automation", body: "Store tokens, GraphQL and MCP let connected tools read and manage a store." }
+    integrations:
+      title: "Connects to what you already use"
+      lead: "Carrier, ads and automation connections that exist today."
+      items: [ "Sendit shipping", "Meta Pixel", "TikTok Pixel", "Discord order alerts", "GraphQL API", "MCP", "OAuth" ]
+    faq:
+      title: "Questions"
+      items:
+        - { q: "Is this a marketplace?", a: "No. Every store has its own address and storefront. The platform is the admin behind them." }
+        - { q: "Which languages are supported?", a: "Storefronts support French, English and Arabic, including right-to-left layout." }
+        - { q: "Which carriers can I use?", a: "Sendit is connected today for shipping within Morocco." }
+        - { q: "Can my tools send orders?", a: "Yes. A store token lets a connected tool create orders through the API. Orders are never duplicated when a request is retried." }
+        - { q: "How do I open a store?", a: "Stores are created by the platform administrator. Sign in to the admin to manage yours." }
+    cta:
+      headline: "Ready to run your store?"
+      body: "Sign in to the admin to manage orders, stock and shipping."
+      button: "Sign in to admin"
+    footer:
+      tagline: "Multi-store commerce platform"
+      admin: "Admin sign in"

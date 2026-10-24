@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for?(:title) ? yield(:title) : "Sign in" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  </head>
+  <body class="min-h-screen bg-white text-[#303030]" style="font-family: 'Inter', ui-sans-serif, system-ui, sans-serif">
+    <% brand = current_store&.name.presence || "Morea Commerce" %>
+    <div class="flex min-h-screen flex-col">
+      <header class="border-b border-[#ebebeb] bg-white">
+        <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <a href="/" class="text-base font-semibold tracking-tight text-[#0b2447]"><%= brand %></a>
+          <a href="/" class="text-sm text-[#616161] hover:text-[#005bd3]">Back to home</a>
+        </div>
+      </header>
+
+      <main class="flex flex-1 items-center justify-center bg-[#f3f8ff] px-4 py-12 sm:px-6">
+        <%= yield %>
+      </main>
+
+      <footer class="border-t border-[#ebebeb] px-4 py-6 text-center text-sm text-[#8a8a8a] sm:px-6">
+        <span class="font-semibold text-[#303030]"><%= brand %></span> · <%= Store.base_domain %>
+      </footer>
+    </div>
+  </body>
+</html>

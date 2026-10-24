@@ -1,6 +1,6 @@
 module Admin
   class SessionsController < ApplicationController
-    layout "admin"
+    layout "auth"
 
     def new
       redirect_to after_login_path if current_admin_user

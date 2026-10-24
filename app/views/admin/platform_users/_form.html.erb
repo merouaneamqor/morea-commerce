@@ -1,0 +1,46 @@
+<div class="admin-page-header">
+  <div class="flex items-center gap-2">
+    <%= link_to admin_platform_users_path, class: "admin-back", "aria-label": t("platform_admin.back") do %><%= admin_icon(:back) %><% end %>
+    <h1 class="admin-page-header__title"><%= @user.persisted? ? (@user.name.presence || @user.email) : t("platform_users.new") %></h1>
+  </div>
+  <button type="submit" form="platform-user-form" class="admin-btn"><%= t("platform_users.save") %></button>
+</div>
+
+<%= form_with model: @user, url: (@user.persisted? ? admin_platform_user_path(@user) : admin_platform_users_path), id: "platform-user-form", class: "admin-stack" do |f| %>
+  <% if @user.errors.any? %>
+    <div role="alert" class="admin-banner admin-banner--critical"><%= @user.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <section class="admin-card">
+    <div class="space-y-4 p-4">
+      <div class="admin-field-grid">
+        <div>
+          <%= f.label :name, t("platform_users.columns.name"), class: "admin-label" %>
+          <%= f.text_field :name, class: "admin-input" %>
+        </div>
+        <div>
+          <%= f.label :email, t("platform_users.columns.email"), class: "admin-label" %>
+          <%= f.email_field :email, class: "admin-input", required: true, autocomplete: "off" %>
+        </div>
+        <div>
+          <%= f.label :role, t("platform_users.columns.role"), class: "admin-label" %>
+          <%= select_tag "user[role]", options_for_select([[t("platform_users.roles.workspace_admin"), "workspace_admin"], [t("platform_users.roles.super_admin"), "super_admin"]], @user.super_admin? ? "super_admin" : "workspace_admin"), id: "user_role", class: "admin-input" %>
+        </div>
+        <div>
+          <%= f.label :store_id, t("platform_users.columns.workspace"), class: "admin-label" %>
+          <%= select_tag "user[store_id]", options_for_select(Store.order(:name).pluck(:name, :id), @user.store_id), include_blank: t("platform_users.no_workspace"), id: "user_store_id", class: "admin-input" %>
+          <p class="admin-help"><%= t("platform_users.workspace_help") %></p>
+        </div>
+        <div>
+          <%= f.label :password, @user.persisted? ? t("platform_users.new_password") : t("platform_users.columns.password"), class: "admin-label" %>
+          <%= f.password_field :password, class: "admin-input", required: !@user.persisted?, autocomplete: "new-password" %>
+          <% if @user.persisted? %><p class="admin-help"><%= t("platform_users.password_help") %></p><% end %>
+        </div>
+        <div>
+          <%= f.label :password_confirmation, t("platform_users.password_confirmation"), class: "admin-label" %>
+          <%= f.password_field :password_confirmation, class: "admin-input", autocomplete: "new-password" %>
+        </div>
+      </div>
+    </div>
+  </section>
+<% end %>

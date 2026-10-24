@@ -1,0 +1,54 @@
+en:
+  platform_users:
+    nav: "Admin users"
+    title: "Admin users"
+    description: "Manage platform administrators and workspace administrators. Archived and suspended users cannot sign in."
+    new: "New admin user"
+    edit: "Edit"
+    save: "Save"
+    created: "Admin user created."
+    saved: "Admin user saved."
+    empty: "No %{status} admin users."
+    no_workspace: "No workspace (platform only)"
+    workspace_help: "Required for workspace administrators. Leave empty for a platform-only administrator."
+    new_password: "New password"
+    password_help: "Leave blank to keep the current password."
+    password_confirmation: "Confirm password"
+    columns:
+      name: "Name"
+      email: "Email"
+      role: "Role"
+      workspace: "Workspace"
+      status: "Status"
+      password: "Password"
+    roles:
+      super_admin: "Platform administrator"
+      workspace_admin: "Workspace administrator"
+    role_filters:
+      all: "All roles"
+      super_admin: "Platform administrators"
+      workspace_admin: "Workspace administrators"
+    statuses:
+      active: "Active"
+      suspended: "Suspended"
+      archived: "Archived"
+    actions:
+      suspend: "Suspend"
+      reactivate: "Reactivate"
+      archive: "Archive"
+      restore: "Restore"
+    confirm:
+      suspend: "Suspend %{email}? They will be signed out."
+      reactivate: "Reactivate %{email}?"
+      archive: "Archive %{email}? They will be signed out."
+      restore: "Restore %{email}?"
+    done:
+      suspend: "%{email} suspended."
+      reactivate: "%{email} reactivated."
+      archive: "%{email} archived."
+      restore: "%{email} restored."
+    denied:
+      self: "You cannot suspend, archive or demote your own account."
+      last_super_admin: "Keep at least one active platform administrator."
+      invalid_transition: "This change is not available for the user's current status."
+      unknown_action: "Unknown action."

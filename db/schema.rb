@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_213000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_214000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -633,9 +633,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_213000) do
     t.datetime "updated_at", null: false
     t.bigint "store_id"
     t.boolean "super_admin", default: false, null: false
+    t.string "status", default: "active", null: false
+    t.datetime "status_changed_at"
     t.index ["email"], name: "index_users_on_email_super_admin", unique: true, where: "(super_admin = true)"
+    t.index ["status"], name: "index_users_on_status"
     t.index ["store_id", "email"], name: "index_users_on_store_id_and_email", unique: true
     t.index ["store_id"], name: "index_users_on_store_id"
+    t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'suspended'::character varying, 'archived'::character varying]::text[])", name: "users_status_check"
   end
 
   add_foreign_key "access_requests", "stores", on_delete: :nullify

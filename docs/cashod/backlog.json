@@ -1,0 +1,609 @@
+[
+  {
+    "id": "E01",
+    "title": "Evidence capture and parity specification",
+    "phase": 0,
+    "dependencies": [],
+    "baseline": "Published reference inspected; authenticated workflows unverified.",
+    "tasks": [
+      {
+        "id": "E01-T1",
+        "title": "Capture authenticated screen and workflow inventory",
+        "acceptance": "Record navigation, URLs, fields, filters, validations, empty/error/loading states and desktop/mobile screenshots for every accessible module; label plan-gated screens. Resolve current blank-page browser behavior before claiming login success.",
+        "github": {
+          "number": 48,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/48"
+        }
+      },
+      {
+        "id": "E01-T2",
+        "title": "Document observed API contracts and domain state machines",
+        "acceptance": "Capture redacted request/response schemas from normal authorized UI use; map order, confirmation, parcel, return and settlement transitions with actor and stock/cash effects. No inferred endpoint may be marked observed.",
+        "github": {
+          "number": 49,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/49"
+        }
+      },
+      {
+        "id": "E01-T3",
+        "title": "Publish signed-off feature parity and Morea gap matrix",
+        "acceptance": "For every feature record source, observation level, existing Morea path, gap, priority and acceptance scenario; split verified behavior from published claims and product choices.",
+        "github": {
+          "number": 50,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/50"
+        }
+      }
+    ],
+    "github": {
+      "number": 34,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/34"
+    }
+  },
+  {
+    "id": "E02",
+    "title": "Tenant access, roles and operational shell",
+    "phase": 1,
+    "dependencies": [
+      "E01"
+    ],
+    "baseline": "Store tenancy, staff, platform admin and FR/EN/AR already exist.",
+    "tasks": [
+      {
+        "id": "E02-T1",
+        "title": "Specify operator roles and store switching",
+        "acceptance": "Map Cashod role/store visibility after login; design membership permissions beyond current User.belongs_to store; test deny-by-default access and cross-tenant denial for UI, jobs, GraphQL and MCP.",
+        "github": {
+          "number": 51,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/51"
+        }
+      },
+      {
+        "id": "E02-T2",
+        "title": "Design dense responsive operations navigation",
+        "acceptance": "Map modules into Morea admin while preserving storefront UX; specify RTL, keyboard navigation, tables, saved filters and accessible error states.",
+        "github": {
+          "number": 52,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/52"
+        }
+      },
+      {
+        "id": "E02-T3",
+        "title": "Harden sessions and audit actor identity",
+        "acceptance": "Specify optional 2FA, session expiry/revocation, privileged actions and actor/source audit events; validate session and token tenant boundaries in isolated tests.",
+        "github": {
+          "number": 53,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/53"
+        }
+      }
+    ],
+    "github": {
+      "number": 35,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/35"
+    }
+  },
+  {
+    "id": "E03",
+    "title": "Order intake, deduplication and COD lifecycle",
+    "phase": 1,
+    "dependencies": [
+      "E01",
+      "E02"
+    ],
+    "baseline": "Order model already has transitions, edits, archive/tags/events, cancellation and stock reservation.",
+    "tasks": [
+      {
+        "id": "E03-T1",
+        "title": "Unify external order ingestion and duplicate detection",
+        "acceptance": "Define source IDs and idempotency keys; repeat delivery creates one order; normalize Moroccan phones; flag likely duplicates without deleting legitimate repeat purchases.",
+        "github": {
+          "number": 54,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/54"
+        }
+      },
+      {
+        "id": "E03-T2",
+        "title": "Extend the existing order desk from observed parity gaps",
+        "acceptance": "Map reference statuses to Order::TRANSITIONS; specify bulk actions, filters, timelines, assignments, validation and edit locks; preserve carrier-owned statuses and existing order history.",
+        "github": {
+          "number": 55,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/55"
+        }
+      },
+      {
+        "id": "E03-T3",
+        "title": "Specify deposits and remaining COD balance",
+        "acceptance": "Define deposit recording/reversal, minor-unit currency arithmetic and collectible remainder; carrier amount must equal agreed outstanding balance; prevent overpayment and double counting.",
+        "github": {
+          "number": 56,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/56"
+        }
+      }
+    ],
+    "github": {
+      "number": 36,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/36"
+    }
+  },
+  {
+    "id": "E04",
+    "title": "Call-center confirmation and agent performance",
+    "phase": 2,
+    "dependencies": [
+      "E03"
+    ],
+    "baseline": "No dedicated call-center tables identified in schema.",
+    "tasks": [
+      {
+        "id": "E04-T1",
+        "title": "Design confirmation queue and fair assignment",
+        "acceptance": "Specify callback precedence, assignment rules, concurrent claim locks and reassignment; two agents cannot claim the same order; store and role scope enforced.",
+        "github": {
+          "number": 57,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/57"
+        }
+      },
+      {
+        "id": "E04-T2",
+        "title": "Model call attempts, outcomes and callbacks",
+        "acceptance": "Record agent, timestamps, duration, disposition and next callback; reference observations determine confirmation/cancellation transitions; unanswered attempts cannot silently confirm orders.",
+        "github": {
+          "number": 58,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/58"
+        }
+      },
+      {
+        "id": "E04-T3",
+        "title": "Define agent reporting and commissions",
+        "acceptance": "Specify denominator for contact/confirmation/delivery rates and commission eligibility/reversals; fixture totals reconcile to call and delivered-order events.",
+        "github": {
+          "number": 59,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/59"
+        }
+      }
+    ],
+    "github": {
+      "number": 37,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/37"
+    }
+  },
+  {
+    "id": "E05",
+    "title": "WhatsApp inbox and AI confirmation",
+    "phase": 3,
+    "dependencies": [
+      "E03",
+      "E04",
+      "E11"
+    ],
+    "baseline": "No WhatsApp inbox/AI confirmation module identified.",
+    "tasks": [
+      {
+        "id": "E05-T1",
+        "title": "Design official WhatsApp connection and shared inbox",
+        "acceptance": "Document provider setup, template approval, consent, delivery receipts and tenant-bound conversations; duplicate webhook must not duplicate messages; no live customer messages during discovery.",
+        "github": {
+          "number": 60,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/60"
+        }
+      },
+      {
+        "id": "E05-T2",
+        "title": "Specify button confirmation and timed follow-ups",
+        "acceptance": "Model confirm/cancel buttons, expiry, already-shipped orders, fallback to call center and opt-out; each event changes an order at most once.",
+        "github": {
+          "number": 61,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/61"
+        }
+      },
+      {
+        "id": "E05-T3",
+        "title": "Design multilingual AI with human handoff",
+        "acceptance": "Specify Darija/AR/FR/EN/ES evaluation fixtures, confidence policy, source-grounded answers, tool permissions, handoff and spend limits; low-confidence or conflicting customer requests require human review.",
+        "github": {
+          "number": 62,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/62"
+        }
+      }
+    ],
+    "github": {
+      "number": 38,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/38"
+    }
+  },
+  {
+    "id": "E06",
+    "title": "Carrier adapters, shipment lifecycle and delivery runs",
+    "phase": 2,
+    "dependencies": [
+      "E03"
+    ],
+    "baseline": "Sendit integration, polling, labels and webhooks already exist.",
+    "tasks": [
+      {
+        "id": "E06-T1",
+        "title": "Extract a carrier contract around existing Sendit behavior",
+        "acceptance": "Specify create/cancel/label/track capabilities, error taxonomy and status mapping; preserve Sendit ownership, retries and idempotency; prove with recorded/sandbox fixtures.",
+        "github": {
+          "number": 63,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/63"
+        }
+      },
+      {
+        "id": "E06-T2",
+        "title": "Prioritize and specify additional carrier integrations",
+        "acceptance": "Validate Cashod carrier list and per-carrier fields/coverage from authorized screens and vendor docs; deliver adapter matrix and first additional carrier contract; do not promise all carriers without evidence.",
+        "github": {
+          "number": 64,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/64"
+        }
+      },
+      {
+        "id": "E06-T3",
+        "title": "Design carrier rules and own-courier delivery runs",
+        "acceptance": "Specify ordered assignment rules, fallback, driver manifests, partial delivery, proof and cash handover; rerunning assignment cannot create duplicate parcels.",
+        "github": {
+          "number": 65,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/65"
+        }
+      }
+    ],
+    "github": {
+      "number": 39,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/39"
+    }
+  },
+  {
+    "id": "E07",
+    "title": "Returns, warehouses and stock costing",
+    "phase": 2,
+    "dependencies": [
+      "E03",
+      "E06"
+    ],
+    "baseline": "Inventory movements, variants and reservation lifecycle exist; no warehouse/FIFO tables identified.",
+    "tasks": [
+      {
+        "id": "E07-T1",
+        "title": "Specify return receipt and disposition lifecycle",
+        "acceptance": "Separate carrier returned from physical receipt; scan/inspect accepted, damaged and missing items; restock once only and reconcile fees without rewriting shipment history.",
+        "github": {
+          "number": 66,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/66"
+        }
+      },
+      {
+        "id": "E07-T2",
+        "title": "Design warehouse balances and immutable stock ledger",
+        "acceptance": "Extend existing movements to locations, transfers, reservations and adjustments; concurrent reservations cannot oversell and ledger/balances reconcile by store, SKU and warehouse.",
+        "github": {
+          "number": 67,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/67"
+        }
+      },
+      {
+        "id": "E07-T3",
+        "title": "Specify FIFO cost lots and delivered COGS",
+        "acceptance": "Define lot allocation, partial consumption, returns and cost corrections; deterministic fixtures reconcile quantity/value and prevent negative cost-lot balances.",
+        "github": {
+          "number": 68,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/68"
+        }
+      }
+    ],
+    "github": {
+      "number": 40,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/40"
+    }
+  },
+  {
+    "id": "E08",
+    "title": "Suppliers, purchasing and production planning",
+    "phase": 3,
+    "dependencies": [
+      "E07"
+    ],
+    "baseline": "No supplier/purchase/production tables identified.",
+    "tasks": [
+      {
+        "id": "E08-T1",
+        "title": "Model suppliers and purchase order workflow",
+        "acceptance": "Specify unit costs, MOQ, lead times, draft/ordered/partial/received/cancelled transitions and access; receiving twice cannot duplicate stock.",
+        "github": {
+          "number": 69,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/69"
+        }
+      },
+      {
+        "id": "E08-T2",
+        "title": "Design partial receipt and supplier balances",
+        "acceptance": "Specify receipts, costs, payments and outstanding balances; stock lots created atomically with accepted receipt quantities and reconcile to supplier ledger.",
+        "github": {
+          "number": 70,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/70"
+        }
+      },
+      {
+        "id": "E08-T3",
+        "title": "Specify made-to-order planning calendar",
+        "acceptance": "Map requested dates to daily SKU demand, available stock and planned production; define rescheduling, timezone, cancellation and shortage behavior.",
+        "github": {
+          "number": 71,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/71"
+        }
+      }
+    ],
+    "github": {
+      "number": 41,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/41"
+    }
+  },
+  {
+    "id": "E09",
+    "title": "Customer identity and risk signals",
+    "phase": 2,
+    "dependencies": [
+      "E03",
+      "E02"
+    ],
+    "baseline": "Customer records and admin customer pages exist.",
+    "tasks": [
+      {
+        "id": "E09-T1",
+        "title": "Design tenant-safe customer identity and history",
+        "acceptance": "Validate whether reference identity spans stores; define explicit merchant boundary, normalized phones, merge/unmerge and event provenance; no cross-merchant customer exposure.",
+        "github": {
+          "number": 72,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/72"
+        }
+      },
+      {
+        "id": "E09-T2",
+        "title": "Specify VIP, blacklist and duplicate review controls",
+        "acceptance": "Capture reason, actor, date and override permission; risk flags explain decisions and never silently discard paid or valid customer orders.",
+        "github": {
+          "number": 73,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/73"
+        }
+      },
+      {
+        "id": "E09-T3",
+        "title": "Define customer search, retention and export access",
+        "acceptance": "Specify masked list views, authorized detail access, retention/deletion rules and export auditing; fixture tests enforce tenant and role restrictions.",
+        "github": {
+          "number": 74,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/74"
+        }
+      }
+    ],
+    "github": {
+      "number": 42,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/42"
+    }
+  },
+  {
+    "id": "E10",
+    "title": "COD reconciliation, accounting and profitability",
+    "phase": 3,
+    "dependencies": [
+      "E06",
+      "E07"
+    ],
+    "baseline": "Platform subscription invoices exist; these are distinct from merchant COD settlements.",
+    "tasks": [
+      {
+        "id": "E10-T1",
+        "title": "Design carrier remittance and invoice matching",
+        "acceptance": "Model expected COD, deposits, delivery/return fees, received cash, discrepancies and settlement state; duplicate statement import cannot book money twice.",
+        "github": {
+          "number": 75,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/75"
+        }
+      },
+      {
+        "id": "E10-T2",
+        "title": "Specify merchant expense and cash ledgers",
+        "acceptance": "Separate merchant accounting from platform invoices; define immutable entries, reversals, receivables and balances; reconcile opening plus movements to closing balances.",
+        "github": {
+          "number": 76,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/76"
+        }
+      },
+      {
+        "id": "E10-T3",
+        "title": "Define P&L and operational KPI semantics",
+        "acceptance": "Document revenue recognition, FIFO COGS, courier fees, returns, commissions, ad spend and expenses; publish hand-calculated delivered/returned/partial-settlement fixtures and timezone rules.",
+        "github": {
+          "number": 77,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/77"
+        }
+      }
+    ],
+    "github": {
+      "number": 43,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/43"
+    }
+  },
+  {
+    "id": "E11",
+    "title": "Workflow automation and reliable event processing",
+    "phase": 2,
+    "dependencies": [
+      "E03"
+    ],
+    "baseline": "Sidekiq, scheduled jobs and Sendit polling already exist.",
+    "tasks": [
+      {
+        "id": "E11-T1",
+        "title": "Design event/outbox and deduplicated job execution",
+        "acceptance": "Specify tenant-bound events, transaction boundaries, idempotent consumers, retry/backoff and dead-letter handling; crash/replay cannot duplicate shipments or stock movements.",
+        "github": {
+          "number": 78,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/78"
+        }
+      },
+      {
+        "id": "E11-T2",
+        "title": "Specify trigger-condition-delay-action workflows",
+        "acceptance": "Map published triggers to observed UI; define conditions, delays, cancellation, versioning and safe preview; limit dangerous actions by permission and environment.",
+        "github": {
+          "number": 79,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/79"
+        }
+      },
+      {
+        "id": "E11-T3",
+        "title": "Design run history, replay and operational alerts",
+        "acceptance": "Specify redacted logs, correlation IDs, dry-run, scoped replay and alert thresholds; failed external actions remain visible with actionable recovery.",
+        "github": {
+          "number": 80,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/80"
+        }
+      }
+    ],
+    "github": {
+      "number": 44,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/44"
+    }
+  },
+  {
+    "id": "E12",
+    "title": "Store integrations, public API and MCP parity",
+    "phase": 3,
+    "dependencies": [
+      "E03",
+      "E11",
+      "E02"
+    ],
+    "baseline": "GraphQL, MCP and OAuth with store tokens already exist.",
+    "tasks": [
+      {
+        "id": "E12-T1",
+        "title": "Design external commerce and Sheets connectors",
+        "acceptance": "Prioritize Shopify then validate YouCan/WooCommerce/LightFunnels/Storeep/xPage/Sheets demand; specify mapping, cursors, retries, sync conflicts and import reconciliation.",
+        "github": {
+          "number": 81,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/81"
+        }
+      },
+      {
+        "id": "E12-T2",
+        "title": "Specify scoped developer API and webhook contracts",
+        "acceptance": "Compare existing GraphQL/MCP with published REST capability; decide REST needs via ADR; define scopes, key rotation, pagination, idempotency, webhook signatures and rate limits.",
+        "github": {
+          "number": 82,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/82"
+        }
+      },
+      {
+        "id": "E12-T3",
+        "title": "Extend existing MCP coverage and safety contracts",
+        "acceptance": "Map accepted modules to tools/resources; preserve preview/apply/verify and authorization semantics; test schema compatibility, tenant scope and safe errors without secrets.",
+        "github": {
+          "number": 83,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/83"
+        }
+      }
+    ],
+    "github": {
+      "number": 45,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/45"
+    }
+  },
+  {
+    "id": "E13",
+    "title": "Advertising attribution and campaign rules",
+    "phase": 4,
+    "dependencies": [
+      "E10",
+      "E11",
+      "E12"
+    ],
+    "baseline": "Pixels/tracking settings exist; ad-account reporting/rules not established.",
+    "tasks": [
+      {
+        "id": "E13-T1",
+        "title": "Specify ad account connection and COD attribution",
+        "acceptance": "Validate Meta/TikTok/Google/Snapchat screens and vendor permissions; define attribution keys/windows, timezone and spend freshness; track unmatched spend explicitly.",
+        "github": {
+          "number": 84,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/84"
+        }
+      },
+      {
+        "id": "E13-T2",
+        "title": "Define delivered-profit campaign reporting",
+        "acceptance": "Join spend to confirmed/delivered/returned orders using versioned attribution rules; verify against accounting fixtures and show stale/missing data.",
+        "github": {
+          "number": 85,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/85"
+        }
+      },
+      {
+        "id": "E13-T3",
+        "title": "Design guarded campaign automation",
+        "acceptance": "Validate which vendors support pause/enable/budget rules; specify dry-run, limits, cooldowns, audit and rollback; no live budget changes during reverse engineering.",
+        "github": {
+          "number": 86,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/86"
+        }
+      }
+    ],
+    "github": {
+      "number": 46,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/46"
+    }
+  },
+  {
+    "id": "E14",
+    "title": "SaaS plans, migration and release acceptance",
+    "phase": 4,
+    "dependencies": [
+      "E02",
+      "E03",
+      "E04",
+      "E05",
+      "E06",
+      "E07",
+      "E08",
+      "E09",
+      "E10",
+      "E11",
+      "E12",
+      "E13"
+    ],
+    "baseline": "Manual platform invoices and soft past-due banners already exist.",
+    "tasks": [
+      {
+        "id": "E14-T1",
+        "title": "Specify plan entitlements and usage metering",
+        "acceptance": "Verify current Cashod pricing/limits before adopting; design store/order/user metering and limit behavior; preserve existing manual billing until an explicit payment-provider decision.",
+        "github": {
+          "number": 87,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/87"
+        }
+      },
+      {
+        "id": "E14-T2",
+        "title": "Plan additive migrations and staged rollout",
+        "acceptance": "Provide ADRs, backfill/reconciliation scripts, feature flags, rollback boundaries and backup/restore rehearsal; preserve Morea storefront, tenant URLs, API contracts and current order data.",
+        "github": {
+          "number": 88,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/88"
+        }
+      },
+      {
+        "id": "E14-T3",
+        "title": "Define end-to-end parity and operational readiness gate",
+        "acceptance": "Use synthetic tenants for intake\u2192confirmation\u2192shipment\u2192delivery/return\u2192settlement plus duplicate, failure and replay cases; require tenant security, accessibility/RTL, load thresholds, monitoring and owner sign-off before release.",
+        "github": {
+          "number": 89,
+          "url": "https://github.com/merouaneamqor/morea-commerce/issues/89"
+        }
+      }
+    ],
+    "github": {
+      "number": 47,
+      "url": "https://github.com/merouaneamqor/morea-commerce/issues/47"
+    }
+  }
+]

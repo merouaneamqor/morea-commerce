@@ -42,7 +42,7 @@
 
         <aside class="admin-sidebar" data-admin-menu-target="sidebar">
           <nav class="admin-sidebar__nav">
-            <%= admin_nav_link "Home", admin_root_path, icon: :home, active: controller_name == "dashboard" %>
+            <%= admin_nav_link t("dashboard.nav"), admin_root_path, icon: :home, active: controller_name == "dashboard" %>
             <%= admin_nav_link "Orders", admin_orders_path, icon: :orders, active: controller_name == "orders" %>
             <% if current_store %>
               <%= admin_nav_link t("admin.confirmations.title"), admin_confirmations_path, icon: :orders, active: controller_name == "confirmations" %>

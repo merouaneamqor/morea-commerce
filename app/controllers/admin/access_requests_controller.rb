@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Admin
-  # Platform admins review visitors' requests to open a store.
+  # Platform admins review requests for merchant workspace access.
   class AccessRequestsController < BaseController
     layout "admin_platform"
     before_action :require_super_admin!
@@ -14,16 +14,25 @@ module Admin
       @counts = AccessRequest.group(:status).count
     end
 
-    # Approval happens by creating the store, so billing and the first admin are set deliberately.
+    # Review opens provisioning; saving the workspace makes the final decision.
     def approve
-      return redirect_to(admin_access_requests_path, alert: "Request already reviewed.") unless @access_request.pending?
+      return redirect_to(admin_access_requests_path, alert: t("platform_admin.request_already_reviewed")) unless @access_request.pending?
 
       redirect_to new_admin_tenant_path(access_request_id: @access_request.id)
     end
 
     def reject
-      @access_request.reject!(reviewer: current_user) if @access_request.pending?
-      redirect_to admin_access_requests_path, notice: "Request rejected."
+      rejected = @access_request.with_lock do
+        if @access_request.pending?
+          @access_request.reject!(reviewer: current_user)
+          true
+        end
+      end
+      if rejected
+        redirect_to admin_access_requests_path, notice: t("platform_admin.request_rejected")
+      else
+        redirect_to admin_access_requests_path, alert: t("platform_admin.request_already_reviewed")
+      end
     end
 
     private

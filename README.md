@@ -12,6 +12,8 @@ Merchants can request a Codify storefront or an external-only order-management w
 
 **Sales channels → Connected stores** configures signed Shopify, WooCommerce and YouCan order webhooks with source filters, receipt history, disconnect/resume and signing-secret replacement. This first slice uses manual provider webhook setup and supports unpaid Moroccan COD/MAD orders without tax, discounts or extra fees. It preserves external line prices/options without local catalog setup or inventory changes. OAuth installation, historical import, provider updates and stock sync remain future work. YouCan needs complete order relationships and native payload completeness is not yet verified; incomplete events are visibly rejected. See [provider setup and limitations](docs/features/connected-store-contracts.md).
 
+**Overview** is the merchant landing dashboard after sign-in. It adapts setup actions to a Codify storefront, connected stores or both, with 7/30-day order metrics, source health, recent orders and direct links to confirmation, due callbacks and delivery issues. Local inventory appears only when the merchant tracks catalog stock; cart activity appears only for enabled storefronts. Order value preserves cents and separates currencies. See [dashboard metric definitions](docs/features/merchant-dashboard.md).
+
 ## Run
 
 ```bash
@@ -32,7 +34,7 @@ docker compose exec web bin/rails db:migrate db:seed
 
 ### Create another tenant
 
-From the platform UI (**New store**), or:
+From the platform UI (**New workspace**), or:
 
 ```bash
 docker compose exec web env \
@@ -43,7 +45,7 @@ docker compose exec web env \
 
 Then open http://atelier.lvh.me:3010 (local). In production, add `{slug}.ollazen.com` as a Custom Domain on the Render `morea` service (or add `*.ollazen.com` + root if on a plan that supports wildcards).
 
-`APP_BASE_DOMAIN=ollazen.com` in production. Set `PLATFORM_DISCORD_WEBHOOK_URL` to get a Discord message for every new access request (`/signup`); requests are reviewed in **/admin/platform**. Locally docker-compose uses `lvh.me`.
+`APP_BASE_DOMAIN=ollazen.com` in production. Set `PLATFORM_DISCORD_WEBHOOK_URL` to get a Discord message for every new access request (`/signup`). Platform admins review requests in **Access requests → Review request** (`/admin/access_requests`), then **Approve and create workspace**. Approved merchant workspaces are listed separately from requests; their public Codify storefront is optional. Locally docker-compose uses `lvh.me`.
 
 ### Platform billing
 
@@ -64,6 +66,10 @@ docker compose exec web bin/rails stores:api_token[morea]
 The token is shown once and selects the store. Send `Authorization: Bearer <token>`.
 
 Connected agents should read the MCP resource `morea://catalog` before writing. The same manual is the GraphQL query `{ guide }`. It covers prices (`priceDh` as whole units), fr/en/ar translations, deletes (`confirm: true`), and image uploads.
+
+## Tests
+
+Automated specs: run `bundle exec rspec` with `RAILS_ENV=test` and a dedicated test database. See [spec setup and coverage](spec/README.md). CI runs the specs alongside the existing smoke scripts, including concurrent workspace approval and rejection checks.
 
 ## Stack
 

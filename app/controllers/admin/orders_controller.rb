@@ -22,6 +22,7 @@ module Admin
         @orders.active
       end
       @orders = @orders.by_status(@status) if @status.present? && !@archived
+      @orders = @orders.where(status: Order::PROBLEM_STATUSES) if params[:attention] == "delivery_issues"
       if params[:q].present?
         q = "%#{Order.sanitize_sql_like(params[:q].strip)}%"
         @orders = @orders.where(

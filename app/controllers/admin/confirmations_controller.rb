@@ -4,11 +4,14 @@ module Admin
 
     def index
       @page = params[:page].to_i.clamp(1, 100_000)
-      @filter = %w[available mine all].include?(params[:filter]) ? params[:filter] : "available"
+      @filter = %w[available mine all callbacks_due].include?(params[:filter]) ? params[:filter] : "available"
       orders = current_store.orders.active.where(status: "new", sendit_code: [ nil, "" ])
         .joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")
       if @filter == "mine"
         orders = orders.where(order_confirmations: { assigned_user_id: current_user.id })
+      elsif @filter == "callbacks_due"
+        orders = orders.where(order_confirmations: { store_id: current_store.id, disposition: "callback" })
+          .where("order_confirmations.callback_at <= ?", Time.current)
       elsif @filter == "available"
         orders = orders.where("order_confirmations.assigned_user_id IS NULL")
           .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)

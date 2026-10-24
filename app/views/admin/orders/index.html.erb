@@ -14,9 +14,16 @@
   <%= form_with url: admin_orders_path, method: :get, class: "flex flex-wrap items-center gap-3 p-4" do %>
     <%= hidden_field_tag :status, @status %>
     <%= hidden_field_tag :q, params[:q] %>
+    <%= hidden_field_tag :attention, params[:attention] if params[:attention] == "delivery_issues" %>
     <%= label_tag :connection_id, t("connections.source"), class: "admin-label" %>
     <%= select_tag :connection_id, options_from_collection_for_select(@connections, :id, :name, params[:connection_id]), include_blank: t("connections.all_sources"), class: "admin-input !w-auto" %>
     <%= submit_tag t("connections.filter"), class: "admin-btn-secondary" %>
+  <% end %>
+  <% if params[:attention] == "delivery_issues" %>
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#ebebeb] px-4 py-2" role="status">
+      <span><%= t("dashboard.filters.delivery_issues") %></span>
+      <%= link_to t("dashboard.filters.clear"), admin_orders_path(connection_id: params[:connection_id].presence, q: params[:q].presence), class: "admin-link" %>
+    </div>
   <% end %>
   <nav class="admin-tabs" aria-label="Filter orders">
     <%= link_to "All", admin_orders_path(q: params[:q].presence, connection_id: params[:connection_id].presence), class: "admin-tab #{'is-active' if @status.blank?}" %>

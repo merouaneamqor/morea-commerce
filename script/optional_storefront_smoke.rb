@@ -35,6 +35,10 @@ ActiveRecord::Base.transaction do
   workspace = Store.find_by!(slug: "external-#{suffix}")
   assert.call("external workspace provisioned and request approved", http.response.redirect? && !workspace.storefront_enabled? && request.reload.store_id == workspace.id)
   assert.call("external-only provisioning skips storefront defaults", !workspace.home_sections.exists? && !workspace.menu_items.exists?)
+  http.get "/admin/platform"
+  overview = Nokogiri::HTML(http.response.body)
+  workspace_row = overview.css("#workspaces tbody tr").find { |row| row.text.include?(workspace.name) }
+  assert.call("external-only account is listed as a workspace without a public storefront link", workspace_row && workspace_row.css("a").none? { |link| link["href"] == workspace.origin })
 
   guest = ActionDispatch::Integration::Session.new(Rails.application)
   guest.host! "#{workspace.slug}.#{Store.base_domain}"

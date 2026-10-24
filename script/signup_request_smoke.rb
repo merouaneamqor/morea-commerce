@@ -99,16 +99,29 @@ ActiveRecord::Base.transaction do
 
   admin.post "/admin/login", params: { email: super_admin.email, password: password }
   admin.get "/admin/platform"
-  assert.call("super admin dashboard shows the pending request", admin.response.status == 200 && admin.response.body.include?(request.store_name) && admin.response.body.include?(request.email))
-  assert.call("dashboard shows the pending count", admin.response.body.include?("Access requests (#{AccessRequest.pending.count})"))
+  assert.call("platform overview keeps pending requests out of workspace records", admin.response.status == 200 && !admin.response.body.include?(request.store_name) && !admin.response.body.include?(request.email))
+  doc = Nokogiri::HTML(admin.response.body)
+  assert.call("dashboard links to the separate request queue with pending count", doc.at_css("[data-access-requests-count='#{AccessRequest.pending.count}']") && doc.at_css(".admin-sidebar a[href='/admin/access_requests']"))
   admin.get "/admin/access_requests"
   assert.call("list shows the request", admin.response.status == 200 && admin.response.body.include?(request.store_name))
+  %w[fr en ar].each do |locale|
+    admin.get "/admin/platform", params: { locale: locale }
+    doc = Nokogiri::HTML(admin.response.body)
+    assert.call("localized workspace overview separates access requests #{locale}", admin.response.status == 200 && doc.at_css("#workspaces") && !doc.at_css("#access-requests") && !admin.response.body.include?(request.email) && !doc.at_css(".translation_missing"))
+    assert.call("platform locale and direction #{locale}", doc.at_css("html")["lang"] == locale && doc.at_css("html")["dir"] == (locale == "ar" ? "rtl" : "ltr"))
+    admin.get "/admin/access_requests", params: { locale: locale }
+    doc = Nokogiri::HTML(admin.response.body)
+    assert.call("request timestamps render without missing translations #{locale}", admin.response.status == 200 && doc.at_css("time[datetime]") && !admin.response.body.match?(/translation missing/i) && !doc.at_css(".translation_missing"))
+    assert.call("approval reviews workspace access rather than creating a storefront #{locale}", doc.at_css("form[action='/admin/access_requests/#{request.id}/approve']")&.text&.include?(I18n.t("platform_admin.review_request", locale: locale)) && !admin.response.body.include?("Create store"))
+  end
 
   # Approve through store creation
   admin.post "/admin/access_requests/#{request.id}/approve"
   assert.call("approve opens the prefilled store form", admin.response.redirect? && admin.response.location.include?("access_request_id=#{request.id}"))
+  assert.call("review alone does not approve or create a workspace", request.reload.pending? && request.store.nil? && !Store.exists?(name: request.store_name))
   admin.get "/admin/tenants/new", params: { access_request_id: request.id }
   assert.call("form is prefilled", admin.response.body.include?(request.store_name) && admin.response.body.include?(request.email))
+  assert.call("approval form creates a workspace rather than claiming to create a storefront", admin.response.body.include?(I18n.t("platform_admin.approve_and_create_workspace")) && !admin.response.body.include?("Create store"))
   admin.post "/admin/tenants", params: { access_request_id: request.id,
     store: { name: request.store_name, slug: "atelier-#{suffix}", email: request.email, currency: "MAD", billing_interval: "monthly", billing_status: "trial", billing_amount_dh: "0" },
     admin: { email: request.email, password: "Pass-#{password}" } }

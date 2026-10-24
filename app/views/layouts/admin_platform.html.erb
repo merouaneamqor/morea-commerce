@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "Platform — #{Store.platform_name}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -22,7 +22,7 @@
             </button>
             <%= link_to admin_platform_path, class: "admin-topbar__brand" do %>
               <span class="admin-topbar__logo">P</span>
-              <span>Platform</span>
+              <span><%= t("platform_admin.title") %></span>
             <% end %>
           </div>
 
@@ -34,14 +34,15 @@
 
         <aside class="admin-sidebar" data-admin-menu-target="sidebar">
           <nav class="admin-sidebar__nav">
-            <%= admin_nav_link "Home", admin_platform_path, icon: :home, active: controller_name == "platform" %>
-            <%= admin_nav_link "Stores", admin_platform_path(anchor: "stores"), icon: :store, active: false %>
-            <%= admin_nav_link "New store", new_admin_tenant_path, icon: :products, active: controller_name == "tenants" %>
+            <%= admin_nav_link t("platform_admin.overview"), admin_platform_path, icon: :home, active: controller_name == "platform" %>
+            <%= admin_nav_link t("platform_admin.access_requests"), admin_access_requests_path, icon: :staff, active: controller_name == "access_requests" %>
+            <%= admin_nav_link t("platform_admin.workspaces"), admin_platform_path(anchor: "workspaces"), icon: :store, active: false %>
+            <%= admin_nav_link t("platform_admin.new_workspace"), new_admin_tenant_path, icon: :products, active: controller_name == "tenants" %>
           </nav>
 
           <div class="admin-sidebar__footer">
             <%= button_to admin_logout_path, method: :delete, class: "admin-nav-item w-full" do %>
-              <%= admin_icon(:logout) %><span>Sign out</span>
+              <%= admin_icon(:logout) %><span><%= t("platform_admin.sign_out") %></span>
             <% end %>
           </div>
         </aside>

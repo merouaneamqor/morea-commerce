@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Admin
-  # Provision new store tenants. The store list lives on the platform dashboard.
+  # Provision merchant workspaces, with an optional public storefront.
   class TenantsController < BaseController
     layout "admin_platform"
     before_action :require_super_admin!
@@ -29,7 +29,7 @@ module Admin
 
     def create
       @store = Store.new(store_params)
-      @access_request = AccessRequest.pending.find_by(id: params[:access_request_id])
+      @access_request = AccessRequest.find(params[:access_request_id]) if params[:access_request_id].present?
       password = params.require(:admin).permit(:password)[:password].to_s
       email = params.require(:admin).permit(:email)[:email].to_s.strip.downcase
 
@@ -39,6 +39,12 @@ module Admin
       end
 
       ActiveRecord::Base.transaction do
+        if @access_request
+          @access_request.lock!
+          unless @access_request.pending?
+            return redirect_to admin_access_requests_path, alert: t("platform_admin.request_already_reviewed")
+          end
+        end
         @store.save!
         @store.users.create!(
           email: email,
@@ -48,10 +54,10 @@ module Admin
           admin: true
         )
         @store.install_online_store_defaults! if @store.storefront_enabled?
-        AccessRequest.pending.find_by(id: params[:access_request_id])&.approve!(store: @store, reviewer: current_user)
+        @access_request&.approve!(store: @store, reviewer: current_user)
       end
 
-      redirect_to admin_platform_path, notice: "Store #{@store.name} created. Open it at #{@store.origin}/admin"
+      redirect_to admin_platform_path, notice: t("platform_admin.workspace_created", name: @store.name, origin: "#{@store.origin}/admin")
     rescue ActiveRecord::RecordInvalid
       @access_request = AccessRequest.pending.find_by(id: params[:access_request_id])
       render :new, status: :unprocessable_entity

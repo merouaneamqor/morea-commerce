@@ -8,7 +8,7 @@
 </div>
 <div class="admin-card">
   <nav class="admin-tabs" aria-label="<%= t('admin.confirmations.filters') %>">
-    <% %w[available mine all].each do |filter| %>
+    <% %w[available mine all callbacks_due].each do |filter| %>
       <%= link_to t("admin.confirmations.#{filter}"), admin_confirmations_path(filter: filter), class: "admin-tab #{'is-active' if @filter == filter}" %>
     <% end %>
   </nav>

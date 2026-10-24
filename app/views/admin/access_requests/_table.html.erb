@@ -2,13 +2,13 @@
   <table class="admin-table">
     <thead>
       <tr>
-        <th>Store</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Language</th>
+        <th><%= t("platform_admin.fields.business") %></th>
+        <th><%= t("platform_admin.fields.email") %></th>
+        <th><%= t("platform_admin.fields.phone") %></th>
+        <th><%= t("platform_admin.fields.language") %></th>
         <th><%= t("onboarding.mode_label") %></th>
-        <th>Requested</th>
-        <th>Status</th>
+        <th><%= t("platform_admin.fields.requested") %></th>
+        <th><%= t("platform_admin.fields.status") %></th>
         <th></th>
       </tr>
     </thead>
@@ -20,17 +20,17 @@
           <td><%= request.phone.presence || "—" %></td>
           <td><%= request.locale.upcase %></td>
           <td><%= t(request.storefront_enabled? ? "onboarding.with_storefront" : "onboarding.external_only") %></td>
-          <td><%= time_ago_in_words(request.created_at) %> ago</td>
+          <td><%= time_tag request.created_at, l(request.created_at.in_time_zone("Africa/Casablanca"), format: "%d/%m/%Y %H:%M") %></td>
           <td>
-            <%= admin_badge(request.status.to_sym, label: request.status.humanize,
+            <%= admin_badge(request.status.to_sym, label: t("platform_admin.request_statuses.#{request.status}"),
                   tone: { "pending" => "warning", "approved" => "success", "rejected" => "neutral" }[request.status]) %>
           </td>
           <td class="text-right">
             <% if request.pending? %>
               <div class="flex justify-end gap-2">
-                <%= button_to "Create store", approve_admin_access_request_path(request), method: :post, class: "admin-btn" %>
-                <%= button_to "Reject", reject_admin_access_request_path(request), method: :post, class: "admin-btn-secondary",
-                      form: { data: { turbo_confirm: "Reject this request?" } } %>
+                <%= button_to t("platform_admin.review_request"), approve_admin_access_request_path(request), method: :post, class: "admin-btn" %>
+                <%= button_to t("platform_admin.reject"), reject_admin_access_request_path(request), method: :post, class: "admin-btn-secondary",
+                      form: { data: { turbo_confirm: t("platform_admin.reject_confirmation") } } %>
               </div>
             <% elsif request.store %>
               <%= request.store.name %>

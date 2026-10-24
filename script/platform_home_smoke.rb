@@ -19,6 +19,14 @@ ActiveRecord::Base.transaction do
     assert.call("#{locale} renders", apex.response.status == 200 && apex.response.body.include?(%(lang="#{locale}")))
     assert.call("#{locale} direction", apex.response.body.include?(%(dir="#{locale == :ar ? "rtl" : "ltr"}")))
   end
+  { "en-US,en;q=0.9" => "English", "ar" => "Arabic" }.each do |header, name|
+    fresh = ActionDispatch::Integration::Session.new(Rails.application)
+    fresh.host! Store.base_domain
+    fresh.get "/", headers: { "Accept-Language" => header }
+    assert.call("French is the default for a first visit with an #{name} browser", fresh.response.body.include?('lang="fr"'))
+    fresh.get "/", params: { locale: "en" }
+    assert.call("explicit locale still wins", fresh.response.body.include?('lang="en"'))
+  end
   apex.get "/fr"
   assert.call("apex never redirects to a store", apex.response.status == 404 && apex.response.location.blank?)
   apex.get "/fr/products/anything"

@@ -71,11 +71,9 @@ class ApplicationController < ActionController::Base
     I18n.locale = locale
   end
 
-  def self.browser_locale_from(request)
-    header = request.env["HTTP_ACCEPT_LANGUAGE"].to_s.downcase
-    return :ar if header.match?(/\bar(?:[-_;,]|$)/)
-    return :en if header.match?(/\ben(?:[-_;,]|$)/)
-
+  # French is the default for first-time visitors whatever the browser's language;
+  # an explicit ?locale= or the saved language cookie still wins.
+  def self.browser_locale_from(_request)
     Morea::Locales::DEFAULT
   end
 

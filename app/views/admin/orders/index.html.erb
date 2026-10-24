@@ -11,27 +11,34 @@
 </div>
 
 <div class="admin-card">
+  <%= form_with url: admin_orders_path, method: :get, class: "flex flex-wrap items-center gap-3 p-4" do %>
+    <%= hidden_field_tag :status, @status %>
+    <%= hidden_field_tag :q, params[:q] %>
+    <%= label_tag :connection_id, t("connections.source"), class: "admin-label" %>
+    <%= select_tag :connection_id, options_from_collection_for_select(@connections, :id, :name, params[:connection_id]), include_blank: t("connections.all_sources"), class: "admin-input !w-auto" %>
+    <%= submit_tag t("connections.filter"), class: "admin-btn-secondary" %>
+  <% end %>
   <nav class="admin-tabs" aria-label="Filter orders">
-    <%= link_to "All", admin_orders_path(q: params[:q].presence), class: "admin-tab #{'is-active' if @status.blank?}" %>
+    <%= link_to "All", admin_orders_path(q: params[:q].presence, connection_id: params[:connection_id].presence), class: "admin-tab #{'is-active' if @status.blank?}" %>
     <% Order::STATUSES.each do |status| %>
       <%= link_to Order::STATUS_LABELS.fetch(status, status.humanize),
-            admin_orders_path(status: status, q: params[:q].presence),
+            admin_orders_path(status: status, q: params[:q].presence, connection_id: params[:connection_id].presence),
             class: "admin-tab #{'is-active' if @status == status}" %>
     <% end %>
-    <%= link_to "Archived", admin_orders_path(status: "archived", q: params[:q].presence), class: "admin-tab #{'is-active' if @archived}" %>
+    <%= link_to "Archived", admin_orders_path(status: "archived", q: params[:q].presence, connection_id: params[:connection_id].presence), class: "admin-tab #{'is-active' if @archived}" %>
   </nav>
 
   <% if params[:q].present? %>
     <div class="flex items-center justify-between gap-3 border-b border-[#ebebeb] px-4 py-2 text-[13px]">
       <span class="admin-muted">Results for “<%= params[:q] %>”</span>
-      <%= link_to "Clear search", admin_orders_path(status: @status.presence), class: "admin-btn-plain" %>
+      <%= link_to "Clear search", admin_orders_path(status: @status.presence, connection_id: params[:connection_id].presence), class: "admin-btn-plain" %>
     </div>
   <% end %>
 
   <div class="admin-table-wrap">
     <table class="admin-table">
       <thead>
-        <tr><th>Order</th><th>Date</th><th>Customer</th><th>Phone</th><th>City</th><th>Status</th><th>Sendit</th><th class="is-numeric">Total</th></tr>
+        <tr><th>Order</th><th><%= t("connections.source") %></th><th>Date</th><th>Customer</th><th>Phone</th><th>City</th><th>Status</th><th>Sendit</th><th class="is-numeric">Total</th></tr>
       </thead>
       <tbody>
         <% @orders.each do |order| %>
@@ -42,6 +49,7 @@
                 <span class="admin-muted ms-1 text-xs"><%= order.tag_list.first(2).join(", ") %></span>
               <% end %>
             </td>
+            <td class="admin-muted"><%= order.store_connection&.name || "—" %></td>
             <td class="admin-muted"><%= order.created_at.strftime("%b %-d, %H:%M") %></td>
             <td><%= order.customer_name %></td>
             <td class="admin-muted"><%= order.customer_phone %></td>

@@ -67,7 +67,7 @@ module Types
     end
 
     class OrderItemType < BaseObject
-      field :product_slug, String, null: false
+      field :product_slug, String, null: true
       field :product_name, String, null: false
       field :variant_name, String, null: true
       field :quantity, Integer, null: false
@@ -75,7 +75,7 @@ module Types
       field :total_dh, Integer, null: false
 
       def product_slug
-        object.product.slug
+        object.product&.slug
       end
 
       def unit_price_dh

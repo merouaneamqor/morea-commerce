@@ -6,6 +6,18 @@
 </div>
 
 <%= form_with model: @store, url: admin_store_path, method: :patch, id: "store-form", class: "admin-stack" do |f| %>
+  <% if @store.errors.any? %>
+    <div role="alert" class="admin-banner admin-banner--critical"><%= @store.errors.full_messages.to_sentence %></div>
+  <% end %>
+  <section class="admin-card" id="storefront">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("onboarding.storefront_heading") %></h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <label class="admin-check"><%= f.check_box :storefront_enabled %> <%= t("onboarding.enable_storefront") %></label>
+      <p class="admin-help"><%= t("onboarding.settings_help") %></p>
+      <%= link_to t("connections.add"), new_admin_store_connection_path, class: "admin-link" %>
+    </div>
+  </section>
+
   <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">Store details</h2></div>
     <div class="space-y-4 px-4 pb-4">

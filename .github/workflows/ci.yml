@@ -114,12 +114,22 @@ jobs:
           node-version: '22'
       - name: Check product variant purchase interactions
         run: node script/variant_picker_smoke.mjs
+      - name: Check idempotent intake and confirmation queue
+        run: |
+          bin/rails runner script/order_intake_smoke.rb
+          bin/rails runner script/confirmation_queue_smoke.rb
+          bin/rails runner script/cod_foundation_requests_smoke.rb
       - name: Check MCP order management and tenant isolation
         run: bin/rails runner script/mcp_order_desk_smoke.rb
       - name: Check platform landing page and signup requests
         run: |
           bin/rails runner script/platform_home_smoke.rb
           bin/rails runner script/signup_request_smoke.rb
+      - name: Check optional storefronts and connected store orders
+        run: |
+          bin/rails runner script/optional_storefront_smoke.rb
+          bin/rails runner script/connected_store_intake_smoke.rb
+          bin/rails runner script/connected_store_admin_smoke.rb
       - name: Check MCP media library and transformation boundaries
         run: bin/rails runner script/mcp_media_smoke.rb
   reporting:

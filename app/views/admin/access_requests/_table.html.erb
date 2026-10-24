@@ -6,6 +6,7 @@
         <th>Email</th>
         <th>Phone</th>
         <th>Language</th>
+        <th><%= t("onboarding.mode_label") %></th>
         <th>Requested</th>
         <th>Status</th>
         <th></th>
@@ -18,6 +19,7 @@
           <td><%= request.email %></td>
           <td><%= request.phone.presence || "—" %></td>
           <td><%= request.locale.upcase %></td>
+          <td><%= t(request.storefront_enabled? ? "onboarding.with_storefront" : "onboarding.external_only") %></td>
           <td><%= time_ago_in_words(request.created_at) %> ago</td>
           <td>
             <%= admin_badge(request.status.to_sym, label: request.status.humanize,

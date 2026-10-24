@@ -1,0 +1,11 @@
+en:
+  onboarding:
+    signup_lead: "Request a workspace to manage your orders. Choose a Codify storefront, connect an existing Shopify, WooCommerce or YouCan store, or use both."
+    business_name: "Business name"
+    mode_label: "How would you like to start?"
+    with_storefront: "Create a Codify storefront"
+    external_only: "Manage orders from my existing store"
+    mode_help: "You can connect existing stores and enable a Codify storefront later."
+    storefront_heading: "Codify storefront"
+    enable_storefront: "Enable the public Codify storefront"
+    settings_help: "Turn this off to use Codify for order management only. Your admin and connections stay available. You can enable it later; existing content is kept."

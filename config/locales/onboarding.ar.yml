@@ -1,0 +1,11 @@
+ar:
+  onboarding:
+    signup_lead: "اطلب مساحة لإدارة طلباتك. أنشئ متجر Codify أو اربط متجرك على Shopify أو WooCommerce أو YouCan، أو استخدم الخيارين معاً."
+    business_name: "اسم النشاط التجاري"
+    mode_label: "كيف تريد أن تبدأ؟"
+    with_storefront: "إنشاء متجر Codify"
+    external_only: "إدارة طلبات متجري الحالي"
+    mode_help: "يمكنك ربط متاجرك الحالية وتفعيل متجر Codify لاحقاً."
+    storefront_heading: "متجر Codify"
+    enable_storefront: "تفعيل متجر Codify العام"
+    settings_help: "أوقف هذا الخيار لاستخدام Codify لإدارة الطلبات فقط. تبقى لوحة الإدارة والاتصالات متاحة. يمكنك تفعيله لاحقاً مع الاحتفاظ بالمحتوى الحالي."

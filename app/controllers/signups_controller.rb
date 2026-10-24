@@ -38,7 +38,7 @@ class SignupsController < ApplicationController
   end
 
   def signup_params
-    params.require(:access_request).permit(:store_name, :email, :phone)
+    params.require(:access_request).permit(:store_name, :email, :phone, :storefront_enabled)
   end
 
   def duplicate_pending?

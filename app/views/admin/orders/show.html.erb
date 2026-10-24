@@ -52,6 +52,14 @@
   </div>
 </div>
 
+<% if @order.external_order_receipt.present? %>
+  <div class="admin-banner mb-4">
+    <%= t("connections.source") %>:
+    <%= link_to @order.store_connection.name, admin_store_connection_path(@order.store_connection), class: "admin-link" %>
+    · <%= @order.external_order_receipt.external_id %>
+    <p><%= t("connections.snapshot_help") %></p>
+  </div>
+<% end %>
 
 <div class="admin-layout">
   <div class="admin-stack">

@@ -1,0 +1,43 @@
+{
+  "en": {
+    "admin": {
+      "confirmations": {
+        "title": "Confirmation queue",
+        "description": "Claim a new order, record the call outcome, or schedule a callback.",
+        "orders": "Orders",
+        "filters": "Confirmation filters",
+        "available": "Available now",
+        "mine": "My claims",
+        "all": "All new orders",
+        "empty": "No orders in this queue.",
+        "order_label": "Order %{number}",
+        "attempts": "%{count} recorded attempts",
+        "callback_due": "Callback: %{time}",
+        "assigned": "Claimed by %{name}",
+        "release": "Release claim",
+        "claimed_elsewhere": "Claimed by another agent",
+        "not_due": "Callback not due yet",
+        "claim": "Claim order",
+        "outcome": "Call outcome",
+        "callback_time": "Callback time (for a callback outcome)",
+        "timezone": "Times use %{zone}.",
+        "notes": "Internal notes",
+        "dispatch_note": "Confirming reserves inventory. Carrier dispatch is a separate action.",
+        "save": "Save outcome",
+        "pagination": "Queue pages",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page %{number}",
+        "claimed": "Order claimed.",
+        "released": "Claim released.",
+        "recorded": "Call outcome recorded.",
+        "outcomes": {
+          "no_answer": "No answer",
+          "callback": "Callback",
+          "confirmed": "Confirmed",
+          "cancelled": "Cancelled"
+        }
+      }
+    }
+  }
+}

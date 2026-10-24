@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# A visitor's request to open a store. Nothing is provisioned until a platform admin approves it.
+# A visitor's request for a workspace. Provisioned after platform approval.
 class AccessRequest < ApplicationRecord
   STATUSES = %w[pending approved rejected].freeze
   MAX_PER_IP_PER_HOUR = 5
@@ -18,6 +18,7 @@ class AccessRequest < ApplicationRecord
   validates :phone, length: { maximum: 30 }, allow_nil: true
   validates :locale, inclusion: { in: Morea::Locales::AVAILABLE.map(&:to_s) }
   validates :status, inclusion: { in: STATUSES }
+  validates :storefront_enabled, inclusion: { in: [ true, false ] }
 
   scope :pending, -> { where(status: "pending") }
 

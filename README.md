@@ -8,6 +8,10 @@ Multi-store cash-on-delivery commerce platform for Morocco. Morea is the referen
 
 Stores are subdomain tenants. Each store has its own catalog, staff, orders, and Sendit/Discord credentials.
 
+Merchants can request a Codify storefront or an external-only order-management workspace at `/signup`. Approval preserves that choice. **Settings → Codify storefront** controls public shopping; disabling it keeps admin and integrations available, and enabling it later installs missing theme defaults. Existing stores stay published by default.
+
+**Sales channels → Connected stores** configures signed Shopify, WooCommerce and YouCan order webhooks with source filters, receipt history, disconnect/resume and signing-secret replacement. This first slice uses manual provider webhook setup and supports unpaid Moroccan COD/MAD orders without tax, discounts or extra fees. It preserves external line prices/options without local catalog setup or inventory changes. OAuth installation, historical import, provider updates and stock sync remain future work. YouCan needs complete order relationships and native payload completeness is not yet verified; incomplete events are visibly rejected. See [provider setup and limitations](docs/features/connected-store-contracts.md).
+
 ## Run
 
 ```bash
@@ -64,3 +68,17 @@ Connected agents should read the MCP resource `morea://catalog` before writing. 
 ## Stack
 
 Rails 8 · Hotwire · Tailwind · PostgreSQL · Redis · Sidekiq
+
+## Tenant commerce stays public
+
+Every store continues to serve its own localized catalog, cart and COD checkout. New operational features live in authenticated admin or store-token APIs; the apex remains the platform administration surface.
+
+## COD operations foundation
+
+- **Admin → Confirmations** (`/admin/confirmations`): claim new orders, record confirmed/cancelled/no-answer outcomes, schedule callbacks and release claims. Confirmation reserves inventory without automatically dispatching to Sendit. Labels are available in EN/FR/AR.
+- **External order intake** (`POST /api/v1/order_imports`): existing store API/OAuth bearer tokens select the store. Repeated source/external IDs return the same order. New imports do not reserve stock, dispatch parcels or send notifications.
+- Repository agents can use three skills under `.agents/skills/` for tenant commerce, COD operations and feature delivery. See `AGENTS.md` and `docs/implementation-workflow.md`.
+
+Feature contracts and test commands: [order intake](docs/features/order-intake.md) and [confirmation queue](docs/features/confirmation-queue.md). Provider webhooks, new carrier adapters, WhatsApp sending, automatic assignment and financial reports remain later phases.
+
+The additive migrations create import identities and confirmation/attempt history. No existing order or storefront data is backfilled or rewritten. A code rollback can leave these tables intact; rolling down their migrations deletes the new operational history and must be planned separately.

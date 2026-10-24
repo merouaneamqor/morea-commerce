@@ -1,5 +1,7 @@
 en:
   platform_admin:
+    request_rejected: "Request rejected."
+    request_already_reviewed: "This request has already been reviewed."
     title: "Platform"
     overview: "Overview"
     overview_description: "Manage merchant workspaces and platform activity."

@@ -1,5 +1,7 @@
 fr:
   platform_admin:
+    request_rejected: "Demande refusée."
+    request_already_reviewed: "Cette demande a déjà été traitée."
     title: "Plateforme"
     overview: "Vue d’ensemble"
     overview_description: "Gérez les espaces marchands et l’activité de la plateforme."

@@ -1,5 +1,7 @@
 ar:
   platform_admin:
+    request_rejected: "تم رفض الطلب."
+    request_already_reviewed: "تمت مراجعة هذا الطلب بالفعل."
     title: "المنصة"
     overview: "نظرة عامة"
     overview_description: "إدارة مساحات عمل التجار ونشاط المنصة."

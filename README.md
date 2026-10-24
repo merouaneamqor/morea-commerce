@@ -67,6 +67,10 @@ The token is shown once and selects the store. Send `Authorization: Bearer <toke
 
 Connected agents should read the MCP resource `morea://catalog` before writing. The same manual is the GraphQL query `{ guide }`. It covers prices (`priceDh` as whole units), fr/en/ar translations, deletes (`confirm: true`), and image uploads.
 
+## Tests
+
+Automated specs: run `bundle exec rspec` with `RAILS_ENV=test` and a dedicated test database. See [spec setup and coverage](spec/README.md). CI runs the specs alongside the existing smoke scripts, including concurrent workspace approval and rejection checks.
+
 ## Stack
 
 Rails 8 · Hotwire · Tailwind · PostgreSQL · Redis · Sidekiq

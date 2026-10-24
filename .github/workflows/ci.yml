@@ -99,6 +99,8 @@ jobs:
         run: bin/rails runner 'Store.find_or_create_by!(slug:"morea") { |s| s.name = "CI Store"; s.currency = "MAD" }'
       - name: Check Rails autoloading
         run: bin/rails zeitwerk:check
+      - name: Run workspace approval and merchant dashboard specs
+        run: bundle exec rspec
       - name: Check catalog changesets and rollback
         run: bin/rails runner script/autonomy_smoke.rb morea
       - name: Check MCP tools and inventory lifecycle

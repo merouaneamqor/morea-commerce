@@ -1,70 +1,59 @@
-<% content_for :title, "Platform — Admin" %>
+<% content_for :title, "#{t('platform_admin.title')} — Codify" %>
 
 <div class="admin-page-header">
   <div>
-    <h1 class="admin-page-header__title">Platform</h1>
-    <p class="admin-page-header__meta">SaaS overview across all store tenants</p>
+    <h1 class="admin-page-header__title"><%= t("platform_admin.title") %></h1>
+    <p class="admin-page-header__meta"><%= t("platform_admin.overview_description") %></p>
   </div>
   <div class="flex items-center gap-2">
-    <%= link_to "Access requests#{@pending_requests_count.positive? ? " (#{@pending_requests_count})" : ""}", admin_access_requests_path, class: "admin-btn-secondary" %>
-    <%= link_to "New store", new_admin_tenant_path, class: "admin-btn" %>
+    <%= link_to t("platform_admin.requests_count", count: @pending_requests_count), admin_access_requests_path, class: "admin-btn-secondary", data: { access_requests_count: @pending_requests_count } %>
+    <%= link_to t("platform_admin.new_workspace"), new_admin_tenant_path, class: "admin-btn" %>
   </div>
 </div>
 
 <div class="admin-card mb-4">
   <div class="grid grid-cols-2 divide-[#ebebeb] sm:grid-cols-3 lg:grid-cols-5 lg:divide-x [&>*]:border-[#ebebeb] max-lg:[&>*]:border-b">
     <div class="p-4">
-      <p class="admin-metric__label">Stores</p>
+      <p class="admin-metric__label"><%= t("platform_admin.workspaces") %></p>
       <p class="admin-metric__value"><%= @store_count %></p>
     </div>
     <div class="p-4">
-      <p class="admin-metric__label">Orders</p>
+      <p class="admin-metric__label"><%= t("platform_admin.orders") %></p>
       <p class="admin-metric__value"><%= @orders_total %></p>
     </div>
     <div class="p-4">
-      <p class="admin-metric__label">Orders today</p>
+      <p class="admin-metric__label"><%= t("platform_admin.orders_today") %></p>
       <p class="admin-metric__value"><%= @orders_today %></p>
     </div>
     <div class="p-4">
-      <p class="admin-metric__label">Revenue (ex. cancelled)</p>
+      <p class="admin-metric__label"><%= t("platform_admin.order_value") %></p>
       <p class="admin-metric__value"><%= money(@revenue_cents, "MAD") %></p>
     </div>
     <div class="p-4">
-      <p class="admin-metric__label">Store staff</p>
+      <p class="admin-metric__label"><%= t("platform_admin.staff") %></p>
       <p class="admin-metric__value"><%= @staff_count %></p>
     </div>
   </div>
 </div>
 
-<section class="admin-card mb-4" id="access-requests">
+<section class="admin-card" id="workspaces">
   <div class="admin-card__header">
-    <h2 class="admin-card__title">Access requests<%= " (#{@pending_requests_count})" if @pending_requests_count.positive? %></h2>
-    <%= link_to "View all", admin_access_requests_path, class: "admin-btn-plain" %>
-  </div>
-  <% if @pending_requests.empty? %>
-    <p class="admin-muted px-4 pb-4">No pending requests.</p>
-  <% else %>
-    <%= render "admin/access_requests/table", requests: @pending_requests %>
-  <% end %>
-</section>
-
-<section class="admin-card" id="stores">
-  <div class="admin-card__header">
-    <h2 class="admin-card__title">Stores</h2>
-    <%= link_to "New store", new_admin_tenant_path, class: "admin-btn-plain" %>
+    <h2 class="admin-card__title"><%= t("platform_admin.workspaces") %></h2>
+    <%= link_to t("platform_admin.new_workspace"), new_admin_tenant_path, class: "admin-btn-plain" %>
   </div>
   <div class="admin-table-wrap">
     <table class="admin-table">
       <thead>
         <tr>
-          <th>Store</th>
-          <th>Slug</th>
-          <th>Billing</th>
-          <th>Amount</th>
-          <th>Status</th>
-          <th>Period ends</th>
-          <th>Staff</th>
-          <th>Orders</th>
+          <th><%= t("platform_admin.workspace") %></th>
+          <th><%= t("platform_admin.storefront") %></th>
+          <th><%= t("platform_admin.slug") %></th>
+          <th><%= t("platform_admin.billing") %></th>
+          <th><%= t("platform_admin.amount") %></th>
+          <th><%= t("platform_admin.status") %></th>
+          <th><%= t("platform_admin.period_ends") %></th>
+          <th><%= t("platform_admin.staff") %></th>
+          <th><%= t("platform_admin.orders") %></th>
           <th></th>
         </tr>
       </thead>
@@ -72,6 +61,7 @@
         <% @stores.each do |store| %>
           <tr>
             <td class="font-semibold"><%= store.name %></td>
+            <td><%= t(store.storefront_enabled? ? "platform_admin.storefront_enabled" : "platform_admin.storefront_disabled") %></td>
             <td class="admin-muted tabular-nums"><%= store.slug %></td>
             <td><%= store.billing_interval.humanize %></td>
             <td class="tabular-nums"><%= money(store.billing_amount_cents, "MAD") %></td>
@@ -83,20 +73,22 @@
             <td class="tabular-nums"><%= store.orders.count %></td>
             <td class="text-right whitespace-nowrap">
               <%= link_to edit_admin_tenant_path(store), class: "admin-btn-plain" do %>
-                Billing
+                <%= t("platform_admin.billing") %>
               <% end %>
               <%= link_to admin_tenant_invoices_path(store), class: "admin-btn-plain" do %>
-                Invoices<% if store.invoices.overdue.any? %> (<%= store.invoices.overdue.count %>)<% end %>
+                <%= t("platform_admin.invoices") %><% if store.invoices.overdue.any? %> (<%= store.invoices.overdue.count %>)<% end %>
               <% end %>
-              <%= button_to "Open admin", enter_admin_tenant_path(store), method: :post, class: "admin-btn-secondary inline" %>
-              <%= link_to "Storefront", store.origin, class: "admin-btn-plain", target: "_blank", rel: "noopener" %>
+              <%= button_to t("platform_admin.open_admin"), enter_admin_tenant_path(store), method: :post, class: "admin-btn-secondary inline" %>
+              <% if store.storefront_enabled? %>
+                <%= link_to t("platform_admin.view_storefront"), store.origin, class: "admin-btn-plain", target: "_blank", rel: "noopener" %>
+              <% end %>
             </td>
           </tr>
         <% end %>
       </tbody>
     </table>
     <% if @stores.empty? %>
-      <p class="admin-empty">No stores yet. Create the first tenant to get started.</p>
+      <p class="admin-empty"><%= t("platform_admin.no_workspaces") %></p>
     <% end %>
   </div>
 </section>

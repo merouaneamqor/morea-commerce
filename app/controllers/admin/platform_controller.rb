@@ -16,7 +16,6 @@ module Admin
       @revenue_cents = @orders_scope.where.not(status: "cancelled").sum(:total_cents)
       @staff_count = User.where.not(store_id: nil).count
       @pending_requests_count = AccessRequest.pending.count
-      @pending_requests = AccessRequest.pending.order(created_at: :desc).limit(5)
     end
 
     private

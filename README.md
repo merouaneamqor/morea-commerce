@@ -34,7 +34,7 @@ docker compose exec web bin/rails db:migrate db:seed
 
 ### Create another tenant
 
-From the platform UI (**New store**), or:
+From the platform UI (**New workspace**), or:
 
 ```bash
 docker compose exec web env \
@@ -45,7 +45,7 @@ docker compose exec web env \
 
 Then open http://atelier.lvh.me:3010 (local). In production, add `{slug}.ollazen.com` as a Custom Domain on the Render `morea` service (or add `*.ollazen.com` + root if on a plan that supports wildcards).
 
-`APP_BASE_DOMAIN=ollazen.com` in production. Set `PLATFORM_DISCORD_WEBHOOK_URL` to get a Discord message for every new access request (`/signup`); requests are reviewed in **/admin/platform**. Locally docker-compose uses `lvh.me`.
+`APP_BASE_DOMAIN=ollazen.com` in production. Set `PLATFORM_DISCORD_WEBHOOK_URL` to get a Discord message for every new access request (`/signup`). Platform admins review requests in **Access requests → Review request** (`/admin/access_requests`), then **Approve and create workspace**. Approved merchant workspaces are listed separately from requests; their public Codify storefront is optional. Locally docker-compose uses `lvh.me`.
 
 ### Platform billing
 

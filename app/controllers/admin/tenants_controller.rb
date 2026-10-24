@@ -51,7 +51,7 @@ module Admin
         AccessRequest.pending.find_by(id: params[:access_request_id])&.approve!(store: @store, reviewer: current_user)
       end
 
-      redirect_to admin_platform_path, notice: "Store #{@store.name} created. Open it at #{@store.origin}/admin"
+      redirect_to admin_platform_path, notice: t("platform_admin.workspace_created", name: @store.name, origin: "#{@store.origin}/admin")
     rescue ActiveRecord::RecordInvalid
       @access_request = AccessRequest.pending.find_by(id: params[:access_request_id])
       render :new, status: :unprocessable_entity

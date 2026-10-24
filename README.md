@@ -1,6 +1,6 @@
-# Morea Commerce
+# Codify
 
-Luxury modest sportswear storefront + COD admin for Morocco.
+Multi-store cash-on-delivery commerce platform for Morocco. Morea is the reference store: luxury modest sportswear storefront + COD admin.
 
 **Storefront:** fashion-house UX (campaign homepage, editorial PDP, restrained blush).  
 **Store admin:** dense and operational — not luxurious.  
@@ -14,7 +14,7 @@ Stores are subdomain tenants. Each store has its own catalog, staff, orders, and
 docker compose up --build
 ```
 
-- Local storefront: http://morea.lvh.me:3010 (or http://localhost:3010)
+- Local: http://localhost:3010 is the platform landing page; stores open on subdomains, http://morea.localhost:3010 or http://morea.lvh.me:3010
 - Production: **ollazen.com**
   - Platform: https://ollazen.com/admin
   - Store example: https://morea.ollazen.com

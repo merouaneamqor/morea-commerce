@@ -35,11 +35,7 @@ class ApplicationController < ActionController::Base
       Current.store = nil
       return if apex_request_allowed?
 
-      default = Store.find_by(slug: ENV.fetch("DEFAULT_STORE_SLUG", "morea"))
-      if default
-        return redirect_to("#{default.origin}#{request.fullpath}", allow_other_host: true, status: :moved_permanently)
-      end
-
+      # The apex never serves a storefront; stores live on their own subdomains.
       return render template: "stores/missing", layout: "bare", status: :not_found
     end
 
@@ -52,7 +48,8 @@ class ApplicationController < ActionController::Base
   # Apex (ollazen.com / www) hosts the SaaS platform, not a storefront.
   def apex_request_allowed?
     path = request.path
-    path == "/up" ||
+    path == "/" ||
+      path == "/up" ||
       path == "/graphql" ||
       path == "/mcp" ||
       path.start_with?("/admin") ||

@@ -243,3 +243,59 @@ fr:
       %{retention}
 
       %{prospecting}
+  platform_home:
+    title: "Codify — plateforme e-commerce multi-boutiques"
+    language: "Langue"
+    nav: { journey: "Fonctionnement", features: "Fonctionnalités", integrations: "Intégrations", faq: "FAQ", sign_in: "Connexion" }
+    hero:
+      eyebrow: "Plateforme e-commerce multi-boutiques"
+      headline: "Gérez vos boutiques en paiement à la livraison depuis une seule plateforme."
+      lead: "Chaque boutique garde sa vitrine, son catalogue et son paiement. Votre équipe confirme les commandes, gère le stock et expédie depuis une seule administration."
+      primary: "Se connecter à l'administration"
+      secondary: "Voir le parcours d'une commande"
+      store_hint: "Vous cherchez une boutique ? Ouvrez-la sur sa propre adresse, par exemple votre-boutique.%{domain}."
+      badges: [ "Vitrines séparées", "Paiement à la livraison", "Français · Anglais · Arabe", "API et MCP" ]
+    journey:
+      title: "Une commande, du paiement à la livraison"
+      lead: "Le même dossier suit la commande à chaque étape, sans tableur."
+      steps:
+        - { title: "Commande passée", body: "Le client commande sur la vitrine, ou un outil connecté envoie la commande par l'API." }
+        - { title: "Confirmation", body: "L'équipe prend la commande dans une file, appelle le client et enregistre le résultat ou un rappel." }
+        - { title: "Stock réservé", body: "À la confirmation, les articles sont réservés pour ne pas vendre deux fois la même unité." }
+        - { title: "Expédiée", body: "La commande part chez le transporteur connecté, et l'étiquette et le suivi reviennent dans l'administration." }
+        - { title: "Livrée ou retournée", body: "Les mises à jour du transporteur passent la commande en livrée ou retournée, avec l'historique conservé." }
+    preview:
+      title: "Votre journée en un coup d'œil"
+      note: "Illustration de la vue d'ensemble de l'administration. Les chiffres sont des exemples, pas des données réelles."
+      metrics: [ { label: "Nouvelles commandes", value: "42" }, { label: "Confirmées", value: "31" }, { label: "Expédiées", value: "27" }, { label: "Livrées", value: "19" } ]
+    features:
+      title: "Tout ce dont une équipe boutique a besoin"
+      lead: "Conçu pour les boutiques qui vendent en paiement à la livraison."
+      items:
+        - { title: "Une vitrine par boutique", body: "Adresse, catalogue, collections, pages et panier propres. Les boutiques sont isolées les unes des autres." }
+        - { title: "Gestion des commandes", body: "Créer, modifier, commenter, archiver et dupliquer des commandes, et imprimer les bons de préparation." }
+        - { title: "File de confirmation", body: "Prise exclusive, rappels, notes internes et résultats clairs pour chaque commande." }
+        - { title: "Produits et stock", body: "Variantes, galeries par couleur et historique de chaque mouvement de stock." }
+        - { title: "Expédition", body: "Envoi au transporteur connecté, impression des étiquettes et synchronisation du statut de livraison." }
+        - { title: "Comptes équipe", body: "L'équipe se connecte à sa boutique, avec sessions expirantes et journal d'audit." }
+        - { title: "Pixels de suivi", body: "Ajoutez les pixels Meta et TikTok par boutique." }
+        - { title: "API et automatisation", body: "Jetons de boutique, GraphQL et MCP permettent à des outils connectés de lire et gérer une boutique." }
+    integrations:
+      title: "Se connecte à vos outils"
+      lead: "Les connexions transporteur, publicité et automatisation disponibles aujourd'hui."
+      items: [ "Expédition Sendit", "Meta Pixel", "TikTok Pixel", "Alertes Discord", "API GraphQL", "MCP", "OAuth" ]
+    faq:
+      title: "Questions"
+      items:
+        - { q: "Est-ce une place de marché ?", a: "Non. Chaque boutique a sa propre adresse et sa vitrine. La plateforme est l'administration derrière elles." }
+        - { q: "Quelles langues sont prises en charge ?", a: "Les vitrines prennent en charge le français, l'anglais et l'arabe, y compris la mise en page de droite à gauche." }
+        - { q: "Quels transporteurs puis-je utiliser ?", a: "Sendit est connecté aujourd'hui pour les expéditions au Maroc." }
+        - { q: "Mes outils peuvent-ils envoyer des commandes ?", a: "Oui. Un jeton de boutique permet à un outil connecté de créer des commandes par l'API. Une requête rejouée ne crée pas de doublon." }
+        - { q: "Comment ouvrir une boutique ?", a: "Les boutiques sont créées par l'administrateur de la plateforme. Connectez-vous à l'administration pour gérer la vôtre." }
+    cta:
+      headline: "Prêt à gérer votre boutique ?"
+      body: "Connectez-vous à l'administration pour gérer commandes, stock et expéditions."
+      button: "Se connecter à l'administration"
+    footer:
+      tagline: "Plateforme e-commerce multi-boutiques"
+      admin: "Connexion administration"

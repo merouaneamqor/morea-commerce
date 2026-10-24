@@ -1,28 +1,28 @@
-<% content_for :title, "Log in — Admin" %>
+<% content_for :title, "Sign in — #{current_store&.name.presence || Store.platform_name}" %>
 
-<div class="w-full max-w-[24rem]">
-  <div class="admin-card">
-    <div class="p-8">
-      <span class="admin-topbar__logo !h-10 !w-10 !text-base">M</span>
-      <h1 class="mt-6 text-xl font-bold text-[#303030]">Log in</h1>
-      <p class="admin-muted mt-1">Continue to <%= current_store&.name || "store" %> admin</p>
+<div class="w-full max-w-md">
+  <div class="rounded-2xl border border-[#e3e3e3] bg-white p-6 shadow-sm sm:p-8">
+    <h1 class="text-2xl font-bold tracking-tight text-[#0b2447]">Sign in</h1>
+    <p class="mt-1 text-sm text-[#616161]">
+      <%= current_store ? "Continue to #{current_store.name} admin" : "Continue to the platform admin" %>
+    </p>
 
-      <% if alert.present? %>
-        <div class="admin-banner admin-banner--critical mt-6 mb-0"><%= alert %></div>
-      <% end %>
+    <% if alert.present? %>
+      <div role="alert" class="mt-6 rounded-lg border border-[#fdd2d6] bg-[#fff1f2] px-3 py-2 text-sm text-[#8e0b21]"><%= alert %></div>
+    <% end %>
 
-      <%= form_with url: admin_login_path, method: :post, class: "mt-6 space-y-4" do %>
-        <div>
-          <%= label_tag :email, "Email", class: "admin-label" %>
-          <%= email_field_tag :email, params[:email], required: true, autocomplete: "username", class: "admin-input !min-h-10" %>
-        </div>
-        <div>
-          <%= label_tag :password, "Password", class: "admin-label" %>
-          <%= password_field_tag :password, nil, required: true, autocomplete: "current-password", class: "admin-input !min-h-10" %>
-        </div>
-        <%= submit_tag "Log in", class: "admin-btn !h-10 w-full" %>
-      <% end %>
-    </div>
+    <%= form_with url: admin_login_path, method: :post, class: "mt-6 space-y-4" do %>
+      <div>
+        <%= label_tag :email, "Email", class: "block text-sm font-medium text-[#303030]" %>
+        <%= email_field_tag :email, params[:email], required: true, autofocus: true, autocomplete: "username",
+              class: "mt-1 block min-h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3 text-sm focus:border-[#005bd3] focus:outline-2 focus:outline-[#005bd3]" %>
+      </div>
+      <div>
+        <%= label_tag :password, "Password", class: "block text-sm font-medium text-[#303030]" %>
+        <%= password_field_tag :password, nil, required: true, autocomplete: "current-password",
+              class: "mt-1 block min-h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3 text-sm focus:border-[#005bd3] focus:outline-2 focus:outline-[#005bd3]" %>
+      </div>
+      <%= submit_tag "Sign in", class: "min-h-11 w-full cursor-pointer rounded-lg bg-[#005bd3] px-4 text-sm font-semibold text-white hover:bg-[#004299] focus:outline-2 focus:outline-offset-2 focus:outline-[#005bd3]" %>
+    <% end %>
   </div>
-  <p class="admin-subdued mt-4 text-center text-xs">Orders, catalog and COD for morea.website</p>
 </div>

@@ -1,3 +1,5 @@
+Latest: [readiness audit](readiness.md) expands the initial collection and records the implementation gates.
+
 # Cashod discovery evidence — 2026-10-24
 
 ## What has now been collected

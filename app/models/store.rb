@@ -18,6 +18,7 @@ class Store < ApplicationRecord
   has_many :menu_items, dependent: :destroy
   has_many :invoices, dependent: :destroy
   has_many :agent_changesets, dependent: :destroy
+  has_many :store_connections, dependent: :destroy
 
   accepts_nested_attributes_for :translations, allow_destroy: false
 
@@ -27,6 +28,7 @@ class Store < ApplicationRecord
   belongs_to :featured_collection, class_name: "Collection", optional: true
 
   validates :name, :slug, presence: true
+  validates :storefront_enabled, inclusion: { in: [ true, false ] }
   validates :slug, uniqueness: true, format: { with: /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/, message: "must be lowercase letters, numbers, and hyphens" }
   validates :slug, exclusion: { in: RESERVED_SUBDOMAINS }
   validates :shipping_cents, :low_stock_threshold, numericality: { greater_than_or_equal_to: 0 }

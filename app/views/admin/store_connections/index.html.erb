@@ -1,0 +1,26 @@
+<% content_for :title, t("connections.title") %>
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("connections.title") %></h1>
+    <p class="admin-page-header__meta"><%= t("connections.lead") %></p>
+  </div>
+  <%= link_to t("connections.add"), new_admin_store_connection_path, class: "admin-btn" %>
+</div>
+<section class="admin-card">
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead><tr><th><%= t("connections.name") %></th><th><%= t("connections.provider") %></th><th><%= t("connections.domain") %></th><th><%= t("connections.status") %></th></tr></thead>
+      <tbody>
+        <% @connections.each do |connection| %>
+          <tr>
+            <td><%= link_to connection.name, admin_store_connection_path(connection), class: "admin-link" %></td>
+            <td><%= t("connections.providers.#{connection.provider}") %></td>
+            <td><%= connection.external_domain %></td>
+            <td><%= connection_state(connection) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @connections.empty? %><p class="admin-empty"><%= t("connections.empty") %></p><% end %>
+  </div>
+</section>

@@ -1,6 +1,6 @@
 # Morea Commerce development
 
-Morea is a Rails 8 tenant commerce application: each store keeps its public storefront, catalog, cart and COD checkout. Operations features extend the store admin. The apex hosts platform administration. Read `README.md` and the relevant source before changing behavior.
+Morea is a Rails 8 tenant commerce application. A tenant is a merchant workspace; its public storefront is optional (`storefront_enabled`). Preserve existing published storefronts, catalog, cart and COD checkout. External-only workspaces use authenticated operations and connected stores without publishing public shopping routes. The apex hosts platform administration. Read `README.md` and the relevant source before changing behavior.
 
 ## Local skills
 
@@ -19,6 +19,7 @@ The user has requested sub-agent implementation work. Delegate independent tasks
 ## Product and data boundaries
 
 - Preserve tenant storefronts and checkout, the `fr/en/ar` public routes and Arabic RTL. Add operational tools under authenticated store admin unless a public API is explicitly needed.
+- Respect the merchant's storefront setting. Disabled storefronts must not serve public localized shopping/checkout; admin, signed provider intake and authorized APIs remain available. Enabling later installs missing defaults without replacing existing content.
 - Resolve records through the authorized store. Request IDs, hidden fields and a global record lookup do not establish tenant authorization. Platform-only sessions may have no current store.
 - Extend existing order state, stock, money, Sendit and GraphQL/MCP contracts. Keep shipping state separate from confirmation attempts, call outcomes and accounting state.
 - Use additive migrations with database constraints for identity/concurrency invariants. Do not enable live third-party sync simply to test a feature.

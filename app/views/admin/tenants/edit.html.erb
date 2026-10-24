@@ -16,6 +16,14 @@
   <% end %>
 
   <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("onboarding.storefront_heading") %></h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <label class="admin-check"><%= f.check_box :storefront_enabled %> <%= t("onboarding.enable_storefront") %></label>
+      <p class="admin-help"><%= t("onboarding.settings_help") %></p>
+    </div>
+  </section>
+
+  <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">Subscription</h2></div>
     <div class="space-y-4 px-4 pb-4">
       <%= render "billing_fields", f: f %>

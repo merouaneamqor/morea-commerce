@@ -10,7 +10,12 @@ module Admin
     def index
       @status = params[:status]
       @archived = @status == "archived"
-      @orders = current_store.orders.recent.includes(:customer)
+      @connections = current_store.store_connections.order(:name)
+      @orders = current_store.orders.recent.includes(:customer, external_order_receipt: :store_connection)
+      if params[:connection_id].present?
+        connection = current_store.store_connections.find(params[:connection_id])
+        @orders = @orders.joins(:external_order_receipt).where(external_order_receipts: { store_connection_id: connection.id })
+      end
       @orders = if @archived
         @orders.archived
       else

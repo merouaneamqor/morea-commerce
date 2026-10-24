@@ -42,6 +42,10 @@
           <%= f.text_field :currency, class: "admin-input" %>
         </div>
       </div>
+      <div>
+        <label class="admin-check"><%= f.check_box :storefront_enabled %> <%= t("onboarding.enable_storefront") %></label>
+        <p class="admin-help"><%= t("onboarding.settings_help") %></p>
+      </div>
     </div>
   </section>
 

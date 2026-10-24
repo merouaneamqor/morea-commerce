@@ -1,6 +1,6 @@
 # Implementing Morea operations features
 
-Morea remains an ecommerce app: every tenant retains a public localized storefront, catalog, cart and COD checkout. New back-office features extend its Rails admin and services. The initial implementation scope is replay-safe source intake and a confirmation queue; other Cashod-inspired modules follow their own evidence and integration gates.
+Morea supports both published storefronts and external-only merchant workspaces. Existing tenants retain their localized storefront, catalog, cart and COD checkout; new merchants may choose order operations without publishing a storefront. The `storefront_enabled` setting controls public shopping, while authenticated admin and signed order intake remain available. New back-office features extend its Rails admin and services. Provider contracts and current limitations are documented in `docs/features/connected-store-contracts.md`.
 
 ## Reusable project skills
 

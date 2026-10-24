@@ -1,0 +1,11 @@
+ar:
+  onboarding:
+    signup_lead: "اطلب مساحة لإدارة طلباتك. أنشئ متجر Morea أو اربط متجرك على Shopify أو WooCommerce أو YouCan، أو استخدم الخيارين معاً."
+    business_name: "اسم النشاط التجاري"
+    mode_label: "كيف تريد أن تبدأ؟"
+    with_storefront: "إنشاء متجر Morea"
+    external_only: "إدارة طلبات متجري الحالي"
+    mode_help: "يمكنك ربط متاجرك الحالية وتفعيل متجر Morea لاحقاً."
+    storefront_heading: "متجر Morea"
+    enable_storefront: "تفعيل متجر Morea العام"
+    settings_help: "أوقف هذا الخيار لاستخدام Morea لإدارة الطلبات فقط. تبقى لوحة الإدارة والاتصالات متاحة. يمكنك تفعيله لاحقاً مع الاحتفاظ بالمحتوى الحالي."

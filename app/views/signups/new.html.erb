@@ -4,7 +4,7 @@
 
 <div class="fx-glass p-7 sm:p-9">
   <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("signup.heading") %></h1>
-  <p class="mt-2 text-sm leading-6 text-[#b9d3ff]"><%= t("signup.lead") %></p>
+  <p class="mt-2 text-sm leading-6 text-[#b9d3ff]"><%= t("onboarding.signup_lead") %></p>
 
   <% if alert.present? || errors.any? %>
     <div role="alert" class="fx-alert mt-6"><%= alert.presence || t("signup.fix_fields") %></div>
@@ -17,7 +17,7 @@
 
     <% { store_name: [ :text_field, "organization" ], email: [ :email_field, "email" ], phone: [ :telephone_field, "tel" ] }.each do |attr, (kind, autocomplete)| %>
       <div>
-        <%= f.label attr, t("signup.#{attr}"), class: "fx-label" %>
+        <%= f.label attr, t(attr == :store_name ? "onboarding.business_name" : "signup.#{attr}"), class: "fx-label" %>
         <%= f.public_send(kind, attr, required: attr != :phone, autocomplete: autocomplete,
               autofocus: attr == :store_name, maxlength: (attr == :store_name ? 80 : nil),
               "aria-invalid": (errors.include?(attr) ? "true" : nil),
@@ -28,6 +28,19 @@
         <% end %>
       </div>
     <% end %>
+
+    <fieldset class="space-y-3 text-sm text-white">
+      <legend class="fx-label"><%= t("onboarding.mode_label") %></legend>
+      <label class="flex items-start gap-3">
+        <%= f.radio_button :storefront_enabled, true %>
+        <span><%= t("onboarding.with_storefront") %></span>
+      </label>
+      <label class="flex items-start gap-3">
+        <%= f.radio_button :storefront_enabled, false %>
+        <span><%= t("onboarding.external_only") %></span>
+      </label>
+      <p class="text-[#b9d3ff]"><%= t("onboarding.mode_help") %></p>
+    </fieldset>
 
     <%= f.submit t("signup.submit"), class: "fx-btn" %>
   <% end %>

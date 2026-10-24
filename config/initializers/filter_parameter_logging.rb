@@ -11,3 +11,9 @@ Rails.application.config.filter_parameters += [
 Rails.application.config.filter_parameters += [
   "order.name", "order.phone", "order.city", "order.district", "order.address", :notes
 ]
+
+# External webhook bodies contain customer details at provider-specific paths.
+Rails.application.config.filter_parameters += [
+  :customer, :shipping_address, :billing_address, :billing, :shipping, :data,
+  :line_items, :variants, :phone, :first_name, :last_name, :address1, :address2
+]

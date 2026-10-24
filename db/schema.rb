@@ -10,9 +10,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_213000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "access_requests", force: :cascade do |t|
+    t.string "store_name", null: false
+    t.string "email", null: false
+    t.string "phone"
+    t.string "locale", default: "fr", null: false
+    t.string "status", default: "pending", null: false
+    t.string "ip"
+    t.bigint "store_id"
+    t.bigint "reviewed_by_id"
+    t.datetime "reviewed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "storefront_enabled", default: true, null: false
+    t.index ["email"], name: "index_access_requests_one_pending_per_email", unique: true, where: "((status)::text = 'pending'::text)"
+    t.index ["ip", "created_at"], name: "index_access_requests_on_ip_and_created_at"
+    t.index ["reviewed_by_id"], name: "index_access_requests_on_reviewed_by_id"
+    t.index ["status", "created_at"], name: "index_access_requests_on_status_and_created_at"
+    t.index ["store_id"], name: "index_access_requests_on_store_id"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'approved'::character varying, 'rejected'::character varying]::text[])", name: "access_request_status"
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -42,6 +63,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "addresses", force: :cascade do |t|
+    t.bigint "customer_id", null: false
+    t.string "city", null: false
+    t.string "line1", null: false
+    t.string "line2"
+    t.boolean "default", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_addresses_on_customer_id"
+  end
+
   create_table "agent_changesets", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.string "token", null: false
@@ -61,37 +93,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
     t.index ["status"], name: "index_agent_changesets_on_status"
     t.index ["store_id", "token"], name: "index_agent_changesets_on_store_id_and_token", unique: true
     t.index ["store_id"], name: "index_agent_changesets_on_store_id"
-  end
-
-  create_table "access_requests", force: :cascade do |t|
-    t.string "store_name", null: false
-    t.string "email", null: false
-    t.string "phone"
-    t.string "locale", default: "fr", null: false
-    t.string "status", default: "pending", null: false
-    t.string "ip"
-    t.bigint "store_id"
-    t.bigint "reviewed_by_id"
-    t.datetime "reviewed_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_access_requests_one_pending_per_email", unique: true, where: "((status)::text = 'pending'::text)"
-    t.index ["ip", "created_at"], name: "index_access_requests_on_ip_and_created_at"
-    t.index ["reviewed_by_id"], name: "index_access_requests_on_reviewed_by_id"
-    t.index ["status", "created_at"], name: "index_access_requests_on_status_and_created_at"
-    t.index ["store_id"], name: "index_access_requests_on_store_id"
-    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'approved'::character varying, 'rejected'::character varying]::text[])", name: "access_request_status"
-  end
-
-  create_table "addresses", force: :cascade do |t|
-    t.bigint "customer_id", null: false
-    t.string "city", null: false
-    t.string "line1", null: false
-    t.string "line2"
-    t.boolean "default", default: true, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["customer_id"], name: "index_addresses_on_customer_id"
   end
 
   create_table "cart_items", force: :cascade do |t|
@@ -153,6 +154,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
     t.index ["store_id"], name: "index_collections_on_store_id"
   end
 
+  create_table "confirmation_attempts", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "order_confirmation_id", null: false
+    t.bigint "user_id"
+    t.string "actor_label", null: false
+    t.string "outcome", null: false
+    t.text "notes"
+    t.datetime "callback_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_confirmation_id"], name: "index_confirmation_attempts_on_order_confirmation_id"
+    t.index ["store_id"], name: "index_confirmation_attempts_on_store_id"
+    t.index ["user_id"], name: "index_confirmation_attempts_on_user_id"
+    t.check_constraint "outcome::text = ANY (ARRAY['no_answer'::character varying, 'callback'::character varying, 'confirmed'::character varying, 'cancelled'::character varying]::text[])", name: "confirmation_attempt_outcome"
+  end
+
   create_table "customers", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.string "name", null: false
@@ -178,6 +195,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
     t.datetime "updated_at", null: false
     t.index ["store_id", "code"], name: "index_discounts_on_store_id_and_code", unique: true
     t.index ["store_id"], name: "index_discounts_on_store_id"
+  end
+
+  create_table "external_order_receipts", force: :cascade do |t|
+    t.bigint "store_connection_id", null: false
+    t.bigint "order_id"
+    t.string "external_id", null: false
+    t.string "status", null: false
+    t.string "error_code"
+    t.datetime "received_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_external_order_receipts_on_order_id", unique: true
+    t.index ["store_connection_id", "external_id"], name: "index_external_receipts_on_connection_identity", unique: true
+    t.index ["store_connection_id"], name: "index_external_order_receipts_on_store_connection_id"
+    t.check_constraint "status::text = 'accepted'::text AND order_id IS NOT NULL AND error_code IS NULL OR status::text = 'rejected'::text AND order_id IS NULL AND error_code IS NOT NULL", name: "external_receipt_result"
   end
 
   create_table "home_section_translations", force: :cascade do |t|
@@ -283,6 +315,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
     t.index ["client_id"], name: "index_oauth_clients_on_client_id", unique: true
   end
 
+  create_table "order_confirmations", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "order_id", null: false
+    t.bigint "assigned_user_id"
+    t.datetime "claimed_at"
+    t.string "disposition", default: "pending", null: false
+    t.datetime "callback_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assigned_user_id"], name: "index_order_confirmations_on_assigned_user_id"
+    t.index ["order_id"], name: "index_order_confirmations_on_order_id", unique: true
+    t.index ["store_id", "disposition", "callback_at"], name: "index_confirmation_queue"
+    t.index ["store_id"], name: "index_order_confirmations_on_store_id"
+    t.check_constraint "disposition::text = ANY (ARRAY['pending'::character varying, 'no_answer'::character varying, 'callback'::character varying, 'confirmed'::character varying, 'cancelled'::character varying]::text[])", name: "confirmation_disposition"
+  end
+
   create_table "order_events", force: :cascade do |t|
     t.bigint "order_id", null: false
     t.bigint "user_id"
@@ -294,9 +342,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
     t.index ["user_id"], name: "index_order_events_on_user_id"
   end
 
+  create_table "order_imports", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "order_id", null: false
+    t.string "source", limit: 64, null: false
+    t.string "external_id", limit: 255, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_imports_on_order_id"
+    t.index ["store_id", "source", "external_id"], name: "index_order_imports_on_tenant_source_external_id", unique: true
+    t.index ["store_id"], name: "index_order_imports_on_store_id"
+  end
+
   create_table "order_items", force: :cascade do |t|
     t.bigint "order_id", null: false
-    t.bigint "product_id", null: false
+    t.bigint "product_id"
     t.bigint "product_variant_id"
     t.string "product_name", null: false
     t.string "variant_name"
@@ -479,6 +539,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
     t.index ["store_id"], name: "index_products_on_store_id"
   end
 
+  create_table "store_connections", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "provider", null: false
+    t.string "name", null: false
+    t.string "external_domain", null: false
+    t.string "external_store_id"
+    t.string "token", null: false
+    t.text "webhook_secret_ciphertext", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "verified_at"
+    t.datetime "last_received_at"
+    t.string "last_error_code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id", "provider", "external_domain"], name: "idx_on_store_id_provider_external_domain_3a7fd79a93", unique: true
+    t.index ["store_id"], name: "index_store_connections_on_store_id"
+    t.index ["token"], name: "index_store_connections_on_token", unique: true
+    t.check_constraint "provider::text = ANY (ARRAY['shopify'::character varying, 'woocommerce'::character varying, 'youcan'::character varying]::text[])", name: "store_connection_provider"
+  end
+
   create_table "store_translations", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.string "locale", null: false
@@ -537,6 +617,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
     t.string "api_token_digest"
     t.string "api_token_last_four"
     t.jsonb "agent_profile", default: {}, null: false
+    t.boolean "storefront_enabled", default: true, null: false
     t.index ["api_token_digest"], name: "index_stores_on_api_token_digest", unique: true
     t.index ["billing_interval"], name: "index_stores_on_billing_interval"
     t.index ["billing_status"], name: "index_stores_on_billing_status"
@@ -562,6 +643,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "customers"
+  add_foreign_key "agent_changesets", "stores"
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "product_variants"
   add_foreign_key "cart_items", "products"
@@ -569,10 +651,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
   add_foreign_key "collection_products", "collections"
   add_foreign_key "collection_products", "products"
   add_foreign_key "collection_translations", "collections"
-  add_foreign_key "agent_changesets", "stores"
   add_foreign_key "collections", "stores"
+  add_foreign_key "confirmation_attempts", "order_confirmations", on_delete: :cascade
+  add_foreign_key "confirmation_attempts", "stores", on_delete: :cascade
+  add_foreign_key "confirmation_attempts", "users", on_delete: :nullify
   add_foreign_key "customers", "stores"
   add_foreign_key "discounts", "stores"
+  add_foreign_key "external_order_receipts", "orders"
+  add_foreign_key "external_order_receipts", "store_connections"
   add_foreign_key "home_section_translations", "home_sections"
   add_foreign_key "home_sections", "stores"
   add_foreign_key "inventory_movements", "orders"
@@ -582,8 +668,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
   add_foreign_key "menu_item_translations", "menu_items"
   add_foreign_key "menu_items", "stores"
   add_foreign_key "oauth_access_tokens", "stores"
+  add_foreign_key "order_confirmations", "orders", on_delete: :cascade
+  add_foreign_key "order_confirmations", "stores", on_delete: :cascade
+  add_foreign_key "order_confirmations", "users", column: "assigned_user_id", on_delete: :nullify
   add_foreign_key "order_events", "orders"
   add_foreign_key "order_events", "users"
+  add_foreign_key "order_imports", "orders", on_delete: :cascade
+  add_foreign_key "order_imports", "stores", on_delete: :cascade
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "product_variants"
   add_foreign_key "order_items", "products"
@@ -596,6 +687,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
   add_foreign_key "product_translations", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "stores"
+  add_foreign_key "store_connections", "stores"
   add_foreign_key "store_translations", "stores"
   add_foreign_key "users", "stores"
 end

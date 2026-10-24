@@ -4,6 +4,8 @@ class Order < ApplicationRecord
   has_many :order_items, dependent: :destroy
   has_many :inventory_movements, dependent: :nullify
   has_many :order_events, dependent: :destroy
+  has_one :external_order_receipt, dependent: :restrict_with_exception
+  has_one :store_connection, through: :external_order_receipt
   has_many :order_imports, dependent: :destroy
   has_one :order_confirmation, dependent: :destroy
 
@@ -103,6 +105,8 @@ class Order < ApplicationRecord
 
   # Full commercial edit while unshipped and any Sendit parcel can still be changed
   def editable?
+    return false if external_order_receipt.present?
+
     return false unless EDITABLE_STATUSES.include?(status)
     return true if sendit_code.blank?
 
@@ -111,6 +115,7 @@ class Order < ApplicationRecord
 
   def edit_lock_reason
     return if editable?
+    return I18n.t("connections.external_order_locked") if external_order_receipt.present?
     return "Cancelled orders cannot be edited." if status == "cancelled"
     return "Returned orders cannot be edited." if status == "returned"
     return "Delivered orders cannot be edited." if status == "delivered"
@@ -312,7 +317,7 @@ class Order < ApplicationRecord
 
   def reserve_inventory!
     order_items.includes(:product, :product_variant).each do |item|
-      next unless item.product.track_inventory
+      next unless item.product&.track_inventory
 
       Inventory::Adjuster.adjust!(
         product: item.product,
@@ -331,7 +336,7 @@ class Order < ApplicationRecord
 
   def restore_inventory!(reason: "order_cancelled")
     order_items.includes(:product, :product_variant).each do |item|
-      next unless item.product.track_inventory
+      next unless item.product&.track_inventory
 
       Inventory::Adjuster.adjust!(
         product: item.product,

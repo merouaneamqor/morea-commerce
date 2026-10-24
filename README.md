@@ -8,6 +8,10 @@ Multi-store cash-on-delivery commerce platform for Morocco. Morea is the referen
 
 Stores are subdomain tenants. Each store has its own catalog, staff, orders, and Sendit/Discord credentials.
 
+Merchants can request a Morea storefront or an external-only order-management workspace at `/signup`. Approval preserves that choice. **Settings → Morea storefront** controls public shopping; disabling it keeps admin and integrations available, and enabling it later installs missing theme defaults. Existing stores stay published by default.
+
+**Sales channels → Connected stores** configures signed Shopify, WooCommerce and YouCan order webhooks with source filters, receipt history, disconnect/resume and signing-secret replacement. This first slice uses manual provider webhook setup and supports unpaid Moroccan COD/MAD orders without tax, discounts or extra fees. It preserves external line prices/options without local catalog setup or inventory changes. OAuth installation, historical import, provider updates and stock sync remain future work. YouCan needs complete order relationships and native payload completeness is not yet verified; incomplete events are visibly rejected. See [provider setup and limitations](docs/features/connected-store-contracts.md).
+
 ## Run
 
 ```bash

@@ -112,6 +112,11 @@ module Orders
     end
 
     def duplicate(order)
+      if order.external_order_receipt.present?
+        errors.add(:base, I18n.t("connections.external_order_locked"))
+        return failure
+      end
+
       attrs = {
         name: order.customer_name,
         phone: order.customer_phone,

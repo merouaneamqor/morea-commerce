@@ -23,11 +23,13 @@ module Admin
       return unless @access_request
 
       @store.assign_attributes(name: @access_request.store_name, slug: @access_request.store_name.parameterize,
-        email: @access_request.email, phone: @access_request.phone)
+        email: @access_request.email, phone: @access_request.phone,
+        storefront_enabled: @access_request.storefront_enabled)
     end
 
     def create
       @store = Store.new(store_params)
+      @access_request = AccessRequest.pending.find_by(id: params[:access_request_id])
       password = params.require(:admin).permit(:password)[:password].to_s
       email = params.require(:admin).permit(:email)[:email].to_s.strip.downcase
 
@@ -45,7 +47,7 @@ module Admin
           password_confirmation: password,
           admin: true
         )
-        @store.install_online_store_defaults!
+        @store.install_online_store_defaults! if @store.storefront_enabled?
         AccessRequest.pending.find_by(id: params[:access_request_id])&.approve!(store: @store, reviewer: current_user)
       end
 
@@ -59,7 +61,7 @@ module Admin
     end
 
     def update
-      if @store.update(billing_params)
+      if update_workspace
         redirect_to admin_platform_path, notice: "Billing updated for #{@store.name}."
       else
         render :edit, status: :unprocessable_entity
@@ -88,15 +90,26 @@ module Admin
 
     def store_params
       params.require(:store).permit(
-        :name, :slug, :email, :phone, :currency,
+        :name, :slug, :email, :phone, :currency, :storefront_enabled,
         :billing_interval, :billing_status, :billing_amount_dh, :billing_period_ends_on
       )
     end
 
     def billing_params
       params.require(:store).permit(
-        :billing_interval, :billing_status, :billing_amount_dh, :billing_period_ends_on
+        :billing_interval, :billing_status, :billing_amount_dh, :billing_period_ends_on, :storefront_enabled
       )
+    end
+
+    def update_workspace
+      @store.with_lock do
+        was_enabled = @store.storefront_enabled?
+        @store.update!(billing_params)
+        @store.install_online_store_defaults! if !was_enabled && @store.storefront_enabled?
+      end
+      true
+    rescue ActiveRecord::RecordInvalid
+      false
     end
   end
 end

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   post "webhooks/sendit/:store_slug", to: "webhooks/sendit#create", as: :sendit_webhook
+  post "webhooks/store_orders/:token", to: "webhooks/store_orders#create", as: :store_orders_webhook
   post "consent/tracking", to: "consents#tracking", as: :tracking_consent
 
   post "/graphql", to: "graphql#execute"
@@ -100,6 +101,7 @@ Rails.application.routes.draw do
       end
     end
     resource :store, only: %i[edit update]
+    resources :store_connections, only: %i[index new create show update]
     resource :agent_api, only: :show, controller: "agent_api" do
       post :token, action: :generate_token
       delete :token, action: :revoke_token

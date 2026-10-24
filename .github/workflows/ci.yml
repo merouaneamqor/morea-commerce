@@ -125,6 +125,11 @@ jobs:
         run: |
           bin/rails runner script/platform_home_smoke.rb
           bin/rails runner script/signup_request_smoke.rb
+      - name: Check optional storefronts and connected store orders
+        run: |
+          bin/rails runner script/optional_storefront_smoke.rb
+          bin/rails runner script/connected_store_intake_smoke.rb
+          bin/rails runner script/connected_store_admin_smoke.rb
       - name: Check MCP media library and transformation boundaries
         run: bin/rails runner script/mcp_media_smoke.rb
   reporting:

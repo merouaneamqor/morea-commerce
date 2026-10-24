@@ -1,0 +1,11 @@
+en:
+  onboarding:
+    signup_lead: "Request a workspace to manage your orders. Choose a Morea storefront, connect an existing Shopify, WooCommerce or YouCan store, or use both."
+    business_name: "Business name"
+    mode_label: "How would you like to start?"
+    with_storefront: "Create a Morea storefront"
+    external_only: "Manage orders from my existing store"
+    mode_help: "You can connect existing stores and enable a Morea storefront later."
+    storefront_heading: "Morea storefront"
+    enable_storefront: "Enable the public Morea storefront"
+    settings_help: "Turn this off to use Morea for order management only. Your admin and connections stay available. You can enable it later; existing content is kept."

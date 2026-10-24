@@ -1,0 +1,41 @@
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Store</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Language</th>
+        <th>Requested</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% requests.each do |request| %>
+        <tr>
+          <td class="font-medium"><%= request.store_name %></td>
+          <td><%= request.email %></td>
+          <td><%= request.phone.presence || "—" %></td>
+          <td><%= request.locale.upcase %></td>
+          <td><%= time_ago_in_words(request.created_at) %> ago</td>
+          <td>
+            <%= admin_badge(request.status.to_sym, label: request.status.humanize,
+                  tone: { "pending" => "warning", "approved" => "success", "rejected" => "neutral" }[request.status]) %>
+          </td>
+          <td class="text-right">
+            <% if request.pending? %>
+              <div class="flex justify-end gap-2">
+                <%= button_to "Create store", approve_admin_access_request_path(request), method: :post, class: "admin-btn" %>
+                <%= button_to "Reject", reject_admin_access_request_path(request), method: :post, class: "admin-btn-secondary",
+                      form: { data: { turbo_confirm: "Reject this request?" } } %>
+              </div>
+            <% elsif request.store %>
+              <%= request.store.name %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

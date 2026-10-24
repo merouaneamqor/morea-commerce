@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_23_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,6 +61,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_120000) do
     t.index ["status"], name: "index_agent_changesets_on_status"
     t.index ["store_id", "token"], name: "index_agent_changesets_on_store_id_and_token", unique: true
     t.index ["store_id"], name: "index_agent_changesets_on_store_id"
+  end
+
+  create_table "access_requests", force: :cascade do |t|
+    t.string "store_name", null: false
+    t.string "email", null: false
+    t.string "phone"
+    t.string "locale", default: "fr", null: false
+    t.string "status", default: "pending", null: false
+    t.string "ip"
+    t.bigint "store_id"
+    t.bigint "reviewed_by_id"
+    t.datetime "reviewed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_access_requests_one_pending_per_email", unique: true, where: "((status)::text = 'pending'::text)"
+    t.index ["ip", "created_at"], name: "index_access_requests_on_ip_and_created_at"
+    t.index ["reviewed_by_id"], name: "index_access_requests_on_reviewed_by_id"
+    t.index ["status", "created_at"], name: "index_access_requests_on_status_and_created_at"
+    t.index ["store_id"], name: "index_access_requests_on_store_id"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'approved'::character varying, 'rejected'::character varying]::text[])", name: "access_request_status"
   end
 
   create_table "addresses", force: :cascade do |t|
@@ -537,6 +557,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_23_120000) do
     t.index ["store_id"], name: "index_users_on_store_id"
   end
 
+  add_foreign_key "access_requests", "stores", on_delete: :nullify
+  add_foreign_key "access_requests", "users", column: "reviewed_by_id", on_delete: :nullify
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "customers"

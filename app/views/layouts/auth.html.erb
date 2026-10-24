@@ -1,33 +1,46 @@
+<% localized = content_for?(:localized) %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= localized ? I18n.locale : "en" %>">
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "Sign in" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="dark">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
-  <body class="min-h-screen bg-white text-[#303030]" style="font-family: 'Inter', ui-sans-serif, system-ui, sans-serif">
+  <body class="bg-[#04122e]" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
     <% brand = current_store&.name.presence || Store.platform_name %>
-    <div class="flex min-h-screen flex-col">
-      <header class="border-b border-[#ebebeb] bg-white">
-        <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <a href="/" class="text-base font-semibold tracking-tight text-[#0b2447]"><%= brand %></a>
-          <a href="/" class="text-sm text-[#616161] hover:text-[#005bd3]">Back to home</a>
-        </div>
-      </header>
+    <div class="fx-stage" dir="<%= localized && rtl? ? "rtl" : "ltr" %>">
+      <span class="fx-orb" style="width: 28rem; height: 28rem; top: -8rem; right: -6rem" aria-hidden="true"></span>
+      <span class="fx-orb" style="width: 22rem; height: 22rem; bottom: -8rem; left: -6rem; animation-delay: -6s" aria-hidden="true"></span>
 
-      <main class="flex flex-1 items-center justify-center bg-[#f3f8ff] px-4 py-12 sm:px-6">
-        <%= yield %>
-      </main>
+      <div class="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-5 sm:px-8">
+        <header class="flex items-center justify-between gap-4 py-6">
+          <a href="/" class="flex items-center gap-2 text-base font-semibold tracking-tight text-white">
+            <span class="fx-dot" aria-hidden="true"></span><%= brand %>
+          </a>
+          <div class="flex items-center gap-4 text-xs text-[#b9d3ff]">
+            <%= yield :topbar %>
+            <a href="/" class="fx-link"><%= content_for?(:back_label) ? yield(:back_label) : "Back to home" %></a>
+          </div>
+        </header>
 
-      <footer class="border-t border-[#ebebeb] px-4 py-6 text-center text-sm text-[#8a8a8a] sm:px-6">
-        <span class="font-semibold text-[#303030]"><%= brand %></span> · <%= Store.base_domain %>
-      </footer>
+        <main class="grid flex-1 items-center gap-10 pb-12 lg:grid-cols-2 lg:gap-16">
+          <section class="hidden lg:block" aria-hidden="<%= content_for?(:aside) ? "false" : "true" %>">
+            <%= yield :aside %>
+          </section>
+          <div class="mx-auto w-full max-w-md lg:max-w-lg">
+            <%= yield %>
+          </div>
+        </main>
+
+        <footer class="py-6 text-center text-xs text-[#7f9bc9]"><%= brand %> · <%= Store.base_domain %></footer>
+      </div>
     </div>
   </body>
 </html>

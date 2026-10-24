@@ -5,7 +5,10 @@
     <h1 class="admin-page-header__title">Platform</h1>
     <p class="admin-page-header__meta">SaaS overview across all store tenants</p>
   </div>
-  <%= link_to "New store", new_admin_tenant_path, class: "admin-btn" %>
+  <div class="flex items-center gap-2">
+    <%= link_to "Access requests#{@pending_requests_count.positive? ? " (#{@pending_requests_count})" : ""}", admin_access_requests_path, class: "admin-btn-secondary" %>
+    <%= link_to "New store", new_admin_tenant_path, class: "admin-btn" %>
+  </div>
 </div>
 
 <div class="admin-card mb-4">
@@ -32,6 +35,18 @@
     </div>
   </div>
 </div>
+
+<section class="admin-card mb-4" id="access-requests">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title">Access requests<%= " (#{@pending_requests_count})" if @pending_requests_count.positive? %></h2>
+    <%= link_to "View all", admin_access_requests_path, class: "admin-btn-plain" %>
+  </div>
+  <% if @pending_requests.empty? %>
+    <p class="admin-muted px-4 pb-4">No pending requests.</p>
+  <% else %>
+    <%= render "admin/access_requests/table", requests: @pending_requests %>
+  <% end %>
+</section>
 
 <section class="admin-card" id="stores">
   <div class="admin-card__header">

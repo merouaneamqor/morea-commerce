@@ -1,0 +1,24 @@
+<% content_for :title, "Access requests — Admin" %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Access requests</h1>
+    <p class="admin-page-header__meta">Visitors asking to open a store. Nothing is created until you approve.</p>
+  </div>
+  <%= link_to "Back", admin_platform_path, class: "admin-btn-secondary" %>
+</div>
+
+<nav class="mb-4 flex gap-2" aria-label="Status">
+  <% AccessRequest::STATUSES.each do |status| %>
+    <%= link_to "#{status.humanize} (#{@counts[status].to_i})", admin_access_requests_path(status: status),
+          class: (status == @status ? "admin-btn" : "admin-btn-secondary") %>
+  <% end %>
+</nav>
+
+<section class="admin-card">
+  <% if @requests.empty? %>
+    <p class="admin-muted p-4">No <%= @status %> requests.</p>
+  <% else %>
+    <%= render "table", requests: @requests %>
+  <% end %>
+</section>

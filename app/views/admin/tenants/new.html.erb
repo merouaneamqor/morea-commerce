@@ -6,6 +6,10 @@
 </div>
 
 <%= form_with model: @store, url: admin_tenants_path, class: "admin-stack" do |f| %>
+  <% if @access_request %>
+    <%= hidden_field_tag :access_request_id, @access_request.id %>
+    <div class="admin-banner">Creating the store requested by <%= @access_request.email %>. Saving approves the request.</div>
+  <% end %>
   <% if @store.errors.any? %>
     <div class="admin-banner admin-banner--critical">
       <%= @store.errors.full_messages.to_sentence %>
@@ -54,7 +58,7 @@
       <div class="admin-field-grid">
         <div>
           <label class="admin-label" for="admin_email">Email</label>
-          <input class="admin-input" type="email" name="admin[email]" id="admin_email" required>
+          <input class="admin-input" type="email" name="admin[email]" id="admin_email" value="<%= @access_request&.email %>" required>
         </div>
         <div>
           <label class="admin-label" for="admin_password">Password</label>

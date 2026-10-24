@@ -1,0 +1,11 @@
+<% content_for :title, t("signup.thanks_title") %>
+<%= render "signups/chrome" %>
+
+<div class="fx-glass p-8 text-center sm:p-10" role="status">
+  <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-[#6aa6ff]/50 bg-[#2f7bff]/20 text-[#9cc4ff]" aria-hidden="true">
+    <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>
+  </span>
+  <h1 class="mt-5 text-3xl font-bold tracking-tight text-white"><%= t("signup.thanks_title") %></h1>
+  <p class="mt-3 text-sm leading-6 text-[#b9d3ff]"><%= t("signup.thanks_body") %></p>
+  <%= link_to t("signup.back"), platform_home_path, class: "fx-btn mt-7 inline-flex items-center justify-center no-underline" %>
+</div>

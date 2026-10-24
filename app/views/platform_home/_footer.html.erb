@@ -1,0 +1,8 @@
+<% h = ->(key) { t("platform_home.#{key}") } %>
+<% sign_in_path = admin_login_path(locale: nil) %>
+  <footer class="border-t border-[#a0c8ff]/15 px-4 py-8 sm:px-6">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 text-sm text-[#8fb0e0]">
+      <p><span class="font-semibold text-white"><%= Store.platform_name %></span> · <%= h.("footer.tagline") %> · <%= Store.base_domain %></p>
+      <%= link_to h.("footer.admin"), sign_in_path, class: "hover:text-white" %>
+    </div>
+  </footer>

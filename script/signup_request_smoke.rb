@@ -103,6 +103,15 @@ ActiveRecord::Base.transaction do
   assert.call("dashboard shows the pending count", admin.response.body.include?("Access requests (#{AccessRequest.pending.count})"))
   admin.get "/admin/access_requests"
   assert.call("list shows the request", admin.response.status == 200 && admin.response.body.include?(request.store_name))
+  %w[fr en ar].each do |locale|
+    %w[/admin/platform /admin/access_requests].each do |path|
+      admin.get path, params: { locale: locale }
+      doc = Nokogiri::HTML(admin.response.body)
+      assert.call("request timestamps render without missing translations #{locale} #{path}",
+        admin.response.status == 200 && doc.at_css("time[datetime]") &&
+        !admin.response.body.match?(/translation missing/i) && !doc.at_css(".translation_missing"))
+    end
+  end
 
   # Approve through store creation
   admin.post "/admin/access_requests/#{request.id}/approve"

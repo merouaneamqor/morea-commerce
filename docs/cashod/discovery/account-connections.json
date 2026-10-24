@@ -1,0 +1,15 @@
+{
+  "stores": [
+    {
+      "shopify_connected": true,
+      "integrations": [
+        {
+          "type": "SHOPIFY",
+          "isActive": true
+        }
+      ],
+      "currency": "MAD",
+      "country": "MA"
+    }
+  ]
+}

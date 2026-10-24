@@ -1,0 +1,629 @@
+[
+  {
+    "method": "GET",
+    "path": "/stores",
+    "http_status": "200",
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "sample_shape": {
+          "id": "str",
+          "name": "str",
+          "description": "NoneType",
+          "logo": "NoneType",
+          "isActive": "bool",
+          "organizationId": "str",
+          "shopifyDomain": "str",
+          "shopifyAccessToken": "str",
+          "isShopifyConnected": "bool",
+          "storeUrl": "str",
+          "lowStockThreshold": "int",
+          "criticalStockThreshold": "int",
+          "defaultMinStock": "str",
+          "defaultMaxStock": "str",
+          "createdAt": "str",
+          "updatedAt": "str",
+          "currency": "str",
+          "currencySymbol": "str",
+          "locale": "str",
+          "timezone": "str",
+          "country": "str",
+          "includeShippingByDefault": "bool",
+          "contactEmail": "str",
+          "contactPhone": "str",
+          "totalProductsSynced": "int",
+          "totalOrdersSynced": "int",
+          "lastIntegrationSyncAt": "NoneType",
+          "confirmationStatusConfig": "NoneType",
+          "shippingStatusConfig": "NoneType",
+          "paymentStatusConfig": "NoneType",
+          "defaultWarehouseId": "str",
+          "defaultSupplierId": "str",
+          "_count": "dict",
+          "integrations": "list",
+          "stats": "dict"
+        }
+      },
+      "meta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/orders?limit=1",
+    "http_status": "200",
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "sample_shape": {
+          "id": "str",
+          "orderNumber": "str",
+          "storeId": "str",
+          "status": "str",
+          "confirmationStatus": "str",
+          "paymentStatus": "str",
+          "total": "str",
+          "subtotal": "str",
+          "shippingCost": "str",
+          "discount": "str",
+          "advancePayment": "str",
+          "callNotes": "NoneType",
+          "internalNotes": "NoneType",
+          "courierNotes": "NoneType",
+          "preparationNote": "NoneType",
+          "deliveryCompanyNotes": "NoneType",
+          "source": "str",
+          "sourceName": "NoneType",
+          "leadCampaignId": "NoneType",
+          "leadAt": "NoneType",
+          "createdAt": "str",
+          "updatedAt": "str",
+          "deliveryAddress": "str",
+          "deliveryCity": "str",
+          "deliveryPhone": "str",
+          "deliveryPhone2": "NoneType",
+          "deliveryCompanyId": "str",
+          "trackingNumber": "str",
+          "labelUrl": "NoneType",
+          "splitWarning": "NoneType",
+          "splitPlan": "NoneType",
+          "confirmedBy": "str",
+          "confirmedAt": "str",
+          "cancelledBy": "NoneType",
+          "cancelledAt": "NoneType",
+          "cancellationReason": "NoneType",
+          "returnedBy": "NoneType",
+          "returnedAt": "NoneType",
+          "assignedTo": "str",
+          "agentPaid": "bool",
+          "agentPaidAt": "NoneType",
+          "agentPaidAmount": "NoneType",
+          "agentPaidBy": "NoneType",
+          "callCount": "int",
+          "noAnswerCount": "int",
+          "lastCallAt": "str",
+          "lastCallOutcome": "str",
+          "lastCallDuration": "int",
+          "totalCallDuration": "int",
+          "scheduledCallAt": "NoneType",
+          "requeuedAt": "NoneType",
+          "originalCreatedAt": "NoneType",
+          "scheduledDeliveryAt": "NoneType",
+          "dueAt": "NoneType",
+          "whatsappContactedAt": "str",
+          "deliveryUnreachableCount": "int",
+          "customer": "dict",
+          "store": "dict",
+          "deliveryCompany": "dict",
+          "items": "list",
+          "shipments": "list",
+          "tags": "list",
+          "splitPlanStatus": "str"
+        }
+      },
+      "meta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/products?limit=1",
+    "http_status": "200",
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "sample_shape": {
+          "id": "str",
+          "name": "str",
+          "sku": "str",
+          "stockItemId": "NoneType",
+          "category": "str",
+          "retailPrice": "str",
+          "costPrice": "str",
+          "salePrice": "str",
+          "totalStock": "str",
+          "totalSold": "str",
+          "minStock": "str",
+          "maxStock": "str",
+          "trackStock": "bool",
+          "isActive": "bool",
+          "isFragile": "bool",
+          "isTest": "bool",
+          "soldByWeight": "bool",
+          "unit": "NoneType",
+          "status": "str",
+          "externalPlatform": "str",
+          "integrationId": "str",
+          "shopifyProductId": "str",
+          "sizeGroupTemplateId": "NoneType",
+          "createdAt": "str",
+          "images": "list",
+          "variants": "list",
+          "integration": "dict",
+          "sizeGroupTemplate": "NoneType"
+        }
+      },
+      "meta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/categories",
+    "http_status": "200",
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "sample_shape": {
+          "id": "str",
+          "name": "str",
+          "description": "NoneType",
+          "color": "str",
+          "isActive": "bool",
+          "storeId": "str",
+          "organizationId": "str",
+          "createdAt": "str",
+          "updatedAt": "str",
+          "externalId": "NoneType",
+          "externalPlatform": "NoneType",
+          "store": "dict",
+          "productCount": "int"
+        }
+      },
+      "meta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/size-groups",
+    "http_status": "200",
+    "response_shape": {
+      "type": "array",
+      "sample_shape": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/delivery-companies",
+    "http_status": "200",
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "sample_shape": {
+          "id": "str",
+          "name": "str",
+          "code": "str",
+          "contactPhone": "str",
+          "contactEmail": "str",
+          "website": "str",
+          "baseRate": "NoneType",
+          "perKgRate": "NoneType",
+          "apiKey": "NoneType",
+          "apiEndpoint": "str",
+          "hasApiIntegration": "bool",
+          "isActive": "bool",
+          "organizationId": "str",
+          "country": "str",
+          "createdAt": "str",
+          "updatedAt": "str",
+          "accountManager": "str",
+          "accountType": "str",
+          "logoUrl": "str",
+          "villeRamassage": "str",
+          "apiId": "NoneType",
+          "apiTimeout": "int",
+          "credentialType": "str",
+          "password": "str",
+          "privateKey": "str",
+          "publicKey": "str",
+          "username": "str",
+          "webhookUrl": "NoneType",
+          "webhookSecret": "NoneType",
+          "accountName": "str",
+          "isBuiltIn": "bool",
+          "providerType": "str",
+          "allowOpenColis": "bool",
+          "allowTryOn": "bool",
+          "senderName": "NoneType",
+          "senderPhone": "NoneType",
+          "senderAddress": "NoneType",
+          "addProductInNature": "bool",
+          "useDefaultNoteAsDesignation": "bool",
+          "addVariantsInNote": "bool",
+          "declareValueOption": "str",
+          "enableAutoSync": "bool",
+          "lastSyncError": "NoneType",
+          "lastSyncStatus": "str",
+          "lastSyncedAt": "str",
+          "syncFrequencyMinutes": "int",
+          "appCode": "NoneType",
+          "secretKey": "NoneType",
+          "hideCityPrice": "bool",
+          "wmsEndpoint": "NoneType",
+          "wmsDatabase": "NoneType",
+          "wmsUsername": "NoneType",
+          "wmsPassword": "NoneType",
+          "supportsWarehouseStock": "bool",
+          "supportsProductListing": "bool",
+          "defaultNote": "NoneType",
+          "partnerType": "str",
+          "userId": "NoneType",
+          "defaultCityId": "NoneType",
+          "storeRelations": "list",
+          "parcelWebhookUrl": "str",
+          "_count": "dict"
+        }
+      },
+      "meta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/warehouses",
+    "http_status": "200",
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "sample_shape": {
+          "id": "str",
+          "name": "str",
+          "code": "str",
+          "address": "str",
+          "city": "str",
+          "isActive": "bool",
+          "organizationId": "str",
+          "createdAt": "str",
+          "updatedAt": "str",
+          "state": "str",
+          "postalCode": "str",
+          "country": "str",
+          "contactPerson": "str",
+          "contactPhone": "str",
+          "contactEmail": "str",
+          "capacity": "int",
+          "notes": "str",
+          "deliveryCompanyId": "str",
+          "dcStockSyncEnabled": "bool",
+          "isShippingWarehouse": "bool",
+          "_count": "dict",
+          "stores": "list",
+          "deliveryCompany": "dict",
+          "storeIds": "list"
+        }
+      },
+      "meta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/inventory/valuation",
+    "http_status": "200",
+    "response_shape": {
+      "valuations": {
+        "type": "array",
+        "sample_shape": {
+          "productId": "str",
+          "productName": "str",
+          "sku": "str",
+          "totalQuantity": "int",
+          "totalValue": "int",
+          "averageCost": "int",
+          "lastPurchasePrice": "int",
+          "lotCount": "int",
+          "lots": "list"
+        }
+      },
+      "summary": {
+        "totalProducts": "int",
+        "totalQuantity": "int",
+        "totalValue": "int",
+        "inTransitUnits": "str",
+        "inTransitValue": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/planning/calendar",
+    "http_status": "400",
+    "response_shape": {
+      "message": "str",
+      "error": "str",
+      "statusCode": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/shipments/stats",
+    "http_status": "200",
+    "response_shape": {
+      "totalShipments": "int",
+      "deliveredCount": "int",
+      "returnedCount": "int",
+      "returnInProgressCount": "int",
+      "failedCount": "int",
+      "successRate": "float",
+      "returnRate": "float",
+      "pendingPickupCount": "int",
+      "inTransitCount": "int",
+      "scheduledCount": "int",
+      "paidCodTotal": "int",
+      "unpaidCodTotal": "int",
+      "paidCodCount": "int",
+      "unpaidCodCount": "int",
+      "statusDistribution": {
+        "type": "array",
+        "sample_shape": {
+          "status": "str",
+          "count": "int",
+          "percentage": "int"
+        }
+      },
+      "weeklyPerformance": {
+        "type": "array",
+        "sample_shape": {
+          "date": "str",
+          "delivered": "int",
+          "returned": "int",
+          "failed": "int",
+          "inTransit": "int"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/returns/stats",
+    "http_status": "200",
+    "response_shape": {
+      "returnsInProgress": "int",
+      "totalReturned": "int",
+      "pendingVerification": "int",
+      "verified": "int",
+      "verifiedToday": "int",
+      "returnedToday": "int",
+      "returnRate": "float"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/suppliers/stats",
+    "http_status": "200",
+    "response_shape": {
+      "totalSuppliers": "int",
+      "activeSuppliers": "int",
+      "totalProducts": "int",
+      "totalOrders": "int",
+      "totalSpent": "int",
+      "totalDebt": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/purchase-orders/stats",
+    "http_status": "200",
+    "response_shape": {
+      "totalOrders": "int",
+      "pendingOrders": "int",
+      "totalSpent": "int",
+      "thisMonthSpent": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/whatsapp/accounts",
+    "http_status": "200",
+    "response_shape": {
+      "type": "array",
+      "sample_shape": {
+        "id": "str",
+        "organizationId": "str",
+        "name": "str",
+        "phoneNumber": "str",
+        "phoneNumberId": "str",
+        "businessAccountId": "str",
+        "wabaId": "str",
+        "accessToken": "str",
+        "webhookVerifyToken": "str",
+        "isActive": "bool",
+        "isVerified": "bool",
+        "isPhoneRegistered": "bool",
+        "status": "str",
+        "accountType": "str",
+        "baileysSessionId": "NoneType",
+        "baileysPhoneJid": "NoneType",
+        "lastConnectedAt": "NoneType",
+        "disconnectReason": "NoneType",
+        "qualityRating": "str",
+        "messagingLimit": "NoneType",
+        "lastSyncAt": "str",
+        "syncError": "NoneType",
+        "createdAt": "str",
+        "updatedAt": "str",
+        "storeRelations": {
+          "type": "array",
+          "sample_shape": "dict"
+        },
+        "userRelations": {
+          "type": "array",
+          "sample_shape": "dict"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/whatsapp-ai-agent/tools",
+    "http_status": "200",
+    "response_shape": {
+      "type": "array",
+      "sample_shape": {
+        "key": "str",
+        "label": "str",
+        "description": "str"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/whatsapp-ai-agent/available-models",
+    "http_status": "200",
+    "response_shape": {
+      "type": "array",
+      "sample_shape": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/whatsapp-ai-agent/config-templates",
+    "http_status": "200",
+    "response_shape": {
+      "type": "array",
+      "sample_shape": {
+        "id": "str",
+        "name": "str",
+        "description": "str",
+        "isDefault": "bool",
+        "config": {
+          "scope": "str",
+          "mode": "str",
+          "customPrompt": "str",
+          "aiModel": "str",
+          "enabledTools": "list",
+          "personaName": "str",
+          "personaGender": "str",
+          "tone": "str",
+          "voiceName": "str",
+          "voiceStyle": "str",
+          "ttsProvider": "str",
+          "voicesByLanguage": "dict",
+          "openerEnabled": "bool",
+          "openerPrompt": "NoneType",
+          "languages": "list",
+          "primaryLanguage": "str",
+          "missedCallEnabled": "bool",
+          "missedCallThreshold": "int",
+          "handleAllInbound": "bool",
+          "autoConfirm": "bool",
+          "confidenceThreshold": "float",
+          "upsellEnabled": "bool",
+          "ttsEnabled": "bool",
+          "voiceSpeed": "float",
+          "voiceSpeedsByLanguage": "dict",
+          "maxVoiceNotesPerConversation": "NoneType",
+          "savLanguage": "NoneType",
+          "replyLength": "str",
+          "guideNextStepEnabled": "bool",
+          "closingOfferEnabled": "bool",
+          "helpOfferEnabled": "bool",
+          "followUpNudgeEnabled": "bool",
+          "deliveryInfoEnabled": "bool",
+          "freeDelivery": "bool",
+          "deliveryFee": "NoneType",
+          "deliveryCities": "list",
+          "restrictToDeliveryCities": "bool",
+          "deliveryInstructions": "str"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/ai-billing/rate-card",
+    "http_status": "200",
+    "response_shape": {
+      "creditsPerUsd": "int",
+      "markup": "float",
+      "minTopupUsd": "int",
+      "chatReplyCredits": "float",
+      "voiceNoteCredits": "float",
+      "repliesPerUsd": "float",
+      "voiceNotesPerUsd": "float"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/expenses/categories",
+    "http_status": "200",
+    "response_shape": {
+      "type": "array",
+      "sample_shape": "str"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/accounting/overview",
+    "http_status": "400",
+    "response_shape": {
+      "message": "str",
+      "error": "str",
+      "statusCode": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/users/settings",
+    "http_status": "404",
+    "response_shape": {
+      "message": "str",
+      "error": "str",
+      "statusCode": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api-keys",
+    "http_status": "200",
+    "response_shape": {
+      "type": "array",
+      "sample_shape": null
+    }
+  }
+]

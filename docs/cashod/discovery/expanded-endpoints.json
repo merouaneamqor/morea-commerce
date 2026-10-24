@@ -1,0 +1,3677 @@
+[
+  {
+    "method": "POST",
+    "path_expression": "\"/users/2fa/setup\"",
+    "client_method": null,
+    "chunk": "0ggssqicu4xwb.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/users/2fa/enable\"",
+    "client_method": null,
+    "chunk": "0ggssqicu4xwb.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/users/2fa/disable\"",
+    "client_method": null,
+    "chunk": "0ggssqicu4xwb.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/delivery-assignment-rules\"",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/delivery-assignment-rules/stats\"",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-assignment-rules\"",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-assignment-rules/${s}`",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/delivery-assignment-rules/${e}`",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-assignment-rules/${s}/toggle`",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/delivery-assignment-rules/${e}/duplicate`",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-assignment-rules/swap-priority\"",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-assignment-rules/bulk-delete\"",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/delivery-men\"",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-men\"",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-men/${C.id}`",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-men/${e.id}`",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/delivery-men/${T.id}`",
+    "client_method": null,
+    "chunk": "3415y850-exq3.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/preparation-sheet\"",
+    "client_method": null,
+    "chunk": "18_ca08-owe3h.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/subscription/usage-stats\"",
+    "client_method": null,
+    "chunk": "2lpqwy8y0wr8r.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/announcements/active\"",
+    "client_method": null,
+    "chunk": "2lpqwy8y0wr8r.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/shipments/bulk-send/preview\"",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/shipments/bulk-send\"",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/shipments/bulk-sync-tracking\"",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/shipments/${e}/confirm-deleted-at-carrier`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/shipments/${e}/live-tracking`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/shipments/send/${t}`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/shipments/${e}`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/shipments/order/${e}`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/shipments/stats?${s.toString()}`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/shipments?${s.toString()}`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/shipments/stock-check\"",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/shipments/${e}/sync-tracking`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/shipments/split/${e}`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/shipments/${t}`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/shipments/order/${e}/parcels`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/shipments/split/${e}/plan`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/shipments/split/${t}/plan`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/shipments/${t}/status`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/shipments/split/${t}`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/shipments/split/${e}/preview`",
+    "client_method": null,
+    "chunk": "1_gbn99c6md6t.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/users/${t}/role-assignments/${r}/permissions`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/users/roles\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/users\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/users/roles/${e}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/users/${e}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/users/roles\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/users/roles/${t}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/users/${t}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/users/${t}/app-permissions`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/users/${t}/role-assignments/${r}/permissions`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/users/${e}/role-assignments`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/users\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/ad-accounts?storeId=${e}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/ad-accounts/pending/${e}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/ad-accounts/confirm-oauth\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/ad-accounts/${e}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/ad-accounts/${e}/stores`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/advertising/campaigns/${e}/store`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/advertising/ads/${e}/store`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/advertising/campaigns/needs-store-count\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/ad-accounts/${e}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "\"/ad-accounts/bulk\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ad-accounts/allowance\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/advertising/dashboard/metrics\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/advertising/campaigns\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/advertising/adsets\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/advertising/campaigns/${e}/details`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/ad-accounts/${e}/sync`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/ad-accounts/${e}/sync-status/${t}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/advertising/campaigns/${e}/status`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/advertising/campaigns/${e}/budget`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/advertising/adsets/${e}/status`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/advertising/adsets/${e}/budget`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/advertising/ads/${e}/status`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ads/unlinked\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/ads/${e}/link-product`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/ads/auto-link\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/ads/linked-products?storeId=${e}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/ad-accounts/${e}/available-metrics`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/custom-metrics?storeId=${e}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/custom-metrics\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/custom-metrics/${e}?storeId=${t}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/custom-metrics/${e}?storeId=${t}`",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/custom-metrics/validate\"",
+    "client_method": null,
+    "chunk": "0uxzlw4xd0kv6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/delivery-companies\"",
+    "client_method": null,
+    "chunk": "031up701x5oz2.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders\"",
+    "client_method": null,
+    "chunk": "031up701x5oz2.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/apps/install\"",
+    "client_method": null,
+    "chunk": "0squ2oavia0iw.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/apps/installed\"",
+    "client_method": null,
+    "chunk": "0squ2oavia0iw.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/apps/marketplace\"",
+    "client_method": null,
+    "chunk": "0squ2oavia0iw.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/apps/${e.appId}/toggle`",
+    "client_method": null,
+    "chunk": "0squ2oavia0iw.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/apps/${e.appId}/track-usage`",
+    "client_method": null,
+    "chunk": "0squ2oavia0iw.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/apps/${e.appId}/uninstall`",
+    "client_method": null,
+    "chunk": "0squ2oavia0iw.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/analytics/advanced\"",
+    "client_method": null,
+    "chunk": "2bu44j9a2d5fn.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/analytics/customers\"",
+    "client_method": null,
+    "chunk": "2bu44j9a2d5fn.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/analytics/dashboard-kpis\"",
+    "client_method": null,
+    "chunk": "2bu44j9a2d5fn.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/analytics/products\"",
+    "client_method": null,
+    "chunk": "2bu44j9a2d5fn.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/analytics/products/${s}/drilldown`",
+    "client_method": null,
+    "chunk": "2bu44j9a2d5fn.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/analytics/revenue\"",
+    "client_method": null,
+    "chunk": "2bu44j9a2d5fn.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery/overview?${r(e)}`",
+    "client_method": null,
+    "chunk": "2q0mt2zew9zb6.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/shipments/bulk-send/${e}/status`",
+    "client_method": null,
+    "chunk": "08-t6k995w-56.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/shipments/${e.id}/label`",
+    "client_method": null,
+    "chunk": "08-t6k995w-56.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/workflows/${e}/activate`",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/workflows/executions/${e}/cancel`",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/workflows\"",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/workflows/${e}/deactivate`",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/workflows/${e}`",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/workflows/${e.workflowId}/duplicate`",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/workflows/executions/${e}/retry`",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/workflows/${t}`",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/workflows/executions/${e}`",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/workflows/executions/list\"",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/workflows/stats\"",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/workflows/templates\"",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/workflows\"",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/order-confirmations/counts\"",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/orders/billing/summary/${eJ.id}`",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/orders/billing/deductions/${eJ.id}`",
+    "client_method": null,
+    "chunk": "3rj2r5vfotvc4.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-invoices\"",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/delivery-invoices/${e}`",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery-invoices/stats?${t.toString()}`",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery-invoices?${a.toString()}`",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-invoices/${t}`",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-invoices/cathedis/upload\"",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-invoices/forcelog/upload\"",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-invoices/navex/upload\"",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-invoices/ozonexpress/upload\"",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-invoices/speedaf/upload\"",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery-invoices/sendit/${e}/orders`",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/orders/${t}`",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-invoices/cathedis/parse\"",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-invoices/forcelog/parse\"",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-invoices/navex/parse\"",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-invoices/ozonexpress/parse\"",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-invoices/speedaf/parse\"",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-invoices/${e}`",
+    "client_method": null,
+    "chunk": "2a6hcvnd3nvy1.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/analytics/products/${l}/drilldown`",
+    "client_method": null,
+    "chunk": "3yak1o_bhf-kd.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/integrations/${e}/sync-status`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/integrations\"",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/integrations/${t}`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/integrations/${e}/logs`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/integrations/${e}/webhooks`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/integrations/${e}/register-webhooks`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/integrations/${e}/regenerate-secret`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/storeep/${e}/register-webhooks`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/integrations/errors/${e}/resolve`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/auth/shopify?shop=${encodeURIComponent(t)}&storeId=${n}`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/integrations?storeId=${e}`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/storeep/${e}/webhooks`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/integrations/${t}/sync`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/integrations/test-credentials\"",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/integrations/${t}/webhooks/${n}`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/integrations/${t}/column-mappings`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/integrations/${t}`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/integrations/${t}/field-mappings`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/integrations/${e}/checkout-fields`",
+    "client_method": null,
+    "chunk": "0tzh9o86thglm.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/auth/login\"",
+    "client_method": "login",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/auth/login/verify-2fa\"",
+    "client_method": "verify2FALogin",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/auth/demo-login\"",
+    "client_method": "demoLogin",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/auth/register\"",
+    "client_method": "register",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/auth/me\"",
+    "client_method": "getCurrentUser",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/profile\"",
+    "client_method": "updateProfile",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/milestones/revenue\"",
+    "client_method": "getRevenueMilestones",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/password\"",
+    "client_method": "updatePassword",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/users/break-status\"",
+    "client_method": "getBreakStatus",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/break-status\"",
+    "client_method": "updateBreakStatus",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/users/agents\"",
+    "client_method": "getAgents",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/assign\"",
+    "client_method": "assignOrders",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/reassign-fresh\"",
+    "client_method": "reassignOrdersFresh",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/unassign\"",
+    "client_method": "unassignOrders",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/orders/auto-assign?${a.toString()}`",
+    "client_method": "autoAssignOrders",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/organization\"",
+    "client_method": null,
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/organization/branding/upload\"",
+    "client_method": "uploadBrandingAsset",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/users/organization/custom-domain\"",
+    "client_method": "setCustomDomain",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/users/organization/custom-domain/verify\"",
+    "client_method": "verifyCustomDomain",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "\"/users/organization/custom-domain\"",
+    "client_method": "removeCustomDomain",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/users/settings\"",
+    "client_method": "getUserSettings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/settings/notifications\"",
+    "client_method": "updateNotificationSettings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/settings/appearance\"",
+    "client_method": "updateAppearanceSettings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/customers\"",
+    "client_method": "getCustomers",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/customers/${t}`",
+    "client_method": "getCustomer",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/customers\"",
+    "client_method": "createCustomer",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/customers/${t}`",
+    "client_method": "updateCustomer",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/customers/${t}`",
+    "client_method": "deleteCustomer",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/customers/${t}/block`",
+    "client_method": "blockCustomer",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/customers/${t}/unblock`",
+    "client_method": "unblockCustomer",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/customers/blacklist-by-phone\"",
+    "client_method": "blacklistCustomerByPhone",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/customers/stats\"",
+    "client_method": "getCustomerStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/customers/${t}/addresses`",
+    "client_method": "getCustomerAddresses",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/products\"",
+    "client_method": "getProducts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/products/${t}`",
+    "client_method": "getProduct",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/products/refresh-cache\"",
+    "client_method": "refreshProductsCache",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/products\"",
+    "client_method": "createProduct",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/products/${t}`",
+    "client_method": "updateProduct",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/products/${t}`",
+    "client_method": "deleteProduct",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/products/upload-image\"",
+    "client_method": "uploadProductImage",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/workflows/media\"",
+    "client_method": "uploadWorkflowMedia",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/workflows/options/cities\"",
+    "client_method": "getWorkflowCities",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/products/variants/${t}/stock`",
+    "client_method": "updateVariantStock",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/products/stats\"",
+    "client_method": "getProductStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/products/analytics/top-products\"",
+    "client_method": "getTopProducts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/inventory\"",
+    "client_method": "getInventory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/inventory\"",
+    "client_method": "createInventory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/inventory/${t}`",
+    "client_method": "updateInventory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/inventory/${t}/adjust`",
+    "client_method": "adjustInventoryStock",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/inventory/${t}`",
+    "client_method": "deleteInventory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/inventory/adjust\"",
+    "client_method": "adjustStockFifo",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/inventory/return\"",
+    "client_method": "handleInventoryReturn",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/inventory/lots/${t}/cost`",
+    "client_method": "updateLotCost",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/inventory/lots/bulk-cost\"",
+    "client_method": "bulkUpdateLotCost",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/inventory/lots/${t}`",
+    "client_method": "getInventoryLots",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/inventory/fifo-cost/${t}`",
+    "client_method": "getFifoCost",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/inventory/movements/${t}`",
+    "client_method": "getStockMovements",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/inventory/valuation\"",
+    "client_method": "getInventoryValuation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/planning/calendar\"",
+    "client_method": "getPlanningCalendar",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/planning/day\"",
+    "client_method": "getPlanningDay",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/products/${t}/sync-to-youcan`",
+    "client_method": "syncProductToYouCan",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/products/${t}/recost-preview`",
+    "client_method": "getProductRecostPreview",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/products/${t}/recost`",
+    "client_method": "recostProduct",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/products/${t}/sync-to-shopify`",
+    "client_method": "syncProductToShopify",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/categories\"",
+    "client_method": "getCategories",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/categories/${t}`",
+    "client_method": "getCategory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/categories\"",
+    "client_method": "createCategory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/categories/${t}`",
+    "client_method": "updateCategory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/categories/${t}`",
+    "client_method": "deleteCategory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/size-groups\"",
+    "client_method": "getSizeGroupTemplates",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/size-groups/${t}`",
+    "client_method": "getSizeGroupTemplate",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/size-groups\"",
+    "client_method": "createSizeGroupTemplate",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/size-groups/${t}`",
+    "client_method": "updateSizeGroupTemplate",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/size-groups/${t}`",
+    "client_method": "deleteSizeGroupTemplate",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/size-groups/preview-assignment\"",
+    "client_method": "previewConversion",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/size-groups/assign-product\"",
+    "client_method": "convertProductToSizeGroups",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/size-groups/unlink-product/${t}`",
+    "client_method": "unlinkProductFromSizeGroup",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/orders/${encodeURIComponent(t)}`",
+    "client_method": "getOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/orders/duplicates/${encodeURIComponent(t)}`",
+    "client_method": "getDuplicateOrders",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/duplicates-by-phone\"",
+    "client_method": "getDuplicateOrdersByPhone",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/orders/customer-history/${encodeURIComponent(t)}`",
+    "client_method": null,
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders\"",
+    "client_method": "createOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/export\"",
+    "client_method": "exportOrders",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/export/templates\"",
+    "client_method": "getExportTemplates",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/export/templates\"",
+    "client_method": "createExportTemplate",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/orders/export/templates/${t}`",
+    "client_method": "deleteExportTemplate",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/orders/${encodeURIComponent(t)}`",
+    "client_method": "updateOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/orders/${encodeURIComponent(t)}`",
+    "client_method": "deleteOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/merge\"",
+    "client_method": "mergeOrders",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/reroute/candidates\"",
+    "client_method": "getRerouteCandidates",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/reroute/orders/${encodeURIComponent(t)}/accept`",
+    "client_method": "acceptReroute",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/reroute/orders/${encodeURIComponent(t)}/dismiss`",
+    "client_method": "dismissReroute",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/reroute/settings\"",
+    "client_method": "getRerouteSettings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "\"/reroute/settings\"",
+    "client_method": "updateRerouteSettings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/split-parcels/settings\"",
+    "client_method": "getSplitParcelSettings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "\"/split-parcels/settings\"",
+    "client_method": "updateSplitParcelSettings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/call-log\"",
+    "client_method": "createCallLog",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/stats\"",
+    "client_method": "getOrderStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/badge-counts\"",
+    "client_method": "getOrderBadgeCounts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/analytics/daily-revenue\"",
+    "client_method": "getDailyRevenue",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/analytics/status-distribution\"",
+    "client_method": "getOrderStatusDistribution",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/assignment-stats\"",
+    "client_method": "getAssignmentStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/stores\"",
+    "client_method": "getStores",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/stores/${t}`",
+    "client_method": "getStore",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/stores\"",
+    "client_method": "createStore",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/stores/${t}`",
+    "client_method": "updateStore",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/stores/${t}`",
+    "client_method": "deleteStore",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/stores/${t}/generate-defaults`",
+    "client_method": "generateStoreDefaults",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/stores/stats\"",
+    "client_method": "getStoreStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/stores/${t}/status-configurations`",
+    "client_method": "getStoreStatusConfigurations",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/stores/${t}/status-configurations`",
+    "client_method": "updateStoreStatusConfigurations",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery-companies/${t}`",
+    "client_method": "getDeliveryCompany",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-companies\"",
+    "client_method": "createDeliveryCompany",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-companies/${t}`",
+    "client_method": "updateDeliveryCompany",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/delivery-companies/${t}`",
+    "client_method": "deleteDeliveryCompany",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/delivery-companies/stats\"",
+    "client_method": "getDeliveryCompanyStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/delivery-companies/phone-reputation\"",
+    "client_method": "getPhoneReputation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/delivery-companies/${t}/upload-logo`",
+    "client_method": "uploadDeliveryCompanyLogo",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery-companies/${t}/cities`",
+    "client_method": "getDeliveryCompanyCities",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/delivery-companies/template-cities\"",
+    "client_method": "getTemplateCities",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-companies/${t}/cities/${e}`",
+    "client_method": "updateCityPrice",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-companies/${t}/cities/bulk`",
+    "client_method": "bulkUpdateCities",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/delivery-companies/${t}/cities/${e}`",
+    "client_method": "deleteCityPrice",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/delivery-companies/${t}/cities`",
+    "client_method": "createCity",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-companies/${t}/cities/${e}/ramassage`",
+    "client_method": "toggleRamassageCity",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-companies/assign-to-store\"",
+    "client_method": "assignDeliveryCompaniesToStore",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery-companies/${t}/stores`",
+    "client_method": "getDeliveryCompanyStores",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/delivery-companies/${t}/stores`",
+    "client_method": "setDeliveryCompanyStores",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/delivery-companies/${t}/stores/${e}`",
+    "client_method": "removeDeliveryCompanyFromStore",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/delivery-companies/${t}/test-connection`",
+    "client_method": "testDeliveryCompanyConnection",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery-companies/status-mapping/${t}`",
+    "client_method": "getDeliveryCompanyStatusMapping",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-companies/test-connection-with-credentials\"",
+    "client_method": "testDeliveryCompanyConnectionWithCredentials",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/warehouses\"",
+    "client_method": "getWarehouses",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/warehouses/${t}`",
+    "client_method": "getWarehouse",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/warehouses\"",
+    "client_method": "createWarehouse",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/warehouses/${t}`",
+    "client_method": "updateWarehouse",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/warehouses/${t}`",
+    "client_method": "deleteWarehouse",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/warehouses/stats\"",
+    "client_method": "getWarehouseStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/warehouses/${t}/inventory`",
+    "client_method": "getWarehouseInventory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/stock-items\"",
+    "client_method": "getStockItems",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/stock-items/${t}`",
+    "client_method": "getStockItem",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/stock-items\"",
+    "client_method": "createStockItem",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/stock-items/${t}`",
+    "client_method": "updateStockItem",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/stock-items/${t}`",
+    "client_method": "deleteStockItem",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/stock-items/${t}/link`",
+    "client_method": "linkStockItemListing",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/stock-items/${t}/unlink`",
+    "client_method": "unlinkStockItemListing",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/dc-warehouse-stock/mappings\"",
+    "client_method": "getDCWarehouseMappings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/dc-warehouse-stock/mappings/${t}`",
+    "client_method": "getDCWarehouseMapping",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/dc-warehouse-stock/mappings\"",
+    "client_method": "createDCWarehouseMapping",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/dc-warehouse-stock/mappings/${t}`",
+    "client_method": "updateDCWarehouseMapping",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/dc-warehouse-stock/mappings/bulk-delete\"",
+    "client_method": "bulkDeleteDCWarehouseMappings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/dc-warehouse-stock/mappings/${t}`",
+    "client_method": "deleteDCWarehouseMapping",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/dc-warehouse-stock/mappings/${t}/stock`",
+    "client_method": "updateDCMappingStock",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/dc-warehouse-stock/components/${t}/stock`",
+    "client_method": "updateDCComponentStock",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/dc-warehouse-stock/bulk-update-stock\"",
+    "client_method": "bulkUpdateDCStock",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/dc-warehouse-stock/sync/${t}`",
+    "client_method": "syncDCStock",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/dc-warehouse-stock/product/${t}/breakdown`",
+    "client_method": "getProductStockBreakdown",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/dc-warehouse-stock/mappings/bulk\"",
+    "client_method": "bulkSaveDCMappings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/dc-warehouse-stock/dc-products/${t}`",
+    "client_method": "getDCProducts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/dc-warehouse-stock/summary\"",
+    "client_method": "getDCStockSummary",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/shipments\"",
+    "client_method": "getShipments",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/shipments/${t}`",
+    "client_method": "getShipment",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/shipments\"",
+    "client_method": "createShipment",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/shipments/${t}`",
+    "client_method": "updateShipment",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/shipments/stats\"",
+    "client_method": "getShipmentStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/users/${t}/stores`",
+    "client_method": "getUserStoreAccess",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/store-access\"",
+    "client_method": "grantStoreAccess",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/store-access/${t}`",
+    "client_method": "updateStoreAccess",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/store-access/${t}`",
+    "client_method": "revokeStoreAccess",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/store-access/stores/${t}/users`",
+    "client_method": "getStoreUsers",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/returns\"",
+    "client_method": "getReturnedOrders",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/returns/${t}`",
+    "client_method": "getReturnedOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/returns/search\"",
+    "client_method": "searchReturnedOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/returns/stats\"",
+    "client_method": "getReturnVerificationStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/returns/delivery-companies\"",
+    "client_method": "getDeliveryCompaniesWithReturns",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/returns/${t}/verify`",
+    "client_method": "verifyReturn",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/returns/bulk-verify\"",
+    "client_method": "bulkVerifyReturns",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/returns/${t}/mark-returned`",
+    "client_method": "markAsReturned",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/returns/bulk-mark-returned\"",
+    "client_method": "bulkMarkAsReturned",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/returns\"",
+    "client_method": "createReturn",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/returns/${t}`",
+    "client_method": "updateReturn",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/returns/${t}`",
+    "client_method": "deleteReturn",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/suppliers\"",
+    "client_method": "getSuppliers",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/suppliers/${t}`",
+    "client_method": "getSupplier",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/suppliers/stats\"",
+    "client_method": "getSupplierStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/suppliers/by-product/${t}`",
+    "client_method": "getProductSuppliers",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/suppliers\"",
+    "client_method": "createSupplier",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/suppliers/${t}`",
+    "client_method": "updateSupplier",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/suppliers/${t}`",
+    "client_method": "deleteSupplier",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/suppliers/${t}/products`",
+    "client_method": "addProductToSupplier",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/suppliers/products/${t}`",
+    "client_method": "updateSupplierProduct",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/suppliers/products/${t}`",
+    "client_method": "removeProductFromSupplier",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/suppliers/${t}/bulk-link-products`",
+    "client_method": "bulkLinkProductsToSupplier",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/purchase-orders\"",
+    "client_method": "getPurchaseOrders",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/purchase-orders/${t}`",
+    "client_method": "getPurchaseOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/purchase-orders/stats\"",
+    "client_method": "getPurchaseOrderStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/purchase-orders\"",
+    "client_method": "createPurchaseOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/items/${e}/unlink-dc-stock`",
+    "client_method": "unlinkPurchaseOrderDcStock",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/purchase-orders/${t}`",
+    "client_method": "updatePurchaseOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/submit`",
+    "client_method": "submitPurchaseOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/confirm`",
+    "client_method": "confirmPurchaseOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/receive`",
+    "client_method": "receivePurchaseOrderItems",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/purchase-orders/${t}/payment`",
+    "client_method": "updatePurchaseOrderPayment",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/cancel`",
+    "client_method": "cancelPurchaseOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/purchase-orders/${t}`",
+    "client_method": "deletePurchaseOrder",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/purchase-orders/${t}/payments`",
+    "client_method": "getPurchaseOrderPayments",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/payments`",
+    "client_method": "addPurchaseOrderPayment",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/purchase-orders/payments/${t}`",
+    "client_method": "deletePurchaseOrderPayment",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/purchase-orders/payments/${t}/proof-url`",
+    "client_method": "getPaymentProofUrl",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/accounts\"",
+    "client_method": "listAiAgentAccounts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp-ai-agent/accounts/${t}/settings`",
+    "client_method": "getAiAgentSettings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/whatsapp-ai-agent/accounts/${t}/settings`",
+    "client_method": "updateAiAgentSettings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp-ai-agent/accounts/${t}/delivery-cities`",
+    "client_method": "getAiAgentDeliveryCities",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp-ai-agent/knowledge/sync\"",
+    "client_method": "syncAiAgentKnowledge",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/knowledge/status\"",
+    "client_method": "getAiAgentKnowledgeStatus",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/voices\"",
+    "client_method": null,
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp-ai-agent/voice/preview\"",
+    "client_method": "previewAiAgentVoice",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/error-logs\"",
+    "client_method": null,
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/tools\"",
+    "client_method": "listAiAgentTools",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/config-templates\"",
+    "client_method": "listAiAgentConfigTemplates",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/available-models\"",
+    "client_method": "getAiAgentAvailableModels",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/product-media/products\"",
+    "client_method": "listAiMediaProducts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/product-media\"",
+    "client_method": "listProductMedia",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp-ai-agent/product-media/upload\"",
+    "client_method": null,
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/product-media/opener\"",
+    "client_method": "getProductOpener",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/product-media/${t}`",
+    "client_method": "deleteProductMedia",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/ad-mappings\"",
+    "client_method": "listAdMappings",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/ad-mappings/ad-suggestions\"",
+    "client_method": "listAdSuggestions",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp-ai-agent/ad-mappings\"",
+    "client_method": "createAdMapping",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp-ai-agent/ad-mappings/${t}`",
+    "client_method": "updateAdMapping",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/ad-mappings/${t}`",
+    "client_method": "deleteAdMapping",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/customer-memory\"",
+    "client_method": "listCustomerMemories",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp-ai-agent/customer-memory/${t}`",
+    "client_method": "updateCustomerMemory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/customer-memory/${t}`",
+    "client_method": "deleteCustomerMemory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/wallet\"",
+    "client_method": "getAiBillingWallet",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/rate-card\"",
+    "client_method": "getAiRateCard",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/transactions\"",
+    "client_method": "getAiBillingTransactions",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/usage\"",
+    "client_method": "getAiBillingUsage",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/byok-usage\"",
+    "client_method": "getAiBillingByokUsage",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/ai-billing/topup\"",
+    "client_method": "topUpAiCredits",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/ai-billing/checkout\"",
+    "client_method": "createAiCreditCheckout",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/status\"",
+    "client_method": "getAiBillingStatus",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/datasets\"",
+    "client_method": "listDatasets",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp-ai-agent/datasets\"",
+    "client_method": "createDataset",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/datasets/${t}`",
+    "client_method": "deleteDataset",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp-ai-agent/datasets/${t}/documents`",
+    "client_method": "listDatasetDocuments",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp-ai-agent/datasets/${t}/documents`",
+    "client_method": "addDatasetTextDocument",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp-ai-agent/datasets/${t}/documents/upload`",
+    "client_method": null,
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/datasets/${t}/documents/${e}`",
+    "client_method": "deleteDatasetDocument",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/ai-knowledge/products\"",
+    "client_method": "listKnowledgeProducts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp-ai-agent/products/${t}/ai-knowledge`",
+    "client_method": "listProductKnowledge",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp-ai-agent/products/${t}/ai-knowledge`",
+    "client_method": "addProductKnowledge",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp-ai-agent/products/${t}/ai-knowledge/upload`",
+    "client_method": null,
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp-ai-agent/products/${t}/ai-knowledge/${e}`",
+    "client_method": "updateProductKnowledge",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/products/${t}/ai-knowledge/${e}`",
+    "client_method": "deleteProductKnowledge",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/sav/tickets\"",
+    "client_method": "listSavTickets",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp-ai-agent/sav/tickets/${t}`",
+    "client_method": "getSavTicket",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp-ai-agent/sav/tickets/${t}`",
+    "client_method": "updateSavTicket",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/accounts\"",
+    "client_method": "getWhatsAppAccounts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/accounts/all\"",
+    "client_method": "getAllWhatsAppAccounts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}`",
+    "client_method": "getWhatsAppAccount",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/business-profile`",
+    "client_method": "getWhatsAppBusinessProfile",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/business-profile`",
+    "client_method": "updateWhatsAppBusinessProfile",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/business-profile/photo`",
+    "client_method": "updateWhatsAppBusinessProfilePhoto",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts\"",
+    "client_method": "createWhatsAppAccount",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/embedded-signup\"",
+    "client_method": "exchangeMetaCode",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/exchange-token\"",
+    "client_method": "exchangeWhatsAppToken",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/embedded-signup-token\"",
+    "client_method": "connectWhatsAppWithToken",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/available-numbers\"",
+    "client_method": "getAvailableWhatsAppNumbers",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/meta-config\"",
+    "client_method": "getMetaAppConfig",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/web-session\"",
+    "client_method": "createWebSessionAccount",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/init-session`",
+    "client_method": "initBaileysSession",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/disconnect-session`",
+    "client_method": "disconnectBaileysSession",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/reconnect-session`",
+    "client_method": "reconnectBaileysSession",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/accounts/${t}`",
+    "client_method": "deleteWhatsAppAccount",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}`",
+    "client_method": "updateWhatsAppAccount",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/templates/${t}`",
+    "client_method": "updateWhatsAppTemplate",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/test-connection\"",
+    "client_method": "testWhatsAppConnection",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/sync-templates`",
+    "client_method": "syncWhatsAppTemplates",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/register-phone`",
+    "client_method": "registerWhatsAppPhone",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/stores`",
+    "client_method": "getWhatsAppAccountStores",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/stores/${e}`",
+    "client_method": "linkStoreToWhatsAppAccount",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/accounts/${t}/stores/${e}`",
+    "client_method": "unlinkStoreFromWhatsAppAccount",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/stores`",
+    "client_method": "updateWhatsAppAccountStores",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/users`",
+    "client_method": "getWhatsAppAccountUsers",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}`",
+    "client_method": "linkUserToWhatsAppAccount",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}`",
+    "client_method": "unlinkUserFromWhatsAppAccount",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/users`",
+    "client_method": "updateWhatsAppAccountUsers",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}/permissions`",
+    "client_method": "updateWhatsAppUserAccountPermissions",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}/product-restrictions`",
+    "client_method": "getWhatsAppUserProductRestrictions",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}/product-restrictions`",
+    "client_method": "updateWhatsAppUserProductRestrictions",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}/delivery-company-restrictions`",
+    "client_method": "getWhatsAppUserDeliveryCompanyRestrictions",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}/delivery-company-restrictions`",
+    "client_method": "updateWhatsAppUserDeliveryCompanyRestrictions",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/conversations\"",
+    "client_method": "getWhatsAppConversations",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/conversations/${t}`",
+    "client_method": "getWhatsAppConversation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/conversations\"",
+    "client_method": "startWhatsAppConversation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/status`",
+    "client_method": "updateWhatsAppConversationStatus",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/assign`",
+    "client_method": "assignWhatsAppConversation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/products`",
+    "client_method": "updateConversationProducts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/link-customer`",
+    "client_method": "linkWhatsAppCustomer",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/unlink-customer`",
+    "client_method": "unlinkWhatsAppCustomer",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/conversations/archived\"",
+    "client_method": "getArchivedWhatsAppConversations",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/archive`",
+    "client_method": "archiveWhatsAppConversation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/unarchive`",
+    "client_method": "unarchiveWhatsAppConversation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/pin`",
+    "client_method": "pinWhatsAppConversation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/unpin`",
+    "client_method": "unpinWhatsAppConversation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/name`",
+    "client_method": "renameWhatsAppConversation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/conversations/${t}`",
+    "client_method": "deleteWhatsAppConversation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/blocked-contacts\"",
+    "client_method": "getBlockedWhatsAppContacts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/conversations/${t}/block`",
+    "client_method": "blockWhatsAppContact",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/blocked-contacts/${encodeURIComponent(t)}`",
+    "client_method": "unblockWhatsAppContact",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/contacts/${encodeURIComponent(t)}/blocked`",
+    "client_method": "isWhatsAppContactBlocked",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/conversations/${t}/messages`",
+    "client_method": "getWhatsAppMessages",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/text\"",
+    "client_method": "sendWhatsAppTextMessage",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/media\"",
+    "client_method": "sendWhatsAppMediaMessage",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/upload\"",
+    "client_method": null,
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/template\"",
+    "client_method": "sendWhatsAppTemplateMessage",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/location\"",
+    "client_method": "sendWhatsAppLocationMessage",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/forward\"",
+    "client_method": "forwardWhatsAppMessage",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/messages/${t}`",
+    "client_method": "deleteWhatsAppMessage",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/templates`",
+    "client_method": "getWhatsAppTemplates",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/quick-replies`",
+    "client_method": "getWhatsAppQuickReplies",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/templates\"",
+    "client_method": "createWhatsAppTemplate",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/templates/defaults\"",
+    "client_method": "getDefaultWhatsAppTemplates",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/submit-default-templates`",
+    "client_method": null,
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/default-template-drafts`",
+    "client_method": "getDefaultWhatsAppTemplateDrafts",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/whatsapp/accounts/${t}/default-template-drafts`",
+    "client_method": "saveDefaultWhatsAppTemplateDraft",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/accounts/${t}/default-template-drafts/${encodeURIComponent(a)}/${encodeURIComponent(e)}`",
+    "client_method": "deleteDefaultWhatsAppTemplateDraft",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/templates/submit\"",
+    "client_method": "submitWhatsAppTemplateToMeta",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/templates/${t}/meta`",
+    "client_method": "deleteWhatsAppTemplateFromMeta",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/templates/${t}/refresh`",
+    "client_method": "refreshWhatsAppTemplateStatus",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/notifications\"",
+    "client_method": "getNotifications",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/notifications/unread-count\"",
+    "client_method": "getUnreadNotificationCount",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/notifications/${t}/read`",
+    "client_method": "markNotificationAsRead",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/notifications/mark-all-read\"",
+    "client_method": "markAllNotificationsAsRead",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/notifications/${t}`",
+    "client_method": "deleteNotification",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "\"/notifications\"",
+    "client_method": "deleteAllNotifications",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/notifications/preferences\"",
+    "client_method": "getNotificationPreferences",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "\"/notifications/preferences\"",
+    "client_method": "updateNotificationPreferences",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/expenses\"",
+    "client_method": "getExpenses",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/expenses/stats\"",
+    "client_method": "getExpenseStats",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/expenses/categories\"",
+    "client_method": "getExpenseCategories",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/expenses/${t}`",
+    "client_method": "getExpense",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/expenses\"",
+    "client_method": null,
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/expenses/${t}`",
+    "client_method": "updateExpense",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/expenses/${t}`",
+    "client_method": "deleteExpense",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/expenses/${t}/upload-invoice`",
+    "client_method": "uploadExpenseInvoice",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/expenses/${t}/invoice-url`",
+    "client_method": "getExpenseInvoiceUrl",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/expenses/${t}/invoice`",
+    "client_method": "deleteExpenseInvoice",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/recurring-expenses\"",
+    "client_method": "getRecurringExpenses",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/recurring-expenses/${t}`",
+    "client_method": "getRecurringExpense",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/recurring-expenses\"",
+    "client_method": "createRecurringExpense",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/recurring-expenses/${t}`",
+    "client_method": "updateRecurringExpense",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/recurring-expenses/${t}`",
+    "client_method": "deleteRecurringExpense",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/recurring-expenses/${t}/toggle-active`",
+    "client_method": "toggleRecurringExpenseActive",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/recurring-expenses/${t}/generate`",
+    "client_method": "triggerRecurringExpenseGeneration",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/recurring-expenses/${t}/expenses`",
+    "client_method": "getRecurringExpenseHistory",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/overview\"",
+    "client_method": "getFinancialOverview",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/pnl\"",
+    "client_method": "getProfitAndLoss",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/cash-flow\"",
+    "client_method": "getCashFlow",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/receivables\"",
+    "client_method": "getReceivables",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/cogs-breakdown\"",
+    "client_method": "getCogsBreakdown",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/payables\"",
+    "client_method": "getPayables",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/inventory\"",
+    "client_method": "getAccountingInventoryValuation",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/support/tickets\"",
+    "client_method": "createSupportTicket",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/support/tickets/my\"",
+    "client_method": "getMySupportTickets",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/support/tickets/${t}`",
+    "client_method": "getSupportTicket",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/api-keys\"",
+    "client_method": "getApiKeys",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/api-keys\"",
+    "client_method": "createApiKey",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/api-keys/${t}`",
+    "client_method": "revokeApiKey",
+    "chunk": "0rxdcmfzcmi09.js",
+    "evidence": "frontend source reference; live verification required"
+  }
+]

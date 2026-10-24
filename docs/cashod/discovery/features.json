@@ -1,0 +1,1922 @@
+[
+  {
+    "id": "F001",
+    "module": "order-management",
+    "feature": "Combined order desk",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F002",
+    "module": "order-management",
+    "feature": "Realtime arrival",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F003",
+    "module": "order-management",
+    "feature": "Confirmation filters",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F004",
+    "module": "order-management",
+    "feature": "Carrier and city filters",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F005",
+    "module": "order-management",
+    "feature": "Product and source filters",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F006",
+    "module": "order-management",
+    "feature": "Agent and date filters",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F007",
+    "module": "order-management",
+    "feature": "Batch operations",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F008",
+    "module": "order-management",
+    "feature": "CSV and Excel exports",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F009",
+    "module": "order-management",
+    "feature": "Reusable export formats",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F010",
+    "module": "order-management",
+    "feature": "Commercial edits",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F011",
+    "module": "order-management",
+    "feature": "Discounts",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F012",
+    "module": "order-management",
+    "feature": "Optional shipping fees",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F013",
+    "module": "order-management",
+    "feature": "Upsell lines",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F014",
+    "module": "order-management",
+    "feature": "Quantity pricing",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F015",
+    "module": "order-management",
+    "feature": "Customer deposits",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F016",
+    "module": "order-management",
+    "feature": "Outstanding COD calculation",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F017",
+    "module": "order-management",
+    "feature": "Duplicate review and merge",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F018",
+    "module": "order-management",
+    "feature": "Returning-unit reroute",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F019",
+    "module": "order-management",
+    "feature": "Status timeline",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F020",
+    "module": "order-management",
+    "feature": "Internal and courier notes",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/order-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F021",
+    "module": "call-center",
+    "feature": "Agent confirmation queue",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F022",
+    "module": "call-center",
+    "feature": "Call dispositions",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F023",
+    "module": "call-center",
+    "feature": "Callback scheduling",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F024",
+    "module": "call-center",
+    "feature": "Call notes",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F025",
+    "module": "call-center",
+    "feature": "Round-robin store assignment",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F026",
+    "module": "call-center",
+    "feature": "Agent statistics",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F027",
+    "module": "call-center",
+    "feature": "Agent leaderboard",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F028",
+    "module": "call-center",
+    "feature": "Delivered-order commissions",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F029",
+    "module": "call-center",
+    "feature": "Product bonuses",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F030",
+    "module": "call-center",
+    "feature": "Upsell bonuses",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F031",
+    "module": "call-center",
+    "feature": "Batched payouts",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F032",
+    "module": "call-center",
+    "feature": "Payout evidence",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/call-center",
+    "workflow_verified": false
+  },
+  {
+    "id": "F033",
+    "module": "ai-agent",
+    "feature": "WhatsApp customer agent",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F034",
+    "module": "ai-agent",
+    "feature": "Confirmation-only mode",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F035",
+    "module": "ai-agent",
+    "feature": "Full sales/after-sales mode",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F036",
+    "module": "ai-agent",
+    "feature": "Darija support",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F037",
+    "module": "ai-agent",
+    "feature": "Arabic/French/English/Spanish support",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F038",
+    "module": "ai-agent",
+    "feature": "Persona and tone settings",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F039",
+    "module": "ai-agent",
+    "feature": "Gender-aware language",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F040",
+    "module": "ai-agent",
+    "feature": "Voice-note responses",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F041",
+    "module": "ai-agent",
+    "feature": "Catalog-grounded answers",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F042",
+    "module": "ai-agent",
+    "feature": "Dataset knowledge",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F043",
+    "module": "ai-agent",
+    "feature": "Post-confirmation upsells",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F044",
+    "module": "ai-agent",
+    "feature": "Unanswered-question logs",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F045",
+    "module": "ai-agent",
+    "feature": "Human escalation",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/ai-agent",
+    "workflow_verified": false
+  },
+  {
+    "id": "F046",
+    "module": "auto-confirmation",
+    "feature": "Explicit customer consent recognition",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/auto-confirmation",
+    "workflow_verified": false
+  },
+  {
+    "id": "F047",
+    "module": "auto-confirmation",
+    "feature": "Confidence threshold",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/auto-confirmation",
+    "workflow_verified": false
+  },
+  {
+    "id": "F048",
+    "module": "auto-confirmation",
+    "feature": "Human review for ambiguous replies",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/auto-confirmation",
+    "workflow_verified": false
+  },
+  {
+    "id": "F049",
+    "module": "auto-confirmation",
+    "feature": "Human-controlled cancellations",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/auto-confirmation",
+    "workflow_verified": false
+  },
+  {
+    "id": "F050",
+    "module": "auto-confirmation",
+    "feature": "Unanswered-call escalation",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/auto-confirmation",
+    "workflow_verified": false
+  },
+  {
+    "id": "F051",
+    "module": "auto-confirmation",
+    "feature": "Interactive confirmation buttons",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/auto-confirmation",
+    "workflow_verified": false
+  },
+  {
+    "id": "F052",
+    "module": "whatsapp",
+    "feature": "Multiple WhatsApp accounts",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/whatsapp",
+    "workflow_verified": false
+  },
+  {
+    "id": "F053",
+    "module": "whatsapp",
+    "feature": "Shared inbox",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/whatsapp",
+    "workflow_verified": false
+  },
+  {
+    "id": "F054",
+    "module": "whatsapp",
+    "feature": "Media messages",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/whatsapp",
+    "workflow_verified": false
+  },
+  {
+    "id": "F055",
+    "module": "whatsapp",
+    "feature": "Approved templates",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/whatsapp",
+    "workflow_verified": false
+  },
+  {
+    "id": "F056",
+    "module": "whatsapp",
+    "feature": "Conversation-to-order creation",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/whatsapp",
+    "workflow_verified": false
+  },
+  {
+    "id": "F057",
+    "module": "whatsapp",
+    "feature": "Automatic replies",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/whatsapp",
+    "workflow_verified": false
+  },
+  {
+    "id": "F058",
+    "module": "whatsapp",
+    "feature": "Workflow integration",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/whatsapp",
+    "workflow_verified": false
+  },
+  {
+    "id": "F059",
+    "module": "whatsapp",
+    "feature": "Archived conversations",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/whatsapp",
+    "workflow_verified": false
+  },
+  {
+    "id": "F060",
+    "module": "whatsapp",
+    "feature": "Blocked contacts",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/whatsapp",
+    "workflow_verified": false
+  },
+  {
+    "id": "F061",
+    "module": "whatsapp",
+    "feature": "Quick replies",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/whatsapp",
+    "workflow_verified": false
+  },
+  {
+    "id": "F062",
+    "module": "whatsapp",
+    "feature": "Account-user and store access",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/whatsapp",
+    "workflow_verified": false
+  },
+  {
+    "id": "F063",
+    "module": "delivery-management",
+    "feature": "Individual dispatch",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F064",
+    "module": "delivery-management",
+    "feature": "Batch dispatch",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F065",
+    "module": "delivery-management",
+    "feature": "Individual labels",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F066",
+    "module": "delivery-management",
+    "feature": "Batch labels",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F067",
+    "module": "delivery-management",
+    "feature": "Webhook tracking",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F068",
+    "module": "delivery-management",
+    "feature": "Polling tracking",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F069",
+    "module": "delivery-management",
+    "feature": "Prioritized carrier assignment",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F070",
+    "module": "delivery-management",
+    "feature": "City/address rules",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F071",
+    "module": "delivery-management",
+    "feature": "Amount/product/category/source/time rules",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F072",
+    "module": "delivery-management",
+    "feature": "Warehouse-stock preference",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F073",
+    "module": "delivery-management",
+    "feature": "Carrier remittance tracking",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F074",
+    "module": "delivery-management",
+    "feature": "Carrier invoice imports",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F075",
+    "module": "delivery-management",
+    "feature": "Receivables aging",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F076",
+    "module": "delivery-management",
+    "feature": "Carrier stock sync",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F077",
+    "module": "delivery-management",
+    "feature": "Public parcel tracking",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F078",
+    "module": "delivery-management",
+    "feature": "Own-courier dispatch board",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F079",
+    "module": "delivery-management",
+    "feature": "Mobile courier view",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F080",
+    "module": "delivery-management",
+    "feature": "Expected-versus-collected cash",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F081",
+    "module": "delivery-management",
+    "feature": "Courier payouts",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/delivery-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F082",
+    "module": "returns",
+    "feature": "Return-in-progress tracking",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/returns",
+    "workflow_verified": false
+  },
+  {
+    "id": "F083",
+    "module": "returns",
+    "feature": "Physical receipt verification",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/returns",
+    "workflow_verified": false
+  },
+  {
+    "id": "F084",
+    "module": "returns",
+    "feature": "Single parcel scan",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/returns",
+    "workflow_verified": false
+  },
+  {
+    "id": "F085",
+    "module": "returns",
+    "feature": "Batch parcel verification",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/returns",
+    "workflow_verified": false
+  },
+  {
+    "id": "F086",
+    "module": "returns",
+    "feature": "Restock on accepted return",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/returns",
+    "workflow_verified": false
+  },
+  {
+    "id": "F087",
+    "module": "returns",
+    "feature": "Carrier return fee allocation",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/returns",
+    "workflow_verified": false
+  },
+  {
+    "id": "F088",
+    "module": "product-catalog",
+    "feature": "Product CRUD",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/product-catalog",
+    "workflow_verified": false
+  },
+  {
+    "id": "F089",
+    "module": "product-catalog",
+    "feature": "Variant SKUs",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/product-catalog",
+    "workflow_verified": false
+  },
+  {
+    "id": "F090",
+    "module": "product-catalog",
+    "feature": "Categories",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/product-catalog",
+    "workflow_verified": false
+  },
+  {
+    "id": "F091",
+    "module": "product-catalog",
+    "feature": "Size groups",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/product-catalog",
+    "workflow_verified": false
+  },
+  {
+    "id": "F092",
+    "module": "product-catalog",
+    "feature": "Images",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/product-catalog",
+    "workflow_verified": false
+  },
+  {
+    "id": "F093",
+    "module": "product-catalog",
+    "feature": "Sale and cost prices",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/product-catalog",
+    "workflow_verified": false
+  },
+  {
+    "id": "F094",
+    "module": "product-catalog",
+    "feature": "Quantity offers",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/product-catalog",
+    "workflow_verified": false
+  },
+  {
+    "id": "F095",
+    "module": "product-catalog",
+    "feature": "Low-stock thresholds",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/product-catalog",
+    "workflow_verified": false
+  },
+  {
+    "id": "F096",
+    "module": "product-catalog",
+    "feature": "Product analytics",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/product-catalog",
+    "workflow_verified": false
+  },
+  {
+    "id": "F097",
+    "module": "inventory-management",
+    "feature": "Warehouse stock",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/inventory-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F098",
+    "module": "inventory-management",
+    "feature": "Variant balances",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/inventory-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F099",
+    "module": "inventory-management",
+    "feature": "Shipment stock-out",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/inventory-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F100",
+    "module": "inventory-management",
+    "feature": "Delivered stock sale",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/inventory-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F101",
+    "module": "inventory-management",
+    "feature": "Return stock-in",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/inventory-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F102",
+    "module": "inventory-management",
+    "feature": "Low-stock insights",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/inventory-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F103",
+    "module": "inventory-management",
+    "feature": "Inventory movements",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/inventory-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F104",
+    "module": "inventory-management",
+    "feature": "FIFO lots",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/inventory-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F105",
+    "module": "inventory-management",
+    "feature": "Inventory valuation",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/inventory-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F106",
+    "module": "inventory-management",
+    "feature": "Carrier-warehouse mappings",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/inventory-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F107",
+    "module": "suppliers",
+    "feature": "Supplier records",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/suppliers",
+    "workflow_verified": false
+  },
+  {
+    "id": "F108",
+    "module": "suppliers",
+    "feature": "Supplier product catalog",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/suppliers",
+    "workflow_verified": false
+  },
+  {
+    "id": "F109",
+    "module": "suppliers",
+    "feature": "Unit purchase costs",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/suppliers",
+    "workflow_verified": false
+  },
+  {
+    "id": "F110",
+    "module": "suppliers",
+    "feature": "Minimum quantities",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/suppliers",
+    "workflow_verified": false
+  },
+  {
+    "id": "F111",
+    "module": "suppliers",
+    "feature": "Lead-time fields",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/suppliers",
+    "workflow_verified": false
+  },
+  {
+    "id": "F112",
+    "module": "suppliers",
+    "feature": "Supplier balances",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/suppliers",
+    "workflow_verified": false
+  },
+  {
+    "id": "F113",
+    "module": "purchase-orders",
+    "feature": "Purchase order lifecycle",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/purchase-orders",
+    "workflow_verified": false
+  },
+  {
+    "id": "F114",
+    "module": "purchase-orders",
+    "feature": "Partial receipts",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/purchase-orders",
+    "workflow_verified": false
+  },
+  {
+    "id": "F115",
+    "module": "purchase-orders",
+    "feature": "Receipt stock costing",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/purchase-orders",
+    "workflow_verified": false
+  },
+  {
+    "id": "F116",
+    "module": "purchase-orders",
+    "feature": "Supplier payments",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/purchase-orders",
+    "workflow_verified": false
+  },
+  {
+    "id": "F117",
+    "module": "purchase-orders",
+    "feature": "Payment proof",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/purchase-orders",
+    "workflow_verified": false
+  },
+  {
+    "id": "F118",
+    "module": "purchase-orders",
+    "feature": "Payables",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/purchase-orders",
+    "workflow_verified": false
+  },
+  {
+    "id": "F119",
+    "module": "production-planning",
+    "feature": "Monthly calendar",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/production-planning",
+    "workflow_verified": false
+  },
+  {
+    "id": "F120",
+    "module": "production-planning",
+    "feature": "Weekly calendar",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/production-planning",
+    "workflow_verified": false
+  },
+  {
+    "id": "F121",
+    "module": "production-planning",
+    "feature": "Due-date view",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/production-planning",
+    "workflow_verified": false
+  },
+  {
+    "id": "F122",
+    "module": "production-planning",
+    "feature": "Scheduled-delivery view",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/production-planning",
+    "workflow_verified": false
+  },
+  {
+    "id": "F123",
+    "module": "production-planning",
+    "feature": "Callback-date view",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/production-planning",
+    "workflow_verified": false
+  },
+  {
+    "id": "F124",
+    "module": "production-planning",
+    "feature": "Daily product quantities",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/production-planning",
+    "workflow_verified": false
+  },
+  {
+    "id": "F125",
+    "module": "production-planning",
+    "feature": "Daily order details",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/production-planning",
+    "workflow_verified": false
+  },
+  {
+    "id": "F126",
+    "module": "production-planning",
+    "feature": "Stock-versus-demand comparison",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/production-planning",
+    "workflow_verified": false
+  },
+  {
+    "id": "F127",
+    "module": "production-planning",
+    "feature": "Shortfall detection",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/production-planning",
+    "workflow_verified": false
+  },
+  {
+    "id": "F128",
+    "module": "production-planning",
+    "feature": "CSV planning export",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/production-planning",
+    "workflow_verified": false
+  },
+  {
+    "id": "F129",
+    "module": "production-planning",
+    "feature": "Printable production sheet",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/production-planning",
+    "workflow_verified": false
+  },
+  {
+    "id": "F130",
+    "module": "client-management",
+    "feature": "Phone-based identity",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/client-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F131",
+    "module": "client-management",
+    "feature": "Customer order history",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/client-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F132",
+    "module": "client-management",
+    "feature": "Cross-store merchant history",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/client-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F133",
+    "module": "client-management",
+    "feature": "Confirmation and delivery statistics",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/client-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F134",
+    "module": "client-management",
+    "feature": "Return/cancellation history",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/client-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F135",
+    "module": "client-management",
+    "feature": "Product-only spend totals",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/client-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F136",
+    "module": "client-management",
+    "feature": "Phone blacklist",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/client-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F137",
+    "module": "client-management",
+    "feature": "Saved addresses",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/client-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F138",
+    "module": "client-management",
+    "feature": "Customer search",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/client-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F139",
+    "module": "analytics",
+    "feature": "Operational KPIs",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F140",
+    "module": "analytics",
+    "feature": "Confirmation rate",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F141",
+    "module": "analytics",
+    "feature": "Delivery rate",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F142",
+    "module": "analytics",
+    "feature": "Return rate",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F143",
+    "module": "analytics",
+    "feature": "Status distribution",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F144",
+    "module": "analytics",
+    "feature": "Product/customer/city rankings",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F145",
+    "module": "analytics",
+    "feature": "Agent/carrier performance",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F146",
+    "module": "analytics",
+    "feature": "Profit and loss",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F147",
+    "module": "analytics",
+    "feature": "Cash flow",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F148",
+    "module": "analytics",
+    "feature": "Receivables",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F149",
+    "module": "analytics",
+    "feature": "COGS breakdown",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F150",
+    "module": "analytics",
+    "feature": "Payables",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F151",
+    "module": "analytics",
+    "feature": "Expenses",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F152",
+    "module": "analytics",
+    "feature": "Recurring expenses",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F153",
+    "module": "analytics",
+    "feature": "Supplier cash payments",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F154",
+    "module": "analytics",
+    "feature": "Deposit cash treatment",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/analytics",
+    "workflow_verified": false
+  },
+  {
+    "id": "F155",
+    "module": "advertising",
+    "feature": "Meta/TikTok/Google/Snapchat connections",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F156",
+    "module": "advertising",
+    "feature": "Campaign/ad-set/ad reporting",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F157",
+    "module": "advertising",
+    "feature": "Ten-minute reporting cadence",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F158",
+    "module": "advertising",
+    "feature": "UTM attribution",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F159",
+    "module": "advertising",
+    "feature": "Click-ID attribution",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F160",
+    "module": "advertising",
+    "feature": "Delivered COD profitability",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F161",
+    "module": "advertising",
+    "feature": "ROAS/ROI",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F162",
+    "module": "advertising",
+    "feature": "Campaign activation and pause",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F163",
+    "module": "advertising",
+    "feature": "Budget edits",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F164",
+    "module": "advertising",
+    "feature": "Meta/TikTok/Snapchat rules",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F165",
+    "module": "advertising",
+    "feature": "44 rule metrics",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F166",
+    "module": "advertising",
+    "feature": "Formula conditions",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F167",
+    "module": "advertising",
+    "feature": "Multiple evaluation windows",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F168",
+    "module": "advertising",
+    "feature": "Budget floors and caps",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F169",
+    "module": "advertising",
+    "feature": "Cooldown",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F170",
+    "module": "advertising",
+    "feature": "Daily action limits",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F171",
+    "module": "advertising",
+    "feature": "Dry-run rules",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F172",
+    "module": "advertising",
+    "feature": "Execution history",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F173",
+    "module": "advertising",
+    "feature": "Meta Conversions API events",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/advertising",
+    "workflow_verified": false
+  },
+  {
+    "id": "F174",
+    "module": "workflows",
+    "feature": "Order/customer/stock/shipment/ad triggers",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F175",
+    "module": "workflows",
+    "feature": "Scheduled triggers",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F176",
+    "module": "workflows",
+    "feature": "Delayed actions",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F177",
+    "module": "workflows",
+    "feature": "WhatsApp-button triggers",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F178",
+    "module": "workflows",
+    "feature": "Inbound webhook triggers",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F179",
+    "module": "workflows",
+    "feature": "Manual runs",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F180",
+    "module": "workflows",
+    "feature": "WhatsApp/SMS/email actions",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F181",
+    "module": "workflows",
+    "feature": "Slack/Discord notifications",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F182",
+    "module": "workflows",
+    "feature": "Order/customer/shipment updates",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F183",
+    "module": "workflows",
+    "feature": "Agent assignment",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F184",
+    "module": "workflows",
+    "feature": "Batch carrier dispatch",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F185",
+    "module": "workflows",
+    "feature": "Stock updates",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F186",
+    "module": "workflows",
+    "feature": "Outbound HTTP calls",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F187",
+    "module": "workflows",
+    "feature": "Step-level run history",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F188",
+    "module": "workflows",
+    "feature": "Template library",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/workflows",
+    "workflow_verified": false
+  },
+  {
+    "id": "F189",
+    "module": "multi-store",
+    "feature": "Store-specific country",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/multi-store",
+    "workflow_verified": false
+  },
+  {
+    "id": "F190",
+    "module": "multi-store",
+    "feature": "Store currency",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/multi-store",
+    "workflow_verified": false
+  },
+  {
+    "id": "F191",
+    "module": "multi-store",
+    "feature": "Store timezone",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/multi-store",
+    "workflow_verified": false
+  },
+  {
+    "id": "F192",
+    "module": "multi-store",
+    "feature": "Store-specific carriers",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/multi-store",
+    "workflow_verified": false
+  },
+  {
+    "id": "F193",
+    "module": "multi-store",
+    "feature": "Store warehouses",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/multi-store",
+    "workflow_verified": false
+  },
+  {
+    "id": "F194",
+    "module": "multi-store",
+    "feature": "Per-store staff visibility",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/multi-store",
+    "workflow_verified": false
+  },
+  {
+    "id": "F195",
+    "module": "multi-store",
+    "feature": "Several commerce sources",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/multi-store",
+    "workflow_verified": false
+  },
+  {
+    "id": "F196",
+    "module": "user-management",
+    "feature": "Granular permissions",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/user-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F197",
+    "module": "user-management",
+    "feature": "Role definitions",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/user-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F198",
+    "module": "user-management",
+    "feature": "Store access grants",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/user-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F199",
+    "module": "user-management",
+    "feature": "Two-factor login",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/user-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F200",
+    "module": "user-management",
+    "feature": "Google sign-in",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/user-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F201",
+    "module": "user-management",
+    "feature": "Email verification",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/user-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F202",
+    "module": "user-management",
+    "feature": "Organization isolation",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/user-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F203",
+    "module": "user-management",
+    "feature": "Signed webhook verification",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/user-management",
+    "workflow_verified": false
+  },
+  {
+    "id": "F204",
+    "module": "multi-language",
+    "feature": "Ten user-interface languages",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/multi-language",
+    "workflow_verified": false
+  },
+  {
+    "id": "F205",
+    "module": "multi-language",
+    "feature": "Arabic RTL",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/multi-language",
+    "workflow_verified": false
+  },
+  {
+    "id": "F206",
+    "module": "multi-language",
+    "feature": "Per-user locale",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/features/multi-language",
+    "workflow_verified": false
+  },
+  {
+    "id": "F207",
+    "module": "dashboard-ai",
+    "feature": "Natural-language business queries",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F208",
+    "module": "dashboard-ai",
+    "feature": "Live operational context",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F209",
+    "module": "dashboard-ai",
+    "feature": "Permission-bound actions",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F210",
+    "module": "dashboard-ai",
+    "feature": "Order/note/stock/customer/assignment actions",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F211",
+    "module": "dashboard-ai",
+    "feature": "Integration-sync actions",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F212",
+    "module": "dashboard-ai",
+    "feature": "Default Gemini model",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F213",
+    "module": "dashboard-ai",
+    "feature": "OpenAI/Anthropic/Google/Groq/DeepSeek BYOK",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F214",
+    "module": "dashboard-ai",
+    "feature": "Plan gating",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F215",
+    "module": "developer-api",
+    "feature": "Per-store API keys",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F216",
+    "module": "developer-api",
+    "feature": "Read/write scopes",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F217",
+    "module": "developer-api",
+    "feature": "Key revocation",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F218",
+    "module": "developer-api",
+    "feature": "Idempotent external order IDs",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F219",
+    "module": "developer-api",
+    "feature": "Cursor pagination",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F220",
+    "module": "developer-api",
+    "feature": "Absolute stock writes",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F221",
+    "module": "developer-api",
+    "feature": "SKU-based product upsert",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F222",
+    "module": "developer-api",
+    "feature": "Rate limits",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F223",
+    "module": "developer-api",
+    "feature": "Typed errors",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F224",
+    "module": "developer-api",
+    "feature": "OpenAPI document",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F225",
+    "module": "developer-api",
+    "feature": "MCP server",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F226",
+    "module": "developer-api",
+    "feature": "OAuth PKCE",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F227",
+    "module": "developer-api",
+    "feature": "46 MCP tools",
+    "evidence": "published",
+    "source": "https://cashod.ma/llms-full.txt",
+    "workflow_verified": false
+  },
+  {
+    "id": "F228",
+    "module": "additional-client-modules",
+    "feature": "Split-parcel settings",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F229",
+    "module": "additional-client-modules",
+    "feature": "Order rerouting settings",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F230",
+    "module": "additional-client-modules",
+    "feature": "AI wallet and usage",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F231",
+    "module": "additional-client-modules",
+    "feature": "AI rate cards",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F232",
+    "module": "additional-client-modules",
+    "feature": "AI knowledge datasets",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F233",
+    "module": "additional-client-modules",
+    "feature": "AI support tickets",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F234",
+    "module": "additional-client-modules",
+    "feature": "Product media openers",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F235",
+    "module": "additional-client-modules",
+    "feature": "Ad-to-product mappings",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F236",
+    "module": "additional-client-modules",
+    "feature": "Customer AI memory",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F237",
+    "module": "additional-client-modules",
+    "feature": "Organization branding",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F238",
+    "module": "additional-client-modules",
+    "feature": "Organization custom domains",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F239",
+    "module": "additional-client-modules",
+    "feature": "Notifications",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  },
+  {
+    "id": "F240",
+    "module": "additional-client-modules",
+    "feature": "Support tickets",
+    "evidence": "frontend-client-reference",
+    "source": "https://app.cashod.ma/_next/static/chunks/0rxdcmfzcmi09.js",
+    "workflow_verified": false
+  }
+]

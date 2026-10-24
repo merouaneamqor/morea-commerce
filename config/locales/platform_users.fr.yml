@@ -1,0 +1,54 @@
+fr:
+  platform_users:
+    nav: "Utilisateurs admin"
+    title: "Utilisateurs admin"
+    description: "Gérez les administrateurs de la plateforme et des espaces de travail. Les utilisateurs suspendus ou archivés ne peuvent pas se connecter."
+    new: "Nouvel utilisateur admin"
+    edit: "Modifier"
+    save: "Enregistrer"
+    created: "Utilisateur admin créé."
+    saved: "Utilisateur admin enregistré."
+    empty: "Aucun utilisateur admin : %{status}."
+    no_workspace: "Aucun espace (plateforme uniquement)"
+    workspace_help: "Obligatoire pour un administrateur d'espace de travail. Laissez vide pour un administrateur de la plateforme."
+    new_password: "Nouveau mot de passe"
+    password_help: "Laissez vide pour conserver le mot de passe actuel."
+    password_confirmation: "Confirmer le mot de passe"
+    columns:
+      name: "Nom"
+      email: "E-mail"
+      role: "Rôle"
+      workspace: "Espace de travail"
+      status: "Statut"
+      password: "Mot de passe"
+    roles:
+      super_admin: "Administrateur plateforme"
+      workspace_admin: "Administrateur d'espace"
+    role_filters:
+      all: "Tous les rôles"
+      super_admin: "Administrateurs plateforme"
+      workspace_admin: "Administrateurs d'espace"
+    statuses:
+      active: "Actif"
+      suspended: "Suspendu"
+      archived: "Archivé"
+    actions:
+      suspend: "Suspendre"
+      reactivate: "Réactiver"
+      archive: "Archiver"
+      restore: "Restaurer"
+    confirm:
+      suspend: "Suspendre %{email} ? Sa session sera fermée."
+      reactivate: "Réactiver %{email} ?"
+      archive: "Archiver %{email} ? Sa session sera fermée."
+      restore: "Restaurer %{email} ?"
+    done:
+      suspend: "%{email} suspendu."
+      reactivate: "%{email} réactivé."
+      archive: "%{email} archivé."
+      restore: "%{email} restauré."
+    denied:
+      self: "Vous ne pouvez pas suspendre, archiver ou rétrograder votre propre compte."
+      last_super_admin: "Conservez au moins un administrateur plateforme actif."
+      invalid_transition: "Ce changement n'est pas disponible pour le statut actuel."
+      unknown_action: "Action inconnue."

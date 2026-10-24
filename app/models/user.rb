@@ -5,7 +5,13 @@ class User < ApplicationRecord
   belongs_to :store, optional: true
   has_many :order_events, dependent: :nullify
 
+  STATUSES = %w[active suspended archived].freeze
+
   scope :super_admins, -> { where(super_admin: true) }
+  scope :active, -> { where(status: "active") }
+  scope :with_status, ->(status) { where(status: status) }
+
+  validates :status, inclusion: { in: STATUSES }
 
   validates :email, presence: true
   validates :email, uniqueness: { scope: :store_id }, unless: :platform_only_super_admin?
@@ -13,6 +19,15 @@ class User < ApplicationRecord
   validates :store, presence: true, unless: :super_admin?
 
   normalizes :email, with: ->(e) { e.strip.downcase }
+
+  STATUSES.each do |name|
+    define_method(:"#{name}?") { status == name }
+  end
+
+  # Only active accounts may authenticate or keep an existing session.
+  def can_sign_in?
+    active? && (admin? || super_admin?)
+  end
 
   def platform_admin?
     super_admin?

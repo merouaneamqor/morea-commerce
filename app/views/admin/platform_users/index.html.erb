@@ -1,0 +1,69 @@
+<% content_for :title, t("platform_users.title") %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("platform_users.title") %></h1>
+    <p class="admin-page-header__meta"><%= t("platform_users.description") %></p>
+  </div>
+  <div class="flex items-center gap-2">
+    <%= link_to t("platform_admin.back"), admin_platform_path, class: "admin-btn-secondary" %>
+    <%= link_to t("platform_users.new"), new_admin_platform_user_path, class: "admin-btn" %>
+  </div>
+</div>
+
+<nav class="mb-2 flex flex-wrap gap-2" aria-label="<%= t("platform_users.columns.status") %>">
+  <% User::STATUSES.each do |status| %>
+    <%= link_to t("platform_admin.status_count", status: t("platform_users.statuses.#{status}"), count: @counts[status].to_i),
+          admin_platform_users_path(status: status, role: @role),
+          class: (status == @status ? "admin-btn" : "admin-btn-secondary") %>
+  <% end %>
+</nav>
+<nav class="mb-4 flex flex-wrap gap-2" aria-label="<%= t("platform_users.columns.role") %>">
+  <% Admin::PlatformUsersController::ROLES.each do |role| %>
+    <%= link_to t("platform_users.role_filters.#{role}"), admin_platform_users_path(status: @status, role: role),
+          class: (role == @role ? "admin-btn-plain font-semibold" : "admin-btn-plain"), "aria-current": (role == @role ? "true" : nil) %>
+  <% end %>
+</nav>
+
+<section class="admin-card">
+  <% if @users.empty? %>
+    <p class="admin-muted p-4"><%= t("platform_users.empty", status: t("platform_users.statuses.#{@status}")) %></p>
+  <% else %>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("platform_users.columns.name") %></th>
+            <th><%= t("platform_users.columns.email") %></th>
+            <th><%= t("platform_users.columns.role") %></th>
+            <th><%= t("platform_users.columns.workspace") %></th>
+            <th><%= t("platform_users.columns.status") %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.each do |user| %>
+            <tr>
+              <td class="font-medium"><%= link_to user.name.presence || "—", edit_admin_platform_user_path(user), class: "admin-link" %></td>
+              <td class="admin-muted"><%= user.email %></td>
+              <td><%= t(user.super_admin? ? "platform_users.roles.super_admin" : "platform_users.roles.workspace_admin") %></td>
+              <td class="admin-muted"><%= user.store&.name || "—" %></td>
+              <td><%= admin_badge(user.status, label: t("platform_users.statuses.#{user.status}"), tone: { "active" => "success", "suspended" => "warning", "archived" => "neutral" }[user.status]) %></td>
+              <td class="text-right whitespace-nowrap">
+                <%= link_to t("platform_users.edit"), edit_admin_platform_user_path(user), class: "admin-btn-plain" %>
+                <% Platform::UserLifecycle::ACTIONS.each do |action, rule| %>
+                  <% next unless rule[:from].include?(user.status) %>
+                  <% next if user == current_user && rule[:to] != "active" %>
+                  <%= button_to t("platform_users.actions.#{action}"), lifecycle_admin_platform_user_path(user, lifecycle: action),
+                        method: :post, params: { return_status: @status },
+                        form: { class: "inline", data: { turbo_confirm: t("platform_users.confirm.#{action}", email: user.email) } },
+                        class: "admin-btn-plain #{'admin-btn-plain--critical' if %w[suspend archive].include?(action)}" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>

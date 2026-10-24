@@ -244,7 +244,7 @@ ar:
 
       %{prospecting}
   platform_home:
-    title: "موريا كومرس — منصة تجارة متعددة المتاجر"
+    title: "Codify — منصة تجارة متعددة المتاجر"
     language: "اللغة"
     nav: { journey: "كيف تعمل", features: "المزايا", integrations: "التكاملات", faq: "الأسئلة", sign_in: "تسجيل الدخول" }
     hero:

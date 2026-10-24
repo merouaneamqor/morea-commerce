@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-puts "Seeding Morea Commerce..."
+puts "Seeding Codify..."
 
 store = Store.find_or_initialize_by(slug: "morea")
 store.assign_attributes(

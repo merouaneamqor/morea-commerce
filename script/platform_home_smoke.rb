@@ -11,7 +11,7 @@ ActiveRecord::Base.transaction do
   apex.host! Store.base_domain
 
   apex.get "/"
-  assert.call("apex root renders the platform page without redirect", apex.response.status == 200 && apex.response.body.include?("Morea Commerce"))
+  assert.call("apex root renders the platform page without redirect", apex.response.status == 200 && apex.response.body.include?(Store.platform_name))
   assert.call("platform page links to admin sign-in", apex.response.body.include?('href="/admin/login"'))
   assert.call("platform page does not list tenants", !apex.response.body.include?(store.name))
   Morea::Locales::AVAILABLE.each do |locale|
@@ -30,12 +30,12 @@ ActiveRecord::Base.transaction do
   tenant.host! "#{store.slug}.#{Store.base_domain}"
   tenant.get "/"
   assert.call("tenant root still redirects to its localized storefront", tenant.response.redirect? && tenant.response.location =~ %r{/(fr|en|ar)\z})
-  assert.call("tenant root is not the platform page", !tenant.response.body.include?("Morea Commerce"))
+  assert.call("tenant root is not the platform page", !tenant.response.body.include?(Store.platform_name))
 
   local = ActionDispatch::Integration::Session.new(Rails.application)
   local.host! "localhost"
   local.get "/"
-  assert.call("localhost is the platform page, not a store", local.response.status == 200 && local.response.body.include?("Morea Commerce"))
+  assert.call("localhost is the platform page, not a store", local.response.status == 200 && local.response.body.include?(Store.platform_name))
   local.host! "#{store.slug}.localhost"
   local.get "/"
   assert.call("slug.localhost opens that store", local.response.redirect? && local.response.location =~ %r{/(fr|en|ar)\z})

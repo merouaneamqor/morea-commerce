@@ -48,6 +48,11 @@ class Store < ApplicationRecord
     where.not(sendit_public_key: [ nil, "" ]).where.not(sendit_secret_key: [ nil, "" ])
   }
 
+  # Product name shown on the apex landing page and sign-in (not a tenant store name).
+  def self.platform_name
+    ENV.fetch("PLATFORM_NAME", "Codify")
+  end
+
   def self.base_domain
     ENV.fetch("APP_BASE_DOMAIN") { Rails.env.local? ? "lvh.me" : "localhost" }
   end

@@ -1,6 +1,6 @@
-# Morea Commerce
+# Codify
 
-Luxury modest sportswear storefront + COD admin for Morocco.
+Multi-store cash-on-delivery commerce platform for Morocco. Morea is the reference store: luxury modest sportswear storefront + COD admin.
 
 **Storefront:** fashion-house UX (campaign homepage, editorial PDP, restrained blush).  
 **Store admin:** dense and operational — not luxurious.  

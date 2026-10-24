@@ -8,7 +8,7 @@
 <div dir="<%= rtl? ? "rtl" : "ltr" %>" class="min-h-screen bg-white text-[#303030]" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
   <header class="sticky top-0 z-20 border-b border-[#ebebeb] bg-white/90 backdrop-blur">
     <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-      <a href="/" class="text-base font-semibold tracking-tight text-[#0b2447]">Morea Commerce</a>
+      <a href="/" class="text-base font-semibold tracking-tight text-[#0b2447]"><%= Store.platform_name %></a>
       <nav class="hidden items-center gap-6 text-sm text-[#616161] md:flex" aria-label="Primary">
         <a class="hover:text-[#005bd3]" href="#journey"><%= h.("nav.journey") %></a>
         <a class="hover:text-[#005bd3]" href="#features"><%= h.("nav.features") %></a>
@@ -129,7 +129,7 @@
 
   <footer class="border-t border-[#ebebeb] px-4 py-8 sm:px-6">
     <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 text-sm text-[#8a8a8a]">
-      <p><span class="font-semibold text-[#303030]">Morea Commerce</span> · <%= h.("footer.tagline") %> · <%= Store.base_domain %></p>
+      <p><span class="font-semibold text-[#303030]"><%= Store.platform_name %></span> · <%= h.("footer.tagline") %> · <%= Store.base_domain %></p>
       <%= link_to h.("footer.admin"), sign_in_path, class: "hover:text-[#005bd3]" %>
     </div>
   </footer>

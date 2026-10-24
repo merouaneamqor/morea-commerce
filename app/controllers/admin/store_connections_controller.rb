@@ -11,6 +11,7 @@ module Admin
 
     def new
       @connection = current_store.store_connections.new
+      @connection.provider = params[:provider] if StoreConnection::PROVIDERS.include?(params[:provider])
     end
 
     def create

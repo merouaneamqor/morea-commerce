@@ -9,6 +9,7 @@
         "available": "Available now",
         "mine": "My claims",
         "all": "All new orders",
+        "callbacks_due": "Callbacks due",
         "empty": "No orders in this queue.",
         "order_label": "Order %{number}",
         "attempts": "%{count} recorded attempts",

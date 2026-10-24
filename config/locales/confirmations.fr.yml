@@ -9,6 +9,7 @@
         "available": "Disponibles",
         "mine": "Mes commandes",
         "all": "Toutes les nouvelles",
+        "callbacks_due": "Rappels à effectuer",
         "empty": "Aucune commande dans cette file.",
         "order_label": "Commande %{number}",
         "attempts": "%{count} tentatives enregistrées",

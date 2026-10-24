@@ -1,0 +1,14 @@
+<section class="admin-card">
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= t("dashboard.setup_heading") %></h2></div>
+  <div class="p-4 space-y-4">
+    <% if @dashboard.store.storefront_enabled? %>
+      <div class="flex flex-wrap items-start justify-between gap-3"><div><p class="font-medium"><%= t(@dashboard.has_products ? "dashboard.setup.present_storefront" : "dashboard.setup.add_products") %></p><p class="admin-muted mt-1"><%= t("dashboard.setup.storefront_help") %></p></div><%= link_to t(@dashboard.has_products ? "dashboard.customize" : "dashboard.add_product"), @dashboard.has_products ? admin_home_sections_path : new_admin_product_path, class: "admin-btn-secondary" %></div>
+    <% end %>
+    <% if @dashboard.connections_count.zero? %>
+      <div><p class="font-medium"><%= t("dashboard.setup.connect") %></p><p class="admin-muted mt-1"><%= t("dashboard.setup.connect_help") %></p><div class="mt-3 flex flex-wrap gap-2"><% StoreConnection::PROVIDERS.each do |provider| %><%= link_to t("connections.providers.#{provider}"), new_admin_store_connection_path(provider: provider), class: "admin-btn-secondary" %><% end %></div></div>
+    <% end %>
+    <% unless @dashboard.has_orders %><div><p class="font-medium"><%= t("dashboard.setup.first_order") %></p><p class="admin-muted mt-1"><%= t("dashboard.setup.first_order_help") %></p></div><% end %>
+    <% unless @dashboard.store.storefront_enabled? %><p class="admin-muted"><%= t("dashboard.setup.optional_storefront") %> <%= link_to t("dashboard.storefront_settings"), edit_admin_store_path, class: "admin-link" %></p><% end %>
+    <% if @dashboard.has_orders && @dashboard.connections_count.positive? && !@dashboard.store.storefront_enabled? %><p class="admin-muted"><%= t("dashboard.setup.daily") %></p><% end %>
+  </div>
+</section>

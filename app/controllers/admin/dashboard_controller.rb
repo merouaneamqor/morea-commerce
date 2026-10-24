@@ -2,13 +2,10 @@ module Admin
   class DashboardController < BaseController
     def show
       return redirect_to(admin_platform_path) if super_admin? && session[:admin_mode] != "store"
+      return redirect_to(admin_platform_path) if super_admin? && !current_store
+      return head(:not_found) unless current_store
 
-      @orders = current_store.orders
-      @counts = Order::STATUSES.index_with { |s| @orders.by_status(s).count }
-      @cancel_rate = @orders.cancel_rate
-      @recent_orders = @orders.recent.limit(8)
-      @low_stock = current_store.products.active.low_stock(current_store.low_stock_threshold).includes(:product_variants)
-      @active_carts = current_store.carts.recent.count
+      @dashboard = DashboardSummary.new(store: current_store, period: params[:period])
     end
   end
 end

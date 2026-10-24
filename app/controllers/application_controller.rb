@@ -32,7 +32,9 @@ class ApplicationController < ActionController::Base
 
   def set_current_store
     if Store.apex_host?(request.host)
-      Current.store = nil
+      # Merchants can use the shared sign-in/admin host. Its workspace comes
+      # from authenticated membership, never from a submitted tenant ID.
+      Current.store = apex_admin_workspace
       return if apex_request_allowed?
 
       # The apex never serves a storefront; stores live on their own subdomains.
@@ -47,6 +49,13 @@ class ApplicationController < ActionController::Base
     end
 
     render template: "stores/missing", layout: "bare", status: :not_found
+  end
+
+  def apex_admin_workspace
+    return unless request.path.start_with?("/admin") && session[:user_id]
+
+    user = User.find_by(id: session[:user_id])
+    user.store if user&.admin? && !user.super_admin?
   end
 
   def storefront_request?

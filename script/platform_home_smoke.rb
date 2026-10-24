@@ -20,7 +20,9 @@ ActiveRecord::Base.transaction do
     assert.call("#{locale} direction", apex.response.body.include?(%(dir="#{locale == :ar ? "rtl" : "ltr"}")))
   end
   apex.get "/fr"
-  assert.call("apex storefront paths still go to the default store or 404", apex.response.status.in?([ 301, 404 ]))
+  assert.call("apex never redirects to a store", apex.response.status == 404 && apex.response.location.blank?)
+  apex.get "/fr/products/anything"
+  assert.call("apex product paths are not found", apex.response.status == 404)
   apex.get "/admin/login"
   assert.call("apex admin login unchanged", apex.response.status == 200)
 

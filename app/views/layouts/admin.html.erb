@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "Admin — #{current_store&.name || "Store"}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -44,6 +44,9 @@
           <nav class="admin-sidebar__nav">
             <%= admin_nav_link "Home", admin_root_path, icon: :home, active: controller_name == "dashboard" %>
             <%= admin_nav_link "Orders", admin_orders_path, icon: :orders, active: controller_name == "orders" %>
+            <% if current_store %>
+              <%= admin_nav_link t("admin.confirmations.title"), admin_confirmations_path, icon: :orders, active: controller_name == "confirmations" %>
+            <% end %>
             <%= admin_nav_link "Carts", admin_carts_path, icon: :carts, active: controller_name == "carts" %>
             <%= admin_nav_link "Products", admin_products_path, icon: :products, active: controller_name.in?(%w[products variants inventory]) %>
             <%= admin_nav_link "Collections", admin_collections_path, icon: :collections, active: controller_name == "collections" %>

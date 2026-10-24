@@ -4,6 +4,8 @@ class Order < ApplicationRecord
   has_many :order_items, dependent: :destroy
   has_many :inventory_movements, dependent: :nullify
   has_many :order_events, dependent: :destroy
+  has_many :order_imports, dependent: :destroy
+  has_one :order_confirmation, dependent: :destroy
 
   # Happy-path progression (Sendit advances through these)
   FLOW = %w[
@@ -159,14 +161,18 @@ class Order < ApplicationRecord
     store.sendit_configured? && SENDIT_OWNED_STATUSES.include?(new_status.to_s)
   end
 
-  def transition_to!(new_status, reason: nil, user: nil, source: :staff)
+  def transition_to!(new_status, reason: nil, user: nil, source: :staff, sync_delivery: true)
     new_status = new_status.to_s
-    if source == :staff && sendit_owns_status?(new_status)
-      raise ArgumentError, "“#{STATUS_LABELS.fetch(new_status, new_status.humanize)}” is set by Sendit only. Use Refresh Sendit."
-    end
-    raise ArgumentError, "Invalid transition #{status} → #{new_status}" unless can_transition_to?(new_status)
+    # Re-read under the same lock used by the confirmation queue. A legacy admin
+    # request may hold a stale instance after another actor reserves the stock.
+    with_lock do
+      if source == :staff && sendit_owns_status?(new_status)
+        raise ArgumentError, "“#{STATUS_LABELS.fetch(new_status, new_status.humanize)}” is set by Sendit only. Use Refresh Sendit."
+      end
+      raise ArgumentError, "Invalid transition #{status} → #{new_status}" unless can_transition_to?(new_status)
 
-    apply_status_change!(new_status, reason: reason, user: user)
+      apply_status_change!(new_status, reason: reason, user: user, sync_delivery: sync_delivery)
+    end
   end
 
   # Step forward through FLOW until `target` (never backwards). Used by Sendit sync.
@@ -231,7 +237,7 @@ class Order < ApplicationRecord
 
   private
 
-  def apply_status_change!(new_status, reason: nil, user: nil, force: false)
+  def apply_status_change!(new_status, reason: nil, user: nil, force: false, sync_delivery: true)
     raise ArgumentError, "Invalid transition #{status} → #{new_status}" unless force || can_transition_to?(new_status)
 
     from = status
@@ -261,7 +267,7 @@ class Order < ApplicationRecord
     end
 
     OrderStatusJob.perform_later(id)
-    enqueue_sendit_sync(new_status)
+    enqueue_sendit_sync(new_status) if sync_delivery
     self
   end
 

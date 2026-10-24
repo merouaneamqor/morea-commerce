@@ -152,6 +152,15 @@ Rails.application.routes.draw do
     resources :customers, only: %i[index show edit update]
     resources :carts, only: %i[index show]
 
+    # Store-manager menu entries whose feature is not built yet (empty pages)
+    {
+      inventory: "inventory", purchases: "purchases", expenses: "expenses", delivery: "delivery",
+      whatsapp: "whatsapp", analytics: "analytics", accounting: "accounting", workflows: "workflows",
+      billing: "billing", app: "app", ai_chat: "ai-chat", help: "help"
+    }.each do |feature, path|
+      get path, to: "coming_soon#show", defaults: { feature: feature.to_s }, as: feature
+    end
+
     # Online Store
     resources :home_sections, except: %i[show] do
       member do

@@ -1,0 +1,11 @@
+<% label = t("admin_menu.items.#{@entry.key}") %>
+<% content_for :title, "#{label} — Admin" %>
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= label %></h1>
+    <p class="admin-muted mt-2"><%= t("admin_menu.coming_soon.description") %></p>
+  </div>
+</div>
+<div class="admin-card">
+  <p class="admin-empty"><%= t("admin_menu.coming_soon.empty", feature: label) %></p>
+</div>

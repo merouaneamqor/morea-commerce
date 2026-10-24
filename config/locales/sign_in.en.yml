@@ -1,0 +1,24 @@
+en:
+  sign_in:
+    page_title: "Sign in — %{name}"
+    heading: "Sign in"
+    workspace_subtitle: "Sign in to your Codify workspace"
+    tenant_subtitle: "Continue to %{name} workspace admin"
+    back: "Back to home"
+    language: "Language"
+    email: "Email"
+    password: "Password"
+    workspace: "Workspace address (optional)"
+    workspace_help: "If your email belongs to several workspaces, enter the workspace subdomain."
+    submit: "Sign in"
+    approval_note: "Your account is available after approval. Use the password set for your workspace account."
+    invalid: "Invalid email or password."
+    welcome: "Welcome back."
+    signed_out: "Signed out."
+    aside:
+      chip: "Secure workspace"
+      headline: "Run every order from one console."
+      points:
+        - "Confirm, ship and track cash-on-delivery orders"
+        - "Stock, catalog and staff in one place"
+        - "Separate, isolated data for every workspace"

@@ -2,6 +2,10 @@
 
 Prepared 2026-10-24. Target: https://app.cashod.ma/. Repository: merouaneamqor/morea-commerce.
 
+## Updated discovery
+
+See [the collected discovery evidence](discovery/README.md): authenticated API login now succeeds, MCP exposes 46 tools, 240 feature candidates and 28 named integrations are inventoried, and 377 frontend request references are catalogued. The initial browser-rendering limitation below still applies to screenshots, but no longer blocks API inspection.
+
 ## Evidence and limits
 
 Cashod published reference: https://cashod.ma/llms.txt and https://cashod.ma/llms-full.txt (retrieved 2026-10-24). Public app metadata also describes COD modules. These are vendor claims, not authenticated behavioral evidence. The inspection browser received the login page, then the application logged a DEVTOOL permission warning and navigated to about:blank with JavaScript enabled; disabling JavaScript retrieved the application HTML but did not expose a usable login form. Login and account feature/plan access have NOT been verified. No credentials, cookies, customer records or private account screenshots are included here. E01 closes this gap before implementation parity is accepted.

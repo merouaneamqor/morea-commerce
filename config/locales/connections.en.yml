@@ -1,7 +1,7 @@
 en:
   connections:
     title: "Connected stores"
-    lead: "Receive orders from your existing stores. A Morea storefront is optional."
+    lead: "Receive orders from your existing stores. A Codify storefront is optional."
     add: "Connect a store"
     name: "Connection name"
     provider: "Platform"
@@ -30,7 +30,7 @@ en:
     empty: "Connect Shopify, WooCommerce or YouCan to receive your orders here."
     deliveries: "Recent order deliveries"
     external_id: "External order ID"
-    order: "Morea order"
+    order: "Codify order"
     received: "Received"
     accepted: "Received"
     rejected: "Needs attention: %{code}"
@@ -39,7 +39,7 @@ en:
     source: "Source store"
     all_sources: "All sources"
     filter: "Filter"
-    snapshot_help: "Product names and prices come from the source store. These lines do not change Morea inventory. Confirm and fulfill the order here; commercial edits remain locked."
+    snapshot_help: "Product names and prices come from the source store. These lines do not change Codify inventory. Confirm and fulfill the order here; commercial edits remain locked."
     external_order_locked: "Imported order prices and products are preserved from the source store. Commercial editing and duplication are unavailable."
     providers: { shopify: "Shopify", woocommerce: "WooCommerce", youcan: "YouCan" }
     states:

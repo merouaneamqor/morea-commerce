@@ -1,7 +1,7 @@
 ar:
   connections:
     title: "المتاجر المرتبطة"
-    lead: "استقبل طلبات متاجرك الحالية. إنشاء واجهة Morea اختياري."
+    lead: "استقبل طلبات متاجرك الحالية. إنشاء واجهة Codify اختياري."
     add: "ربط متجر"
     name: "اسم الاتصال"
     provider: "المنصة"
@@ -30,7 +30,7 @@ ar:
     empty: "اربط Shopify أو WooCommerce أو YouCan لاستقبال طلباتك هنا."
     deliveries: "آخر الطلبات الواردة"
     external_id: "معرّف الطلب الخارجي"
-    order: "طلب Morea"
+    order: "طلب Codify"
     received: "وقت الاستقبال"
     accepted: "تم الاستقبال"
     rejected: "يحتاج مراجعة: %{code}"
@@ -39,7 +39,7 @@ ar:
     source: "المتجر المصدر"
     all_sources: "جميع المصادر"
     filter: "تصفية"
-    snapshot_help: "أسماء المنتجات والأسعار من المتجر المصدر. هذه العناصر لا تغيّر مخزون Morea. أكّد الطلب واشحنه هنا؛ التعديلات التجارية مقفلة."
+    snapshot_help: "أسماء المنتجات والأسعار من المتجر المصدر. هذه العناصر لا تغيّر مخزون Codify. أكّد الطلب واشحنه هنا؛ التعديلات التجارية مقفلة."
     external_order_locked: "تُحفظ أسعار ومنتجات الطلب المستورد من المتجر المصدر. التعديل التجاري والنسخ غير متاحين."
     providers: { shopify: "Shopify", woocommerce: "WooCommerce", youcan: "YouCan" }
     states:

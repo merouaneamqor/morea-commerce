@@ -1,7 +1,7 @@
 fr:
   connections:
     title: "Boutiques connectées"
-    lead: "Recevez les commandes de vos boutiques existantes. La vitrine Morea est facultative."
+    lead: "Recevez les commandes de vos boutiques existantes. La vitrine Codify est facultative."
     add: "Connecter une boutique"
     name: "Nom de la connexion"
     provider: "Plateforme"
@@ -30,7 +30,7 @@ fr:
     empty: "Connectez Shopify, WooCommerce ou YouCan pour recevoir vos commandes ici."
     deliveries: "Dernières réceptions de commandes"
     external_id: "Identifiant externe"
-    order: "Commande Morea"
+    order: "Commande Codify"
     received: "Reçue le"
     accepted: "Reçue"
     rejected: "À vérifier : %{code}"
@@ -39,7 +39,7 @@ fr:
     source: "Boutique source"
     all_sources: "Toutes les sources"
     filter: "Filtrer"
-    snapshot_help: "Les produits et prix proviennent de la boutique source. Ces lignes ne modifient pas le stock Morea. Confirmez et expédiez ici ; les modifications commerciales restent verrouillées."
+    snapshot_help: "Les produits et prix proviennent de la boutique source. Ces lignes ne modifient pas le stock Codify. Confirmez et expédiez ici ; les modifications commerciales restent verrouillées."
     external_order_locked: "Les prix et produits importés sont conservés depuis la boutique source. La modification commerciale et la duplication sont indisponibles."
     providers: { shopify: "Shopify", woocommerce: "WooCommerce", youcan: "YouCan" }
     states:

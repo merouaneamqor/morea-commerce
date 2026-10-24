@@ -1,11 +1,11 @@
 fr:
   onboarding:
-    signup_lead: "Demandez un espace pour gérer vos commandes. Créez une boutique Morea, connectez votre boutique Shopify, WooCommerce ou YouCan, ou utilisez les deux."
+    signup_lead: "Demandez un espace pour gérer vos commandes. Créez une boutique Codify, connectez votre boutique Shopify, WooCommerce ou YouCan, ou utilisez les deux."
     business_name: "Nom de l’entreprise"
     mode_label: "Comment souhaitez-vous commencer ?"
-    with_storefront: "Créer une boutique Morea"
+    with_storefront: "Créer une boutique Codify"
     external_only: "Gérer les commandes de ma boutique existante"
-    mode_help: "Vous pourrez connecter vos boutiques existantes et activer une boutique Morea plus tard."
-    storefront_heading: "Boutique Morea"
-    enable_storefront: "Activer la boutique publique Morea"
-    settings_help: "Désactivez cette option pour utiliser Morea uniquement pour gérer vos commandes. L’administration et les connexions restent disponibles. Vous pourrez la réactiver ; le contenu est conservé."
+    mode_help: "Vous pourrez connecter vos boutiques existantes et activer une boutique Codify plus tard."
+    storefront_heading: "Boutique Codify"
+    enable_storefront: "Activer la boutique publique Codify"
+    settings_help: "Désactivez cette option pour utiliser Codify uniquement pour gérer vos commandes. L’administration et les connexions restent disponibles. Vous pourrez la réactiver ; le contenu est conservé."

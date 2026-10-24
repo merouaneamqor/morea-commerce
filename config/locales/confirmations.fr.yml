@@ -1,0 +1,43 @@
+{
+  "fr": {
+    "admin": {
+      "confirmations": {
+        "title": "File de confirmation",
+        "description": "Attribuez-vous une nouvelle commande, notez le résultat ou planifiez un rappel.",
+        "orders": "Commandes",
+        "filters": "Filtres de confirmation",
+        "available": "Disponibles",
+        "mine": "Mes commandes",
+        "all": "Toutes les nouvelles",
+        "empty": "Aucune commande dans cette file.",
+        "order_label": "Commande %{number}",
+        "attempts": "%{count} tentatives enregistrées",
+        "callback_due": "Rappel : %{time}",
+        "assigned": "Attribuée à %{name}",
+        "release": "Libérer",
+        "claimed_elsewhere": "Attribuée à un autre agent",
+        "not_due": "Rappel prévu plus tard",
+        "claim": "Prendre la commande",
+        "outcome": "Résultat de l’appel",
+        "callback_time": "Date du rappel (résultat rappel)",
+        "timezone": "Fuseau horaire : %{zone}.",
+        "notes": "Notes internes",
+        "dispatch_note": "La confirmation réserve le stock. L’expédition est une action distincte.",
+        "save": "Enregistrer",
+        "pagination": "Pages de la file",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "page": "Page %{number}",
+        "claimed": "Commande attribuée.",
+        "released": "Commande libérée.",
+        "recorded": "Résultat enregistré.",
+        "outcomes": {
+          "no_answer": "Sans réponse",
+          "callback": "Rappel",
+          "confirmed": "Confirmée",
+          "cancelled": "Annulée"
+        }
+      }
+    }
+  }
+}

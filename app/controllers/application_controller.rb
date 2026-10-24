@@ -114,13 +114,19 @@ class ApplicationController < ActionController::Base
     redirect_to localized_root_path, alert: t("store.preparing") unless current_store
   end
 
-  # Store staff for this host, or a platform super admin (any host).
+  # Store staff for this host, or a platform super admin (any host), through a live server-side session.
   def current_admin_user
     return @current_admin_user if defined?(@current_admin_user)
-    return @current_admin_user = nil unless session[:user_id]
 
-    @current_admin_user = current_store&.users&.find_by(id: session[:user_id]) ||
-      User.super_admins.find_by(id: session[:user_id])
+    user = current_admin_session&.user
+    permitted = user && (user.super_admin? || (current_store && user.store_id == current_store.id))
+    @current_admin_user = permitted ? user : nil
+  end
+
+  def current_admin_session
+    return @current_admin_session if defined?(@current_admin_session)
+
+    @current_admin_session = AdminSession.find_active(session[:admin_session_token])
   end
 
   def super_admin?

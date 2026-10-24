@@ -11,11 +11,13 @@ module Admin
 
     def generate_token
       token = current_store.generate_api_token!
+      Audit.record("api_token.generated", actor: current_user, store: current_store, request: request, subject: current_store)
       redirect_to admin_agent_api_path, flash: { api_token: token }
     end
 
     def revoke_token
       current_store.revoke_api_token!
+      Audit.record("api_token.revoked", actor: current_user, store: current_store, request: request, subject: current_store)
       redirect_to admin_agent_api_path, notice: "API token revoked."
     end
   end

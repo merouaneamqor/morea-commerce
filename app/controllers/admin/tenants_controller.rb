@@ -62,6 +62,7 @@ module Admin
     # Switch into store-ops mode, then open that store's admin (may be another subdomain).
     def enter
       session[:admin_mode] = "store"
+      Audit.record("platform.tenant_entered", actor: current_user, store: @store, request: request, subject: @store, platform: true)
       if current_store&.id == @store.id
         redirect_to admin_root_path
       else

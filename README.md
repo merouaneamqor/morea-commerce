@@ -14,7 +14,7 @@ Stores are subdomain tenants. Each store has its own catalog, staff, orders, and
 docker compose up --build
 ```
 
-- Local storefront: http://morea.lvh.me:3010 (or http://localhost:3010)
+- Local: http://localhost:3010 is the platform landing page; stores open on subdomains, http://morea.localhost:3010 or http://morea.lvh.me:3010
 - Production: **ollazen.com**
   - Platform: https://ollazen.com/admin
   - Store example: https://morea.ollazen.com

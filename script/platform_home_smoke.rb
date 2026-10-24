@@ -32,6 +32,19 @@ ActiveRecord::Base.transaction do
   assert.call("tenant root still redirects to its localized storefront", tenant.response.redirect? && tenant.response.location =~ %r{/(fr|en|ar)\z})
   assert.call("tenant root is not the platform page", !tenant.response.body.include?("Morea Commerce"))
 
+  local = ActionDispatch::Integration::Session.new(Rails.application)
+  local.host! "localhost"
+  local.get "/"
+  assert.call("localhost is the platform page, not a store", local.response.status == 200 && local.response.body.include?("Morea Commerce"))
+  local.host! "#{store.slug}.localhost"
+  local.get "/"
+  assert.call("slug.localhost opens that store", local.response.redirect? && local.response.location =~ %r{/(fr|en|ar)\z})
+  local.get "/fr"
+  assert.call("slug.localhost serves the storefront", local.response.status == 200 && local.response.body.include?("Home CI"))
+  local.host! "missing-#{suffix}.localhost"
+  local.get "/fr"
+  assert.call("unknown subdomain is not found", local.response.status == 404)
+
   puts "Platform home checks passed: #{checks}"
   raise ActiveRecord::Rollback
 end

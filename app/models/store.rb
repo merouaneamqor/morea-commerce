@@ -52,34 +52,35 @@ class Store < ApplicationRecord
     ENV.fetch("APP_BASE_DOMAIN") { Rails.env.local? ? "lvh.me" : "localhost" }
   end
 
+  # Local development also answers on *.localhost (browsers resolve it to loopback without DNS).
+  def self.base_domains
+    [ base_domain.downcase, ("localhost" if Rails.env.local?) ].compact.uniq
+  end
+
   def self.apex_host?(host)
     hostname = host.to_s.downcase.split(":").first
-    domain = base_domain.downcase
-    hostname == domain || hostname == "www.#{domain}"
+    base_domains.any? { |domain| hostname == domain || hostname == "www.#{domain}" }
   end
 
   def self.find_by_host(host)
     hostname = host.to_s.downcase.split(":").first
     return if hostname.blank?
 
-    # Local docker/dev without a subdomain still opens the default store
-    if Rails.env.local? && %w[localhost 127.0.0.1].include?(hostname)
-      return find_by(slug: ENV.fetch("DEFAULT_STORE_SLUG", "morea"))
-    end
-
-    domain = base_domain.downcase
+    # Direct loopback IP access opens the default store in local dev
+    return find_by(slug: ENV.fetch("DEFAULT_STORE_SLUG", "morea")) if Rails.env.local? && hostname == "127.0.0.1"
     return if apex_host?(hostname)
 
-    suffix = ".#{domain}"
-    return unless hostname.end_with?(suffix)
+    base_domains.each do |domain|
+      suffix = ".#{domain}"
+      next unless hostname.end_with?(suffix)
 
-    slug = hostname.delete_suffix(suffix)
-    return if slug.blank? || slug.include?(".") || RESERVED_SUBDOMAINS.include?(slug)
+      slug = hostname.delete_suffix(suffix)
+      next if slug.blank? || slug.include?(".") || RESERVED_SUBDOMAINS.include?(slug)
 
-    find_by(slug: slug)
+      return find_by(slug: slug)
+    end
+    nil
   end
-
-
 
   def pixels_configured?
     meta_pixel_id.present? || tiktok_pixel_id.present?

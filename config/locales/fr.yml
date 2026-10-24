@@ -315,6 +315,10 @@ fr:
       store_name: "Saisissez le nom de votre boutique (2 à 80 caractères)."
       email: "Saisissez une adresse email valide."
       phone: "Le numéro de téléphone est trop long."
+    aside:
+      chip: "Demande d'accès"
+      headline: "Ouvrez votre boutique en paiement à la livraison."
+      points: [ "Votre propre vitrine et votre adresse", "Confirmez, expédiez et suivez chaque commande", "Données séparées et isolées pour chaque boutique" ]
     thanks_title: "Demande reçue"
     thanks_body: "Nous l'examinerons et vous contacterons à l'email indiqué. Votre boutique est créée une fois la demande approuvée."
     back: "Retour à l'accueil"

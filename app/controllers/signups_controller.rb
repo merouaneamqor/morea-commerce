@@ -2,7 +2,7 @@
 
 # Public "request access" form on the platform apex. Creates a pending AccessRequest only.
 class SignupsController < ApplicationController
-  layout "bare"
+  layout "auth"
   before_action :require_apex!
 
   def new

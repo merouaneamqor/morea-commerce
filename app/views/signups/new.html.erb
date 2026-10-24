@@ -1,54 +1,39 @@
 <% content_for :title, t("signup.title", name: Store.platform_name) %>
-<% content_for :head do %>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<% end %>
-<% field = "mt-1 block min-h-11 w-full rounded-lg border bg-white px-3 text-sm focus:border-[#005bd3] focus:outline-2 focus:outline-[#005bd3]" %>
+<%= render "signups/chrome" %>
+<% errors = @access_request.errors.attribute_names %>
 
-<div dir="<%= rtl? ? "rtl" : "ltr" %>" class="min-h-screen bg-white text-[#303030]" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
-  <%= render "platform_home/header" %>
+<div class="fx-glass p-7 sm:p-9">
+  <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("signup.heading") %></h1>
+  <p class="mt-2 text-sm leading-6 text-[#b9d3ff]"><%= t("signup.lead") %></p>
 
-  <main class="bg-[#f3f8ff] px-4 py-12 sm:px-6 sm:py-20">
-    <div class="mx-auto max-w-md">
-      <div class="rounded-2xl border border-[#dbe8fb] bg-white p-6 shadow-sm sm:p-8">
-        <h1 class="text-2xl font-bold tracking-tight text-[#0b2447]"><%= t("signup.heading") %></h1>
-        <p class="mt-2 text-sm leading-6 text-[#616161]"><%= t("signup.lead") %></p>
+  <% if alert.present? || errors.any? %>
+    <div role="alert" class="fx-alert mt-6"><%= alert.presence || t("signup.fix_fields") %></div>
+  <% end %>
 
-        <% errors = @access_request.errors.attribute_names %>
-        <% if alert.present? || errors.any? %>
-          <div role="alert" class="mt-6 rounded-lg border border-[#fdd2d6] bg-[#fff1f2] px-3 py-2 text-sm text-[#8e0b21]">
-            <%= alert.presence || t("signup.fix_fields") %>
-          </div>
-        <% end %>
-
-        <%= form_with model: @access_request, url: signup_path, method: :post, class: "mt-6 space-y-4" do |f| %>
-          <div class="hidden" aria-hidden="true">
-            <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
-          </div>
-
-          <% { store_name: [ :text_field, "organization" ], email: [ :email_field, "email" ], phone: [ :telephone_field, "tel" ] }.each do |attr, (kind, autocomplete)| %>
-            <div>
-              <%= f.label attr, t("signup.#{attr}"), class: "block text-sm font-medium text-[#303030]" %>
-              <%= f.public_send(kind, attr, required: attr != :phone, autocomplete: autocomplete,
-                    autofocus: attr == :store_name, maxlength: (attr == :store_name ? 80 : nil),
-                    "aria-invalid": (errors.include?(attr) ? "true" : nil),
-                    "aria-describedby": (errors.include?(attr) ? "#{attr}-error" : nil),
-                    class: "#{field} #{errors.include?(attr) ? "border-[#8e0b21]" : "border-[#d4d4d4]"}") %>
-              <% if errors.include?(attr) %>
-                <p id="<%= attr %>-error" class="mt-1 text-sm text-[#8e0b21]"><%= t("signup.errors.#{attr}") %></p>
-              <% end %>
-            </div>
-          <% end %>
-
-          <%= f.submit t("signup.submit"), class: "min-h-11 w-full cursor-pointer rounded-lg bg-[#005bd3] px-4 text-sm font-semibold text-white hover:bg-[#004299] focus:outline-2 focus:outline-offset-2 focus:outline-[#005bd3]" %>
-        <% end %>
-
-        <p class="mt-6 text-center text-sm text-[#616161]">
-          <%= t("signup.have_account") %>
-          <%= link_to t("signup.sign_in"), admin_login_path(locale: nil), class: "font-medium text-[#005bd3] hover:underline" %>
-        </p>
-      </div>
+  <%= form_with model: @access_request, url: signup_path, method: :post, class: "mt-7 space-y-5" do |f| %>
+    <div class="hidden" aria-hidden="true">
+      <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
     </div>
-  </main>
 
-  <%= render "platform_home/footer" %>
+    <% { store_name: [ :text_field, "organization" ], email: [ :email_field, "email" ], phone: [ :telephone_field, "tel" ] }.each do |attr, (kind, autocomplete)| %>
+      <div>
+        <%= f.label attr, t("signup.#{attr}"), class: "fx-label" %>
+        <%= f.public_send(kind, attr, required: attr != :phone, autocomplete: autocomplete,
+              autofocus: attr == :store_name, maxlength: (attr == :store_name ? 80 : nil),
+              "aria-invalid": (errors.include?(attr) ? "true" : nil),
+              "aria-describedby": (errors.include?(attr) ? "#{attr}-error" : nil),
+              class: "fx-input") %>
+        <% if errors.include?(attr) %>
+          <p id="<%= attr %>-error" class="mt-1 text-sm text-[#ffb4bd]"><%= t("signup.errors.#{attr}") %></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= f.submit t("signup.submit"), class: "fx-btn" %>
+  <% end %>
+
+  <p class="mt-6 text-center text-sm text-[#b9d3ff]">
+    <%= t("signup.have_account") %>
+    <%= link_to t("signup.sign_in"), admin_login_path(locale: nil), class: "fx-link font-medium" %>
+  </p>
 </div>

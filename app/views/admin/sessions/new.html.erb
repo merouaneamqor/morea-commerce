@@ -1,28 +1,33 @@
 <% content_for :title, "Sign in — #{current_store&.name.presence || Store.platform_name}" %>
+<% content_for :aside do %>
+  <p class="fx-chip"><span class="fx-dot" aria-hidden="true"></span>Secure admin</p>
+  <h2 class="fx-gradient-text mt-6 text-5xl font-bold leading-[1.05] tracking-tight">Run every order from one console.</h2>
+  <ul class="mt-8 space-y-4 text-[#b9d3ff]">
+    <li class="flex items-center gap-3"><span class="fx-dot" aria-hidden="true"></span>Confirm, ship and track cash-on-delivery orders</li>
+    <li class="flex items-center gap-3"><span class="fx-dot" aria-hidden="true"></span>Stock, catalog and staff in one place</li>
+    <li class="flex items-center gap-3"><span class="fx-dot" aria-hidden="true"></span>Separate, isolated data for every store</li>
+  </ul>
+<% end %>
 
-<div class="w-full max-w-md">
-  <div class="rounded-2xl border border-[#e3e3e3] bg-white p-6 shadow-sm sm:p-8">
-    <h1 class="text-2xl font-bold tracking-tight text-[#0b2447]">Sign in</h1>
-    <p class="mt-1 text-sm text-[#616161]">
-      <%= current_store ? "Continue to #{current_store.name} admin" : "Continue to the platform admin" %>
-    </p>
+<div class="fx-glass p-7 sm:p-9">
+  <h1 class="text-3xl font-bold tracking-tight text-white">Sign in</h1>
+  <p class="mt-2 text-sm text-[#b9d3ff]">
+    <%= current_store ? "Continue to #{current_store.name} admin" : "Continue to the platform admin" %>
+  </p>
 
-    <% if alert.present? %>
-      <div role="alert" class="mt-6 rounded-lg border border-[#fdd2d6] bg-[#fff1f2] px-3 py-2 text-sm text-[#8e0b21]"><%= alert %></div>
-    <% end %>
+  <% if alert.present? %>
+    <div role="alert" class="fx-alert mt-6"><%= alert %></div>
+  <% end %>
 
-    <%= form_with url: admin_login_path, method: :post, class: "mt-6 space-y-4" do %>
-      <div>
-        <%= label_tag :email, "Email", class: "block text-sm font-medium text-[#303030]" %>
-        <%= email_field_tag :email, params[:email], required: true, autofocus: true, autocomplete: "username",
-              class: "mt-1 block min-h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3 text-sm focus:border-[#005bd3] focus:outline-2 focus:outline-[#005bd3]" %>
-      </div>
-      <div>
-        <%= label_tag :password, "Password", class: "block text-sm font-medium text-[#303030]" %>
-        <%= password_field_tag :password, nil, required: true, autocomplete: "current-password",
-              class: "mt-1 block min-h-11 w-full rounded-lg border border-[#d4d4d4] bg-white px-3 text-sm focus:border-[#005bd3] focus:outline-2 focus:outline-[#005bd3]" %>
-      </div>
-      <%= submit_tag "Sign in", class: "min-h-11 w-full cursor-pointer rounded-lg bg-[#005bd3] px-4 text-sm font-semibold text-white hover:bg-[#004299] focus:outline-2 focus:outline-offset-2 focus:outline-[#005bd3]" %>
-    <% end %>
-  </div>
+  <%= form_with url: admin_login_path, method: :post, class: "mt-7 space-y-5" do %>
+    <div>
+      <%= label_tag :email, "Email", class: "fx-label" %>
+      <%= email_field_tag :email, params[:email], required: true, autofocus: true, autocomplete: "username", placeholder: "you@company.com", class: "fx-input" %>
+    </div>
+    <div>
+      <%= label_tag :password, "Password", class: "fx-label" %>
+      <%= password_field_tag :password, nil, required: true, autocomplete: "current-password", placeholder: "••••••••", class: "fx-input" %>
+    </div>
+    <%= submit_tag "Sign in", class: "fx-btn" %>
+  <% end %>
 </div>

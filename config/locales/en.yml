@@ -315,6 +315,10 @@ en:
       store_name: "Enter your store name (2 to 80 characters)."
       email: "Enter a valid email address."
       phone: "The phone number is too long."
+    aside:
+      chip: "Request access"
+      headline: "Open your cash-on-delivery store."
+      points: [ "Your own storefront and address", "Confirm, ship and track every order", "Separate, isolated data for every store" ]
     thanks_title: "Request received"
     thanks_body: "We will review it and contact you at the email you gave. Your store is created once the request is approved."
     back: "Back to home"

@@ -7,9 +7,10 @@ module Orders
 
     attr_reader :store, :user, :order, :errors
 
-    def initialize(store:, user: nil)
+    def initialize(store:, user: nil, external_effects: true)
       @store = store
       @user = user
+      @external_effects = external_effects
       @errors = ActiveModel::Errors.new(self)
     end
 
@@ -44,8 +45,10 @@ module Orders
         @order.record_event!("created", body: "Order created by staff", user: user)
       end
 
-      OrderStatusJob.perform_later(@order.id)
-      DiscordOrderNotifyJob.perform_later(@order.id)
+      if @external_effects
+        OrderStatusJob.perform_later(@order.id)
+        DiscordOrderNotifyJob.perform_later(@order.id)
+      end
       success(@order)
     rescue ActiveRecord::RecordInvalid => e
       errors.add(:base, e.record.errors.full_messages.to_sentence.presence || e.message)
@@ -365,6 +368,8 @@ module Orders
     end
 
     def sendit_district_for(contact)
+      return {} unless @external_effects
+
       return {} unless Sendit::Client.configured?(store)
 
       match = if contact[:district].present?

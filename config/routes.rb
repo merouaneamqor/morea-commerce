@@ -38,6 +38,9 @@ Rails.application.routes.draw do
   end
 
   get "/", to: "platform_home#show", as: :platform_home, constraints: ->(request) { Store.apex_host?(request.host) }
+  get "/signup", to: "signups#new", as: :signup
+  post "/signup", to: "signups#create"
+  get "/signup/thanks", to: "signups#thanks", as: :signup_thanks
 
   root to: redirect { |_params, request|
     locale = request.cookie_jar[ApplicationController::LOCALE_COOKIE].to_s
@@ -74,6 +77,12 @@ Rails.application.routes.draw do
 
     root to: "dashboard#show"
     get "platform", to: "platform#show", as: :platform
+    resources :access_requests, only: :index do
+      member do
+        post :approve
+        post :reject
+      end
+    end
     resources :tenants, only: %i[index new create edit update] do
       member do
         post :enter

@@ -13,12 +13,17 @@ module Admin
     end
 
     def new
+      @access_request = AccessRequest.pending.find_by(id: params[:access_request_id])
       @store = Store.new(
         currency: "MAD",
         billing_interval: "monthly",
         billing_status: "trial",
         billing_amount_cents: 0
       )
+      return unless @access_request
+
+      @store.assign_attributes(name: @access_request.store_name, slug: @access_request.store_name.parameterize,
+        email: @access_request.email, phone: @access_request.phone)
     end
 
     def create
@@ -41,10 +46,12 @@ module Admin
           admin: true
         )
         @store.install_online_store_defaults!
+        AccessRequest.pending.find_by(id: params[:access_request_id])&.approve!(store: @store, reviewer: current_user)
       end
 
       redirect_to admin_platform_path, notice: "Store #{@store.name} created. Open it at #{@store.origin}/admin"
     rescue ActiveRecord::RecordInvalid
+      @access_request = AccessRequest.pending.find_by(id: params[:access_request_id])
       render :new, status: :unprocessable_entity
     end
 

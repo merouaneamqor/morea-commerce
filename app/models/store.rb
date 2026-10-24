@@ -57,6 +57,12 @@ class Store < ApplicationRecord
     ENV.fetch("APP_BASE_DOMAIN") { Rails.env.local? ? "lvh.me" : "localhost" }
   end
 
+  def self.platform_origin
+    host = base_domain
+    port = ENV["APP_PORT"].presence
+    "#{Rails.env.local? ? "http" : "https"}://#{host}#{":#{port}" if port}"
+  end
+
   # Local development also answers on *.localhost (browsers resolve it to loopback without DNS).
   def self.base_domains
     [ base_domain.downcase, ("localhost" if Rails.env.local?) ].compact.uniq

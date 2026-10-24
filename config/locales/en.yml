@@ -246,12 +246,12 @@ en:
   platform_home:
     title: "Codify — multi-store commerce platform"
     language: "Language"
-    nav: { journey: "How it works", features: "Features", integrations: "Integrations", faq: "FAQ", sign_in: "Sign in" }
+    nav: { journey: "How it works", features: "Features", integrations: "Integrations", faq: "FAQ", sign_in: "Sign in", signup: "Request access" }
     hero:
       eyebrow: "Multi-store commerce platform"
       headline: "Run cash-on-delivery stores from one platform."
       lead: "Each store keeps its own storefront, catalog and checkout. Your team confirms orders, manages stock and ships from a single admin."
-      primary: "Sign in to admin"
+      primary: "Request access"
       secondary: "See how an order flows"
       store_hint: "Looking for a store? Open it on its own address, for example your-store.%{domain}."
       badges: [ "Separate storefronts", "Cash on delivery", "French · English · Arabic", "API and MCP" ]
@@ -291,11 +291,30 @@ en:
         - { q: "Which languages are supported?", a: "Storefronts support French, English and Arabic, including right-to-left layout." }
         - { q: "Which carriers can I use?", a: "Sendit is connected today for shipping within Morocco." }
         - { q: "Can my tools send orders?", a: "Yes. A store token lets a connected tool create orders through the API. Orders are never duplicated when a request is retried." }
-        - { q: "How do I open a store?", a: "Stores are created by the platform administrator. Sign in to the admin to manage yours." }
+        - { q: "How do I open a store?", a: "Request access with your store name and email. A platform administrator reviews each request and creates your store." }
     cta:
       headline: "Ready to run your store?"
-      body: "Sign in to the admin to manage orders, stock and shipping."
-      button: "Sign in to admin"
+      body: "Request access and a platform administrator will set up your store."
+      button: "Request access"
     footer:
       tagline: "Multi-store commerce platform"
       admin: "Admin sign in"
+  signup:
+    title: "Request access — %{name}"
+    heading: "Request access"
+    lead: "Tell us about your store. A platform administrator reviews each request and creates your store. Nothing is created until it is approved."
+    store_name: "Store name"
+    email: "Email"
+    phone: "Phone (optional)"
+    submit: "Send request"
+    have_account: "Already have an account?"
+    sign_in: "Sign in"
+    fix_fields: "Please check the highlighted fields."
+    throttled: "Too many requests. Please try again later."
+    errors:
+      store_name: "Enter your store name (2 to 80 characters)."
+      email: "Enter a valid email address."
+      phone: "The phone number is too long."
+    thanks_title: "Request received"
+    thanks_body: "We will review it and contact you at the email you gave. Your store is created once the request is approved."
+    back: "Back to home"

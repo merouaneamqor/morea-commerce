@@ -21,6 +21,8 @@ services:
         sync: false
       - key: DISCORD_ORDERS_WEBHOOK_URL
         sync: false
+      - key: PLATFORM_DISCORD_WEBHOOK_URL
+        sync: false
       - key: ORDERS_JWT_SECRET
         sync: false
       - key: CLOUDINARY_URL

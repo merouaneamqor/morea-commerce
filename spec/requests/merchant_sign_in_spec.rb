@@ -22,7 +22,7 @@ RSpec.describe "Merchant sign in", type: :request do
 
   before { host! Store.base_domain }
 
-  [true, false].each do |enabled|
+  [ true, false ].each do |enabled|
     it "opens the approved merchant's apex dashboard with storefront_enabled=#{enabled}" do
       store.update!(storefront_enabled: enabled)
       foreign = workspace(name: "Foreign workspace must stay private")
@@ -191,7 +191,7 @@ RSpec.describe "Merchant sign in", type: :request do
   it "preserves an existing same-host OAuth return destination across session renewal" do
     allow(Rails).to receive(:cache).and_return(ActiveSupport::Cache::MemoryStore.new)
     host! "#{store.slug}.#{Store.base_domain}"
-    client = OauthClient.register!(name: "Synthetic login client", redirect_uris: ["https://synthetic.example.test/oauth/callback"])
+    client = OauthClient.register!(name: "Synthetic login client", redirect_uris: [ "https://synthetic.example.test/oauth/callback" ])
     get "/oauth/authorize", params: { client_id: client.client_id, redirect_uri: client.redirect_uris.first, code_challenge: "synthetic-pkce-challenge", code_challenge_method: "S256" }
     expect(URI.parse(response.location).path).to eq(admin_login_path)
     login
@@ -206,5 +206,3 @@ RSpec.describe "Merchant sign in", type: :request do
     expect(response).to redirect_to(admin_root_path)
   end
 end
-
-

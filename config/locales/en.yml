@@ -243,3 +243,31 @@ en:
       %{retention}
 
       %{prospecting}
+  platform_home:
+    title: "Morea Commerce — multi-store commerce platform"
+    language: "Language"
+    eyebrow: "Multi-store commerce platform"
+    headline: "Run cash-on-delivery stores from one platform."
+    lead: "Each store keeps its own storefront, catalog and checkout. Staff confirm orders, manage stock and ship from one admin."
+    sign_in: "Sign in to admin"
+    store_hint: "Looking for a store? Open it on its own address, for example your-store.%{domain}."
+    features_title: "What the platform provides"
+    features:
+      storefronts:
+        title: "Separate storefronts"
+        body: "Every store has its own address, catalog, cart and customers, isolated from other stores."
+      cod:
+        title: "Cash-on-delivery checkout"
+        body: "Customers order without paying online, and stock is reserved when the order is confirmed."
+      confirmation:
+        title: "Order confirmation"
+        body: "A queue lets staff claim orders, call customers, schedule callbacks and record the outcome."
+      shipping:
+        title: "Shipping"
+        body: "Confirmed orders can be sent to the connected carrier and tracked from the admin."
+      api:
+        title: "API and automation"
+        body: "Store tokens, GraphQL and MCP let connected tools read and manage a store."
+      languages:
+        title: "French, English, Arabic"
+        body: "Storefronts support right-to-left Arabic as well as French and English."

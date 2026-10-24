@@ -1,0 +1,41 @@
+<% content_for :title, t("platform_home.title") %>
+
+<div dir="<%= rtl? ? "rtl" : "ltr" %>" class="flex min-h-screen flex-col">
+  <header class="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-6">
+    <span class="font-display text-2xl text-ink">Morea Commerce</span>
+    <nav class="flex items-center gap-4 text-xs uppercase tracking-[0.18em] text-ink-soft" aria-label="<%= t("platform_home.language") %>">
+      <% Morea::Locales::AVAILABLE.each do |locale| %>
+        <%= link_to locale.to_s.upcase, platform_home_path(locale: locale),
+              class: (locale.to_s == I18n.locale.to_s ? "text-ink underline underline-offset-4" : "hover:text-ink"),
+              "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
+      <% end %>
+    </nav>
+  </header>
+
+  <main class="mx-auto w-full max-w-5xl flex-1 px-6 pb-16">
+    <section class="py-16 sm:py-24">
+      <p class="text-xs uppercase tracking-[0.2em] text-ink-faint"><%= t("platform_home.eyebrow") %></p>
+      <h1 class="mt-4 max-w-3xl font-display text-4xl leading-tight text-ink sm:text-6xl"><%= t("platform_home.headline") %></h1>
+      <p class="mt-6 max-w-2xl text-base leading-7 text-ink-soft"><%= t("platform_home.lead") %></p>
+      <div class="mt-8 flex flex-wrap items-center gap-4">
+        <%= link_to t("platform_home.sign_in"), admin_login_path(locale: nil),
+              class: "bg-ink px-6 py-3 text-xs uppercase tracking-[0.2em] text-paper hover:bg-ink-soft" %>
+        <p class="text-sm text-ink-faint"><%= t("platform_home.store_hint", domain: Store.base_domain) %></p>
+      </div>
+    </section>
+
+    <section aria-labelledby="platform-features" class="border-t border-line pt-12">
+      <h2 id="platform-features" class="text-xs uppercase tracking-[0.2em] text-ink-faint"><%= t("platform_home.features_title") %></h2>
+      <ul class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <% %w[storefronts cod confirmation shipping api languages].each do |key| %>
+          <li>
+            <h3 class="font-display text-xl text-ink"><%= t("platform_home.features.#{key}.title") %></h3>
+            <p class="mt-2 text-sm leading-6 text-ink-soft"><%= t("platform_home.features.#{key}.body") %></p>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="border-t border-line px-6 py-6 text-center text-xs text-ink-faint"><%= Store.base_domain %></footer>
+</div>

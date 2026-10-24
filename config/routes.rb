@@ -37,6 +37,8 @@ Rails.application.routes.draw do
     end
   end
 
+  get "/", to: "platform_home#show", as: :platform_home, constraints: ->(request) { Store.apex_host?(request.host) }
+
   root to: redirect { |_params, request|
     locale = request.cookie_jar[ApplicationController::LOCALE_COOKIE].to_s
     locale = ApplicationController.browser_locale_from(request).to_s if locale.blank?

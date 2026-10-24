@@ -52,7 +52,8 @@ class ApplicationController < ActionController::Base
   # Apex (ollazen.com / www) hosts the SaaS platform, not a storefront.
   def apex_request_allowed?
     path = request.path
-    path == "/up" ||
+    path == "/" ||
+      path == "/up" ||
       path == "/graphql" ||
       path == "/mcp" ||
       path.start_with?("/admin") ||

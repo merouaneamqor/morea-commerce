@@ -243,3 +243,31 @@ fr:
       %{retention}
 
       %{prospecting}
+  platform_home:
+    title: "Morea Commerce — plateforme e-commerce multi-boutiques"
+    language: "Langue"
+    eyebrow: "Plateforme e-commerce multi-boutiques"
+    headline: "Gérez vos boutiques en paiement à la livraison depuis une seule plateforme."
+    lead: "Chaque boutique garde sa vitrine, son catalogue et son paiement. L'équipe confirme les commandes, gère le stock et expédie depuis une seule administration."
+    sign_in: "Se connecter à l'administration"
+    store_hint: "Vous cherchez une boutique ? Ouvrez-la sur sa propre adresse, par exemple votre-boutique.%{domain}."
+    features_title: "Ce que propose la plateforme"
+    features:
+      storefronts:
+        title: "Vitrines séparées"
+        body: "Chaque boutique a sa propre adresse, son catalogue, son panier et ses clients, isolés des autres boutiques."
+      cod:
+        title: "Paiement à la livraison"
+        body: "Les clients commandent sans payer en ligne, et le stock est réservé à la confirmation de la commande."
+      confirmation:
+        title: "Confirmation des commandes"
+        body: "Une file permet de prendre une commande, d'appeler le client, de programmer un rappel et d'enregistrer le résultat."
+      shipping:
+        title: "Expédition"
+        body: "Les commandes confirmées peuvent être envoyées au transporteur connecté et suivies depuis l'administration."
+      api:
+        title: "API et automatisation"
+        body: "Jetons de boutique, GraphQL et MCP permettent à des outils connectés de lire et gérer une boutique."
+      languages:
+        title: "Français, anglais, arabe"
+        body: "Les vitrines prennent en charge l'arabe de droite à gauche, ainsi que le français et l'anglais."

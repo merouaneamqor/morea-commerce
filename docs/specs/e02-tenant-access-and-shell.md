@@ -2,7 +2,7 @@
 
 Epic #35 · work packages #51, #52, #53 · project #33 · depends on #34 (E01).
 
-**Status: specification only.** Evidence labels used below:
+**Status: specification, with stories 1–2 of §5 implemented in this branch** (audit events, server-side sessions, rotation, expiry, revocation, login throttling; verified by `script/admin_session_audit_smoke.rb`). Roles, store switching, navigation, saved filters and 2FA remain unimplemented. Evidence labels used below:
 
 - **code** — read in this checkout, not exercised against a deployment.
 - **published** — Cashod public claims (`docs/cashod/gap-matrix.md`, features F196/F197/F209 in the discovery evidence, PR #90). No authenticated workflow has been verified.
@@ -115,8 +115,8 @@ Cashod 2FA method (TOTP, SMS, email) and session lifetime; whether they expose a
 
 Order matters: audit and sessions first because roles depend on trustworthy actor identity.
 
-1. `audit_events` model, writer service, and wiring for existing staff/token actions.
-2. Server-side sessions with rotation, expiry, revocation and login throttling.
+1. ✅ `audit_events` model, writer service, and wiring for sign-in/out, failed sign-in, staff, password, API token and platform tenant entry. Not yet wired: MCP/GraphQL/job sources, role and membership changes.
+2. ✅ Server-side sessions with rotation, 12 h idle / 30 d absolute expiry, revocation on logout and password change, and DB-backed login throttling (10 failures per email or 30 per IP in 15 min). No UI yet to list or revoke other sessions.
 3. `memberships` + `Permissions` + deny-by-default CI check, with backfill migration.
 4. Store switcher and membership management UI.
 5. Grouped, role-aware navigation shell with RTL/keyboard/accessibility checks.

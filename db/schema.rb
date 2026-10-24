@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_161000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_24_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,6 +53,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_161000) do
     t.index ["customer_id"], name: "index_addresses_on_customer_id"
   end
 
+  create_table "admin_sessions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "store_id"
+    t.string "token_digest", null: false
+    t.datetime "last_seen_at", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "revoked_at"
+    t.string "ip"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_admin_sessions_on_store_id"
+    t.index ["token_digest"], name: "index_admin_sessions_on_token_digest", unique: true
+    t.index ["user_id"], name: "index_admin_sessions_on_user_id"
+  end
+
   create_table "agent_changesets", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.string "token", null: false
@@ -72,6 +88,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_161000) do
     t.index ["status"], name: "index_agent_changesets_on_status"
     t.index ["store_id", "token"], name: "index_agent_changesets_on_store_id_and_token", unique: true
     t.index ["store_id"], name: "index_agent_changesets_on_store_id"
+  end
+
+  create_table "audit_events", force: :cascade do |t|
+    t.bigint "store_id"
+    t.bigint "actor_user_id"
+    t.string "actor_label"
+    t.string "source", null: false
+    t.boolean "acting_as_platform", default: false, null: false
+    t.string "action", null: false
+    t.string "subject_type"
+    t.bigint "subject_id"
+    t.jsonb "metadata", default: {}, null: false
+    t.string "ip"
+    t.datetime "created_at", null: false
+    t.index ["action", "created_at"], name: "index_audit_events_on_action_and_created_at"
+    t.index ["actor_user_id"], name: "index_audit_events_on_actor_user_id"
+    t.index ["store_id", "created_at"], name: "index_audit_events_on_store_id_and_created_at"
+    t.index ["store_id"], name: "index_audit_events_on_store_id"
+    t.check_constraint "source::text = ANY (ARRAY['ui'::character varying, 'api'::character varying, 'mcp'::character varying, 'job'::character varying, 'system'::character varying]::text[])", name: "audit_event_source"
   end
 
   create_table "cart_items", force: :cascade do |t|
@@ -584,7 +619,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_161000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "customers"
+  add_foreign_key "admin_sessions", "stores", on_delete: :cascade
+  add_foreign_key "admin_sessions", "users", on_delete: :cascade
   add_foreign_key "agent_changesets", "stores"
+  add_foreign_key "audit_events", "stores", on_delete: :nullify
+  add_foreign_key "audit_events", "users", column: "actor_user_id", on_delete: :nullify
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "product_variants"
   add_foreign_key "cart_items", "products"

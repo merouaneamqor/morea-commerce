@@ -9,7 +9,12 @@ RSpec.describe "Platform admin user management", type: :request do
   let!(:owner) { User.create!(email: "owner-#{SecureRandom.hex(4)}@example.test", password: password, admin: true, super_admin: true) }
   let!(:merchant) { store.users.create!(email: "merchant-#{SecureRandom.hex(4)}@example.test", password: password, admin: true) }
 
-  before { host! Store.base_domain }
+  before do
+    host! Store.base_domain
+    # Seeded databases may already hold platform admins; the last-admin rules
+    # must be exercised against this example's accounts only.
+    User.super_admins.where.not(id: owner.id).update_all(status: "suspended")
+  end
 
   def sign_in(user, pass = password)
     post "/admin/login", params: { email: user.email, password: pass, workspace: user.store&.slug }
@@ -45,9 +50,11 @@ RSpec.describe "Platform admin user management", type: :request do
     end
 
     it "creates a platform-only super admin" do
-      post "/admin/platform/users", params: { user: { email: "second-#{SecureRandom.hex(3)}@example.test", password: password, password_confirmation: password, role: "super_admin", store_id: "" } }
+      email = "second-#{SecureRandom.hex(3)}@example.test"
+      post "/admin/platform/users", params: { user: { email: email, password: password, password_confirmation: password, role: "super_admin", store_id: "" } }
       expect(response).to redirect_to(admin_platform_users_path)
-      expect(User.super_admins.where(store_id: nil).count).to eq(2)
+      created = User.find_by!(email: email)
+      expect([ created.super_admin?, created.store_id, created.status ]).to eq([ true, nil, "active" ])
     end
 
     it "rejects a workspace admin without a workspace or a password" do

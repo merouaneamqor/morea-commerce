@@ -1,0 +1,32 @@
+<% Admin::Menu::GROUPS.each do |group, entries| %>
+  <% if group %><p class="admin-sidebar__heading"><%= t("admin_menu.groups.#{group}") %></p><% end %>
+  <% entries.each do |entry| %>
+    <%= admin_nav_link t("admin_menu.items.#{entry.key}"), public_send(entry.route), icon: entry.icon,
+          active: entry.placeholder? ? (controller_name == "coming_soon" && params[:feature] == entry.key.to_s) : controller_name.in?(entry.controllers) %>
+    <% if entry.key == :orders && controller_name.in?(%w[orders carts]) %>
+      <div class="admin-subnav">
+        <%= link_to t("admin_menu.items.orders"), admin_orders_path, class: "admin-subnav__item #{'is-active' if controller_name == 'orders'}" %>
+        <%= link_to t("admin_menu.items.carts"), admin_carts_path, class: "admin-subnav__item #{'is-active' if controller_name == 'carts'}" %>
+      </div>
+    <% end %>
+    <% if entry.key == :products && controller_name.in?(entry.controllers) %>
+      <div class="admin-subnav">
+        <%= link_to t("admin_menu.items.all_products"), admin_products_path, class: "admin-subnav__item #{'is-active' if controller_name.in?(%w[products variants inventory])}" %>
+        <%= link_to t("admin_menu.items.collections"), admin_collections_path, class: "admin-subnav__item #{'is-active' if controller_name == 'collections'}" %>
+        <%= link_to t("admin_menu.items.discounts"), admin_discounts_path, class: "admin-subnav__item #{'is-active' if controller_name == 'discounts'}" %>
+        <%= link_to t("admin_menu.items.media"), admin_media_path, class: "admin-subnav__item #{'is-active' if controller_name == 'media'}" %>
+      </div>
+    <% end %>
+  <% end %>
+  <% if group == :channels %>
+    <% online_store = controller_name.in?(%w[home_sections pages page_sections menu_items]) %>
+    <%= admin_nav_link t("admin_menu.items.online_store"), current_store&.storefront_enabled? ? admin_home_sections_path : edit_admin_store_path, icon: :store, active: online_store %>
+    <% if online_store %>
+      <div class="admin-subnav">
+        <%= link_to "Customize", admin_home_sections_path, class: "admin-subnav__item #{'is-active' if controller_name == 'home_sections'}" %>
+        <%= link_to "Pages", admin_pages_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pages'}" %>
+        <%= link_to "Navigation", admin_menu_items_path, class: "admin-subnav__item #{'is-active' if controller_name == 'menu_items'}" %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

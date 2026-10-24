@@ -42,31 +42,7 @@
 
         <aside class="admin-sidebar" data-admin-menu-target="sidebar">
           <nav class="admin-sidebar__nav">
-            <%= admin_nav_link t("dashboard.nav"), admin_root_path, icon: :home, active: controller_name == "dashboard" %>
-            <%= admin_nav_link "Orders", admin_orders_path, icon: :orders, active: controller_name == "orders" %>
-            <% if current_store %>
-              <%= admin_nav_link t("admin.confirmations.title"), admin_confirmations_path, icon: :orders, active: controller_name == "confirmations" %>
-            <% end %>
-            <%= admin_nav_link "Carts", admin_carts_path, icon: :carts, active: controller_name == "carts" %>
-            <%= admin_nav_link "Products", admin_products_path, icon: :products, active: controller_name.in?(%w[products variants inventory]) %>
-            <%= admin_nav_link "Collections", admin_collections_path, icon: :collections, active: controller_name == "collections" %>
-            <%= admin_nav_link "Discounts", admin_discounts_path, icon: :discounts, active: controller_name == "discounts" %>
-            <%= admin_nav_link "Media", admin_media_path, icon: :image, active: controller_name == "media" %>
-            <%= admin_nav_link "Customers", admin_customers_path, icon: :customers, active: controller_name == "customers" %>
-
-            <p class="admin-sidebar__heading">Sales channels</p>
-            <% if current_store %>
-              <%= admin_nav_link t("connections.title"), admin_store_connections_path, icon: :external, active: controller_name == "store_connections" %>
-            <% end %>
-            <% online_store = controller_name.in?(%w[home_sections pages page_sections menu_items]) %>
-            <%= admin_nav_link "Online Store", current_store&.storefront_enabled? ? admin_home_sections_path : edit_admin_store_path, icon: :store, active: online_store %>
-            <% if online_store %>
-              <div class="admin-subnav">
-                <%= link_to "Customize", admin_home_sections_path, class: "admin-subnav__item #{'is-active' if controller_name == 'home_sections'}" %>
-                <%= link_to "Pages", admin_pages_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pages'}" %>
-                <%= link_to "Navigation", admin_menu_items_path, class: "admin-subnav__item #{'is-active' if controller_name == 'menu_items'}" %>
-              </div>
-            <% end %>
+            <%= render "admin/shared/sidebar_nav" %>
           </nav>
 
           <div class="admin-sidebar__footer">
@@ -82,7 +58,6 @@
                 <%= link_to "Agent API", admin_agent_api_path, class: "admin-subnav__item #{'is-active' if controller_name == 'agent_api'}" %>
               </div>
             <% end %>
-            <%= admin_nav_link "Staff", admin_users_path, icon: :staff, active: controller_name == "users" %>
             <%= button_to admin_logout_path, method: :delete, class: "admin-nav-item w-full" do %>
               <%= admin_icon(:logout) %><span>Sign out</span>
             <% end %>

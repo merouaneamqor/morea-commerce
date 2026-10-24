@@ -35,6 +35,20 @@ module AdminHelper
     external: '<path d="M11 3h6v6M17 3l-8 8"/><path d="M15 12v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4"/>',
     logout: '<path d="M8 3H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h4M13 14l4-4-4-4M17 10H8"/>',
     menu: '<path d="M3 5h14M3 10h14M3 15h14"/>',
+    inventory: '<path d="M3 7h14v10H3z"/><path d="M3 7l2-4h10l2 4M8 11h4"/>',
+    purchases: '<path d="M3 4h2l1.5 8h8L17 6H6"/><path d="M10 14v3M8.5 15.5h3"/>',
+    expenses: '<rect x="2.5" y="5" width="15" height="10" rx="1.5"/><circle cx="10" cy="10" r="2.2"/>',
+    delivery: '<path d="M2.5 5h9v8h-9zM11.5 8h3l2 2.5V13h-5z"/><circle cx="6" cy="14.5" r="1.3"/><circle cx="14" cy="14.5" r="1.3"/>',
+    call_center: '<path d="M5 3h3l1.2 3.2-1.8 1.2a9 9 0 0 0 4.2 4.2l1.2-1.8L16.8 11v3a2 2 0 0 1-2 2A12 12 0 0 1 3 4.8a2 2 0 0 1 2-1.8z"/>',
+    advertising: '<path d="M3 8v4h3l7 4V4L6 8z"/><path d="M16 8.5a2.5 2.5 0 0 1 0 3"/>',
+    whatsapp: '<path d="M3 17l1.2-3.6A7 7 0 1 1 7 16z"/>',
+    analytics: '<path d="M3 17V3M3 17h14"/><path d="M6.5 13l3-4 3 2 4-6"/>',
+    accounting: '<rect x="4" y="3" width="12" height="14" rx="1.5"/><path d="M7 7h6M7 11h1M10 11h1M13 11h0M7 14h1M10 14h1"/>',
+    workflows: '<circle cx="5" cy="5" r="2"/><circle cx="15" cy="10" r="2"/><circle cx="5" cy="15" r="2"/><path d="M7 5h3a3 3 0 0 1 3 3v0M7 15h3a3 3 0 0 0 3-3v0"/>',
+    billing: '<rect x="2.5" y="4.5" width="15" height="11" rx="1.5"/><path d="M2.5 8.5h15M5.5 12.5h3"/>',
+    app: '<rect x="6" y="2.5" width="8" height="15" rx="1.5"/><path d="M9 15h2"/>',
+    ai_chat: '<path d="M3 4h14v9H9l-4 3v-3H3z"/><path d="M7 8h6"/>',
+    help: '<circle cx="10" cy="10" r="7"/><path d="M8 8a2 2 0 1 1 3 1.7c-.7.4-1 .8-1 1.6M10 14h.01"/>',
     image: '<rect x="3" y="3" width="14" height="14" rx="2"/><circle cx="7.5" cy="7.5" r="1.5"/><path d="m17 13-4-4-8 8"/>'
   }.freeze
 

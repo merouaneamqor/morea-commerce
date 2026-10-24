@@ -1,0 +1,54 @@
+ar:
+  platform_users:
+    nav: "مستخدمو الإدارة"
+    title: "مستخدمو الإدارة"
+    description: "إدارة مسؤولي المنصة ومسؤولي مساحات العمل. لا يمكن للمستخدمين الموقوفين أو المؤرشفين تسجيل الدخول."
+    new: "مستخدم إداري جديد"
+    edit: "تعديل"
+    save: "حفظ"
+    created: "تم إنشاء المستخدم الإداري."
+    saved: "تم حفظ المستخدم الإداري."
+    empty: "لا يوجد مستخدمون إداريون (%{status})."
+    no_workspace: "بدون مساحة عمل (للمنصة فقط)"
+    workspace_help: "مطلوب لمسؤول مساحة العمل. اتركه فارغا لمسؤول المنصة."
+    new_password: "كلمة مرور جديدة"
+    password_help: "اتركه فارغا للإبقاء على كلمة المرور الحالية."
+    password_confirmation: "تأكيد كلمة المرور"
+    columns:
+      name: "الاسم"
+      email: "البريد الإلكتروني"
+      role: "الدور"
+      workspace: "مساحة العمل"
+      status: "الحالة"
+      password: "كلمة المرور"
+    roles:
+      super_admin: "مسؤول المنصة"
+      workspace_admin: "مسؤول مساحة العمل"
+    role_filters:
+      all: "كل الأدوار"
+      super_admin: "مسؤولو المنصة"
+      workspace_admin: "مسؤولو مساحات العمل"
+    statuses:
+      active: "نشط"
+      suspended: "موقوف"
+      archived: "مؤرشف"
+    actions:
+      suspend: "إيقاف"
+      reactivate: "إعادة تفعيل"
+      archive: "أرشفة"
+      restore: "استعادة"
+    confirm:
+      suspend: "إيقاف %{email}؟ سيتم تسجيل خروجه."
+      reactivate: "إعادة تفعيل %{email}؟"
+      archive: "أرشفة %{email}؟ سيتم تسجيل خروجه."
+      restore: "استعادة %{email}؟"
+    done:
+      suspend: "تم إيقاف %{email}."
+      reactivate: "تمت إعادة تفعيل %{email}."
+      archive: "تمت أرشفة %{email}."
+      restore: "تمت استعادة %{email}."
+    denied:
+      self: "لا يمكنك إيقاف حسابك أو أرشفته أو خفض صلاحياته."
+      last_super_admin: "أبقِ على مسؤول منصة نشط واحد على الأقل."
+      invalid_transition: "هذا التغيير غير متاح لحالة المستخدم الحالية."
+      unknown_action: "إجراء غير معروف."

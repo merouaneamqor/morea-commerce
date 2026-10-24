@@ -31,7 +31,7 @@ module Admin
     private
 
     def sign_in_allowed?(user)
-      user && (user.admin? || user.super_admin?)
+      user&.can_sign_in?
     end
 
     def sign_in_user(email)
@@ -46,7 +46,7 @@ module Admin
 
       # Email uniqueness is per workspace. Require an explicit workspace when
       # the same address has multiple accounts instead of selecting a tenant.
-      candidates = User.where(email: email).where("admin = TRUE OR super_admin = TRUE").limit(2).to_a
+      candidates = User.where(email: email).where("admin = TRUE OR super_admin = TRUE").active.limit(2).to_a
       candidates.first if candidates.one?
     end
 

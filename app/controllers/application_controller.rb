@@ -54,7 +54,7 @@ class ApplicationController < ActionController::Base
   def apex_admin_workspace
     return unless request.path.start_with?("/admin") && session[:user_id]
 
-    user = User.find_by(id: session[:user_id])
+    user = User.active.find_by(id: session[:user_id])
     user.store if user&.admin? && !user.super_admin?
   end
 
@@ -132,8 +132,8 @@ class ApplicationController < ActionController::Base
     return @current_admin_user if defined?(@current_admin_user)
     return @current_admin_user = nil unless session[:user_id]
 
-    @current_admin_user = current_store&.users&.find_by(id: session[:user_id]) ||
-      User.super_admins.find_by(id: session[:user_id])
+    @current_admin_user = current_store&.users&.active&.find_by(id: session[:user_id]) ||
+      User.super_admins.active.find_by(id: session[:user_id])
   end
 
   def super_admin?

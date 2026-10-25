@@ -1,119 +1,52 @@
 <% content_for :title, t("platform_home.title") %>
 <% content_for :head do %>
   <meta name="color-scheme" content="dark">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <%= stylesheet_link_tag "platform_home", "data-turbo-track": "reload" %>
 <% end %>
-<% h = ->(key) { t("platform_home.#{key}") } %>
-
-<div dir="<%= rtl? ? "rtl" : "ltr" %>" class="fx-page min-h-screen" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
+<% h = ->(key) { t("platform_home.refresh.#{key}") } %>
+<div class="platform-landing" dir="<%= rtl? ? "rtl" : "ltr" %>">
   <%= render "platform_home/header" %>
-
   <main>
-    <section class="fx-hero px-4 py-20 sm:px-6 sm:py-32">
-      <span class="fx-orb" style="width: 30rem; height: 30rem; top: -10rem; right: 5%" aria-hidden="true"></span>
-      <span class="fx-orb" style="width: 22rem; height: 22rem; bottom: -8rem; left: 2%; animation-delay: -6s" aria-hidden="true"></span>
-      <div class="relative z-10 mx-auto max-w-4xl text-center">
-        <p class="fx-chip"><span class="fx-dot" aria-hidden="true"></span><%= h.("hero.eyebrow") %></p>
-        <h1 class="fx-gradient-text mt-8 text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl"><%= h.("hero.headline") %></h1>
-        <p class="mx-auto mt-6 max-w-2xl text-base leading-7 text-[#b9d3ff] sm:text-lg"><%= h.("hero.lead") %></p>
-        <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
-          <%= link_to h.("hero.primary"), signup_path, class: "fx-btn !inline-flex !w-auto items-center justify-center px-7 no-underline" %>
-          <a href="#journey" class="fx-btn-ghost"><%= h.("hero.secondary") %></a>
+    <section class="platform-hero" aria-labelledby="platform-title">
+      <div class="platform-container platform-hero-copy">
+        <p class="platform-eyebrow"><span aria-hidden="true"></span><%= h.("eyebrow") %></p>
+        <h1 id="platform-title"><%= h.("headline") %><br><span><%= h.("headline_accent") %></span></h1>
+        <p class="platform-lead"><%= h.("lead") %></p>
+        <div class="platform-actions">
+          <%= link_to t("platform_home.hero.primary"), signup_path(locale: I18n.locale), class: "platform-button" %>
+          <a href="#journey" class="platform-button platform-button-secondary"><%= t("platform_home.hero.secondary") %></a>
         </div>
-        <ul class="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[#b9d3ff]">
-          <% t("platform_home.hero.badges").each do |badge| %>
-            <li class="flex items-center gap-2"><span class="fx-dot" aria-hidden="true"></span><%= badge %></li>
-          <% end %>
-        </ul>
-        <p class="mt-8 text-sm text-[#8fb0e0]"><%= t("platform_home.hero.store_hint", domain: Store.base_domain) %></p>
+        <ul class="platform-badges"><% h.("badges").each do |badge| %><li><%= badge %></li><% end %></ul>
       </div>
+      <div class="platform-map" aria-hidden="true"><%= render "platform_home/network_map" %></div>
     </section>
-
-    <section id="journey" class="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 sm:px-6">
-      <h2 class="fx-gradient-text max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl"><%= h.("journey.title") %></h2>
-      <p class="mt-3 max-w-2xl text-[#b9d3ff]"><%= h.("journey.lead") %></p>
-      <ol class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <% t("platform_home.journey.steps").each_with_index do |step, i| %>
-          <li class="fx-card p-5">
-            <span class="fx-step-num"><%= i + 1 %></span>
-            <h3 class="mt-4 text-sm font-semibold text-white"><%= step[:title] %></h3>
-            <p class="mt-2 text-sm leading-6 text-[#9fbce8]"><%= step[:body] %></p>
-          </li>
-        <% end %>
-      </ol>
-    </section>
-
-    <section class="px-4 py-12 sm:px-6" aria-labelledby="preview-title">
-      <div class="mx-auto max-w-4xl">
-        <h2 id="preview-title" class="text-center text-2xl font-bold tracking-tight text-white sm:text-3xl"><%= h.("preview.title") %></h2>
-        <div class="fx-glass mt-8 p-4 sm:p-6">
-          <div class="mb-4 flex items-center gap-1.5" aria-hidden="true">
-            <span class="h-2.5 w-2.5 rounded-full bg-[#ff6b7a]/80"></span><span class="h-2.5 w-2.5 rounded-full bg-[#ffd166]/80"></span><span class="h-2.5 w-2.5 rounded-full bg-[#5ea2ff]/90"></span>
-          </div>
-          <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <% t("platform_home.preview.metrics").each do |metric| %>
-              <div class="rounded-xl border border-[#a0c8ff]/15 bg-[#04122e]/50 p-4">
-                <dt class="text-xs text-[#8fb0e0]"><%= metric[:label] %></dt>
-                <dd class="fx-metric mt-2 text-3xl font-semibold text-white"><%= metric[:value] %></dd>
-              </div>
-            <% end %>
-          </dl>
-        </div>
-        <p class="mt-3 text-center text-xs text-[#8fb0e0]"><%= h.("preview.note") %></p>
-      </div>
-    </section>
-
-    <section id="features" class="mx-auto max-w-6xl scroll-mt-20 px-4 py-20 sm:px-6">
-      <h2 class="fx-gradient-text max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl"><%= h.("features.title") %></h2>
-      <p class="mt-3 max-w-2xl text-[#b9d3ff]"><%= h.("features.lead") %></p>
-      <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <% t("platform_home.features.items").each do |item| %>
-          <li class="fx-card p-5">
-            <h3 class="text-sm font-semibold text-white"><%= item[:title] %></h3>
-            <p class="mt-2 text-sm leading-6 text-[#9fbce8]"><%= item[:body] %></p>
+    <section id="features" class="platform-container platform-features" aria-labelledby="features-title">
+      <h2 id="features-title"><%= h.("features_title") %></h2>
+      <p class="platform-section-lead"><%= h.("features_lead") %></p>
+      <ul class="platform-cards">
+        <% h.("features").each_with_index do |item, index| %>
+          <li class="platform-card">
+            <span class="platform-icon" aria-hidden="true">
+              <% if index == 0 %><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>
+              <% elsif index == 1 %><svg viewBox="0 0 24 24"><path d="M3 6h11v11H3zM14 10h4l3 4v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+              <% else %><svg viewBox="0 0 24 24"><path d="M5 19V12M12 19V5M19 19V9"/></svg><% end %>
+            </span>
+            <h3><%= item[:title] %></h3><p><%= item[:body] %></p>
           </li>
         <% end %>
       </ul>
     </section>
-
-    <section id="integrations" class="scroll-mt-20 border-y border-[#a0c8ff]/12 bg-[#071a3f]/60 px-4 py-16 sm:px-6">
-      <div class="mx-auto max-w-6xl">
-        <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl"><%= h.("integrations.title") %></h2>
-        <p class="mt-3 text-[#b9d3ff]"><%= h.("integrations.lead") %></p>
-        <ul class="mt-8 flex flex-wrap gap-3">
-          <% t("platform_home.integrations.items").each do |name| %>
-            <li class="fx-chip !text-sm !normal-case !tracking-normal"><%= name %></li>
-          <% end %>
-        </ul>
-      </div>
-    </section>
-
-    <section id="faq" class="mx-auto max-w-3xl scroll-mt-20 px-4 py-20 sm:px-6">
-      <h2 class="fx-gradient-text text-3xl font-bold tracking-tight"><%= h.("faq.title") %></h2>
-      <div class="mt-8 space-y-3">
-        <% t("platform_home.faq.items").each do |item| %>
-          <details class="fx-card group p-5">
-            <summary class="flex cursor-pointer items-center justify-between gap-4 text-sm font-semibold text-white">
-              <%= item[:q] %>
-              <span class="text-[#6aa6ff] transition group-open:rotate-45" aria-hidden="true">+</span>
-            </summary>
-            <p class="mt-3 text-sm leading-6 text-[#9fbce8]"><%= item[:a] %></p>
-          </details>
+    <section id="journey" class="platform-container platform-journey" aria-labelledby="journey-title">
+      <h2 id="journey-title"><%= h.("journey_title") %></h2>
+      <ol class="platform-timeline">
+        <% h.("steps").each_with_index do |step, index| %>
+          <li><span class="platform-step"><%= index + 1 %></span><h3><%= step[:title] %></h3><p><%= step[:body] %></p></li>
         <% end %>
-      </div>
+      </ol>
     </section>
-
-    <section class="px-4 pb-24 sm:px-6">
-      <div class="fx-glass fx-hero mx-auto max-w-4xl px-6 py-16 text-center">
-        <span class="fx-orb" style="width: 20rem; height: 20rem; top: -8rem; left: 50%; margin-left: -10rem" aria-hidden="true"></span>
-        <div class="relative z-10">
-          <h2 class="fx-gradient-text text-3xl font-bold tracking-tight sm:text-4xl"><%= h.("cta.headline") %></h2>
-          <p class="mx-auto mt-3 max-w-xl text-[#b9d3ff]"><%= h.("cta.body") %></p>
-          <%= link_to h.("cta.button"), signup_path, class: "fx-btn mt-8 !inline-flex !w-auto items-center justify-center px-8 no-underline" %>
-        </div>
-      </div>
+    <section id="contact" class="platform-container platform-contact" aria-labelledby="contact-title">
+      <div class="platform-cta"><h2 id="contact-title"><%= h.("cta_title") %></h2><p><%= h.("cta_body") %></p><%= link_to t("platform_home.hero.primary"), signup_path(locale: I18n.locale), class: "platform-button platform-button-white" %></div>
     </section>
   </main>
-
   <%= render "platform_home/footer" %>
 </div>

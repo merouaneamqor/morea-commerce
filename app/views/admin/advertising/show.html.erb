@@ -1,0 +1,84 @@
+<% content_for :title, "Advertising — Codify" %>
+<% totals = @summary.totals; money = ->(cents) { number_to_currency(cents / 100.0, unit: 'MAD ', precision: 2) }; ratio = ->(metrics) { @summary.roas(metrics) ? "#{number_with_precision(@summary.roas(metrics), precision: 2)}×" : '—' } %>
+<div class="admin-page-header">
+  <div><h1 class="admin-page-header__title"><%= t("advertising.text_0") %></h1><p class="admin-page-header__meta"><%= t("advertising.text_1") %></p></div>
+  <a href="#add-account" class="admin-btn"><%= t("advertising.text_2") %></a>
+</div>
+<p class="admin-banner mb-5"><%= t("advertising.note_0") %></p>
+<% if @error.present? %><p role="alert" class="admin-banner admin-banner--critical mb-4"><%= @error %></p><% end %>
+<%= form_with url: admin_advertising_path, method: :get, class: 'admin-card p-4 mb-5 flex flex-wrap items-end gap-3' do |f| %>
+  <div><%= f.label :start_date, t("advertising.text_3"), class: 'admin-label' %><%= f.date_field :start_date, value: @summary.start_date, required: true, class: 'admin-input' %></div>
+  <div><%= f.label :end_date, t("advertising.text_4"), class: 'admin-label' %><%= f.date_field :end_date, value: @summary.end_date, required: true, class: 'admin-input' %></div>
+  <div><%= f.label :sort, t("advertising.text_5"), class: 'admin-label' %><%= f.select :sort, [[t("advertising.text_7"), 'name'], [t("advertising.text_8"), 'profit']], { selected: params[:sort] }, class: 'admin-input' %></div>
+  <%= f.submit t("advertising.text_6"), class: 'admin-btn-secondary' %>
+  <p class="admin-muted"><%= t("advertising.note_1") %></p>
+<% end %>
+<div class="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-5">
+  <% [[t("advertising.text_9"), money.call(totals[:spend_cents])], [t("advertising.text_10"), ratio.call(totals)], [t("advertising.text_11"), number_with_delimiter(totals[:confirmed_orders])], [t("advertising.text_12"), "#{number_with_delimiter(totals[:clicks])} / #{number_with_delimiter(totals[:impressions])}"]].each do |label, value| %>
+    <div class="admin-card p-4"><p class="admin-metric__label"><%= label %></p><p class="admin-metric__value mt-2"><%= value %></p></div>
+  <% end %>
+</div>
+<nav class="flex flex-wrap gap-3 mb-5" aria-label="Advertising sections"><a class="admin-btn-secondary" href="#campaigns"><%= t("advertising.text_16") %> (<%= @summary.campaigns.size %>)</a><a class="admin-btn-secondary" href="#accounts"><%= t("advertising.accounts") %> (<%= @summary.accounts.size %>)</a><a class="admin-btn-secondary" href="#report-day"><%= t("advertising.report_day") %></a></nav>
+<div class="admin-layout mb-5">
+  <section class="admin-card">
+    <div class="admin-card__header"><div><h2 class="admin-card__title"><%= t("advertising.text_13") %></h2><p class="admin-muted mt-1"><%= t("advertising.note_2") %> <%= ratio.call(totals) %></p></div></div>
+    <% if @summary.daily.empty? %><p class="admin-empty"><%= t("advertising.note_3") %></p><% else %>
+      <% maximum = [@summary.daily.flat_map { |_, spend, revenue| [spend, revenue] }.max, 1].max %>
+      <div class="p-4 space-y-3" role="img" aria-label="Daily spend and delivered revenue. Exact amounts follow each date.">
+        <% @summary.daily.each do |date, spend, revenue| %>
+          <div><p class="admin-muted mb-1"><%= date %> · Spend <%= money.call(spend) %> · Revenue <%= money.call(revenue) %></p><div class="h-2 rounded bg-gray-100"><div class="h-2 rounded bg-gray-800" style="width: <%= spend.fdiv(maximum) * 100 %>%"></div></div><div class="mt-1 h-2 rounded bg-gray-100"><div class="h-2 rounded bg-gray-400" style="width: <%= revenue.fdiv(maximum) * 100 %>%"></div></div></div>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+  <section class="admin-card" id="accounts">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("advertising.text_14") %></h2></div>
+    <% if @summary.accounts.empty? %><p class="admin-empty"><%= t("advertising.text_15") %></p><% end %>
+    <% @summary.accounts.each do |account| %>
+      <div class="p-4 border-b"><p class="font-medium"><%= account.name %></p><p class="admin-muted mt-1"><%= account.provider %> · <%= t("advertising.note_4") %> · <%= account.active? ? t("advertising.note_5") : t("advertising.note_6") %></p>
+        <%= button_to(account.active? ? t("advertising.note_7") : t("advertising.note_8"), account_admin_advertising_path(account), method: :patch, params: { active: !account.active? }, class: 'admin-btn-secondary mt-3') %>
+      </div>
+    <% end %>
+  </section>
+</div>
+<section class="admin-card mb-5" id="campaigns">
+  <div class="admin-card__header"><div><h2 class="admin-card__title"><%= t("advertising.text_16") %></h2><p class="admin-muted mt-1"><%= t("advertising.note_9") %></p></div></div>
+  <% if @summary.rows.empty? %><p class="admin-empty"><%= t("advertising.note_10") %></p><% else %>
+    <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th><%= t("advertising.text_17") %></th><th><%= t("advertising.text_18") %></th><th><%= t("advertising.text_19") %></th><th><%= t("advertising.text_20") %></th><th><%= t("advertising.text_10") %></th><th><%= t("advertising.text_21") %></th><th><%= t("advertising.text_22") %></th><th><%= t("advertising.text_23") %></th></tr></thead><tbody>
+      <% @summary.rows.each do |row| %><% campaign = row[:campaign]; metrics = row[:metrics]; profit = @summary.profit(metrics); reported = metrics.values.any?(&:positive?) %>
+        <tr><td><span class="font-medium"><%= campaign.name %></span><p class="admin-muted"><%= campaign.advertising_account.name %></p></td><td><%= money.call(metrics[:spend_cents]) %></td><td><%= metrics[:confirmed_orders] %> / <%= metrics[:delivered_orders] %></td><td><%= metrics[:confirmed_orders].positive? ? money.call(metrics[:spend_cents].fdiv(metrics[:confirmed_orders])) : '—' %></td><td><%= ratio.call(metrics) %></td><td><%= money.call(profit) %></td><td><span class="admin-badge admin-badge--neutral"><%= !reported ? t("advertising.note_11") : (profit.positive? ? t("advertising.note_12") : (profit.negative? ? t("advertising.note_13") : t("advertising.note_14"))) %></span></td><td><%= button_to(campaign.active? ? t("advertising.note_15") : t("advertising.note_16"), campaign_admin_advertising_path(campaign), method: :patch, params: { active: !campaign.active? }, class: 'admin-btn-secondary') %></td></tr>
+      <% end %>
+    </tbody></table></div>
+  <% end %>
+</section>
+<div class="grid gap-5 lg:grid-cols-2 mb-5">
+  <section class="admin-card p-5" id="add-account"><h2 class="admin-card__title mb-4"><%= t("advertising.text_24") %></h2>
+    <%= form_with url: accounts_admin_advertising_path, scope: :account, class: 'space-y-3' do |f| %>
+      <div><%= f.label :name, t("advertising.text_25"), class: 'admin-label' %><%= f.text_field :name, required: true, maxlength: 100, class: 'admin-input' %></div>
+      <div><%= f.label :provider, t("advertising.text_26"), class: 'admin-label' %><%= f.select :provider, AdvertisingAccount::PROVIDERS, {}, class: 'admin-input' %></div><%= f.submit t("advertising.text_27"), class: 'admin-btn' %>
+    <% end %>
+  </section>
+  <section class="admin-card p-5"><h2 class="admin-card__title mb-4"><%= t("advertising.text_28") %></h2>
+    <% if @summary.accounts.empty? %><p class="admin-muted"><%= t("advertising.note_17") %></p><% else %>
+      <%= form_with url: campaigns_admin_advertising_path, scope: :campaign, class: 'space-y-3' do |f| %>
+        <div><%= f.label :advertising_account_id, t("advertising.text_29"), class: 'admin-label' %><%= f.collection_select :advertising_account_id, @summary.accounts, :id, :name, {}, class: 'admin-input' %></div>
+        <div><%= f.label :name, t("advertising.text_30"), class: 'admin-label' %><%= f.text_field :name, required: true, maxlength: 150, class: 'admin-input' %></div><%= f.submit t("advertising.text_28"), class: 'admin-btn' %>
+      <% end %>
+    <% end %>
+  </section>
+</div>
+<section class="admin-card p-5" id="report-day"><h2 class="admin-card__title mb-2"><%= t("advertising.text_31") %></h2><p class="admin-muted mb-4"><%= t("advertising.note_19") %></p>
+  <% if @summary.campaigns.empty? %><p class="admin-muted"><%= t("advertising.note_18") %></p><% else %>
+    <%= form_with url: admin_advertising_path, method: :get, class: 'flex flex-wrap gap-3 items-end mb-4' do |f| %>
+      <div><%= f.label :report_campaign_id, t("advertising.text_32"), class: 'admin-label' %><%= f.collection_select :report_campaign_id, @summary.campaigns, :id, :name, { selected: @report.advertising_campaign_id }, class: 'admin-input' %></div>
+      <div><%= f.label :report_date, t("advertising.text_33"), class: 'admin-label' %><%= f.date_field :report_date, value: @report.date, required: true, class: 'admin-input' %></div><%= f.submit t("advertising.text_34"), class: 'admin-btn-secondary' %>
+    <% end %>
+    <% if @report.advertising_campaign_id.present? %>
+    <%= form_with url: performance_admin_advertising_path, scope: :performance, class: 'space-y-4' do |f| %>
+      <%= f.hidden_field :advertising_campaign_id, value: @report.advertising_campaign_id %><%= f.hidden_field :date, value: @report.date %>
+      <p class="font-medium"><%= @report.advertising_campaign.name %> · <%= @report.date %></p>
+      <div class="grid gap-3 lg:grid-cols-3"><% { spend: t("advertising.text_36"), delivered_revenue: t("advertising.text_37"), fulfillment_cost: t("advertising.text_38"), confirmed_orders: t("advertising.text_11"), delivered_orders: t("advertising.text_39"), clicks: t("advertising.text_40"), impressions: t("advertising.text_41") }.each do |field, label| %><div><%= f.label field, label, class: 'admin-label' %><%= f.number_field field, min: 0, max: 9_000_000_000_000, step: (%i[spend delivered_revenue fulfillment_cost].include?(field) ? '0.01' : 1), value: (%i[spend delivered_revenue fulfillment_cost].include?(field) ? @report.public_send("#{field}_cents").to_i / 100.0 : @report.public_send(field)), required: true, class: 'admin-input' %></div><% end %></div><%= f.submit t("advertising.text_35"), class: 'admin-btn' %>
+    <% end %>
+    <% end %>
+  <% end %>
+</section>

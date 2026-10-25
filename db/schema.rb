@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_25_100200) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_25_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -72,6 +72,47 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_100200) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["customer_id"], name: "index_addresses_on_customer_id"
+  end
+
+  create_table "advertising_accounts", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "name", null: false
+    t.string "provider", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_advertising_accounts_on_store_id"
+  end
+
+  create_table "advertising_campaigns", force: :cascade do |t|
+    t.bigint "advertising_account_id", null: false
+    t.string "name", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["advertising_account_id"], name: "index_advertising_campaigns_on_advertising_account_id"
+  end
+
+  create_table "advertising_performances", force: :cascade do |t|
+    t.bigint "advertising_campaign_id", null: false
+    t.date "date", null: false
+    t.bigint "spend_cents", default: 0, null: false
+    t.bigint "delivered_revenue_cents", default: 0, null: false
+    t.bigint "fulfillment_cost_cents", default: 0, null: false
+    t.bigint "confirmed_orders", default: 0, null: false
+    t.bigint "delivered_orders", default: 0, null: false
+    t.bigint "clicks", default: 0, null: false
+    t.bigint "impressions", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["advertising_campaign_id", "date"], name: "index_advertising_performance_day", unique: true
+    t.check_constraint "clicks >= 0", name: "advertising_clicks_nonnegative"
+    t.check_constraint "confirmed_orders >= 0", name: "advertising_confirmed_orders_nonnegative"
+    t.check_constraint "delivered_orders >= 0", name: "advertising_delivered_orders_nonnegative"
+    t.check_constraint "delivered_revenue_cents >= 0", name: "advertising_delivered_revenue_cents_nonnegative"
+    t.check_constraint "fulfillment_cost_cents >= 0", name: "advertising_fulfillment_cost_cents_nonnegative"
+    t.check_constraint "impressions >= 0", name: "advertising_impressions_nonnegative"
+    t.check_constraint "spend_cents >= 0", name: "advertising_spend_cents_nonnegative"
   end
 
   create_table "agent_changesets", force: :cascade do |t|
@@ -668,6 +709,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_100200) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "customers"
+  add_foreign_key "advertising_accounts", "stores"
+  add_foreign_key "advertising_campaigns", "advertising_accounts"
+  add_foreign_key "advertising_performances", "advertising_campaigns"
   add_foreign_key "agent_changesets", "stores"
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "product_variants"

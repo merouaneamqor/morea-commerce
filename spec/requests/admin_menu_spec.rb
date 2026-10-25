@@ -29,6 +29,17 @@ RSpec.describe "Store manager menu", type: :request do
     end
   end
 
+  it "opens the implemented delivery and advertising dashboards from the sidebar" do
+    sign_in
+    get "/admin"
+    expect(response.body).to include('href="/admin/delivery"', 'href="/admin/advertising"')
+    expect(Admin::Menu::PLACEHOLDERS).not_to have_key("delivery")
+    get admin_delivery_path
+    expect(response).to have_http_status(:ok)
+    get admin_advertising_path
+    expect(response).to have_http_status(:ok)
+  end
+
   it "keeps platform-only sessions out of store placeholder pages" do
     platform_user = User.create!(email: "platform-#{SecureRandom.hex(5)}@example.test", password: password, admin: true, super_admin: true)
     sign_in(platform_user, workspace: nil)

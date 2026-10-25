@@ -12,13 +12,16 @@ module Admin
 
     GROUPS = [
       [ nil, [
-        entry(:dashboard, :admin_root_path, :home, controllers: "dashboard")
+        entry(:dashboard, :admin_root_path, :home, controllers: "dashboard"),
+        entry(:orders, :admin_orders_path, :orders, controllers: %w[orders carts]),
+        entry(:customers, :admin_customers_path, :customers, controllers: "customers"),
+        entry(:delivery, :admin_delivery_path, :delivery, controllers: "delivery"),
+        entry(:advertising, :admin_advertising_path, :advertising, controllers: "advertising"),
+        entry(:analytics, :admin_analytics_path, :analytics, placeholder: true),
+        entry(:accounting, :admin_accounting_path, :accounting, placeholder: true)
       ] ],
       [ :operations, [
-        entry(:orders, :admin_orders_path, :orders, controllers: %w[orders carts]),
-        entry(:call_center, :admin_confirmations_path, :call_center, controllers: "confirmations"),
-        entry(:delivery, :admin_delivery_path, :delivery, controllers: "delivery"),
-        entry(:customers, :admin_customers_path, :customers, controllers: "customers")
+        entry(:call_center, :admin_confirmations_path, :call_center, controllers: "confirmations")
       ] ],
       [ :catalog, [
         entry(:products, :admin_products_path, :products, controllers: %w[products variants inventory collections discounts media]),
@@ -29,12 +32,9 @@ module Admin
         entry(:stores, :admin_store_connections_path, :external, controllers: "store_connections")
       ] ],
       [ :marketing, [
-        entry(:advertising, :admin_advertising_path, :advertising, controllers: "advertising"),
         entry(:whatsapp, :admin_whatsapp_path, :whatsapp, placeholder: true)
       ] ],
       [ :insights, [
-        entry(:analytics, :admin_analytics_path, :analytics, placeholder: true),
-        entry(:accounting, :admin_accounting_path, :accounting, placeholder: true),
         entry(:expenses, :admin_expenses_path, :expenses, placeholder: true)
       ] ],
       [ :team, [

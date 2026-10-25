@@ -1,5 +1,6 @@
 ar:
   admin_menu:
+    more_tools: "أدوات إضافية"
     groups:
       catalog: "الكتالوج والمخزون"
       marketing: "التسويق"

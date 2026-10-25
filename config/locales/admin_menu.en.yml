@@ -1,5 +1,6 @@
 en:
   admin_menu:
+    more_tools: "More tools"
     groups:
       catalog: "Catalog & stock"
       marketing: "Marketing"

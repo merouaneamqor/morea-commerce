@@ -1,4 +1,9 @@
 <% Admin::Menu::GROUPS.each do |group, entries| %>
+  <% if group == :operations %>
+    <% secondary_active = Admin::Menu::GROUPS.drop(1).flat_map(&:last).any? { |entry| entry.placeholder? ? (controller_name == "coming_soon" && params[:feature] == entry.key.to_s) : controller_name.in?(entry.controllers) } || controller_name.in?(%w[home_sections pages page_sections menu_items]) %>
+    <details <%= "open" if secondary_active %>>
+      <summary class="admin-sidebar__heading cursor-pointer"><%= t("admin_menu.more_tools") %></summary>
+  <% end %>
   <% if group %><p class="admin-sidebar__heading"><%= t("admin_menu.groups.#{group}") %></p><% end %>
   <% entries.each do |entry| %>
     <%= admin_nav_link t("admin_menu.items.#{entry.key}"), public_send(entry.route), icon: entry.icon,
@@ -30,3 +35,5 @@
     <% end %>
   <% end %>
 <% end %>
+
+</details>

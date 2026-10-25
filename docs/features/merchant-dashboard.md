@@ -10,6 +10,16 @@ Order count, order value, delivered and cancelled counts describe orders **creat
 
 The work queue is independent of that period. It counts active, unarchived orders across all dates: new orders without a carrier parcel, callbacks due now or earlier on those orders, and delivery issues (`address_issue`, `unreachable`, `postponed`). Archived orders do not inflate operational work. The delivery issue shortcut opens the existing order desk filtered to those statuses; callbacks open the confirmation queue filtered to callbacks currently due.
 
+## Overview panels
+
+The main overview adds 7/30-day comparisons, a daily order-value chart, current order-state distribution, up to five orders awaiting confirmation, and up to four campaigns with manually reported performance. Chart values preserve integer cents and keep currencies separate; a table provides exact daily amounts. Delivered order value is the face value of orders currently delivered in the selected order-creation cohort. It is not settled cash or accounting revenue.
+
+Confirmation rate measures the fraction of received orders whose current state is confirmed or further along the fulfillment lifecycle, including delivery issues and returns. New and cancelled orders do not count as confirmed; this is a current-state indicator, not historical confirmation-event conversion. Previous-period comparisons use the same Casablanca calendar duration and cutoff time. A zero previous order count has no percentage-change baseline.
+
+Campaign contribution comes from the existing manual advertising reports for the selected calendar dates: entered delivered revenue less entered fulfillment costs and advertising spend. It does not represent merchant net profit or automatic order attribution. Paused campaigns remain included in historical reporting. Campaign summaries link to the existing reporting dashboard.
+
+Confirmation work remains independent of the chart period. Orders open the existing order desk and confirmation queue, preserving claim ownership, callbacks, audit history, inventory transitions and Sendit ownership. Viewing the overview never confirms orders, dispatches parcels, changes budgets or contacts providers.
+
 ## Getting started and channel health
 
 External-only merchants can open setup for Shopify, WooCommerce and YouCan directly from the dashboard. No local catalog or published boutique is required to receive supported signed orders. Boutique merchants receive catalog and storefront actions appropriate to their setup. Disabled boutiques stay unpublished; viewing the dashboard does not enable shopping routes or modify a connection.

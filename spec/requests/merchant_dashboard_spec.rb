@@ -51,6 +51,7 @@ RSpec.describe "Merchant dashboard", type: :request do
 
   %w[fr en ar].each do |locale|
     it "renders #{locale} with appropriate direction and inventory only when local stock is tracked" do
+      order(status: "delivered")
       sign_in
       get "/admin", params: { locale: locale }
       expect(response).to have_http_status(:ok)
@@ -68,6 +69,26 @@ RSpec.describe "Merchant dashboard", type: :request do
       expect(document.at_css("[data-dashboard-inventory]")).to be_present
       expect(response.body).not_to match(/translation missing|translation_missing/i)
     end
+  end
+
+  it "renders overview panels with tenant-scoped order and manual campaign data" do
+    order(customer_name: "Own pending buyer", total_cents: 12345)
+    order(workspace: workspace, customer_name: "Foreign pending buyer")
+    account = AdvertisingAccount.create!(store: store, name: "Synthetic reporting", provider: "Meta")
+    campaign = account.advertising_campaigns.create!(name: "Own campaign")
+    campaign.advertising_performances.create!(date: Time.current.in_time_zone("Africa/Casablanca").to_date,
+      spend_cents: 100, delivered_revenue_cents: 500, fulfillment_cost_cents: 150)
+    sign_in
+    get "/admin", params: { locale: "en" }
+    expect(response).to have_http_status(:ok)
+    %w[chart statuses pending campaigns].each do |section|
+      expect(document.at_css("[data-overview-section='#{section}']")).to be_present
+    end
+    expect(response.body).to include("Own pending buyer", "Own campaign")
+    expect(response.body).not_to include("Foreign pending buyer")
+    expect(document.at_css("a[href='/admin/orders/new']")).to be_present
+    expect(document.at_css("a[href='/admin/advertising']")).to be_present
+    expect(document.css("form[action*='/outcome']")).to be_empty
   end
 
   it "offers all three provider presets without publishing an external-only storefront" do

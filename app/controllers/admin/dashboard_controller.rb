@@ -5,7 +5,9 @@ module Admin
       return redirect_to(admin_platform_path) if super_admin? && !current_store
       return head(:not_found) unless current_store
 
-      @dashboard = DashboardSummary.new(store: current_store, period: params[:period])
+      now = Time.current
+      @dashboard = DashboardSummary.new(store: current_store, period: params[:period], now: now)
+      @overview = OverviewMetrics.new(store: current_store, period: @dashboard.period, now: now)
     end
   end
 end

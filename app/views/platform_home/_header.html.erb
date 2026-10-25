@@ -1,6 +1,6 @@
 <header class="platform-header">
   <div class="platform-container platform-header-inner">
-    <a href="<%= platform_home_path(locale: I18n.locale) %>" class="platform-brand"><span class="platform-logo" aria-hidden="true"><%= Store.platform_name.first %><span>.</span></span><span><%= Store.platform_name %><span class="platform-brand-suffix"> crm</span></span></a>
+    <a href="<%= platform_home_path(locale: I18n.locale) %>" class="platform-brand"><%= image_tag "/brand/seallo-logo.png", alt: Store.platform_name, class: "seallo-brand-image" %></a>
     <nav class="platform-nav" aria-label="<%= t("platform_home.refresh.navigation") %>">
       <a href="#features"><%= t("platform_home.nav.features") %></a>
       <a href="#journey"><%= t("platform_home.refresh.nav_journey") %></a>

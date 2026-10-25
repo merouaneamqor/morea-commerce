@@ -1,4 +1,4 @@
-<% content_for :title, "#{t('delivery_dashboard.title')} — Codify" %>
+<% content_for :title, "#{t('delivery_dashboard.title')} — #{Store.platform_name}" %>
 <div class="admin-page-header">
   <div><h1 class="admin-page-header__title"><%= t("delivery_dashboard.title") %></h1><p class="admin-page-header__meta"><%= t("delivery_dashboard.subtitle") %></p></div>
   <div class="flex flex-wrap gap-2"><%= link_to t("delivery_dashboard.issues_link"), admin_orders_path(attention: "delivery_issues"), class: "admin-btn-secondary" %><%= link_to t("delivery_dashboard.orders"), admin_orders_path, class: "admin-btn" %></div>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= render "shared/platform_icons" %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet">
@@ -21,7 +22,7 @@
               <%= admin_icon(:menu) %>
             </button>
             <%= link_to admin_platform_path, class: "admin-topbar__brand min-w-0" do %>
-              <span class="admin-topbar__logo shrink-0">P</span>
+              <%= image_tag "/brand/seallo-icon.png", alt: "", width: 28, height: 28, class: "seallo-admin-icon" %>
               <span class="truncate"><%= t("platform_admin.title") %></span>
             <% end %>
           </div>

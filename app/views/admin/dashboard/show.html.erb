@@ -1,4 +1,4 @@
-<% content_for :title, "#{t('dashboard.title')} — Codify" %>
+<% content_for :title, "#{t('dashboard.title')} — #{Store.platform_name}" %>
 <% primary_label, primary_path = dashboard_primary_action(@dashboard) %>
 <div data-dashboard-mode="<%= @dashboard.mode %>">
   <div class="admin-page-header">

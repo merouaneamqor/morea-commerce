@@ -8,6 +8,7 @@
     <meta name="color-scheme" content="dark">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= render "shared/platform_icons" %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
@@ -23,7 +24,8 @@
       <div class="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-5 sm:px-8">
         <header class="flex flex-wrap items-center justify-between gap-4 py-6">
           <a href="/" class="flex items-center gap-2 text-base font-semibold tracking-tight text-white">
-            <span class="fx-dot" aria-hidden="true"></span><%= brand %>
+            <%= image_tag "/brand/seallo-logo.png", alt: Store.platform_name, class: "seallo-brand-image" %>
+            <% if current_store %><span><%= current_store.name %></span><% end %>
           </a>
           <div class="flex flex-wrap items-center gap-4 text-xs text-[#b9d3ff]">
             <%= yield :topbar %>

@@ -1,4 +1,4 @@
-<% content_for :title, "Advertising — Codify" %>
+<% content_for :title, "Advertising — #{Store.platform_name}" %>
 <% totals = @summary.totals; money = ->(cents) { number_to_currency(cents / 100.0, unit: 'MAD ', precision: 2) }; ratio = ->(metrics) { @summary.roas(metrics) ? "#{number_with_precision(@summary.roas(metrics), precision: 2)}×" : '—' } %>
 <div class="admin-page-header">
   <div><h1 class="admin-page-header__title"><%= t("advertising.text_0") %></h1><p class="admin-page-header__meta"><%= t("advertising.text_1") %></p></div>

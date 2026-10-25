@@ -114,6 +114,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Check dashboard Chart.js lifecycle
+        run: node script/dashboard_chart_test.mjs
       - name: Check product variant purchase interactions
         run: node script/variant_picker_smoke.mjs
       - name: Check idempotent intake and confirmation queue

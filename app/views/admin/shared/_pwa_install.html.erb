@@ -1,0 +1,22 @@
+<aside class="admin-pwa" data-admin-pwa hidden aria-labelledby="admin-pwa-title">
+  <div class="admin-pwa__copy">
+    <h2 id="admin-pwa-title"><%= t("admin_pwa.title", app: Store.platform_name) %></h2>
+    <p><%= t("admin_pwa.description") %></p>
+    <div id="admin-pwa-instructions" data-admin-pwa-instructions hidden>
+      <ol data-admin-pwa-ios hidden>
+        <li><%= t("admin_pwa.ios.open_safari") %></li>
+        <li><%= t("admin_pwa.ios.share") %></li>
+        <li><%= t("admin_pwa.ios.add") %></li>
+      </ol>
+      <ol data-admin-pwa-other hidden>
+        <li><%= t("admin_pwa.other.menu") %></li>
+        <li><%= t("admin_pwa.other.add") %></li>
+      </ol>
+      <p class="admin-pwa__help"><%= t("admin_pwa.availability") %></p>
+    </div>
+  </div>
+  <div class="admin-pwa__actions">
+    <button type="button" class="admin-btn" data-admin-pwa-install aria-controls="admin-pwa-instructions" aria-expanded="false"><%= t("admin_pwa.install") %></button>
+    <button type="button" class="admin-btn-plain" data-admin-pwa-dismiss><%= t("admin_pwa.later") %></button>
+  </div>
+</aside>

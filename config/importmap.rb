@@ -8,3 +8,5 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 
 # Chart.js 4.5.1, vendored with its color dependency for same-origin loading.
 pin "chart.js/auto", to: "chartjs-auto.js"
+
+pin "admin_pwa"

@@ -57,6 +57,14 @@ Super admins can use **Platform → Workspaces → Open admin** to operate any w
 
 Both platform and workspace admin headers provide **FR / EN / AR** language links. The selection is saved in the browser and Arabic uses right-to-left layout.
 
+### Install the admin app
+
+After signing in, the admin area offers **Install**. Android browsers that support installation open their native install dialog after the button is tapped. On iPhone/iPad, open the admin in Safari and choose **Share → Add to Home Screen** using the displayed steps. Other browsers show menu instructions. HTTPS is required outside localhost.
+
+The installed app opens `/admin` on the same host. Your normal sign-in and workspace permissions still apply. Installation is per host; using the platform host lets super admins switch workspaces within one app. The prompt stays hidden in standalone mode, and **Later** postpones it for seven days on that browser. Browser rules determine whether the native dialog is available.
+
+Admin operations require a connection. The service worker does not cache private pages, order data, API responses or writes; offline navigation displays a connection message. Installation and device-specific behavior still need a real iOS/Android check before claiming device verification.
+
 ### Platform billing
 
 Each store has monthly/yearly billing fields. Super admins issue **manual invoices** from Platform → store → Invoices (draft → issue → mark paid / void). Overdue issued invoices set the store to `past_due` and show a soft banner in store admin; the storefront stays online.

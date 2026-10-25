@@ -1,0 +1,23 @@
+.admin-pwa[hidden], .admin-pwa [hidden] { display: none !important; }
+.admin-pwa {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid #b9d3ff;
+  border-radius: 12px;
+  background: #edf5ff;
+  color: #132c50;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.admin-pwa h2 { margin: 0 0 4px; font-size: 14px; font-weight: 650; }
+.admin-pwa p { margin: 0; }
+.admin-pwa ol { list-style: decimal; margin: 12px 0; padding-inline-start: 20px; }
+.admin-pwa__actions { display: flex; flex-shrink: 0; align-items: center; flex-wrap: wrap; gap: 12px; }
+.admin-pwa__help { font-size: 12px; }
+@media (max-width: 600px) {
+  .admin-pwa { flex-direction: column; }
+}

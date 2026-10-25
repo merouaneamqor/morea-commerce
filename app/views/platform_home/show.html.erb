@@ -1,6 +1,7 @@
 <% content_for :title, t("platform_home.title") %>
 <% content_for :head do %>
   <meta name="color-scheme" content="dark">
+  <%= render "shared/platform_icons" %>
   <%= stylesheet_link_tag "platform_home", "data-turbo-track": "reload" %>
 <% end %>
 <% h = ->(key) { t("platform_home.refresh.#{key}") } %>

@@ -67,6 +67,12 @@
 
         <main class="admin-main">
           <div class="admin-page">
+            <% if current_store&.subscription_required? && !subscription_access? %>
+              <div class="admin-banner admin-banner--critical">
+                <%= t("subscriptions.required") %>
+                <%= link_to t("subscriptions.title"), admin_subscription_path, class: "underline font-semibold" %>
+              </div>
+            <% end %>
             <% if store_billing_past_due? %>
               <div class="admin-banner admin-banner--critical">
                 Subscription payment is overdue. Your storefront stays online, but renew with the platform owner to clear billing.

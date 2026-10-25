@@ -3,6 +3,8 @@
 module Oauth
   class AuthorizationsController < ApplicationController
     layout "admin"
+    include SubscriptionAccess
+    before_action :require_subscription_access!, if: -> { current_admin_user && current_store }
 
     def show
       @query = resolve_query

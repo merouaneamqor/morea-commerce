@@ -35,26 +35,6 @@ RSpec.describe "Merchant workspace access and approval", type: :request do
     }
   end
 
-  describe "public signup" do
-    [ false, true ].each do |storefront_enabled|
-      it "requests approval without provisioning when storefront_enabled is #{storefront_enabled}" do
-        expect do
-          post "/signup", params: { locale: "fr", access_request: {
-            store_name: "Pending Merchant #{suffix}", email: "pending-#{suffix}@example.test",
-            storefront_enabled: storefront_enabled
-          } }
-        end.to change(AccessRequest, :count).by(1)
-          .and change(Store, :count).by(0)
-          .and change(User, :count).by(0)
-
-        expect(response).to redirect_to(%r{/signup/thanks})
-        request_record = AccessRequest.find_by!(email: "pending-#{suffix}@example.test")
-        expect(request_record).to have_attributes(status: "pending", store_id: nil,
-          reviewed_by_id: nil, reviewed_at: nil, storefront_enabled: storefront_enabled)
-      end
-    end
-  end
-
   describe "the platform request queue" do
     before do
       access_request

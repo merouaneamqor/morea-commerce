@@ -1,6 +1,14 @@
 class User < ApplicationRecord
   has_secure_password
 
+  generates_token_for :password_reset, expires_in: 15.minutes do
+    password_salt&.last(10)
+  end
+
+  # Existing staff passwords remain valid; stronger requirements apply to recovery.
+  validates :password, length: { minimum: 12 }, on: :password_reset
+  validates :password_confirmation, presence: true, on: :password_reset
+
   # Super admins may be platform-only (no store) or also staff on a home store.
   belongs_to :store, optional: true
   has_many :order_events, dependent: :nullify

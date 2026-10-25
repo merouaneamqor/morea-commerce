@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="<%= localized ? I18n.locale : "en" %>">
   <head>
+    <meta charset="utf-8">
     <title><%= content_for?(:title) ? yield(:title) : "Sign in" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="dark">
@@ -20,11 +21,11 @@
       <span class="fx-orb" style="width: 22rem; height: 22rem; bottom: -8rem; left: -6rem; animation-delay: -6s" aria-hidden="true"></span>
 
       <div class="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-5 sm:px-8">
-        <header class="flex items-center justify-between gap-4 py-6">
+        <header class="flex flex-wrap items-center justify-between gap-4 py-6">
           <a href="/" class="flex items-center gap-2 text-base font-semibold tracking-tight text-white">
             <span class="fx-dot" aria-hidden="true"></span><%= brand %>
           </a>
-          <div class="flex items-center gap-4 text-xs text-[#b9d3ff]">
+          <div class="flex flex-wrap items-center gap-4 text-xs text-[#b9d3ff]">
             <%= yield :topbar %>
             <a href="/" class="fx-link"><%= content_for?(:back_label) ? yield(:back_label) : "Back to home" %></a>
           </div>

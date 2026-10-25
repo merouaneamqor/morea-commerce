@@ -1,8 +1,11 @@
 module Admin
   class BaseController < ApplicationController
+    include SubscriptionAccess
+
     layout "admin"
     before_action :require_admin!
     before_action :sync_store_billing_past_due!
+    before_action :require_subscription_access!
 
     helper_method :current_user, :store_billing_past_due?
 

@@ -14,6 +14,7 @@ module Admin
         return_to = session[:return_to]
         reset_session
         session[:user_id] = user.id
+        session[:session_version] = user.session_version
         session[:admin_mode] = user.super_admin? ? "platform" : "store"
         session[:return_to] = return_to if return_to.present?
         redirect_to after_login_path_for(user), notice: t("sign_in.welcome")

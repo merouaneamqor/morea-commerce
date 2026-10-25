@@ -48,5 +48,12 @@
     <% end %>
     <%= submit_tag t("sign_in.submit"), class: "fx-btn" %>
   <% end %>
-  <p class="mt-5 text-xs text-[#b9d3ff]"><%= t("sign_in.approval_note") %></p>
+  <% account_origin = Store.apex_host?(request.host) ? "" : Store.platform_origin %>
+  <p class="mt-5 text-center text-sm">
+    <%= link_to t("registration.forgot_password"), "#{account_origin}#{new_password_reset_path(locale: I18n.locale)}", class: "fx-link" %>
+  </p>
+  <p class="mt-6 border-t border-white/15 pt-6 text-center text-sm text-[#b9d3ff]">
+    <%= t("registration.no_account") %>
+    <%= link_to t("registration.create_account"), "#{account_origin}#{signup_path(locale: I18n.locale)}", class: "fx-link font-semibold underline underline-offset-4" %>
+  </p>
 </div>

@@ -55,7 +55,7 @@ class ApplicationController < ActionController::Base
     return unless request.path.start_with?("/admin") && session[:user_id]
 
     user = User.active.find_by(id: session[:user_id])
-    user.store if user&.admin? && !user.super_admin?
+    user.store if user&.admin? && !user.super_admin? && session[:session_version].to_i == user.session_version
   end
 
   def storefront_request?
@@ -132,8 +132,9 @@ class ApplicationController < ActionController::Base
     return @current_admin_user if defined?(@current_admin_user)
     return @current_admin_user = nil unless session[:user_id]
 
-    @current_admin_user = current_store&.users&.active&.find_by(id: session[:user_id]) ||
+    user = current_store&.users&.active&.find_by(id: session[:user_id]) ||
       User.super_admins.active.find_by(id: session[:user_id])
+    @current_admin_user = user if user && session[:session_version].to_i == user.session_version
   end
 
   def super_admin?

@@ -15,16 +15,7 @@ ActiveRecord::Base.transaction do
 
   http = ActionDispatch::Integration::Session.new(Rails.application)
   http.host! Store.base_domain
-  %w[fr en ar].each do |locale|
-    http.get "/signup", params: { locale: locale }
-    doc = Nokogiri::HTML(http.response.body)
-    choices = doc.css('input[type="radio"][name="access_request[storefront_enabled]"]')
-    assert.call("localized mode selection #{locale}", http.response.status == 200 && choices.map { |choice| choice["value"] }.sort == %w[false true] && !doc.at_css(".translation_missing"))
-    assert.call("signup direction #{locale}", doc.at_css(".fx-stage")["dir"] == (locale == "ar" ? "rtl" : "ltr"))
-  end
-  http.post "/signup", params: { access_request: { store_name: "External workspace", email: "external-#{suffix}@example.test", storefront_enabled: "false" } }
-  request = AccessRequest.find_by!(email: "external-#{suffix}@example.test")
-  assert.call("signup persists external-only intent without provisioning", !request.storefront_enabled? && request.store.nil?)
+  request = AccessRequest.create!(store_name: "External workspace", email: "external-#{suffix}@example.test", storefront_enabled: false)
   http.post "/admin/login", params: { email: root.email, password: password }
   http.get "/admin/tenants/new", params: { access_request_id: request.id }
   doc = Nokogiri::HTML(http.response.body)

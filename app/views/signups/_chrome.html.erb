@@ -1,20 +1,20 @@
 <% content_for :localized, "1" %>
-<% content_for :back_label, t("signup.back") %>
+<% content_for :back_label, t("registration.back") %>
 <% content_for :topbar do %>
   <nav class="flex items-center gap-2" aria-label="<%= t("platform_home.language") %>">
     <% Morea::Locales::AVAILABLE.each do |locale| %>
-      <%= link_to locale.to_s.upcase, "#{request.path}?locale=#{locale}",
+      <%= link_to locale.to_s.upcase, url_for(request.query_parameters.merge(locale: locale, only_path: true)),
             class: (locale.to_s == I18n.locale.to_s ? "font-semibold text-white" : "fx-link"),
             "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
     <% end %>
   </nav>
 <% end %>
 <% content_for :aside do %>
-  <p class="fx-chip"><span class="fx-dot" aria-hidden="true"></span><%= t("signup.aside.chip") %></p>
-  <h2 class="fx-gradient-text mt-6 text-5xl font-bold leading-[1.05] tracking-tight"><%= t("signup.aside.headline") %></h2>
-  <ul class="mt-8 space-y-4 text-[#b9d3ff]">
-    <% t("signup.aside.points").each do |point| %>
-      <li class="flex items-center gap-3"><span class="fx-dot" aria-hidden="true"></span><%= point %></li>
+  <p class="fx-chip"><span class="fx-dot" aria-hidden="true"></span><%= t("registration.aside.chip") %></p>
+  <h2 class="fx-gradient-text mt-6 text-5xl font-bold leading-[1.05] tracking-tight"><%= t("registration.aside.headline") %></h2>
+  <ol class="mt-8 space-y-4 text-[#b9d3ff]">
+    <% t("registration.aside.steps").each_with_index do |step, index| %>
+      <li class="flex items-start gap-3"><span class="font-semibold text-white" aria-hidden="true"><%= index + 1 %>.</span><span><%= step %></span></li>
     <% end %>
-  </ul>
+  </ol>
 <% end %>

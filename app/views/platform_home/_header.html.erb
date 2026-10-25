@@ -5,6 +5,7 @@
       <a href="#features"><%= t("platform_home.nav.features") %></a>
       <a href="#journey"><%= t("platform_home.refresh.nav_journey") %></a>
       <a href="#contact"><%= t("platform_home.refresh.nav_contact") %></a>
+      <%= link_to t("platform_home.nav.sign_in"), admin_login_path(locale: I18n.locale), class: "platform-login-nav" %>
     </nav>
     <div class="platform-header-actions">
       <div class="platform-languages" role="group" aria-label="<%= t("platform_home.language") %>">

@@ -246,12 +246,12 @@ fr:
   platform_home:
     title: "Codify — plateforme e-commerce multi-boutiques"
     language: "Langue"
-    nav: { journey: "Fonctionnement", features: "Fonctionnalités", integrations: "Intégrations", faq: "FAQ", sign_in: "Connexion", signup: "Demander un accès" }
+    nav: { journey: "Fonctionnement", features: "Fonctionnalités", integrations: "Intégrations", faq: "FAQ", sign_in: "Connexion", signup: "Créer un compte" }
     hero:
       eyebrow: "Plateforme e-commerce multi-boutiques"
       headline: "Gérez vos boutiques en paiement à la livraison depuis une seule plateforme."
       lead: "Chaque boutique garde sa vitrine, son catalogue et son paiement. Votre équipe confirme les commandes, gère le stock et expédie depuis une seule administration."
-      primary: "Demander un accès"
+      primary: "Créer un compte"
       secondary: "Voir le parcours d'une commande"
       store_hint: "Vous cherchez une boutique ? Ouvrez-la sur sa propre adresse, par exemple votre-boutique.%{domain}."
       badges: [ "Vitrines séparées", "Paiement à la livraison", "Français · Anglais · Arabe", "API et MCP" ]
@@ -291,11 +291,11 @@ fr:
         - { q: "Quelles langues sont prises en charge ?", a: "Les vitrines prennent en charge le français, l'anglais et l'arabe, y compris la mise en page de droite à gauche." }
         - { q: "Quels transporteurs puis-je utiliser ?", a: "Sendit est connecté aujourd'hui pour les expéditions au Maroc." }
         - { q: "Mes outils peuvent-ils envoyer des commandes ?", a: "Oui. Un jeton de boutique permet à un outil connecté de créer des commandes par l'API. Une requête rejouée ne crée pas de doublon." }
-        - { q: "Comment ouvrir une boutique ?", a: "Demandez un accès avec le nom de votre boutique et votre email. Un administrateur de la plateforme examine chaque demande et crée votre boutique." }
+        - { q: "Comment ouvrir une boutique ?", a: "Créez votre compte gratuit et vérifiez votre email. Explorez votre espace, puis abonnez-vous pour utiliser ses outils." }
     cta:
       headline: "Prêt à gérer votre boutique ?"
-      body: "Demandez un accès et un administrateur de la plateforme configurera votre boutique."
-      button: "Demander un accès"
+      body: "Créez votre compte gratuit, vérifiez votre email et choisissez un abonnement lorsque vous êtes prêt."
+      button: "Créer un compte"
     footer:
       tagline: "Plateforme e-commerce multi-boutiques"
       admin: "Connexion administration"

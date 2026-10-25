@@ -1,0 +1,53 @@
+{
+  "en": {
+    "delivery_dashboard": {
+      "title": "Deliveries",
+      "subtitle": "Track shipments and courier performance.",
+      "issues_link": "Delivery issues",
+      "orders": "Manage orders",
+      "from": "From",
+      "through": "Through",
+      "status": "Shipment status",
+      "all_statuses": "All statuses",
+      "search": "Search shipments",
+      "placeholder": "Tracking, order, customer or city",
+      "apply": "Apply",
+      "reset": "Reset",
+      "cohort": "Current status of shipment orders received in this period, including archived orders. New and unshipped confirmed/cancelled orders are excluded. Metrics use the full date range; status and search filter the list.",
+      "total": "Total shipments",
+      "of_shipments": "%{percent}% of shipments",
+      "companies": "Delivery companies",
+      "manual": "Manual",
+      "staff_managed": "Staff managed",
+      "configured": "Configured",
+      "not_configured": "Not configured",
+      "shipments": "Shipments",
+      "delivered": "Delivered",
+      "average": "Average delivery",
+      "days": "%{count} days",
+      "last_sync": "Last parcel sync: %{time}",
+      "no_sync": "No parcel synchronization recorded in this period.",
+      "configure": "Configure Sendit",
+      "manual_note": "Orders without a Sendit tracking code. Manage shipment states from each order.",
+      "recent": "Recent shipments",
+      "list_note": "Up to 30 matching shipments. Open an order for tracking, labels and available actions.",
+      "empty": "No shipments match these filters.",
+      "order": "Tracking / order",
+      "customer": "Customer",
+      "city": "City",
+      "company": "Company",
+      "state": "Status",
+      "cod": "COD value",
+      "breakdown": "Shipment status breakdown",
+      "duration_note": "Based on delivered shipments with valid dispatch and delivery timestamps.",
+      "groups": {
+        "collection": "Collection",
+        "in_delivery": "In delivery",
+        "issues": "Delivery issues",
+        "delivered": "Delivered",
+        "returned": "Returned",
+        "cancelled": "Cancelled"
+      }
+    }
+  }
+}

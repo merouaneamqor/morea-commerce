@@ -1,0 +1,9 @@
+# Delivery dashboard
+
+`/admin/delivery` is a read-only, authenticated workspace dashboard using the existing admin components. It provides date filtering (30 days by default, maximum 366 calendar days), shipment metrics, Sendit/manual breakdowns, current-state distribution, average transit duration and a bounded searchable shipment list. Orders link to the existing order desk for labels, tracking and permitted actions. Sendit configuration links to existing store settings; no provider connection or dispatch is initiated by viewing the dashboard.
+
+Metrics represent the current status of orders **received** within the selected Casablanca calendar date range, including archived records. They do not represent deliveries completed during that period. New orders and confirmed/cancelled orders without a Sendit parcel are excluded. Preparing/awaiting-pickup records count as collection; picked-up/in-transit/out-for-delivery count as in delivery. Delivery issues and cancelled courier parcels are separate categories so every counted shipment appears in the breakdown. Status/search filters affect the recent list only. Courier configuration is not proof of connectivity. Manual shipments are orders without a Sendit tracking code, not another API integration.
+
+COD values preserve each order's currency and exact cents. They are order face values, not carrier remittance or profit. Average delivery days uses delivered orders with both dispatch/delivery timestamps and nonnegative durations; missing timestamps show an em dash. No settlement inference is made from delivery status.
+
+Verification: `RAILS_ENV=test bundle exec rspec spec/services/admin/delivery_summary_spec.rb spec/requests/delivery_dashboard_spec.rb`. Fixtures are synthetic and disconnected. There are no migrations or provider writes.

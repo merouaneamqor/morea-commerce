@@ -21,12 +21,12 @@ module Admin
         entry(:inventory, :admin_inventory_path, :inventory, placeholder: true),
         entry(:purchases, :admin_purchases_path, :purchases, placeholder: true),
         entry(:expenses, :admin_expenses_path, :expenses, placeholder: true),
-        entry(:delivery, :admin_delivery_path, :delivery, placeholder: true),
+        entry(:delivery, :admin_delivery_path, :delivery, controllers: "delivery"),
         entry(:call_center, :admin_confirmations_path, :call_center, controllers: "confirmations")
       ] ],
       [ :channels, [
         entry(:stores, :admin_store_connections_path, :external, controllers: "store_connections"),
-        entry(:advertising, :edit_admin_pixels_path, :advertising, controllers: "pixels"),
+        entry(:advertising, :admin_advertising_path, :advertising, controllers: %w[advertising pixels]),
         entry(:whatsapp, :admin_whatsapp_path, :whatsapp, placeholder: true)
       ] ],
       [ :insights, [

@@ -1,0 +1,58 @@
+<% content_for :title, "#{t('delivery_dashboard.title')} — Codify" %>
+<div class="admin-page-header">
+  <div><h1 class="admin-page-header__title"><%= t("delivery_dashboard.title") %></h1><p class="admin-page-header__meta"><%= t("delivery_dashboard.subtitle") %></p></div>
+  <div class="flex flex-wrap gap-2"><%= link_to t("delivery_dashboard.issues_link"), admin_orders_path(attention: "delivery_issues"), class: "admin-btn-secondary" %><%= link_to t("delivery_dashboard.orders"), admin_orders_path, class: "admin-btn" %></div>
+</div>
+<section class="admin-card p-4 mb-5">
+  <%= form_with url: admin_delivery_path, method: :get, class: "flex flex-wrap items-end gap-3" do |form| %>
+    <div><%= form.label :start_date, t("delivery_dashboard.from"), class: "block admin-muted mb-1" %><%= form.date_field :start_date, value: @delivery.start_date, class: "admin-input", required: true %></div>
+    <div><%= form.label :end_date, t("delivery_dashboard.through"), class: "block admin-muted mb-1" %><%= form.date_field :end_date, value: @delivery.end_date, class: "admin-input", required: true %></div>
+    <div><%= form.label :status, t("delivery_dashboard.status"), class: "block admin-muted mb-1" %><%= form.select :status, Admin::DeliverySummary::GROUPS.keys.map { |key| [t("delivery_dashboard.groups.#{key}"), key] }, { include_blank: t("delivery_dashboard.all_statuses"), selected: @delivery.status }, class: "admin-input" %></div>
+    <div><%= form.label :q, t("delivery_dashboard.search"), class: "block admin-muted mb-1" %><%= form.search_field :q, value: @delivery.query, placeholder: t("delivery_dashboard.placeholder"), class: "admin-input" %></div>
+    <%= form.submit t("delivery_dashboard.apply"), class: "admin-btn" %><%= link_to t("delivery_dashboard.reset"), admin_delivery_path, class: "admin-btn-plain" %>
+  <% end %>
+  <p class="admin-muted mt-3"><%= t("delivery_dashboard.cohort") %></p>
+</section>
+<div class="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-5">
+  <div class="admin-card p-4"><p class="admin-metric__label"><%= t("delivery_dashboard.total") %></p><p class="admin-metric__value mt-2"><%= number_with_delimiter(@delivery.total) %></p></div>
+  <% Admin::DeliverySummary::GROUPS.each_key do |group| %>
+    <div class="admin-card p-4"><p class="admin-metric__label"><%= t("delivery_dashboard.groups.#{group}") %></p><p class="admin-metric__value mt-2"><%= number_with_delimiter(@delivery.counts.fetch(group)) %></p><p class="admin-muted mt-2"><%= t("delivery_dashboard.of_shipments", percent: @delivery.percentage(group)) %></p></div>
+  <% end %>
+</div>
+<section class="mb-5">
+  <h2 class="admin-card__title mb-3"><%= t("delivery_dashboard.companies") %></h2>
+  <div class="grid gap-3 lg:grid-cols-2">
+    <% @delivery.couriers.each do |courier| %>
+      <div class="admin-card p-4">
+        <div class="flex items-center justify-between gap-3"><h3 class="admin-card__title"><%= courier[:name] == "Manual" ? t("delivery_dashboard.manual") : courier[:name] %></h3><span class="admin-badge admin-badge--neutral"><%= courier[:name] == "Manual" ? t("delivery_dashboard.staff_managed") : (current_store.sendit_configured? ? t("delivery_dashboard.configured") : t("delivery_dashboard.not_configured")) %></span></div>
+        <div class="grid grid-cols-3 gap-3 mt-4"><div><p class="admin-muted"><%= t("delivery_dashboard.shipments") %></p><p class="font-semibold mt-1"><%= courier[:total] %></p></div><div><p class="admin-muted"><%= t("delivery_dashboard.delivered") %></p><p class="font-semibold mt-1"><%= courier[:rate] %>%</p></div><div><p class="admin-muted"><%= t("delivery_dashboard.average") %></p><p class="font-semibold mt-1"><%= courier[:average_days] ? t("delivery_dashboard.days", count: courier[:average_days]) : "—" %></p></div></div>
+        <% if courier[:name] == "Sendit" %>
+          <p class="admin-muted mt-3"><%= courier[:last_sync] ? t("delivery_dashboard.last_sync", time: l(courier[:last_sync], format: :short)) : t("delivery_dashboard.no_sync") %></p>
+          <%= link_to t("delivery_dashboard.configure"), edit_admin_store_path, class: "admin-link mt-3 inline-block" %>
+        <% else %><p class="admin-muted mt-3"><%= t("delivery_dashboard.manual_note") %></p><% end %>
+      </div>
+    <% end %>
+  </div>
+</section>
+<div class="admin-layout">
+  <section class="admin-card">
+    <div class="admin-card__header"><div><h2 class="admin-card__title"><%= t("delivery_dashboard.recent") %></h2><p class="admin-muted mt-1"><%= t("delivery_dashboard.list_note") %></p></div></div>
+    <% if @delivery.recent_orders.empty? %><p class="admin-empty"><%= t("delivery_dashboard.empty") %></p><% else %>
+      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th><%= t("delivery_dashboard.order") %></th><th><%= t("delivery_dashboard.customer") %></th><th><%= t("delivery_dashboard.city") %></th><th><%= t("delivery_dashboard.company") %></th><th><%= t("delivery_dashboard.state") %></th><th class="is-numeric"><%= t("delivery_dashboard.cod") %></th></tr></thead><tbody>
+        <% @delivery.recent_orders.each do |order| %><tr>
+          <td><%= link_to order.sendit_code.presence || "##{order.number}", admin_order_path(order), class: "admin-link" %><% if order.sendit_code.present? %><p class="admin-muted mt-1">#<%= order.number %></p><% end %></td>
+          <td><%= order.customer_name %></td><td><%= order.customer_city %></td><td><%= order.sendit_code.present? ? "Sendit" : t("delivery_dashboard.manual") %></td><td><%= admin_badge(order.status, label: t("dashboard.order_statuses.#{order.status}")) %></td><td class="is-numeric"><%= dashboard_money(order.total_cents, order.currency) %></td>
+        </tr><% end %>
+      </tbody></table></div>
+    <% end %>
+  </section>
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("delivery_dashboard.breakdown") %></h2></div>
+    <div class="p-4 space-y-4">
+      <% Admin::DeliverySummary::GROUPS.each_key do |group| %>
+        <div><div class="flex justify-between gap-3"><span><%= t("delivery_dashboard.groups.#{group}") %></span><span><%= @delivery.counts.fetch(group) %> · <%= @delivery.percentage(group) %>%</span></div><meter class="w-full mt-2" min="0" max="100" value="<%= @delivery.percentage(group) %>" aria-label="<%= t("delivery_dashboard.groups.#{group}") %>"><%= @delivery.percentage(group) %>%</meter></div>
+      <% end %>
+      <p class="admin-muted"><%= t("delivery_dashboard.average") %>: <%= @delivery.average_days ? t("delivery_dashboard.days", count: @delivery.average_days) : "—" %>. <%= t("delivery_dashboard.duration_note") %></p>
+    </div>
+  </section>
+</div>

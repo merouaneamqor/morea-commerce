@@ -160,9 +160,18 @@ Rails.application.routes.draw do
     resources :customers, only: %i[index show edit update]
     resources :carts, only: %i[index show]
 
+    get "delivery", to: "delivery#show", as: :delivery
+    resource :advertising, only: :show, controller: "advertising" do
+      post :accounts
+      patch "accounts/:id", action: :update_account, as: :account
+      post :campaigns
+      patch "campaigns/:id", action: :update_campaign, as: :campaign
+      post :performance
+    end
+
     # Store-manager menu entries whose feature is not built yet (empty pages)
     {
-      inventory: "inventory", purchases: "purchases", expenses: "expenses", delivery: "delivery",
+      inventory: "inventory", purchases: "purchases", expenses: "expenses",
       whatsapp: "whatsapp", analytics: "analytics", accounting: "accounting", workflows: "workflows",
       billing: "billing", app: "app", ai_chat: "ai-chat", help: "help"
     }.each do |feature, path|

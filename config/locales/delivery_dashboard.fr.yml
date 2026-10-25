@@ -1,0 +1,53 @@
+{
+  "fr": {
+    "delivery_dashboard": {
+      "title": "Livraisons",
+      "subtitle": "Suivez les expéditions et la performance des livreurs.",
+      "issues_link": "Problèmes de livraison",
+      "orders": "Gérer les commandes",
+      "from": "Du",
+      "through": "Au",
+      "status": "Statut de livraison",
+      "all_statuses": "Tous les statuts",
+      "search": "Rechercher une expédition",
+      "placeholder": "Suivi, commande, client ou ville",
+      "apply": "Appliquer",
+      "reset": "Réinitialiser",
+      "cohort": "Statut actuel des commandes reçues sur la période, y compris les archives. Les commandes nouvelles et confirmées/annulées sans expédition sont exclues. Le statut et la recherche filtrent uniquement la liste.",
+      "total": "Total des expéditions",
+      "of_shipments": "%{percent} % des expéditions",
+      "companies": "Sociétés de livraison",
+      "manual": "Manuel",
+      "staff_managed": "Gestion manuelle",
+      "configured": "Configuré",
+      "not_configured": "Non configuré",
+      "shipments": "Expéditions",
+      "delivered": "Livrées",
+      "average": "Délai moyen",
+      "days": "%{count} jours",
+      "last_sync": "Dernière synchronisation : %{time}",
+      "no_sync": "Aucune synchronisation enregistrée sur la période.",
+      "configure": "Configurer Sendit",
+      "manual_note": "Commandes sans code de suivi Sendit. Gérez les statuts depuis chaque commande.",
+      "recent": "Expéditions récentes",
+      "list_note": "Jusqu’à 30 expéditions. Ouvrez une commande pour le suivi, les étiquettes et les actions.",
+      "empty": "Aucune expédition ne correspond aux filtres.",
+      "order": "Suivi / commande",
+      "customer": "Client",
+      "city": "Ville",
+      "company": "Société",
+      "state": "Statut",
+      "cod": "Montant à encaisser",
+      "breakdown": "Répartition des statuts",
+      "duration_note": "Calculé sur les livraisons avec dates d’expédition et de livraison valides.",
+      "groups": {
+        "collection": "Collecte",
+        "in_delivery": "En livraison",
+        "issues": "Problèmes de livraison",
+        "delivered": "Livrées",
+        "returned": "Retournées",
+        "cancelled": "Annulées"
+      }
+    }
+  }
+}

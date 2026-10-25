@@ -16,6 +16,8 @@ Subscriptions currently use the existing manual-invoice workflow; online payment
 
 **Overview** is the merchant landing dashboard after sign-in. It adapts setup actions to a Codify storefront, connected stores or both, with 7/30-day order metrics, source health, recent orders and direct links to confirmation, due callbacks and delivery issues. Local inventory appears only when the merchant tracks catalog stock; cart activity appears only for enabled storefronts. Order value preserves cents and separates currencies. See [dashboard metric definitions](docs/features/merchant-dashboard.md).
 
+**Delivery** now opens a shipment dashboard with date/search/status filters, courier performance, current shipment counts and links to existing order actions. **Advertising** opens a manual MAD performance dashboard with reporting accounts, campaigns, daily spend and delivered-sales figures, ROAS and contribution comparisons. These pages retain the existing admin design. Reporting controls do not pause ads at a provider; delivery uses existing Sendit/manual workflows. See [delivery definitions](docs/features/delivery-dashboard.md) and [advertising definitions](docs/features/advertising-dashboard.md).
+
 ## Run
 
 ```bash

@@ -14,7 +14,10 @@
         <p class="platform-lead"><%= h.("lead") %></p>
         <div class="platform-actions">
           <%= link_to t("platform_home.hero.primary"), signup_path(locale: I18n.locale), class: "platform-button" %>
-          <%= link_to h.("agent_button"), signup_path(locale: I18n.locale), class: "platform-button platform-button-secondary" %>
+          <%= link_to signup_path(locale: I18n.locale), class: "platform-button platform-button-secondary platform-agent-button" do %>
+            <span><%= h.("agent_button") %></span>
+            <%= render "platform_home/agent_logos" %>
+          <% end %>
           <a href="#journey" class="platform-button platform-button-secondary"><%= t("platform_home.hero.secondary") %></a>
         </div>
         <ul class="platform-badges"><% h.("badges").each do |badge| %><li><%= badge %></li><% end %></ul>

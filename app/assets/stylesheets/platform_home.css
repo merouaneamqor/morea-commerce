@@ -623,3 +623,17 @@
     transform: none;
   }
 }
+
+.platform-agent-button {
+  gap: 14px;
+}
+.platform-agent-logos {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.platform-agent-logos svg {
+  width: 22px;
+  height: 22px;
+}

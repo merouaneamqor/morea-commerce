@@ -18,8 +18,8 @@
             <span><%= h.("agent_button") %></span>
             <%= render "platform_home/agent_logos" %>
           <% end %>
-          <a href="#journey" class="platform-button platform-button-secondary"><%= t("platform_home.hero.secondary") %></a>
         </div>
+        <a href="#journey" class="platform-journey-link"><%= t("platform_home.hero.secondary") %><span aria-hidden="true"> ↓</span></a>
         <ul class="platform-badges"><% h.("badges").each do |badge| %><li><%= badge %></li><% end %></ul>
       </div>
       <div class="platform-map" aria-hidden="true"><%= render "platform_home/network_map" %></div>

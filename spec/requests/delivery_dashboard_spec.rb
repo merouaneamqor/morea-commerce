@@ -28,7 +28,7 @@ RSpec.describe "Delivery dashboard", type: :request do
 
   it "renders only shipments from the authenticated workspace" do
     foreign = Store.create!(slug: "foreign-shipment-#{SecureRandom.hex(5)}", name: "Synthetic foreign workspace")
-    [ [store, "OWN-TRACKING", "Own synthetic buyer"], [foreign, "FOREIGN-TRACKING", "Foreign synthetic buyer"] ].each do |workspace, tracking, name|
+    [ [ store, "OWN-TRACKING", "Own synthetic buyer" ], [ foreign, "FOREIGN-TRACKING", "Foreign synthetic buyer" ] ].each do |workspace, tracking, name|
       customer = workspace.customers.create!(name: name, phone: "0612345678", city: "Casablanca")
       workspace.orders.create!(customer: customer, customer_name: name, customer_phone: customer.phone,
         customer_city: customer.city, customer_address: "Synthetic address", total_cents: 12345,

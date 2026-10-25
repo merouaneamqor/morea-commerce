@@ -48,7 +48,7 @@ module Admin
       end
       save_record(record)
     rescue Date::Error, ArgumentError
-      redirect_to admin_advertising_path, alert: 'Enter a valid reporting date and MAD amounts with at most two decimals.'
+      redirect_to admin_advertising_path, alert: "Enter a valid reporting date and MAD amounts with at most two decimals."
     end
 
     private
@@ -67,7 +67,7 @@ module Admin
 
     def save_record(record)
       if record.save
-        redirect_to admin_advertising_path, notice: 'Advertising report saved.'
+        redirect_to admin_advertising_path, notice: "Advertising report saved."
       else
         @error = record.errors.full_messages.to_sentence
         @report = record if record.is_a?(AdvertisingPerformance)
@@ -75,7 +75,7 @@ module Admin
         render :show, status: :unprocessable_entity
       end
     rescue ActiveRecord::RecordNotUnique
-      redirect_to admin_advertising_path, alert: 'This reporting day was updated concurrently. Please reload and try again.'
+      redirect_to admin_advertising_path, alert: "This reporting day was updated concurrently. Please reload and try again."
     end
   end
 end

@@ -21,7 +21,7 @@ class CreateAdvertising < ActiveRecord::Migration[8.0]
       end
       t.timestamps
     end
-    add_index :advertising_performances, [:advertising_campaign_id, :date], unique: true, name: 'index_advertising_performance_day'
+    add_index :advertising_performances, [ :advertising_campaign_id, :date ], unique: true, name: 'index_advertising_performance_day'
     %i[spend_cents delivered_revenue_cents fulfillment_cost_cents confirmed_orders delivered_orders clicks impressions].each do |field|
       add_check_constraint :advertising_performances, "#{field} >= 0", name: "advertising_#{field}_nonnegative"
     end

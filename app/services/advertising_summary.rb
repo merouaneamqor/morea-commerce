@@ -11,14 +11,14 @@ class AdvertisingSummary
     @campaigns = AdvertisingCampaign.where(advertising_account_id: @accounts.select(:id)).includes(:advertising_account).order(:name)
     performance = AdvertisingPerformance.where(advertising_campaign_id: @campaigns.select(:id), date: @start_date..@end_date)
     grouped = performance.group(:advertising_campaign_id).pluck(:advertising_campaign_id, *AdvertisingPerformance::METRICS.map { |metric| AdvertisingPerformance.arel_table[metric].sum })
-    totals = grouped.to_h { |id, *values| [id, AdvertisingPerformance::METRICS.zip(values).to_h] }
+    totals = grouped.to_h { |id, *values| [ id, AdvertisingPerformance::METRICS.zip(values).to_h ] }
     @rows = @campaigns.map { |campaign| { campaign: campaign, metrics: totals.fetch(campaign.id, empty_metrics) } }
-    @rows.sort_by! { |row| -profit(row[:metrics]) } if sort == 'profit'
-    @daily = performance.group(:date).order(:date).pluck(:date, Arel.sql('SUM(spend_cents)'), Arel.sql('SUM(delivered_revenue_cents)'))
+    @rows.sort_by! { |row| -profit(row[:metrics]) } if sort == "profit"
+    @daily = performance.group(:date).order(:date).pluck(:date, Arel.sql("SUM(spend_cents)"), Arel.sql("SUM(delivered_revenue_cents)"))
   end
 
   def totals
-    AdvertisingPerformance::METRICS.to_h { |metric| [metric, rows.sum { |row| row[:metrics][metric] }] }
+    AdvertisingPerformance::METRICS.to_h { |metric| [ metric, rows.sum { |row| row[:metrics][metric] } ] }
   end
 
   def profit(metrics)

@@ -20,7 +20,7 @@ RSpec.describe Admin::DeliverySummary do
   end
 
   it "requires a persisted authorized workspace" do
-    [nil, Store.new].each do |invalid|
+    [ nil, Store.new ].each do |invalid|
       expect { described_class.new(store: invalid) }.to raise_error(ArgumentError)
     end
   end
@@ -35,7 +35,7 @@ RSpec.describe Admin::DeliverySummary do
     shipment(status: "confirmed")
     shipment(status: "cancelled")
     expect(summary.total).to eq(1)
-    expect(summary.recent_orders).to eq([own])
+    expect(summary.recent_orders).to eq([ own ])
   end
 
   it "accounts for every shipment state including courier cancellations and delivery issues" do
@@ -57,7 +57,7 @@ RSpec.describe Admin::DeliverySummary do
     shipment(customer_name: "Synthetic 100%", status: "in_transit")
     result = summary(status: "returned", query: "100%")
     expect(result.total).to eq(3)
-    expect(result.recent_orders).to eq([wanted])
+    expect(result.recent_orders).to eq([ wanted ])
     31.times { shipment }
     expect(summary.recent_orders.length).to eq(30)
   end

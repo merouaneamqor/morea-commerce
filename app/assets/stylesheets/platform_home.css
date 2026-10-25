@@ -6,7 +6,7 @@
   min-height: 100vh;
   font-size: 16px;
   line-height: 1.5;
-  overflow: hidden;
+  overflow-x: clip;
 }
 .platform-landing * {
   box-sizing: border-box;
@@ -19,7 +19,7 @@
   outline-offset: 5px;
 }
 .platform-container {
-  width: min(100% - 64px, 1080px);
+  width: min(100% - 64px, 1120px);
   margin-inline: auto;
 }
 .platform-header {
@@ -28,10 +28,13 @@
 }
 .platform-header-inner {
   min-height: 88px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 28px;
+  gap: 32px;
+}
+.platform-nav {
+  justify-content: center;
 }
 .platform-brand {
   display: flex;
@@ -40,6 +43,7 @@
   color: #fff;
   font-weight: 700;
   font-size: 24px;
+  min-width: 0;
   white-space: nowrap;
 }
 .platform-brand-suffix {
@@ -128,7 +132,7 @@
 }
 .platform-hero {
   position: relative;
-  padding-top: 52px;
+  padding-top: clamp(48px, 6vw, 88px);
   background:
     radial-gradient(ellipse at 50% 47%, #142c70a6, transparent 64%),
     linear-gradient(#071029, #081335 55%, #050b1e);
@@ -174,9 +178,10 @@
   content: "";
 }
 .platform-hero h1 {
-  font-size: clamp(40px, 6vw, 76px);
+  font-size: clamp(36px, 6vw, 76px);
   letter-spacing: -2px;
-  line-height: 1.15;
+  line-height: 1.12;
+  text-wrap: balance;
   font-weight: 700;
   margin: 30px 0 22px;
 }
@@ -186,18 +191,18 @@
   color: transparent;
 }
 .platform-lead {
-  max-width: 740px;
+  max-width: 660px;
   margin: 0 auto;
   color: #a7b0cd;
-  font-size: 19px;
+  font-size: clamp(16px, 1.7vw, 19px);
   line-height: 1.7;
 }
 .platform-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 24px;
-  margin-top: 38px;
+  gap: 16px;
+  margin-top: 32px;
 }
 .platform-button-secondary {
   background: #0e1a3d;
@@ -230,10 +235,8 @@
 }
 .platform-map {
   position: relative;
-  width: min(1260px, 110%);
-  margin: 8px 0 0;
-  left: 50%;
-  transform: translateX(-50%);
+  width: min(100%, 1260px);
+  margin: 20px auto 0;
   height: auto;
   aspect-ratio: 1200/530;
   direction: ltr;
@@ -244,7 +247,7 @@
   height: 100%;
 }
 .platform-features {
-  padding-top: 68px;
+  padding-top: clamp(36px, 5vw, 64px);
 }
 .platform-landing h2 {
   font-size: clamp(26px, 3.1vw, 40px);
@@ -262,7 +265,7 @@
 }
 .platform-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 26px;
   list-style: none;
   padding: 0;
@@ -272,7 +275,7 @@
   background: #101a3e;
   border: 1px solid #334379;
   border-radius: 24px;
-  padding: 32px;
+  padding: clamp(24px, 2.6vw, 32px);
   box-shadow: inset 0 0 0 4px #111b3b;
 }
 .platform-icon {
@@ -296,7 +299,7 @@
 }
 .platform-card h3 {
   font-weight: 700;
-  font-size: 24px;
+  font-size: clamp(21px, 2vw, 24px);
   margin: 0 0 12px;
 }
 .platform-card p {
@@ -306,11 +309,11 @@
   margin: 0;
 }
 .platform-journey {
-  padding-top: 108px;
+  padding-top: clamp(64px, 8vw, 96px);
 }
 .platform-timeline {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   list-style: none;
   padding: 0;
   margin: 68px 0 0;
@@ -354,8 +357,8 @@
   margin: 0 auto;
 }
 .platform-contact {
-  padding-top: 104px;
-  padding-bottom: 84px;
+  padding-top: clamp(64px, 8vw, 96px);
+  padding-bottom: clamp(48px, 6vw, 72px);
 }
 .platform-cta {
   position: relative;
@@ -423,207 +426,6 @@
 .platform-admin-link:hover {
   color: white;
 }
-@media (min-width: 1600px) {
-  .platform-hero h1 {
-    font-size: 80px;
-  }
-}
-@media (max-width: 1000px) {
-  .platform-nav {
-    gap: 18px;
-  }
-  .platform-header-inner {
-    gap: 20px;
-  }
-  .platform-header-actions {
-    gap: 16px;
-  }
-  .platform-brand {
-    font-size: 20px;
-  }
-  .platform-header-button {
-    padding: 10px 14px;
-  }
-  .platform-card {
-    padding: 26px;
-  }
-  .platform-footer {
-    flex-wrap: wrap;
-  }
-  .platform-footer p {
-    order: 4;
-    width: 100%;
-    text-align: center;
-  }
-}
-@media (max-width: 760px) {
-  .platform-container {
-    width: calc(100% - 40px);
-  }
-  .platform-header-inner {
-    min-height: 78px;
-    flex-wrap: wrap;
-    padding-block: 18px;
-    gap: 20px;
-  }
-  .platform-nav {
-    order: 3;
-    justify-content: center;
-    width: 100%;
-  }
-  .platform-brand {
-    font-size: 18px;
-    gap: 9px;
-  }
-  .platform-logo {
-    width: 30px;
-    height: 30px;
-    font-size: 23px;
-  }
-  .platform-header-actions {
-    gap: 14px;
-  }
-  .platform-header-button {
-    font-size: 11px;
-    padding: 9px 12px;
-  }
-  .platform-languages {
-    gap: 10px;
-  }
-  .platform-languages a {
-    font-size: 11px;
-  }
-  .platform-hero {
-    padding-top: 42px;
-  }
-  .platform-eyebrow {
-    font-size: 9px;
-    letter-spacing: 1px;
-    padding: 8px 12px;
-  }
-  .platform-hero h1 {
-    letter-spacing: -1.2px;
-    margin-top: 26px;
-  }
-  .platform-lead {
-    font-size: 16px;
-    max-width: 540px;
-  }
-  .platform-actions {
-    gap: 12px;
-    margin-top: 26px;
-  }
-  .platform-button {
-    font-size: 13px;
-    padding: 13px 20px;
-  }
-  .platform-badges {
-    gap: 18px;
-    font-size: 11px;
-  }
-  .platform-map {
-    width: 145%;
-    margin-top: 14px;
-  }
-  .platform-features {
-    padding-top: 36px;
-  }
-  .platform-section-lead {
-    font-size: 14px;
-  }
-  .platform-cards {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    margin-top: 30px;
-  }
-  .platform-card {
-    padding: 26px;
-    border-radius: 20px;
-  }
-  .platform-icon {
-    width: 46px;
-    height: 46px;
-    margin-bottom: 16px;
-  }
-  .platform-card h3 {
-    font-size: 22px;
-  }
-  .platform-card p {
-    font-size: 15px;
-  }
-  .platform-journey {
-    padding-top: 60px;
-  }
-  .platform-timeline {
-    grid-template-columns: 1fr;
-    gap: 28px;
-    margin-top: 36px;
-  }
-  .platform-timeline li {
-    text-align: start;
-    min-height: 60px;
-    padding-inline-start: 82px;
-  }
-  .platform-step {
-    position: absolute;
-    inset-inline-start: 0;
-    top: 0;
-    width: 54px;
-    height: 54px;
-    font-size: 22px;
-  }
-  .platform-timeline li:not(:last-child):before {
-    inset-inline-start: 26px;
-    top: 60px;
-    width: 2px;
-    height: calc(100% - 38px);
-  }
-  .platform-timeline h3 {
-    margin: 0 0 4px;
-  }
-  .platform-timeline p {
-    max-width: none;
-    margin: 0;
-  }
-  .platform-contact {
-    padding-top: 60px;
-    padding-bottom: 52px;
-  }
-  .platform-cta {
-    padding: 38px 20px;
-    border-radius: 24px;
-  }
-  .platform-cta p {
-    font-size: 15px;
-  }
-  .platform-footer {
-    padding-block: 30px 36px;
-    gap: 22px;
-  }
-  .platform-footer .platform-brand {
-    font-size: 16px;
-  }
-  .platform-footer .platform-languages {
-    margin-inline-start: auto;
-  }
-  .platform-admin-link {
-    order: 3;
-    width: 100%;
-    text-align: center;
-  }
-  .platform-footer p {
-    margin: 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .platform-button {
-    transition: none;
-  }
-  .platform-button:hover {
-    transform: none;
-  }
-}
-
 .platform-agent-button {
   gap: 14px;
 }
@@ -636,4 +438,265 @@
 .platform-agent-logos svg {
   width: 22px;
   height: 22px;
+}
+
+.platform-button {
+  min-height: 48px;
+  text-align: center;
+  line-height: 1.4;
+}
+.platform-journey-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-top: 14px;
+  color: #b3c4fa;
+  font-size: 14px;
+}
+.platform-journey-link:hover {
+  color: white;
+}
+.platform-languages a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  min-height: 44px;
+}
+.platform-languages {
+  gap: 4px;
+}
+.platform-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.platform-eyebrow {
+  max-width: 100%;
+  text-align: start;
+}
+.platform-eyebrow span {
+  flex-shrink: 0;
+}
+.platform-landing :is(h1, h2, h3, p) {
+  overflow-wrap: anywhere;
+}
+.platform-landing[dir="rtl"] :is(h1, h2, .platform-eyebrow) {
+  letter-spacing: normal;
+}
+@media (max-width: 1050px) {
+  .platform-header-inner {
+    grid-template-columns: 1fr auto;
+    gap: 8px 24px;
+    padding-block: 18px 8px;
+  }
+  .platform-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    gap: 32px;
+  }
+  .platform-header-actions {
+    gap: 16px;
+  }
+  .platform-brand {
+    font-size: 22px;
+  }
+  .platform-header-button {
+    padding: 12px 20px;
+  }
+}
+@media (max-width: 900px) {
+  .platform-cards {
+    gap: 18px;
+  }
+  .platform-card p {
+    font-size: 15px;
+  }
+  .platform-timeline {
+    max-width: 540px;
+    margin: 40px auto 0;
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .platform-timeline li {
+    text-align: start;
+    min-height: 64px;
+    padding-inline-start: 84px;
+  }
+  .platform-step {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+  .platform-timeline li:not(:last-child):before {
+    inset-inline-start: 27px;
+    top: 62px;
+    width: 2px;
+    height: calc(100% - 40px);
+  }
+  .platform-timeline h3 {
+    margin: 2px 0 6px;
+  }
+  .platform-timeline p {
+    max-width: none;
+    margin: 0;
+    font-size: 15px;
+  }
+  .platform-footer {
+    flex-wrap: wrap;
+  }
+  .platform-footer p {
+    order: 4;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+  }
+}
+@media (max-width: 700px) {
+  .platform-container {
+    width: calc(100% - 40px);
+  }
+  .platform-header-inner {
+    padding-block: 16px 6px;
+    gap: 10px 12px;
+  }
+  .platform-header-actions {
+    display: contents;
+  }
+  .platform-header-button {
+    display: none;
+  }
+  .platform-header-inner > .platform-brand {
+    font-size: 20px;
+  }
+  .platform-header-inner .platform-languages {
+    justify-self: end;
+  }
+  .platform-logo {
+    width: 32px;
+    height: 32px;
+    font-size: 25px;
+    flex-shrink: 0;
+  }
+  .platform-logo > span {
+    font-size: 16px;
+  }
+  .platform-nav {
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .platform-nav a {
+    font-size: 13px;
+  }
+  .platform-hero {
+    padding-top: 40px;
+  }
+  .platform-eyebrow {
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .platform-hero h1 {
+    letter-spacing: -1.2px;
+    margin: 24px 0 20px;
+  }
+  .platform-lead {
+    line-height: 1.65;
+    max-width: 520px;
+  }
+  .platform-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 360px;
+    margin: 28px auto 0;
+    gap: 12px;
+  }
+  .platform-actions .platform-button {
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    padding: 14px 18px;
+    font-size: 14px;
+  }
+  .platform-agent-logos {
+    gap: 8px;
+  }
+  .platform-agent-logos svg {
+    width: 20px;
+    height: 20px;
+  }
+  .platform-agent-button {
+    gap: 12px;
+  }
+  .platform-badges {
+    gap: 12px 20px;
+    font-size: 12px;
+    margin-top: 22px;
+  }
+  .platform-map {
+    margin-top: 24px;
+  }
+  .platform-landing h2 {
+    font-size: clamp(25px, 5vw, 32px);
+    text-wrap: balance;
+  }
+  .platform-section-lead {
+    font-size: 15px;
+  }
+  .platform-cards {
+    grid-template-columns: 1fr;
+    margin-top: 30px;
+    gap: 16px;
+  }
+  .platform-card {
+    padding: 24px;
+    border-radius: 20px;
+  }
+  .platform-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+  .platform-card h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  .platform-cta {
+    padding: 36px 24px;
+    border-radius: 24px;
+  }
+  .platform-cta p {
+    font-size: 16px;
+  }
+  .platform-footer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px 12px;
+    padding-block: 28px 36px;
+  }
+  .platform-footer .platform-brand {
+    font-size: 16px;
+  }
+  .platform-footer .platform-languages {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .platform-footer :is(p, .platform-admin-link) {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .platform-button {
+    transition: none;
+  }
+  .platform-button:hover {
+    transform: none;
+  }
 }

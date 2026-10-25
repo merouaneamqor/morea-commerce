@@ -36,7 +36,8 @@
           "Verify your email and choose your password",
           "Explore your workspace and subscribe to start using your tools"
         ]
-      }
+      },
+      "no_account": "Don’t have an account?"
     },
     "registration_mailer": {
       "subject": "Verify your email — %{name}",
@@ -134,7 +135,8 @@
           "Vérifiez votre email et choisissez un mot de passe",
           "Explorez votre espace et abonnez-vous pour utiliser vos outils"
         ]
-      }
+      },
+      "no_account": "Vous n’avez pas encore de compte ?"
     },
     "registration_mailer": {
       "subject": "Vérifiez votre email — %{name}",
@@ -232,7 +234,8 @@
           "أكّد بريدك الإلكتروني واختر كلمة المرور",
           "استكشف مساحة عملك واشترك لاستخدام أدواتك"
         ]
-      }
+      },
+      "no_account": "ليس لديك حساب بعد؟"
     },
     "registration_mailer": {
       "subject": "تأكيد بريدك الإلكتروني — %{name}",

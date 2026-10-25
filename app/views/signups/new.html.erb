@@ -33,8 +33,8 @@
     <p class="text-sm leading-6 text-[#b9d3ff]"><%= t("registration.subscription_note") %></p>
     <%= f.submit t("registration.submit"), class: "fx-btn" %>
   <% end %>
-  <p class="mt-6 text-center text-sm text-[#b9d3ff]">
+  <p class="mt-6 border-t border-white/15 pt-6 text-center text-sm text-[#b9d3ff]">
     <%= t("registration.have_account") %>
-    <%= link_to t("registration.sign_in"), admin_login_path(locale: I18n.locale), class: "fx-link font-medium" %>
+    <%= link_to t("registration.sign_in"), admin_login_path(locale: I18n.locale), class: "fx-link font-semibold underline underline-offset-4" %>
   </p>
 </div>

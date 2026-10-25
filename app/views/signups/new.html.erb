@@ -2,8 +2,8 @@
 <%= render "signups/chrome" %>
 <% errors = @registration.errors.attribute_names %>
 
-<div class="fx-glass p-7 sm:p-9">
-  <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("registration.heading") %></h1>
+<div class="auth-card fx-glass">
+  <h1 class="auth-title"><%= t("registration.heading") %></h1>
   <p class="mt-2 text-sm leading-6 text-[#b9d3ff]"><%= t("registration.lead") %></p>
 
   <% if alert.present? || errors.any? %>

@@ -294,11 +294,11 @@ en:
         - { q: "How do I open a store?", a: "Create your free account and verify your email. You can explore your workspace, then subscribe to start using its tools." }
     cta:
       headline: "Ready to run your store?"
-      body: "Create your free account, verify your email and choose a subscription when you are ready."
+      body: "Create your account for free. Subscribe when you’re ready to use your tools."
       button: "Create account"
     footer:
       tagline: "Multi-store commerce platform"
-      admin: "Admin sign in"
+      admin: "Sign in"
   signup:
     title: "Request access — %{name}"
     heading: "Request access"

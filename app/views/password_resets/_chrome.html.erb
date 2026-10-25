@@ -4,3 +4,11 @@
   <h2 class="fx-gradient-text mt-6 text-5xl font-bold leading-[1.05] tracking-tight"><%= t("password_reset.aside_title") %></h2>
   <p class="mt-8 text-base leading-7 text-[#b9d3ff]"><%= t("password_reset.aside_body") %></p>
 <% end %>
+
+<% content_for :topbar, flush: true do %>
+  <nav aria-label="<%= t("platform_home.language") %>">
+    <% Morea::Locales::AVAILABLE.each do |locale| %>
+      <%= link_to locale.to_s.upcase, (@token.present? ? edit_password_reset_path(token: @token, locale: locale) : new_password_reset_path(locale: locale)), "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
+    <% end %>
+  </nav>
+<% end %>

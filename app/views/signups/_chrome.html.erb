@@ -3,7 +3,7 @@
 <% content_for :topbar do %>
   <nav class="flex items-center gap-2" aria-label="<%= t("platform_home.language") %>">
     <% Morea::Locales::AVAILABLE.each do |locale| %>
-      <%= link_to locale.to_s.upcase, url_for(request.query_parameters.merge(locale: locale, only_path: true)),
+      <%= link_to locale.to_s.upcase, (@token.present? ? signup_verify_path(token: @token, locale: locale) : (action_name.in?(%w[thanks resend]) ? signup_thanks_path(locale: locale) : signup_path(locale: locale))),
             class: (locale.to_s == I18n.locale.to_s ? "font-semibold text-white" : "fx-link"),
             "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
     <% end %>

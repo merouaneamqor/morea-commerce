@@ -84,6 +84,13 @@ RSpec.describe "Merchant dashboard", type: :request do
     %w[chart statuses pending campaigns].each do |section|
       expect(document.at_css("[data-overview-section='#{section}']")).to be_present
     end
+    chart = document.at_css('[data-overview-section="chart"] [data-controller="dashboard-chart"]')
+    chart_config = JSON.parse(chart["data-dashboard-chart-config-value"])
+    expect(chart_config["type"]).to eq("line")
+    expect(chart_config.dig("data", "datasets", 0, "data")).to include(123.45)
+    expect(chart["data-dashboard-chart-currency-value"]).to eq("MAD")
+    statuses = document.at_css('[data-overview-section="statuses"] [data-controller="dashboard-chart"]')
+    expect(JSON.parse(statuses["data-dashboard-chart-config-value"])["type"]).to eq("doughnut")
     expect(response.body).to include("Own pending buyer", "Own campaign")
     expect(response.body).not_to include("Foreign pending buyer")
     expect(document.at_css("a[href='/admin/orders/new']")).to be_present

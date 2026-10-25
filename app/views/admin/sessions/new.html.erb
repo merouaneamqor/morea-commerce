@@ -20,12 +20,13 @@
   </ul>
 <% end %>
 
-<div class="fx-glass p-7 sm:p-9">
-  <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("sign_in.heading") %></h1>
+<div class="auth-card fx-glass">
+  <h1 class="auth-title"><%= t("sign_in.heading") %></h1>
   <p class="mt-2 text-sm text-[#b9d3ff]">
     <%= Store.apex_host?(request.host) ? t("sign_in.workspace_subtitle") : t("sign_in.tenant_subtitle", name: current_store&.name) %>
   </p>
 
+  <% if notice.present? %><p class="mt-4 text-sm" role="status"><%= notice %></p><% end %>
   <% if alert.present? %>
     <div role="alert" class="fx-alert mt-6"><%= alert %></div>
   <% end %>
@@ -40,11 +41,14 @@
       <%= password_field_tag :password, nil, required: true, autocomplete: "current-password", placeholder: "••••••••", class: "fx-input" %>
     </div>
     <% if Store.apex_host?(request.host) %>
-      <div>
-        <%= label_tag :workspace, t("sign_in.workspace"), class: "fx-label" %>
-        <%= text_field_tag :workspace, params[:workspace], autocomplete: "off", autocapitalize: "none", spellcheck: false, "aria-describedby": "workspace-help", class: "fx-input" %>
-        <p id="workspace-help" class="mt-2 text-xs text-[#b9d3ff]"><%= t("sign_in.workspace_help") %></p>
-      </div>
+      <details class="auth-workspace" <%= "open" if params[:workspace].present? %>>
+        <summary><%= t("registration.auth.workspace_toggle") %></summary>
+        <div>
+          <%= label_tag :workspace, t("sign_in.workspace"), class: "fx-label" %>
+          <%= text_field_tag :workspace, params[:workspace], autocomplete: "off", autocapitalize: "none", spellcheck: false, "aria-describedby": "workspace-help", class: "fx-input" %>
+          <p id="workspace-help" class="mt-2 text-xs text-[#b9d3ff]"><%= t("sign_in.workspace_help") %></p>
+        </div>
+      </details>
     <% end %>
     <%= submit_tag t("sign_in.submit"), class: "fx-btn" %>
   <% end %>

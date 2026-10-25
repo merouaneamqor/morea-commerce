@@ -246,7 +246,7 @@ fr:
   platform_home:
     title: "Codify — plateforme e-commerce multi-boutiques"
     language: "Langue"
-    nav: { journey: "Fonctionnement", features: "Fonctionnalités", integrations: "Intégrations", faq: "FAQ", sign_in: "Connexion", signup: "Créer un compte" }
+    nav: { journey: "Fonctionnement", features: "Fonctionnalités", integrations: "Intégrations", faq: "FAQ", sign_in: "Se connecter", signup: "Créer un compte" }
     hero:
       eyebrow: "Plateforme e-commerce multi-boutiques"
       headline: "Gérez vos boutiques en paiement à la livraison depuis une seule plateforme."
@@ -294,11 +294,11 @@ fr:
         - { q: "Comment ouvrir une boutique ?", a: "Créez votre compte gratuit et vérifiez votre email. Explorez votre espace, puis abonnez-vous pour utiliser ses outils." }
     cta:
       headline: "Prêt à gérer votre boutique ?"
-      body: "Créez votre compte gratuit, vérifiez votre email et choisissez un abonnement lorsque vous êtes prêt."
+      body: "Créez votre compte gratuitement. Abonnez-vous pour utiliser vos outils."
       button: "Créer un compte"
     footer:
       tagline: "Plateforme e-commerce multi-boutiques"
-      admin: "Connexion administration"
+      admin: "Se connecter"
   signup:
     title: "Demander un accès — %{name}"
     heading: "Demander un accès"

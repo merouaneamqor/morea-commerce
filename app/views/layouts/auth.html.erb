@@ -1,47 +1,50 @@
 <% localized = content_for?(:localized) %>
+<% brand = current_store&.name.presence || Store.platform_name %>
+<% account_origin = Store.apex_host?(request.host) ? "" : Store.platform_origin %>
+<% login_page = controller_path == "admin/sessions" %>
 <!DOCTYPE html>
-<html lang="<%= localized ? I18n.locale : "en" %>">
+<html lang="<%= localized ? I18n.locale : "en" %>" dir="<%= localized && rtl? ? "rtl" : "ltr" %>">
   <head>
     <meta charset="utf-8">
-    <title><%= content_for?(:title) ? yield(:title) : "Sign in" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : t("sign_in.heading") %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="dark">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "platform_home", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "auth", "data-turbo-track": "reload" %>
   </head>
-  <body class="bg-[#04122e]" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
-    <% brand = current_store&.name.presence || Store.platform_name %>
-    <div class="fx-stage" dir="<%= localized && rtl? ? "rtl" : "ltr" %>">
-      <span class="fx-orb" style="width: 28rem; height: 28rem; top: -8rem; right: -6rem" aria-hidden="true"></span>
-      <span class="fx-orb" style="width: 22rem; height: 22rem; bottom: -8rem; left: -6rem; animation-delay: -6s" aria-hidden="true"></span>
-
-      <div class="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-5 sm:px-8">
-        <header class="flex flex-wrap items-center justify-between gap-4 py-6">
-          <a href="/" class="flex items-center gap-2 text-base font-semibold tracking-tight text-white">
-            <span class="fx-dot" aria-hidden="true"></span><%= brand %>
-          </a>
-          <div class="flex flex-wrap items-center gap-4 text-xs text-[#b9d3ff]">
+  <body>
+    <div class="platform-landing auth-page fx-stage" dir="<%= localized && rtl? ? "rtl" : "ltr" %>">
+      <header class="platform-header auth-header">
+        <div class="auth-container auth-header-inner">
+          <a href="/" class="platform-brand"><span class="platform-logo" aria-hidden="true"><%= brand.first %><span>.</span></span><span><%= brand %><span class="platform-brand-suffix"> crm</span></span></a>
+          <div class="auth-header-actions">
             <%= yield :topbar %>
-            <a href="/" class="fx-link"><%= content_for?(:back_label) ? yield(:back_label) : "Back to home" %></a>
+            <a href="/" class="auth-home-link"><%= t("registration.auth.home") %></a>
           </div>
-        </header>
-
-        <main class="grid flex-1 items-center gap-10 pb-12 lg:grid-cols-2 lg:gap-16">
-          <section class="hidden lg:block" aria-hidden="<%= content_for?(:aside) ? "false" : "true" %>">
-            <%= yield :aside %>
-          </section>
-          <div class="mx-auto w-full max-w-md lg:max-w-lg">
-            <%= yield %>
-          </div>
-        </main>
-
-        <footer class="py-6 text-center text-xs text-[#7f9bc9]"><%= brand %> · <%= Store.base_domain %></footer>
-      </div>
+        </div>
+      </header>
+      <main class="auth-container auth-main">
+        <section class="auth-aside" aria-label="<%= brand %>">
+          <%= yield :aside %>
+          <div class="auth-map" aria-hidden="true"><%= render "platform_home/network_map" %></div>
+        </section>
+        <div class="auth-form-column">
+          <nav class="auth-tabs" aria-label="<%= t("registration.auth.sign_in") %> / <%= t("registration.auth.sign_up") %>">
+            <%= link_to t("registration.auth.login_tab"), admin_login_path(locale: I18n.locale), "aria-current": (login_page ? "page" : nil) %>
+            <%= link_to t("registration.auth.signup_tab"), "#{account_origin}#{signup_path(locale: I18n.locale)}", "aria-current": (controller_path == "signups" ? "page" : nil) %>
+          </nav>
+          <%= yield %>
+          <p class="auth-secure-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 10V7a6 6 0 0 1 12 0v3M5 10h14v11H5z"/></svg><%= t("registration.auth.secure_note") %></p>
+        </div>
+      </main>
+      <footer class="auth-container auth-footer"><span>© <%= Date.current.year %> <%= brand %></span><span><%= t("registration.auth.footer_tagline") %></span></footer>
     </div>
   </body>
 </html>

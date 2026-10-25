@@ -1,24 +1,24 @@
 fr:
   sign_in:
-    page_title: "Connexion — %{name}"
-    heading: "Se connecter"
-    workspace_subtitle: "Connectez-vous à votre espace Codify"
-    tenant_subtitle: "Accédez à l’administration de l’espace %{name}"
-    back: "Retour à l’accueil"
-    language: "Langue"
-    email: "E-mail"
-    password: "Mot de passe"
-    workspace: "Adresse de l’espace (facultatif)"
-    workspace_help: "Si votre e-mail est associé à plusieurs espaces, saisissez le sous-domaine de l’espace."
-    submit: "Se connecter"
-    approval_note: "Votre compte est accessible après approbation. Utilisez le mot de passe défini pour votre compte dans cet espace."
-    invalid: "E-mail ou mot de passe incorrect."
-    welcome: "Bienvenue."
-    signed_out: "Vous êtes déconnecté."
+    page_title: Se connecter — %{name}
+    heading: Se connecter
+    workspace_subtitle: Bienvenue dans votre espace.
+    tenant_subtitle: Bienvenue chez %{name}.
+    back: Accueil
+    language: Langue
+    email: Adresse email
+    password: Mot de passe
+    workspace: Espace de travail (facultatif)
+    workspace_help: Saisissez le préfixe de l’adresse de votre espace si cet email est associé à plusieurs espaces.
+    submit: Se connecter
+    approval_note: Connectez-vous avec votre email et votre mot de passe.
+    invalid: E-mail ou mot de passe incorrect.
+    welcome: Bienvenue.
+    signed_out: Vous êtes déconnecté.
     aside:
-      chip: "Espace sécurisé"
-      headline: "Gérez toutes vos commandes depuis une seule interface."
+      chip: Votre espace
+      headline: Votre e-commerce, sous contrôle.
       points:
-        - "Confirmez, expédiez et suivez les commandes en paiement à la livraison"
-        - "Stock, catalogue et équipe au même endroit"
-        - "Des données séparées et isolées pour chaque espace"
+      - Confirmez et suivez vos commandes
+      - Gérez votre catalogue et votre stock
+      - Retrouvez votre équipe au même endroit

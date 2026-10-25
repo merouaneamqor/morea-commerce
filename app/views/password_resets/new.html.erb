@@ -1,7 +1,7 @@
 <% content_for :title, t("password_reset.title") %>
 <%= render "password_resets/chrome" %>
-<div class="fx-glass p-7 sm:p-9">
-  <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("password_reset.heading") %></h1>
+<div class="auth-card fx-glass">
+  <h1 class="auth-title"><%= t("password_reset.heading") %></h1>
   <p class="mt-3 text-sm leading-6 text-[#b9d3ff]"><%= t("password_reset.lead") %></p>
   <% if notice.present? %><p class="mt-5 text-sm leading-6 text-[#b9d3ff]" role="status"><%= notice %></p><% end %>
   <% if alert.present? %><p class="fx-alert mt-5" role="alert"><%= alert %></p><% end %>

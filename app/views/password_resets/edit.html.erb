@@ -1,12 +1,12 @@
 <% content_for :title, t("password_reset.edit_title") %>
 <%= render "password_resets/chrome" %>
-<div class="fx-glass p-7 sm:p-9">
+<div class="auth-card fx-glass">
   <% if @user.nil? %>
-    <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("password_reset.invalid_title") %></h1>
+    <h1 class="auth-title"><%= t("password_reset.invalid_title") %></h1>
     <p class="mt-3 text-sm leading-6 text-[#b9d3ff]" role="alert"><%= t("password_reset.invalid_body") %></p>
     <%= link_to t("password_reset.request_new_link"), new_password_reset_path(locale: I18n.locale), class: "fx-btn mt-7 inline-flex items-center justify-center no-underline" %>
   <% else %>
-    <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("password_reset.edit_title") %></h1>
+    <h1 class="auth-title"><%= t("password_reset.edit_title") %></h1>
     <p class="mt-3 text-sm leading-6 text-[#b9d3ff]"><%= t("password_reset.edit_lead") %></p>
     <% if @user.errors.any? %>
       <div role="alert" class="fx-alert mt-5">

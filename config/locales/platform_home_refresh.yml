@@ -1,0 +1,185 @@
+{
+  "fr": {
+    "platform_home": {
+      "refresh": {
+        "eyebrow": "Plateforme COD pour e-commerçants",
+        "headline": "Votre e-commerce,",
+        "headline_accent": "sous contrôle.",
+        "lead": "Confirmez vos commandes COD, expédiez avec votre société de livraison et suivez votre activité depuis une seule plateforme.",
+        "badges": [
+          "Commandes",
+          "Livraison",
+          "Stock",
+          "Suivi"
+        ],
+        "features_title": "Tout ce qu’il faut pour vos commandes COD",
+        "features_lead": "Un seul espace pour confirmer, livrer et suivre.",
+        "features": [
+          {
+            "title": "Confirmation",
+            "body": "Confirmez, annulez ou planifiez un rappel. Votre équipe suit chaque commande directement depuis la plateforme."
+          },
+          {
+            "title": "Livraison",
+            "body": "Envoyez vos commandes au transporteur connecté. Retrouvez les étiquettes et le suivi de vos colis au même endroit."
+          },
+          {
+            "title": "Vue d’ensemble",
+            "body": "Commandes récentes, activité et stock : gardez une vue claire sur le quotidien de votre boutique."
+          }
+        ],
+        "journey_title": "Le parcours d’une commande",
+        "steps": [
+          {
+            "title": "Commande",
+            "body": "Elle arrive de votre boutique"
+          },
+          {
+            "title": "Confirmée",
+            "body": "Votre équipe confirme le client"
+          },
+          {
+            "title": "Stock réservé",
+            "body": "Les articles sont réservés"
+          },
+          {
+            "title": "Expédition",
+            "body": "Via le transporteur connecté"
+          },
+          {
+            "title": "Suivi",
+            "body": "Livraison et retours centralisés"
+          }
+        ],
+        "cta_title": "Prêt à garder le contrôle ?",
+        "cta_body": "Demandez un accès et simplifiez la gestion de vos commandes.",
+        "footer": "Votre e-commerce, sous contrôle.",
+        "navigation": "Navigation principale",
+        "nav_journey": "Parcours",
+        "nav_contact": "Contact"
+      }
+    }
+  },
+  "en": {
+    "platform_home": {
+      "refresh": {
+        "eyebrow": "COD platform for e-commerce teams",
+        "headline": "Your e-commerce,",
+        "headline_accent": "under control.",
+        "lead": "Confirm your cash-on-delivery orders, ship with your delivery company and follow your business from one platform.",
+        "badges": [
+          "Orders",
+          "Delivery",
+          "Inventory",
+          "Tracking"
+        ],
+        "features_title": "Everything you need for your COD orders",
+        "features_lead": "One place to confirm, deliver and track.",
+        "features": [
+          {
+            "title": "Confirmation",
+            "body": "Confirm, cancel or schedule a callback. Your team follows every order directly from the platform."
+          },
+          {
+            "title": "Delivery",
+            "body": "Send orders to your connected carrier. Find shipping labels and parcel tracking in the same place."
+          },
+          {
+            "title": "Overview",
+            "body": "Recent orders, activity and inventory: keep a clear view of your store’s daily operations."
+          }
+        ],
+        "journey_title": "The journey of an order",
+        "steps": [
+          {
+            "title": "Order",
+            "body": "Arrives from your store"
+          },
+          {
+            "title": "Confirmed",
+            "body": "Your team confirms the customer"
+          },
+          {
+            "title": "Stock reserved",
+            "body": "Items are reserved"
+          },
+          {
+            "title": "Shipping",
+            "body": "Through your connected carrier"
+          },
+          {
+            "title": "Tracking",
+            "body": "Delivery and returns in one place"
+          }
+        ],
+        "cta_title": "Ready to take control?",
+        "cta_body": "Request access and simplify your order management.",
+        "footer": "Your e-commerce, under control.",
+        "navigation": "Main navigation",
+        "nav_journey": "How it works",
+        "nav_contact": "Contact"
+      }
+    }
+  },
+  "ar": {
+    "platform_home": {
+      "refresh": {
+        "eyebrow": "منصة الدفع عند الاستلام للتجارة الإلكترونية",
+        "headline": "تجارتك الإلكترونية،",
+        "headline_accent": "تحت سيطرتك.",
+        "lead": "أكّد طلبات الدفع عند الاستلام، واشحن مع شركة التوصيل، وتابع نشاط متجرك من منصة واحدة.",
+        "badges": [
+          "الطلبات",
+          "التوصيل",
+          "المخزون",
+          "التتبع"
+        ],
+        "features_title": "كل ما تحتاجه لطلبات الدفع عند الاستلام",
+        "features_lead": "مساحة واحدة لتأكيد الطلبات والتوصيل والتتبع.",
+        "features": [
+          {
+            "title": "تأكيد الطلبات",
+            "body": "أكّد الطلبات أو ألغها أو حدد موعداً لإعادة الاتصال. يتابع فريقك كل طلب مباشرة من المنصة."
+          },
+          {
+            "title": "التوصيل",
+            "body": "أرسل طلباتك إلى شركة الشحن المتصلة. تجد ملصقات الشحن وتتبع الطرود في مكان واحد."
+          },
+          {
+            "title": "نظرة شاملة",
+            "body": "الطلبات الأخيرة والنشاط والمخزون: تابع العمليات اليومية لمتجرك بوضوح."
+          }
+        ],
+        "journey_title": "رحلة الطلب",
+        "steps": [
+          {
+            "title": "الطلب",
+            "body": "يصل من متجرك"
+          },
+          {
+            "title": "التأكيد",
+            "body": "يؤكد فريقك الطلب مع العميل"
+          },
+          {
+            "title": "حجز المخزون",
+            "body": "تُحجز المنتجات للطلب"
+          },
+          {
+            "title": "الشحن",
+            "body": "عبر شركة الشحن المتصلة"
+          },
+          {
+            "title": "التتبع",
+            "body": "التوصيل والمرتجعات في مكان واحد"
+          }
+        ],
+        "cta_title": "مستعد للتحكم في تجارتك؟",
+        "cta_body": "اطلب الوصول وبسّط إدارة طلباتك.",
+        "footer": "تجارتك الإلكترونية، تحت سيطرتك.",
+        "navigation": "التنقل الرئيسي",
+        "nav_journey": "رحلة الطلب",
+        "nav_contact": "تواصل معنا"
+      }
+    }
+  }
+}

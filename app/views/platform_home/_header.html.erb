@@ -1,24 +1,18 @@
-<% h = ->(key) { t("platform_home.#{key}") } %>
-<% sign_in_path = admin_login_path(locale: nil) %>
-  <header class="fx-nav">
-    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-      <a href="/" class="flex items-center gap-2 text-base font-semibold tracking-tight text-white"><span class="fx-dot" aria-hidden="true"></span><%= Store.platform_name %></a>
-      <nav class="hidden items-center gap-6 text-sm text-[#b9d3ff] md:flex" aria-label="Primary">
-        <a class="hover:text-white" href="<%= platform_home_path(anchor: "journey") %>"><%= h.("nav.journey") %></a>
-        <a class="hover:text-white" href="<%= platform_home_path(anchor: "features") %>"><%= h.("nav.features") %></a>
-        <a class="hover:text-white" href="<%= platform_home_path(anchor: "integrations") %>"><%= h.("nav.integrations") %></a>
-        <a class="hover:text-white" href="<%= platform_home_path(anchor: "faq") %>"><%= h.("nav.faq") %></a>
-      </nav>
-      <div class="flex items-center gap-3 text-xs">
-        <div class="flex items-center gap-2" role="group" aria-label="<%= h.("language") %>">
-          <% Morea::Locales::AVAILABLE.each do |locale| %>
-            <%= link_to locale.to_s.upcase, "#{request.path}?locale=#{locale}",
-                  class: (locale.to_s == I18n.locale.to_s ? "font-semibold text-white" : "text-[#8fb0e0] hover:text-white"),
-                  "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
-          <% end %>
-        </div>
-        <%= link_to h.("nav.sign_in"), sign_in_path, class: "hidden px-2 py-2 text-sm font-medium text-[#eaf2ff] hover:text-white sm:inline" %>
-        <%= link_to h.("nav.signup"), signup_path, class: "rounded-lg border border-[#a0c8ff]/50 bg-gradient-to-b from-[#2f7bff] to-[#005bd3] px-3.5 py-2 text-sm font-semibold text-white shadow-[0_6px_24px_-8px_rgba(47,123,255,0.9)] hover:brightness-110 focus:outline-2 focus:outline-offset-2 focus:outline-white" %>
+<header class="platform-header">
+  <div class="platform-container platform-header-inner">
+    <a href="<%= platform_home_path(locale: I18n.locale) %>" class="platform-brand"><span class="platform-logo" aria-hidden="true"><%= Store.platform_name.first %><span>.</span></span><span><%= Store.platform_name %><span class="platform-brand-suffix"> crm</span></span></a>
+    <nav class="platform-nav" aria-label="<%= t("platform_home.refresh.navigation") %>">
+      <a href="#features"><%= t("platform_home.nav.features") %></a>
+      <a href="#journey"><%= t("platform_home.refresh.nav_journey") %></a>
+      <a href="#contact"><%= t("platform_home.refresh.nav_contact") %></a>
+    </nav>
+    <div class="platform-header-actions">
+      <div class="platform-languages" role="group" aria-label="<%= t("platform_home.language") %>">
+        <% Morea::Locales::AVAILABLE.each do |locale| %>
+          <%= link_to locale.to_s.upcase, platform_home_path(locale: locale), lang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
+        <% end %>
       </div>
+      <%= link_to t("platform_home.nav.signup"), signup_path(locale: I18n.locale), class: "platform-button platform-header-button" %>
     </div>
-  </header>
+  </div>
+</header>

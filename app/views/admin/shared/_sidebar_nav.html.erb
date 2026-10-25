@@ -23,9 +23,9 @@
     <%= admin_nav_link t("admin_menu.items.online_store"), current_store&.storefront_enabled? ? admin_home_sections_path : edit_admin_store_path, icon: :store, active: online_store %>
     <% if online_store %>
       <div class="admin-subnav">
-        <%= link_to "Customize", admin_home_sections_path, class: "admin-subnav__item #{'is-active' if controller_name == 'home_sections'}" %>
-        <%= link_to "Pages", admin_pages_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pages'}" %>
-        <%= link_to "Navigation", admin_menu_items_path, class: "admin-subnav__item #{'is-active' if controller_name == 'menu_items'}" %>
+        <%= link_to t("admin_menu.items.customize"), admin_home_sections_path, class: "admin-subnav__item #{'is-active' if controller_name == 'home_sections'}" %>
+        <%= link_to t("admin_menu.items.pages"), admin_pages_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pages'}" %>
+        <%= link_to t("admin_menu.items.navigation"), admin_menu_items_path, class: "admin-subnav__item #{'is-active' if controller_name == 'menu_items'}" %>
       </div>
     <% end %>
   <% end %>

@@ -12,26 +12,30 @@ module Admin
 
     GROUPS = [
       [ nil, [
-        entry(:dashboard, :admin_root_path, :home, controllers: "dashboard"),
-        entry(:orders, :admin_orders_path, :orders, controllers: %w[orders carts]),
-        entry(:customers, :admin_customers_path, :customers, controllers: "customers"),
-        entry(:products, :admin_products_path, :products, controllers: %w[products variants inventory collections discounts media])
+        entry(:dashboard, :admin_root_path, :home, controllers: "dashboard")
       ] ],
       [ :operations, [
-        entry(:inventory, :admin_inventory_path, :inventory, placeholder: true),
-        entry(:purchases, :admin_purchases_path, :purchases, placeholder: true),
-        entry(:expenses, :admin_expenses_path, :expenses, controllers: "store_expenses"),
+        entry(:orders, :admin_orders_path, :orders, controllers: %w[orders carts]),
+        entry(:call_center, :admin_confirmations_path, :call_center, controllers: "confirmations"),
         entry(:delivery, :admin_delivery_path, :delivery, controllers: "delivery"),
-        entry(:call_center, :admin_confirmations_path, :call_center, controllers: "confirmations")
+        entry(:customers, :admin_customers_path, :customers, controllers: "customers")
+      ] ],
+      [ :catalog, [
+        entry(:products, :admin_products_path, :products, controllers: %w[products variants inventory collections discounts media]),
+        entry(:inventory, :admin_inventory_path, :inventory, placeholder: true),
+        entry(:purchases, :admin_purchases_path, :purchases, placeholder: true)
       ] ],
       [ :channels, [
-        entry(:stores, :admin_store_connections_path, :external, controllers: "store_connections"),
-        entry(:advertising, :admin_advertising_path, :advertising, controllers: %w[advertising pixels]),
+        entry(:stores, :admin_store_connections_path, :external, controllers: "store_connections")
+      ] ],
+      [ :marketing, [
+        entry(:advertising, :admin_advertising_path, :advertising, controllers: "advertising"),
         entry(:whatsapp, :admin_whatsapp_path, :whatsapp, placeholder: true)
       ] ],
       [ :insights, [
         entry(:analytics, :admin_analytics_path, :analytics, placeholder: true),
-        entry(:accounting, :admin_accounting_path, :accounting, placeholder: true)
+        entry(:accounting, :admin_accounting_path, :accounting, placeholder: true),
+        entry(:expenses, :admin_expenses_path, :expenses, placeholder: true)
       ] ],
       [ :team, [
         entry(:agents, :admin_users_path, :staff, controllers: "users"),

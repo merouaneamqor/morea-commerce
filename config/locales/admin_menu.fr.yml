@@ -1,12 +1,22 @@
 fr:
   admin_menu:
     groups:
-      operations: "Opérations"
+      catalog: "Catalogue et stock"
+      marketing: "Marketing"
+      operations: "Commandes et livraison"
       channels: "Canaux de vente"
-      insights: "Pilotage"
+      insights: "Finances et rapports"
       team: "Équipe"
       account: "Compte"
     items:
+      navigation: "Navigation"
+      pages: "Pages"
+      customize: "Personnaliser"
+      sign_out: "Déconnexion"
+      agent_api: "API agent"
+      pixels: "Pixels"
+      general: "Général"
+      settings: "Paramètres"
       dashboard: "Tableau de bord"
       orders: "Commandes"
       carts: "Paniers"
@@ -21,7 +31,7 @@ fr:
       expenses: "Dépenses"
       delivery: "Livraison"
       call_center: "Centre d’appels"
-      stores: "Magasins"
+      stores: "Boutiques connectées"
       advertising: "Publicité"
       whatsapp: "Intégration WhatsApp"
       online_store: "Boutique en ligne"

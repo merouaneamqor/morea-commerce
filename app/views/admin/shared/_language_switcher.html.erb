@@ -1,0 +1,10 @@
+<nav aria-label="Language / Langue / اللغة" class="flex items-center gap-2" dir="ltr" data-admin-language-switcher>
+  <% Morea::Locales::AVAILABLE.each do |locale| %>
+    <%= link_to Morea::Locales.code_for(locale),
+          admin_language_switch_path(locale),
+          class: "inline-flex px-1 py-2 text-[13px] font-medium hover:underline #{'font-semibold underline' if locale == current_locale.to_sym}",
+          lang: locale,
+          hreflang: locale,
+          aria: { label: Morea::Locales.label_for(locale), current: ("true" if locale == current_locale.to_sym) } %>
+  <% end %>
+</nav>

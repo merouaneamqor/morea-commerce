@@ -16,17 +16,18 @@
     <% if current_admin_user %>
       <div class="admin-shell" data-controller="admin-menu">
         <header class="admin-topbar">
-          <div class="flex items-center gap-2">
+          <div class="flex min-w-0 items-center gap-2">
             <button type="button" class="admin-topbar__menu md:hidden" data-action="admin-menu#toggle" aria-label="Menu">
               <%= admin_icon(:menu) %>
             </button>
-            <%= link_to admin_platform_path, class: "admin-topbar__brand" do %>
-              <span class="admin-topbar__logo">P</span>
-              <span><%= t("platform_admin.title") %></span>
+            <%= link_to admin_platform_path, class: "admin-topbar__brand min-w-0" do %>
+              <span class="admin-topbar__logo shrink-0">P</span>
+              <span class="truncate"><%= t("platform_admin.title") %></span>
             <% end %>
           </div>
 
-          <div class="admin-topbar__account">
+          <div class="admin-topbar__account shrink-0">
+            <%= render "admin/shared/language_switcher" %>
             <span class="admin-avatar"><%= current_admin_user.name.to_s.first.presence || "S" %></span>
             <span class="hidden sm:inline"><%= current_admin_user.name.presence || current_admin_user.email %></span>
           </div>

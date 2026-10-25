@@ -1,4 +1,13 @@
 module AdminHelper
+  def admin_language_switch_path(locale)
+    path = if !request.get? && action_name.in?(%w[create update])
+      url_for(action: action_name == "create" ? "new" : "edit", only_path: true)
+    else
+      request.path
+    end
+    "#{path}?#{request.query_parameters.merge("locale" => locale).to_query}"
+  end
+
   BADGE_TONES = {
     "new" => "attention",
     "confirmed" => "info",

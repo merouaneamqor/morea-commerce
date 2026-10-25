@@ -64,6 +64,23 @@ RSpec.describe "Platform admin user management", type: :request do
       expect(response).to have_http_status(:unprocessable_content)
     end
 
+    it "does not silently detach a platform admin when the selected workspace is missing" do
+      owner.update!(store: store)
+      missing_store_id = Store.maximum(:id) + 1
+      patch "/admin/platform/users/#{owner.id}", params: { user: { email: owner.email, role: "super_admin", store_id: missing_store_id } }
+      expect(response).to have_http_status(:not_found)
+      expect(owner.reload.store).to eq(store)
+    end
+
+    it "allows another active platform admin to demote an account" do
+      other = User.create!(email: "other-#{SecureRandom.hex(4)}@example.test", password: password, admin: true, super_admin: true)
+      patch "/admin/platform/users/#{other.id}", params: { user: { email: other.email, role: "workspace_admin", store_id: store.id } }
+      expect(response).to redirect_to(admin_platform_users_path)
+      expect(other.reload).not_to be_super_admin
+      expect(other.store).to eq(store)
+      expect(owner.reload).to be_super_admin
+    end
+
     it "suspends and reactivates, blocking sign-in and live sessions while suspended" do
       merchant_session = open_session
       merchant_session.host! Store.base_domain

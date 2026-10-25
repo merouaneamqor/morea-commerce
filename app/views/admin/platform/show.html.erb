@@ -27,7 +27,9 @@
     </div>
     <div class="p-4">
       <p class="admin-metric__label"><%= t("platform_admin.order_value") %></p>
-      <p class="admin-metric__value"><%= money(@revenue_cents, "MAD") %></p>
+      <% @order_values.each do |currency, cents| %>
+        <p class="admin-metric__value" data-platform-order-value="<%= currency %>"><%= dashboard_money(cents, currency) %></p>
+      <% end %>
     </div>
     <div class="p-4">
       <p class="admin-metric__label"><%= t("platform_admin.staff") %></p>

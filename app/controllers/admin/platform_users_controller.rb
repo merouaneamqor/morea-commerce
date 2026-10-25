@@ -43,13 +43,21 @@ module Admin
     end
 
     def update
-      assign_attributes
-      if (reason = demotion_denied_reason)
-        @user.errors.add(:base, t("platform_users.denied.#{reason}"))
-        return render :edit, status: :unprocessable_entity
+      saved = User.transaction do
+        # Use the same lock order as lifecycle changes so concurrent demotions
+        # and suspensions cannot both remove the remaining platform admins.
+        User.super_admins.active.order(:id).lock.pluck(:id)
+        @user.lock!
+        assign_attributes
+        if (reason = demotion_denied_reason)
+          @user.errors.add(:base, t("platform_users.denied.#{reason}"))
+          false
+        else
+          @user.save
+        end
       end
 
-      if @user.save
+      if saved
         redirect_to admin_platform_users_path, notice: t("platform_users.saved")
       else
         render :edit, status: :unprocessable_entity
@@ -89,7 +97,7 @@ module Admin
       @user.admin = true
       @user.super_admin = role == "super_admin"
       # Workspace must come from the Store table, never a free-form value.
-      @user.store = store_id.present? ? Store.find_by(id: store_id) : nil
+      @user.store = store_id.present? ? Store.find(store_id) : nil
     end
 
     def demotion_denied_reason

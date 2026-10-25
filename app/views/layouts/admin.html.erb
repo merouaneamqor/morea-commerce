@@ -16,13 +16,13 @@
     <% if current_admin_user %>
       <div class="admin-shell" data-controller="admin-menu">
         <header class="admin-topbar">
-          <div class="flex items-center gap-2">
+          <div class="flex min-w-0 items-center gap-2">
             <button type="button" class="admin-topbar__menu md:hidden" data-action="admin-menu#toggle" aria-label="Menu">
               <%= admin_icon(:menu) %>
             </button>
-            <%= link_to admin_root_path, class: "admin-topbar__brand" do %>
-              <span class="admin-topbar__logo"><%= current_store&.name.to_s.first.presence || "M" %></span>
-              <span><%= current_store&.name || "Store" %></span>
+            <%= link_to admin_root_path, class: "admin-topbar__brand min-w-0" do %>
+              <span class="admin-topbar__logo shrink-0"><%= current_store&.name.to_s.first.presence || "M" %></span>
+              <span class="truncate"><%= current_store&.name || "Store" %></span>
             <% end %>
           </div>
 
@@ -31,7 +31,8 @@
             <%= search_field_tag :q, params[:q], placeholder: "Search orders", "aria-label": "Search orders" %>
           <% end %>
 
-          <div class="admin-topbar__account gap-3">
+          <div class="admin-topbar__account shrink-0 gap-3">
+            <%= render "admin/shared/language_switcher" %>
             <% if super_admin? %>
               <%= link_to "Platform", admin_platform_path, class: "admin-btn-plain hidden sm:inline" %>
             <% end %>

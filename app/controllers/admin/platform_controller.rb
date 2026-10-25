@@ -13,7 +13,10 @@ module Admin
       @orders_scope = Order.all
       @orders_total = @orders_scope.count
       @orders_today = @orders_scope.where(created_at: Time.current.all_day).count
-      @revenue_cents = @orders_scope.where.not(status: "cancelled").sum(:total_cents)
+      @order_values = @orders_scope.where.not(status: "cancelled").group(:currency).sum(:total_cents).each_with_object(Hash.new(0)) do |(currency, cents), totals|
+        totals[currency.to_s.upcase == "DH" ? "MAD" : currency.to_s.upcase] += cents
+      end.sort.to_h
+      @order_values = { "MAD" => 0 } if @order_values.empty?
       @staff_count = User.where.not(store_id: nil).count
       @pending_requests_count = AccessRequest.pending.count
     end

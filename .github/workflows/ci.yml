@@ -114,6 +114,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Check admin PWA install flow and network-only service worker
+        run: |
+          node --test script/admin_pwa_test.mjs
+          node script/admin_service_worker_test.mjs
       - name: Check dashboard Chart.js lifecycle
         run: node script/dashboard_chart_test.mjs
       - name: Check product variant purchase interactions

@@ -83,6 +83,8 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    get "manifest.webmanifest", to: "pwa#manifest", as: :pwa_manifest
+    get "service-worker.js", to: "pwa#service_worker", as: :pwa_service_worker
     get "login", to: "sessions#new"
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"

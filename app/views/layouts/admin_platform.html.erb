@@ -3,6 +3,10 @@
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "Platform — #{Store.platform_name}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="manifest" href="<%= admin_pwa_manifest_path %>">
+    <meta name="theme-color" content="#2e4dd5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="<%= Store.platform_name %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= render "shared/platform_icons" %>
@@ -10,6 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin_pwa" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -55,6 +60,7 @@
           <div class="admin-page">
             <% if notice.present? %><div class="admin-banner admin-banner--success"><%= notice %></div><% end %>
             <% if alert.present? %><div class="admin-banner admin-banner--critical"><%= alert %></div><% end %>
+            <%= render "admin/shared/pwa_install" %>
             <%= yield %>
           </div>
         </main>

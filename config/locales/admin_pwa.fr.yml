@@ -1,0 +1,14 @@
+fr:
+  admin_pwa:
+    title: "Installer %{app}"
+    description: "Ouvrez votre espace depuis l’écran d’accueil, comme une application."
+    install: "Installer l’application"
+    later: "Plus tard"
+    availability: "Les options d’installation dépendent de votre navigateur. Une connexion internet est nécessaire."
+    ios:
+      open_safari: "Ouvrez cette page dans Safari."
+      share: "Touchez Partager (le carré avec une flèche vers le haut)."
+      add: "Choisissez Sur l’écran d’accueil, puis touchez Ajouter."
+    other:
+      menu: "Ouvrez le menu de votre navigateur (⋮ ou ⋯)."
+      add: "Choisissez Installer l’application ou Ajouter à l’écran d’accueil, puis confirmez."

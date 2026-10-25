@@ -1,0 +1,5 @@
+<h1><%= t("registration_mailer.subject", name: Store.platform_name) %></h1>
+<p><%= t("registration_mailer.body") %></p>
+<p><%= link_to t("registration_mailer.button"), @verification_url %></p>
+<p><%= t("registration_mailer.expiry") %></p>
+<p><%= t("registration_mailer.ignore") %></p>

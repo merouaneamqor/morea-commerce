@@ -1,0 +1,21 @@
+<% content_for :title, t("password_reset.title") %>
+<%= render "password_resets/chrome" %>
+<div class="fx-glass p-7 sm:p-9">
+  <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("password_reset.heading") %></h1>
+  <p class="mt-3 text-sm leading-6 text-[#b9d3ff]"><%= t("password_reset.lead") %></p>
+  <% if notice.present? %><p class="mt-5 text-sm leading-6 text-[#b9d3ff]" role="status"><%= notice %></p><% end %>
+  <% if alert.present? %><p class="fx-alert mt-5" role="alert"><%= alert %></p><% end %>
+  <%= form_with url: password_resets_path(locale: I18n.locale), method: :post, class: "mt-7 space-y-5" do %>
+    <div>
+      <%= label_tag :email, t("registration.email"), class: "fx-label" %>
+      <%= email_field_tag :email, nil, required: true, autocomplete: "email", maxlength: 160, autofocus: true, autocapitalize: "none", spellcheck: false, class: "fx-input" %>
+    </div>
+    <div>
+      <%= label_tag :workspace, t("password_reset.workspace"), class: "fx-label" %>
+      <%= text_field_tag :workspace, nil, autocomplete: "off", autocapitalize: "none", spellcheck: false, "aria-describedby": "reset-workspace-help", class: "fx-input" %>
+      <p id="reset-workspace-help" class="mt-2 text-xs leading-5 text-[#b9d3ff]"><%= t("password_reset.workspace_help") %></p>
+    </div>
+    <%= submit_tag t("password_reset.submit"), class: "fx-btn" %>
+  <% end %>
+  <p class="mt-6 text-center text-sm"><%= link_to t("password_reset.back_to_sign_in"), admin_login_path(locale: I18n.locale), class: "fx-link" %></p>
+</div>

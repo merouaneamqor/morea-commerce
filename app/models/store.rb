@@ -151,6 +151,14 @@ class Store < ApplicationRecord
     self.billing_amount_cents = value.to_i * 100
   end
 
+  # Older workspaces retain their existing billing policy. Self-service accounts
+  # need a paid, current billing period before merchant operations are available.
+  def operational_access?
+    return true unless subscription_required?
+
+    billing_status == "active" && billing_period_ends_on.present? && billing_period_ends_on >= Date.current
+  end
+
   def billing_past_due?
     billing_status == "past_due" || invoices.overdue.exists?
   end

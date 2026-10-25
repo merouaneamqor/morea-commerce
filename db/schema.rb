@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_24_214000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_25_100200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -539,6 +539,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_214000) do
     t.index ["store_id"], name: "index_products_on_store_id"
   end
 
+  create_table "registrations", force: :cascade do |t|
+    t.string "business_name", null: false
+    t.string "email", null: false
+    t.string "password_digest"
+    t.string "locale", default: "fr", null: false
+    t.string "verification_nonce", null: false
+    t.datetime "verification_sent_at"
+    t.datetime "verified_at"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_registrations_on_email", unique: true
+    t.index ["user_id"], name: "index_registrations_on_user_id", unique: true
+    t.check_constraint "email::text = lower(email::text)", name: "registrations_normalized_email"
+    t.check_constraint "verified_at IS NOT NULL OR user_id IS NULL", name: "registrations_verification_identity"
+    t.check_constraint "verified_at IS NULL OR password_digest IS NOT NULL", name: "registrations_verified_password"
+  end
+
   create_table "store_connections", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.string "provider", null: false
@@ -618,6 +636,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_214000) do
     t.string "api_token_last_four"
     t.jsonb "agent_profile", default: {}, null: false
     t.boolean "storefront_enabled", default: true, null: false
+    t.boolean "subscription_required", default: false, null: false
     t.index ["api_token_digest"], name: "index_stores_on_api_token_digest", unique: true
     t.index ["billing_interval"], name: "index_stores_on_billing_interval"
     t.index ["billing_status"], name: "index_stores_on_billing_status"
@@ -635,10 +654,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_214000) do
     t.boolean "super_admin", default: false, null: false
     t.string "status", default: "active", null: false
     t.datetime "status_changed_at"
+    t.integer "session_version", default: 0, null: false
     t.index ["email"], name: "index_users_on_email_super_admin", unique: true, where: "(super_admin = true)"
     t.index ["status"], name: "index_users_on_status"
     t.index ["store_id", "email"], name: "index_users_on_store_id_and_email", unique: true
     t.index ["store_id"], name: "index_users_on_store_id"
+    t.check_constraint "session_version >= 0", name: "users_session_version_nonnegative"
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'suspended'::character varying, 'archived'::character varying]::text[])", name: "users_status_check"
   end
 
@@ -691,6 +712,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_24_214000) do
   add_foreign_key "product_translations", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "stores"
+  add_foreign_key "registrations", "users", on_delete: :nullify
   add_foreign_key "store_connections", "stores"
   add_foreign_key "store_translations", "stores"
   add_foreign_key "users", "stores"

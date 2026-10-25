@@ -27,6 +27,7 @@ module Connections
       @connection.with_lock do
         raise Error.new("disconnected", status: 410) unless @connection.active?
         authenticate!(body, headers)
+        raise Error.new("subscription_required", status: 402) unless @connection.store.operational_access?
         @connection.update!(last_received_at: Time.current, verified_at: @connection.verified_at || Time.current)
         payload = JSON.parse(body)
         validate_origin!(payload, headers)

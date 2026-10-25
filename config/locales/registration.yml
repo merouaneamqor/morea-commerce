@@ -1,0 +1,296 @@
+{
+  "en": {
+    "registration": {
+      "title": "Create your account — %{name}",
+      "heading": "Create your account",
+      "lead": "Start with your business name and email. We’ll send a link so you can verify your email and choose a password.",
+      "business_name": "Business name",
+      "email": "Email address",
+      "password": "Password",
+      "password_confirmation": "Confirm password",
+      "password_help": "Use at least 12 characters.",
+      "subscription_note": "Creating an account is free. You can explore your workspace, then subscribe when you are ready to start using its tools.",
+      "submit": "Continue with email",
+      "have_account": "Already have an account?",
+      "sign_in": "Sign in",
+      "fix_fields": "Please check the following details.",
+      "check_email_title": "Check your email",
+      "check_email_body": "If this address can be registered, you will receive a link to verify your email and choose your password. If you already have an account, sign in instead.",
+      "resend_title": "Didn’t receive an email?",
+      "resend_help": "Check your spam folder, or enter your email below to request a new link.",
+      "resend": "Resend verification email",
+      "verify_title": "Finish creating your account",
+      "verify_body": "Choose your password to verify this email address and open your workspace.",
+      "verify_submit": "Verify email and create account",
+      "expired_title": "This link is no longer valid",
+      "expired_body": "The verification link may have expired or already been used. Request a new link, or sign in if your account is already verified.",
+      "request_new_link": "Get a new verification link",
+      "back": "Back to home",
+      "verified": "Your email is verified. Welcome to your workspace.",
+      "resend_notice": "If there is an eligible pending account for this email, a verification link will be sent.",
+      "aside": {
+        "chip": "Get started",
+        "headline": "Your business starts here.",
+        "steps": [
+          "Enter your business name and email",
+          "Verify your email and choose your password",
+          "Explore your workspace and subscribe to start using your tools"
+        ]
+      }
+    },
+    "registration_mailer": {
+      "subject": "Verify your email — %{name}",
+      "body": "Confirm your email address to finish creating your account.",
+      "button": "Verify email",
+      "expiry": "This link expires in 24 hours. You can request a new link from the signup page.",
+      "ignore": "If you did not request this account, you can ignore this email."
+    },
+    "activerecord": {
+      "attributes": {
+        "registration": {
+          "business_name": "Business name",
+          "email": "Email address",
+          "password": "Password",
+          "password_confirmation": "Confirm password"
+        }
+      },
+      "errors": {
+        "models": {
+          "registration": {
+            "blank": "can't be blank",
+            "too_short": "is too short (minimum is %{count} characters)",
+            "too_long": "is too long (maximum is %{count} characters)",
+            "invalid": "is invalid",
+            "confirmation": "doesn't match %{attribute}",
+            "taken": "has already been taken",
+            "password_too_long": "is too long (maximum is 72 bytes)"
+          }
+        }
+      }
+    },
+    "password_reset": {
+      "title": "Reset your password",
+      "heading": "Forgot your password?",
+      "lead": "Enter your email and we will send you a password reset link if an eligible account exists.",
+      "workspace": "Workspace (optional)",
+      "workspace_help": "If you use this email for several workspaces, enter the workspace address prefix to choose the right account.",
+      "submit": "Send reset link",
+      "back_to_sign_in": "Back to sign in",
+      "edit_title": "Choose a new password",
+      "edit_lead": "Use a strong password you have not used on this account before.",
+      "invalid_title": "This reset link is no longer valid",
+      "invalid_body": "The link may have expired or already been used. Request a new link to reset your password.",
+      "request_new_link": "Get a new reset link",
+      "update": "Save new password",
+      "requested": "If an eligible account exists for this email, you will receive a password reset link.",
+      "updated": "Your password has been changed. Sign in with your new password.",
+      "throttled": "Too many attempts. Please try again later.",
+      "aside_chip": "Account recovery",
+      "aside_title": "Get back to your business.",
+      "aside_body": "Reset your password securely through your verified email address. Reset links expire after 15 minutes."
+    },
+    "password_reset_mailer": {
+      "subject": "Reset your password — %{name}",
+      "body": "Use the link below to choose a new password for your account.",
+      "button": "Reset password",
+      "expiry": "This link expires in 15 minutes and can only be used once.",
+      "ignore": "If you did not request a password reset, ignore this email. Your password will not change."
+    }
+  },
+  "fr": {
+    "registration": {
+      "title": "Créer votre compte — %{name}",
+      "heading": "Créez votre compte",
+      "lead": "Saisissez le nom de votre entreprise et votre email. Nous vous enverrons un lien pour vérifier votre email et choisir un mot de passe.",
+      "business_name": "Nom de votre entreprise",
+      "email": "Adresse email",
+      "password": "Mot de passe",
+      "password_confirmation": "Confirmer le mot de passe",
+      "password_help": "Utilisez au moins 12 caractères.",
+      "subscription_note": "La création du compte est gratuite. Explorez votre espace, puis abonnez-vous lorsque vous êtes prêt à utiliser ses outils.",
+      "submit": "Continuer avec mon email",
+      "have_account": "Vous avez déjà un compte ?",
+      "sign_in": "Se connecter",
+      "fix_fields": "Veuillez vérifier les informations suivantes.",
+      "check_email_title": "Consultez votre messagerie",
+      "check_email_body": "Si cette adresse peut être inscrite, vous recevrez un lien pour vérifier votre email et choisir votre mot de passe. Si vous avez déjà un compte, connectez-vous.",
+      "resend_title": "Vous n’avez pas reçu d’email ?",
+      "resend_help": "Vérifiez vos courriers indésirables ou saisissez votre email ci-dessous pour demander un nouveau lien.",
+      "resend": "Renvoyer l’email de vérification",
+      "verify_title": "Terminez la création de votre compte",
+      "verify_body": "Choisissez votre mot de passe pour vérifier cette adresse email et ouvrir votre espace.",
+      "verify_submit": "Vérifier mon email et créer mon compte",
+      "expired_title": "Ce lien n’est plus valide",
+      "expired_body": "Le lien a peut-être expiré ou a déjà été utilisé. Demandez un nouveau lien ou connectez-vous si votre compte est déjà vérifié.",
+      "request_new_link": "Obtenir un nouveau lien",
+      "back": "Retour à l’accueil",
+      "verified": "Votre email est vérifié. Bienvenue dans votre espace.",
+      "resend_notice": "Si un compte en attente peut être vérifié avec cette adresse, un lien de vérification sera envoyé.",
+      "aside": {
+        "chip": "Commencer",
+        "headline": "Votre activité commence ici.",
+        "steps": [
+          "Saisissez le nom de votre entreprise et votre email",
+          "Vérifiez votre email et choisissez un mot de passe",
+          "Explorez votre espace et abonnez-vous pour utiliser vos outils"
+        ]
+      }
+    },
+    "registration_mailer": {
+      "subject": "Vérifiez votre email — %{name}",
+      "body": "Confirmez votre adresse email pour terminer la création de votre compte.",
+      "button": "Vérifier mon email",
+      "expiry": "Ce lien expire dans 24 heures. Vous pouvez demander un nouveau lien depuis la page d’inscription.",
+      "ignore": "Si vous n’êtes pas à l’origine de cette inscription, vous pouvez ignorer cet email."
+    },
+    "activerecord": {
+      "attributes": {
+        "registration": {
+          "business_name": "Nom de votre entreprise",
+          "email": "Adresse email",
+          "password": "Mot de passe",
+          "password_confirmation": "Confirmer le mot de passe"
+        }
+      },
+      "errors": {
+        "models": {
+          "registration": {
+            "blank": "doit être renseigné",
+            "too_short": "est trop court (au moins %{count} caractères)",
+            "too_long": "est trop long (au maximum %{count} caractères)",
+            "invalid": "n’est pas valide",
+            "confirmation": "ne correspond pas à %{attribute}",
+            "taken": "est déjà utilisé",
+            "password_too_long": "est trop long (au maximum 72 octets)"
+          }
+        }
+      }
+    },
+    "password_reset": {
+      "title": "Réinitialiser votre mot de passe",
+      "heading": "Mot de passe oublié ?",
+      "lead": "Saisissez votre email. Si un compte éligible existe, nous vous enverrons un lien de réinitialisation.",
+      "workspace": "Espace de travail (facultatif)",
+      "workspace_help": "Si vous utilisez cet email pour plusieurs espaces, saisissez le préfixe de l’adresse de votre espace pour choisir le bon compte.",
+      "submit": "Envoyer le lien",
+      "back_to_sign_in": "Retour à la connexion",
+      "edit_title": "Choisissez un nouveau mot de passe",
+      "edit_lead": "Utilisez un mot de passe fort que vous n’avez pas encore utilisé pour ce compte.",
+      "invalid_title": "Ce lien n’est plus valide",
+      "invalid_body": "Le lien a peut-être expiré ou a déjà été utilisé. Demandez un nouveau lien pour réinitialiser votre mot de passe.",
+      "request_new_link": "Obtenir un nouveau lien",
+      "update": "Enregistrer le mot de passe",
+      "requested": "Si un compte éligible existe avec cet email, vous recevrez un lien de réinitialisation.",
+      "updated": "Votre mot de passe a été modifié. Connectez-vous avec votre nouveau mot de passe.",
+      "throttled": "Trop de tentatives. Veuillez réessayer plus tard.",
+      "aside_chip": "Récupération du compte",
+      "aside_title": "Retrouvez votre activité.",
+      "aside_body": "Réinitialisez votre mot de passe en toute sécurité grâce à votre adresse email vérifiée. Le lien expire après 15 minutes."
+    },
+    "password_reset_mailer": {
+      "subject": "Réinitialisez votre mot de passe — %{name}",
+      "body": "Utilisez le lien ci-dessous pour choisir un nouveau mot de passe.",
+      "button": "Réinitialiser mon mot de passe",
+      "expiry": "Ce lien expire dans 15 minutes et ne peut être utilisé qu’une seule fois.",
+      "ignore": "Si vous n’avez pas demandé cette réinitialisation, ignorez cet email. Votre mot de passe restera inchangé."
+    }
+  },
+  "ar": {
+    "registration": {
+      "title": "إنشاء حسابك — %{name}",
+      "heading": "أنشئ حسابك",
+      "lead": "ابدأ باسم نشاطك التجاري وبريدك الإلكتروني. سنرسل رابطاً لتأكيد بريدك واختيار كلمة مرور.",
+      "business_name": "اسم النشاط التجاري",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "password_confirmation": "تأكيد كلمة المرور",
+      "password_help": "استخدم 12 حرفاً على الأقل.",
+      "subscription_note": "إنشاء الحساب مجاني. يمكنك استكشاف مساحة عملك ثم الاشتراك عندما تكون مستعداً لاستخدام أدواتها.",
+      "submit": "المتابعة بالبريد الإلكتروني",
+      "have_account": "لديك حساب بالفعل؟",
+      "sign_in": "تسجيل الدخول",
+      "fix_fields": "يرجى مراجعة البيانات التالية.",
+      "check_email_title": "تحقّق من بريدك الإلكتروني",
+      "check_email_body": "إذا كان بالإمكان تسجيل هذا العنوان، فستصلك رسالة للتحقّق من بريدك الإلكتروني واختيار كلمة مرور. إذا كان لديك حساب بالفعل، فسجّل الدخول.",
+      "resend_title": "لم تصلك رسالة؟",
+      "resend_help": "تحقّق من مجلد الرسائل غير المرغوب فيها أو أدخل بريدك الإلكتروني لطلب رابط جديد.",
+      "resend": "إعادة إرسال رسالة التحقّق",
+      "verify_title": "أكمل إنشاء حسابك",
+      "verify_body": "اختر كلمة المرور لتأكيد هذا البريد الإلكتروني وفتح مساحة عملك.",
+      "verify_submit": "تأكيد البريد وإنشاء الحساب",
+      "expired_title": "هذا الرابط لم يعد صالحاً",
+      "expired_body": "قد تكون صلاحية الرابط انتهت أو تم استخدامه بالفعل. اطلب رابطاً جديداً أو سجّل الدخول إذا كان حسابك قد تم تأكيده.",
+      "request_new_link": "الحصول على رابط جديد",
+      "back": "العودة إلى الرئيسية",
+      "verified": "تم تأكيد بريدك الإلكتروني. مرحباً بك في مساحة عملك.",
+      "resend_notice": "إذا وُجد حساب مؤهّل بانتظار التحقّق بهذا البريد، فسيتم إرسال رابط التحقّق.",
+      "aside": {
+        "chip": "ابدأ الآن",
+        "headline": "نشاطك التجاري يبدأ هنا.",
+        "steps": [
+          "أدخل اسم نشاطك التجاري وبريدك الإلكتروني",
+          "أكّد بريدك الإلكتروني واختر كلمة المرور",
+          "استكشف مساحة عملك واشترك لاستخدام أدواتك"
+        ]
+      }
+    },
+    "registration_mailer": {
+      "subject": "تأكيد بريدك الإلكتروني — %{name}",
+      "body": "أكّد عنوان بريدك الإلكتروني لإكمال إنشاء حسابك.",
+      "button": "تأكيد البريد الإلكتروني",
+      "expiry": "تنتهي صلاحية هذا الرابط خلال 24 ساعة. يمكنك طلب رابط جديد من صفحة التسجيل.",
+      "ignore": "إذا لم تطلب إنشاء هذا الحساب، فيمكنك تجاهل هذه الرسالة."
+    },
+    "activerecord": {
+      "attributes": {
+        "registration": {
+          "business_name": "اسم النشاط التجاري",
+          "email": "البريد الإلكتروني",
+          "password": "كلمة المرور",
+          "password_confirmation": "تأكيد كلمة المرور"
+        }
+      },
+      "errors": {
+        "models": {
+          "registration": {
+            "blank": "مطلوب",
+            "too_short": "قصير جداً (الحد الأدنى %{count} حرفاً)",
+            "too_long": "طويل جداً (الحد الأقصى %{count} حرفاً)",
+            "invalid": "غير صالح",
+            "confirmation": "لا يتطابق مع %{attribute}",
+            "taken": "مستخدم بالفعل",
+            "password_too_long": "طويل جداً (الحد الأقصى 72 بايت)"
+          }
+        }
+      }
+    },
+    "password_reset": {
+      "title": "إعادة تعيين كلمة المرور",
+      "heading": "نسيت كلمة المرور؟",
+      "lead": "أدخل بريدك الإلكتروني وسنرسل رابط إعادة التعيين إذا وُجد حساب مؤهّل.",
+      "workspace": "مساحة العمل (اختياري)",
+      "workspace_help": "إذا كنت تستخدم هذا البريد لعدة مساحات عمل، فأدخل بادئة عنوان مساحة العمل لاختيار الحساب الصحيح.",
+      "submit": "إرسال رابط إعادة التعيين",
+      "back_to_sign_in": "العودة إلى تسجيل الدخول",
+      "edit_title": "اختر كلمة مرور جديدة",
+      "edit_lead": "استخدم كلمة مرور قوية لم تستخدمها لهذا الحساب من قبل.",
+      "invalid_title": "رابط إعادة التعيين لم يعد صالحاً",
+      "invalid_body": "قد تكون صلاحية الرابط انتهت أو تم استخدامه بالفعل. اطلب رابطاً جديداً لإعادة تعيين كلمة المرور.",
+      "request_new_link": "الحصول على رابط جديد",
+      "update": "حفظ كلمة المرور الجديدة",
+      "requested": "إذا وُجد حساب مؤهّل بهذا البريد، فستصلك رسالة تحتوي على رابط إعادة التعيين.",
+      "updated": "تم تغيير كلمة المرور. سجّل الدخول باستخدام كلمة المرور الجديدة.",
+      "throttled": "محاولات كثيرة. يرجى المحاولة لاحقاً.",
+      "aside_chip": "استعادة الحساب",
+      "aside_title": "عُد إلى نشاطك التجاري.",
+      "aside_body": "أعد تعيين كلمة المرور بأمان عبر بريدك الإلكتروني المؤكّد. تنتهي صلاحية الرابط بعد 15 دقيقة."
+    },
+    "password_reset_mailer": {
+      "subject": "إعادة تعيين كلمة المرور — %{name}",
+      "body": "استخدم الرابط أدناه لاختيار كلمة مرور جديدة لحسابك.",
+      "button": "إعادة تعيين كلمة المرور",
+      "expiry": "تنتهي صلاحية الرابط خلال 15 دقيقة ويمكن استخدامه مرة واحدة فقط.",
+      "ignore": "إذا لم تطلب إعادة تعيين كلمة المرور، فتجاهل هذه الرسالة. لن تتغير كلمة مرورك."
+    }
+  }
+}

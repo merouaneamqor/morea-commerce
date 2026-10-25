@@ -8,7 +8,9 @@ Multi-store cash-on-delivery commerce platform for Morocco. Morea is the referen
 
 Stores are subdomain tenants. Each store has its own catalog, staff, orders, and Sendit/Discord credentials.
 
-Merchants can request a Codify storefront or an external-only order-management workspace at `/signup`. Approval preserves that choice. **Settings → Codify storefront** controls public shopping; disabling it keeps admin and integrations available, and enabling it later installs missing theme defaults. Existing stores stay published by default.
+Merchants create an account at `/signup` without administrator approval: enter a business name and email, follow a verification link, then choose a password. A verified account opens its workspace overview immediately. New workspaces begin unpublished and require an active subscription before operational pages, writes, agent APIs or connected-order intake can be used. Existing workspaces retain their access policy. Password recovery is available from sign-in. See [self-service signup and subscription setup](docs/features/self-service-subscriptions.md).
+
+Subscriptions currently use the existing manual-invoice workflow; online payment checkout needs a selected provider and configured prices. New verified workspaces are **not** given a paid trial or operational access by signup.
 
 **Sales channels → Connected stores** configures signed Shopify, WooCommerce and YouCan order webhooks with source filters, receipt history, disconnect/resume and signing-secret replacement. This first slice uses manual provider webhook setup and supports unpaid Moroccan COD/MAD orders without tax, discounts or extra fees. It preserves external line prices/options without local catalog setup or inventory changes. OAuth installation, historical import, provider updates and stock sync remain future work. YouCan needs complete order relationships and native payload completeness is not yet verified; incomplete events are visibly rejected. See [provider setup and limitations](docs/features/connected-store-contracts.md).
 
@@ -45,7 +47,7 @@ docker compose exec web env \
 
 Then open http://atelier.lvh.me:3010 (local). In production, add `{slug}.ollazen.com` as a Custom Domain on the Render `morea` service (or add `*.ollazen.com` + root if on a plan that supports wildcards).
 
-`APP_BASE_DOMAIN=ollazen.com` in production. Set `PLATFORM_DISCORD_WEBHOOK_URL` to get a Discord message for every new access request (`/signup`). Platform admins review requests in **Access requests → Review request** (`/admin/access_requests`), then **Approve and create workspace**. Approved merchant workspaces are listed separately from requests; their public Codify storefront is optional. Locally docker-compose uses `lvh.me`.
+`APP_BASE_DOMAIN=ollazen.com` in production. Email delivery requires `MAIL_FROM` and the `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and optional `SMTP_DOMAIN` / `SMTP_AUTHENTICATION` environment settings, plus the existing Sidekiq worker. Verification and recovery links use the configured platform domain, never the incoming request host. `SUBSCRIPTION_SUPPORT_EMAIL` enables the subscription-page contact action. Historical access requests remain reviewable by platform admins; public signup no longer enters that queue.
 
 ### Platform billing
 

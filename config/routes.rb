@@ -46,6 +46,13 @@ Rails.application.routes.draw do
   get "/signup", to: "signups#new", as: :signup
   post "/signup", to: "signups#create"
   get "/signup/thanks", to: "signups#thanks", as: :signup_thanks
+  get "/signup/verify", to: "signups#verify", as: :signup_verify
+  post "/signup/confirm", to: "signups#confirm", as: :signup_confirm
+  post "/signup/resend", to: "signups#resend", as: :signup_resend
+  get "/signup/password/new", to: "password_resets#new", as: :new_password_reset
+  post "/signup/password", to: "password_resets#create", as: :password_resets
+  get "/signup/password/edit", to: "password_resets#edit", as: :edit_password_reset
+  patch "/signup/password", to: "password_resets#update", as: :password_reset
 
   root to: redirect { |_params, request|
     locale = request.cookie_jar[ApplicationController::LOCALE_COOKIE].to_s
@@ -81,6 +88,7 @@ Rails.application.routes.draw do
     delete "logout", to: "sessions#destroy"
 
     root to: "dashboard#show"
+    resource :subscription, only: :show
     get "platform", to: "platform#show", as: :platform
     resources :platform_users, path: "platform/users", except: %i[show destroy] do
       member { post "lifecycle/:lifecycle", action: :lifecycle, as: :lifecycle, constraints: { lifecycle: /suspend|reactivate|archive|restore/ } }

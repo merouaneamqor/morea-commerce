@@ -1,0 +1,5 @@
+<h1><%= t("password_reset_mailer.subject", name: Store.platform_name) %></h1>
+<p><%= t("password_reset_mailer.body") %></p>
+<p><%= link_to t("password_reset_mailer.button"), @reset_url %></p>
+<p><%= t("password_reset_mailer.expiry") %></p>
+<p><%= t("password_reset_mailer.ignore") %></p>

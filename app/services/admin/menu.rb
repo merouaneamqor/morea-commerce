@@ -38,7 +38,7 @@ module Admin
         entry(:workflows, :admin_workflows_path, :workflows, placeholder: true)
       ] ],
       [ :account, [
-        entry(:billing, :admin_billing_path, :billing, placeholder: true),
+        entry(:billing, :admin_subscription_path, :billing, controllers: "subscriptions"),
         entry(:app, :admin_app_path, :app, placeholder: true),
         entry(:ai_chat, :admin_ai_chat_path, :ai_chat, placeholder: true),
         entry(:help, :admin_help_path, :help, placeholder: true)

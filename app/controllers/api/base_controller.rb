@@ -20,7 +20,11 @@ module Api
 
     def set_current_store
       Current.store = Store.find_by_host(request.host)
-      return if Current.store
+      if Current.store
+        return if Current.store.operational_access?
+
+        return respond_with_result(ok: false, title: "Subscription required", message: "An active subscription is required.", status: :payment_required)
+      end
 
       respond_with_result(
         ok: false,

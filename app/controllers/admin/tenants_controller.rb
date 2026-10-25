@@ -74,10 +74,11 @@ module Admin
       end
     end
 
-    # Switch into store-ops mode, then open that store's admin (may be another subdomain).
+    # Apex sessions can operate any workspace without requiring its public host.
     def enter
       session[:admin_mode] = "store"
-      if current_store&.id == @store.id
+      session[:admin_store_id] = @store.id
+      if Store.apex_host?(request.host) || current_store&.id == @store.id
         redirect_to admin_root_path
       else
         redirect_to "#{@store.origin}/admin", allow_other_host: true

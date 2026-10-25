@@ -32,8 +32,8 @@ class ApplicationController < ActionController::Base
 
   def set_current_store
     if Store.apex_host?(request.host)
-      # Merchants can use the shared sign-in/admin host. Its workspace comes
-      # from authenticated membership, never from a submitted tenant ID.
+      # Merchants use their authenticated membership on the shared admin host.
+      # Super admins may select a workspace through the authorized enter action.
       Current.store = apex_admin_workspace
       return if apex_request_allowed?
 
@@ -55,7 +55,13 @@ class ApplicationController < ActionController::Base
     return unless request.path.start_with?("/admin") && session[:user_id]
 
     user = User.active.find_by(id: session[:user_id])
-    user.store if user&.admin? && !user.super_admin? && session[:session_version].to_i == user.session_version
+    return unless user && session[:session_version].to_i == user.session_version
+
+    if user.super_admin?
+      Store.find_by(id: session[:admin_store_id]) if session[:admin_mode] == "store"
+    elsif user.admin?
+      user.store
+    end
   end
 
   def storefront_request?

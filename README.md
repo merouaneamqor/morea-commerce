@@ -51,6 +51,12 @@ Then open http://atelier.lvh.me:3010 (local). In production, add `{slug}.ollazen
 
 `APP_BASE_DOMAIN=ollazen.com` in production. Email delivery requires `MAIL_FROM` and the `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and optional `SMTP_DOMAIN` / `SMTP_AUTHENTICATION` environment settings, plus the existing Sidekiq worker. Verification and recovery links use the configured platform domain, never the incoming request host. `SUBSCRIPTION_SUPPORT_EMAIL` enables the subscription-page contact action. Historical access requests remain reviewable by platform admins; public signup no longer enters that queue.
 
+### Workspace access and language
+
+Super admins can use **Platform → Workspaces → Open admin** to operate any workspace, including unpublished workspaces, on the platform host. Return to **Platform** to choose another workspace. Merchant sessions remain limited to their own workspace.
+
+Both platform and workspace admin headers provide **FR / EN / AR** language links. The selection is saved in the browser and Arabic uses right-to-left layout.
+
 ### Platform billing
 
 Each store has monthly/yearly billing fields. Super admins issue **manual invoices** from Platform → store → Invoices (draft → issue → mark paid / void). Overdue issued invoices set the store to `past_due` and show a soft banner in store admin; the storefront stays online.

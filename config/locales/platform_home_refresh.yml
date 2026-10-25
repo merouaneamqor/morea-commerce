@@ -5,7 +5,7 @@
         "eyebrow": "Plateforme COD pour e-commerçants",
         "headline": "Votre e-commerce,",
         "headline_accent": "sous contrôle.",
-        "lead": "Confirmez vos commandes COD, expédiez avec votre société de livraison et suivez votre activité depuis une seule plateforme.",
+        "lead": "Vendez partout où vos clients achètent. En ligne et en personne. Avec l’IA et sur les réseaux sociaux. Au niveau local et mondial.",
         "badges": [
           "Commandes",
           "Livraison",
@@ -56,7 +56,8 @@
         "footer": "Votre e-commerce, sous contrôle.",
         "navigation": "Navigation principale",
         "nav_journey": "Parcours",
-        "nav_contact": "Contact"
+        "nav_contact": "Contact",
+        "agent_button": "Commencer avec votre agent"
       }
     }
   },
@@ -66,7 +67,7 @@
         "eyebrow": "COD platform for e-commerce teams",
         "headline": "Your e-commerce,",
         "headline_accent": "under control.",
-        "lead": "Confirm your cash-on-delivery orders, ship with your delivery company and follow your business from one platform.",
+        "lead": "Sell everywhere people shop. Online and in person. Across AI and on social. Locally and globally.",
         "badges": [
           "Orders",
           "Delivery",
@@ -117,7 +118,8 @@
         "footer": "Your e-commerce, under control.",
         "navigation": "Main navigation",
         "nav_journey": "How it works",
-        "nav_contact": "Contact"
+        "nav_contact": "Contact",
+        "agent_button": "Start with your agent"
       }
     }
   },
@@ -127,7 +129,7 @@
         "eyebrow": "منصة الدفع عند الاستلام للتجارة الإلكترونية",
         "headline": "تجارتك الإلكترونية،",
         "headline_accent": "تحت سيطرتك.",
-        "lead": "أكّد طلبات الدفع عند الاستلام، واشحن مع شركة التوصيل، وتابع نشاط متجرك من منصة واحدة.",
+        "lead": "بِع أينما يتسوق الناس. عبر الإنترنت وفي المتاجر. عبر الذكاء الاصطناعي ووسائل التواصل الاجتماعي. محلياً وعالمياً.",
         "badges": [
           "الطلبات",
           "التوصيل",
@@ -178,7 +180,8 @@
         "footer": "تجارتك الإلكترونية، تحت سيطرتك.",
         "navigation": "التنقل الرئيسي",
         "nav_journey": "رحلة الطلب",
-        "nav_contact": "تواصل معنا"
+        "nav_contact": "تواصل معنا",
+        "agent_button": "ابدأ مع وكيلك"
       }
     }
   }

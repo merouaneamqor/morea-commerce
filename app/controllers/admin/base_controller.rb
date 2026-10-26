@@ -4,6 +4,7 @@ module Admin
 
     layout "admin"
     before_action :require_admin!
+    before_action :confine_confirmation_agents!
     before_action :sync_store_billing_past_due!
     before_action :require_subscription_access!
 
@@ -26,9 +27,20 @@ end
     end
 
     def require_admin!
-      return if current_user&.super_admin? || current_user&.admin?
+      return if current_user&.super_admin? || current_user&.admin? || current_user&.confirmation_agent?
 
       redirect_to admin_login_path, alert: "Please sign in."
+    end
+
+    # Confirmation agents are not admins: they reach the desk, its performance page
+    # and the billing page (needed when a subscription blocks the store).
+    AGENT_ALLOWED_CONTROLLERS = %w[admin/confirmations admin/subscriptions admin/push_subscriptions].freeze
+
+    def confine_confirmation_agents!
+      return unless current_user&.confirmation_agent? && !current_user.super_admin?
+      return if AGENT_ALLOWED_CONTROLLERS.include?(controller_path)
+
+      redirect_to home_admin_confirmations_path
     end
 
     def require_super_admin!

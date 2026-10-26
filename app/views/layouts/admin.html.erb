@@ -39,6 +39,18 @@
 
           <div class="admin-topbar__account shrink-0 gap-3">
             <%= render "admin/shared/language_switcher" %>
+            <div class="contents"
+                 data-controller="order-alerts"
+                 data-order-alerts-public-key-value="<%= Rails.configuration.x.web_push[:public_key] %>"
+                 data-order-alerts-subscribe-url-value="<%= admin_push_subscription_path %>"
+                 data-order-alerts-on-label-value="<%= t('admin.order_alerts.on') %>"
+                 data-order-alerts-off-label-value="<%= t('admin.order_alerts.off') %>"
+                 data-order-alerts-blocked-label-value="<%= t('admin.order_alerts.blocked') %>">
+              <button type="button" class="admin-btn-plain" hidden
+                      aria-pressed="false" data-order-alerts-target="toggle" data-action="order-alerts#toggle">
+                <span data-order-alerts-target="label"><%= t("admin.order_alerts.off") %></span>
+              </button>
+            </div>
             <% if super_admin? %>
               <%= link_to "Platform", admin_platform_path, class: "admin-btn-plain hidden sm:inline" %>
             <% end %>

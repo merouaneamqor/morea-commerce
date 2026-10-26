@@ -47,7 +47,7 @@ module Admin
 
       # Email uniqueness is per workspace. Require an explicit workspace when
       # the same address has multiple accounts instead of selecting a tenant.
-      candidates = User.where(email: email).where("admin = TRUE OR super_admin = TRUE").active.limit(2).to_a
+      candidates = User.where(email: email).where("admin = TRUE OR super_admin = TRUE OR confirmation_role = 'agent'").active.limit(2).to_a
       candidates.first if candidates.one?
     end
 
@@ -61,7 +61,9 @@ module Admin
         return return_to
       end
 
-      user&.super_admin? ? admin_platform_path : admin_root_path
+      return admin_platform_path if user&.super_admin?
+
+      user&.confirmation_agent? ? home_admin_confirmations_path : admin_root_path
     end
   end
 end

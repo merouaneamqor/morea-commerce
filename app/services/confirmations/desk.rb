@@ -4,6 +4,9 @@ module Confirmations
   class Desk
     class Error < StandardError; end
 
+    NO_ANSWER_LIMIT = 3
+    AUTO_CANCEL_REASON = "Auto-cancelled after #{NO_ANSWER_LIMIT} unanswered calls".freeze
+
     def initialize(store:, user:)
       @store, @user = store, user
     end
@@ -42,12 +45,20 @@ module Confirmations
       with_order(order_id) do |order, confirmation|
         require_open!(order)
         require_owner!(confirmation)
-        if %w[confirmed cancelled].include?(outcome)
+        # The order lock serializes this count, so the third unanswered call always cancels.
+        auto_cancel = outcome == "no_answer" && no_answer_count(confirmation) + 1 >= NO_ANSWER_LIMIT
+        # Time held since the claim started; read before the claim is cleared below.
+        handled = confirmation.claimed_at && [ (Time.current - confirmation.claimed_at).round, 0 ].max
+        if auto_cancel
+          order.transition_to!("cancelled", reason: AUTO_CANCEL_REASON, user: @user, source: :staff, sync_delivery: false)
+        elsif %w[confirmed cancelled].include?(outcome)
           order.transition_to!(outcome, reason: notes, user: @user, source: :staff, sync_delivery: false)
         end
-        confirmation.update!(disposition: outcome, callback_at: callback, assigned_user: nil, claimed_at: nil)
-        confirmation.confirmation_attempts.create!(store: @store, user: @user, outcome: outcome, notes: notes, callback_at: callback)
-        order.record_event!("comment", body: "Confirmation outcome: #{outcome.humanize}#{" — #{notes}" if notes}", user: @user)
+        confirmation.update!(disposition: auto_cancel ? "cancelled" : outcome, callback_at: callback, assigned_user: nil, claimed_at: nil)
+        confirmation.confirmation_attempts.create!(store: @store, user: @user, outcome: outcome, notes: notes, callback_at: callback, handled_seconds: handled)
+        body = "Confirmation outcome: #{outcome.humanize}#{" — #{notes}" if notes}"
+        body = "#{body}. #{AUTO_CANCEL_REASON}" if auto_cancel
+        order.record_event!("comment", body: body, user: @user)
         confirmation
       end
     rescue ActiveRecord::RecordInvalid => e
@@ -73,7 +84,7 @@ module Confirmations
     end
 
     def authorize!
-      return if @store && @user && (@user.super_admin? || (@user.admin? && @user.store_id == @store.id))
+      return if @store && @user&.can_work_desk_for?(@store.id)
 
       raise Error, "Store administration access required."
     end
@@ -82,6 +93,10 @@ module Confirmations
       unless order.status == "new" && !order.archived? && order.sendit_code.blank?
         raise Error, "Only active, unshipped new orders can be confirmed here."
       end
+    end
+
+    def no_answer_count(confirmation)
+      confirmation.confirmation_attempts.where(outcome: "no_answer").count
     end
 
     def require_owner!(confirmation)

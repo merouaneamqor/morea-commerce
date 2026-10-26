@@ -1,0 +1,6 @@
+en:
+  admin:
+    order_alerts:
+      "on": "Order alerts on"
+      "off": "Order alerts"
+      blocked: "Notifications are blocked in this browser"

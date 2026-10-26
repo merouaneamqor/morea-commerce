@@ -20,3 +20,30 @@ self.addEventListener("fetch", (event) => {
     headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }
   })))
 })
+
+// Order alerts: show a system notification, and tell any open admin tab so it can play the chime.
+self.addEventListener("push", (event) => {
+  let data = {}
+  try { data = event.data ? event.data.json() : {} } catch (_) { data = { title: "Seallo", body: event.data ? event.data.text() : "" } }
+  const show = self.registration.showNotification(data.title || "Seallo", {
+    body: data.body || "",
+    tag: data.tag,
+    renotify: Boolean(data.tag),
+    icon: "/icon-128.png",
+    badge: "/icon-48.png",
+    requireInteraction: true,
+    data: { url: data.url || "/admin/confirmations" }
+  })
+  const notify = self.clients.matchAll({ type: "window", includeUncontrolled: true })
+    .then((clients) => clients.forEach((client) => client.postMessage({ kind: data.kind || "notification", ...data })))
+  event.waitUntil(Promise.all([show, notify]))
+})
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close()
+  const url = new URL(event.notification.data?.url || "/admin/confirmations", self.location.origin).href
+  event.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+    const open = clients.find((client) => client.url.startsWith(`${self.location.origin}/admin`))
+    return open ? open.focus() : self.clients.openWindow(url)
+  }))
+})

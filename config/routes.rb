@@ -85,6 +85,7 @@ Rails.application.routes.draw do
   namespace :admin do
     get "manifest.webmanifest", to: "pwa#manifest", as: :pwa_manifest
     get "service-worker.js", to: "pwa#service_worker", as: :pwa_service_worker
+    resource :push_subscription, only: %i[create destroy]
     get "login", to: "sessions#new"
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"
@@ -136,6 +137,12 @@ Rails.application.routes.draw do
     post "media/upload", to: "media#upload", as: :media_upload
     post "media/edits", to: "media#edits", as: :media_edits
     resources :confirmations, only: :index, param: :order_id do
+      collection do
+        get :home
+        get :dashboard
+        post :clock_in
+        post :clock_out
+      end
       member do
         post :claim
         post :release

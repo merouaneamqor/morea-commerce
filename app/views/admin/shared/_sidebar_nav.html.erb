@@ -1,12 +1,21 @@
 <% Admin::Menu::GROUPS.each do |group, entries| %>
+  <% next if current_admin_user&.confirmation_agent? && group != :operations %>
   <% if group %><p class="admin-sidebar__heading"><%= t("admin_menu.groups.#{group}") %></p><% end %>
   <% entries.each do |entry| %>
+    <% next if current_admin_user&.confirmation_agent? && entry.key != :call_center %>
     <%= admin_nav_link t("admin_menu.items.#{entry.key}"), public_send(entry.route), icon: entry.icon,
           active: entry.placeholder? ? (controller_name == "coming_soon" && params[:feature] == entry.key.to_s) : controller_name.in?(entry.controllers) %>
     <% if entry.key == :orders && controller_name.in?(%w[orders carts]) %>
       <div class="admin-subnav">
         <%= link_to t("admin_menu.items.orders"), admin_orders_path, class: "admin-subnav__item #{'is-active' if controller_name == 'orders'}" %>
         <%= link_to t("admin_menu.items.carts"), admin_carts_path, class: "admin-subnav__item #{'is-active' if controller_name == 'carts'}" %>
+      </div>
+    <% end %>
+    <% if entry.key == :call_center && controller_name == "confirmations" %>
+      <div class="admin-subnav">
+        <%= link_to t("admin.confirmations.home"), home_admin_confirmations_path, class: "admin-subnav__item #{'is-active' if action_name == 'home'}" %>
+        <%= link_to t("admin.confirmations.title"), admin_confirmations_path, class: "admin-subnav__item #{'is-active' if action_name.in?(%w[index])}" %>
+        <%= link_to t("admin.confirmations.performance"), dashboard_admin_confirmations_path, class: "admin-subnav__item #{'is-active' if action_name == 'dashboard'}" %>
       </div>
     <% end %>
     <% if entry.key == :products && controller_name.in?(entry.controllers) %>

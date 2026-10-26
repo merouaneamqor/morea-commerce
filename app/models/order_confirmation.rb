@@ -19,7 +19,7 @@ class OrderConfirmation < ApplicationRecord
 
   def same_store_records
     errors.add(:order, "must belong to this store") if order && order.store_id != store_id
-    if assigned_user && !(assigned_user.super_admin? || (assigned_user.admin? && assigned_user.store_id == store_id))
+    if assigned_user && !assigned_user.can_work_desk_for?(store_id)
       errors.add(:assigned_user, "must administer this store")
     end
   end

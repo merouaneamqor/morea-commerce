@@ -4,7 +4,7 @@ module Admin
   class StoreConnectionsController < BaseController
     before_action :require_workspace!
     before_action :set_shopify_configuration
-    before_action :set_connection, only: %i[show update]
+    before_action :set_connection, only: %i[show update destroy]
 
     def index
       @connections = current_store.store_connections.order(created_at: :desc).limit(100)
@@ -24,7 +24,7 @@ module Admin
       @connection.shopify_oauth = true if @connection.provider == "shopify"
       if @connection.save
         if @connection.provider == "shopify"
-          return redirect_to shopify_authorization_url, allow_other_host: true
+          return redirect_to shopify_authorization_url, allow_other_host: true, status: :see_other
         end
         redirect_to admin_store_connection_path(@connection), notice: t("connections.saved")
       else
@@ -34,6 +34,14 @@ module Admin
 
     def show
       @receipts = @connection.external_order_receipts.order(received_at: :desc).limit(50).includes(:order)
+    end
+
+    def destroy
+      if @connection.with_lock { @connection.destroy }
+        redirect_to admin_store_connections_path, notice: t("connections.deleted"), status: :see_other
+      else
+        redirect_to admin_store_connection_path(@connection), alert: t("connections.delete_blocked"), status: :see_other
+      end
     end
 
     def shopify_callback
@@ -61,7 +69,7 @@ module Admin
       when "authorize_shopify"
         return head :unprocessable_entity unless @connection.provider == "shopify"
 
-        return redirect_to shopify_authorization_url, allow_other_host: true
+        return redirect_to shopify_authorization_url, allow_other_host: true, status: :see_other
       when "verify_shopify_api"
         return head :unprocessable_entity unless @connection.provider == "shopify"
 

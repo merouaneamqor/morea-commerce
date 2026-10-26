@@ -115,7 +115,7 @@ Rails.application.routes.draw do
     end
     resource :store, only: %i[edit update]
     get "shopify/callback", to: "store_connections#shopify_callback", as: :shopify_callback
-    resources :store_connections, only: %i[index new create show update]
+    resources :store_connections, only: %i[index new create show update destroy]
     resource :agent_api, only: :show, controller: "agent_api" do
       post :token, action: :generate_token
       delete :token, action: :revoke_token

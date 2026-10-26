@@ -171,6 +171,7 @@ class Checkout
 
     OrderStatusJob.perform_later(order.id)
     DiscordOrderNotifyJob.perform_later(order.id)
+    NewOrderAlertJob.perform_later(order.id)
     order
   end
 

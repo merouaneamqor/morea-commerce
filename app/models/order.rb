@@ -9,9 +9,6 @@ class Order < ApplicationRecord
   has_many :order_imports, dependent: :destroy
   has_one :order_confirmation, dependent: :destroy
 
-  # Staff hear about every order that lands, whichever channel created it.
-  after_create_commit -> { NewOrderAlertJob.perform_later(id) }, if: -> { status == "new" }
-
   # Happy-path progression (Sendit advances through these)
   FLOW = %w[
     new confirmed preparing awaiting_pickup picked_up in_transit out_for_delivery delivered

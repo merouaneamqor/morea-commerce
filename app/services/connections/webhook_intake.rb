@@ -26,49 +26,12 @@ module Connections
       raise Error.new("payload_too_large", status: 413) if body.bytesize > MAX_BODY_BYTES
       @connection.with_lock do
         raise Error.new("disconnected", status: 410) unless @connection.active?
-        raise Error.new("api_connection", status: 410) if @connection.shopify_api_configured?
         authenticate!(body, headers)
         raise Error.new("subscription_required", status: 402) unless @connection.store.operational_access?
         @connection.update!(last_received_at: Time.current, verified_at: @connection.verified_at || Time.current)
         payload = JSON.parse(body)
         validate_origin!(payload, headers)
-        data = @connection.provider == "youcan" ? payload["data"] : payload
-        external_id = data.is_a?(Hash) ? data["id"].to_s : ""
-        raise Error, "invalid_external_id" unless external_id.match?(/\A[a-zA-Z0-9_-]{1,255}\z/)
-        receipt = @connection.external_order_receipts.find_or_initialize_by(external_id: external_id)
-        return Result.new(receipt: receipt, replayed: true) if receipt.persisted? && receipt.status == "accepted"
-
-        begin
-          attrs = OrderNormalizer.new(@connection).call(payload)
-          # Savepoint removes partial customer/order writes if a validated model
-          # refuses a provider payload, while preserving a safe rejection receipt.
-          ApplicationRecord.transaction(requires_new: true) do
-            store = @connection.store
-            # Match existing intake's lock order for customer identity updates.
-            store.with_lock do
-              customer = store.customers.find_or_initialize_by(phone: attrs[:customer_phone])
-              customer.assign_attributes(name: attrs[:customer_name], city: attrs[:customer_city])
-              customer.save!
-              order = store.orders.create!(attrs.except(:lines).merge(customer: customer, payment_method: "cod", status: "new"))
-              attrs[:lines].each { |line| order.order_items.create!(line) }
-              customer.increment!(:orders_count)
-              order.record_event!("created", body: "Order received from #{@connection.provider}")
-              receipt.assign_attributes(order: order, status: "accepted", error_code: nil, received_at: Time.current)
-              receipt.save!
-            end
-          end
-          @connection.update!(last_error_code: nil)
-        rescue OrderNormalizer::Error => error
-          receipt.assign_attributes(status: "rejected", error_code: error.message, received_at: Time.current)
-          receipt.save!
-          @connection.update!(last_error_code: error.message)
-        rescue ActiveRecord::RecordInvalid, ActiveRecord::RangeError
-          receipt.reload if receipt.persisted?
-          receipt.assign_attributes(order: nil, status: "rejected", error_code: "invalid_order", received_at: Time.current)
-          receipt.save!
-          @connection.update!(last_error_code: "invalid_order")
-        end
-        Result.new(receipt: receipt, replayed: false)
+        persist(payload)
       end
     rescue JSON::ParserError
       raise Error, "invalid_json"
@@ -78,11 +41,67 @@ module Connections
       raise Error.new("secret_unavailable", status: 503)
     end
 
+    # Imports an order fetched through the authorized Shopify API. The caller has
+    # already authenticated with Shopify, so there is no signature or topic to check.
+    def import(payload)
+      @connection.with_lock do
+        raise Error.new("disconnected", status: 410) unless @connection.active?
+        raise Error.new("subscription_required", status: 402) unless @connection.store.operational_access?
+        @connection.update!(last_received_at: Time.current, verified_at: @connection.verified_at || Time.current)
+        persist(payload)
+      end
+    rescue TypeError, NoMethodError
+      raise Error, "invalid_payload"
+    end
+
     private
+
+    def persist(payload)
+      data = @connection.provider == "youcan" ? payload["data"] : payload
+      external_id = data.is_a?(Hash) ? data["id"].to_s : ""
+      raise Error, "invalid_external_id" unless external_id.match?(/\A[a-zA-Z0-9_-]{1,255}\z/)
+      receipt = @connection.external_order_receipts.find_or_initialize_by(external_id: external_id)
+      return Result.new(receipt: receipt, replayed: true) if receipt.persisted? && receipt.status == "accepted"
+
+      begin
+        attrs = OrderNormalizer.new(@connection).call(payload)
+        # Savepoint removes partial customer/order writes if a validated model
+        # refuses a provider payload, while preserving a safe rejection receipt.
+        ApplicationRecord.transaction(requires_new: true) do
+          store = @connection.store
+          # Match existing intake's lock order for customer identity updates.
+          store.with_lock do
+            customer = store.customers.find_or_initialize_by(phone: attrs[:customer_phone])
+            customer.assign_attributes(name: attrs[:customer_name], city: attrs[:customer_city])
+            customer.save!
+            order = store.orders.create!(attrs.except(:lines).merge(customer: customer, payment_method: "cod", status: "new"))
+            attrs[:lines].each { |line| order.order_items.create!(line) }
+            customer.increment!(:orders_count)
+            order.record_event!("created", body: "Order received from #{@connection.provider}")
+            receipt.assign_attributes(order: order, status: "accepted", error_code: nil, received_at: Time.current)
+            receipt.save!
+          end
+        end
+        @connection.update!(last_error_code: nil)
+      rescue OrderNormalizer::Error => error
+        receipt.assign_attributes(status: "rejected", error_code: error.message, received_at: Time.current)
+        receipt.save!
+        @connection.update!(last_error_code: error.message)
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RangeError
+        receipt.reload if receipt.persisted?
+        receipt.assign_attributes(order: nil, status: "rejected", error_code: "invalid_order", received_at: Time.current)
+        receipt.save!
+        @connection.update!(last_error_code: "invalid_order")
+      end
+      Result.new(receipt: receipt, replayed: false)
+    end
 
     def authenticate!(body, headers)
       header = { "shopify" => "X-Shopify-Hmac-SHA256", "woocommerce" => "X-WC-Webhook-Signature", "youcan" => "X-YOUCAN-SIGNATURE" }.fetch(@connection.provider)
-      digest = OpenSSL::HMAC.digest("sha256", @connection.webhook_secret, body)
+      # OAuth connections are signed by the shared app; legacy ones by their own secret.
+      secret = @connection.shopify_api_configured? ? ENV["SHOPIFY_CLIENT_SECRET"].to_s : @connection.webhook_secret.to_s
+      raise Error.new("secret_unavailable", status: 503) if secret.blank?
+      digest = OpenSSL::HMAC.digest("sha256", secret, body)
       expected = @connection.provider == "youcan" ? digest.unpack1("H*") : Base64.strict_encode64(digest)
       given = headers[header].to_s
       raise Error.new("invalid_signature", status: 401) unless given.bytesize == expected.bytesize && ActiveSupport::SecurityUtils.secure_compare(expected, given)

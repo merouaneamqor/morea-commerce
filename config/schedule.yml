@@ -10,4 +10,10 @@ sendit_poll:
   queue: default
   active_job: true
   description: "Refresh Sendit parcels (shipped, unreachable, refused, returns)"
+shopify_orders_sync:
+  cron: "<%= ENV.fetch("SHOPIFY_SYNC_CRON", "*/10 * * * *") %>"
+  class: "ShopifyOrdersSyncJob"
+  queue: default
+  active_job: true
+  description: "Import Shopify COD orders missed by the webhook"
 <% end %>

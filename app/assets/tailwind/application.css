@@ -1052,7 +1052,7 @@
   .admin-body {
     @apply min-h-screen text-[13px] leading-5 antialiased;
     font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-    background: #f1f1f1;
+    background: #f1f6fd;
     color: #303030;
     font-feature-settings: "cv11", "ss01";
   }

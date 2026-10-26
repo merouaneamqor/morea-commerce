@@ -1348,12 +1348,44 @@
     @apply lg:grid-cols-4;
   }
 
+  /* The six primary KPIs sit on one row from xl up (3 + 3 below, 2 per row on phones);
+   the value is the focus, so label, note and status stay small. */
   .admin-dashboard-metrics--primary-kpis {
-    @apply md:grid-cols-2 xl:grid-cols-3;
+  @apply grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6;
   }
 
-  .admin-dashboard-metric--hero {
-    @apply min-h-40;
+  .admin-dashboard-metric.admin-dashboard-metric--hero {
+  @apply flex min-h-0 flex-col p-3;
+  }
+
+  .admin-dashboard-metric.admin-dashboard-metric--hero .admin-dashboard-metric__head {
+  @apply gap-2;
+  }
+
+  .admin-dashboard-metric.admin-dashboard-metric--hero .admin-dashboard-metric__icon {
+  @apply h-7 w-7 rounded-lg;
+  }
+
+  .admin-dashboard-metric.admin-dashboard-metric--hero .admin-dashboard-metric__icon svg {
+  @apply h-4 w-4;
+  }
+
+  .admin-dashboard-metric.admin-dashboard-metric--hero .admin-metric__label {
+  @apply mt-0 text-xs font-semibold leading-tight;
+  }
+
+  .admin-dashboard-metric.admin-dashboard-metric--hero .admin-metric__value {
+  @apply mt-2.5 font-extrabold leading-none tracking-tight;
+  font-size: clamp(1.25rem, 1.9vw, 1.75rem);
+  overflow-wrap: anywhere;
+  }
+
+  .admin-dashboard-metric.admin-dashboard-metric--hero .admin-dashboard-metric__delta {
+  @apply mt-1.5 text-[11px] font-normal leading-snug;
+  }
+
+  .admin-dashboard-metric.admin-dashboard-metric--hero .admin-quality {
+  @apply mt-2 px-1.5 py-0.5 text-[9px];
   }
 
   .admin-dashboard-metric__head {

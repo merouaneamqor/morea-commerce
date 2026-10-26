@@ -1,11 +1,16 @@
 <% content_for :title, @connection.name %>
+<% shopify = @connection.provider == "shopify" %>
 <div class="admin-page-header">
   <div><h1 class="admin-page-header__title"><%= @connection.name %></h1>
     <p class="admin-page-header__meta"><%= t("connections.providers.#{@connection.provider}") %> · <%= @connection.external_domain %> · <%= connection_state(@connection) %></p></div>
-  <%= button_to t(@connection.active? ? "connections.disconnect" : "connections.reconnect"), admin_store_connection_path(@connection), method: :patch, params: { operation: @connection.active? ? "disconnect" : "reconnect" }, class: "admin-btn-secondary" %>
+  <%= button_to t(@connection.active? ? "connections.disconnect" : (shopify ? "connections.shopify_api.reconnect" : "connections.reconnect")), admin_store_connection_path(@connection), method: :patch, params: { operation: @connection.active? ? "disconnect" : "reconnect" }, class: "admin-btn-secondary" %>
 </div>
+<% if @connection.errors.any? %><div role="alert" class="admin-banner admin-banner--critical"><%= @connection.errors.full_messages.to_sentence %></div><% end %>
+<% if shopify %>
+  <%= render "shopify_api" %>
+  <%= render "shopify_setup", saved: true %>
+<% else %>
 <section class="admin-card p-5 mb-4 space-y-3">
-  <% if @connection.errors.any? %><div role="alert" class="admin-banner admin-banner--critical"><%= @connection.errors.full_messages.to_sentence %></div><% end %>
   <h2 class="admin-card__title"><%= t("connections.setup") %></h2>
   <p><%= t("connections.instructions.#{@connection.provider}") %></p>
   <label for="webhook-url" class="admin-label"><%= t("connections.webhook_url") %></label>
@@ -16,18 +21,17 @@
   <p class="admin-muted"><%= t("connections.resume_help") %></p>
   <% if @connection.last_error_code.present? %><p role="alert" class="admin-banner admin-banner--critical"><%= t("connections.delivery_error", code: @connection.last_error_code) %></p><% end %>
 </section>
-<% if @connection.provider == "shopify" %><%= render "shopify_setup", saved: true %><% end %>
 <section class="admin-card p-5 mb-4">
   <%= form_with model: [:admin, @connection], class: "space-y-3" do |f| %>
     <%= hidden_field_tag :operation, "rotate_secret" %>
     <%= f.label :webhook_secret, t("connections.secret"), class: "admin-label" %>
     <%= f.password_field :webhook_secret, value: nil, required: true, autocomplete: "new-password", class: "admin-input" %>
-    <% if @connection.provider == "shopify" %><p class="admin-muted"><%= t("connections.shopify_setup.secret_help") %></p><% end %>
     <%= f.submit t("connections.rotate_secret"), class: "admin-btn-secondary" %>
   <% end %>
 </section>
+<% end %>
 <section class="admin-card">
-  <div class="admin-card__header"><h2 class="admin-card__title"><%= t("connections.deliveries") %></h2></div>
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= t(shopify ? "connections.shopify_api.imported_orders" : "connections.deliveries") %></h2></div>
   <div class="admin-table-wrap"><table class="admin-table">
     <thead><tr><th><%= t("connections.external_id") %></th><th><%= t("connections.status") %></th><th><%= t("connections.order") %></th><th><%= t("connections.received") %></th></tr></thead>
     <tbody><% @receipts.each do |receipt| %><tr>
@@ -37,5 +41,5 @@
       <td><%= l(receipt.received_at.in_time_zone("Africa/Casablanca"), format: "%d/%m/%Y %H:%M") %></td>
     </tr><% end %></tbody>
   </table></div>
-  <% if @receipts.empty? %><p class="admin-empty"><%= t("connections.no_deliveries") %></p><% end %>
+  <% if @receipts.empty? %><p class="admin-empty"><%= t(shopify ? "connections.shopify_api.no_imported_orders" : "connections.no_deliveries") %></p><% end %>
 </section>

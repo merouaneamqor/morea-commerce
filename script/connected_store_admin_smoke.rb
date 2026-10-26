@@ -25,15 +25,17 @@ ActiveRecord::Base.transaction do
     doc = Nokogiri::HTML(http.response.body)
     assert.call("localized connection form #{locale}", http.response.status == 200 && !doc.at_css(".translation_missing") && doc.at_css("html")["dir"] == (locale == "ar" ? "rtl" : "ltr"))
   end
-  attrs = { name: "Shopify source", provider: "shopify", external_domain: "synthetic-#{suffix}.myshopify.com", webhook_secret: secret, store_id: other.id, active: false }
+  attrs = { name: "Woo admin source", provider: "woocommerce", external_domain: "admin-#{suffix}.example.test", webhook_secret: secret, store_id: other.id, active: false }
   http.post "/admin/store_connections", params: { store_connection: attrs }
-  connection = store.store_connections.find_by!(name: "Shopify source")
-  assert.call("create connection tenant owned and awaiting delivery", http.response.redirect? && connection.active? && connection.verified_at.nil? && connection.store_id == store.id)
+  created = store.store_connections.find_by!(name: "Woo admin source")
+  assert.call("create connection tenant owned and awaiting verification", http.response.redirect? && created.active? && created.store_id == store.id)
+  api_connection = store.store_connections.create!(name: "Shopify API source", provider: "shopify", external_domain: "synthetic-#{suffix}.myshopify.com", shopify_oauth: true)
   %w[fr en ar].each do |locale|
-    http.get "/admin/store_connections/#{connection.id}", params: { locale: locale }
+    http.get "/admin/store_connections/#{api_connection.id}", params: { locale: locale }
     doc = Nokogiri::HTML(http.response.body)
-    assert.call("localized connection setup #{locale}", http.response.status == 200 && !doc.at_css(".translation_missing") && doc.at_css("#webhook-url")["value"].include?(connection.token))
-    assert.call("never render stored signing secret #{locale}", !http.response.body.include?(secret))
+    assert.call("localized API connection setup #{locale}", http.response.status == 200 && !doc.at_css(".translation_missing") && !doc.at_css("#webhook-url") && doc.at_css("input[name='operation'][value='authorize_shopify']"))
+    assert.call("Shopify no longer requests a webhook secret #{locale}", !doc.at_css("input[name='store_connection[webhook_secret]']"))
+    assert.call("Shopify merchants do not enter app credentials #{locale}", !doc.at_css("input[name='store_connection[shopify_client_id]']") && !doc.at_css("input[name='store_connection[shopify_client_secret]']"))
   end
   http.get "/admin/store_connections/#{foreign.id}"
   assert.call("foreign connection hidden", http.response.status == 404)
@@ -42,6 +44,8 @@ ActiveRecord::Base.transaction do
   http.post "/admin/store_connections", params: { store_connection: attrs.merge(external_domain: "https://wrong.example/path") }
   assert.call("invalid provider domain has visible validation", http.response.status == 422 && !http.response.body.include?(secret))
 
+  # Preserve existing signed intake independently of the new API setup UI.
+  connection = store.store_connections.create!(name: "Legacy Shopify source", provider: "shopify", external_domain: "legacy-#{suffix}.myshopify.com", webhook_secret: secret)
   # End-to-end signed webhook delivery on the apex, with complete parameter
   # filtering even for provider-defined custom fields outside known PII paths.
   webhook = ActionDispatch::Integration::Session.new(Rails.application)
@@ -85,8 +89,8 @@ ActiveRecord::Base.transaction do
   assert.call("commercial edits cannot replace external prices", http.response.redirect? && order.reload.total_cents == 24_990)
   http.post "/admin/orders/#{order.id}/duplicate"
   assert.call("snapshot duplicate denied without partial order", http.response.redirect? && store.orders.count == 1)
-  http.patch "/admin/store_connections/#{connection.id}", params: { operation: "rotate_secret", store_connection: { webhook_secret: replacement } }
-  assert.call("secret rotation preserves identity and clears verification", http.response.redirect? && connection.reload.webhook_secret == replacement && connection.verified_at.nil? && connection.external_order_receipts.count == 1)
+  connection.with_lock { connection.update!(webhook_secret: replacement, verified_at: nil, last_error_code: nil) }
+  assert.call("legacy secret rotation preserves identity and clears verification", connection.reload.webhook_secret == replacement && connection.verified_at.nil? && connection.external_order_receipts.count == 1)
   webhook.post path, params: body, headers: headers.merge("X-Shopify-Hmac-SHA256" => sign.call(secret))
   assert.call("old secret revoked", webhook.response.status == 401)
   webhook.post path, params: body, headers: headers.merge("X-Shopify-Hmac-SHA256" => sign.call(replacement))

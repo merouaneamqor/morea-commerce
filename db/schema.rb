@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_25_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -605,17 +605,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_25_150000) do
     t.string "external_domain", null: false
     t.string "external_store_id"
     t.string "token", null: false
-    t.text "webhook_secret_ciphertext", null: false
+    t.text "webhook_secret_ciphertext"
     t.boolean "active", default: true, null: false
     t.datetime "verified_at"
     t.datetime "last_received_at"
     t.string "last_error_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "shopify_oauth", default: false, null: false
+    t.text "shopify_access_token_ciphertext"
+    t.datetime "shopify_access_token_expires_at"
+    t.text "shopify_refresh_token_ciphertext"
+    t.datetime "shopify_refresh_token_expires_at"
+    t.string "shopify_granted_scopes", default: [], null: false, array: true
+    t.datetime "shopify_api_verified_at"
+    t.string "shopify_api_error_code"
+    t.string "shopify_oauth_state_digest"
+    t.datetime "shopify_oauth_state_expires_at"
+    t.index ["shopify_oauth_state_digest"], name: "index_store_connections_on_shopify_oauth_state_digest", unique: true
     t.index ["store_id", "provider", "external_domain"], name: "idx_on_store_id_provider_external_domain_3a7fd79a93", unique: true
     t.index ["store_id"], name: "index_store_connections_on_store_id"
     t.index ["token"], name: "index_store_connections_on_token", unique: true
+    t.check_constraint "NOT shopify_oauth OR provider::text = 'shopify'::text", name: "store_connection_shopify_oauth"
+    t.check_constraint "provider::text = 'shopify'::text OR webhook_secret_ciphertext IS NOT NULL", name: "store_connection_webhook_credentials"
     t.check_constraint "provider::text = ANY (ARRAY['shopify'::character varying, 'woocommerce'::character varying, 'youcan'::character varying]::text[])", name: "store_connection_provider"
+    t.check_constraint "shopify_access_token_ciphertext IS NULL OR shopify_oauth AND shopify_access_token_expires_at IS NOT NULL", name: "store_connection_shopify_token"
+    t.check_constraint "shopify_refresh_token_ciphertext IS NULL OR shopify_oauth AND shopify_refresh_token_expires_at IS NOT NULL", name: "store_connection_shopify_refresh_token"
   end
 
   create_table "store_translations", force: :cascade do |t|

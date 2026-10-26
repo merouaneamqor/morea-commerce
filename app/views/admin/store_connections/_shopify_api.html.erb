@@ -1,0 +1,23 @@
+<section class="admin-card p-5 mb-4 space-y-3" aria-labelledby="shopify-api-title">
+  <h2 id="shopify-api-title" class="admin-card__title"><%= t("connections.shopify_api.title") %></h2>
+  <p><%= t(!@connection.active? ? "connections.states.disconnected" : (@connection.shopify_api_connected? ? "connections.shopify_api.connected" : "connections.shopify_api.configured")) %></p>
+  <p class="admin-muted"><%= t("connections.shopify_api.test_help") %></p>
+  <% if @connection.shopify_api_verified_at.present? %>
+    <p><%= t("connections.shopify_api.last_checked", time: l(@connection.shopify_api_verified_at.in_time_zone("Africa/Casablanca"), format: "%d/%m/%Y %H:%M")) %></p>
+  <% end %>
+  <% if @connection.shopify_granted_scopes.present? %>
+    <div><h3 class="font-semibold"><%= t("connections.shopify_api.permissions") %></h3><p dir="ltr"><%= @connection.shopify_granted_scopes.join(", ") %></p></div>
+  <% end %>
+  <% if @connection.shopify_api_error_code.present? %>
+    <p role="alert" class="admin-banner admin-banner--critical"><%= t("connections.shopify_api.errors.#{@connection.shopify_api_error_code}", default: t("connections.shopify_api.errors.connection_failed")) %></p>
+  <% end %>
+  <% unless @shopify_configured %>
+    <p role="alert" class="admin-banner admin-banner--critical"><%= t("connections.shopify_api.errors.config_missing") %></p>
+  <% end %>
+  <% if @connection.active? && @shopify_configured && @connection.shopify_access_token_ciphertext.present? %>
+    <%= button_to t("connections.shopify_api.test"), admin_store_connection_path(@connection), method: :patch, params: { operation: "verify_shopify_api" }, class: "admin-btn" %>
+  <% end %>
+  <% if @connection.active? %>
+    <%= button_to t(@connection.shopify_access_token_ciphertext.present? ? "connections.shopify_api.reauthorize" : "connections.shopify_api.connect"), admin_store_connection_path(@connection), method: :patch, params: { operation: "authorize_shopify" }, disabled: !@shopify_configured, class: "admin-btn-secondary" %>
+  <% end %>
+</section>

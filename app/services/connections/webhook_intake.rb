@@ -26,6 +26,7 @@ module Connections
       raise Error.new("payload_too_large", status: 413) if body.bytesize > MAX_BODY_BYTES
       @connection.with_lock do
         raise Error.new("disconnected", status: 410) unless @connection.active?
+        raise Error.new("api_connection", status: 410) if @connection.shopify_api_configured?
         authenticate!(body, headers)
         raise Error.new("subscription_required", status: 402) unless @connection.store.operational_access?
         @connection.update!(last_received_at: Time.current, verified_at: @connection.verified_at || Time.current)

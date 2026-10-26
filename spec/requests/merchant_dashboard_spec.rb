@@ -111,7 +111,8 @@ RSpec.describe "Merchant dashboard", type: :request do
     %w[shopify woocommerce youcan].each do |provider|
       get "/admin/store_connections/new", params: { provider: provider }
       expect(response).to have_http_status(:ok)
-      expect(document.at_css('select[name="store_connection[provider]"] option[selected]')["value"]).to eq(provider)
+      expect(document.at_css('input[type="hidden"][name="store_connection[provider]"]')["value"]).to eq(provider)
+      expect(document.at_css('nav a[aria-current="page"]')["href"]).to eq(new_admin_store_connection_path(provider: provider))
     end
     get "/en"
     expect(response).to have_http_status(:not_found)
@@ -126,7 +127,7 @@ RSpec.describe "Merchant dashboard", type: :request do
     get "/admin", params: { locale: "en" }
     expect(document.at_css('[data-dashboard-mode="combined"]')).to be_present
     row = document.at_css("a[href='/admin/store_connections/#{source.id}']").ancestors("li").first
-    expect(row.text).to include(I18n.t("connections.states.awaiting", locale: :en))
+    expect(row.text).to include(I18n.t("connections.shopify_api.states.missing", locale: :en))
     expect(response.body).not_to include(source.webhook_secret, source.token, source.webhook_secret_ciphertext, foreign_order.number)
   end
 

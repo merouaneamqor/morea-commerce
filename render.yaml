@@ -19,6 +19,10 @@ services:
         value: ollazen.com
       - key: RAILS_MASTER_KEY
         sync: false
+      - key: SHOPIFY_CLIENT_ID
+        sync: false
+      - key: SHOPIFY_CLIENT_SECRET
+        sync: false
       - key: DISCORD_ORDERS_WEBHOOK_URL
         sync: false
       - key: PLATFORM_DISCORD_WEBHOOK_URL

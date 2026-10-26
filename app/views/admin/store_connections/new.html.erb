@@ -23,11 +23,16 @@
         <div><%= f.label :external_store_id, t("connections.store_id"), class: "admin-label" %><%= f.text_field :external_store_id, required: true, class: "admin-input", dir: "ltr", aria: { describedby: "store-id-help" } %>
           <p id="store-id-help" class="admin-muted mt-1"><%= t("connections.store_id_help") %></p></div>
       <% end %>
-      <div><%= f.label :webhook_secret, t("connections.secret"), class: "admin-label" %><%= f.password_field :webhook_secret, required: true, autocomplete: "new-password", class: "admin-input", value: nil, aria: { describedby: "secret-help" } %>
-        <p id="secret-help" class="admin-muted mt-1"><%= t(shopify ? "connections.shopify_setup.secret_help" : "connections.secret_help") %></p></div>
-      <div class="flex flex-wrap gap-3"><%= f.submit t("connections.save"), class: "admin-btn" %><%= link_to t("connections.back"), admin_store_connections_path, class: "admin-btn-secondary" %></div>
+      <% if shopify %>
+        <p class="admin-muted"><%= t("connections.shopify_api.save_help") %></p>
+        <% unless @shopify_configured %><p role="alert" class="admin-banner admin-banner--critical"><%= t("connections.shopify_api.errors.config_missing") %></p><% end %>
+      <% else %>
+        <div><%= f.label :webhook_secret, t("connections.secret"), class: "admin-label" %><%= f.password_field :webhook_secret, required: true, autocomplete: "new-password", class: "admin-input", value: nil, aria: { describedby: "secret-help" } %>
+          <p id="secret-help" class="admin-muted mt-1"><%= t("connections.secret_help") %></p></div>
+      <% end %>
+      <div class="flex flex-wrap gap-3"><%= f.submit t(shopify ? "connections.shopify_api.connect" : "connections.save"), disabled: shopify && !@shopify_configured, class: "admin-btn" %><%= link_to t("connections.back"), admin_store_connections_path, class: "admin-btn-secondary" %></div>
     <% end %>
   </div>
 <% else %>
-  <div class="admin-card p-5"><p><%= t("connections.choose") %></p><p class="admin-muted mt-2"><%= t("connections.setup_lead") %></p></div>
+  <div class="admin-card p-5"><p><%= t("connections.choose") %></p></div>
 <% end %>

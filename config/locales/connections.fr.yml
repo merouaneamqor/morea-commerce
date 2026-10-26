@@ -1,7 +1,7 @@
 fr:
   connections:
     title: "Boutiques connectées"
-    lead: "Recevez les commandes de vos boutiques existantes. La vitrine Codify est facultative."
+    lead: "Gérez les connexions à vos boutiques existantes. La vitrine Codify est facultative."
     add: "Connecter une boutique"
     name: "Nom de la connexion"
     provider: "Plateforme"
@@ -12,7 +12,7 @@ fr:
     store_id: "Identifiant de boutique YouCan"
     store_id_help: "Obligatoire pour YouCan. Copiez l’UUID de votre boutique depuis votre compte YouCan."
     secret: "Secret de signature du webhook"
-    secret_help: "Shopify et YouCan : secret client de votre application. WooCommerce : secret choisi dans les réglages du webhook."
+    secret_help: "YouCan : secret client de votre application. WooCommerce : secret choisi dans les réglages du webhook."
     setup_lead: "Configurez un webhook signé dans votre boutique existante. L’installation d’applications et l’import de l’historique ne sont pas encore inclus."
     save: "Enregistrer et afficher la configuration"
     back: "Retour"
@@ -27,7 +27,7 @@ fr:
     scope_help: "Réception des nouvelles commandes non payées avec paiement à la livraison en MAD au Maroc, sans taxes, réductions ni frais supplémentaires. L’historique, les modifications, les annulations et la synchronisation du catalogue ou du stock ne sont pas encore inclus."
     disconnect: "Déconnecter"
     reconnect: "Reprendre la réception"
-    empty: "Connectez Shopify, WooCommerce ou YouCan pour recevoir vos commandes ici."
+    empty: "Connectez votre boutique Shopify, WooCommerce ou YouCan."
     deliveries: "Dernières réceptions de commandes"
     external_id: "Identifiant externe"
     order: "Commande Codify"
@@ -42,23 +42,76 @@ fr:
     snapshot_help: "Les produits et prix proviennent de la boutique source. Ces lignes ne modifient pas le stock Codify. Confirmez et expédiez ici ; les modifications commerciales restent verrouillées."
     external_order_locked: "Les prix et produits importés sont conservés depuis la boutique source. La modification commerciale et la duplication sont indisponibles."
     shopify_setup:
-      title: "Connecter Shopify pas à pas"
-      intro: "Configurez manuellement un webhook pour recevoir vos nouvelles commandes Shopify ici."
-      before_start: "Vous devez avoir accès à l’administration Shopify et au secret de signature de votre abonnement webhook."
-      step_one_title: "Renseignez votre boutique Shopify"
-      step_one_body: "Utilisez le domaine permanent exemple.myshopify.com, et non le domaine personnalisé de votre vitrine."
-      step_two_title: "Ajoutez le secret de signature"
-      step_two_body: "Utilisez le secret qui signe cet abonnement webhook. Pour un abonnement créé par une application, utilisez son secret client. Un jeton d’accès API ne fonctionne pas."
-      step_three_title: "Créez le webhook Shopify"
-      step_three_body: "Après l’enregistrement, copiez l’URL de livraison générée. Dans Shopify, configurez un abonnement orders/create au format JSON avec cette URL et le même secret de signature."
-      step_four_title: "Envoyez une commande test"
-      step_four_body: "Créez une commande admissible non payée avec paiement à la livraison, puis consultez l’historique ci-dessous. Une connexion enregistrée attend un envoi. La vérification confirme la réception d’un envoi signé ; vérifiez que la réception est acceptée pour confirmer l’import."
-      supported_title: "Commandes prises en charge"
-      supported_body: "Nouvelles commandes non payées avec paiement à la livraison en MAD au Maroc, sans taxes, réductions ni frais supplémentaires."
-      unavailable_title: "Pas encore disponible"
-      unavailable_body: "Installation OAuth en un clic, commandes antérieures, synchronisation des produits ou du stock et mises à jour des commandes Shopify."
-      domain_help: "Utilisez exemple.myshopify.com sans https:// ni chemin."
-      secret_help: "Saisissez le secret de signature du webhook. Pour un abonnement créé par une application, utilisez son secret client, pas le jeton d’accès API."
+      title: Connecter Shopify
+      intro: Installez l’application Seallo pour connecter votre boutique Shopify via son
+        API.
+      before_start: Vous devez pouvoir installer des applications dans votre boutique
+        Shopify.
+      step_one_title: Renseignez votre boutique Shopify
+      step_one_body: Saisissez un nom de connexion et votre domaine permanent exemple.myshopify.com.
+      step_two_title: Autorisez l’accès dans Shopify
+      step_two_body: 'Cliquez sur Connecter Shopify, puis autorisez l’application Seallo.
+        Autorisations demandées : write_orders, read_orders, read_customers et read_products.
+        write_orders inclut read_orders.'
+      step_three_title: Revenez dans Seallo
+      step_three_body: Après autorisation, retrouvez ici les permissions accordées. Utilisez
+        Tester la connexion API pour vérifier l’accès.
+      supported_title: Accès aux données clients
+      supported_body: Les noms, e-mails, téléphones et adresses peuvent nécessiter l’approbation
+        de Shopify pour les données clients protégées.
+      unavailable_title: Synchronisation
+      unavailable_body: La connexion vérifie l’accès API. L’import automatique des commandes,
+        leurs modifications et la synchronisation des produits ou du stock ne sont pas
+        activés.
+      domain_help: Utilisez exemple.myshopify.com sans https:// ni chemin.
+    shopify_api:
+      title: Connexion API Shopify
+      save_help: Vous serez redirigé vers Shopify pour installer l’application Seallo et
+        autoriser l’accès.
+      saved: Connexion Shopify enregistrée. Continuez vers Shopify pour autoriser l’accès.
+      verified: Connexion API Shopify vérifiée.
+      connected: Accès API vérifié.
+      configured: Autorisation Shopify enregistrée. Testez la connexion pour vérifier
+        l’accès API.
+      not_configured: Connectez Shopify pour autoriser l’application Seallo.
+      test: Tester la connexion API
+      test_help: Ce test lit le domaine et les autorisations de l’application. Il n’importe
+        ni ne modifie les commandes, produits ou stocks.
+      last_checked: 'Dernière vérification : %{time}'
+      permissions: Autorisations vérifiées
+      reconnect: Reconnecter l’API
+      imported_orders: Dernières commandes importées
+      no_imported_orders: Aucune commande importée. La vérification API n’importe pas
+        de commandes.
+      states:
+        connected: API connectée
+        configured: API à vérifier
+        missing: Autorisation Shopify requise
+      errors:
+        connection_failed: Échec de la vérification API. Vérifiez la configuration et
+          réessayez.
+        credentials_missing: Autorisez l’application Seallo pour connecter Shopify.
+        disconnected: Reconnectez la boutique avant de tester l’API.
+        invalid_credentials: L’accès Shopify n’est plus valide. Autorisez à nouveau l’application.
+        shop_not_permitted: L’application Seallo ne peut pas accéder à cette boutique.
+          Vérifiez le domaine et l’installation.
+        missing_scopes: Des autorisations sont manquantes. Autorisez à nouveau l’application
+          Seallo et approuvez les permissions demandées.
+        source_mismatch: L’API a renvoyé une autre boutique. Vérifiez le domaine permanent
+          myshopify.com.
+        rate_limited: Shopify limite les requêtes. Réessayez le test plus tard.
+        unavailable: Shopify est inaccessible. Réessayez plus tard.
+        invalid_response: Réponse inattendue de Shopify. Réessayez plus tard.
+        config_missing: La connexion Shopify n’est pas encore configurée. Contactez l’administrateur
+          de la plateforme.
+        authorization_failed: L’autorisation Shopify a échoué. Réessayez la connexion.
+        authorization_expired: L’autorisation Shopify a expiré. Connectez Shopify à nouveau.
+        invalid_state: Cette demande d’autorisation n’est plus valide. Recommencez la
+          connexion depuis Seallo.
+        invalid_signature: L’autorisation Shopify n’a pas pu être vérifiée. Recommencez
+          la connexion depuis Seallo.
+      connect: Connecter Shopify
+      reauthorize: Autoriser Shopify à nouveau
     providers: { shopify: "Shopify", woocommerce: "WooCommerce", youcan: "YouCan" }
     states:
       disconnected: "Déconnectée"
@@ -66,6 +119,5 @@ fr:
       verified: "Réception active"
       awaiting: "En attente d’un envoi signé"
     instructions:
-      shopify: "Dans votre application Shopify, abonnez-vous à orders/create au format JSON avec cette URL HTTPS. Utilisez le secret client de cette application et le domaine permanent myshopify.com."
       woocommerce: "Dans WooCommerce → Réglages → Avancé → Webhooks, ajoutez un webhook actif Commande créée. Renseignez l’URL ci-dessous et le même secret que celui saisi ici."
       youcan: "Dans votre application YouCan, abonnez-vous à order.created avec cette URL. Utilisez le secret client de l’application et l’UUID de votre boutique."

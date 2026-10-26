@@ -29,7 +29,7 @@ RSpec.describe "Shared Shopify app connections", type: :request do
 
   def start_authorization
     patch "/admin/store_connections/#{connection.id}", params: { operation: "authorize_shopify" }
-    expect(response).to have_http_status(:redirect)
+    expect(response).to have_http_status(:see_other)
     uri = URI.parse(response.location)
     expect(uri.host).to eq(connection.external_domain)
     Rack::Utils.parse_nested_query(uri.query).fetch("state")
@@ -44,7 +44,7 @@ RSpec.describe "Shared Shopify app connections", type: :request do
     sign_in
     expect(Connections::ShopifyApi).not_to receive(:new)
     post "/admin/store_connections", params: { store_connection: attributes.merge(store_id: 999_999, active: false) }
-    expect(response).to have_http_status(:redirect)
+    expect(response).to have_http_status(:see_other)
     saved = store.store_connections.find_by!(name: "Shopify API")
     expect(saved).to be_active
     expect(saved.shopify_oauth).to eq(true)
@@ -70,6 +70,12 @@ RSpec.describe "Shared Shopify app connections", type: :request do
         expect(document.at_css("html")["dir"]).to eq(locale == "ar" ? "rtl" : "ltr")
         expect(document.at_css(".translation_missing")).to be_nil
         expect(document.at_css("#webhook-url")).to be_nil
+        oauth_form = if path.end_with?("/new")
+          document.at_css("input[name='store_connection[provider]']").ancestors("form").first
+        else
+          document.at_css("input[name='operation'][value='authorize_shopify']").ancestors("form").first
+        end
+        expect(oauth_form["data-turbo"]).to eq("false")
         %w[webhook_secret shopify_client_id shopify_client_secret shopify_access_token].each do |field|
           expect(document.at_css("input[name='store_connection[#{field}]']")).to be_nil
         end
@@ -88,6 +94,7 @@ RSpec.describe "Shared Shopify app connections", type: :request do
     get "/admin/store_connections/#{connection.id}", params: { locale: "en" }
     expect(response).to have_http_status(:ok)
     expect(document.at_css("input[name='operation'][value='verify_shopify_api']")).to be_present
+    expect(document.at_css("input[name='operation'][value='authorize_shopify']").ancestors("form").first["data-turbo"]).to eq("false")
     expect(response.body).not_to include("synthetic-private-access-token", "synthetic-private-refresh-token", app_secret)
   end
 

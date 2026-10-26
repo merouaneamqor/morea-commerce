@@ -3,7 +3,10 @@
 <div class="admin-page-header">
   <div><h1 class="admin-page-header__title"><%= @connection.name %></h1>
     <p class="admin-page-header__meta"><%= t("connections.providers.#{@connection.provider}") %> · <%= @connection.external_domain %> · <%= connection_state(@connection) %></p></div>
-  <%= button_to t(@connection.active? ? "connections.disconnect" : (shopify ? "connections.shopify_api.reconnect" : "connections.reconnect")), admin_store_connection_path(@connection), method: :patch, params: { operation: @connection.active? ? "disconnect" : "reconnect" }, class: "admin-btn-secondary" %>
+  <div class="flex flex-wrap gap-3">
+    <%= button_to t(@connection.active? ? "connections.disconnect" : (shopify ? "connections.shopify_api.reconnect" : "connections.reconnect")), admin_store_connection_path(@connection), method: :patch, params: { operation: @connection.active? ? "disconnect" : "reconnect" }, class: "admin-btn-secondary" %>
+    <%= button_to t("connections.delete"), admin_store_connection_path(@connection), method: :delete, form: { data: { turbo_confirm: t("connections.delete_confirm", name: @connection.name) } }, class: "admin-btn-critical" %>
+  </div>
 </div>
 <% if @connection.errors.any? %><div role="alert" class="admin-banner admin-banner--critical"><%= @connection.errors.full_messages.to_sentence %></div><% end %>
 <% if shopify %>

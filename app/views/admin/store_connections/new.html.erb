@@ -14,7 +14,7 @@
   <div class="admin-card p-5 max-w-2xl">
     <h2 class="admin-card__title mb-4"><%= t("connections.providers.#{@connection.provider}") %></h2>
     <% unless shopify %><p class="admin-muted mb-4"><%= t("connections.setup_lead") %></p><% end %>
-    <%= form_with model: [:admin, @connection], class: "space-y-4" do |f| %>
+    <%= form_with model: [:admin, @connection], class: "space-y-4", data: { turbo: !shopify } do |f| %>
       <%= f.hidden_field :provider %>
       <div><%= f.label :name, t("connections.name"), class: "admin-label" %><%= f.text_field :name, required: true, maxlength: 100, class: "admin-input" %></div>
       <div><%= f.label :external_domain, t("connections.domain"), class: "admin-label" %><%= f.text_field :external_domain, required: true, placeholder: shopify ? "example.myshopify.com" : "shop.example.com", class: "admin-input", dir: "ltr", aria: { describedby: "domain-help" }, autocapitalize: "none", spellcheck: false %>

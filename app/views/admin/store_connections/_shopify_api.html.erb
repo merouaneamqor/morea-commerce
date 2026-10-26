@@ -18,6 +18,6 @@
     <%= button_to t("connections.shopify_api.test"), admin_store_connection_path(@connection), method: :patch, params: { operation: "verify_shopify_api" }, class: "admin-btn" %>
   <% end %>
   <% if @connection.active? %>
-    <%= button_to t(@connection.shopify_access_token_ciphertext.present? ? "connections.shopify_api.reauthorize" : "connections.shopify_api.connect"), admin_store_connection_path(@connection), method: :patch, params: { operation: "authorize_shopify" }, disabled: !@shopify_configured, class: "admin-btn-secondary" %>
+    <%= button_to t(@connection.shopify_access_token_ciphertext.present? ? "connections.shopify_api.reauthorize" : "connections.shopify_api.connect"), admin_store_connection_path(@connection), method: :patch, params: { operation: "authorize_shopify" }, form: { data: { turbo: false } }, disabled: !@shopify_configured, class: "admin-btn-secondary" %>
   <% end %>
 </section>

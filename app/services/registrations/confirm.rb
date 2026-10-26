@@ -31,6 +31,7 @@ module Registrations
           email: registration.email,
           currency: "MAD",
           storefront_enabled: false,
+          admin_theme: registration.admin_theme,
           subscription_required: true,
           billing_status: "canceled",
           billing_period_ends_on: Date.yesterday

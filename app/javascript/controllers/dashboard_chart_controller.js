@@ -15,8 +15,10 @@ export default class extends Controller {
     const style = getComputedStyle(this.element)
     const foreground = style.color
     const rtl = document.documentElement.dir === "rtl"
+    const themed = (name, fallback) => style.getPropertyValue(name).trim() || fallback
     const muted = "#8a827c"
-    const palette = ["#9a6f72", "#1a1716", "#c4a0a3", "#4a4340", "#f8cdd0", "#8a827c"]
+    const original = ["#9a6f72", "#1a1716", "#c4a0a3", "#4a4340", "#f8cdd0", "#8a827c"]
+    const palette = original.map((color, index) => themed(`--chart-${index + 1}`, color))
     const doughnut = config.type === "doughnut"
     const number = new Intl.NumberFormat(document.documentElement.lang || "en")
     const money = new Intl.NumberFormat(document.documentElement.lang || "en", {
@@ -26,13 +28,16 @@ export default class extends Controller {
 
     config.data.datasets.forEach((dataset, index) => {
       if (doughnut) {
-        dataset.backgroundColor ||= config.data.labels.map((_, item) => palette[item % palette.length])
-        dataset.borderColor = "#faf9f7"
+        const fallback = dataset.backgroundColor
+        dataset.backgroundColor = dataset.statuses
+          ? dataset.statuses.map((status, item) => themed(`--chart-status-${status}`, fallback?.[item] ?? palette[item % palette.length]))
+          : (fallback || config.data.labels.map((_, item) => palette[item % palette.length]))
+        dataset.borderColor = themed("--chart-gap", "#faf9f7")
         dataset.borderWidth = 3
         dataset.hoverOffset = 5
       } else {
-        dataset.borderColor = index === 0 ? foreground : "#9a6f72"
-        dataset.backgroundColor = index === 0 ? "rgba(26, 23, 22, 0.07)" : "#9a6f72"
+        dataset.borderColor = index === 0 ? themed("--chart-1", foreground) : themed("--chart-2", "#9a6f72")
+        dataset.backgroundColor = index === 0 ? themed("--chart-fill", "rgba(26, 23, 22, 0.07)") : themed("--chart-2", "#9a6f72")
         dataset.borderWidth = index === 0 ? 3 : 2
         dataset.pointRadius = 0
         dataset.pointHoverRadius = 4

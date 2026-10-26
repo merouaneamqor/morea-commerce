@@ -1112,6 +1112,25 @@
   .admin-sidebar {
     @apply fixed bottom-0 start-0 top-14 z-30 flex w-60 flex-col justify-between overflow-y-auto px-3 py-3 transition-transform duration-200;
     background: #0a0a0a;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+  }
+
+  .admin-sidebar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .admin-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .admin-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 9999px;
+  }
+
+  .admin-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.6);
   }
 
   @media (max-width: 767px) {

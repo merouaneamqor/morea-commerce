@@ -1,7 +1,7 @@
 ar:
   connections:
     title: "المتاجر المرتبطة"
-    lead: "استقبل طلبات متاجرك الحالية. إنشاء واجهة Codify اختياري."
+    lead: "أدر اتصالات متاجرك الحالية. إنشاء واجهة Codify اختياري."
     add: "ربط متجر"
     name: "اسم الاتصال"
     provider: "المنصة"
@@ -12,7 +12,7 @@ ar:
     store_id: "معرّف متجر YouCan"
     store_id_help: "مطلوب في YouCan. انسخ UUID متجرك من حساب YouCan."
     secret: "سر توقيع الويب هوك"
-    secret_help: "Shopify وYouCan: سر العميل للتطبيق. WooCommerce: السر الذي اخترته في إعدادات الويب هوك."
+    secret_help: "YouCan: سر العميل للتطبيق. WooCommerce: السر الذي اخترته في إعدادات الويب هوك."
     setup_lead: "اربط متجرك عبر ويب هوك موقّع تضبطه في متجرك الحالي. تثبيت التطبيقات واستيراد الطلبات السابقة غير متاحين بعد."
     save: "حفظ وعرض الإعدادات"
     back: "رجوع"
@@ -27,7 +27,7 @@ ar:
     scope_help: "يستقبل الطلبات الجديدة غير المدفوعة بالدفع عند الاستلام بالدرهم المغربي داخل المغرب، دون ضرائب أو خصومات أو رسوم إضافية. الاستيراد السابق والتعديلات والإلغاءات ومزامنة الكتالوج والمخزون غير متاحة بعد."
     disconnect: "قطع الاتصال"
     reconnect: "استئناف استقبال الطلبات"
-    empty: "اربط Shopify أو WooCommerce أو YouCan لاستقبال طلباتك هنا."
+    empty: "اربط متجرك في Shopify أو WooCommerce أو YouCan."
     deliveries: "آخر الطلبات الواردة"
     external_id: "معرّف الطلب الخارجي"
     order: "طلب Codify"
@@ -42,23 +42,64 @@ ar:
     snapshot_help: "أسماء المنتجات والأسعار من المتجر المصدر. هذه العناصر لا تغيّر مخزون Codify. أكّد الطلب واشحنه هنا؛ التعديلات التجارية مقفلة."
     external_order_locked: "تُحفظ أسعار ومنتجات الطلب المستورد من المتجر المصدر. التعديل التجاري والنسخ غير متاحين."
     shopify_setup:
-      title: "ربط Shopify خطوة بخطوة"
-      intro: "اضبط ويب هوك يدويًا لاستقبال طلبات Shopify الجديدة هنا."
-      before_start: "تحتاج إلى صلاحية الدخول إلى إدارة Shopify وسر التوقيع الخاص باشتراك الويب هوك."
-      step_one_title: "أدخل متجر Shopify"
-      step_one_body: "استخدم نطاق متجرك الدائم example.myshopify.com، وليس النطاق المخصص لواجهة متجرك."
-      step_two_title: "أضف سر التوقيع"
-      step_two_body: "استخدم السر الذي يوقّع هذا الاشتراك. الاشتراكات التي ينشئها تطبيق تستخدم سر العميل للتطبيق. رمز الوصول إلى API لا يصلح للتوقيع."
-      step_three_title: "أنشئ ويب هوك في Shopify"
-      step_three_body: "بعد الحفظ، انسخ رابط الاستقبال الذي تم إنشاؤه. في Shopify، اضبط اشتراك orders/create بصيغة JSON باستخدام هذا الرابط وسر التوقيع نفسه."
-      step_four_title: "أرسل طلبًا تجريبيًا"
-      step_four_body: "أنشئ طلبًا مؤهلًا غير مدفوع بالدفع عند الاستلام، ثم راجع سجل الاستقبال أدناه. الاتصال المحفوظ ينتظر وصول طلب. التحقق يعني وصول إرسال موقّع؛ تأكد من قبول الاستقبال للتأكد من استيراد الطلب."
-      supported_title: "الطلبات المدعومة"
-      supported_body: "الطلبات الجديدة غير المدفوعة بالدفع عند الاستلام بالدرهم المغربي داخل المغرب، دون ضرائب أو خصومات أو رسوم إضافية."
-      unavailable_title: "غير متاح بعد"
-      unavailable_body: "التثبيت بنقرة واحدة عبر OAuth، والطلبات السابقة، ومزامنة المنتجات أو المخزون، وتحديثات طلبات Shopify."
-      domain_help: "استخدم example.myshopify.com دون https:// أو مسار."
-      secret_help: "أدخل سر توقيع الويب هوك. الاشتراكات التي ينشئها تطبيق تستخدم سر العميل للتطبيق، وليس رمز الوصول إلى API."
+      title: ربط Shopify
+      intro: ثبّت تطبيق Seallo لربط متجر Shopify عبر API.
+      before_start: تحتاج إلى صلاحية تثبيت التطبيقات في متجر Shopify.
+      step_one_title: أدخل متجر Shopify
+      step_one_body: أدخل اسم الاتصال ونطاق متجرك الدائم example.myshopify.com.
+      step_two_title: وافق على الوصول في Shopify
+      step_two_body: 'اختر ربط Shopify ثم وافق على تطبيق Seallo. الصلاحيات المطلوبة: write_orders
+        وread_orders وread_customers وread_products. تشمل write_orders صلاحية read_orders.'
+      step_three_title: عُد إلى Seallo
+      step_three_body: بعد الموافقة، تظهر الصلاحيات الممنوحة هنا. استخدم اختبار اتصال
+        API للتحقق من الوصول إلى المتجر.
+      supported_title: الوصول إلى بيانات العملاء
+      supported_body: قد تتطلب أسماء العملاء والبريد الإلكتروني والهاتف والعناوين موافقة
+        Shopify على بيانات العملاء المحمية.
+      unavailable_title: المزامنة
+      unavailable_body: يتحقق الربط من الوصول إلى API. استيراد الطلبات وتحديثها ومزامنة
+        المنتجات والمخزون تلقائيًا غير مفعّلة.
+      domain_help: استخدم example.myshopify.com دون https:// أو مسار.
+    shopify_api:
+      title: اتصال Shopify API
+      save_help: ستنتقل إلى Shopify لتثبيت تطبيق Seallo والموافقة على الوصول.
+      saved: تم حفظ اتصال Shopify. تابع إلى Shopify للموافقة على الوصول.
+      verified: تم التحقق من اتصال Shopify API.
+      connected: تم التحقق من الوصول إلى API.
+      configured: تم حفظ تفويض Shopify. اختبر الاتصال للتحقق من الوصول إلى API.
+      not_configured: اربط Shopify لتفويض تطبيق Seallo.
+      test: اختبار اتصال API
+      test_help: يقرأ الاختبار نطاق المتجر وصلاحيات التطبيق. لا يستورد أو يغيّر الطلبات
+        أو المنتجات أو المخزون.
+      last_checked: 'آخر تحقق: %{time}'
+      permissions: الصلاحيات المتحقق منها
+      reconnect: إعادة ربط API
+      imported_orders: آخر الطلبات المستوردة
+      no_imported_orders: لا توجد طلبات مستوردة بعد. التحقق من API لا يستورد الطلبات.
+      states:
+        connected: API متصل
+        configured: يلزم اختبار API
+        missing: تفويض Shopify مطلوب
+      errors:
+        connection_failed: فشل التحقق من API. راجع إعداد التطبيق وحاول مجددًا.
+        credentials_missing: فوّض تطبيق Seallo لربط Shopify.
+        disconnected: أعد ربط المتجر قبل اختبار API.
+        invalid_credentials: لم يعد الوصول إلى Shopify صالحًا. فوّض التطبيق مجددًا.
+        shop_not_permitted: لا يمكن لتطبيق Seallo الوصول إلى هذا المتجر. راجع النطاق وتثبيت
+          التطبيق.
+        missing_scopes: بعض الصلاحيات مطلوبة. فوّض تطبيق Seallo مجددًا ووافق على الصلاحيات
+          المطلوبة.
+        source_mismatch: أعاد API متجرًا آخر. راجع نطاق myshopify.com الدائم.
+        rate_limited: Shopify يحدّ الطلبات حاليًا. أعد الاختبار لاحقًا.
+        unavailable: تعذر الوصول إلى Shopify. حاول لاحقًا.
+        invalid_response: أعاد Shopify استجابة غير متوقعة. حاول لاحقًا.
+        config_missing: لم يتم إعداد اتصال Shopify بعد. تواصل مع مسؤول المنصة.
+        authorization_failed: فشل تفويض Shopify. حاول الربط مجددًا.
+        authorization_expired: انتهت صلاحية تفويض Shopify. اربط Shopify مجددًا.
+        invalid_state: لم يعد طلب التفويض صالحًا. ابدأ الربط مجددًا من Seallo.
+        invalid_signature: تعذر التحقق من تفويض Shopify. ابدأ الربط مجددًا من Seallo.
+      connect: ربط Shopify
+      reauthorize: تفويض Shopify مجددًا
     providers: { shopify: "Shopify", woocommerce: "WooCommerce", youcan: "YouCan" }
     states:
       disconnected: "غير متصل"
@@ -66,6 +107,5 @@ ar:
       verified: "يستقبل الطلبات"
       awaiting: "بانتظار طلب موقّع"
     instructions:
-      shopify: "في تطبيق Shopify اشترك في orders/create بصيغة JSON باستخدام رابط HTTPS هذا. استخدم سر العميل للتطبيق ونطاق myshopify.com الدائم."
       woocommerce: "في WooCommerce ← الإعدادات ← متقدم ← Webhooks، أضف ويب هوك نشطًا لإنشاء الطلبات. أدخل الرابط أدناه والسر نفسه الذي أدخلته هنا."
       youcan: "في تطبيق YouCan اشترك في order.created باستخدام هذا الرابط. استخدم سر العميل للتطبيق وUUID متجرك."

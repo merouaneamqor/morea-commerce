@@ -1,7 +1,18 @@
 module AdminHelper
   def admin_language_switch_path(locale)
+    if controller_path == "admin/store_connections" && action_name == "shopify_callback"
+      return "#{admin_store_connections_path}?#{ { locale: locale }.to_query}"
+    end
+
     path = if !request.get? && action_name.in?(%w[create update])
-      url_for(action: action_name == "create" ? "new" : "edit", only_path: true)
+      target = if action_name == "create"
+        "new"
+      elsif controller_path == "admin/store_connections"
+        "show"
+      else
+        "edit"
+      end
+      url_for(action: target, only_path: true)
     else
       request.path
     end

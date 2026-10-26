@@ -1,7 +1,7 @@
 en:
   connections:
     title: "Connected stores"
-    lead: "Receive orders from your existing stores. A Codify storefront is optional."
+    lead: "Manage connections to your existing stores. A Codify storefront is optional."
     add: "Connect a store"
     name: "Connection name"
     provider: "Platform"
@@ -12,7 +12,7 @@ en:
     store_id: "YouCan store ID"
     store_id_help: "Required for YouCan. Copy your store UUID from your YouCan account."
     secret: "Webhook signing secret"
-    secret_help: "Shopify and YouCan: your app client secret. WooCommerce: the webhook secret you choose in its settings."
+    secret_help: "YouCan: your app client secret. WooCommerce: the webhook secret you choose in its settings."
     setup_lead: "Connect using a signed order webhook configured in your existing store. App installation and historical order import are not included yet."
     save: "Save and show setup"
     back: "Back"
@@ -27,7 +27,7 @@ en:
     scope_help: "Receives new unpaid COD orders in MAD for delivery in Morocco, without tax, discounts or extra fees. Historical import, upstream changes, cancellations and catalog or stock sync are not included yet."
     disconnect: "Disconnect"
     reconnect: "Resume receiving orders"
-    empty: "Connect Shopify, WooCommerce or YouCan to receive your orders here."
+    empty: "Connect your Shopify, WooCommerce or YouCan store."
     deliveries: "Recent order deliveries"
     external_id: "External order ID"
     order: "Codify order"
@@ -42,23 +42,70 @@ en:
     snapshot_help: "Product names and prices come from the source store. These lines do not change Codify inventory. Confirm and fulfill the order here; commercial edits remain locked."
     external_order_locked: "Imported order prices and products are preserved from the source store. Commercial editing and duplication are unavailable."
     shopify_setup:
-      title: "Connect Shopify step by step"
-      intro: "Set up a webhook manually to receive new Shopify orders here."
-      before_start: "You need access to Shopify admin and the signing secret for your webhook subscription."
-      step_one_title: "Enter your Shopify store"
-      step_one_body: "Use your permanent example.myshopify.com domain, not your custom storefront domain."
-      step_two_title: "Add the signing secret"
-      step_two_body: "Use the secret that signs this webhook subscription. App-created subscriptions use the app client secret. An API access token will not work."
-      step_three_title: "Create the Shopify webhook"
-      step_three_body: "After saving, copy the generated delivery URL. In Shopify, configure an orders/create subscription in JSON format using this URL and the same signing secret."
-      step_four_title: "Send a test order"
-      step_four_body: "Create an eligible unpaid COD order and check the delivery history below. A saved connection waits for delivery. Verification means a signed delivery arrived; check for an accepted receipt to confirm import."
-      supported_title: "Orders you can receive"
-      supported_body: "New unpaid cash-on-delivery orders in MAD for delivery in Morocco, without tax, discounts or extra fees."
-      unavailable_title: "Not available yet"
-      unavailable_body: "One-click OAuth installation, historical orders, product or stock sync, and Shopify order updates."
-      domain_help: "Use example.myshopify.com without https:// or a path."
-      secret_help: "Enter the webhook signing secret. App-created subscriptions use the app client secret, not the API access token."
+      title: Connect Shopify
+      intro: Install the Seallo app to connect your Shopify store through its API.
+      before_start: You need permission to install apps in your Shopify store.
+      step_one_title: Enter your Shopify store
+      step_one_body: Enter a connection name and your permanent example.myshopify.com
+        domain.
+      step_two_title: Approve access in Shopify
+      step_two_body: 'Select Connect Shopify, then approve the Seallo app. Requested permissions:
+        write_orders, read_orders, read_customers and read_products. write_orders includes
+        read_orders.'
+      step_three_title: Return to Seallo
+      step_three_body: After approval, return here to see the granted permissions. Use
+        Test API connection to check store access.
+      supported_title: Customer data access
+      supported_body: Customer names, email, phone numbers and addresses may require Shopify
+        approval for protected customer data.
+      unavailable_title: Synchronization
+      unavailable_body: Connecting verifies API access. Automatic order import, order
+        updates, product sync and stock sync are not enabled.
+      domain_help: Use example.myshopify.com without https:// or a path.
+    shopify_api:
+      title: Shopify API connection
+      save_help: You will continue to Shopify to install the Seallo app and approve access.
+      saved: Shopify connection saved. Continue to Shopify to approve access.
+      verified: Shopify API connection verified.
+      connected: API access verified.
+      configured: Shopify authorization saved. Test the connection to check API access.
+      not_configured: Connect Shopify to authorize the Seallo app.
+      test: Test API connection
+      test_help: This test reads the store domain and app permissions. It does not import
+        or change orders, products or stock.
+      last_checked: 'Last verified: %{time}'
+      permissions: Verified permissions
+      reconnect: Reconnect API
+      imported_orders: Recent imported orders
+      no_imported_orders: No imported orders yet. API verification does not import orders.
+      states:
+        connected: API connected
+        configured: API check needed
+        missing: Shopify authorization needed
+      errors:
+        connection_failed: API verification failed. Check the app setup and try again.
+        credentials_missing: Authorize the Seallo app to connect Shopify.
+        disconnected: Reconnect this store before testing the API.
+        invalid_credentials: Shopify access is no longer valid. Authorize the app again.
+        shop_not_permitted: The Seallo app cannot access this store. Check the store domain
+          and app installation.
+        missing_scopes: Required permissions are missing. Authorize the Seallo app again
+          and approve the requested permissions.
+        source_mismatch: The API returned a different store. Check the permanent myshopify.com
+          domain.
+        rate_limited: Shopify is limiting requests. Try the connection test again later.
+        unavailable: Shopify could not be reached. Try again later.
+        invalid_response: Shopify returned an unexpected response. Try again later.
+        config_missing: Shopify connection is not configured yet. Contact the platform
+          administrator.
+        authorization_failed: Shopify authorization failed. Try connecting again.
+        authorization_expired: Shopify authorization expired. Connect Shopify again.
+        invalid_state: This authorization request is no longer valid. Start the connection
+          again from Seallo.
+        invalid_signature: Shopify authorization could not be verified. Start the connection
+          again from Seallo.
+      connect: Connect Shopify
+      reauthorize: Authorize Shopify again
     providers: { shopify: "Shopify", woocommerce: "WooCommerce", youcan: "YouCan" }
     states:
       disconnected: "Disconnected"
@@ -66,6 +113,5 @@ en:
       verified: "Receiving orders"
       awaiting: "Awaiting signed delivery"
     instructions:
-      shopify: "In your Shopify app, subscribe to orders/create using JSON and this HTTPS delivery URL. Use that app's client secret. Configure the permanent myshopify.com domain above."
       woocommerce: "In WooCommerce → Settings → Advanced → Webhooks, add an active Order created webhook. Set the delivery URL below and the same secret you entered here."
       youcan: "In your YouCan app, subscribe to order.created with this delivery URL. Use the app client secret and your store UUID."

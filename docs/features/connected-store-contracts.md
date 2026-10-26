@@ -1,18 +1,20 @@
 # Connected stores: signed order intake
 
-This slice lets an authenticated tenant operator configure a Shopify, WooCommerce or YouCan order source without creating local catalog products. Storefront visibility is a separate setting; existing Codify checkout remains available when enabled. Connections are configured manually in the provider dashboard. There is no OAuth install flow, remote subscription creation, historical backfill, polling, outbound order update or inventory synchronization.
+Shopify now uses the shared Seallo app's [OAuth API connection](shopify-api-connection.md). Its admin setup contains no webhook instructions, signing-secret field or delivery URL. Existing imported orders remain available. Automatic API import and synchronization are not enabled by connecting the API.
+
+WooCommerce and YouCan retain signed order intake without local catalog products. Storefront visibility is a separate setting; existing Codify checkout remains available when enabled. These two platforms use manual webhook setup. There is no remote subscription creation, historical backfill, polling, outbound order update or inventory synchronization.
 
 ## Provider setup and verified evidence
 
-Create a connection under **Admin → Connected stores**. Enter a descriptive name, bare provider hostname and signing secret. Shopify requires the permanent `*.myshopify.com` hostname. YouCan also requires the external store UUID. Keep signing secrets private. Codify stores secrets as authenticated AES-256-GCM ciphertext using a key derived from the existing stable Rails `secret_key_base`; deployment needs no additional encryption variables. Rotating that base key requires re-entering connection secrets before deliveries can resume.
+Create a WooCommerce or YouCan connection under **Admin → Connected stores**. Enter a descriptive name, bare provider hostname and signing secret. YouCan also requires the external store UUID. Keep signing secrets private. Codify stores secrets as authenticated AES-256-GCM ciphertext using a key derived from the existing stable Rails `secret_key_base`; deployment needs no additional encryption variables. Rotating that base key requires re-entering connection secrets before deliveries can resume.
 
-The connection form starts with a platform choice and shows only the relevant fields. Shopify has a dedicated entry point and a localized four-step setup guide explaining the permanent domain, signing secret, manual subscription and test order. After saving, the delivery URL appears first, followed by the two remaining setup steps. The guide distinguishes a signed delivery from an accepted order and lists supported orders and unavailable synchronization features in English, French and Arabic.
+The connection form starts with a platform choice and shows only the relevant fields in English, French and Arabic. Existing legacy Shopify webhook records are retained for compatibility and are not offered as a new setup option. A validated OAuth callback switches the connection to API mode before token exchange; webhook intake for that connection returns 410. Complete authorization if token exchange fails. Existing orders and receipt identities are retained. Remove any old provider subscription after switching.
 
 Copy the connection endpoint into the provider's webhook subscription:
 
 | Provider | Subscription | Secret | Verification |
 | --- | --- | --- | --- |
-| Shopify | `orders/create` | App client secret for the subscribed app | Base64 HMAC-SHA256 of raw body in `X-Shopify-Hmac-SHA256`; exact `X-Shopify-Shop-Domain` match |
+| Shopify (legacy only) | `orders/create` | App client secret for the subscribed app | Base64 HMAC-SHA256 of raw body in `X-Shopify-Hmac-SHA256`; exact `X-Shopify-Shop-Domain` match |
 | WooCommerce | `order.created`, REST API v3 payload | Explicit webhook secret | Base64 HMAC-SHA256 of raw body in `X-WC-Webhook-Signature`; HTTPS `X-WC-Webhook-Source` hostname match |
 | YouCan | `order.created`, API `v1` | Subscribing OAuth client's secret | Lowercase hex HMAC-SHA256 of raw body in `X-YOUCAN-SIGNATURE`; envelope `data.store_id` matches configured store UUID |
 

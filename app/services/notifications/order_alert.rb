@@ -31,8 +31,9 @@ module Notifications
         vapid: { subject: @vapid[:subject], public_key: @vapid[:public_key], private_key: @vapid[:private_key] }
       )
       true
-    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription
-      # The browser revoked or replaced this subscription; stop sending to it.
+    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription, WebPush::Unauthorized
+      # The browser revoked or replaced this subscription, or it was created
+      # with a different VAPID key; stop retrying an endpoint that cannot work.
       subscription.destroy!
       false
     rescue WebPush::ResponseError => e

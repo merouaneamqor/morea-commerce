@@ -1,6 +1,8 @@
 module Admin
   class ConfirmationsController < BaseController
     PERIODS = %w[today week month].freeze
+    REMINDER_COOLDOWN = 10.minutes
+    REMINDER_MAX_LENGTH = 120
     FILTERS = %w[available mine all callbacks_due].freeze
 
     before_action :require_store_context!
@@ -58,6 +60,27 @@ module Admin
       redirect_to dashboard_admin_confirmations_path(period: period_param), notice: t("admin.confirmations.clocked_out")
     rescue Confirmations::Shifts::Error => e
       redirect_to dashboard_admin_confirmations_path(period: period_param), alert: e.message
+    end
+
+    # Agents are confined to this controller, so admin rights are checked here.
+    def remind
+      return head(:forbidden) unless current_user.admin? || current_user.super_admin?
+
+      cooldown_key = "confirmation-reminder/#{current_store.id}"
+      unless Rails.cache.write(cooldown_key, current_user.id, expires_in: REMINDER_COOLDOWN, unless_exist: true)
+        return redirect_to admin_confirmations_path, alert: t("admin.confirmations.remind_cooldown")
+      end
+
+      message = params[:message].to_s.squish.first(REMINDER_MAX_LENGTH).presence || t("admin.confirmations.remind_default")
+      sent = Notifications::AgentReminder.new(store: current_store, message: message).deliver
+      # Nothing reached an agent, so let the next attempt go through immediately.
+      Rails.cache.delete(cooldown_key) if sent.zero?
+
+      if sent.zero?
+        redirect_to admin_confirmations_path, alert: t("admin.confirmations.remind_none")
+      else
+        redirect_to admin_confirmations_path, notice: t("admin.confirmations.remind_sent", count: sent)
+      end
     end
 
     def claim

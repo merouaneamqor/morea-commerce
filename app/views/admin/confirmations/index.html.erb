@@ -18,6 +18,16 @@
     <% end %>
   </nav>
 
+  <% unless agent_view? %>
+    <%= form_with url: remind_admin_confirmations_path, class: "flex flex-wrap items-end gap-3 border-b border-[#ebebeb] p-4" do |form| %>
+      <div class="min-w-[16rem] flex-1">
+        <%= form.label :message, t("admin.confirmations.remind_label"), class: "block text-sm mb-1" %>
+        <%= form.text_field :message, maxlength: 120, placeholder: t("admin.confirmations.remind_default"), class: "w-full rounded border border-gray-300 p-2" %>
+      </div>
+      <%= form.submit t("admin.confirmations.remind_button"), class: "admin-btn-secondary" %>
+    <% end %>
+  <% end %>
+
   <div class="admin-table-wrap">
     <table class="admin-table">
       <thead>

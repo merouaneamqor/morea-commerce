@@ -140,6 +140,7 @@ Rails.application.routes.draw do
       collection do
         get :home
         get :dashboard
+        post :remind
         post :clock_in
         post :clock_out
       end

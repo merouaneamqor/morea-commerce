@@ -38,7 +38,21 @@ export default class extends Controller {
   async refresh() {
     const registration = await navigator.serviceWorker.register("/admin/service-worker.js", { scope: "/admin" })
     const subscription = await registration.pushManager.getSubscription()
+    // A subscription made with another VAPID key can never receive alerts; drop it so one click re-subscribes.
+    if (subscription && !this.keysMatch(subscription)) {
+      await this.send("DELETE", { endpoint: subscription.endpoint }).catch(() => {})
+      await subscription.unsubscribe()
+      return this.render(false)
+    }
     this.render(Boolean(subscription) && Notification.permission === "granted")
+  }
+
+  keysMatch(subscription) {
+    const stored = subscription.options?.applicationServerKey
+    if (!stored) return true // Browsers that do not expose the key keep their subscription.
+    const wanted = this.applicationServerKey()
+    const current = new Uint8Array(stored)
+    return current.length === wanted.length && current.every((byte, index) => byte === wanted[index])
   }
 
   async enable() {

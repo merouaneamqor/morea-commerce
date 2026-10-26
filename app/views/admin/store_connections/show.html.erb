@@ -16,11 +16,13 @@
   <p class="admin-muted"><%= t("connections.resume_help") %></p>
   <% if @connection.last_error_code.present? %><p role="alert" class="admin-banner admin-banner--critical"><%= t("connections.delivery_error", code: @connection.last_error_code) %></p><% end %>
 </section>
+<% if @connection.provider == "shopify" %><%= render "shopify_setup", saved: true %><% end %>
 <section class="admin-card p-5 mb-4">
   <%= form_with model: [:admin, @connection], class: "space-y-3" do |f| %>
     <%= hidden_field_tag :operation, "rotate_secret" %>
     <%= f.label :webhook_secret, t("connections.secret"), class: "admin-label" %>
     <%= f.password_field :webhook_secret, value: nil, required: true, autocomplete: "new-password", class: "admin-input" %>
+    <% if @connection.provider == "shopify" %><p class="admin-muted"><%= t("connections.shopify_setup.secret_help") %></p><% end %>
     <%= f.submit t("connections.rotate_secret"), class: "admin-btn-secondary" %>
   <% end %>
 </section>

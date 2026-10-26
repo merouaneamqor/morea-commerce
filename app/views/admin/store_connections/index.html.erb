@@ -6,6 +6,11 @@
   </div>
   <%= link_to t("connections.add"), new_admin_store_connection_path, class: "admin-btn" %>
 </div>
+<section class="admin-card p-5 mb-4 space-y-3" aria-labelledby="shopify-connect-title">
+  <h2 id="shopify-connect-title" class="admin-card__title"><%= t("connections.shopify_setup.title") %></h2>
+  <p class="admin-muted"><%= t("connections.shopify_setup.intro") %></p>
+  <%= link_to t("connections.shopify_setup.title"), new_admin_store_connection_path(provider: "shopify"), class: "admin-btn-secondary" %>
+</section>
 <section class="admin-card">
   <div class="admin-table-wrap">
     <table class="admin-table">

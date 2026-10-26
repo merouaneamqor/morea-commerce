@@ -111,7 +111,8 @@ RSpec.describe "Merchant dashboard", type: :request do
     %w[shopify woocommerce youcan].each do |provider|
       get "/admin/store_connections/new", params: { provider: provider }
       expect(response).to have_http_status(:ok)
-      expect(document.at_css('select[name="store_connection[provider]"] option[selected]')["value"]).to eq(provider)
+      expect(document.at_css('input[type="hidden"][name="store_connection[provider]"]')["value"]).to eq(provider)
+      expect(document.at_css('nav a[aria-current="page"]')["href"]).to eq(new_admin_store_connection_path(provider: provider))
     end
     get "/en"
     expect(response).to have_http_status(:not_found)

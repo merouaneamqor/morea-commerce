@@ -172,7 +172,9 @@ ActiveRecord::Base.transaction do
     assert.call("external workspace offers #{provider} setup", doc.css("a").any? { |link| link["href"].to_s.include?("/admin/store_connections/new") && link["href"].include?("provider=#{provider}") })
     external_http.get "/admin/store_connections/new", params: { provider: provider }
     form = Nokogiri::HTML(external_http.response.body)
-    assert.call("#{provider} setup preset is selected", external_http.response.status == 200 && form.at_css('select[name="store_connection[provider]"] option[selected]')&.[]("value") == provider)
+    assert.call("#{provider} setup submits the selected provider", external_http.response.status == 200 && form.at_css('form input[type="hidden"][name="store_connection[provider]"]')&.[]("value") == provider)
+    active_providers = form.css('a[aria-current="page"]').select { |link| link["href"].to_s.include?("/admin/store_connections/new") }
+    assert.call("#{provider} setup marks its provider link current", active_providers.one? && active_providers.first["href"].include?("provider=#{provider}"))
   end
   external_http.get "/en"
   assert.call("dashboard does not publish an external-only storefront", external_http.response.status == 404 && !external.reload.storefront_enabled?)

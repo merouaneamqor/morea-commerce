@@ -48,6 +48,7 @@ module Admin
       @connection, code = Connections::ShopifyOauth.consume_callback!(query_string: request.query_string,
         session: session, store: current_store, user_id: current_user.id)
       Connections::ShopifyApi.new(connection: @connection).authorize!(code: code)
+      ShopifyOrdersSyncJob.perform_later(@connection.id)
       redirect_to admin_store_connection_path(@connection), notice: t("connections.shopify_api.verified")
     rescue Connections::ShopifyOauth::Error, Connections::ShopifyApi::Error => error
       @oauth_error_code = error.code
@@ -74,6 +75,7 @@ module Admin
         return head :unprocessable_entity unless @connection.provider == "shopify"
 
         Connections::ShopifyApi.new(connection: @connection).verify!
+        ShopifyOrdersSyncJob.perform_later(@connection.id)
         return redirect_to admin_store_connection_path(@connection), notice: t("connections.shopify_api.verified")
       when "rotate_secret"
         return head :unprocessable_entity if @connection.provider == "shopify"

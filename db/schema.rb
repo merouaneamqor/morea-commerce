@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_26_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -666,6 +666,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_120000) do
     t.string "shopify_api_error_code"
     t.string "shopify_oauth_state_digest"
     t.datetime "shopify_oauth_state_expires_at"
+    t.datetime "shopify_orders_synced_at"
+    t.datetime "shopify_webhook_checked_at"
     t.index ["shopify_oauth_state_digest"], name: "index_store_connections_on_shopify_oauth_state_digest", unique: true
     t.index ["store_id", "provider", "external_domain"], name: "idx_on_store_id_provider_external_domain_3a7fd79a93", unique: true
     t.index ["store_id"], name: "index_store_connections_on_store_id"

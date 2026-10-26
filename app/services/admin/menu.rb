@@ -35,7 +35,7 @@ module Admin
         entry(:whatsapp, :admin_whatsapp_path, :whatsapp, placeholder: true)
       ] ],
       [ :insights, [
-        entry(:expenses, :admin_expenses_path, :expenses, placeholder: true)
+        entry(:expenses, :admin_expenses_path, :expenses, controllers: "store_expenses")
       ] ],
       [ :team, [
         entry(:agents, :admin_users_path, :staff, controllers: "users"),

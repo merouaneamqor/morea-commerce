@@ -48,6 +48,7 @@ module Orders
       if @external_effects
         OrderStatusJob.perform_later(@order.id)
         DiscordOrderNotifyJob.perform_later(@order.id)
+        NewOrderAlertJob.perform_later(@order.id)
       end
       success(@order)
     rescue ActiveRecord::RecordInvalid => e

@@ -25,8 +25,13 @@ RSpec.describe Notifications::OrderAlert do
 
   before { allow(WebPush).to receive(:payload_send) }
 
-  it "is queued when a new order lands" do
-    expect { order }.to have_enqueued_job(NewOrderAlertJob)
+  it "is queued for storefront and staff orders, but not for imports" do
+    product = store.products.create!(slug: "alert-tee", name: "Tee", price_cents: 10_000, stock: 10, status: "active", track_inventory: true)
+    attrs = { name: "Synthetic buyer", phone: "0612345678", city: "Casablanca", address: "Synthetic address",
+      lines: [ { product_id: product.id, quantity: 1 } ] }
+
+    expect { Orders::Editor.new(store: store).create(attrs) }.to have_enqueued_job(NewOrderAlertJob)
+    expect { Orders::Editor.new(store: store, external_effects: false).create(attrs) }.not_to have_enqueued_job(NewOrderAlertJob)
   end
 
   it "alerts active staff of the order's store only, including agents" do

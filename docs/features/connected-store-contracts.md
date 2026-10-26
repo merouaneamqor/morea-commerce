@@ -6,6 +6,8 @@ This slice lets an authenticated tenant operator configure a Shopify, WooCommerc
 
 Create a connection under **Admin → Connected stores**. Enter a descriptive name, bare provider hostname and signing secret. Shopify requires the permanent `*.myshopify.com` hostname. YouCan also requires the external store UUID. Keep signing secrets private. Codify stores secrets as authenticated AES-256-GCM ciphertext using a key derived from the existing stable Rails `secret_key_base`; deployment needs no additional encryption variables. Rotating that base key requires re-entering connection secrets before deliveries can resume.
 
+The connection form starts with a platform choice and shows only the relevant fields. Shopify has a dedicated entry point and a localized four-step setup guide explaining the permanent domain, signing secret, manual subscription and test order. After saving, the delivery URL appears first, followed by the two remaining setup steps. The guide distinguishes a signed delivery from an accepted order and lists supported orders and unavailable synchronization features in English, French and Arabic.
+
 Copy the connection endpoint into the provider's webhook subscription:
 
 | Provider | Subscription | Secret | Verification |

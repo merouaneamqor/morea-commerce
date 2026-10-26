@@ -90,7 +90,7 @@ class SignupsController < ApplicationController
   end
 
   def signup_params
-    params.require(:registration).permit(:business_name, :email)
+    params.require(:registration).permit(:business_name, :email, :admin_theme)
   end
 
   def duplicate_identity?

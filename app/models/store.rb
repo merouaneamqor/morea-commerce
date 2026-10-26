@@ -2,6 +2,8 @@ class Store < ApplicationRecord
   include Translatable
 
   RESERVED_SUBDOMAINS = %w[www app admin api].freeze
+  # Look of the merchant admin; "current" is the original grey interface.
+  ADMIN_THEMES = %w[blue dark light current].freeze
   BILLING_INTERVALS = %w[monthly yearly].freeze
   BILLING_STATUSES = %w[trial active past_due canceled].freeze
 
@@ -29,6 +31,7 @@ class Store < ApplicationRecord
   belongs_to :featured_collection, class_name: "Collection", optional: true
 
   validates :name, :slug, presence: true
+  validates :admin_theme, inclusion: { in: ADMIN_THEMES }
   validates :storefront_enabled, inclusion: { in: [ true, false ] }
   validates :slug, uniqueness: true, format: { with: /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/, message: "must be lowercase letters, numbers, and hyphens" }
   validates :slug, exclusion: { in: RESERVED_SUBDOMAINS }

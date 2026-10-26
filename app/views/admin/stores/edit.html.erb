@@ -19,6 +19,11 @@
   </section>
 
   <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("admin_theme.heading") %></h2></div>
+    <div class="px-4 pb-4"><%= render "shared/theme_picker", form: f, legend: false %></div>
+  </section>
+
+  <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">Store details</h2></div>
     <div class="space-y-4 px-4 pb-4">
   <div>

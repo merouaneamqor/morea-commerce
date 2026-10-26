@@ -72,6 +72,17 @@ module AdminHelper
     image: '<rect x="3" y="3" width="14" height="14" rx="2"/><circle cx="7.5" cy="7.5" r="1.5"/><path d="m17 13-4-4-8 8"/>'
   }.freeze
 
+# Lucide (ISC) icons vendored in vendor/icons/lucide; trusted static files, so the markup is html_safe.
+LUCIDE_ICONS = Dir[Rails.root.join("vendor/icons/lucide/*.svg")].to_h do |file|
+  [ File.basename(file, ".svg"), File.read(file)[%r{<svg[^>]*>(.*)</svg>}m, 1].to_s.strip.html_safe ]
+end.freeze
+
+def lucide_icon(name, size: 20, **options)
+  tag.svg(LUCIDE_ICONS.fetch(name.to_s), width: size, height: size, viewBox: "0 0 24 24", fill: "none",
+          stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round",
+          "aria-hidden": true, class: [ "shrink-0", options[:class] ].compact.join(" "))
+end
+
   def admin_icon(name, size: 20)
     tag.svg(ICONS.fetch(name).html_safe, width: size, height: size, viewBox: "0 0 20 20", fill: "none",
             stroke: "currentColor", "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round",

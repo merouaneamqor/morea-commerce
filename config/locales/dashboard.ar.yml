@@ -8,6 +8,7 @@ ar:
       clear: "عرض جميع الطلبات"
     variant_stock: "أقل مخزون للمتغيرات: %{count}"
     title: "لوحة التحكم"
+    subtitle: "نظرة عامة على أداء متجركم"
     view_orders: "عرض الطلبات"
     create_order: "إنشاء طلب"
     metrics_heading: "نظرة على الطلبات"

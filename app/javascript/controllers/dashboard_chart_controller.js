@@ -15,8 +15,8 @@ export default class extends Controller {
     const style = getComputedStyle(this.element)
     const foreground = style.color
     const rtl = document.documentElement.dir === "rtl"
-    const muted = "#9ca3af"
-    const palette = [foreground, "#6b7280", muted, "#d1d5db", "#4b5563", "#e5e7eb"]
+    const muted = "#8a827c"
+    const palette = ["#9a6f72", "#1a1716", "#c4a0a3", "#4a4340", "#f8cdd0", "#8a827c"]
     const doughnut = config.type === "doughnut"
     const number = new Intl.NumberFormat(document.documentElement.lang || "en")
     const money = new Intl.NumberFormat(document.documentElement.lang || "en", {
@@ -26,17 +26,19 @@ export default class extends Controller {
 
     config.data.datasets.forEach((dataset, index) => {
       if (doughnut) {
-        dataset.backgroundColor = config.data.labels.map((_, item) => palette[item % palette.length])
-        dataset.borderColor = style.backgroundColor
-        dataset.borderWidth = 2
+        dataset.backgroundColor ||= config.data.labels.map((_, item) => palette[item % palette.length])
+        dataset.borderColor = "#faf9f7"
+        dataset.borderWidth = 3
+        dataset.hoverOffset = 5
       } else {
-        dataset.borderColor = index === 0 ? foreground : muted
-        dataset.backgroundColor = dataset.borderColor
-        dataset.borderWidth = 2
-        dataset.pointRadius = 2
-        dataset.pointHoverRadius = 5
-        dataset.tension = 0.2
-        dataset.fill = false
+        dataset.borderColor = index === 0 ? foreground : "#9a6f72"
+        dataset.backgroundColor = index === 0 ? "rgba(26, 23, 22, 0.07)" : "#9a6f72"
+        dataset.borderWidth = index === 0 ? 3 : 2
+        dataset.pointRadius = 0
+        dataset.pointHoverRadius = 4
+        dataset.pointHitRadius = 12
+        dataset.tension = 0.35
+        dataset.fill = index === 0 ? "origin" : false
         if (index > 0) dataset.borderDash = [6, 4]
       }
     })
@@ -51,7 +53,14 @@ export default class extends Controller {
       font: { family: style.fontFamily },
       plugins: {
         ...options.plugins,
-        legend: { display: !doughnut, rtl, textDirection: rtl ? "rtl" : "ltr", labels: { color: foreground, usePointStyle: true } },
+        legend: {
+          display: !doughnut,
+          position: "bottom",
+          align: "start",
+          rtl,
+          textDirection: rtl ? "rtl" : "ltr",
+          labels: { color: foreground, usePointStyle: true, pointStyle: "line", padding: 18 }
+        },
         tooltip: {
           ...options.plugins?.tooltip,
           rtl,
@@ -66,6 +75,9 @@ export default class extends Controller {
           }
         }
       }
+    }
+    if (doughnut) {
+      config.options.cutout = "68%"
     }
     if (!doughnut) {
       config.options.interaction = { mode: "index", intersect: false }

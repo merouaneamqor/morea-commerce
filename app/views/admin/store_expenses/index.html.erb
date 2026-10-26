@@ -1,0 +1,38 @@
+<% content_for :title, "Expenses — #{Store.platform_name}" %>
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Expenses</h1>
+    <p class="admin-muted mt-1">Operating costs not tied to one order. They are deducted from net profit for the dates they fall in.</p>
+  </div>
+  <nav class="flex gap-2" aria-label="Period">
+    <% [30, 90].each do |days| %><%= link_to "#{days} days", admin_expenses_path(period: days), class: @period == days ? "admin-btn" : "admin-btn-secondary" %><% end %>
+  </nav>
+</div>
+
+<% if @error %><div class="admin-banner mb-4" role="alert"><%= @error %></div><% end %>
+
+<div class="admin-layout">
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Last <%= @period %> days</h2><strong class="tabular-nums"><%= money(@total_cents, current_store.currency) %></strong></div>
+    <% if @expenses.empty? %><p class="admin-empty">No expenses recorded in this period.</p><% else %>
+      <div class="admin-table-wrap"><table class="admin-table">
+        <thead><tr><th>Date</th><th>Category</th><th>Note</th><th class="is-numeric">Amount</th><th></th></tr></thead>
+        <tbody><% @expenses.each do |expense| %>
+          <tr><td><%= expense.spent_on.strftime("%b %-d, %Y") %></td><td><%= expense.category.humanize %></td><td class="admin-muted"><%= expense.note %></td><td class="is-numeric"><%= money(expense.amount_cents, current_store.currency) %></td>
+            <td><%= button_to "Remove", admin_expense_path(expense), method: :delete, class: "admin-btn-plain", form: { data: { turbo_confirm: "Remove this expense?" } } %></td></tr>
+        <% end %></tbody>
+      </table></div>
+    <% end %>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Add an expense</h2></div>
+    <%= form_with model: @expense, url: admin_expenses_path, class: "space-y-3 px-4 pb-4" do |f| %>
+      <div><%= f.label :spent_on, "Date", class: "admin-label" %><%= f.date_field :spent_on, class: "admin-input", required: true %></div>
+      <div><%= f.label :category, "Category", class: "admin-label" %><%= f.select :category, StoreExpense::CATEGORIES.map { |c| [ c.humanize, c ] }, {}, class: "admin-input" %></div>
+      <div><%= label_tag "store_expense_amount", "Amount (#{current_store.currency})", class: "admin-label" %><%= text_field_tag "store_expense[amount]", nil, id: "store_expense_amount", class: "admin-input", inputmode: "decimal", required: true %></div>
+      <div><%= f.label :note, "Note", class: "admin-label" %><%= f.text_field :note, class: "admin-input", maxlength: 255 %></div>
+      <%= f.submit "Add expense", class: "admin-btn" %>
+    <% end %>
+  </section>
+</div>

@@ -81,6 +81,9 @@ class Order < ApplicationRecord
   scope :by_status, ->(status) { where(status: status) if status.present? }
   scope :active, -> { where(archived_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
+  scope :collected, -> { where.not(collected_at: nil) }
+  # Delivered by the carrier but the cash has not reached the merchant yet
+  scope :awaiting_remittance, -> { where(status: "delivered", collected_at: nil) }
 
   # Street address with the quartier, as the courier needs it
   def delivery_address
@@ -145,6 +148,35 @@ class Order < ApplicationRecord
     record_event!("unarchived", body: "Order unarchived", user: user)
     self
   end
+
+# Cash received by the merchant for a delivered COD order (carrier remittance).
+def record_collection!(cents: total_cents, user: nil)
+  with_lock do
+    raise ArgumentError, "Only delivered orders can be marked as collected." unless status == "delivered"
+    raise ArgumentError, "The COD payment is already recorded." if collected_at.present?
+    raise ArgumentError, "Enter an amount between 0 and the order total." unless cents.is_a?(Integer) && cents.between?(0, total_cents)
+
+    update!(collected_cents: cents, collected_at: Time.current)
+    record_event!("payment", body: "COD payment collected: #{(cents / 100.0).round(2)} #{currency}", user: user)
+  end
+  self
+end
+
+def record_refund!(cents:, user: nil)
+  with_lock do
+    raise ArgumentError, "Record the COD payment before a refund." if collected_at.blank?
+    raise ArgumentError, "Enter a positive amount." unless cents.is_a?(Integer) && cents.positive?
+    raise ArgumentError, "A refund cannot exceed the collected amount." if refunded_cents + cents > collected_cents
+
+    update!(refunded_cents: refunded_cents + cents)
+    record_event!("payment", body: "Refund recorded: #{(cents / 100.0).round(2)} #{currency}", user: user)
+  end
+  self
+end
+
+def net_collected_cents
+  collected_at.present? ? collected_cents - refunded_cents : 0
+end
 
   def record_event!(kind, body:, user: nil)
     order_events.create!(kind: kind, body: body, user: user)

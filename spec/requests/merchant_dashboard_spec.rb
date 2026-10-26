@@ -77,20 +77,37 @@ RSpec.describe "Merchant dashboard", type: :request do
     account = AdvertisingAccount.create!(store: store, name: "Synthetic reporting", provider: "Meta")
     campaign = account.advertising_campaigns.create!(name: "Own campaign")
     campaign.advertising_performances.create!(date: Time.current.in_time_zone("Africa/Casablanca").to_date,
-      spend_cents: 100, delivered_revenue_cents: 500, fulfillment_cost_cents: 150)
+      spend_cents: 100, delivered_revenue_cents: 500, fulfillment_cost_cents: 150, delivered_orders: 2)
     sign_in
     get "/admin", params: { locale: "en" }
     expect(response).to have_http_status(:ok)
-    %w[chart statuses pending campaigns].each do |section|
+    %w[chart recent statuses products pending campaigns].each do |section|
       expect(document.at_css("[data-overview-section='#{section}']")).to be_present
     end
-    chart = document.at_css('[data-overview-section="chart"] [data-controller="dashboard-chart"]')
+    overview = document.at_css("[data-overview-dashboard]")
+    expect(overview["data-dashboard-palette"].split).to contain_exactly("ink", "brass", "blush")
+    expect(overview.css('[data-dashboard-visual="metric"]').length).to eq(6)
+    expect(overview.at_css('[data-overview-card="delivery"]').text).to include("Delivery success")
+    expect(overview.at_css('[data-overview-card="net-collected"]').text).to include("Net collected revenue", "Missing data")
+    expect(overview.at_css('[data-overview-card="net-profit"]').text).to include("Net profit", "Missing data")
+    expect(overview.at_css('[data-overview-card="real-orders"]').text).to include("Real orders", "Estimated")
+    expect(overview.at_css('[data-overview-card="average-order"]').text).to include("Average order value", "Verified")
+    expect(overview.at_css("[data-action-center]")).to be_present
+    expect(overview.at_css("[data-order-funnel]")).to be_present
+
+    sales_section = document.at_css('[data-dashboard-chart-kind="sales"]')
+    expect(sales_section["data-overview-section"]).to eq("chart")
+    chart = sales_section.at_css('[data-controller="dashboard-chart"]')
     chart_config = JSON.parse(chart["data-dashboard-chart-config-value"])
     expect(chart_config["type"]).to eq("line")
     expect(chart_config.dig("data", "datasets", 0, "data")).to include(123.45)
     expect(chart["data-dashboard-chart-currency-value"]).to eq("MAD")
-    statuses = document.at_css('[data-overview-section="statuses"] [data-controller="dashboard-chart"]')
-    expect(JSON.parse(statuses["data-dashboard-chart-config-value"])["type"]).to eq("doughnut")
+    statuses_section = document.at_css('[data-dashboard-chart-kind="statuses"]')
+    expect(statuses_section["data-overview-section"]).to eq("statuses")
+    statuses = statuses_section.at_css('[data-controller="dashboard-chart"]')
+    statuses_config = JSON.parse(statuses["data-dashboard-chart-config-value"])
+    expect(statuses_config["type"]).to eq("doughnut")
+    expect(statuses_config.dig("data", "datasets", 0, "data").sum).to eq(1)
     expect(response.body).to include("Own pending buyer", "Own campaign")
     expect(response.body).not_to include("Foreign pending buyer")
     expect(document.at_css("a[href='/admin/orders/new']")).to be_present

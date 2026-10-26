@@ -22,6 +22,7 @@ class Product < ApplicationRecord
   validates :slug, uniqueness: { scope: :store_id }
   validates :status, inclusion: { in: STATUSES }
   validates :price_cents, numericality: { greater_than_or_equal_to: 0 }
+  validates :cost_cents, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :stock, numericality: { greater_than_or_equal_to: 0 }
 
   before_validation :ensure_slug, on: :create
@@ -52,6 +53,14 @@ class Product < ApplicationRecord
 
   def price_dh=(value)
     self.price_cents = value.to_i * 100
+  end
+
+  def cost_dh
+    cost_cents.to_i / 100 if cost_cents.present?
+  end
+
+  def cost_dh=(value)
+    self.cost_cents = value.present? ? value.to_i * 100 : nil
   end
 
   def compare_at_dh

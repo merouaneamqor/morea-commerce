@@ -8,6 +8,7 @@ fr:
       clear: "Afficher toutes les commandes"
     variant_stock: "Variante la plus basse : %{count} restants"
     title: "Tableau de bord"
+    subtitle: "Aperçu de la performance de votre boutique"
     view_orders: "Voir les commandes"
     create_order: "Créer une commande"
     metrics_heading: "Vue des commandes"

@@ -160,6 +160,7 @@ class Checkout
           variant_name: item.product_variant&.display_name,
           quantity: item.quantity,
           unit_price_cents: item.unit_price_cents,
+          unit_cost_cents: item.product.cost_cents,
           total_cents: item.line_total_cents
         )
       end

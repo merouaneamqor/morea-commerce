@@ -55,7 +55,7 @@ module Admin
 
     def product_params
       params.require(:product).permit(
-        :slug, :status, :price_dh, :compare_at_dh, :currency,
+        :slug, :status, :price_dh, :compare_at_dh, :cost_dh, :currency,
         :sku, :stock, :track_inventory, :featured, :position,
         collection_ids: [],
         translations_attributes: [

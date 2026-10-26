@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_26_010000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,6 +74,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_010000) do
     t.index ["customer_id"], name: "index_addresses_on_customer_id"
   end
 
+  create_table "admin_sessions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "store_id"
+    t.string "token_digest", null: false
+    t.datetime "last_seen_at", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "revoked_at"
+    t.string "ip"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_admin_sessions_on_store_id"
+    t.index ["token_digest"], name: "index_admin_sessions_on_token_digest", unique: true
+    t.index ["user_id"], name: "index_admin_sessions_on_user_id"
+  end
+
   create_table "advertising_accounts", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.string "name", null: false
@@ -134,6 +150,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_010000) do
     t.index ["status"], name: "index_agent_changesets_on_status"
     t.index ["store_id", "token"], name: "index_agent_changesets_on_store_id_and_token", unique: true
     t.index ["store_id"], name: "index_agent_changesets_on_store_id"
+  end
+
+  create_table "audit_events", force: :cascade do |t|
+    t.bigint "store_id"
+    t.bigint "actor_user_id"
+    t.string "actor_label"
+    t.string "source", null: false
+    t.boolean "acting_as_platform", default: false, null: false
+    t.string "action", null: false
+    t.string "subject_type"
+    t.bigint "subject_id"
+    t.jsonb "metadata", default: {}, null: false
+    t.string "ip"
+    t.datetime "created_at", null: false
+    t.index ["action", "created_at"], name: "index_audit_events_on_action_and_created_at"
+    t.index ["actor_user_id"], name: "index_audit_events_on_actor_user_id"
+    t.index ["store_id", "created_at"], name: "index_audit_events_on_store_id_and_created_at"
+    t.index ["store_id"], name: "index_audit_events_on_store_id"
+    t.check_constraint "source::text = ANY (ARRAY['ui'::character varying, 'api'::character varying, 'mcp'::character varying, 'job'::character varying, 'system'::character varying]::text[])", name: "audit_event_source"
   end
 
   create_table "cart_items", force: :cascade do |t|
@@ -406,9 +441,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_010000) do
     t.integer "total_cents", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "unit_cost_cents"
     t.index ["order_id"], name: "index_order_items_on_order_id"
     t.index ["product_id"], name: "index_order_items_on_product_id"
     t.index ["product_variant_id"], name: "index_order_items_on_product_variant_id"
+    t.check_constraint "unit_cost_cents IS NULL OR unit_cost_cents >= 0", name: "order_items_unit_cost_cents_nonnegative"
   end
 
   create_table "orders", force: :cascade do |t|
@@ -449,6 +486,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_010000) do
     t.string "discount_code"
     t.datetime "archived_at"
     t.string "tags"
+    t.integer "collected_cents"
+    t.datetime "collected_at"
+    t.integer "refunded_cents", default: 0, null: false
     t.index ["archived_at"], name: "index_orders_on_archived_at"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["customer_phone"], name: "index_orders_on_customer_phone"
@@ -456,6 +496,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_010000) do
     t.index ["store_id", "number"], name: "index_orders_on_store_id_and_number", unique: true
     t.index ["store_id", "sendit_code"], name: "index_orders_on_store_id_and_sendit_code", unique: true, where: "(sendit_code IS NOT NULL)"
     t.index ["store_id"], name: "index_orders_on_store_id"
+    t.check_constraint "collected_cents IS NULL OR collected_cents >= 0", name: "orders_collected_cents_nonnegative"
+    t.check_constraint "refunded_cents >= 0", name: "orders_refunded_cents_nonnegative"
   end
 
   create_table "page_section_translations", force: :cascade do |t|
@@ -574,10 +616,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_010000) do
     t.text "fit"
     t.text "movement"
     t.integer "image_order", default: [], null: false, array: true
+    t.integer "cost_cents"
     t.index ["featured"], name: "index_products_on_featured"
     t.index ["status"], name: "index_products_on_status"
     t.index ["store_id", "slug"], name: "index_products_on_store_id_and_slug", unique: true
     t.index ["store_id"], name: "index_products_on_store_id"
+    t.check_constraint "cost_cents IS NULL OR cost_cents >= 0", name: "products_cost_cents_nonnegative"
   end
 
   create_table "registrations", force: :cascade do |t|
@@ -631,6 +675,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_010000) do
     t.check_constraint "provider::text = ANY (ARRAY['shopify'::character varying, 'woocommerce'::character varying, 'youcan'::character varying]::text[])", name: "store_connection_provider"
     t.check_constraint "shopify_access_token_ciphertext IS NULL OR shopify_oauth AND shopify_access_token_expires_at IS NOT NULL", name: "store_connection_shopify_token"
     t.check_constraint "shopify_refresh_token_ciphertext IS NULL OR shopify_oauth AND shopify_refresh_token_expires_at IS NOT NULL", name: "store_connection_shopify_refresh_token"
+  end
+
+  create_table "store_expenses", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.date "spent_on", null: false
+    t.string "category", null: false
+    t.string "note"
+    t.bigint "amount_cents", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id", "spent_on"], name: "index_store_expenses_on_store_id_and_spent_on"
+    t.index ["store_id"], name: "index_store_expenses_on_store_id"
+    t.check_constraint "amount_cents > 0", name: "store_expenses_amount_positive"
   end
 
   create_table "store_translations", force: :cascade do |t|
@@ -724,10 +781,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_010000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "customers"
+  add_foreign_key "admin_sessions", "stores", on_delete: :cascade
+  add_foreign_key "admin_sessions", "users", on_delete: :cascade
   add_foreign_key "advertising_accounts", "stores"
   add_foreign_key "advertising_campaigns", "advertising_accounts"
   add_foreign_key "advertising_performances", "advertising_campaigns"
   add_foreign_key "agent_changesets", "stores"
+  add_foreign_key "audit_events", "stores", on_delete: :nullify
+  add_foreign_key "audit_events", "users", column: "actor_user_id", on_delete: :nullify
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "product_variants"
   add_foreign_key "cart_items", "products"
@@ -773,6 +834,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_010000) do
   add_foreign_key "products", "stores"
   add_foreign_key "registrations", "users", on_delete: :nullify
   add_foreign_key "store_connections", "stores"
+  add_foreign_key "store_expenses", "stores"
   add_foreign_key "store_translations", "stores"
   add_foreign_key "users", "stores"
 end

@@ -9,7 +9,17 @@ module Admin
 
     helper_method :current_user, :store_billing_past_due?
 
-    private
+private
+
+# Merchant-entered MAD amount ("12", "12.5", "12,50") to integer cents; no silent rounding.
+def parse_mad_cents(value)
+  amount = BigDecimal(value.to_s.strip.tr(",", ".")) * 100
+  raise ArgumentError, "Enter a valid amount with at most two decimals." unless amount.finite? && amount == amount.round
+
+  amount.to_i
+rescue ArgumentError
+  raise ArgumentError, "Enter a valid amount with at most two decimals."
+end
 
     def current_user
       current_admin_user

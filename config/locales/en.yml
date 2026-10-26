@@ -1,4 +1,7 @@
 en:
+  time:
+    formats:
+      short: "%m/%d/%Y %H:%M"
   store:
     preparing: "Store is being prepared."
     missing_eyebrow: "Multi-tenant storefront"

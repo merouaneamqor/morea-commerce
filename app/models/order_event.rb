@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class OrderEvent < ApplicationRecord
-  KINDS = %w[comment created edited duplicated archived unarchived status].freeze
+  KINDS = %w[comment created edited duplicated archived unarchived status payment].freeze
 
   belongs_to :order
   belongs_to :user, optional: true

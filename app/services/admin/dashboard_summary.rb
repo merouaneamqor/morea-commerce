@@ -13,6 +13,7 @@ module Admin
     attr_reader :store, :period, :days, :starts_at, :ends_at, :mode,
       :orders_count, :order_value_cents, :order_values, :delivered_count,
       :cancelled_count, :pending_count, :callbacks_due_count, :delivery_issues_count,
+      :ready_to_ship_count, :cod_pending_count,
       :recent_orders, :connections, :connections_count, :rejected_count, :source_stats,
       :has_products, :has_orders, :has_tracked_inventory, :low_stock, :low_stock_count,
       :active_carts_count
@@ -66,6 +67,8 @@ module Admin
         .where(order_confirmations: { store_id: store.id, disposition: "callback" })
         .where("order_confirmations.callback_at <= ?", ends_at).count
       @delivery_issues_count = store.orders.active.where(status: Order::PROBLEM_STATUSES).count
+      @cod_pending_count = store.orders.active.awaiting_remittance.count
+      @ready_to_ship_count = store.orders.active.where(status: %w[confirmed preparing], sendit_code: [ nil, "" ]).count
       @recent_orders = store.orders.active.where(created_at: ..ends_at).recent.order(id: :desc)
         .includes(:order_imports, external_order_receipt: :store_connection).limit(RECENT_LIMIT).to_a
       @active_carts_count = store.storefront_enabled? ? store.carts.recent.count : 0

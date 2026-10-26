@@ -1,14 +1,16 @@
 <% content_for :title, "#{t('dashboard.title')} — #{Store.platform_name}" %>
+<% content_for :admin_page_class, "admin-page--dashboard" %>
 <% primary_label, primary_path = dashboard_primary_action(@dashboard) %>
 <div data-dashboard-mode="<%= @dashboard.mode %>">
   <div class="admin-page-header">
     <div>
-      <p class="admin-muted mb-1"><%= @dashboard.store.name %></p>
       <h1 class="admin-page-header__title"><%= t("dashboard.title") %></h1>
-      <p class="admin-page-header__meta"><%= t("dashboard.modes.#{@dashboard.mode}") %></p>
+      <p class="admin-muted mt-1"><%= t("dashboard.subtitle") %></p>
     </div>
     <div class="flex flex-wrap gap-2">
-      <%= link_to t("dashboard.view_orders"), admin_orders_path, class: "admin-btn-secondary" %>
+      <nav class="admin-dashboard-period" aria-label="<%= t('dashboard.period') %>">
+        <% %w[7 30].each do |period| %><%= link_to t("dashboard.days", count: period.to_i), admin_root_path(period: period), class: @overview.days == period.to_i ? "is-active" : nil, aria: { current: @overview.days == period.to_i ? "page" : nil } %><% end %>
+      </nav>
       <%= link_to t("dashboard.create_order"), new_admin_order_path, class: "admin-btn" %>
     </div>
   </div>
@@ -17,29 +19,15 @@
     <div class="space-y-5">
       <%= render "setup" %>
       <%= render "channels" %>
-      <section class="admin-card">
-        <div class="admin-card__header"><div><h2 class="admin-card__title"><%= t("dashboard.recent_orders") %></h2><p class="admin-muted mt-1"><%= t("dashboard.recent_note") %></p></div><%= link_to t("dashboard.view_all"), admin_orders_path, class: "admin-btn-plain" %></div>
-        <% if @dashboard.recent_orders.empty? %>
-          <div class="p-5"><p class="font-medium"><%= t("dashboard.no_orders") %></p><p class="admin-muted mt-2"><%= t("dashboard.no_orders_help") %></p><%= link_to primary_label, primary_path, class: "admin-btn-secondary mt-4" %></div>
-        <% else %>
-          <div class="admin-table-wrap"><table class="admin-table">
-            <thead><tr><th><%= t("dashboard.order") %></th><th><%= t("dashboard.source") %></th><th><%= t("dashboard.status") %></th><th class="is-numeric"><%= t("dashboard.total") %></th></tr></thead>
-            <tbody><% @dashboard.recent_orders.each do |order| %>
-              <tr><td><%= link_to "##{order.number}", admin_order_path(order), class: "admin-link" %><p class="admin-muted mt-1 text-xs"><%= dashboard_time(order.created_at) %></p></td><td><%= dashboard_order_source(order) %></td><td><%= admin_badge(order.status, label: t("dashboard.order_statuses.#{order.status}")) %></td><td class="is-numeric"><%= dashboard_money(order.total_cents, order.currency) %></td></tr>
-            <% end %></tbody>
-          </table></div>
-        <% end %>
-      </section>
     </div>
     <div class="space-y-5">
       <section class="admin-card">
         <div class="admin-card__header"><h2 class="admin-card__title"><%= t("dashboard.work_heading") %></h2></div>
-        <p class="admin-muted px-4 pt-3"><%= t("dashboard.work_note") %></p>
         <div class="divide-y divide-[#ebebeb]">
           <% [{key: "pending", count: @dashboard.pending_count, path: admin_confirmations_path(filter: "all")}, {key: "callbacks", count: @dashboard.callbacks_due_count, path: admin_confirmations_path(filter: "callbacks_due")}, {key: "delivery_issues", count: @dashboard.delivery_issues_count, path: admin_orders_path(attention: "delivery_issues")}].each do |work| %>
-            <%= link_to work[:path], class: "flex items-center justify-between gap-3 p-4 hover:bg-[#f7f7f7]", data: { dashboard_work: work[:key] } do %>
-              <span><span class="block font-medium"><%= t("dashboard.work.#{work[:key]}") %></span><span class="admin-muted mt-1 block text-xs"><%= t("dashboard.work_help.#{work[:key]}") %></span></span>
-              <span class="admin-badge <%= work[:count].positive? ? 'admin-badge--attention' : 'admin-badge--neutral' %>"><%= number_with_delimiter(work[:count]) %></span>
+            <%= link_to work[:path], class: "admin-dashboard-work-row", data: { dashboard_work: work[:key] } do %>
+              <span class="font-medium"><%= t("dashboard.work.#{work[:key]}") %></span>
+              <span class="admin-dashboard-work-count <%= work[:count].positive? ? 'is-attention' : nil %>"><%= number_with_delimiter(work[:count]) %></span>
             <% end %>
           <% end %>
         </div>
@@ -47,7 +35,6 @@
       <% if @dashboard.has_tracked_inventory %>
         <section class="admin-card" data-dashboard-inventory>
           <div class="admin-card__header"><h2 class="admin-card__title"><%= t("dashboard.inventory") %></h2><%= link_to t("dashboard.products"), admin_products_path, class: "admin-btn-plain" %></div>
-          <p class="admin-muted px-4 pt-3"><%= t("dashboard.inventory_note") %></p>
           <% if @dashboard.low_stock.empty? %><p class="admin-empty"><%= t("dashboard.stock_ok") %></p><% else %>
             <p class="px-4 pt-3 font-medium"><%= t("dashboard.stock_alert", count: @dashboard.low_stock_count) %></p>
             <ul class="py-2"><% @dashboard.low_stock.each do |product| %><li><%= link_to edit_admin_product_path(product), class: "flex items-center justify-between gap-3 px-4 py-3 hover:bg-[#f7f7f7]" do %><span class="min-w-0 truncate font-medium"><%= product.name %></span><span class="admin-badge admin-badge--warning"><%= dashboard_stock_label(product) %></span><% end %></li><% end %></ul>
@@ -55,8 +42,8 @@
         </section>
       <% end %>
       <% if @dashboard.store.storefront_enabled? %>
-        <section class="admin-card p-4" data-dashboard-storefront>
-          <h2 class="admin-card__title"><%= t("dashboard.storefront") %></h2><p class="admin-muted mt-2"><%= t("dashboard.carts", count: @dashboard.active_carts_count) %></p>
+        <section class="admin-card admin-dashboard-storefront" data-dashboard-storefront>
+          <h2 class="admin-card__title"><%= t("dashboard.storefront") %></h2><p class="admin-dashboard-storefront__value"><%= number_with_delimiter(@dashboard.active_carts_count) %></p><p class="admin-muted"><%= t("dashboard.carts", count: @dashboard.active_carts_count) %></p>
           <div class="mt-3 flex flex-wrap gap-3"><%= link_to t("dashboard.review_carts"), admin_carts_path, class: "admin-link" %><%= link_to t("dashboard.storefront_settings"), edit_admin_store_path, class: "admin-link" %></div>
         </section>
       <% end %>

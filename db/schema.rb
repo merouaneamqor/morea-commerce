@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_26_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -240,10 +240,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_140000) do
     t.datetime "callback_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "handled_seconds"
     t.index ["order_confirmation_id"], name: "index_confirmation_attempts_on_order_confirmation_id"
     t.index ["store_id"], name: "index_confirmation_attempts_on_store_id"
     t.index ["user_id"], name: "index_confirmation_attempts_on_user_id"
+    t.check_constraint "handled_seconds IS NULL OR handled_seconds >= 0", name: "confirmation_attempt_handled_nonnegative"
     t.check_constraint "outcome::text = ANY (ARRAY['no_answer'::character varying, 'callback'::character varying, 'confirmed'::character varying, 'cancelled'::character varying]::text[])", name: "confirmation_attempt_outcome"
+  end
+
+  create_table "confirmation_shifts", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "user_id"
+    t.string "actor_label", null: false
+    t.datetime "started_at", null: false
+    t.datetime "ended_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id", "started_at"], name: "index_confirmation_shifts_on_store_id_and_started_at"
+    t.index ["store_id"], name: "index_confirmation_shifts_on_store_id"
+    t.index ["user_id"], name: "index_confirmation_shifts_on_user_id"
+    t.index ["user_id"], name: "index_confirmation_shifts_one_open_per_user", unique: true, where: "(ended_at IS NULL)"
+    t.check_constraint "ended_at IS NULL OR ended_at > started_at", name: "confirmation_shift_order"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -624,6 +641,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_140000) do
     t.check_constraint "cost_cents IS NULL OR cost_cents >= 0", name: "products_cost_cents_nonnegative"
   end
 
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "user_id", null: false
+    t.text "endpoint", null: false
+    t.string "p256dh", null: false
+    t.string "auth", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint", unique: true
+    t.index ["store_id"], name: "index_push_subscriptions_on_store_id"
+    t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
+    t.check_constraint "endpoint ~~ 'https://%'::text", name: "push_subscription_https_endpoint"
+  end
+
   create_table "registrations", force: :cascade do |t|
     t.string "business_name", null: false
     t.string "email", null: false
@@ -774,10 +805,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_140000) do
     t.string "status", default: "active", null: false
     t.datetime "status_changed_at"
     t.integer "session_version", default: 0, null: false
+    t.string "confirmation_role", default: "supervisor", null: false
     t.index ["email"], name: "index_users_on_email_super_admin", unique: true, where: "(super_admin = true)"
     t.index ["status"], name: "index_users_on_status"
     t.index ["store_id", "email"], name: "index_users_on_store_id_and_email", unique: true
     t.index ["store_id"], name: "index_users_on_store_id"
+    t.check_constraint "confirmation_role::text <> 'agent'::text OR admin = false", name: "users_agent_not_admin"
+    t.check_constraint "confirmation_role::text = ANY (ARRAY['agent'::character varying, 'supervisor'::character varying]::text[])", name: "users_confirmation_role_check"
     t.check_constraint "session_version >= 0", name: "users_session_version_nonnegative"
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'suspended'::character varying, 'archived'::character varying]::text[])", name: "users_status_check"
   end
@@ -806,6 +840,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_140000) do
   add_foreign_key "confirmation_attempts", "order_confirmations", on_delete: :cascade
   add_foreign_key "confirmation_attempts", "stores", on_delete: :cascade
   add_foreign_key "confirmation_attempts", "users", on_delete: :nullify
+  add_foreign_key "confirmation_shifts", "stores", on_delete: :cascade
+  add_foreign_key "confirmation_shifts", "users", on_delete: :nullify
   add_foreign_key "customers", "stores"
   add_foreign_key "discounts", "stores"
   add_foreign_key "external_order_receipts", "orders"
@@ -838,6 +874,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_140000) do
   add_foreign_key "product_translations", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "stores"
+  add_foreign_key "push_subscriptions", "stores", on_delete: :cascade
+  add_foreign_key "push_subscriptions", "users", on_delete: :cascade
   add_foreign_key "registrations", "users", on_delete: :nullify
   add_foreign_key "store_connections", "stores"
   add_foreign_key "store_expenses", "stores"

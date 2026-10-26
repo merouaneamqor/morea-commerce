@@ -11,6 +11,7 @@ class ConfirmationAttempt < ApplicationRecord
 
   validates :outcome, inclusion: { in: OUTCOMES }
   validates :notes, length: { maximum: 2000 }
+  validates :handled_seconds, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :callback_at, presence: true, if: -> { outcome == "callback" }
   validate :same_store_records
 
@@ -24,7 +25,7 @@ class ConfirmationAttempt < ApplicationRecord
     if order_confirmation && order_confirmation.store_id != store_id
       errors.add(:order_confirmation, "must belong to this store")
     end
-    if user && !(user.super_admin? || (user.admin? && user.store_id == store_id))
+    if user && !user.can_work_desk_for?(store_id)
       errors.add(:user, "must administer this store")
     end
   end

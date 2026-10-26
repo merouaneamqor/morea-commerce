@@ -1,0 +1,104 @@
+<% content_for :title, "#{t('admin.confirmations.home_title', name: current_user.name.presence || current_user.email)} — Admin" %>
+<% home = @home %>
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("admin.confirmations.home_title", name: current_user.name.presence || current_user.email) %></h1>
+    <p class="admin-muted mt-2"><%= t("admin.confirmations.home_description") %></p>
+  </div>
+  <%= link_to t("admin.confirmations.open_queue"), admin_confirmations_path, class: "admin-btn" %>
+</div>
+
+<%= render "shift_card", open_shift: @open_shift, period: "today" %>
+
+<div class="grid grid-cols-2 gap-3 md:grid-cols-4 mb-5">
+  <div class="admin-card p-4">
+    <p class="admin-metric__label"><%= t("admin.confirmations.home_kpi.points") %></p>
+    <p class="admin-metric__value mt-2"><%= number_with_delimiter(home.points) %></p>
+    <p class="admin-muted mt-2"><%= t("admin.confirmations.home_kpi.points_today") %></p>
+  </div>
+  <div class="admin-card p-4">
+    <p class="admin-metric__label"><%= t("admin.confirmations.kpi.confirmed") %></p>
+    <p class="admin-metric__value mt-2"><%= number_with_delimiter(home.outcome_counts["confirmed"]) %></p>
+    <p class="admin-muted mt-2"><%= t("admin.confirmations.kpi.attempts", count: home.outcome_counts.values.sum) %></p>
+  </div>
+  <div class="admin-card p-4">
+    <p class="admin-metric__label"><%= t("admin.confirmations.kpi.rate") %></p>
+    <p class="admin-metric__value mt-2"><%= confirmation_rate_label(home.confirmation_rate) %></p>
+  </div>
+  <div class="admin-card p-4">
+    <p class="admin-metric__label"><%= t("admin.confirmations.home_kpi.avg_time") %></p>
+    <p class="admin-metric__value mt-2"><%= home.average_handled_seconds ? shift_clock(home.average_handled_seconds) : "—" %></p>
+    <p class="admin-muted mt-2"><%= t("admin.confirmations.home_kpi.avg_time_hint") %></p>
+  </div>
+</div>
+
+<section class="admin-card p-4 mb-5" aria-labelledby="points-legend-title">
+  <h2 id="points-legend-title" class="admin-card__title"><%= t("admin.confirmations.home_kpi.points_legend") %></h2>
+  <ul class="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+    <% Confirmations::AgentHome::POINTS.each do |outcome, points| %>
+      <li class="flex items-center justify-between rounded border border-[#ebebeb] p-3">
+        <span><%= t("admin.confirmations.outcomes.#{outcome}") %></span>
+        <span class="admin-badge admin-badge--info"><%= t("admin.confirmations.home_kpi.points_value", count: points) %></span>
+      </li>
+    <% end %>
+  </ul>
+</section>
+
+<section class="admin-card mb-5" aria-labelledby="claims-title">
+  <div class="admin-card__header flex items-center justify-between p-4">
+    <h2 id="claims-title" class="admin-card__title"><%= t("admin.confirmations.home_kpi.claims") %></h2>
+    <%= link_to t("admin.confirmations.home_kpi.my_claims"), admin_confirmations_path(filter: "mine"), class: "admin-link" %>
+  </div>
+  <% if home.active_claims.empty? %>
+    <p class="admin-empty"><%= t("admin.confirmations.home_kpi.no_claims") %></p>
+  <% else %>
+    <ul class="divide-y divide-[#ebebeb]">
+      <% home.active_claims.each do |claim| %>
+        <li class="flex flex-wrap items-center justify-between gap-3 p-4">
+          <div>
+            <span class="admin-link">#<%= claim.order.number %></span>
+            <span class="admin-muted ms-2"><%= claim.order.customer_name %> · <%= claim.order.customer_city %></span>
+          </div>
+          <div class="text-end">
+            <p class="admin-muted text-sm"><%= t("admin.confirmations.home_kpi.time_on_order") %></p>
+            <p role="timer" class="tabular-nums font-medium" data-controller="shift-timer" data-shift-timer-started-at-value="<%= claim.claimed_at.iso8601 %>"><%= shift_clock(Time.current - claim.claimed_at) %></p>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>
+
+<section class="admin-card" aria-labelledby="recent-title">
+  <div class="admin-card__header p-4">
+    <h2 id="recent-title" class="admin-card__title"><%= t("admin.confirmations.home_kpi.recent") %></h2>
+  </div>
+  <% if home.recent.empty? %>
+    <p class="admin-empty"><%= t("admin.confirmations.home_kpi.no_recent") %></p>
+  <% else %>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("admin.confirmations.columns.order") %></th>
+            <th><%= t("admin.confirmations.columns.outcome") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.columns.time_spent") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.columns.points") %></th>
+            <th><%= t("admin.confirmations.columns.when") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% home.recent.each do |attempt| %>
+            <tr>
+              <td>#<%= attempt.order_confirmation.order.number %></td>
+              <td><%= t("admin.confirmations.outcomes.#{attempt.outcome}") %></td>
+              <td class="is-numeric"><%= attempt.handled_seconds ? shift_clock(attempt.handled_seconds) : "—" %></td>
+              <td class="is-numeric"><%= Confirmations::AgentHome::POINTS.fetch(attempt.outcome, 0) %></td>
+              <td><%= l(attempt.created_at, format: :short) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>

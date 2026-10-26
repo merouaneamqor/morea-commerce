@@ -33,6 +33,11 @@
           <%= f.password_field :password_confirmation, class: "admin-input", autocomplete: "new-password" %>
         </div>
       </div>
+      <div>
+        <%= f.label :confirmation_role, t("admin.confirmations.role_label"), class: "admin-label" %>
+        <%= f.select :confirmation_role, User::CONFIRMATION_ROLES.map { |role| [t("admin.confirmations.roles.#{role}"), role] }, {}, class: "admin-input" %>
+        <p class="admin-help"><%= t("admin.confirmations.agent_not_admin") %></p>
+      </div>
       <label class="admin-check"><%= f.check_box :admin %> Admin access</label>
     </div>
   </section>

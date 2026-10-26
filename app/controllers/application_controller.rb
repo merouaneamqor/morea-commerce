@@ -59,7 +59,7 @@ class ApplicationController < ActionController::Base
 
     if user.super_admin?
       Store.find_by(id: session[:admin_store_id]) if session[:admin_mode] == "store"
-    elsif user.admin?
+    elsif user.admin? || user.confirmation_agent?
       user.store
     end
   end

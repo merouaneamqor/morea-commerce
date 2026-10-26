@@ -1,0 +1,83 @@
+<% content_for :title, "#{t('admin.confirmations.performance_title')} — Admin" %>
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("admin.confirmations.performance_title") %></h1>
+    <p class="admin-muted mt-2"><%= t("admin.confirmations.performance_description") %></p>
+  </div>
+  <%= link_to t("admin.confirmations.title"), admin_confirmations_path, class: "admin-btn-secondary" %>
+</div>
+
+<%= render "shift_card", open_shift: @open_shift, period: @period %>
+
+<nav class="admin-tabs mb-5" aria-label="<%= t('admin.confirmations.period') %>">
+  <% Admin::ConfirmationsController::PERIODS.each do |period| %>
+    <%= link_to t("admin.confirmations.periods.#{period}"), dashboard_admin_confirmations_path(period: period), class: "admin-tab #{'is-active' if @period == period}", "aria-current": (@period == period ? "page" : nil) %>
+  <% end %>
+</nav>
+
+<div class="grid grid-cols-2 gap-3 md:grid-cols-4 mb-5">
+  <div class="admin-card p-4">
+    <p class="admin-metric__label"><%= t("admin.confirmations.kpi.on_shift_now") %></p>
+    <p class="admin-metric__value mt-2"><%= number_with_delimiter(@performance.agents_on_shift) %></p>
+    <p class="admin-muted mt-2"><%= t("admin.confirmations.kpi.of_agents", count: @rows.size) %></p>
+  </div>
+  <div class="admin-card p-4">
+    <p class="admin-metric__label"><%= t("admin.confirmations.kpi.hours_worked") %></p>
+    <p class="admin-metric__value mt-2"><%= shift_hours(@totals.worked_seconds) %></p>
+  </div>
+  <div class="admin-card p-4">
+    <p class="admin-metric__label"><%= t("admin.confirmations.kpi.confirmed") %></p>
+    <p class="admin-metric__value mt-2"><%= number_with_delimiter(@totals.confirmed) %></p>
+    <p class="admin-muted mt-2"><%= t("admin.confirmations.kpi.attempts", count: @totals.attempts) %></p>
+  </div>
+  <div class="admin-card p-4">
+    <p class="admin-metric__label"><%= t("admin.confirmations.kpi.rate") %></p>
+    <p class="admin-metric__value mt-2"><%= confirmation_rate_label(@totals.confirmation_rate) %></p>
+    <p class="admin-muted mt-2"><%= t("admin.confirmations.kpi.per_hour", value: confirmations_per_hour_label(@totals.confirmations_per_hour)) %></p>
+  </div>
+</div>
+
+<div class="admin-card">
+  <% if @rows.empty? %>
+    <p class="admin-empty"><%= t("admin.confirmations.no_agents") %></p>
+  <% else %>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("admin.confirmations.columns.agent") %></th>
+            <th><%= t("admin.confirmations.columns.role") %></th>
+            <th><%= t("admin.confirmations.columns.status") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.columns.hours") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.columns.attempts") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.outcomes.confirmed") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.outcomes.cancelled") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.outcomes.no_answer") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.outcomes.callback") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.columns.rate") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.columns.per_hour") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.columns.claims") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @rows.each do |row| %>
+            <tr>
+              <td><%= row.user.name.presence || row.user.email %></td>
+              <td><span class="admin-badge admin-badge--neutral"><%= t("admin.confirmations.roles.#{row.user.confirmation_role}") %></span></td>
+              <td><span class="admin-badge <%= row.on_shift ? 'admin-badge--success' : 'admin-badge--neutral' %>"><%= t(row.on_shift ? "admin.confirmations.status.on_shift" : "admin.confirmations.status.off_shift") %></span></td>
+              <td class="is-numeric"><%= shift_hours(row.figures.worked_seconds) %></td>
+              <td class="is-numeric"><%= row.figures.attempts %></td>
+              <td class="is-numeric"><%= row.figures.confirmed %></td>
+              <td class="is-numeric"><%= row.figures.cancelled %></td>
+              <td class="is-numeric"><%= row.figures.no_answer %></td>
+              <td class="is-numeric"><%= row.figures.callbacks %></td>
+              <td class="is-numeric"><%= confirmation_rate_label(row.figures.confirmation_rate) %></td>
+              <td class="is-numeric"><%= confirmations_per_hour_label(row.figures.confirmations_per_hour) %></td>
+              <td class="is-numeric"><%= row.figures.open_claims %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

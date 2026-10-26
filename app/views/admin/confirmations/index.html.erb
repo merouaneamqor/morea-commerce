@@ -1,75 +1,132 @@
 <% content_for :title, "#{t('admin.confirmations.title')} — Admin" %>
+<% content_for :admin_page_class, "admin-page--dashboard" %>
 <div class="admin-page-header">
   <div>
     <h1 class="admin-page-header__title"><%= t("admin.confirmations.title") %></h1>
     <p class="admin-muted mt-2"><%= t("admin.confirmations.description") %></p>
   </div>
-  <%= link_to t("admin.confirmations.orders"), admin_orders_path, class: "admin-btn-secondary" %>
+  <div class="flex flex-wrap gap-2">
+    <%= link_to t("admin.confirmations.performance"), dashboard_admin_confirmations_path, class: "admin-btn-secondary" %>
+    <%= link_to t("admin.confirmations.orders"), admin_orders_path, class: "admin-btn-secondary" %>
+  </div>
 </div>
-<div class="admin-card">
-  <nav class="admin-tabs" aria-label="<%= t('admin.confirmations.filters') %>">
-    <% %w[available mine all callbacks_due].each do |filter| %>
-      <%= link_to t("admin.confirmations.#{filter}"), admin_confirmations_path(filter: filter), class: "admin-tab #{'is-active' if @filter == filter}" %>
+
+<div class="admin-card overflow-hidden">
+  <nav class="admin-tabs px-4" aria-label="<%= t('admin.confirmations.filters') %>">
+    <% @filters.each do |filter| %>
+      <%= link_to t("admin.confirmations.#{filter}"), admin_confirmations_path(filter: filter), class: "admin-tab #{'is-active' if @filter == filter}", "aria-current": (@filter == filter ? "page" : nil) %>
     <% end %>
   </nav>
-  <% if @orders.empty? %>
-    <p class="admin-empty"><%= t("admin.confirmations.empty") %></p>
-  <% end %>
-  <% @orders.each do |order| %>
-    <% confirmation = @confirmations[order.id] %>
-    <section class="border-b border-[#ebebeb] p-4" aria-label="<%= t('admin.confirmations.order_label', number: order.number) %>">
-      <div class="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <%= link_to "##{order.number}", admin_order_path(order), class: "admin-link" %>
-          <span class="admin-muted ms-2"><%= order.total_display %></span>
-          <p class="mt-2"><%= order.customer_name %> · <%= order.customer_city %></p>
-          <p><%= link_to order.customer_phone, "tel:#{order.customer_phone.gsub(/[^\d+]/, '')}", class: "admin-link", dir: "ltr" %></p>
-          <p class="admin-muted mt-2"><%= t("admin.confirmations.attempts", count: @attempt_counts[order.id].to_i) %></p>
-          <% if confirmation&.callback_at %>
-            <p class="admin-muted"><%= t("admin.confirmations.callback_due", time: l(confirmation.callback_at, format: :short)) %></p>
-          <% end %>
-          <% if confirmation&.assigned_user %>
-            <p class="admin-muted"><%= t("admin.confirmations.assigned", name: confirmation.assigned_user.name.presence || confirmation.assigned_user.email) %></p>
-          <% end %>
-        </div>
-        <% if confirmation&.assigned_user_id == current_user.id %>
-          <%= button_to t("admin.confirmations.release"), release_admin_confirmation_path(order), class: "admin-btn-secondary" %>
-        <% elsif confirmation&.assigned_user_id %>
-          <span class="admin-muted"><%= t("admin.confirmations.claimed_elsewhere") %></span>
-        <% elsif confirmation.nil? || confirmation.due? %>
-          <%= button_to t("admin.confirmations.claim"), claim_admin_confirmation_path(order), class: "admin-btn" %>
-        <% else %>
-          <span class="admin-muted"><%= t("admin.confirmations.not_due") %></span>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th><%= t("admin.confirmations.columns.order") %></th>
+          <th><%= t("admin.confirmations.columns.date") %></th>
+          <th><%= t("admin.confirmations.columns.customer") %></th>
+          <th><%= t("admin.confirmations.products") %></th>
+          <th><%= t("admin.confirmations.columns.status") %></th>
+          <th class="is-numeric"><%= t("admin.confirmations.columns.actions") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @orders.empty? %>
+          <tr><td colspan="6"><p class="admin-empty"><%= t("admin.confirmations.empty") %></p></td></tr>
         <% end %>
-      </div>
-      <% if confirmation&.assigned_user_id == current_user.id %>
-        <%= form_with url: outcome_admin_confirmation_path(order), class: "mt-4 grid gap-3 max-w-2xl" do |form| %>
-          <div>
-            <%= form.label :outcome, t("admin.confirmations.outcome"), for: "outcome_#{order.id}", class: "block text-sm mb-1" %>
-            <%= form.select :outcome, ConfirmationAttempt::OUTCOMES.map { |value| [t("admin.confirmations.outcomes.#{value}"), value] }, {}, id: "outcome_#{order.id}", class: "w-full rounded border border-gray-300 p-2" %>
-          </div>
-          <div>
-            <%= form.label :callback_at, t("admin.confirmations.callback_time"), for: "callback_#{order.id}", class: "block text-sm mb-1" %>
-            <%= form.datetime_local_field :callback_at, id: "callback_#{order.id}", class: "w-full rounded border border-gray-300 p-2" %>
-            <p class="admin-muted text-xs mt-1"><%= t("admin.confirmations.timezone", zone: Time.zone.name) %></p>
-          </div>
-          <div>
-            <%= form.label :notes, t("admin.confirmations.notes"), for: "notes_#{order.id}", class: "block text-sm mb-1" %>
-            <%= form.text_area :notes, id: "notes_#{order.id}", maxlength: 2000, rows: 2, class: "w-full rounded border border-gray-300 p-2" %>
-          </div>
-          <p class="admin-muted text-sm"><%= t("admin.confirmations.dispatch_note") %></p>
-          <%= form.submit t("admin.confirmations.save"), class: "admin-btn justify-self-start" %>
+        <% @orders.each do |order| %>
+          <% confirmation = @confirmations[order.id] %>
+          <% mine = confirmation&.assigned_user_id == current_user.id %>
+          <tr class="align-top transition-colors hover:bg-[#f6f6f7]" aria-label="<%= t('admin.confirmations.order_label', number: order.number) %>">
+            <td>
+              <%= link_to "##{order.number}", admin_order_path(order), class: "admin-link font-semibold" %>
+              <p class="admin-muted text-sm mt-1"><%= order.total_display %></p>
+            </td>
+            <td class="whitespace-nowrap admin-muted text-sm"><%= l(order.created_at, format: :short) %></td>
+            <td>
+              <p class="font-medium"><%= order.customer_name %></p>
+              <p class="admin-muted text-sm"><%= order.customer_city %></p>
+              <p class="text-sm"><%= link_to order.customer_phone, "tel:#{order.customer_phone.gsub(/[^\d+]/, '')}", class: "admin-link", dir: "ltr" %></p>
+            </td>
+            <td>
+              <ul class="space-y-1 text-sm">
+                <% order.order_items.each do |item| %>
+                  <li>
+                    <%= item.quantity %> × <%= item.product_name %><% if item.variant_name.present? %> <span class="admin-muted">(<%= item.variant_name %>)</span><% end %>
+                    <span class="admin-muted ms-1"><%= money(item.total_cents, order.currency) %></span>
+                  </li>
+                <% end %>
+              </ul>
+            </td>
+            <td>
+              <div class="flex flex-col items-start gap-1">
+                <span class="admin-badge admin-badge--neutral"><%= t("admin.confirmations.attempts", count: @attempt_counts[order.id].to_i) %></span>
+                <% if confirmation&.callback_at %>
+                  <span class="admin-badge admin-badge--attention"><%= t("admin.confirmations.callback_due", time: l(confirmation.callback_at, format: :short)) %></span>
+                <% end %>
+                <% if confirmation&.assigned_user && (!agent_view? || mine) %>
+                  <span class="admin-badge admin-badge--info"><%= t("admin.confirmations.assigned", name: confirmation.assigned_user.name.presence || confirmation.assigned_user.email) %></span>
+                <% elsif confirmation&.assigned_user %>
+                  <span class="admin-badge admin-badge--neutral"><%= t("admin.confirmations.claimed_elsewhere") %></span>
+                <% else %>
+                  <span class="admin-badge admin-badge--success"><%= t("admin.confirmations.available") %></span>
+                <% end %>
+              </div>
+            </td>
+            <td class="is-numeric">
+              <div class="flex flex-col items-end gap-2">
+                <% if mine %>
+                  <% if confirmation.claimed_at %>
+                    <p role="timer" class="tabular-nums text-sm" data-controller="shift-timer" data-shift-timer-started-at-value="<%= confirmation.claimed_at.iso8601 %>"><%= shift_clock(Time.current - confirmation.claimed_at) %></p>
+                  <% end %>
+                  <%= button_to t("admin.confirmations.release"), release_admin_confirmation_path(order), class: "admin-btn-secondary" %>
+                <% elsif confirmation&.assigned_user_id %>
+                  <span class="admin-muted text-sm"><%= t("admin.confirmations.claimed_elsewhere") %></span>
+                <% elsif confirmation.nil? || confirmation.due? %>
+                  <%= button_to t("admin.confirmations.claim"), claim_admin_confirmation_path(order), class: "admin-btn" %>
+                <% else %>
+                  <span class="admin-muted text-sm"><%= t("admin.confirmations.not_due") %></span>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+          <% if mine %>
+            <tr class="bg-[#fafafa]">
+              <td colspan="6">
+                <%= form_with url: outcome_admin_confirmation_path(order), class: "grid gap-3 max-w-2xl py-2" do |form| %>
+                  <div>
+                    <%= form.label :outcome, t("admin.confirmations.outcome"), for: "outcome_#{order.id}", class: "block text-sm mb-1" %>
+                    <%= form.select :outcome, ConfirmationAttempt::OUTCOMES.map { |value| [t("admin.confirmations.outcomes.#{value}"), value] }, {}, id: "outcome_#{order.id}", class: "w-full rounded border border-gray-300 p-2" %>
+                  </div>
+                  <div>
+                    <%= form.label :callback_at, t("admin.confirmations.callback_time"), for: "callback_#{order.id}", class: "block text-sm mb-1" %>
+                    <%= form.datetime_local_field :callback_at, id: "callback_#{order.id}", class: "w-full rounded border border-gray-300 p-2" %>
+                    <p class="admin-muted text-xs mt-1"><%= t("admin.confirmations.timezone", zone: Time.zone.name) %></p>
+                  </div>
+                  <div>
+                    <%= form.label :notes, t("admin.confirmations.notes"), for: "notes_#{order.id}", class: "block text-sm mb-1" %>
+                    <%= form.text_area :notes, id: "notes_#{order.id}", maxlength: 2000, rows: 2, class: "w-full rounded border border-gray-300 p-2" %>
+                  </div>
+                  <p class="admin-muted text-sm"><%= t("admin.confirmations.dispatch_note") %></p>
+                  <%= form.submit t("admin.confirmations.save"), class: "admin-btn justify-self-start" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
         <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <nav class="flex items-center justify-between gap-4 border-t border-[#ebebeb] p-4" aria-label="<%= t('admin.confirmations.pagination') %>">
+    <span class="admin-muted text-sm"><%= t("admin.confirmations.page", number: @page) %></span>
+    <div class="flex items-center gap-2">
+      <% if @page > 1 %>
+        <%= link_to t("admin.confirmations.previous"), admin_confirmations_path(filter: @filter, page: @page - 1), class: "admin-btn-secondary" %>
       <% end %>
-    </section>
-  <% end %>
-  <nav class="flex items-center gap-4 p-4" aria-label="<%= t('admin.confirmations.pagination') %>">
-    <% if @page > 1 %>
-      <%= link_to t("admin.confirmations.previous"), admin_confirmations_path(filter: @filter, page: @page - 1), class: "admin-link" %>
-    <% end %>
-    <span class="admin-muted"><%= t("admin.confirmations.page", number: @page) %></span>
-    <% if @has_next %>
-      <%= link_to t("admin.confirmations.next"), admin_confirmations_path(filter: @filter, page: @page + 1), class: "admin-link" %>
-    <% end %>
+      <% if @has_next %>
+        <%= link_to t("admin.confirmations.next"), admin_confirmations_path(filter: @filter, page: @page + 1), class: "admin-btn-secondary" %>
+      <% end %>
+    </div>
   </nav>
 </div>

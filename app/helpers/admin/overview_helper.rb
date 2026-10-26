@@ -26,11 +26,24 @@ module Admin::OverviewHelper
   end
 
   def overview_status_chart(counts)
+    colors = {
+      "new" => "#c4a0a3",
+      "confirmed" => "#9a6f72",
+      "preparing" => "#4a4340",
+      "shipped" => "#1a1716",
+      "delivered" => "#2f6f52",
+      "address_issue" => "#b7791f",
+      "unreachable" => "#b7791f",
+      "postponed" => "#8a827c",
+      "cancelled" => "#9b3a46",
+      "returned" => "#b7791f"
+    }
+
     {
       type: "doughnut",
       data: {
         labels: counts.keys.map { |status| t("dashboard.order_statuses.#{status}") },
-        datasets: [ { data: counts.values } ]
+        datasets: [ { data: counts.values, backgroundColor: counts.keys.map { |status| colors.fetch(status, "#8a827c") } } ]
       }
     }
   end

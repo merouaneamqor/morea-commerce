@@ -119,6 +119,29 @@
       </div>
     </section>
 
+<% if @order.status == "delivered" %>
+  <section class="admin-card" data-order-payment>
+    <div class="admin-card__header"><h2 class="admin-card__title">COD payment</h2><%= @order.collected_at ? admin_badge(:paid, label: "Collected", tone: "neutral") : admin_badge(:pending, label: "Awaiting remittance", tone: "warning") %></div>
+    <div class="px-4 pb-4 space-y-3">
+      <% if @order.collected_at.blank? %>
+        <%= form_with url: collect_admin_order_path(@order), method: :post, class: "flex flex-wrap items-end gap-2" do %>
+          <div><%= label_tag :amount, "Amount received (#{@order.currency})", class: "admin-label" %><%= text_field_tag :amount, number_with_precision(@order.total_cents / 100.0, precision: 2), class: "admin-input", inputmode: "decimal" %></div>
+          <%= submit_tag "Record payment", class: "admin-btn" %>
+        <% end %>
+        <p class="admin-help">Record the cash once the carrier has remitted it to you.</p>
+      <% else %>
+        <div class="admin-summary-row"><span>Collected</span><span class="admin-muted"><%= @order.collected_at.strftime("%b %-d, %H:%M") %></span><span class="tabular-nums"><%= money(@order.collected_cents, @order.currency) %></span></div>
+        <% if @order.refunded_cents.positive? %><div class="admin-summary-row"><span>Refunded</span><span></span><span class="tabular-nums">−<%= money(@order.refunded_cents, @order.currency) %></span></div><% end %>
+        <div class="admin-summary-row border-t border-[#ebebeb] pt-2 font-semibold"><span>Net collected</span><span></span><span class="tabular-nums"><%= money(@order.net_collected_cents, @order.currency) %></span></div>
+        <%= form_with url: refund_admin_order_path(@order), method: :post, class: "flex flex-wrap items-end gap-2" do %>
+          <div><%= label_tag :amount, "Refund (#{@order.currency})", class: "admin-label" %><%= text_field_tag :amount, nil, class: "admin-input", inputmode: "decimal" %></div>
+          <%= submit_tag "Record refund", class: "admin-btn-secondary", data: { turbo_confirm: "Record this refund?" } %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
     <section class="admin-card">
       <div class="admin-card__header"><h2 class="admin-card__title">Timeline</h2></div>
       <div class="px-4 pb-4">

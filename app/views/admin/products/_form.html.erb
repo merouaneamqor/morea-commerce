@@ -84,6 +84,11 @@
             <%= f.label :compare_at_dh, "Compare-at price", class: "admin-label" %>
             <%= f.number_field :compare_at_dh, class: "admin-input", min: 0 %>
           </div>
+          <div>
+            <%= f.label :cost_dh, "Cost per unit", class: "admin-label" %>
+            <%= f.number_field :cost_dh, class: "admin-input", min: 0 %>
+            <p class="admin-help">Your purchase cost. Used for net profit; copied onto each new order.</p>
+          </div>
         </div>
       </section>
 

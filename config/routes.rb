@@ -158,9 +158,12 @@ Rails.application.routes.draw do
         get :packing_slip
         post :comments
         patch :tags
+        post :collect
+        post :refund
       end
     end
     resources :customers, only: %i[index show edit update]
+    resources :expenses, controller: "store_expenses", only: %i[index create destroy]
     resources :carts, only: %i[index show]
 
     get "delivery", to: "delivery#show", as: :delivery
@@ -174,7 +177,7 @@ Rails.application.routes.draw do
 
     # Store-manager menu entries whose feature is not built yet (empty pages)
     {
-      inventory: "inventory", purchases: "purchases", expenses: "expenses",
+      inventory: "inventory", purchases: "purchases",
       whatsapp: "whatsapp", analytics: "analytics", accounting: "accounting", workflows: "workflows",
       billing: "billing", app: "app", ai_chat: "ai-chat", help: "help"
     }.each do |feature, path|

@@ -73,7 +73,7 @@
         <div class="admin-scrim md:hidden" data-action="click->admin-menu#close"></div>
 
         <main class="admin-main">
-          <div class="admin-page">
+          <div class="admin-page <%= yield(:admin_page_class) %>">
             <% if current_store&.subscription_required? && !subscription_access? %>
               <div class="admin-banner admin-banner--critical">
                 <%= t("subscriptions.required") %>

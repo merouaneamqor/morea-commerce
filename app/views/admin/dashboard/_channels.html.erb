@@ -1,12 +1,12 @@
 <section class="admin-card">
-  <div class="admin-card__header"><div><h2 class="admin-card__title"><%= t("dashboard.channels") %></h2><p class="admin-muted mt-1"><%= t("dashboard.channels_note") %></p></div><%= link_to t("dashboard.manage_channels"), admin_store_connections_path, class: "admin-btn-plain" %></div>
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= t("dashboard.channels") %></h2><%= link_to t("dashboard.manage_channels"), admin_store_connections_path, class: "admin-btn-plain" %></div>
   <% if @dashboard.rejected_count.positive? %><p class="m-4 rounded border border-amber-200 bg-amber-50 p-3"><%= t("dashboard.rejected", count: @dashboard.rejected_count) %></p><% end %>
   <% if @dashboard.connections.empty? %><p class="admin-empty"><%= t("dashboard.channels_empty") %></p><% else %>
     <ul class="divide-y divide-[#ebebeb]">
       <% @dashboard.connections.each do |connection| %>
         <% stats = @dashboard.source_stats.fetch(connection.id) %>
         <li class="p-4"><div class="flex flex-wrap items-start justify-between gap-3"><div><%= link_to connection.name, admin_store_connection_path(connection), class: "admin-link" %><p class="admin-muted mt-1"><%= t("connections.providers.#{connection.provider}") %> · <bdi><%= connection.external_domain %></bdi></p></div><%= admin_badge("connection", label: connection_state(connection), tone: dashboard_connection_tone(connection)) %></div>
-          <p class="admin-muted mt-3"><%= t("dashboard.channel_orders", count: stats[:orders_count], days: @dashboard.days) %></p>
+          <p class="admin-dashboard-channel-count"><%= t("dashboard.channel_orders", count: stats[:orders_count], days: @dashboard.days) %></p>
           <p class="admin-muted mt-1"><%= connection.last_received_at ? t("dashboard.last_received", time: dashboard_time(connection.last_received_at)) : t("dashboard.never_received") %></p>
           <% if stats[:rejected_count].positive? %><p class="mt-2"><%= t("dashboard.channel_rejected", count: stats[:rejected_count]) %></p><% end %>
           <% if !connection.active? || connection.last_error_code.present? || !connection.verified_at? || stats[:rejected_count].positive? %><%= link_to t(connection.active? ? "dashboard.review_setup" : "dashboard.review_disconnected"), admin_store_connection_path(connection), class: "admin-btn-secondary mt-3" %><% end %>

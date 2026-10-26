@@ -1,4 +1,7 @@
 fr:
+  time:
+    formats:
+      short: "%d/%m/%Y %H:%M"
   store:
     preparing: "La boutique se prépare."
     missing_eyebrow: "Boutique multi-tenant"

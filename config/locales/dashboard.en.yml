@@ -8,6 +8,7 @@ en:
       clear: "Show all orders"
     variant_stock: "Lowest variant: %{count} left"
     title: "Dashboard"
+    subtitle: "An overview of your store performance"
     view_orders: "View orders"
     create_order: "Create order"
     metrics_heading: "Order overview"

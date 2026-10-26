@@ -20,7 +20,7 @@ module Admin
       [ :operations, [
         entry(:inventory, :admin_inventory_path, :inventory, placeholder: true),
         entry(:purchases, :admin_purchases_path, :purchases, placeholder: true),
-        entry(:expenses, :admin_expenses_path, :expenses, placeholder: true),
+        entry(:expenses, :admin_expenses_path, :expenses, controllers: "store_expenses"),
         entry(:delivery, :admin_delivery_path, :delivery, controllers: "delivery"),
         entry(:call_center, :admin_confirmations_path, :call_center, controllers: "confirmations")
       ] ],

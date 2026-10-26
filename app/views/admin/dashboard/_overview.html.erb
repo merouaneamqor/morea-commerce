@@ -1,66 +1,80 @@
-<section class="mb-5" data-overview-dashboard>
-  <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
-    <div><h2 class="admin-card__title"><%= t("overview.heading") %></h2><p class="admin-muted mt-1"><%= t("dashboard.cohort_note") %></p></div>
-    <nav class="flex gap-2" aria-label="<%= t('dashboard.period') %>">
-      <% %w[7 30].each do |period| %><%= link_to t("dashboard.days", count: period.to_i), admin_root_path(period: period), class: @overview.days == period.to_i ? "admin-btn" : "admin-btn-secondary", aria: { current: @overview.days == period.to_i ? "page" : nil } %><% end %>
-    </nav>
-  </div>
-  <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-    <div class="admin-card p-4" data-dashboard-metric="orders" data-overview-card="orders"><p class="admin-metric__label"><%= t("overview.orders") %></p><p class="admin-metric__value mt-2"><%= number_with_delimiter(@overview.orders_count) %></p><p class="admin-muted mt-2"><%= overview_change(@overview.orders_count, @overview.previous_orders_count) %></p></div>
-    <div class="admin-card p-4" data-overview-card="confirmation"><p class="admin-metric__label"><%= t("overview.confirmation_rate") %></p><p class="admin-metric__value mt-2"><%= @overview.confirmation_rate.nil? ? "—" : "#{number_with_precision(@overview.confirmation_rate, precision: 1)}%" %></p><p class="admin-muted mt-2"><%= overview_rate_change(@overview.confirmation_rate, @overview.previous_confirmation_rate) %></p><p class="admin-muted mt-1 text-xs"><%= t("overview.confirmation_note") %></p></div>
-    <div class="admin-card p-4" data-dashboard-metric="delivered" data-overview-card="delivered"><p class="admin-metric__label"><%= t("overview.delivered_sales") %></p><p class="admin-metric__value mt-2"><%= overview_money_values(@overview.delivered_values) %></p><p class="admin-muted mt-2"><%= overview_delivered_change(@overview) %></p><p class="admin-muted mt-1 text-xs"><%= t("overview.delivered_note") %></p></div>
-    <div class="admin-card p-4" data-overview-card="contribution"><p class="admin-metric__label"><%= t("overview.ad_contribution") %></p><p class="admin-metric__value mt-2"><%= @overview.ad_reporting_present ? dashboard_money(@overview.reported_ad_contribution, "MAD") : "—" %></p><p class="admin-muted mt-2"><%= t("overview.contribution_note") %></p></div>
+<div data-overview-dashboard data-dashboard-palette="ink brass blush">
+<section class="admin-dashboard-overview mb-5">
+  <div class="admin-dashboard-metrics admin-dashboard-metrics--primary-kpis">
+    <% [
+      ["net-collected", nil, :net_collected_revenue, t("overview.net_collected_revenue"), overview_money_values(@overview.net_collected_values), t("overview.net_collected_note")],
+      ["net-profit", nil, :net_profit, t("overview.net_profit"), overview_money_values(@overview.net_profit_values), (@overview.net_margin_rate ? t("overview.margin", value: number_with_precision(@overview.net_margin_rate, precision: 1)) : t("overview.net_profit_note"))],
+      ["real-orders", "orders", :real_orders, t("overview.real_orders"), number_with_delimiter(@overview.real_orders_count), t("overview.real_orders_note")],
+      ["delivery", nil, :delivery_success, t("overview.delivery_success"), (@overview.delivery_success_rate ? "#{number_with_precision(@overview.delivery_success_rate, precision: 1)}%" : "—"), t("overview.delivery_success_note")],
+      ["confirmation", nil, :confirmation_rate, t("overview.confirmation_rate"), "#{number_with_precision(@overview.confirmation_rate, precision: 1)}%", t("overview.currently_reported")],
+      ["average-order", nil, :average_order_value, t("overview.average_order"), overview_money_values(@overview.merchandise_aov_values), t("overview.currently_reported")]
+    ].each_with_index do |(card, metric, quality_key, label, value, note), index| %>
+      <article class="admin-dashboard-metric admin-dashboard-metric--hero" data-dashboard-visual="metric" data-dashboard-metric="<%= metric %>" data-overview-card="<%= card %>">
+        <div class="admin-dashboard-metric__head"><span class="admin-dashboard-metric__icon" aria-hidden="true"><%= lucide_icon(%w[banknote trending-up shopping-bag truck circle-check receipt][index], size: 22) %></span><p class="admin-metric__label"><%= label %></p></div>
+        <p class="admin-metric__value"><%= value %></p>
+        <p class="admin-dashboard-metric__delta"><%= note %></p>
+        <span class="admin-quality admin-quality--<%= @overview.data_quality.fetch(quality_key) %>"><%= t("overview.quality.#{@overview.data_quality.fetch(quality_key)}") %></span>
+      </article>
+    <% end %>
   </div>
 </section>
-<div class="admin-layout mb-5">
-  <section class="admin-card" data-overview-section="chart">
-    <div class="admin-card__header"><div><h2 class="admin-card__title"><%= t("overview.sales_chart") %></h2><p class="admin-muted mt-1"><%= t("overview.chart_note") %></p></div></div>
+
+<div class="admin-dashboard-feature mb-4">
+  <section class="admin-card admin-dashboard-chart-card" data-overview-section="chart" data-dashboard-chart-kind="sales">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("overview.sales_chart") %></h2><span class="admin-dashboard-chart-caption"><%= t("dashboard.days", count: @overview.days) %></span></div>
     <% currencies = @overview.daily_values.flat_map { |day| day[:values].keys + day[:delivered_values].keys }.uniq.sort %>
     <% if currencies.empty? %><p class="admin-empty"><%= t("overview.no_chart") %></p><% else %>
-      <div class="p-4 space-y-5">
+      <div class="space-y-5 px-4 pb-4">
         <% currencies.each do |currency| %>
-          <div>
-            <p class="font-medium"><%= currency %></p>
-            <div style="height: 260px; position: relative" data-controller="dashboard-chart"
+          <div class="admin-dashboard-chart-panel">
+            <p class="admin-dashboard-chart-currency"><%= currency %></p>
+            <div class="admin-dashboard-line-chart" data-controller="dashboard-chart"
                  data-dashboard-chart-config-value="<%= overview_line_chart(@overview.daily_values, currency).to_json %>"
                  data-dashboard-chart-currency-value="<%= currency %>">
               <canvas data-dashboard-chart-target="canvas" role="img" aria-label="<%= t('overview.chart_label', currency: currency) %>"><%= t("overview.exact_values") %></canvas>
             </div>
           </div>
         <% end %>
-        <p class="admin-muted"><%= t("overview.chart_legend") %></p>
         <details><summary class="admin-link cursor-pointer"><%= t("overview.exact_values") %></summary><div class="admin-table-wrap mt-3"><table class="admin-table"><thead><tr><th><%= t("overview.date") %></th><th><%= t("overview.order_value") %></th><th><%= t("overview.delivered_sales") %></th></tr></thead><tbody><% @overview.daily_values.each do |day| %><tr><td><%= l(day[:date], format: t("overview.date_format")) %></td><td><%= overview_money_values(day[:values]) %></td><td><%= overview_money_values(day[:delivered_values]) %></td></tr><% end %></tbody></table></div></details>
       </div>
     <% end %>
   </section>
-  <section class="admin-card" data-overview-section="statuses">
-    <div class="admin-card__header"><div><h2 class="admin-card__title"><%= t("overview.order_status") %></h2><p class="admin-muted mt-1"><%= t("overview.orders_total", count: @overview.orders_count) %></p></div></div>
-    <div class="p-4 space-y-3">
-      <% if @overview.orders_count.positive? %>
-        <div style="height: 200px; position: relative" data-controller="dashboard-chart"
-             data-dashboard-chart-config-value="<%= overview_status_chart(@overview.status_counts).to_json %>">
-          <canvas data-dashboard-chart-target="canvas" role="img" aria-label="<%= t('overview.order_status') %>"><%= t("overview.orders_total", count: @overview.orders_count) %></canvas>
-        </div>
-      <% end %>
-      <p class="text-center font-semibold"><%= t("overview.orders_total", count: @overview.orders_count) %></p>
-      <% @overview.status_counts.each do |status, count| %><% percentage = @overview.orders_count.zero? ? 0 : count * 100.0 / @overview.orders_count %><div><div class="flex justify-between gap-3"><span><%= t("dashboard.order_statuses.#{status}") %></span><span><%= count %> · <%= number_with_precision(percentage, precision: 1) %>%</span></div></div><% end %><% if @overview.orders_count.zero? %><p class="admin-muted"><%= t("overview.no_statuses") %></p><% end %></div>
+
+  <section class="admin-action-center" data-action-center>
+    <div><p class="admin-dashboard-eyebrow"><%= t("overview.action_center") %></p><h2 class="admin-action-center__title"><%= t("overview.needs_attention") %></h2></div>
+    <div class="admin-action-center__list">
+      <% [
+        ["confirmation", t("overview.action_items.awaiting_confirmation"), t("overview.action_items.contact_customers"), @dashboard.pending_count, admin_confirmations_path(filter: "all")],
+        ["shipping", t("overview.action_items.ready_to_ship"), t("overview.action_items.prepare_shipments"), @dashboard.ready_to_ship_count, admin_orders_path],
+        ["exceptions", t("overview.action_items.delivery_exceptions"), t("overview.action_items.investigate"), @dashboard.delivery_issues_count, admin_orders_path(attention: "delivery_issues")],
+        ["cod-pending", t("overview.action_items.cod_pending"), t("overview.action_items.reconcile"), @dashboard.cod_pending_count, admin_orders_path(status: "delivered")]
+      ].each do |key, title, action, count, path| %><%= link_to path, class: "admin-action-center__item", data: { action_item: key } do %><span><strong><%= title %></strong><small><%= action %></small></span><b><%= number_with_delimiter(count) %></b><% end %><% end %>
+    </div>
   </section>
 </div>
+
+<section class="admin-funnel mb-4" data-order-funnel>
+  <div class="admin-funnel__heading"><p class="admin-dashboard-eyebrow"><%= t("overview.funnel") %></p><h2><%= t("overview.funnel_title") %></h2></div>
+  <div class="admin-funnel__steps"><% @overview.funnel.each_with_index do |(key, count), index| %><div class="admin-funnel__step"><span><%= t("overview.funnel_steps.#{key}") %></span><strong><%= number_with_delimiter(count) %></strong><% if index < @overview.funnel.size - 1 %><i aria-hidden="true"><%= lucide_icon("chevron-right", size: 20) %></i><% end %></div><% end %></div>
+</section>
+
+<div class="admin-dashboard-bottom mb-5">
+  <section class="admin-card admin-dashboard-recent" data-overview-section="recent">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("dashboard.recent_orders") %></h2><%= link_to t("dashboard.view_all"), admin_orders_path, class: "admin-btn-plain" %></div>
+    <% if @dashboard.recent_orders.empty? %><p class="admin-empty"><%= t("dashboard.no_orders") %></p><% else %><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th><%= t("dashboard.order") %></th><th><%= t("dashboard.status") %></th><th class="is-numeric"><%= t("dashboard.total") %></th></tr></thead><tbody><% @dashboard.recent_orders.first(5).each do |order| %><tr><td><%= link_to "##{order.number}", admin_order_path(order), class: "admin-link" %><p class="admin-muted mt-1 text-xs"><%= dashboard_time(order.created_at) %> · <%= order.customer_name %></p></td><td><%= admin_badge(order.status, label: t("dashboard.order_statuses.#{order.status}")) %></td><td class="is-numeric"><%= dashboard_money(order.total_cents, order.currency) %></td></tr><% end %></tbody></table></div><% end %>
+  </section>
+  <section class="admin-card" data-overview-section="statuses" data-dashboard-chart-kind="statuses">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("overview.order_status") %></h2><strong class="admin-dashboard-total"><%= number_with_delimiter(@overview.orders_count) %></strong></div>
+    <div class="space-y-3 px-4 pb-4"><% if @overview.orders_count.positive? %><div class="admin-dashboard-doughnut" data-controller="dashboard-chart" data-dashboard-chart-config-value="<%= overview_status_chart(@overview.status_counts).to_json %>"><canvas data-dashboard-chart-target="canvas" role="img" aria-label="<%= t('overview.order_status') %>"><%= t("overview.orders_total", count: @overview.orders_count) %></canvas></div><% end %><% @overview.status_counts.first(4).each do |status, count| %><% percentage = @overview.orders_count.zero? ? 0 : count * 100.0 / @overview.orders_count %><div class="admin-dashboard-status"><div class="flex justify-between gap-3"><span><%= t("dashboard.order_statuses.#{status}") %></span><span><strong><%= count %></strong> · <%= number_with_precision(percentage, precision: 1) %>%</span></div></div><% end %></div>
+  </section>
+  <section class="admin-card" data-overview-section="products">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("overview.top_products") %></h2><%= link_to t("dashboard.view_all"), admin_products_path, class: "admin-btn-plain" %></div>
+    <% if @overview.top_products.empty? %><p class="admin-empty"><%= t("overview.no_top_products") %></p><% else %><div class="admin-dashboard-products"><% max_units = @overview.top_products.map { |row| row[:units] }.max %><% @overview.top_products.each do |row| %><div class="admin-dashboard-product"><div class="min-w-0"><p class="truncate font-medium"><%= row[:name] %></p><p class="admin-muted mt-1"><%= t("overview.units_sold", count: row[:units]) %></p></div><strong><%= overview_money_values(row[:revenue_values]) %></strong><div class="admin-dashboard-product__bar"><span style="width: <%= row[:units] * 100.0 / max_units %>%"></span></div></div><% end %></div><% end %>
+  </section>
+</div>
+
 <div class="admin-layout mb-5">
-  <section class="admin-card" data-overview-section="pending">
-    <div class="admin-card__header"><div><h2 class="admin-card__title"><%= t("overview.to_confirm") %></h2><p class="admin-muted mt-1"><%= t("overview.queue_note") %></p></div><%= link_to t("dashboard.view_all"), admin_confirmations_path(filter: "all"), class: "admin-btn-plain" %></div>
-    <% if @overview.pending_orders.empty? %><p class="admin-empty"><%= t("overview.queue_empty") %></p><% else %>
-      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th><%= t("overview.customer") %></th><th><%= t("overview.city") %></th><th><%= t("dashboard.total") %></th><th><%= t("dashboard.status") %></th><th><%= t("overview.actions") %></th></tr></thead><tbody><% @overview.pending_orders.each do |order| %><tr><td><%= link_to order.customer_name, admin_order_path(order), class: "admin-link" %><p class="admin-muted mt-1 text-xs">#<%= order.number %><% if order.order_items.first %> · <%= order.order_items.first.product_name %><% end %></p></td><td><%= order.customer_city %></td><td><%= dashboard_money(order.total_cents, order.currency) %></td><td><%= t("dashboard.order_statuses.#{order.status}") %></td><td><% confirmation = order.order_confirmation %>
-          <% if confirmation&.assigned_user_id == current_user.id %>
-            <%= link_to t("overview.review"), admin_confirmations_path(filter: "mine"), class: "admin-btn-secondary" %>
-          <% elsif confirmation&.assigned_user_id %><span class="admin-muted"><%= t("admin.confirmations.claimed_elsewhere") %></span>
-          <% elsif confirmation && !confirmation.due? %><span class="admin-muted"><%= t("admin.confirmations.not_due") %></span>
-          <% else %><%= button_to t("admin.confirmations.claim"), claim_admin_confirmation_path(order), method: :post, class: "admin-btn-secondary" %><% end %>
-        </td></tr><% end %></tbody></table></div>
-    <% end %>
-  </section>
-  <section class="admin-card" data-overview-section="campaigns">
-    <div class="admin-card__header"><div><h2 class="admin-card__title"><%= t("overview.campaigns") %></h2><p class="admin-muted mt-1"><%= t("overview.campaign_note") %></p></div><%= link_to t("dashboard.view_all"), admin_advertising_path(start_date: @overview.starts_at.to_date, end_date: @overview.ends_at.to_date), class: "admin-btn-plain" %></div>
-    <% if @overview.campaigns.empty? %><p class="admin-empty"><%= t("overview.campaign_empty") %></p><% else %><div class="divide-y divide-[#ebebeb]"><% @overview.campaigns.each do |row| %><% metrics = row[:metrics]; roas = @overview.advertising_summary.roas(metrics) %><div class="p-4"><div class="flex items-center justify-between gap-3"><%= link_to row[:campaign].name, admin_advertising_path, class: "admin-link" %><span class="font-medium"><%= roas ? "#{number_with_precision(roas, precision: 2)}×" : "—" %></span></div><p class="admin-muted mt-2"><%= t("overview.campaign_spend", amount: dashboard_money(metrics[:spend_cents], "MAD")) %></p><p class="admin-muted mt-1"><%= t("overview.campaign_contribution", amount: dashboard_money(@overview.advertising_summary.profit(metrics), "MAD")) %></p></div><% end %></div><% end %>
-  </section>
+  <section class="admin-card" data-overview-section="pending"><div class="admin-card__header"><h2 class="admin-card__title"><%= t("overview.to_confirm") %></h2><%= link_to t("dashboard.view_all"), admin_confirmations_path(filter: "all"), class: "admin-btn-plain" %></div><% if @overview.pending_orders.empty? %><p class="admin-empty"><%= t("overview.queue_empty") %></p><% else %><div class="divide-y divide-[#ebebeb]"><% @overview.pending_orders.each do |order| %><%= link_to admin_order_path(order), class: "flex items-center justify-between gap-3 p-4 hover:bg-[#faf9f7]" do %><span><strong><%= order.customer_name %></strong><small class="admin-muted mt-1 block">#<%= order.number %> · <%= order.customer_city %></small></span><strong><%= dashboard_money(order.total_cents, order.currency) %></strong><% end %><% end %></div><% end %></section>
+  <section class="admin-card" data-overview-section="campaigns"><div class="admin-card__header"><h2 class="admin-card__title"><%= t("overview.campaigns") %></h2><%= link_to t("dashboard.view_all"), admin_advertising_path(start_date: @overview.starts_at.to_date, end_date: @overview.ends_at.to_date), class: "admin-btn-plain" %></div><% if @overview.campaigns.empty? %><p class="admin-empty"><%= t("overview.campaign_empty") %></p><% else %><div class="divide-y divide-[#ebebeb]"><% @overview.campaigns.each do |row| %><div class="p-4"><div class="flex items-center justify-between gap-3"><span class="font-medium"><%= row[:campaign].name %></span><strong><%= dashboard_money(row[:contribution_cents], "MAD") %></strong></div><p class="admin-muted mt-2"><%= t("overview.campaign_spend", amount: dashboard_money(row[:metrics][:spend_cents], "MAD")) %></p></div><% end %></div><% end %></section>
+</div>
 </div>

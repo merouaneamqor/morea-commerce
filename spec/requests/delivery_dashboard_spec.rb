@@ -41,6 +41,21 @@ RSpec.describe "Delivery dashboard", type: :request do
     expect(response.body).not_to include("FOREIGN-TRACKING", "Foreign synthetic buyer")
   end
 
+  it "renders the last Sendit sync using the French short time format" do
+    customer = store.customers.create!(name: "Synthetic buyer", phone: "0612345678", city: "Casablanca")
+    store.orders.create!(customer: customer, customer_name: customer.name, customer_phone: customer.phone,
+      customer_city: customer.city, customer_address: "Synthetic address", total_cents: 12345,
+      subtotal_cents: 12345, currency: "MAD", status: "in_transit", sendit_code: "SYNCED-TRACKING",
+      sendit_synced_at: Time.zone.local(2026, 10, 26, 14, 30))
+
+    sign_in
+    get "/admin/delivery", params: { locale: "fr" }
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Dernière synchronisation : 26/10/2026 14:30")
+    expect(response.body).not_to match(/translation missing|translation_missing/i)
+  end
+
   %w[fr en ar].each do |locale|
     it "renders localized labels in #{locale}" do
       sign_in

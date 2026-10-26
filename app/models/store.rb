@@ -19,6 +19,7 @@ class Store < ApplicationRecord
   has_many :invoices, dependent: :destroy
   has_many :agent_changesets, dependent: :destroy
   has_many :store_connections, dependent: :destroy
+  has_many :store_expenses, dependent: :destroy
 
   accepts_nested_attributes_for :translations, allow_destroy: false
 

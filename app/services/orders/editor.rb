@@ -312,6 +312,7 @@ module Orders
           variant_name: priced[:variant_name],
           quantity: priced[:quantity],
           unit_price_cents: priced[:unit_price_cents],
+          unit_cost_cents: priced[:product].cost_cents,
           total_cents: priced[:total_cents]
         )
       end

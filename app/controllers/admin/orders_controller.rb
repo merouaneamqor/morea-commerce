@@ -4,7 +4,7 @@ module Admin
   class OrdersController < BaseController
     before_action :set_order, only: %i[
       show edit update transition sendit sendit_label
-      duplicate archive unarchive packing_slip comments tags
+      duplicate archive unarchive packing_slip comments tags collect refund
     ]
 
     def index
@@ -134,6 +134,21 @@ module Admin
         redirect_to admin_order_path(@order), alert: editor.errors.full_messages.to_sentence
       end
     end
+
+def collect
+  cents = params[:amount].present? ? parse_mad_cents(params[:amount]) : @order.total_cents
+  @order.record_collection!(cents: cents, user: current_user)
+  redirect_to admin_order_path(@order), notice: "COD payment recorded."
+rescue ArgumentError, ActiveRecord::RecordInvalid => e
+  redirect_to admin_order_path(@order), alert: e.message
+end
+
+def refund
+  @order.record_refund!(cents: parse_mad_cents(params[:amount]), user: current_user)
+  redirect_to admin_order_path(@order), notice: "Refund recorded."
+rescue ArgumentError, ActiveRecord::RecordInvalid => e
+  redirect_to admin_order_path(@order), alert: e.message
+end
 
     def tags
       editor = Orders::Editor.new(store: current_store, user: current_user)

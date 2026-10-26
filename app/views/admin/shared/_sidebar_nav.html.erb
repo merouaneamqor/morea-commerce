@@ -1,4 +1,9 @@
 <% Admin::Menu::GROUPS.each do |group, entries| %>
+  <% if group == :operations %>
+    <% secondary_active = Admin::Menu::GROUPS.drop(1).flat_map(&:last).any? { |entry| entry.placeholder? ? (controller_name == "coming_soon" && params[:feature] == entry.key.to_s) : controller_name.in?(entry.controllers) } || controller_name.in?(%w[home_sections pages page_sections menu_items]) %>
+    <details <%= "open" if secondary_active %>>
+      <summary class="admin-sidebar__heading cursor-pointer"><%= t("admin_menu.more_tools") %></summary>
+  <% end %>
   <% if group %><p class="admin-sidebar__heading"><%= t("admin_menu.groups.#{group}") %></p><% end %>
   <% entries.each do |entry| %>
     <%= admin_nav_link t("admin_menu.items.#{entry.key}"), public_send(entry.route), icon: entry.icon,
@@ -23,10 +28,12 @@
     <%= admin_nav_link t("admin_menu.items.online_store"), current_store&.storefront_enabled? ? admin_home_sections_path : edit_admin_store_path, icon: :store, active: online_store %>
     <% if online_store %>
       <div class="admin-subnav">
-        <%= link_to "Customize", admin_home_sections_path, class: "admin-subnav__item #{'is-active' if controller_name == 'home_sections'}" %>
-        <%= link_to "Pages", admin_pages_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pages'}" %>
-        <%= link_to "Navigation", admin_menu_items_path, class: "admin-subnav__item #{'is-active' if controller_name == 'menu_items'}" %>
+        <%= link_to t("admin_menu.items.customize"), admin_home_sections_path, class: "admin-subnav__item #{'is-active' if controller_name == 'home_sections'}" %>
+        <%= link_to t("admin_menu.items.pages"), admin_pages_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pages'}" %>
+        <%= link_to t("admin_menu.items.navigation"), admin_menu_items_path, class: "admin-subnav__item #{'is-active' if controller_name == 'menu_items'}" %>
       </div>
     <% end %>
   <% end %>
 <% end %>
+
+</details>

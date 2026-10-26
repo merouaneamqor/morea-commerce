@@ -15,23 +15,27 @@ module Admin
         entry(:dashboard, :admin_root_path, :home, controllers: "dashboard"),
         entry(:orders, :admin_orders_path, :orders, controllers: %w[orders carts]),
         entry(:customers, :admin_customers_path, :customers, controllers: "customers"),
-        entry(:products, :admin_products_path, :products, controllers: %w[products variants inventory collections discounts media])
+        entry(:delivery, :admin_delivery_path, :delivery, controllers: "delivery"),
+        entry(:advertising, :admin_advertising_path, :advertising, controllers: "advertising"),
+        entry(:analytics, :admin_analytics_path, :analytics, placeholder: true),
+        entry(:accounting, :admin_accounting_path, :accounting, placeholder: true)
       ] ],
       [ :operations, [
-        entry(:inventory, :admin_inventory_path, :inventory, placeholder: true),
-        entry(:purchases, :admin_purchases_path, :purchases, placeholder: true),
-        entry(:expenses, :admin_expenses_path, :expenses, controllers: "store_expenses"),
-        entry(:delivery, :admin_delivery_path, :delivery, controllers: "delivery"),
         entry(:call_center, :admin_confirmations_path, :call_center, controllers: "confirmations")
       ] ],
+      [ :catalog, [
+        entry(:products, :admin_products_path, :products, controllers: %w[products variants inventory collections discounts media]),
+        entry(:inventory, :admin_inventory_path, :inventory, placeholder: true),
+        entry(:purchases, :admin_purchases_path, :purchases, placeholder: true)
+      ] ],
       [ :channels, [
-        entry(:stores, :admin_store_connections_path, :external, controllers: "store_connections"),
-        entry(:advertising, :admin_advertising_path, :advertising, controllers: %w[advertising pixels]),
+        entry(:stores, :admin_store_connections_path, :external, controllers: "store_connections")
+      ] ],
+      [ :marketing, [
         entry(:whatsapp, :admin_whatsapp_path, :whatsapp, placeholder: true)
       ] ],
       [ :insights, [
-        entry(:analytics, :admin_analytics_path, :analytics, placeholder: true),
-        entry(:accounting, :admin_accounting_path, :accounting, placeholder: true)
+        entry(:expenses, :admin_expenses_path, :expenses, controllers: "store_expenses")
       ] ],
       [ :team, [
         entry(:agents, :admin_users_path, :staff, controllers: "users"),

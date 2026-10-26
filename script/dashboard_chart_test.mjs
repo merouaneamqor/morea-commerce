@@ -47,7 +47,7 @@ assert.equal(instances[2].destroyed, 1)
 assert.equal(listeners.size, 0)
 
 document.documentElement.dir = "rtl"
-controller.configValue = { type: "doughnut", data: { labels: ["New", "Delivered"], datasets: [{ data: [1, 3] }] } }
+controller.configValue = { type: "pie", data: { labels: ["New", "Delivered"], datasets: [{ data: [1, 3] }] } }
 controller.connect()
 assert.equal(controller.chart.config.options.plugins.legend.display, false)
 assert.equal(controller.chart.config.options.plugins.legend.rtl, true)

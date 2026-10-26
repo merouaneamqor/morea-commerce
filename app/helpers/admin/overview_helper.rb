@@ -40,7 +40,7 @@ module Admin::OverviewHelper
     }
 
     {
-      type: "doughnut",
+      type: "pie",
       data: {
         labels: counts.keys.map { |status| t("dashboard.order_statuses.#{status}") },
         datasets: [ { data: counts.values, statuses: counts.keys, backgroundColor: counts.keys.map { |status| colors.fetch(status, "#8a827c") } } ]

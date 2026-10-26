@@ -106,7 +106,7 @@ RSpec.describe "Merchant dashboard", type: :request do
     expect(statuses_section["data-overview-section"]).to eq("statuses")
     statuses = statuses_section.at_css('[data-controller="dashboard-chart"]')
     statuses_config = JSON.parse(statuses["data-dashboard-chart-config-value"])
-    expect(statuses_config["type"]).to eq("doughnut")
+    expect(statuses_config["type"]).to eq("pie")
     expect(statuses_config.dig("data", "datasets", 0, "data").sum).to eq(1)
     expect(response.body).to include("Own pending buyer", "Own campaign")
     expect(response.body).not_to include("Foreign pending buyer")

@@ -19,7 +19,7 @@ export default class extends Controller {
     const muted = "#8a827c"
     const original = ["#9a6f72", "#1a1716", "#c4a0a3", "#4a4340", "#f8cdd0", "#8a827c"]
     const palette = original.map((color, index) => themed(`--chart-${index + 1}`, color))
-    const doughnut = config.type === "doughnut"
+    const circular = ["pie", "doughnut"].includes(config.type)
     const number = new Intl.NumberFormat(document.documentElement.lang || "en")
     const money = new Intl.NumberFormat(document.documentElement.lang || "en", {
       minimumFractionDigits: 2, maximumFractionDigits: 2
@@ -27,7 +27,7 @@ export default class extends Controller {
     const formatMoney = value => `${money.format(value)} ${this.currencyValue}`
 
     config.data.datasets.forEach((dataset, index) => {
-      if (doughnut) {
+      if (circular) {
         const fallback = dataset.backgroundColor
         dataset.backgroundColor = dataset.statuses
           ? dataset.statuses.map((status, item) => themed(`--chart-status-${status}`, fallback?.[item] ?? palette[item % palette.length]))
@@ -59,7 +59,7 @@ export default class extends Controller {
       plugins: {
         ...options.plugins,
         legend: {
-          display: !doughnut,
+          display: !circular,
           position: "bottom",
           align: "start",
           rtl,
@@ -72,7 +72,7 @@ export default class extends Controller {
           textDirection: rtl ? "rtl" : "ltr",
           callbacks: {
             label: context => {
-              if (!doughnut) return `${context.dataset.label}: ${formatMoney(context.parsed.y)}`
+              if (!circular) return `${context.dataset.label}: ${formatMoney(context.parsed.y)}`
               const total = context.dataset.data.reduce((sum, count) => sum + Number(count), 0)
               const percentage = total ? Number(context.raw) * 100 / total : 0
               return `${context.label}: ${number.format(context.raw)} (${number.format(Number(percentage.toFixed(1)))}%)`
@@ -81,10 +81,10 @@ export default class extends Controller {
         }
       }
     }
-    if (doughnut) {
+    if (config.type === "doughnut") {
       config.options.cutout = "68%"
     }
-    if (!doughnut) {
+    if (!circular) {
       config.options.interaction = { mode: "index", intersect: false }
       config.options.scales = {
         x: { ticks: { color: foreground, maxTicksLimit: 8 }, grid: { display: false } },

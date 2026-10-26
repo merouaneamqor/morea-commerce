@@ -35,7 +35,7 @@ module Admin
 
     def store_params
       attrs = params.require(:store).permit(
-        :name, :slug, :phone, :whatsapp, :email, :currency, :storefront_enabled,
+        :name, :slug, :phone, :whatsapp, :email, :currency, :storefront_enabled, :admin_theme,
         :featured_product_id, :featured_collection_id,
         :campaign_image_url, :sendit_pickup_district_id,
         :shipping_dh, :free_shipping_threshold_dh,

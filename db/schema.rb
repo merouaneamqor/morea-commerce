@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_26_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_26_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -635,11 +635,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_130000) do
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "admin_theme", default: "blue", null: false
     t.index ["email"], name: "index_registrations_on_email", unique: true
     t.index ["user_id"], name: "index_registrations_on_user_id", unique: true
     t.check_constraint "email::text = lower(email::text)", name: "registrations_normalized_email"
     t.check_constraint "verified_at IS NOT NULL OR user_id IS NULL", name: "registrations_verification_identity"
     t.check_constraint "verified_at IS NULL OR password_digest IS NOT NULL", name: "registrations_verified_password"
+    t.check_constraint "admin_theme::text = ANY (ARRAY['blue'::character varying, 'dark'::character varying, 'light'::character varying, 'current'::character varying]::text[])", name: "registrations_admin_theme"
   end
 
   create_table "store_connections", force: :cascade do |t|
@@ -752,10 +754,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_26_130000) do
     t.jsonb "agent_profile", default: {}, null: false
     t.boolean "storefront_enabled", default: true, null: false
     t.boolean "subscription_required", default: false, null: false
+    t.string "admin_theme", default: "current", null: false
     t.index ["api_token_digest"], name: "index_stores_on_api_token_digest", unique: true
     t.index ["billing_interval"], name: "index_stores_on_billing_interval"
     t.index ["billing_status"], name: "index_stores_on_billing_status"
     t.index ["slug"], name: "index_stores_on_slug", unique: true
+    t.check_constraint "admin_theme::text = ANY (ARRAY['blue'::character varying, 'dark'::character varying, 'light'::character varying, 'current'::character varying]::text[])", name: "stores_admin_theme"
   end
 
   create_table "users", force: :cascade do |t|

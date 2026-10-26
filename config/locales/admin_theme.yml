@@ -1,0 +1,42 @@
+en:
+  admin_theme:
+    heading: "Choose your theme"
+    help: "Pick how your workspace looks. You can change it later in Settings."
+    names:
+      blue: "Blue"
+      dark: "Dark"
+      light: "Light"
+      current: "Current"
+    descriptions:
+      blue: "Navy sidebar, soft blue pages"
+      dark: "Easy on the eyes at night"
+      light: "Clean white and bright"
+      current: "The original grey look"
+fr:
+  admin_theme:
+    heading: "Choisissez votre thème"
+    help: "Choisissez l’apparence de votre espace. Vous pourrez la modifier plus tard dans Paramètres."
+    names:
+      blue: "Bleu"
+      dark: "Sombre"
+      light: "Clair"
+      current: "Actuel"
+    descriptions:
+      blue: "Menu bleu nuit, pages bleu clair"
+      dark: "Reposant le soir"
+      light: "Blanc, net et lumineux"
+      current: "L’apparence grise d’origine"
+ar:
+  admin_theme:
+    heading: "اختر المظهر"
+    help: "اختر مظهر مساحة عملك. يمكنك تغييره لاحقاً من الإعدادات."
+    names:
+      blue: "أزرق"
+      dark: "داكن"
+      light: "فاتح"
+      current: "الحالي"
+    descriptions:
+      blue: "قائمة كحلية وصفحات زرقاء فاتحة"
+      dark: "مريح للعين ليلاً"
+      light: "أبيض نظيف ومشرق"
+      current: "المظهر الرمادي الأصلي"

@@ -11,6 +11,7 @@ class Registration < ApplicationRecord
 
   validates :business_name, presence: true, length: { in: 2..80 }
   validates :email, presence: true, length: { maximum: 160 }, format: { with: URI::MailTo::EMAIL_REGEXP }, uniqueness: true
+  validates :admin_theme, inclusion: { in: Store::ADMIN_THEMES }
   validates :locale, inclusion: { in: Morea::Locales::AVAILABLE.map(&:to_s) }
   # Credentials are chosen only after the visitor proves ownership of the email link.
   validates :password, length: { minimum: 12 }, on: :confirmation

@@ -74,6 +74,17 @@ RSpec.describe Notifications::OrderAlert do
     expect(PushSubscription.exists?(subscription.id)).to be(false)
   end
 
+  it "removes subscriptions that reject the configured VAPID identity" do
+    user = staff(store)
+    subscription = subscribe(user)
+    response = Struct.new(:body, :code).new("", 401)
+    allow(WebPush).to receive(:payload_send).and_raise(WebPush::Unauthorized.new(response, "push.example.test"))
+
+    described_class.new(order, vapid: vapid).deliver
+
+    expect(PushSubscription.exists?(subscription.id)).to be(false)
+  end
+
   it "sends nothing when push keys are not configured" do
     subscribe(staff(store))
 

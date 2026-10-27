@@ -1,0 +1,102 @@
+<% content_for :title, "Online Store — Admin" %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Online Store</h1>
+    <p class="admin-page-header__meta">Build, organize and publish your customer-facing store.</p>
+  </div>
+  <% if @store.storefront_enabled? %>
+    <span class="admin-badge admin-badge--success" data-online-store-readiness="published">Published</span>
+  <% else %>
+    <span class="admin-badge admin-badge--attention" data-online-store-readiness="unpublished">Unpublished</span>
+  <% end %>
+</div>
+
+<%= render "admin/shared/online_store_tabs" %>
+
+<% unless @store.storefront_enabled? %>
+  <section class="admin-card mb-4">
+    <div class="admin-card__header">
+      <div>
+        <h2 class="admin-card__title">Your storefront is not public yet</h2>
+        <p class="admin-muted mt-1">You can prepare products, the home page, pages and navigation before publishing. Customers cannot open shopping routes until you enable the storefront.</p>
+      </div>
+      <%= link_to "Review publishing settings", edit_admin_store_path(anchor: "storefront"), class: "admin-btn" %>
+    </div>
+  </section>
+<% end %>
+
+<div class="admin-layout">
+  <section class="admin-card">
+    <div class="admin-card__header">
+      <div>
+        <h2 class="admin-card__title">Launch readiness</h2>
+        <p class="admin-muted mt-1"><%= @ready_steps %> of 5 store-building steps ready</p>
+      </div>
+    </div>
+
+    <div class="divide-y divide-[#ebebeb]">
+      <% steps = [
+        ["Products", :products, @storefront_counts[:products], "active product", "Add at least one active product customers can buy.", admin_products_path],
+        ["Collections", :collections, @storefront_counts[:collections], "published collection", "Group products so customers can browse the catalog.", admin_collections_path],
+        ["Home page", :sections, @storefront_counts[:home_sections], "visible section", "Arrange visible sections that introduce your store.", admin_home_sections_path],
+        ["Navigation", :navigation, @storefront_counts[:navigation], "menu item", "Help customers reach products, collections and information.", admin_menu_items_path],
+        ["Pages", :pages, @storefront_counts[:pages], "published page", "Publish useful content such as About, Shipping or Returns.", admin_pages_path]
+      ] %>
+      <% steps.each do |label, key, count, unit, help, path| %>
+        <div class="flex flex-wrap items-center justify-between gap-3 p-4" data-online-store-readiness="<%= count.positive? ? 'ready' : 'needs-attention' %>">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <p class="font-semibold"><%= label %></p>
+              <span class="admin-badge <%= count.positive? ? 'admin-badge--success' : 'admin-badge--attention' %>">
+                <%= count.positive? ? "Ready" : "Needs attention" %>
+              </span>
+            </div>
+            <p class="admin-muted mt-1"><span data-online-store-count="<%= key %>"><%= count %></span> <%= unit.pluralize(count) %> · <%= help %></p>
+          </div>
+          <%= link_to(count.positive? ? "Manage" : "Set up", path, class: "admin-btn-secondary") %>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <div class="admin-stack">
+    <section class="admin-card">
+      <div class="admin-card__header"><h2 class="admin-card__title">Build your store</h2></div>
+      <div class="space-y-3 p-4">
+        <%= link_to admin_themes_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
+          <span>Install or publish a theme</span><span aria-hidden="true">→</span>
+        <% end %>
+        <%= link_to admin_home_sections_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
+          <span>Customize home page</span><span aria-hidden="true">→</span>
+        <% end %>
+        <%= link_to admin_products_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
+          <span>Manage products</span><span aria-hidden="true">→</span>
+        <% end %>
+        <%= link_to admin_collections_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
+          <span>Manage collections</span><span aria-hidden="true">→</span>
+        <% end %>
+        <%= link_to admin_menu_items_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
+          <span>Edit navigation</span><span aria-hidden="true">→</span>
+        <% end %>
+        <%= link_to admin_pages_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
+          <span>Manage pages</span><span aria-hidden="true">→</span>
+        <% end %>
+        <%= link_to edit_admin_store_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
+          <span>Store settings</span><span aria-hidden="true">→</span>
+        <% end %>
+      </div>
+    </section>
+
+    <% if @store.storefront_enabled? %>
+      <section class="admin-card">
+        <div class="admin-card__header"><h2 class="admin-card__title">Preview storefront</h2></div>
+        <div class="space-y-2 p-4">
+          <% { fr: "Français", en: "English", ar: "العربية" }.each do |locale, label| %>
+            <%= link_to "#{label} ↗", "#{@store.origin}/#{locale}", class: "admin-btn-secondary w-full", target: "_blank", rel: "noopener", data: { storefront_preview: locale } %>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  </div>
+</div>

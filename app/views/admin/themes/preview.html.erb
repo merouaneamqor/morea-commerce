@@ -1,0 +1,27 @@
+<% content_for :title, "Preview #{@theme.name} — Themes" %>
+
+<div class="admin-page-header">
+  <div>
+    <div class="mb-2"><%= link_to "← #{@theme.name}", admin_theme_path(@theme), class: "admin-link--blue" %></div>
+    <h1 class="admin-page-header__title">Theme preview</h1>
+    <p class="admin-page-header__meta">Admin-only snapshot. Nothing here is published or served from the public storefront.</p>
+  </div>
+  <span class="admin-badge admin-badge--info">Preview</span>
+</div>
+
+<section class="admin-card overflow-hidden" data-theme-preview="<%= @theme.id %>">
+  <div class="flex items-center gap-2 border-b border-[#dedede] bg-[#f5f5f5] px-4 py-3" aria-hidden="true"><span class="h-3 w-3 rounded-full bg-[#e36b62]"></span><span class="h-3 w-3 rounded-full bg-[#e6bd55]"></span><span class="h-3 w-3 rounded-full bg-[#65b66f]"></span><span class="ml-3 flex-1 rounded bg-white px-3 py-1 text-center text-xs text-stone-500"><%= current_store.slug %>.store / preview</span></div>
+  <div class="bg-white text-stone-900">
+    <header class="flex items-center justify-between border-b px-6 py-4"><strong class="tracking-widest"><%= current_store.name %></strong><span class="text-xs uppercase tracking-wider">Catalog &nbsp; About &nbsp; Cart</span></header>
+    <% @theme.snapshot.fetch("sections", []).each do |section| %>
+      <% copy = section.fetch("translations", {}).fetch("en", {}) %>
+      <div class="border-b px-6 py-10 <%= section.fetch('kind') == 'hero' ? 'bg-[#eee5dc] py-20 text-center' : '' %>" data-preview-section="<%= section.fetch("kind") %>">
+        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-stone-500"><%= copy["subheading"].presence || section.fetch("kind").humanize %></p>
+        <% if copy["heading"].present? %><h2 class="text-2xl font-semibold"><%= copy["heading"] %></h2><% end %>
+        <% if copy["body"].present? %><p class="mx-auto mt-3 max-w-2xl whitespace-pre-line text-stone-600"><%= copy["body"] %></p><% end %>
+        <% if section.fetch("kind").in?(%w[featured_collection collection_list]) %><div class="mt-6 grid grid-cols-3 gap-3"><span class="h-24 bg-stone-100"></span><span class="h-24 bg-stone-100"></span><span class="h-24 bg-stone-100"></span></div><% end %>
+        <% if copy["button_label"].present? %><span class="mt-5 inline-block bg-stone-900 px-4 py-2 text-sm text-white"><%= copy["button_label"] %></span><% end %>
+      </div>
+    <% end %>
+  </div>
+</section>

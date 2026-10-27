@@ -52,6 +52,29 @@ module Admin
       redirect_to admin_home_sections_path, notice: @section.visible ? "Section shown." : "Section hidden."
     end
 
+    def reorder
+      ordered_ids = Array(params[:ordered_ids]).map(&:to_s)
+      valid_order = false
+
+      HomeSection.transaction do
+        sections = current_store.home_sections.lock.to_a
+        valid_ids = sections.map { |section| section.id.to_s }
+        valid_order = ordered_ids.length == valid_ids.length && ordered_ids.uniq.length == ordered_ids.length &&
+          ordered_ids.sort == valid_ids.sort
+
+        if valid_order
+          sections_by_id = sections.index_by { |section| section.id.to_s }
+          ordered_ids.each_with_index do |id, position|
+            sections_by_id.fetch(id).update_column(:position, position)
+          end
+        end
+      end
+
+      return render json: { error: "The section order is invalid." }, status: :unprocessable_entity unless valid_order
+
+      head :no_content
+    end
+
     private
 
     def set_section

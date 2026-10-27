@@ -29,9 +29,16 @@
       <%= link_to "Edit", edit_admin_store_path(anchor: "announcement"), class: "admin-btn-secondary" %>
     </div>
 
-    <ol>
+    <ol data-controller="sortable"
+        data-sortable-url-value="<%= reorder_admin_home_sections_path %>"
+        data-sortable-target="list">
       <% @sections.each_with_index do |section, i| %>
-        <li class="flex items-center gap-3 border-t border-[#ebebeb] px-4 py-3 <%= "opacity-60" unless section.visible %>">
+        <li class="flex items-center gap-3 border-t border-[#ebebeb] px-4 py-3 <%= "opacity-60" unless section.visible %>"
+            draggable="true"
+            data-sortable-target="item"
+            data-section-id="<%= section.id %>"
+            data-action="dragstart->sortable#dragStart dragover->sortable#dragOver drop->sortable#drop dragend->sortable#dragEnd">
+          <span class="cursor-grab text-[#737373]" title="Drag to reorder" aria-hidden="true"><%= admin_icon(:menu, size: 14) %></span>
           <span class="admin-badge admin-badge--neutral tabular-nums"><%= i + 1 %></span>
           <div class="min-w-0 flex-1">
             <%= link_to section.label, edit_admin_home_section_path(section), class: "admin-link" %>
@@ -46,6 +53,7 @@
         </li>
       <% end %>
     </ol>
+    <p class="sr-only" aria-live="polite" data-sortable-target="status"></p>
     <% if @sections.empty? %>
       <p class="admin-empty">No sections yet. Add one to start building your home page.</p>
     <% end %>
@@ -54,7 +62,7 @@
   <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">How it works</h2></div>
     <div class="space-y-3 px-4 pb-4 admin-muted">
-      <p>Sections appear on the home page from top to bottom in this order. Use the arrows to reorder, <strong>Hide</strong> to take one off the page without losing it.</p>
+      <p>Sections appear on the home page from top to bottom in this order. Drag them or use the arrows to reorder. <strong>Hide</strong> takes one off the page without losing it.</p>
       <p>Each section has text for French, English and Arabic. Empty translations fall back to French.</p>
       <p>Menus and content pages live under <%= link_to "Navigation", admin_menu_items_path, class: "admin-link--blue" %> and <%= link_to "Pages", admin_pages_path, class: "admin-link--blue" %>.</p>
     </div>

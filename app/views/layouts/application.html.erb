@@ -45,6 +45,7 @@
           </nav>
         </div>
         <nav class="maison-nav__actions">
+          <%= link_to t("nav.search"), search_path, class: "maison-link hidden md:inline" %>
           <button type="button"
                   class="maison-link cursor-pointer md:hidden"
                   onclick="document.getElementById('mobile-nav').showModal()"
@@ -66,6 +67,7 @@
         </button>
       </div>
       <nav class="mobile-menu__nav" aria-label="<%= t("nav.main_menu") %>">
+        <%= link_to t("nav.search"), search_path, class: "mobile-menu__link", onclick: "document.getElementById('mobile-nav').close()" %>
         <% store_menu("header").each do |item| %>
           <%= store_menu_link item, class: "mobile-menu__link", onclick: "document.getElementById('mobile-nav').close()" %>
         <% end %>

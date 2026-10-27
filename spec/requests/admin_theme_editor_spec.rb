@@ -7,7 +7,8 @@ RSpec.describe "Admin theme editor", type: :request do
       slug: "theme-editor-#{SecureRandom.hex(5)}",
       name: "Theme editor workspace",
       currency: "MAD",
-      storefront_enabled: true
+      storefront_enabled: true,
+      storefront_theme_editor_enabled: true
     )
   end
   let(:staff) do

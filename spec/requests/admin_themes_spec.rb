@@ -4,7 +4,7 @@ RSpec.describe "Admin storefront themes", type: :request do
   let(:password) { "synthetic-password-123" }
   let(:store) do
     Store.create!(slug: "theme-admin-#{SecureRandom.hex(5)}", name: "Theme admin workspace",
-      currency: "MAD", storefront_enabled: true)
+      currency: "MAD", storefront_enabled: true, storefront_theme_editor_enabled: true)
   end
   let(:staff) do
     store.users.create!(email: "theme-admin-#{SecureRandom.hex(5)}@example.test", password: password, admin: true)

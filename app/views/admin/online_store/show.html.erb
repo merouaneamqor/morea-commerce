@@ -64,8 +64,10 @@
     <section class="admin-card">
       <div class="admin-card__header"><h2 class="admin-card__title">Build your store</h2></div>
       <div class="space-y-3 p-4">
-        <%= link_to admin_themes_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
-          <span>Install or publish a theme</span><span aria-hidden="true">→</span>
+        <% if @store.storefront_theme_editor_enabled? %>
+          <%= link_to admin_themes_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
+            <span>Install or publish a theme</span><span aria-hidden="true">→</span>
+          <% end %>
         <% end %>
         <%= link_to admin_home_sections_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
           <span>Customize home page</span><span aria-hidden="true">→</span>

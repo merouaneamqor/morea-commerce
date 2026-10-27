@@ -1,7 +1,7 @@
 <nav class="admin-card mb-4 admin-tabs !border-0" aria-label="Online Store">
   <%= link_to "Overview", admin_online_store_path, class: "admin-tab #{'is-active' if controller_name == 'online_store'}" %>
   <%= link_to "Customize", admin_home_sections_path, class: "admin-tab #{'is-active' if controller_name == 'home_sections'}" %>
-  <%= link_to "Themes", admin_themes_path, class: "admin-tab #{'is-active' if controller_name == 'themes'}" %>
+  <% if current_store.storefront_theme_editor_enabled? %><%= link_to "Themes", admin_themes_path, class: "admin-tab #{'is-active' if controller_name == 'themes'}" %><% end %>
   <%= link_to "Pages", admin_pages_path, class: "admin-tab #{'is-active' if controller_name.in?(%w[pages page_sections])}" %>
   <%= link_to "Navigation", admin_menu_items_path, class: "admin-tab #{'is-active' if controller_name == 'menu_items'}" %>
   <% if current_store.storefront_enabled? %>

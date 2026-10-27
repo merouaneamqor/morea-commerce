@@ -3,6 +3,7 @@
 module Admin
   class ThemesController < BaseController
     before_action :require_store_context!
+    before_action :require_theme_editor_feature!
     before_action :set_theme, only: %i[show edit update publish preview]
 
     def index
@@ -51,6 +52,12 @@ module Admin
       return if current_store
 
       redirect_to admin_platform_path, alert: "Choose a workspace before managing themes."
+    end
+
+    def require_theme_editor_feature!
+      return if current_store&.storefront_theme_editor_enabled?
+
+      redirect_to admin_online_store_path, alert: "The theme editor is not enabled for this workspace."
     end
 
     def set_theme

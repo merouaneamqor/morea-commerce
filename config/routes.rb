@@ -94,6 +94,7 @@ Rails.application.routes.draw do
     root to: "dashboard#show"
     resource :subscription, only: :show
     get "platform", to: "platform#show", as: :platform
+    resources :feature_flags, only: %i[index update]
     resources :platform_users, path: "platform/users", except: %i[show destroy] do
       member { post "lifecycle/:lifecycle", action: :lifecycle, as: :lifecycle, constraints: { lifecycle: /suspend|reactivate|archive|restore/ } }
     end

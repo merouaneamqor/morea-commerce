@@ -10,8 +10,14 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?, :store_billing_past_due?
 
+  def authenticate_super_admin!
+    return if current_admin_user&.super_admin?
+
+    redirect_to(current_admin_user ? admin_root_path : admin_login_path, alert: "Super admin access required.")
+  end
+
   def default_url_options
-    return {} if is_a?(Admin::BaseController) || controller_path.start_with?("admin")
+    return {} if is_a?(Admin::BaseController) || controller_path.start_with?("admin", "superadmin")
 
     { locale: current_locale }
   end
@@ -77,6 +83,7 @@ class ApplicationController < ActionController::Base
       path == "/graphql" ||
       path == "/mcp" ||
       path.start_with?("/admin") ||
+      path.start_with?("/superadmin") ||
       path.start_with?("/oauth") ||
       path.start_with?("/.well-known") ||
       path.start_with?("/webhooks") ||

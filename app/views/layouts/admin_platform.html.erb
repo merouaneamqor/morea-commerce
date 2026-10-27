@@ -44,7 +44,7 @@
             <%= admin_nav_link t("platform_admin.overview"), admin_platform_path, icon: :home, active: controller_name == "platform" %>
             <%= admin_nav_link t("platform_admin.access_requests"), admin_access_requests_path, icon: :staff, active: controller_name == "access_requests" %>
             <%= admin_nav_link t("platform_users.nav"), admin_platform_users_path, icon: :staff, active: controller_name == "platform_users" %>
-            <%= admin_nav_link "Feature flags", admin_feature_flags_path, icon: :settings, active: controller_name == "feature_flags" %>
+            <%= admin_nav_link "Feature flags", superadmin_feature_flags_path, icon: :settings, active: false %>
             <%= admin_nav_link t("platform_admin.workspaces"), admin_platform_path(anchor: "workspaces"), icon: :store, active: false %>
             <%= admin_nav_link t("platform_admin.new_workspace"), new_admin_tenant_path, icon: :products, active: controller_name == "tenants" %>
           </nav>

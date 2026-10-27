@@ -104,9 +104,12 @@ RSpec.describe "Superadmin dashboard", type: :request do
   it "bounds the newest-workspace list and links to authorized workspace actions" do
     store.update!(created_at: 2.years.ago)
     other_store.update!(created_at: 1.year.ago)
+    # CI retains a smoke-test workspace. Keep these fixtures newer than any
+    # baseline rows without changing or deleting that shared seed data.
+    newest_at = Store.maximum(:created_at) + 1.hour
     newest = 10.times.map do |index|
       Store.create!(slug: "sa-recent-#{SecureRandom.hex(5)}", name: "Recent synthetic workspace #{index}",
-        created_at: index.minutes.ago)
+        created_at: newest_at - index.minutes)
     end
     sign_in(owner)
 

@@ -39,3 +39,5 @@ gem "graphql", "~> 2.4"
 gem "mcp"
 
 gem "web-push", "~> 3.0"
+gem "activeadmin", "~> 3.4"
+gem "dartsass-rails", "~> 0.5"

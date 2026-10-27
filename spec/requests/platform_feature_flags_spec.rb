@@ -43,36 +43,34 @@ RSpec.describe "Platform feature flags", type: :request do
   it "allows a super admin to view the feature flags page" do
     sign_in(super_admin)
 
-    get "/admin/feature_flags"
+    get "/superadmin/feature_flags"
 
     expect(response).to have_http_status(:ok)
+    expect(response.body).to include("active_admin_content")
     expect(response.body).to include(store.name, other_store.name)
   end
 
   it "denies feature flag management to a merchant administrator" do
     sign_in(merchant, host: "#{store.slug}.#{Store.base_domain}")
 
-    get "/admin/feature_flags"
+    host! Store.base_domain
+    get "/superadmin/feature_flags"
 
-    expect(response).to redirect_to(admin_root_path)
+    expect(response).to redirect_to(admin_login_path)
   end
 
   it "enables and disables the theme editor for only the selected workspace" do
     sign_in(super_admin)
 
-    patch "/admin/feature_flags/#{store.id}", params: {
-      feature_flag: { storefront_theme_editor_enabled: "1" }
-    }
+    patch "/superadmin/feature_flags/update", params: { store_id: store.id, enabled: "1" }
 
-    expect(response).to redirect_to(admin_feature_flags_path)
+    expect(response).to redirect_to(superadmin_feature_flags_path)
     expect(store.reload).to be_storefront_theme_editor_enabled
     expect(other_store.reload).not_to be_storefront_theme_editor_enabled
 
-    patch "/admin/feature_flags/#{store.id}", params: {
-      feature_flag: { storefront_theme_editor_enabled: "0" }
-    }
+    patch "/superadmin/feature_flags/update", params: { store_id: store.id, enabled: "0" }
 
-    expect(response).to redirect_to(admin_feature_flags_path)
+    expect(response).to redirect_to(superadmin_feature_flags_path)
     expect(store.reload).not_to be_storefront_theme_editor_enabled
     expect(other_store.reload).not_to be_storefront_theme_editor_enabled
   end

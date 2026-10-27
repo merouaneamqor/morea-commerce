@@ -1,0 +1,62 @@
+<% content_for :title, "#{t("shop.search_title")} — #{current_store.name}" %>
+
+<section class="collection-page">
+  <header class="collection-page__head" data-controller="reveal">
+    <nav class="pdp__crumbs !justify-center !px-0" aria-label="Breadcrumb">
+      <%= link_to t("nav.home"), localized_root_path %>
+      <span aria-hidden="true">/</span>
+      <span><%= t("shop.search_title") %></span>
+    </nav>
+    <h1 class="collection-page__title"><%= t("shop.search_title") %></h1>
+
+    <%= form_with url: search_path, method: :get, class: "mx-auto mt-8 flex max-w-xl gap-3", data: { turbo_action: "replace" } do %>
+      <%= search_field_tag :q, @query, placeholder: t("shop.search_placeholder"), aria: { label: t("shop.search_placeholder") }, maxlength: SearchesController::MAX_QUERY_LENGTH, class: "min-w-0 flex-1 border border-ink/20 bg-transparent px-4 py-3 text-sm" %>
+      <%= submit_tag t("shop.search_submit"), class: "maison-cta cursor-pointer" %>
+    <% end %>
+  </header>
+
+  <% if @query.present? %>
+    <%= form_with url: search_path, method: :get, class: "collection-toolbar", data: { controller: "auto-submit", turbo_action: "replace" } do %>
+      <%= hidden_field_tag :q, @query %>
+      <label class="collection-toolbar__filter">
+        <%= check_box_tag :in_stock, "1", @in_stock, data: { action: "auto-submit#submit" } %>
+        <span><%= t("shop.in_stock_only") %></span>
+      </label>
+      <p class="collection-toolbar__count"><%= t("shop.product_count", count: @total_count) %></p>
+      <label class="collection-toolbar__sort">
+        <span><%= t("shop.sort_by") %></span>
+        <%= select_tag :sort,
+              options_for_select(SearchesController::SORTS.map { |sort| [ t("shop.sort.#{sort}"), sort ] }, @sort),
+              data: { action: "auto-submit#submit" } %>
+      </label>
+      <noscript><%= submit_tag t("shop.apply") %></noscript>
+    <% end %>
+  <% end %>
+
+  <% if @query.blank? %>
+    <div class="py-20 text-center"><p class="text-sm text-ink-soft"><%= t("shop.search_prompt") %></p></div>
+  <% elsif @products.any? %>
+    <div class="home-products md:!grid-cols-3 lg:!grid-cols-4" data-controller="reveal">
+      <% @products.each do |product| %>
+        <%= render "products/card", product: product, sizes: "(max-width: 768px) 50vw, 25vw" %>
+      <% end %>
+    </div>
+
+    <% if @total_pages > 1 %>
+      <nav class="mx-auto flex items-center justify-center gap-6 py-12" aria-label="<%= t("shop.page_status", page: @page, pages: @total_pages) %>">
+        <% if @page > 1 %>
+          <%= link_to t("shop.previous_page"), search_path(q: @query, sort: @sort, in_stock: (@in_stock ? "1" : nil), page: @page - 1), class: "maison-link" %>
+        <% end %>
+        <span class="text-sm text-ink-soft"><%= t("shop.page_status", page: @page, pages: @total_pages) %></span>
+        <% if @page < @total_pages %>
+          <%= link_to t("shop.next_page"), search_path(q: @query, sort: @sort, in_stock: (@in_stock ? "1" : nil), page: @page + 1), class: "maison-link" %>
+        <% end %>
+      </nav>
+    <% end %>
+  <% else %>
+    <div class="py-20 text-center">
+      <p class="text-sm text-ink-soft"><%= t("shop.search_no_results", query: @query) %></p>
+      <%= link_to t("shop.clear_filters"), search_path(q: @query), class: "maison-cta mt-6 justify-center" %>
+    </div>
+  <% end %>
+</section>

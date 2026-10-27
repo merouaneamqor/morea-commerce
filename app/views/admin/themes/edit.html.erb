@@ -1,0 +1,50 @@
+<% content_for :title, "Customize #{@theme.name} — Themes" %>
+
+<div class="mb-4 flex flex-wrap items-center justify-between gap-3" data-controller="theme-editor" data-theme-editor data-theme-editor-save-url-value="<%= admin_theme_path(@theme) %>" data-theme-editor-read-only-value="<%= @theme.published? %>" <%= "data-theme-editor-read-only" if @theme.published? %>>
+  <div class="flex min-w-0 items-center gap-3">
+    <%= link_to "← Themes", admin_theme_path(@theme), class: "admin-link--blue shrink-0" %>
+    <div class="min-w-0">
+      <h1 class="truncate text-xl font-semibold"><%= @theme.name %></h1>
+      <p class="admin-muted"><%= @theme.published? ? "Published theme · read-only" : "Draft theme" %> <span data-theme-editor-target="saveStatus" aria-live="polite"></span></p>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <label class="sr-only" for="theme-editor-locale">Preview language</label>
+    <select id="theme-editor-locale" class="admin-input py-2" data-theme-editor-target="locale" data-action="change->theme-editor#changeLocale">
+      <option value="fr">FR</option><option value="en">EN</option><option value="ar">AR</option>
+    </select>
+    <div class="flex rounded-md border border-[#dedede] bg-white p-1" aria-label="Preview size">
+      <button type="button" class="rounded px-3 py-1.5 text-sm" data-theme-editor-target="desktopButton" data-action="theme-editor#setDesktop" aria-pressed="true">Desktop</button>
+      <button type="button" class="rounded px-3 py-1.5 text-sm" data-theme-editor-target="mobileButton" data-action="theme-editor#setMobile" aria-pressed="false">Mobile</button>
+    </div>
+    <button type="button" class="admin-btn-secondary" data-theme-editor-target="undoButton" data-action="theme-editor#undo" aria-label="Undo change">Undo</button>
+    <button type="button" class="admin-btn-secondary" data-theme-editor-target="redoButton" data-action="theme-editor#redo" aria-label="Redo change">Redo</button>
+    <% unless @theme.published? %><button type="button" class="admin-btn" data-theme-editor-save data-theme-editor-target="saveButton" data-action="theme-editor#save">Save</button><% end %>
+  </div>
+
+  <% if @theme.published? %>
+    <div class="w-full rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900" role="status">Published themes are read-only. Install or duplicate a draft theme to make changes.</div>
+  <% end %>
+
+  <div class="grid w-full gap-4 lg:grid-cols-[16rem_minmax(0,1fr)_19rem]">
+    <aside class="admin-card self-start overflow-hidden" aria-label="Home page sections">
+      <div class="admin-card__header"><h2 class="admin-card__title">Sections</h2><span class="admin-muted">Drag to reorder</span></div>
+      <ol class="divide-y divide-[#ebebeb]" data-theme-editor-sections data-theme-editor-target="sectionList"></ol>
+    </aside>
+
+    <main class="min-w-0 rounded-lg border border-[#dedede] bg-[#e8e8e8] p-3 sm:p-6" aria-label="Storefront preview">
+      <div class="mx-auto overflow-hidden rounded-md bg-white shadow-sm transition-[max-width]" data-theme-editor-target="previewFrame">
+        <div class="flex items-center justify-between border-b px-5 py-4"><strong class="tracking-widest"><%= current_store.name %></strong><span class="text-xs uppercase tracking-wider">Catalog &nbsp; About &nbsp; Cart</span></div>
+        <div data-theme-editor-preview data-theme-editor-target="preview"></div>
+      </div>
+    </main>
+
+    <aside class="admin-card self-start" aria-label="Section settings">
+      <div class="admin-card__header"><h2 class="admin-card__title" data-theme-editor-target="settingsTitle">Section settings</h2></div>
+      <form class="space-y-4 p-4" data-theme-editor-target="settingsForm" data-action="input->theme-editor#updateField change->theme-editor#updateField"></form>
+    </aside>
+  </div>
+
+  <script type="application/json" data-theme-editor-target="payload"><%= raw(json_escape(@theme.snapshot.to_json)) %></script>
+</div>

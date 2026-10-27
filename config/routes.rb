@@ -66,6 +66,7 @@ Rails.application.routes.draw do
     resources :collections, only: %i[index show], param: :slug
     resources :products, only: %i[show], param: :slug
     resources :pages, only: %i[show], param: :slug
+    get :search, to: "searches#show", as: :search
 
     resource :cart, only: %i[show] do
       post :add_item
@@ -192,10 +193,19 @@ Rails.application.routes.draw do
     end
 
     # Online Store
+    resource :online_store, only: :show, controller: "online_store"
     resources :home_sections, except: %i[show] do
+      collection { patch :reorder }
       member do
         patch :move
         patch :toggle
+      end
+    end
+    resources :themes, only: %i[index show edit update] do
+      collection { post :install }
+      member do
+        get :preview
+        post :publish
       end
     end
     resources :pages, except: %i[show] do

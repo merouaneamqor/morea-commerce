@@ -92,7 +92,9 @@ jobs:
         with:
           bundler-cache: true
       - name: Build stylesheets for rendered page checks
-        run: bin/rails tailwindcss:build
+        run: |
+          bin/rails tailwindcss:build
+          bin/rails dartsass:build
       - name: Prepare isolated test database
         run: bin/rails db:prepare
       - name: Create isolated smoke-test store

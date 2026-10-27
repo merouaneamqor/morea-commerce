@@ -34,7 +34,7 @@
       <div class="admin-subnav">
         <%= link_to "Overview", admin_online_store_path, class: "admin-subnav__item #{'is-active' if controller_name == 'online_store'}" %>
         <%= link_to "Customize", admin_home_sections_path, class: "admin-subnav__item #{'is-active' if controller_name == 'home_sections'}" %>
-        <%= link_to "Themes", admin_themes_path, class: "admin-subnav__item #{'is-active' if controller_name == 'themes'}" %>
+        <% if current_store.storefront_theme_editor_enabled? %><%= link_to "Themes", admin_themes_path, class: "admin-subnav__item #{'is-active' if controller_name == 'themes'}" %><% end %>
         <%= link_to "Pages", admin_pages_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pages'}" %>
         <%= link_to "Navigation", admin_menu_items_path, class: "admin-subnav__item #{'is-active' if controller_name == 'menu_items'}" %>
       </div>

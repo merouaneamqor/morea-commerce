@@ -1,0 +1,40 @@
+<% content_for :title, "Feature flags — #{Store.platform_name}" %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title">Feature flags</h1>
+    <p class="admin-page-header__meta">Control staged workspace access to active platform features.</p>
+  </div>
+</div>
+
+<section class="admin-card">
+  <div class="admin-card__header">
+    <div>
+      <h2 class="admin-card__title">Storefront theme editor</h2>
+      <p class="admin-muted mt-1">Enables theme installation, draft preview, visual editing and publishing. Existing storefront tools remain available when disabled.</p>
+    </div>
+    <span class="admin-badge admin-badge--info"><%= @stores.count(&:storefront_theme_editor_enabled?) %> enabled</span>
+  </div>
+
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead><tr><th>Workspace</th><th>Storefront</th><th>Theme editor</th><th></th></tr></thead>
+      <tbody>
+        <% @stores.each do |store| %>
+          <tr data-feature-flag-store="<%= store.id %>">
+            <td><strong><%= store.name %></strong><div class="admin-muted"><%= store.slug %></div></td>
+            <td><%= store.storefront_enabled? ? "Published" : "Unpublished" %></td>
+            <td><%= store.storefront_theme_editor_enabled? ? admin_badge(:active, label: "Enabled") : admin_badge(:archived, label: "Disabled") %></td>
+            <td class="text-right">
+              <%= form_with url: admin_feature_flag_path(store), method: :patch do %>
+                <%= hidden_field_tag "feature_flag[storefront_theme_editor_enabled]", store.storefront_theme_editor_enabled? ? "0" : "1" %>
+                <%= submit_tag(store.storefront_theme_editor_enabled? ? "Disable" : "Enable", class: store.storefront_theme_editor_enabled? ? "admin-btn-secondary" : "admin-btn") %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @stores.empty? %><p class="admin-empty">No workspaces yet.</p><% end %>
+  </div>
+</section>

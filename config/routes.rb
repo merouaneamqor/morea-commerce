@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   post "/graphql", to: "graphql#execute"
   match "/mcp", to: "mcp#handle", via: %i[get post delete]
+  get "/sitemap.xml", to: "sitemaps#show", as: :sitemap, defaults: { format: :xml }
 
   get "/.well-known/oauth-protected-resource", to: "oauth/metadata#protected_resource"
   get "/.well-known/oauth-protected-resource/mcp", to: "oauth/metadata#protected_resource"

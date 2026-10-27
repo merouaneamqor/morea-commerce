@@ -152,7 +152,7 @@ GEM
     google-protobuf (4.36.2-x86_64-linux-gnu)
       bigdecimal
       rake (~> 13.3)
-    graphql (2.6.11)
+    graphql (2.6.13)
       base64
       fiber-storage
       logger
@@ -459,7 +459,7 @@ DEPENDENCIES
   cloudinary (~> 2.0)
   dartsass-rails (~> 0.5)
   debug
-  graphql (~> 2.4)
+  graphql (~> 2.6)
   image_processing (~> 1.2)
   importmap-rails
   jwt (~> 2.10)

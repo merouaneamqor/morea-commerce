@@ -1,2 +1,13 @@
 @import "active_admin/mixins";
 @import "active_admin/base";
+
+.platform-overview {
+  &__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px; }
+  &__actions form { margin: 0; }
+  &__metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  &__metric { padding: 20px; border: 1px solid #dce1e7; border-radius: 8px; background: #fff; }
+  &__metric h3 { font-size: 13px; color: #526172; margin-bottom: 10px; }
+  &__metric strong { display: block; font-size: 28px; line-height: 1.3; color: #172b43; }
+  &__metric p { margin: 8px 0 0; color: #526172; }
+  .panel_contents { overflow-x: auto; }
+}

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_28_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -383,6 +383,144 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
     t.datetime "updated_at", null: false
     t.index ["store_id", "menu", "position"], name: "index_menu_items_on_store_id_and_menu_and_position"
     t.index ["store_id"], name: "index_menu_items_on_store_id"
+  end
+
+  create_table "meta_ads_ad_accounts", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "connection_id", null: false
+    t.bigint "advertising_account_id"
+    t.string "meta_ad_account_id", null: false
+    t.string "name"
+    t.string "currency"
+    t.string "timezone_name"
+    t.boolean "selected", default: false, null: false
+    t.string "sync_status", default: "pending", null: false
+    t.datetime "last_attempt_at"
+    t.datetime "last_synced_at"
+    t.datetime "structure_synced_at"
+    t.datetime "insights_backfilled_at"
+    t.datetime "next_sync_at"
+    t.integer "retry_count", default: 0, null: false
+    t.string "last_error_code"
+    t.string "last_error_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["advertising_account_id"], name: "index_meta_ads_ad_accounts_on_advertising_account_id"
+    t.index ["connection_id"], name: "index_meta_ads_ad_accounts_on_connection_id"
+    t.index ["id", "store_id"], name: "index_meta_ads_ad_accounts_on_id_and_store_id", unique: true
+    t.index ["meta_ad_account_id"], name: "index_meta_ads_ad_accounts_selected_unique", unique: true, where: "selected"
+    t.index ["store_id", "meta_ad_account_id"], name: "index_meta_ads_ad_accounts_on_store_id_and_meta_ad_account_id", unique: true
+    t.index ["store_id"], name: "index_meta_ads_ad_accounts_on_store_id"
+    t.check_constraint "meta_ad_account_id::text ~ '^act_[0-9]+$'::text", name: "meta_ads_ad_account_id_format"
+    t.check_constraint "retry_count >= 0", name: "meta_ads_ad_account_retry_count"
+    t.check_constraint "sync_status::text = ANY (ARRAY['pending'::character varying, 'ok'::character varying, 'running'::character varying, 'rate_limited'::character varying, 'needs_reauthorization'::character varying, 'failed'::character varying]::text[])", name: "meta_ads_ad_account_sync_status"
+  end
+
+  create_table "meta_ads_ad_sets", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "ad_account_id", null: false
+    t.bigint "campaign_id"
+    t.string "meta_id", null: false
+    t.string "name"
+    t.string "status"
+    t.string "effective_status"
+    t.datetime "meta_updated_at"
+    t.datetime "last_seen_at"
+    t.jsonb "raw", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ad_account_id", "meta_id"], name: "index_meta_ads_ad_sets_on_ad_account_id_and_meta_id", unique: true
+    t.index ["campaign_id"], name: "index_meta_ads_ad_sets_on_campaign_id"
+    t.index ["id", "store_id"], name: "index_meta_ads_ad_sets_on_id_and_store_id", unique: true
+    t.index ["store_id"], name: "index_meta_ads_ad_sets_on_store_id"
+  end
+
+  create_table "meta_ads_ads", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "ad_account_id", null: false
+    t.bigint "ad_set_id"
+    t.bigint "campaign_id"
+    t.string "meta_id", null: false
+    t.string "name"
+    t.string "status"
+    t.string "effective_status"
+    t.datetime "meta_updated_at"
+    t.datetime "last_seen_at"
+    t.jsonb "raw", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ad_account_id", "meta_id"], name: "index_meta_ads_ads_on_ad_account_id_and_meta_id", unique: true
+    t.index ["ad_set_id"], name: "index_meta_ads_ads_on_ad_set_id"
+    t.index ["campaign_id"], name: "index_meta_ads_ads_on_campaign_id"
+    t.index ["store_id"], name: "index_meta_ads_ads_on_store_id"
+  end
+
+  create_table "meta_ads_campaigns", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "ad_account_id", null: false
+    t.string "meta_id", null: false
+    t.string "name"
+    t.string "status"
+    t.string "effective_status"
+    t.string "objective"
+    t.datetime "meta_updated_at"
+    t.datetime "last_seen_at"
+    t.jsonb "raw", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ad_account_id", "meta_id"], name: "index_meta_ads_campaigns_on_ad_account_id_and_meta_id", unique: true
+    t.index ["id", "store_id"], name: "index_meta_ads_campaigns_on_id_and_store_id", unique: true
+    t.index ["store_id"], name: "index_meta_ads_campaigns_on_store_id"
+  end
+
+  create_table "meta_ads_connections", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "meta_user_id"
+    t.text "access_token_ciphertext"
+    t.datetime "token_expires_at"
+    t.string "status", default: "active", null: false
+    t.string "granted_scopes", default: [], null: false, array: true
+    t.datetime "last_verified_at"
+    t.string "last_error_code"
+    t.string "oauth_state_digest"
+    t.datetime "oauth_state_expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["oauth_state_digest"], name: "index_meta_ads_connections_on_oauth_state_digest", unique: true
+    t.index ["store_id"], name: "index_meta_ads_connections_on_store_id", unique: true
+    t.check_constraint "status::text <> 'active'::text OR access_token_ciphertext IS NOT NULL", name: "meta_ads_connection_active_token"
+    t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'needs_reauthorization'::character varying, 'disconnected'::character varying]::text[])", name: "meta_ads_connection_status"
+  end
+
+  create_table "meta_ads_daily_insights", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "ad_account_id", null: false
+    t.bigint "campaign_id"
+    t.string "level", null: false
+    t.date "date", null: false
+    t.bigint "impressions", default: 0, null: false
+    t.bigint "reach", default: 0, null: false
+    t.bigint "clicks", default: 0, null: false
+    t.decimal "spend", precision: 18, scale: 4, default: "0.0", null: false
+    t.decimal "ctr", precision: 12, scale: 6
+    t.decimal "cpc", precision: 18, scale: 6
+    t.decimal "cpm", precision: 18, scale: 6
+    t.decimal "conversions", precision: 18, scale: 4, default: "0.0", null: false
+    t.decimal "conversion_value", precision: 18, scale: 4, default: "0.0", null: false
+    t.decimal "roas", precision: 12, scale: 4
+    t.string "currency", null: false
+    t.jsonb "raw_actions", default: {}, null: false
+    t.datetime "synced_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ad_account_id", "campaign_id", "date"], name: "index_meta_ads_insights_campaign_day", unique: true, where: "((level)::text = 'campaign'::text)"
+    t.index ["ad_account_id", "date"], name: "index_meta_ads_insights_account_day", unique: true, where: "((level)::text = 'account'::text)"
+    t.index ["campaign_id"], name: "index_meta_ads_daily_insights_on_campaign_id"
+    t.index ["store_id", "date"], name: "index_meta_ads_daily_insights_on_store_id_and_date"
+    t.index ["store_id"], name: "index_meta_ads_daily_insights_on_store_id"
+    t.check_constraint "(level::text = 'campaign'::text) = (campaign_id IS NOT NULL)", name: "meta_ads_insight_campaign_presence"
+    t.check_constraint "impressions >= 0 AND reach >= 0 AND clicks >= 0 AND spend >= 0::numeric AND conversions >= 0::numeric AND conversion_value >= 0::numeric", name: "meta_ads_insight_non_negative"
+    t.check_constraint "level::text = ANY (ARRAY['account'::character varying, 'campaign'::character varying]::text[])", name: "meta_ads_insight_level"
   end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
@@ -870,6 +1008,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
   add_foreign_key "invoices", "stores"
   add_foreign_key "menu_item_translations", "menu_items"
   add_foreign_key "menu_items", "stores"
+  add_foreign_key "meta_ads_ad_accounts", "advertising_accounts"
+  add_foreign_key "meta_ads_ad_accounts", "meta_ads_connections", column: "connection_id"
+  add_foreign_key "meta_ads_ad_accounts", "stores"
+  add_foreign_key "meta_ads_ad_sets", "meta_ads_ad_accounts", column: ["ad_account_id", "store_id"], primary_key: ["id", "store_id"]
+  add_foreign_key "meta_ads_ad_sets", "meta_ads_campaigns", column: "campaign_id"
+  add_foreign_key "meta_ads_ad_sets", "stores"
+  add_foreign_key "meta_ads_ads", "meta_ads_ad_accounts", column: ["ad_account_id", "store_id"], primary_key: ["id", "store_id"]
+  add_foreign_key "meta_ads_ads", "meta_ads_ad_sets", column: "ad_set_id"
+  add_foreign_key "meta_ads_ads", "meta_ads_campaigns", column: "campaign_id"
+  add_foreign_key "meta_ads_ads", "stores"
+  add_foreign_key "meta_ads_campaigns", "meta_ads_ad_accounts", column: ["ad_account_id", "store_id"], primary_key: ["id", "store_id"]
+  add_foreign_key "meta_ads_campaigns", "stores"
+  add_foreign_key "meta_ads_connections", "stores"
+  add_foreign_key "meta_ads_daily_insights", "meta_ads_ad_accounts", column: ["ad_account_id", "store_id"], primary_key: ["id", "store_id"]
+  add_foreign_key "meta_ads_daily_insights", "meta_ads_campaigns", column: "campaign_id"
+  add_foreign_key "meta_ads_daily_insights", "stores"
   add_foreign_key "oauth_access_tokens", "stores"
   add_foreign_key "order_confirmations", "orders", on_delete: :cascade
   add_foreign_key "order_confirmations", "stores", on_delete: :cascade

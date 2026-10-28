@@ -1,0 +1,66 @@
+<% content_for :title, t("meta_ads.title") %>
+<% status = @connection&.status || "disconnected" %>
+<% tone = { "active" => "success", "needs_reauthorization" => "critical", "disconnected" => "neutral" }.fetch(status) %>
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("meta_ads.title") %></h1>
+    <p class="admin-page-header__meta"><%= t("meta_ads.lead") %></p>
+  </div>
+  <%= link_to t("meta_ads.back"), admin_advertising_path, class: "admin-btn-secondary" %>
+</div>
+<p class="admin-banner mb-5"><%= t("meta_ads.read_only_note") %></p>
+
+<section class="admin-card p-5 mb-4 space-y-3" aria-labelledby="meta-connection-title">
+  <div class="flex flex-wrap items-center gap-3">
+    <h2 id="meta-connection-title" class="admin-card__title"><%= t("meta_ads.connection") %></h2>
+    <span class="admin-badge admin-badge--<%= tone %>"><span class="admin-badge__dot"></span><%= t("meta_ads.status.#{status}") %></span>
+  </div>
+  <% if status == "needs_reauthorization" %><p role="alert" class="admin-banner admin-banner--critical"><%= t("meta_ads.reauthorize_note") %></p><% end %>
+  <% if @connection&.last_verified_at && status == "active" %><p class="admin-muted"><%= t("meta_ads.verified_at", time: l(@connection.last_verified_at, format: :short)) %></p><% end %>
+  <% unless @configured %><p class="admin-banner admin-banner--critical"><%= t("meta_ads.errors.config_missing") %></p><% end %>
+  <div class="flex flex-wrap gap-3">
+    <%= button_to t(status == "active" ? "meta_ads.reconnect" : (status == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect")), connect_admin_meta_ads_path, method: :post, disabled: !@configured, class: "admin-btn" %>
+    <% if status == "active" %>
+      <%= button_to t("meta_ads.refresh"), refresh_admin_meta_ads_path, method: :post, class: "admin-btn-secondary" %>
+    <% end %>
+    <% if status != "disconnected" %>
+      <%= button_to t("meta_ads.disconnect"), connection_admin_meta_ads_path, method: :delete, class: "admin-btn-secondary", form: { data: { turbo_confirm: t("meta_ads.disconnect_confirm") } } %>
+    <% end %>
+  </div>
+</section>
+
+<section class="admin-card" aria-labelledby="meta-accounts-title">
+  <div class="admin-card__header"><h2 id="meta-accounts-title" class="admin-card__title"><%= t("meta_ads.accounts_title") %></h2></div>
+  <% if @accounts.blank? %>
+    <p class="admin-empty"><%= t("meta_ads.no_accounts") %></p>
+  <% else %>
+    <%= form_with url: accounts_admin_meta_ads_path, method: :patch do %>
+      <p class="admin-muted p-4"><%= t("meta_ads.accounts_lead") %></p>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th><%= t("meta_ads.sync_column") %></th><th><%= t("meta_ads.account") %></th><th><%= t("meta_ads.currency") %></th><th><%= t("meta_ads.timezone") %></th><th><%= t("meta_ads.sync") %></th></tr></thead>
+          <tbody>
+            <% @accounts.each do |account| %>
+              <tr>
+                <td><%= check_box_tag "ad_account_ids[]", account.meta_ad_account_id, account.selected, id: "ad_account_#{account.id}", disabled: status != "active", "aria-label": account.name.presence || account.meta_ad_account_id %></td>
+                <td><label for="ad_account_<%= account.id %>"><span class="font-medium"><%= account.name.presence || account.meta_ad_account_id %></span></label><p class="admin-muted"><%= account.meta_ad_account_id %></p></td>
+                <td><%= account.currency %></td>
+                <td><%= account.timezone_name %></td>
+                <td>
+                  <% if account.selected? %>
+                    <%= t("meta_ads.sync_status.#{account.sync_status}") %>
+                    <% if account.last_synced_at %><p class="admin-muted"><%= t("meta_ads.last_synced", time: l(account.last_synced_at, format: :short)) %></p><% end %>
+                    <% if account.last_error_code.present? %><p class="admin-muted"><%= account.last_error_code %></p><% end %>
+                  <% else %>
+                    <span class="admin-muted"><%= t("meta_ads.not_synced") %></span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <% if status == "active" %><div class="p-4"><%= submit_tag t("meta_ads.save_selection"), class: "admin-btn" %></div><% end %>
+    <% end %>
+  <% end %>
+</section>

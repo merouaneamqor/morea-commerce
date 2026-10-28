@@ -21,6 +21,8 @@ class Store < ApplicationRecord
   has_many :invoices, dependent: :destroy
   has_many :agent_changesets, dependent: :destroy
   has_many :store_connections, dependent: :destroy
+  has_many :meta_ads_ad_accounts, class_name: "MetaAds::AdAccount", dependent: :destroy
+  has_one :meta_ads_connection, class_name: "MetaAds::Connection", dependent: :destroy
   has_many :store_expenses, dependent: :destroy
   has_many :storefront_themes, dependent: :destroy
 

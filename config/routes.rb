@@ -177,6 +177,13 @@ Rails.application.routes.draw do
     resources :carts, only: %i[index show]
 
     get "delivery", to: "delivery#show", as: :delivery
+    get "meta-ads/callback", to: "meta_ads#callback", as: :meta_ads_callback
+    resource :meta_ads, path: "meta-ads", only: :show, controller: "meta_ads" do
+      post :connect
+      post :refresh
+      patch :accounts, action: :select_accounts
+      delete :connection, action: :disconnect
+    end
     resource :advertising, only: :show, controller: "advertising" do
       post :accounts
       patch "accounts/:id", action: :update_account, as: :account

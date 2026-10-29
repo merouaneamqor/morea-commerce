@@ -1,0 +1,40 @@
+en:
+  shopify_sync:
+    button: "Sync Shopify orders"
+    title: "Shopify order sync"
+    help: "Import recent eligible COD orders from your connected Shopify stores. Sync runs in the background; refresh this page to see updated progress."
+    checked_through: "Orders checked through"
+    not_synced: "No completed sync yet."
+    receipt_attention: "Some orders need attention. Open the connection to view the details."
+    connect_first: "Connect or reauthorize a Shopify store before syncing orders."
+    queued:
+      one: "Shopify order sync queued for one store. Refresh this page to see updated progress."
+      other: "Shopify order sync queued for %{count} stores. Refresh this page to see updated progress."
+fr:
+  shopify_sync:
+    button: "Synchroniser les commandes Shopify"
+    title: "Synchronisation Shopify"
+    help: "Importez les commandes récentes éligibles au paiement à la livraison depuis vos boutiques Shopify connectées. La synchronisation s’exécute en arrière-plan ; actualisez cette page pour voir la progression."
+    checked_through: "Commandes vérifiées jusqu’au"
+    not_synced: "Aucune synchronisation terminée."
+    receipt_attention: "Certaines commandes nécessitent votre attention. Ouvrez la connexion pour consulter les détails."
+    connect_first: "Connectez ou autorisez à nouveau une boutique Shopify avant de synchroniser les commandes."
+    queued:
+      one: "Synchronisation Shopify lancée pour une boutique. Actualisez cette page pour voir la progression."
+      other: "Synchronisation Shopify lancée pour %{count} boutiques. Actualisez cette page pour voir la progression."
+ar:
+  shopify_sync:
+    button: "مزامنة طلبات Shopify"
+    title: "مزامنة طلبات Shopify"
+    help: "استورد طلبات الدفع عند الاستلام الحديثة والمؤهلة من متاجر Shopify المتصلة. تعمل المزامنة في الخلفية؛ حدّث الصفحة لعرض التقدم."
+    checked_through: "تم التحقق من الطلبات حتى"
+    not_synced: "لم تكتمل أي مزامنة بعد."
+    receipt_attention: "بعض الطلبات تحتاج إلى مراجعة. افتح الاتصال لعرض التفاصيل."
+    connect_first: "اربط متجر Shopify أو أعد تفويضه قبل مزامنة الطلبات."
+    queued:
+      zero: "لم تتم إضافة أي متجر للمزامنة."
+      one: "تمت إضافة متجر واحد لمزامنة طلبات Shopify. حدّث الصفحة لعرض التقدم."
+      two: "تمت إضافة متجرين لمزامنة طلبات Shopify. حدّث الصفحة لعرض التقدم."
+      few: "تمت إضافة %{count} متاجر لمزامنة طلبات Shopify. حدّث الصفحة لعرض التقدم."
+      many: "تمت إضافة %{count} متجرًا لمزامنة طلبات Shopify. حدّث الصفحة لعرض التقدم."
+      other: "تمت إضافة %{count} متجر لمزامنة طلبات Shopify. حدّث الصفحة لعرض التقدم."

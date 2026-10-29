@@ -158,6 +158,7 @@ Rails.application.routes.draw do
     resources :orders, only: %i[index show new create edit update] do
       collection do
         post :sendit_sync_all
+        post :shopify_sync_all
         get :product_search
       end
       member do

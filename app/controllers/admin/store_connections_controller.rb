@@ -83,6 +83,13 @@ module Admin
         Connections::ShopifyApi.new(connection: @connection).verify!
         ShopifyOrdersSyncJob.perform_later(@connection.id)
         return redirect_to admin_store_connection_path(@connection), notice: t("connections.shopify_api.verified")
+      when "sync_shopify_orders"
+        unless @shopify_configured
+          raise Connections::ShopifyApi::Error.new("config_missing")
+        end
+
+        count = Connections::ShopifySyncRequest.call(store: current_store, connection_id: @connection.id)
+        return redirect_to admin_store_connection_path(@connection), notice: t("shopify_sync.queued", count: count), status: :see_other
       when "rotate_secret"
         return head :unprocessable_entity if @connection.provider == "shopify"
 
@@ -97,7 +104,7 @@ module Admin
     rescue ActiveRecord::RecordInvalid
       @receipts = @connection.external_order_receipts.order(received_at: :desc).limit(50).includes(:order)
       render :show, status: :unprocessable_entity
-    rescue Connections::ShopifyApi::Error, Connections::ShopifyOauth::Error => error
+    rescue Connections::ShopifyApi::Error, Connections::ShopifyOauth::Error, Connections::ShopifySyncRequest::Error => error
       @connection.reload
       @connection.errors.add(:base, t("connections.shopify_api.errors.#{error.code}"))
       @receipts = @connection.external_order_receipts.order(received_at: :desc).limit(50).includes(:order)

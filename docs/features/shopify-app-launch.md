@@ -40,3 +40,15 @@ Uninstall processing is idempotent and retains imported orders and receipt histo
 ## Before onboarding clients
 
 Finish the privacy workflow and register all three mandatory compliance subscriptions, complete the scope/data-access review, publish the app's merchant privacy/support information, and perform the development-store acceptance flow. Then prepare the public listing and review credentials with synthetic data. Keep Shopify approval, configuration release, Rails deployment and a verified client installation as separate milestones.
+
+## Existing Render service
+
+Deploy the Rails changes to the existing `morea` service before changing the Shopify App URL to `https://ollazen.com/admin/shopify`. Keep the exact allowed OAuth redirect `https://ollazen.com/admin/shopify/callback`, disable embedding, retain the four configured scopes and release the Shopify configuration version. The uninstall subscription must target `https://ollazen.com/webhooks/shopify/uninstalled`.
+
+Set the shared app's `SHOPIFY_CLIENT_ID` and `SHOPIFY_CLIENT_SECRET` in the Render service environment. Inspect existing app configuration before replacing it: changing a shared app's credentials can break other shops' connections. Keep the existing `SECRET_KEY_BASE`, database and Redis settings. Never copy the sandbox's database URL, encryption key or encrypted tokens into production. The client must sign in to their authorized Morea workspace on the permanent host and complete OAuth there again; sandbox cookies and connections do not transfer.
+
+`bin/render-start.sh` already starts Sidekiq alongside Puma. Shopify's default schedule is every 10 minutes. `SENDIT_EXTERNAL_CRON` disables only Sendit polling; set `SHOPIFY_EXTERNAL_CRON` only when a separate scheduler actually runs `bin/rails morea:shopify:sync`. Verify the worker is consuming `default`, the schedule is enabled, authorization succeeds, the order subscription points to the permanent host, and an eligible synthetic order enters the chosen test workspace once.
+
+A Render Free web service sleeps after 15 minutes without inbound traffic, which also stops its colocated Sidekiq scheduler. Webhooks can experience cold-start delays and polling cannot run while the service sleeps. Reliable continuous processing needs an approved always-running service/worker or an external scheduler. Do not change paid plans or add billed services implicitly. See [Render Free limitations](https://render.com/docs/free).
+
+After verifying the new connection, disable the local sandbox connection and remove its old Shopify order subscription using the authorized app API. This prevents the temporary tunnel from remaining an active destination. Preserve existing order/receipt history in both environments, and keep the test app limited to development-store testing until public launch requirements are complete.

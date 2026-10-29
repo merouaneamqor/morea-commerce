@@ -1,15 +1,18 @@
 # sidekiq-cron jobs, loaded automatically when Sidekiq boots.
-# On Render the Sendit sync runs as a separate Cron Job (the free web service
-# sleeps), so SENDIT_EXTERNAL_CRON=1 turns the in-process schedule off there.
-<% if ENV["SENDIT_EXTERNAL_CRON"].present? %>
+# Each integration can use an external cron independently of the other.
+# Set its *_EXTERNAL_CRON flag only when that integration has an external runner.
+<% if ENV["SENDIT_EXTERNAL_CRON"].present? && ENV["SHOPIFY_EXTERNAL_CRON"].present? %>
 {}
-<% else %>
+<% end %>
+<% unless ENV["SENDIT_EXTERNAL_CRON"].present? %>
 sendit_poll:
   cron: "<%= ENV.fetch("SENDIT_POLL_CRON", "*/15 * * * *") %>"
   class: "SenditPollJob"
   queue: default
   active_job: true
   description: "Refresh Sendit parcels (shipped, unreachable, refused, returns)"
+<% end %>
+<% unless ENV["SHOPIFY_EXTERNAL_CRON"].present? %>
 shopify_orders_sync:
   cron: "<%= ENV.fetch("SHOPIFY_SYNC_CRON", "*/10 * * * *") %>"
   class: "ShopifyOrdersSyncJob"

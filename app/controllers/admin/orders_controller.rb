@@ -2,6 +2,7 @@
 
 module Admin
   class OrdersController < BaseController
+    before_action :require_shopify_workspace!, only: :shopify_sync_all
     before_action :set_order, only: %i[
       show edit update transition sendit sendit_label
       duplicate archive unarchive packing_slip comments tags collect refund
@@ -11,6 +12,7 @@ module Admin
       @status = params[:status]
       @archived = @status == "archived"
       @connections = current_store.store_connections.order(:name)
+      @shopify_connections = @connections.where(provider: "shopify", shopify_oauth: true).limit(100)
       @orders = current_store.orders.recent.includes(:customer, external_order_receipt: :store_connection)
       if params[:connection_id].present?
         connection = current_store.store_connections.find(params[:connection_id])
@@ -232,7 +234,22 @@ end
       redirect_to admin_orders_path, notice: "Syncing #{count} orders with Sendit in the background."
     end
 
+    def shopify_sync_all
+      unless Connections::ShopifyOauth.configured?
+        return redirect_to admin_orders_path, alert: t("connections.shopify_api.errors.config_missing"), status: :see_other
+      end
+
+      count = Connections::ShopifySyncRequest.call(store: current_store)
+      redirect_to admin_orders_path, notice: t("shopify_sync.queued", count: count), status: :see_other
+    rescue Connections::ShopifySyncRequest::Error
+      redirect_to admin_orders_path, alert: t("shopify_sync.connect_first"), status: :see_other
+    end
+
     private
+
+    def require_shopify_workspace!
+      head :not_found unless current_store
+    end
 
     def set_order
       @order = current_store.orders.find(params[:id])

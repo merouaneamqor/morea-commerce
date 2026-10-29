@@ -2,6 +2,15 @@
   <h2 id="shopify-api-title" class="admin-card__title"><%= t("connections.shopify_api.title") %></h2>
   <p><%= t(!@connection.active? ? "connections.states.disconnected" : (@connection.shopify_api_connected? ? "connections.shopify_api.connected" : "connections.shopify_api.configured")) %></p>
   <p class="admin-muted"><%= t("connections.shopify_api.test_help") %></p>
+  <% if @connection.shopify_oauth? %>
+    <div class="space-y-2">
+      <%= render "shopify_sync_status", connection: @connection %>
+      <p class="admin-muted"><%= t("shopify_sync.help") %></p>
+      <%= button_to t("shopify_sync.button"), admin_store_connection_path(@connection), method: :patch,
+        params: { operation: "sync_shopify_orders" }, class: "admin-btn-secondary",
+        disabled: !@shopify_configured || !@connection.active? || (@connection.shopify_access_token_ciphertext.blank? && @connection.shopify_refresh_token_ciphertext.blank?) %>
+    </div>
+  <% end %>
   <% if @connection.shopify_api_verified_at.present? %>
     <p><%= t("connections.shopify_api.last_checked", time: l(@connection.shopify_api_verified_at.in_time_zone("Africa/Casablanca"), format: "%d/%m/%Y %H:%M")) %></p>
   <% end %>

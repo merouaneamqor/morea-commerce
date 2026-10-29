@@ -3,12 +3,31 @@
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Orders</h1>
   <div class="flex flex-wrap items-center gap-2">
+    <% if @shopify_connections.any? %>
+      <%= button_to t("shopify_sync.button"), shopify_sync_all_admin_orders_path, class: "admin-btn-secondary", disabled: !Connections::ShopifyOauth.configured? %>
+    <% end %>
     <% if current_store.sendit_configured? %>
       <%= button_to "Sync with Sendit", sendit_sync_all_admin_orders_path, class: "admin-btn-secondary" %>
     <% end %>
     <%= link_to "Create order", new_admin_order_path, class: "admin-btn" %>
   </div>
 </div>
+
+<% if @shopify_connections.any? %>
+  <section class="admin-card p-4 mb-4" aria-labelledby="shopify-sync-title">
+    <h2 id="shopify-sync-title" class="admin-card__title"><%= t("shopify_sync.title") %></h2>
+    <p class="admin-muted mt-1"><%= t("shopify_sync.help") %></p>
+    <ul class="space-y-2 mt-3">
+      <% @shopify_connections.each do |connection| %>
+        <li class="flex flex-wrap items-center gap-2">
+          <%= link_to connection.name, admin_store_connection_path(connection), class: "admin-link" %>
+          <span class="admin-muted"><%= connection_state(connection) %></span>
+          <%= render "admin/store_connections/shopify_sync_status", connection: connection %>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
 
 <div class="admin-card">
   <%= form_with url: admin_orders_path, method: :get, class: "flex flex-wrap items-center gap-3 p-4" do %>

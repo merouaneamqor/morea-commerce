@@ -13,6 +13,12 @@ module Admin
     def new
       @connection = current_store.store_connections.new
       @connection.provider = params[:provider] if StoreConnection::PROVIDERS.include?(params[:provider])
+      # App launches may suggest a domain, but only the submitted form and OAuth
+      # approval can connect it. Never prefill credentials or tenant identity.
+      shop = params[:shop]
+      if @connection.provider == "shopify" && shop.is_a?(String) && shop.bytesize <= 253 && shop.match?(/\A[a-z0-9][a-z0-9-]*\.myshopify\.com\z/)
+        @connection.external_domain = shop
+      end
     end
 
     def create

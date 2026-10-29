@@ -113,7 +113,7 @@ jobs:
         run: bin/rails runner script/variant_gallery_smoke.rb
       - name: Check luxury merchandising pages and availability
         run: bin/rails runner script/luxury_merchandising_smoke.rb
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
       - name: Check admin PWA install flow and network-only service worker

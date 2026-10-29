@@ -1,0 +1,24 @@
+en:
+  shopify_app:
+    title: "Seallo for Shopify"
+    intro: "Connect your Shopify store to your Morea workspace to manage eligible cash-on-delivery orders."
+    workspace: "Workspace: %{name}"
+    manage: "Manage connection"
+    approval: "Check the workspace above, then connect your store and approve access in Shopify. If your store is already listed below, open its connection to manage or reconnect it."
+    empty: "No Shopify connection found here. Connect your store to get started."
+fr:
+  shopify_app:
+    title: "Seallo pour Shopify"
+    intro: "Connectez votre boutique Shopify à votre espace Morea pour gérer les commandes éligibles au paiement à la livraison."
+    workspace: "Espace de travail : %{name}"
+    manage: "Gérer la connexion"
+    approval: "Vérifiez l’espace ci-dessus, puis connectez votre boutique et autorisez l’accès dans Shopify. Si votre boutique figure déjà ci-dessous, ouvrez sa connexion pour la gérer ou la reconnecter."
+    empty: "Aucune connexion Shopify trouvée ici. Connectez votre boutique pour commencer."
+ar:
+  shopify_app:
+    title: "Seallo لـ Shopify"
+    intro: "اربط متجر Shopify بمساحة عمل Morea لإدارة طلبات الدفع عند الاستلام المؤهلة."
+    workspace: "مساحة العمل: %{name}"
+    manage: "إدارة الاتصال"
+    approval: "تحقق من مساحة العمل أعلاه، ثم اربط متجرك ووافق على الوصول في Shopify. إذا كان متجرك مدرجًا أدناه، افتح الاتصال لإدارته أو إعادة ربطه."
+    empty: "لم يتم العثور على اتصال Shopify هنا. اربط متجرك للبدء."

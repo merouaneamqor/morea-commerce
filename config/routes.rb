@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
   post "webhooks/sendit/:store_slug", to: "webhooks/sendit#create", as: :sendit_webhook
   post "webhooks/store_orders/:token", to: "webhooks/store_orders#create", as: :store_orders_webhook
+  post "webhooks/shopify/uninstalled", to: "webhooks/shopify_lifecycle#uninstall", as: :shopify_uninstalled
   post "consent/tracking", to: "consents#tracking", as: :tracking_consent
 
   post "/graphql", to: "graphql#execute"
@@ -118,6 +119,7 @@ Rails.application.routes.draw do
       end
     end
     resource :store, only: %i[edit update]
+    get "shopify", to: "shopify#show", as: :shopify
     get "shopify/callback", to: "store_connections#shopify_callback", as: :shopify_callback
     resources :store_connections, only: %i[index new create show update destroy]
     resource :agent_api, only: :show, controller: "agent_api" do

@@ -36,7 +36,7 @@ module Connections
         raise Error.new("source_mismatch", status: 403)
       end
 
-      StoreConnection.where(provider: "shopify", shopify_oauth: true, external_domain: shop).find_each do |connection|
+      StoreConnection.where(provider: "shopify", shopify_oauth: true, shopify_app: nil, external_domain: shop).find_each do |connection|
         connection.with_lock do
           connection.update!(active: false, shopify_access_token: nil, shopify_refresh_token: nil,
             shopify_access_token_expires_at: nil, shopify_refresh_token_expires_at: nil,

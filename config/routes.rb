@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   ActiveAdmin.routes(self)
 
   post "webhooks/sendit/:store_slug", to: "webhooks/sendit#create", as: :sendit_webhook
+  post "webhooks/seallo", to: "webhooks/seallo#create"
   post "webhooks/store_orders/:token", to: "webhooks/store_orders#create", as: :store_orders_webhook
   post "webhooks/shopify/uninstalled", to: "webhooks/shopify_lifecycle#uninstall", as: :shopify_uninstalled
   post "consent/tracking", to: "consents#tracking", as: :tracking_consent
@@ -33,6 +34,10 @@ Rails.application.routes.draw do
   match "/oauth/register", to: "oauth/registrations#preflight", via: :options
 
   namespace :api do
+    post "seallo/connect", to: "seallo#connect"
+    post "seallo/status", to: "seallo#status"
+    post "seallo/sync", to: "seallo#sync"
+    post "seallo/disconnect", to: "seallo#disconnect"
     namespace :v1 do
       resources :order_imports, only: :create
     end
@@ -87,6 +92,15 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    get "seallo/connect", to: "seallo_connections#show", as: :seallo_connect
+    post "seallo/connect", to: "seallo_connections#create"
+    resources :shopify_privacy_requests, only: %i[index show] do
+      member do
+        get :export
+        post :complete
+        post :retry_processing
+      end
+    end
     get "manifest.webmanifest", to: "pwa#manifest", as: :pwa_manifest
     get "service-worker.js", to: "pwa#service_worker", as: :pwa_service_worker
     resource :push_subscription, only: %i[create destroy]

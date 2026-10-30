@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_120005) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,7 +32,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
     t.index ["reviewed_by_id"], name: "index_access_requests_on_reviewed_by_id"
     t.index ["status", "created_at"], name: "index_access_requests_on_status_and_created_at"
     t.index ["store_id"], name: "index_access_requests_on_store_id"
-    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'approved'::character varying, 'rejected'::character varying]::text[])", name: "access_request_status"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying::text, 'approved'::character varying::text, 'rejected'::character varying::text])", name: "access_request_status"
   end
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -168,7 +168,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
     t.index ["actor_user_id"], name: "index_audit_events_on_actor_user_id"
     t.index ["store_id", "created_at"], name: "index_audit_events_on_store_id_and_created_at"
     t.index ["store_id"], name: "index_audit_events_on_store_id"
-    t.check_constraint "source::text = ANY (ARRAY['ui'::character varying, 'api'::character varying, 'mcp'::character varying, 'job'::character varying, 'system'::character varying]::text[])", name: "audit_event_source"
+    t.check_constraint "source::text = ANY (ARRAY['ui'::character varying::text, 'api'::character varying::text, 'mcp'::character varying::text, 'job'::character varying::text, 'system'::character varying::text])", name: "audit_event_source"
   end
 
   create_table "cart_items", force: :cascade do |t|
@@ -245,7 +245,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
     t.index ["store_id"], name: "index_confirmation_attempts_on_store_id"
     t.index ["user_id"], name: "index_confirmation_attempts_on_user_id"
     t.check_constraint "handled_seconds IS NULL OR handled_seconds >= 0", name: "confirmation_attempt_handled_nonnegative"
-    t.check_constraint "outcome::text = ANY (ARRAY['no_answer'::character varying, 'callback'::character varying, 'confirmed'::character varying, 'cancelled'::character varying]::text[])", name: "confirmation_attempt_outcome"
+    t.check_constraint "outcome::text = ANY (ARRAY['no_answer'::character varying::text, 'callback'::character varying::text, 'confirmed'::character varying::text, 'cancelled'::character varying::text])", name: "confirmation_attempt_outcome"
   end
 
   create_table "confirmation_shifts", force: :cascade do |t|
@@ -421,7 +421,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
     t.index ["order_id"], name: "index_order_confirmations_on_order_id", unique: true
     t.index ["store_id", "disposition", "callback_at"], name: "index_confirmation_queue"
     t.index ["store_id"], name: "index_order_confirmations_on_store_id"
-    t.check_constraint "disposition::text = ANY (ARRAY['pending'::character varying, 'no_answer'::character varying, 'callback'::character varying, 'confirmed'::character varying, 'cancelled'::character varying]::text[])", name: "confirmation_disposition"
+    t.check_constraint "disposition::text = ANY (ARRAY['pending'::character varying::text, 'no_answer'::character varying::text, 'callback'::character varying::text, 'confirmed'::character varying::text, 'cancelled'::character varying::text])", name: "confirmation_disposition"
   end
 
   create_table "order_events", force: :cascade do |t|
@@ -669,10 +669,39 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
     t.string "admin_theme", default: "blue", null: false
     t.index ["email"], name: "index_registrations_on_email", unique: true
     t.index ["user_id"], name: "index_registrations_on_user_id", unique: true
-    t.check_constraint "admin_theme::text = ANY (ARRAY['blue'::character varying, 'dark'::character varying, 'light'::character varying, 'current'::character varying]::text[])", name: "registrations_admin_theme"
+    t.check_constraint "admin_theme::text = ANY (ARRAY['blue'::character varying::text, 'dark'::character varying::text, 'light'::character varying::text, 'current'::character varying::text])", name: "registrations_admin_theme"
     t.check_constraint "email::text = lower(email::text)", name: "registrations_normalized_email"
     t.check_constraint "verified_at IS NOT NULL OR user_id IS NULL", name: "registrations_verification_identity"
     t.check_constraint "verified_at IS NULL OR password_digest IS NOT NULL", name: "registrations_verified_password"
+  end
+
+  create_table "seallo_connection_codes", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "user_id", null: false
+    t.string "digest", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "consumed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["digest"], name: "index_seallo_connection_codes_on_digest", unique: true
+    t.index ["store_id"], name: "index_seallo_connection_codes_on_store_id"
+    t.index ["user_id"], name: "index_seallo_connection_codes_on_user_id"
+  end
+
+  create_table "shopify_privacy_requests", force: :cascade do |t|
+    t.bigint "store_connection_id"
+    t.string "event_key", null: false
+    t.string "topic", null: false
+    t.string "status", default: "pending", null: false
+    t.text "identifiers_ciphertext"
+    t.string "error_code"
+    t.datetime "processed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_key"], name: "index_shopify_privacy_requests_on_event_key", unique: true
+    t.index ["store_connection_id"], name: "index_shopify_privacy_requests_on_store_connection_id"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying::text, 'needs_review'::character varying::text, 'completed'::character varying::text])", name: "shopify_privacy_request_status"
+    t.check_constraint "topic::text = ANY (ARRAY['customers/data_request'::character varying::text, 'customers/redact'::character varying::text, 'shop/redact'::character varying::text])", name: "shopify_privacy_request_topic"
   end
 
   create_table "store_connections", force: :cascade do |t|
@@ -701,14 +730,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
     t.datetime "shopify_oauth_state_expires_at"
     t.datetime "shopify_orders_synced_at"
     t.datetime "shopify_webhook_checked_at"
+    t.string "shopify_app"
+    t.string "shopify_sync_state"
+    t.datetime "shopify_sync_started_at"
+    t.datetime "shopify_sync_finished_at"
+    t.jsonb "shopify_sync_counts", default: {}, null: false
+    t.string "shopify_sync_error"
+    t.string "shopify_poll_cursor"
+    t.datetime "shopify_poll_since"
+    t.datetime "shopify_poll_until"
+    t.string "shopify_uninstall_event_key"
+    t.datetime "shopify_entitled_until"
+    t.string "shopify_plan_name"
+    t.integer "shopify_order_limit"
+    t.datetime "shopify_billing_period_start"
+    t.datetime "shopify_billing_period_end"
+    t.index ["external_domain"], name: "unique_seallo_shop", unique: true, where: "((shopify_app)::text = 'seallo_connect'::text)"
     t.index ["shopify_oauth_state_digest"], name: "index_store_connections_on_shopify_oauth_state_digest", unique: true
     t.index ["store_id", "provider", "external_domain"], name: "idx_on_store_id_provider_external_domain_3a7fd79a93", unique: true
     t.index ["store_id"], name: "index_store_connections_on_store_id"
     t.index ["token"], name: "index_store_connections_on_token", unique: true
     t.check_constraint "NOT shopify_oauth OR provider::text = 'shopify'::text", name: "store_connection_shopify_oauth"
     t.check_constraint "provider::text = 'shopify'::text OR webhook_secret_ciphertext IS NOT NULL", name: "store_connection_webhook_credentials"
-    t.check_constraint "provider::text = ANY (ARRAY['shopify'::character varying, 'woocommerce'::character varying, 'youcan'::character varying]::text[])", name: "store_connection_provider"
+    t.check_constraint "provider::text = ANY (ARRAY['shopify'::character varying::text, 'woocommerce'::character varying::text, 'youcan'::character varying::text])", name: "store_connection_provider"
     t.check_constraint "shopify_access_token_ciphertext IS NULL OR shopify_oauth AND shopify_access_token_expires_at IS NOT NULL", name: "store_connection_shopify_token"
+    t.check_constraint "shopify_app IS NULL OR shopify_app::text = 'seallo_connect'::text AND provider::text = 'shopify'::text AND shopify_oauth", name: "seallo_shopify_only"
+    t.check_constraint "shopify_entitled_until IS NULL OR shopify_app::text = 'seallo_connect'::text AND shopify_billing_period_start IS NOT NULL AND shopify_billing_period_end > shopify_billing_period_start", name: "seallo_subscription_period"
+    t.check_constraint "shopify_order_limit IS NULL OR shopify_order_limit > 0", name: "seallo_positive_order_limit"
     t.check_constraint "shopify_refresh_token_ciphertext IS NULL OR shopify_oauth AND shopify_refresh_token_expires_at IS NOT NULL", name: "store_connection_shopify_refresh_token"
   end
 
@@ -754,7 +802,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
     t.index ["store_id", "created_at"], name: "index_storefront_themes_on_store_id_and_created_at"
     t.index ["store_id", "status"], name: "index_storefront_themes_one_published_per_store", unique: true, where: "((status)::text = 'published'::text)"
     t.index ["store_id"], name: "index_storefront_themes_on_store_id"
-    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'published'::character varying]::text[])", name: "storefront_themes_status"
+    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying::text, 'published'::character varying::text])", name: "storefront_themes_status"
   end
 
   create_table "stores", force: :cascade do |t|
@@ -806,7 +854,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
     t.index ["billing_interval"], name: "index_stores_on_billing_interval"
     t.index ["billing_status"], name: "index_stores_on_billing_status"
     t.index ["slug"], name: "index_stores_on_slug", unique: true
-    t.check_constraint "admin_theme::text = ANY (ARRAY['blue'::character varying, 'dark'::character varying, 'light'::character varying, 'current'::character varying]::text[])", name: "stores_admin_theme"
+    t.check_constraint "admin_theme::text = ANY (ARRAY['blue'::character varying::text, 'dark'::character varying::text, 'light'::character varying::text, 'current'::character varying::text])", name: "stores_admin_theme"
   end
 
   create_table "users", force: :cascade do |t|
@@ -827,9 +875,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
     t.index ["store_id", "email"], name: "index_users_on_store_id_and_email", unique: true
     t.index ["store_id"], name: "index_users_on_store_id"
     t.check_constraint "confirmation_role::text <> 'agent'::text OR admin = false", name: "users_agent_not_admin"
-    t.check_constraint "confirmation_role::text = ANY (ARRAY['agent'::character varying, 'supervisor'::character varying]::text[])", name: "users_confirmation_role_check"
+    t.check_constraint "confirmation_role::text = ANY (ARRAY['agent'::character varying::text, 'supervisor'::character varying::text])", name: "users_confirmation_role_check"
     t.check_constraint "session_version >= 0", name: "users_session_version_nonnegative"
-    t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'suspended'::character varying, 'archived'::character varying]::text[])", name: "users_status_check"
+    t.check_constraint "status::text = ANY (ARRAY['active'::character varying::text, 'suspended'::character varying::text, 'archived'::character varying::text])", name: "users_status_check"
   end
 
   add_foreign_key "access_requests", "stores", on_delete: :nullify
@@ -893,6 +941,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_100000) do
   add_foreign_key "push_subscriptions", "stores", on_delete: :cascade
   add_foreign_key "push_subscriptions", "users", on_delete: :cascade
   add_foreign_key "registrations", "users", on_delete: :nullify
+  add_foreign_key "seallo_connection_codes", "stores"
+  add_foreign_key "seallo_connection_codes", "users"
+  add_foreign_key "shopify_privacy_requests", "store_connections"
   add_foreign_key "store_connections", "stores"
   add_foreign_key "store_expenses", "stores"
   add_foreign_key "store_translations", "stores"

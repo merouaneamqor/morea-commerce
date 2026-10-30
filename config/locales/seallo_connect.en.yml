@@ -1,0 +1,41 @@
+en:
+  seallo_connect:
+    title: Seallo Connect
+    instructions: Generate a code, then paste it into Seallo Connect in your Shopify admin. The code expires after 10 minutes and links the shop to this workspace. Keep it private.
+    generate_code: Generate connection code
+    import_help: Eligible Moroccan MAD cash-on-delivery orders arrive as New orders. Confirmations, stock and shipping follow your existing workspace rules.
+    connection_states:
+      configured: Awaiting verification
+      verified: Connected
+      disconnected: Disconnected
+    sync_states:
+      waiting: Awaiting sync
+      queued: Sync queued
+      running: Sync in progress
+      complete: Sync complete
+      catching_up: Catch-up in progress
+      failed: Sync failed
+    privacy:
+      link: Privacy requests
+      title: Shopify privacy requests
+      instructions: Review requests within 30 days. Customer exports must be delivered securely to the requesting merchant. Retained records need a documented legal decision.
+      empty: No privacy requests.
+      request: "Request #%{id}"
+      request_title: "Privacy request #%{id}"
+      due: "Due %{date}"
+      secure_response: Download the export and send it securely to the requesting merchant. Mark complete only after delivery.
+      retained_records: Active orders or shared customer records need review. Resolve operational obligations and assess required retention, then retry. Financial records and order states are preserved.
+      download: Download private export
+      confirm_delivery: Confirm secure delivery completed
+      retry_redaction: Retry redaction
+      completed_notice: Request marked complete.
+      retained_alert: Resolve retained business records before completing this request.
+      queued_notice: Processing queued.
+      topics:
+        customers/data_request: Customer data request
+        customers/redact: Customer data erasure
+        shop/redact: Shop data erasure
+      statuses:
+        pending: Pending
+        needs_review: Needs review
+        completed: Completed

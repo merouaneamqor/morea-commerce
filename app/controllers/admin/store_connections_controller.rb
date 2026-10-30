@@ -118,6 +118,8 @@ module Admin
     end
 
     def shopify_authorization_url
+      raise Connections::ShopifyOauth::Error.new("disconnected") if @connection.shopify_app == "seallo_connect"
+
       callback = admin_shopify_callback_url(host: Store.base_domain, protocol: Rails.env.local? ? "http" : "https", port: ENV["APP_PORT"].presence)
       Connections::ShopifyOauth.authorization_url(connection: @connection, session: session, user_id: current_user.id, callback_url: callback)
     end
@@ -128,6 +130,7 @@ module Admin
 
     def set_connection
       @connection = current_store.store_connections.find(params[:id])
+      @shopify_configured = ENV["SEALLO_APP_URL"].present? && ENV["SEALLO_BRIDGE_SECRET"].present? if @connection.shopify_app == "seallo_connect"
     end
 
     def connection_params

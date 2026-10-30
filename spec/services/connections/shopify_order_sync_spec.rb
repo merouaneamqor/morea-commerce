@@ -100,6 +100,23 @@ RSpec.describe Connections::ShopifyOrderSync do
     expect { later.ensure_webhook! }.not_to raise_error
   end
 
+  it "resumes a bounded Seallo window by cursor and preserves webhook/poll replay identity" do
+    connection.update!(shopify_app: "seallo_connect")
+    stub_const("Connections::ShopifyOrderSync::MAX_PAGES", 1)
+    run, fake = sync(orders_page(node, next_page: true))
+    expect { run.ensure_webhook! }.not_to change { fake.calls.length }
+    expect(run.poll!.complete).to be(false)
+    original_filter = fake.calls.last.last[:query]
+    expect(connection.reload.shopify_poll_cursor).to eq("cursor")
+
+    next_run, next_fake = sync(orders_page(node, node(id: "1002")))
+    expect(next_run.poll!).to have_attributes(imported: 1, replayed: 1, complete: true)
+    expect(next_fake.calls.last.last).to include(after: "cursor", query: original_filter)
+    expect(connection.reload.shopify_poll_cursor).to be_nil
+    expect(store.orders.count).to eq(2)
+    expect(store.orders.pluck(:status).uniq).to eq([ "new" ])
+  end
+
   it "accepts webhooks signed with the shared app secret and rejects any other signature" do
     payload = JSON.generate(described_class.new(connection, api: api.new([]), now: now).order_payload(node(id: "3003")))
     signed = ->(secret) { Base64.strict_encode64(OpenSSL::HMAC.digest("sha256", secret, payload)) }

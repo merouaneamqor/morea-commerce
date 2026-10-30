@@ -56,6 +56,9 @@ module Connections
     end
 
     def ensure_webhook!
+      # Seallo Connect declares app-wide subscriptions in its versioned TOML.
+      return if @connection.shopify_app == "seallo_connect"
+
       checked = @connection.shopify_webhook_checked_at
       return if checked && checked > WEBHOOK_CHECK_INTERVAL.ago(@now)
 
@@ -74,9 +77,18 @@ module Connections
     def poll!
       since = @connection.shopify_orders_synced_at || FIRST_SYNC_DAYS.days.ago(@now)
       filter = "created_at:>='#{(since - OVERLAP).utc.iso8601}' financial_status:pending fulfillment_status:unfulfilled"
+      seallo = @connection.shopify_app == "seallo_connect"
+      if seallo
+        # Keep the same window and cursor across bounded runs. A timestamp-only
+        # restart can loop forever when >200 orders share an overlapping window.
+        since = @connection.shopify_poll_since || since
+        until_time = @connection.shopify_poll_until || @now
+        filter = "created_at:>='#{(since - OVERLAP).utc.iso8601}' created_at:<='#{until_time.utc.iso8601}' financial_status:pending fulfillment_status:unfulfilled"
+        @connection.update_columns(shopify_poll_since: since, shopify_poll_until: until_time)
+      end
       intake = WebhookIntake.new(connection: @connection)
       counts = Hash.new(0)
-      cursor = nil
+      cursor = seallo ? @connection.shopify_poll_cursor : nil
       last_seen = nil
       complete = false
       MAX_PAGES.times do
@@ -91,9 +103,14 @@ module Connections
           complete = true
           break
         end
+        @connection.update_columns(shopify_poll_cursor: cursor) if seallo
       end
       # A truncated run resumes from the last order it handled; a complete one from now.
-      @connection.update_columns(shopify_orders_synced_at: complete ? @now : (last_seen || since))
+      @connection.update_columns(shopify_orders_synced_at: complete ? (seallo ? until_time : @now) : (last_seen || since))
+      if seallo
+        @connection.update_columns(shopify_poll_cursor: complete ? nil : cursor,
+          shopify_poll_since: complete ? nil : since, shopify_poll_until: complete ? nil : until_time)
+      end
       Result.new(imported: counts[:imported], rejected: counts[:rejected], replayed: counts[:replayed], complete: complete)
     end
 

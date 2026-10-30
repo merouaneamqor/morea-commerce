@@ -87,6 +87,8 @@ module Connections
       unless @connection.external_domain.to_s.match?(/\A[a-z0-9][a-z0-9-]*\.myshopify\.com\z/) && @connection.external_domain.to_s.bytesize <= 253
         raise Error.new("source_mismatch")
       end
+      return if @connection.shopify_app == "seallo_connect" && @connection.shopify_oauth?
+
       if ENV["SHOPIFY_CLIENT_ID"].blank? || ENV["SHOPIFY_CLIENT_SECRET"].blank?
         raise Error.new("config_missing")
       end
@@ -94,13 +96,15 @@ module Connections
     end
 
     def cached_token?
+      return @connection.shopify_api_verified_at.present? if @connection.shopify_app == "seallo_connect"
+
       @connection.shopify_access_token.present? &&
         @connection.shopify_access_token_expires_at.present? &&
         @connection.shopify_access_token_expires_at > 60.seconds.from_now
     end
 
     def verify_token!
-      refresh_token! unless cached_token?
+      refresh_token! unless @connection.shopify_app == "seallo_connect" || cached_token?
       data = graphql_data(query: VERIFY_QUERY, variables: {})
       unless data["shop"].is_a?(Hash) && data["currentAppInstallation"].is_a?(Hash)
         raise Error.new("invalid_response")
@@ -116,7 +120,9 @@ module Connections
       effective_scopes = scopes.dup
       effective_scopes << "read_customers" if scopes.include?("write_customers")
       effective_scopes << "read_products" if scopes.include?("write_products")
-      raise Error.new("missing_scopes") unless (REQUIRED_SCOPES - effective_scopes).empty?
+      effective_scopes << "read_orders" if scopes.include?("write_orders")
+      required = @connection.shopify_app == "seallo_connect" ? %w[read_orders] : REQUIRED_SCOPES
+      raise Error.new("missing_scopes") unless (required - effective_scopes).empty?
 
       @connection.update!(shopify_granted_scopes: scopes, shopify_api_verified_at: Time.current, shopify_api_error_code: nil)
     end
@@ -158,6 +164,14 @@ module Connections
     end
 
     def graphql_data(query:, variables:)
+      if @connection.shopify_app == "seallo_connect"
+        begin
+          return SealloBridge.graphql(shop: @connection.external_domain, query: query, variables: variables)
+        rescue SealloBridge::Error => error
+          raise Error.new(error.message)
+        end
+      end
+
       uri = URI("https://#{@connection.external_domain}/admin/api/#{API_VERSION}/graphql.json")
       request = Net::HTTP::Post.new(uri)
       request["Content-Type"] = "application/json"

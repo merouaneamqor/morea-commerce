@@ -1,5 +1,9 @@
 module AdminHelper
   def admin_language_switch_path(locale)
+    if controller_path == "admin/seallo_connections"
+      return "#{admin_seallo_connect_path}?#{ { locale: locale }.to_query}"
+    end
+
     if controller_path == "admin/store_connections" && action_name == "shopify_callback"
       return "#{admin_store_connections_path}?#{ { locale: locale }.to_query}"
     end

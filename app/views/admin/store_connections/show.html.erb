@@ -11,7 +11,7 @@
 <% if @connection.errors.any? %><div role="alert" class="admin-banner admin-banner--critical"><%= @connection.errors.full_messages.to_sentence %></div><% end %>
 <% if shopify %>
   <%= render "shopify_api" %>
-  <%= render "shopify_setup", saved: true %>
+  <%= render "shopify_setup", saved: true unless @connection.shopify_app == "seallo_connect" %>
 <% else %>
 <section class="admin-card p-5 mb-4 space-y-3">
   <h2 class="admin-card__title"><%= t("connections.setup") %></h2>

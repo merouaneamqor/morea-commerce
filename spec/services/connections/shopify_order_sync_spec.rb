@@ -101,7 +101,9 @@ RSpec.describe Connections::ShopifyOrderSync do
   end
 
   it "resumes a bounded Seallo window by cursor and preserves webhook/poll replay identity" do
-    connection.update!(shopify_app: "seallo_connect")
+    connection.update!(shopify_app: "seallo_connect", shopify_plan_name: "Seallo Premium", shopify_order_limit: nil,
+      shopify_billing_period_start: 1.day.ago, shopify_billing_period_end: 29.days.from_now,
+      shopify_entitled_until: 1.hour.from_now)
     stub_const("Connections::ShopifyOrderSync::MAX_PAGES", 1)
     run, fake = sync(orders_page(node, next_page: true))
     expect { run.ensure_webhook! }.not_to change { fake.calls.length }

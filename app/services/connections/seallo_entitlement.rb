@@ -22,7 +22,7 @@ module Connections
         end
         connection.update!(shopify_plan_name: name, shopify_order_limit: PLANS[name],
           shopify_billing_period_start: start_time, shopify_billing_period_end: end_time,
-          shopify_entitled_until: [CACHE_LIFETIME.from_now, end_time].min)
+          shopify_entitled_until: [ CACHE_LIFETIME.from_now, end_time ].min)
       end
       true
     rescue ArgumentError, KeyError, TypeError

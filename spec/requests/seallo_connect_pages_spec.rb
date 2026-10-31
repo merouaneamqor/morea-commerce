@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe "Seallo Connect public pages", type: :request do
-  let(:paths) { %w[/seallo-connect /seallo-connect/privacy /seallo-connect/terms] }
+  let(:paths) { %w[/seallo-connect /seallo-connect/pricing /seallo-connect/privacy /seallo-connect/terms] }
 
   around do |example|
     original = ENV["SEALLO_SUPPORT_EMAIL"]
@@ -34,6 +34,22 @@ RSpec.describe "Seallo Connect public pages", type: :request do
     expect(response.body).to include("read_orders")
     expect(response.body).to include("shipping name, phone number and delivery address")
     expect(response.body).to include("customer redaction or shop redaction")
+  end
+
+  it "publishes the three plans, their allowances and the trial" do
+    get "/seallo-connect/pricing", params: { locale: "en" }
+
+    expect(response.body).to include("Seallo Basic: $9 per month", "Up to 30 imported orders")
+    expect(response.body).to include("Seallo Pro: $25 per month", "Up to 100 imported orders")
+    expect(response.body).to include("Seallo Premium: $50 per month", "Unlimited imported orders")
+    expect(response.body).to include("7-day free trial")
+  end
+
+  it "links the pricing page from every page's navigation" do
+    paths.each do |path|
+      get path, params: { locale: "en" }
+      expect(response.body).to include(%(href="/seallo-connect/pricing))
+    end
   end
 
   it "shows a configured support address as a mail link" do
@@ -67,7 +83,7 @@ RSpec.describe "Seallo Connect public pages", type: :request do
 
   it "keeps the three translations structurally identical" do
     shape = lambda do |locale|
-      %i[overview privacy terms].to_h do |page|
+      %i[overview pricing privacy terms].to_h do |page|
         copy = I18n.t("seallo_connect_pages.#{page}", locale: locale)
         [ page, copy[:sections].map { |section| [ section[:body].to_a.size, section[:items].to_a.size ] } ]
       end

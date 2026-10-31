@@ -3,6 +3,7 @@ en:
     nav:
       label: "Seallo Connect"
       overview: "Overview and support"
+      pricing: "Pricing"
       privacy: "Privacy policy"
       terms: "Terms of service"
       language: "Language"
@@ -39,6 +40,31 @@ en:
         - heading: "Disconnecting"
           body:
             - "You can disconnect from the app or uninstall it from Shopify at any time. Importing stops and the connection credentials are removed. Orders already imported remain in your workspace."
+    pricing:
+      title: "Pricing"
+      summary: "Simple monthly plans billed through Shopify, each with a 7-day free trial."
+      sections:
+        - heading: "Seallo Basic: $9 per month"
+          body:
+            - "Up to 30 imported orders in each billing cycle."
+        - heading: "Seallo Pro: $25 per month"
+          body:
+            - "Up to 100 imported orders in each billing cycle."
+        - heading: "Seallo Premium: $50 per month"
+          body:
+            - "Unlimited imported orders."
+        - heading: "What every plan includes"
+          items:
+            - "A 7-day free trial."
+            - "Automatic import of eligible cash-on-delivery orders, plus a catch-up sync for any that were missed."
+            - "Order confirmation, stock and delivery tools in your connected Seallo workspace, with no second purchase needed for this connection."
+            - "Read-only access to your Shopify orders."
+        - heading: "How the order allowance works"
+          body:
+            - "Only orders that are successfully imported count toward your allowance. Orders that are rejected, or that were already imported, do not. When you reach your limit, importing pauses until the next billing cycle or until you upgrade, and nothing already imported is removed."
+        - heading: "Billing"
+          body:
+            - "Prices are in US dollars and billed monthly by Shopify, and charges appear on your Shopify invoice. Choose, change or cancel your plan from the app in your Shopify admin. Development stores are not charged. Shopify's pricing page always shows the current price."
     privacy:
       title: "Privacy policy"
       summary: "How Seallo Connect handles store and order data on behalf of merchants."

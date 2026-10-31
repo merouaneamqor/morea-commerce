@@ -3,6 +3,7 @@ fr:
     nav:
       label: "Seallo Connect"
       overview: "Présentation et assistance"
+      pricing: "Tarifs"
       privacy: "Politique de confidentialité"
       terms: "Conditions d'utilisation"
       language: "Langue"
@@ -39,6 +40,31 @@ fr:
         - heading: "Déconnexion"
           body:
             - "Vous pouvez vous déconnecter depuis l'application ou la désinstaller depuis Shopify à tout moment. L'import s'arrête et les identifiants de connexion sont supprimés. Les commandes déjà importées restent dans votre espace."
+    pricing:
+      title: "Tarifs"
+      summary: "Des offres mensuelles simples, facturées via Shopify, avec 7 jours d'essai gratuit."
+      sections:
+        - heading: "Seallo Basic : 9 $ par mois"
+          body:
+            - "Jusqu'à 30 commandes importées par cycle de facturation."
+        - heading: "Seallo Pro : 25 $ par mois"
+          body:
+            - "Jusqu'à 100 commandes importées par cycle de facturation."
+        - heading: "Seallo Premium : 50 $ par mois"
+          body:
+            - "Commandes importées illimitées."
+        - heading: "Inclus dans chaque offre"
+          items:
+            - "7 jours d'essai gratuit."
+            - "Import automatique des commandes éligibles avec paiement à la livraison, et synchronisation de rattrapage pour celles qui auraient été manquées."
+            - "Outils de confirmation, de stock et de livraison dans votre espace Seallo connecté, sans second achat nécessaire pour cette connexion."
+            - "Accès en lecture seule à vos commandes Shopify."
+        - heading: "Fonctionnement du quota de commandes"
+          body:
+            - "Seules les commandes importées avec succès comptent dans votre quota. Les commandes rejetées ou déjà importées n'en consomment pas. Lorsque la limite est atteinte, l'import est suspendu jusqu'au prochain cycle de facturation ou jusqu'au passage à une offre supérieure, et rien de ce qui a déjà été importé n'est supprimé."
+        - heading: "Facturation"
+          body:
+            - "Les prix sont en dollars américains et facturés chaque mois par Shopify ; les frais apparaissent sur votre facture Shopify. Choisissez, modifiez ou annulez votre offre depuis l'application dans votre administration Shopify. Les boutiques de développement ne sont pas facturées. La page de tarifs de Shopify affiche toujours le prix en vigueur."
     privacy:
       title: "Politique de confidentialité"
       summary: "Comment Seallo Connect traite les données de boutique et de commandes pour le compte des marchands."

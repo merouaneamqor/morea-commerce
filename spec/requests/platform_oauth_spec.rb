@@ -129,4 +129,45 @@ RSpec.describe "Platform OAuth", type: :request do
     callback = URI.decode_www_form(URI.parse(response.location).query).to_h
     expect(callback).to include("error" => "access_denied", "state" => "synthetic-state")
   end
+  context "with production CSRF checks" do
+    around do |example|
+      controller = PlatformOauth::AuthorizationsController
+      original_protection = controller.allow_forgery_protection
+      original_origin_check = controller.forgery_protection_origin_check
+      controller.allow_forgery_protection = true
+      controller.forgery_protection_origin_check = true
+      example.run
+    ensure
+      controller.allow_forgery_protection = original_protection
+      controller.forgery_protection_origin_check = original_origin_check
+    end
+
+    it "allows consent with the rendered token and same-origin browser headers" do
+      sign_in
+      ticket = consent_ticket
+      expect(response.headers["Referrer-Policy"]).to eq("same-origin")
+      token = Nokogiri::HTML(response.body).at_css('input[name="authenticity_token"]')["value"]
+      post "/platform/oauth/authorize", params: { ticket: ticket, decision: "allow", authenticity_token: token },
+        headers: { "Origin" => "http://#{Store.base_domain}" }
+      expect(response).to have_http_status(:see_other)
+      expect(URI.decode_www_form(URI.parse(response.location).query).to_h).to have_key("code")
+    end
+
+    it "still rejects cross-origin consent and missing CSRF tokens" do
+      sign_in
+      ticket = consent_ticket
+      token = Nokogiri::HTML(response.body).at_css('input[name="authenticity_token"]')["value"]
+      expect do
+        post "/platform/oauth/authorize", params: { ticket: ticket, decision: "allow", authenticity_token: token },
+          headers: { "Origin" => "https://untrusted.example.test" }
+      end.not_to change(PlatformOauthCode, :count)
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect do
+        post "/platform/oauth/authorize", params: { ticket: ticket, decision: "allow" },
+          headers: { "Origin" => "http://#{Store.base_domain}" }
+      end.not_to change(PlatformOauthCode, :count)
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+  end
+
 end

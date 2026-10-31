@@ -42,7 +42,10 @@ module PlatformOauth
 
     def prevent_caching
       response.set_header("Cache-Control", "no-store")
-      response.set_header("Referrer-Policy", "no-referrer")
+      # no-referrer can produce Origin: null on Safari form POSTs, which Rails
+      # correctly rejects. Preserve same-origin consent POSTs without leaking
+      # authorization query parameters to external destinations.
+      response.set_header("Referrer-Policy", "same-origin")
     end
 
     def resource

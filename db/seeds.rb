@@ -49,12 +49,19 @@ CollectionTranslation.where(collection_id: store.collections.select(:id)).delete
 Collection.where(store_id: store.id).delete_all
 StoreTranslation.where(store_id: store.id).delete_all
 
+# Seeded accounts never get a published password (it must also satisfy the 12-character
+# staff policy). Set SEED_ADMIN_PASSWORD to choose one. Without it, development and test
+# use a fixed local-only value, and production gets a random one nobody knows, so those
+# accounts are reached through the password-reset email.
+seed_password = ENV["SEED_ADMIN_PASSWORD"].presence ||
+  (Rails.env.production? ? SecureRandom.alphanumeric(32) : "morea-local-password-123")
+
 user = store.users.find_or_initialize_by(email: "admin@morea.website")
 user.name = "Morea Admin"
 # Only set the default password when creating the admin — reseeding keeps a changed password
 if user.new_record?
-  user.password = "morea123"
-  user.password_confirmation = "morea123"
+  user.password = seed_password
+  user.password_confirmation = seed_password
 end
 user.admin = true
 user.super_admin = true
@@ -68,8 +75,8 @@ super_admin.admin = true
 super_admin.super_admin = true
 super_admin.store = nil
 if super_admin.new_record?
-  super_admin.password = "morea123"
-  super_admin.password_confirmation = "morea123"
+  super_admin.password = seed_password
+  super_admin.password_confirmation = seed_password
 end
 super_admin.save!
 
@@ -487,8 +494,12 @@ unless store.invoices.exists?
   end
 end
 
-puts "Admin: admin@morea.website / morea123"
-puts "Super: super@morea.website / morea123 (all stores)"
+if Rails.env.production?
+  puts "Seeded admin@morea.website and super@morea.website. Set SEED_ADMIN_PASSWORD before seeding, or use the password-reset email."
+else
+  puts "Admin: admin@morea.website / #{seed_password}"
+  puts "Super: super@morea.website / #{seed_password} (all stores)"
+end
 puts "Store: #{store.name} — #{store.origin} — #{store.products.count} products — locales fr/en/ar"
 puts "Invoices: #{store.invoices.count} (platform → store → Invoices)"
 load Rails.root.join("db/seeds/dashboard_demo.rb") if Rails.env.development?

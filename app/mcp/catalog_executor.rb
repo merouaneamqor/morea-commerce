@@ -43,7 +43,7 @@ class CatalogExecutor
     result = MoreaSchema.execute(
       query,
       variables: variables.deep_stringify_keys,
-      context: { store: store }
+      context: { store: store, source: "mcp", actor_label: "mcp-tool" }
     )
     payload = result.to_h
     errored = payload["errors"].present? || payload_errors?(payload)

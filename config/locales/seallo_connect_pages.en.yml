@@ -1,0 +1,111 @@
+en:
+  seallo_connect_pages:
+    nav:
+      label: "Seallo Connect"
+      overview: "Overview and support"
+      privacy: "Privacy policy"
+      terms: "Terms of service"
+      language: "Language"
+      home: "Seallo home"
+      updated: "Last updated: %{date}"
+    contact:
+      heading: "Contact"
+      with_email: "For support, privacy questions or data requests, email"
+      without_email: "For support, privacy questions or data requests, contact the Seallo team through your Seallo workspace."
+    overview:
+      title: "Seallo Connect"
+      summary: "Seallo Connect links your Shopify store to your Seallo workspace so your team can confirm and ship cash-on-delivery orders."
+      sections:
+        - heading: "What it does"
+          body:
+            - "Seallo Connect imports eligible cash-on-delivery orders from your Shopify store into your Seallo workspace. There your team confirms each order by phone, manages stock and prepares the delivery with your carrier."
+            - "Orders arrive as New. Confirmation, inventory and shipping stay under your team's control in Seallo."
+        - heading: "How to connect"
+          items:
+            - "Install Seallo Connect from the Shopify App Store and approve the requested access."
+            - "Choose a plan on Shopify's pricing page."
+            - "In your Seallo workspace, open the Seallo connection page and generate a one-time connection code. Only someone authorised in that workspace can do this."
+            - "Paste the code in the app inside your Shopify admin within 10 minutes."
+        - heading: "Which orders are imported"
+          body:
+            - "Unpaid, unfulfilled cash-on-delivery orders in MAD, shipping to Morocco, without tax or discounts. Webhooks deliver new orders, and a catch-up sync recovers any that were missed. The same order is never imported twice. Other orders are not imported and appear as rejected, with a reason, in Seallo."
+        - heading: "What it does not do"
+          items:
+            - "It does not change orders, products, customers or inventory in Shopify."
+            - "It does not read customer email addresses or payment details."
+        - heading: "Plans"
+          body:
+            - "Plans are sold and billed through Shopify, with a 7-day trial: Basic (30 imported orders per billing cycle), Pro (100) and Premium (unlimited). Current prices are shown on Shopify's pricing page. Replayed and rejected orders do not use your allowance, and imports that reach the limit resume after you upgrade."
+        - heading: "Disconnecting"
+          body:
+            - "You can disconnect from the app or uninstall it from Shopify at any time. Importing stops and the connection credentials are removed. Orders already imported remain in your workspace."
+    privacy:
+      title: "Privacy policy"
+      summary: "How Seallo Connect handles store and order data on behalf of merchants."
+      sections:
+        - heading: "Who this applies to"
+          body:
+            - "Seallo Connect is a Shopify app that connects a merchant's Shopify store to the merchant's workspace in Seallo. The merchant decides how its orders are handled. Seallo processes order data on the merchant's behalf to provide the service."
+        - heading: "Data we access"
+          body:
+            - "With the read_orders permission, for each eligible cash-on-delivery order, we read:"
+          items:
+            - "Buyer contact details from the order: shipping name, phone number and delivery address (street, city, country)."
+            - "Order details: order number, date, currency, amounts, items, quantities, payment and fulfilment status."
+            - "Shop identity: the store's myshopify.com domain, and the app's installation and subscription status."
+        - heading: "Data we do not access"
+          body:
+            - "We do not read buyer email addresses, payment card details, customer accounts or marketing data. The app does not request customer-directory or product permissions, and does not write to your Shopify store."
+        - heading: "How we use it"
+          body:
+            - "Only to show the order to the merchant's team in Seallo, let them confirm it with the buyer, manage stock, and prepare delivery with the carrier the merchant chooses. We do not sell data, use it for advertising or use it to profile buyers."
+        - heading: "Where it is stored and who can see it"
+          body:
+            - "Imported orders are stored in the merchant's Seallo workspace and are visible only to people the merchant has authorised there. Workspaces are isolated from each other. The app's Shopify access credentials are kept in an access-controlled database run by our hosting provider and are deleted when the app is uninstalled. All communication uses HTTPS, and requests between Shopify, the app and Seallo are cryptographically signed and verified."
+        - heading: "Who we share it with"
+          body:
+            - "Only with the delivery carrier the merchant connects, so that parcels can be delivered, and with infrastructure providers needed to host the service. We do not share it with anyone else, except where the law requires."
+        - heading: "Retention and deletion"
+          items:
+            - "While the app is connected, orders are imported and kept in the merchant's workspace as its business records."
+            - "When the app is uninstalled or disconnected, importing stops and connection credentials are removed. Shopify session data for the shop is deleted. Orders already imported stay in the merchant's workspace until the merchant deletes them or a Shopify privacy request applies."
+            - "When Shopify sends a customer redaction or shop redaction request, we redact buyer contact details, notes and events on the affected orders once they are completed. Orders still being delivered are held, and flagged for the merchant to review, until they are completed, so that deliveries are not broken. Amounts, statuses and identifiers needed for accounting and to prevent re-importing are kept."
+        - heading: "Privacy requests from buyers"
+          body:
+            - "Buyers should contact the merchant they bought from. When Shopify forwards a customer data request, we prepare an export of the imported order data about that customer for the merchant to review and provide. Buyers and merchants can also write to us at the address below."
+        - heading: "Security"
+          body:
+            - "Requests from Shopify are verified with Shopify's signature, and server-to-server requests use a separate signed key with a short time window to prevent forgery and replay. Access to a workspace's data is limited to authorised members of that workspace."
+        - heading: "Changes"
+          body:
+            - "We will update this page and its date when our practices change."
+    terms:
+      title: "Terms of service"
+      summary: "The terms for using Seallo Connect with your Shopify store."
+      sections:
+        - heading: "The service"
+          body:
+            - "Seallo Connect imports eligible cash-on-delivery orders from your Shopify store into your Seallo workspace. By installing or using the app you agree to these terms and to the privacy policy."
+        - heading: "Your account and authority"
+          body:
+            - "You must be authorised to install apps on the Shopify store and to connect it to the Seallo workspace you choose. A store can be linked to one workspace at a time. Keep your connection codes private. They are single-use and expire."
+        - heading: "Subscription and billing"
+          body:
+            - "Seallo Connect is offered through Shopify-managed plans with a trial period. Billing, plan changes and cancellation are handled by Shopify under its terms. Each plan includes a number of imported orders per billing cycle. When it is reached, importing pauses until the next cycle or until you upgrade. Orders already imported are preserved."
+        - heading: "Your responsibilities"
+          items:
+            - "Use the service lawfully and only for your own store's orders."
+            - "Inform your buyers how their data is used, and handle their data lawfully, including confirmation calls and deliveries."
+            - "Review imported orders. You remain responsible for confirming, shipping and fulfilling them."
+        - heading: "Availability"
+          body:
+            - "We work to keep imports reliable, with webhooks and a catch-up sync, but we cannot guarantee uninterrupted service. Shopify or carrier outages may delay imports. Check the connection status in the app and in Seallo."
+        - heading: "Ending the service"
+          body:
+            - "You can disconnect or uninstall at any time. We may suspend a connection that breaks these terms or puts the platform at risk. Imported orders remain in your workspace, subject to the privacy policy."
+        - heading: "Liability"
+          body:
+            - "The service is provided as is, to the extent allowed by law. We are not liable for indirect losses, such as lost sales, or for delays or failures caused by Shopify, carriers or other third parties."
+        - heading: "Changes"
+          body:
+            - "We may update these terms. The date at the top shows the latest version. Continued use after a change means you accept it."

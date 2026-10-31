@@ -1,0 +1,111 @@
+fr:
+  seallo_connect_pages:
+    nav:
+      label: "Seallo Connect"
+      overview: "Présentation et assistance"
+      privacy: "Politique de confidentialité"
+      terms: "Conditions d'utilisation"
+      language: "Langue"
+      home: "Accueil Seallo"
+      updated: "Dernière mise à jour : %{date}"
+    contact:
+      heading: "Contact"
+      with_email: "Pour toute demande d'assistance, question sur la confidentialité ou demande relative aux données, écrivez à"
+      without_email: "Pour toute demande d'assistance, question sur la confidentialité ou demande relative aux données, contactez l'équipe Seallo depuis votre espace Seallo."
+    overview:
+      title: "Seallo Connect"
+      summary: "Seallo Connect relie votre boutique Shopify à votre espace Seallo afin que votre équipe confirme et expédie les commandes avec paiement à la livraison."
+      sections:
+        - heading: "Ce que fait l'application"
+          body:
+            - "Seallo Connect importe les commandes éligibles avec paiement à la livraison de votre boutique Shopify vers votre espace Seallo. Votre équipe y confirme chaque commande par téléphone, gère le stock et prépare la livraison avec votre transporteur."
+            - "Les commandes arrivent au statut Nouvelle. La confirmation, le stock et l'expédition restent sous le contrôle de votre équipe dans Seallo."
+        - heading: "Comment la connecter"
+          items:
+            - "Installez Seallo Connect depuis le Shopify App Store et acceptez les accès demandés."
+            - "Choisissez une offre sur la page de tarifs de Shopify."
+            - "Dans votre espace Seallo, ouvrez la page de connexion Seallo et générez un code de connexion à usage unique. Seule une personne autorisée dans cet espace peut le faire."
+            - "Collez le code dans l'application, depuis votre administration Shopify, dans les 10 minutes."
+        - heading: "Commandes importées"
+          body:
+            - "Commandes avec paiement à la livraison, non payées et non expédiées, en MAD, livrées au Maroc, sans taxe ni remise. Des webhooks transmettent les nouvelles commandes et une synchronisation de rattrapage récupère celles qui auraient été manquées. Une même commande n'est jamais importée deux fois. Les autres commandes ne sont pas importées et apparaissent dans Seallo comme rejetées, avec le motif."
+        - heading: "Ce que l'application ne fait pas"
+          items:
+            - "Elle ne modifie ni les commandes, ni les produits, ni les clients, ni le stock dans Shopify."
+            - "Elle ne lit ni les adresses e-mail des clients ni les moyens de paiement."
+        - heading: "Offres"
+          body:
+            - "Les offres sont vendues et facturées par Shopify, avec 7 jours d'essai : Basic (30 commandes importées par cycle de facturation), Pro (100) et Premium (illimité). Les prix en vigueur sont affichés sur la page de tarifs de Shopify. Les commandes rejouées ou rejetées ne consomment pas votre quota, et les imports bloqués à la limite reprennent après le passage à une offre supérieure."
+        - heading: "Déconnexion"
+          body:
+            - "Vous pouvez vous déconnecter depuis l'application ou la désinstaller depuis Shopify à tout moment. L'import s'arrête et les identifiants de connexion sont supprimés. Les commandes déjà importées restent dans votre espace."
+    privacy:
+      title: "Politique de confidentialité"
+      summary: "Comment Seallo Connect traite les données de boutique et de commandes pour le compte des marchands."
+      sections:
+        - heading: "Champ d'application"
+          body:
+            - "Seallo Connect est une application Shopify qui relie la boutique Shopify d'un marchand à l'espace Seallo de ce marchand. Le marchand décide du traitement de ses commandes. Seallo traite les données de commandes pour son compte, afin de fournir le service."
+        - heading: "Données auxquelles nous accédons"
+          body:
+            - "Avec l'autorisation read_orders, pour chaque commande éligible avec paiement à la livraison, nous lisons :"
+          items:
+            - "Les coordonnées de l'acheteur figurant sur la commande : nom de livraison, numéro de téléphone et adresse de livraison (rue, ville, pays)."
+            - "Les informations de la commande : numéro, date, devise, montants, articles, quantités, statuts de paiement et d'exécution."
+            - "L'identité de la boutique : son domaine myshopify.com, ainsi que l'état d'installation et d'abonnement de l'application."
+        - heading: "Données auxquelles nous n'accédons pas"
+          body:
+            - "Nous ne lisons ni les adresses e-mail des acheteurs, ni les cartes de paiement, ni les comptes clients, ni les données marketing. L'application ne demande aucune autorisation sur le répertoire clients ou les produits et n'écrit rien dans votre boutique Shopify."
+        - heading: "Utilisation"
+          body:
+            - "Uniquement pour présenter la commande à l'équipe du marchand dans Seallo, lui permettre de la confirmer auprès de l'acheteur, gérer le stock et préparer la livraison avec le transporteur choisi par le marchand. Nous ne vendons pas les données, ne les utilisons pas à des fins publicitaires et ne profilons pas les acheteurs."
+        - heading: "Stockage et accès"
+          body:
+            - "Les commandes importées sont stockées dans l'espace Seallo du marchand et ne sont visibles que des personnes qu'il y a autorisées. Les espaces sont isolés les uns des autres. Les identifiants d'accès Shopify de l'application sont conservés dans une base de données à accès contrôlé, exploitée par notre hébergeur, et supprimés lors de la désinstallation. Toutes les communications utilisent HTTPS, et les requêtes entre Shopify, l'application et Seallo sont signées et vérifiées cryptographiquement."
+        - heading: "Destinataires"
+          body:
+            - "Uniquement le transporteur que le marchand connecte, afin que les colis soient livrés, et les prestataires d'infrastructure nécessaires à l'hébergement du service. Aucun autre destinataire, sauf obligation légale."
+        - heading: "Conservation et suppression"
+          items:
+            - "Tant que l'application est connectée, les commandes sont importées et conservées dans l'espace du marchand comme ses documents commerciaux."
+            - "À la désinstallation ou à la déconnexion, l'import s'arrête et les identifiants de connexion sont supprimés. Les données de session Shopify de la boutique sont effacées. Les commandes déjà importées restent dans l'espace du marchand jusqu'à leur suppression par celui-ci ou l'application d'une demande de confidentialité Shopify."
+            - "Lorsque Shopify envoie une demande de suppression de données d'un client ou d'une boutique, nous effaçons les coordonnées de l'acheteur, les notes et les événements des commandes concernées une fois celles-ci terminées. Les commandes en cours de livraison sont conservées et signalées au marchand pour examen jusqu'à leur clôture, afin de ne pas compromettre les livraisons. Les montants, statuts et identifiants nécessaires à la comptabilité et à la prévention d'un nouvel import sont conservés."
+        - heading: "Demandes de confidentialité des acheteurs"
+          body:
+            - "Les acheteurs doivent s'adresser au marchand auprès duquel ils ont acheté. Lorsque Shopify transmet une demande d'accès aux données d'un client, nous préparons un export des données de commandes importées le concernant, que le marchand examine et fournit. Acheteurs et marchands peuvent aussi nous écrire à l'adresse ci-dessous."
+        - heading: "Sécurité"
+          body:
+            - "Les requêtes de Shopify sont vérifiées avec la signature de Shopify, et les requêtes de serveur à serveur utilisent une clé de signature distincte avec une courte fenêtre de validité contre la falsification et le rejeu. L'accès aux données d'un espace est limité aux membres autorisés de cet espace."
+        - heading: "Modifications"
+          body:
+            - "Nous mettrons à jour cette page et sa date lorsque nos pratiques évolueront."
+    terms:
+      title: "Conditions d'utilisation"
+      summary: "Les conditions d'utilisation de Seallo Connect avec votre boutique Shopify."
+      sections:
+        - heading: "Le service"
+          body:
+            - "Seallo Connect importe les commandes éligibles avec paiement à la livraison de votre boutique Shopify vers votre espace Seallo. En installant ou en utilisant l'application, vous acceptez ces conditions et la politique de confidentialité."
+        - heading: "Votre compte et vos droits"
+          body:
+            - "Vous devez être autorisé à installer des applications sur la boutique Shopify et à la connecter à l'espace Seallo choisi. Une boutique ne peut être liée qu'à un seul espace à la fois. Gardez vos codes de connexion confidentiels : ils sont à usage unique et expirent."
+        - heading: "Abonnement et facturation"
+          body:
+            - "Seallo Connect est proposé via des offres gérées par Shopify, avec une période d'essai. La facturation, les changements d'offre et la résiliation sont gérés par Shopify selon ses conditions. Chaque offre inclut un nombre de commandes importées par cycle de facturation. Une fois atteint, l'import est suspendu jusqu'au cycle suivant ou jusqu'au passage à une offre supérieure. Les commandes déjà importées sont conservées."
+        - heading: "Vos responsabilités"
+          items:
+            - "Utiliser le service de façon licite et uniquement pour les commandes de votre propre boutique."
+            - "Informer vos acheteurs de l'utilisation de leurs données et les traiter de façon licite, y compris pour les appels de confirmation et les livraisons."
+            - "Vérifier les commandes importées. Vous restez responsable de leur confirmation, de leur expédition et de leur exécution."
+        - heading: "Disponibilité"
+          body:
+            - "Nous veillons à la fiabilité des imports, via des webhooks et une synchronisation de rattrapage, mais ne pouvons garantir un service ininterrompu. Des incidents chez Shopify ou les transporteurs peuvent retarder les imports. Consultez l'état de la connexion dans l'application et dans Seallo."
+        - heading: "Fin du service"
+          body:
+            - "Vous pouvez vous déconnecter ou désinstaller à tout moment. Nous pouvons suspendre une connexion qui enfreint ces conditions ou met la plateforme en danger. Les commandes importées restent dans votre espace, sous réserve de la politique de confidentialité."
+        - heading: "Responsabilité"
+          body:
+            - "Le service est fourni en l'état, dans la mesure permise par la loi. Nous ne répondons pas des dommages indirects, tels que les ventes perdues, ni des retards ou défaillances causés par Shopify, les transporteurs ou d'autres tiers."
+        - heading: "Modifications"
+          body:
+            - "Nous pouvons mettre à jour ces conditions. La date en haut de page indique la dernière version. La poursuite de l'utilisation vaut acceptation."

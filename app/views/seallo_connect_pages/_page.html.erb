@@ -1,0 +1,52 @@
+<% page_key = local_assigns.fetch(:page) %>
+<% copy = t("seallo_connect_pages.#{page_key}") %>
+<% content_for :title, "#{copy[:title]} · Seallo Connect" %>
+<% content_for :head do %>
+  <meta name="description" content="<%= copy[:summary] %>">
+  <%= stylesheet_link_tag "seallo_connect_pages", "data-turbo-track": "reload" %>
+<% end %>
+<div class="sc-doc" dir="<%= rtl? ? "rtl" : "ltr" %>">
+  <header class="sc-header">
+    <div class="sc-container sc-header-inner">
+      <a href="<%= seallo_connect_page_path %>" class="sc-brand"><%= image_tag "/brand/seallo-logo.png", alt: Store.platform_name, class: "sc-logo" %><span>Seallo Connect</span></a>
+      <nav class="sc-nav" aria-label="<%= t("seallo_connect_pages.nav.label") %>">
+        <%= link_to t("seallo_connect_pages.nav.overview"), seallo_connect_page_path, "aria-current": (page_key == "overview" ? "page" : nil) %>
+        <%= link_to t("seallo_connect_pages.nav.privacy"), seallo_connect_privacy_path, "aria-current": (page_key == "privacy" ? "page" : nil) %>
+        <%= link_to t("seallo_connect_pages.nav.terms"), seallo_connect_terms_path, "aria-current": (page_key == "terms" ? "page" : nil) %>
+      </nav>
+      <div class="sc-languages" role="group" aria-label="<%= t("seallo_connect_pages.nav.language") %>">
+        <% Morea::Locales::AVAILABLE.each do |locale| %>
+          <%= link_to locale.to_s.upcase, url_for(locale: locale, only_path: true), lang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
+        <% end %>
+      </div>
+    </div>
+  </header>
+  <main class="sc-container sc-main">
+    <h1><%= copy[:title] %></h1>
+    <p class="sc-lead"><%= copy[:summary] %></p>
+    <% if page_key != "overview" %>
+      <p class="sc-updated"><%= t("seallo_connect_pages.nav.updated", date: "2026-10-31") %></p>
+    <% end %>
+    <% copy[:sections].each do |section| %>
+      <section>
+        <h2><%= section[:heading] %></h2>
+        <% Array(section[:body]).each do |paragraph| %><p><%= paragraph %></p><% end %>
+        <% if section[:items].present? %>
+          <ul><% section[:items].each do |item| %><li><%= item %></li><% end %></ul>
+        <% end %>
+      </section>
+    <% end %>
+    <section>
+      <h2><%= t("seallo_connect_pages.contact.heading") %></h2>
+      <% if support_email %>
+        <p><%= t("seallo_connect_pages.contact.with_email") %> <%= mail_to support_email %></p>
+      <% else %>
+        <p><%= t("seallo_connect_pages.contact.without_email") %></p>
+      <% end %>
+    </section>
+  </main>
+  <footer class="sc-container sc-footer">
+    <p>© <%= Date.current.year %> <%= Store.platform_name %></p>
+    <p><%= link_to t("seallo_connect_pages.nav.home"), platform_home_path(locale: I18n.locale) %></p>
+  </footer>
+</div>

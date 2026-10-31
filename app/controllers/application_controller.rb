@@ -85,6 +85,7 @@ class ApplicationController < ActionController::Base
       path == "/up" ||
       path == "/graphql" ||
       path == "/mcp" ||
+      path.start_with?("/platform/oauth/") ||
       path.start_with?("/admin") ||
       path.start_with?("/superadmin") ||
       path.start_with?("/oauth") ||

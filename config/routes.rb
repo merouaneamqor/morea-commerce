@@ -12,6 +12,14 @@ Rails.application.routes.draw do
   post "webhooks/shopify/uninstalled", to: "webhooks/shopify_lifecycle#uninstall", as: :shopify_uninstalled
   post "consent/tracking", to: "consents#tracking", as: :tracking_consent
 
+  get "/.well-known/oauth-protected-resource/platform/mcp", to: "platform_oauth/metadata#protected_resource"
+  get "/.well-known/oauth-authorization-server/platform/oauth", to: "platform_oauth/metadata#authorization_server"
+  get "/platform/oauth/.well-known/oauth-authorization-server", to: "platform_oauth/metadata#authorization_server"
+  get "/platform/oauth/authorize", to: "platform_oauth/authorizations#show", as: :platform_oauth_authorize
+  post "/platform/oauth/authorize", to: "platform_oauth/authorizations#create"
+  post "/platform/oauth/token", to: "platform_oauth/tokens#create", as: :platform_oauth_token
+  match "/platform/oauth/token", to: "platform_oauth/tokens#preflight", via: :options
+
   post "/graphql", to: "graphql#execute"
   match "/platform/mcp", to: "platform_mcp#handle", via: %i[get post delete]
   match "/mcp", to: "mcp#handle", via: %i[get post delete]
@@ -120,6 +128,7 @@ Rails.application.routes.draw do
     resource :platform_agent_api, path: "platform/agent-api", only: :show, controller: "platform_agent_api" do
       post :token, action: :generate_token
       delete :token, action: :revoke_token
+      delete :connections, action: :revoke_connections
     end
     get "platform", to: "platform#show", as: :platform
     resources :platform_users, path: "platform/users", except: %i[show destroy] do

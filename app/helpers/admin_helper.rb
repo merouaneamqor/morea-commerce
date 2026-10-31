@@ -1,5 +1,9 @@
 module AdminHelper
   def admin_language_switch_path(locale)
+    if controller_path == "platform_oauth/authorizations"
+      return platform_oauth_authorize_path(ticket: params[:ticket].presence || @ticket, locale: locale)
+    end
+
     if controller_path == "admin/seallo_connections"
       return "#{admin_seallo_connect_path}?#{ { locale: locale }.to_query}"
     end

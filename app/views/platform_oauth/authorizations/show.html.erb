@@ -1,0 +1,10 @@
+<% content_for :title, "Connect platform agent" %>
+<% content_for :head do %><meta name="turbo-cache-control" content="no-cache"><% end %>
+<div class="admin-page-header"><h1 class="admin-page-header__title">Connect platform agent</h1></div>
+<section class="admin-card"><div class="space-y-4 px-4 py-4">
+  <p><strong><%= @client.client_name %></strong> wants access to platform administration as <strong><%= current_admin_user.name.presence || current_admin_user.email %></strong>.</p>
+  <p>This allows listing all workspaces, staff and subscription invoices, changing staff status, and issuing, voiding or recording payment of subscription invoices.</p>
+  <p>Only connect an agent you trust with platform-wide access. You can revoke its connection from Superadmin MCP settings.</p>
+  <%= button_to "Allow platform access", platform_oauth_authorize_path, method: :post, class: "admin-btn", params: { ticket: @ticket, decision: "allow" }, form: { data: { turbo: false } } %>
+  <%= button_to "Cancel", platform_oauth_authorize_path, method: :post, class: "admin-btn", params: { ticket: @ticket, decision: "deny" }, form: { data: { turbo: false } } %>
+</div></section>

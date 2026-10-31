@@ -46,6 +46,12 @@ Rails.application.routes.draw do
   end
 
   get "/", to: "platform_home#show", as: :platform_home, constraints: ->(request) { Store.apex_host?(request.host) }
+  # Public Seallo Connect pages linked from the Shopify app listing; apex only, never tenant hosts.
+  constraints ->(request) { Store.apex_host?(request.host) } do
+    get "/seallo-connect", to: "seallo_connect_pages#show", as: :seallo_connect_page
+    get "/seallo-connect/privacy", to: "seallo_connect_pages#privacy", as: :seallo_connect_privacy
+    get "/seallo-connect/terms", to: "seallo_connect_pages#terms", as: :seallo_connect_terms
+  end
   get "/signup", to: "signups#new", as: :signup
   post "/signup", to: "signups#create"
   get "/signup/thanks", to: "signups#thanks", as: :signup_thanks

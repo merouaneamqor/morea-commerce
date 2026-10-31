@@ -1,0 +1,35 @@
+/* Public Seallo Connect pages: plain, readable documents that work in light and dark mode. */
+.sc-doc {
+  --sc-bg: #f7f5f2;
+  --sc-fg: #1c1b19;
+  --sc-muted: #5c5a55;
+  --sc-line: #dcd8d0;
+  --sc-link: #0b5cab;
+  min-height: 100vh;
+  background: var(--sc-bg);
+  color: var(--sc-fg);
+  font-family: "DM Sans", "Noto Naskh Arabic", system-ui, sans-serif;
+  line-height: 1.65;
+}
+@media (prefers-color-scheme: dark) {
+  .sc-doc { --sc-bg: #111214; --sc-fg: #ecebe8; --sc-muted: #a7a49d; --sc-line: #2c2d30; --sc-link: #7db7f5; }
+}
+.sc-doc a { color: var(--sc-link); }
+.sc-container { max-width: 46rem; margin: 0 auto; padding: 0 1rem; }
+.sc-header { border-bottom: 1px solid var(--sc-line); }
+.sc-header-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.5rem; padding-top: 1rem; padding-bottom: 1rem; max-width: 60rem; }
+.sc-brand { display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 600; text-decoration: none; color: var(--sc-fg) !important; }
+.sc-logo { height: 1.75rem; width: auto; }
+.sc-nav { display: flex; flex-wrap: wrap; gap: 1rem; flex: 1; }
+.sc-nav a[aria-current="page"] { color: var(--sc-fg); font-weight: 600; text-decoration: none; }
+.sc-languages { display: flex; gap: 0.6rem; font-size: 0.85rem; }
+.sc-languages a[aria-current="true"] { color: var(--sc-fg); font-weight: 600; text-decoration: none; }
+.sc-main { padding-top: 2.5rem; padding-bottom: 3rem; }
+.sc-main h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 0.75rem; }
+.sc-main h2 { font-size: 1.2rem; margin: 2rem 0 0.5rem; }
+.sc-lead { font-size: 1.1rem; color: var(--sc-muted); margin: 0 0 0.5rem; }
+.sc-updated { font-size: 0.85rem; color: var(--sc-muted); }
+.sc-main p { margin: 0.5rem 0; }
+.sc-main ul { margin: 0.5rem 0; padding-inline-start: 1.25rem; }
+.sc-main li { margin: 0.3rem 0; }
+.sc-footer { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid var(--sc-line); padding-top: 1rem; padding-bottom: 2rem; font-size: 0.85rem; color: var(--sc-muted); }

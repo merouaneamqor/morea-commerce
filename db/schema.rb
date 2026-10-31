@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_120005) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_31_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -605,6 +605,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_120005) do
     t.index ["product_id"], name: "index_product_variants_on_product_id"
   end
 
+  create_table "platform_api_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "token_digest", null: false
+    t.string "last_four", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token_digest"], name: "index_platform_api_tokens_on_token_digest", unique: true
+    t.index ["user_id"], name: "index_platform_api_tokens_on_user_id"
+    t.index ["user_id"], name: "index_platform_api_tokens_one_live_per_user", unique: true, where: "(revoked_at IS NULL)"
+  end
+
   create_table "products", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.string "name", null: false
@@ -880,6 +893,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_120005) do
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying::text, 'suspended'::character varying::text, 'archived'::character varying::text])", name: "users_status_check"
   end
 
+  add_foreign_key "platform_api_tokens", "users", on_delete: :cascade
   add_foreign_key "access_requests", "stores", on_delete: :nullify
   add_foreign_key "access_requests", "users", column: "reviewed_by_id", on_delete: :nullify
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

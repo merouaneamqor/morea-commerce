@@ -1,0 +1,36 @@
+<% content_for :title, "Superadmin MCP" %>
+<% content_for :head do %><meta name="turbo-cache-control" content="no-cache"><% end %>
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title">Superadmin MCP</h1>
+</div>
+<div class="admin-stack">
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Platform credentials</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <p class="admin-help">Connect an agent to platform administration at <code><%= @mcp_url %></code>. This credential grants platform-wide access as your superadmin account. Store tokens cannot access this endpoint.</p>
+      <% if @grant %>
+        <p class="admin-help">Your token ends in <code><%= @grant.last_four %></code> and expires <%= @grant.expires_at.to_date.iso8601 %>.</p>
+      <% else %>
+        <p class="admin-help">You have no active platform token.</p>
+      <% end %>
+      <% if @token.present? %>
+        <p class="admin-help">Copy this token now; it is shown only in this response.</p>
+        <pre class="admin-input overflow-x-auto whitespace-pre-wrap text-sm" data-turbo-temporary><%= @token %></pre>
+      <% end %>
+      <div class="flex flex-wrap gap-2">
+        <%= button_to "Generate new platform token", token_admin_platform_agent_api_path, method: :post, class: "admin-btn", form: { data: { turbo: false } } %>
+        <% if @grant %>
+          <%= button_to "Revoke platform token", token_admin_platform_agent_api_path, method: :delete, class: "admin-btn", form: { data: { turbo: false } } %>
+        <% end %>
+      </div>
+      <p class="admin-help">Generating a token replaces your previous token. Tokens expire after 90 days. Suspended, archived or demoted accounts cannot use platform tokens.</p>
+    </div>
+  </section>
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Connect an MCP client</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <p class="admin-help">Use a client that supports a bearer Authorization header. Platform OAuth is not available.</p>
+      <pre class="admin-input overflow-x-auto whitespace-pre-wrap text-sm"><%= JSON.pretty_generate(mcpServers: { morea_platform: { url: @mcp_url, headers: { Authorization: "Bearer <platform_api_token>" } } }) %></pre>
+    </div>
+  </section>
+</div>

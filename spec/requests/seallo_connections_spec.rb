@@ -19,7 +19,7 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
     allow(ENV).to receive(:[]).with("SEALLO_BRIDGE_SECRET").and_return(secret)
     allow(Connections::SealloBridge).to receive(:entitlement).and_return(
       "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601,
-      "plan_name" => "Seallo Basic", "order_limit" => 30
+      "plan_name" => "Seallo Basic", "order_limit" => 19
     )
     host! Store.base_domain
   end

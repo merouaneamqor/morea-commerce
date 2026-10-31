@@ -36,26 +36,26 @@ fr:
             - "Elle ne lit ni les adresses e-mail des clients ni les moyens de paiement."
         - heading: "Offres"
           body:
-            - "Les offres sont vendues et facturées par Shopify, avec 7 jours d'essai : Basic (30 commandes importées par cycle de facturation), Pro (100) et Premium (illimité). Les prix en vigueur sont affichés sur la page de tarifs de Shopify. Les commandes rejouées ou rejetées ne consomment pas votre quota, et les imports bloqués à la limite reprennent après le passage à une offre supérieure."
+            - "Les offres sont gérées par Shopify : Basic est gratuit pour moins de 20 commandes importées par cycle de facturation, Pro coûte 9 $ par mois pour 20 à 99 commandes et Premium coûte 27 $ par mois à partir de 100 commandes, avec des imports illimités. Les prix en vigueur sont affichés sur la page de tarifs de Shopify. Les commandes rejouées ou rejetées ne consomment pas votre quota, et les imports bloqués à la limite reprennent après le passage à une offre supérieure."
         - heading: "Déconnexion"
           body:
             - "Vous pouvez vous déconnecter depuis l'application ou la désinstaller depuis Shopify à tout moment. L'import s'arrête et les identifiants de connexion sont supprimés. Les commandes déjà importées restent dans votre espace."
     pricing:
       title: "Tarifs"
-      summary: "Des offres mensuelles simples, facturées via Shopify, avec 7 jours d'essai gratuit."
+      summary: "Une offre gratuite et des offres mensuelles payantes simples, gérées via Shopify."
       sections:
-        - heading: "Seallo Basic : 9 $ par mois"
+        - heading: "Seallo Basic : Gratuit"
           body:
-            - "Jusqu'à 30 commandes importées par cycle de facturation."
-        - heading: "Seallo Pro : 25 $ par mois"
+            - "Moins de 20 commandes importées par cycle de facturation (jusqu'à 19)."
+        - heading: "Seallo Pro : 9 $ par mois"
           body:
-            - "Jusqu'à 100 commandes importées par cycle de facturation."
-        - heading: "Seallo Premium : 50 $ par mois"
+            - "Pour 20 à 99 commandes importées par cycle de facturation (jusqu'à 99)."
+        - heading: "Seallo Premium : 27 $ par mois"
           body:
-            - "Commandes importées illimitées."
+            - "À partir de 100 commandes importées par cycle de facturation. Imports illimités."
         - heading: "Inclus dans chaque offre"
           items:
-            - "7 jours d'essai gratuit."
+            - "7 jours d'essai gratuit pour les offres payantes."
             - "Import automatique des commandes éligibles avec paiement à la livraison, et synchronisation de rattrapage pour celles qui auraient été manquées."
             - "Outils de confirmation, de stock et de livraison dans votre espace Seallo connecté, sans second achat nécessaire pour cette connexion."
             - "Accès en lecture seule à vos commandes Shopify."
@@ -117,7 +117,7 @@ fr:
             - "Vous devez être autorisé à installer des applications sur la boutique Shopify et à la connecter à l'espace Seallo choisi. Une boutique ne peut être liée qu'à un seul espace à la fois. Gardez vos codes de connexion confidentiels : ils sont à usage unique et expirent."
         - heading: "Abonnement et facturation"
           body:
-            - "Seallo Connect est proposé via des offres gérées par Shopify, avec une période d'essai. La facturation, les changements d'offre et la résiliation sont gérés par Shopify selon ses conditions. Chaque offre inclut un nombre de commandes importées par cycle de facturation. Une fois atteint, l'import est suspendu jusqu'au cycle suivant ou jusqu'au passage à une offre supérieure. Les commandes déjà importées sont conservées."
+            - "Seallo Connect est proposé via des offres gratuites et payantes gérées par Shopify, avec une période d'essai pour les offres payantes. La facturation, les changements d'offre et la résiliation sont gérés par Shopify selon ses conditions. Chaque offre inclut un nombre de commandes importées par cycle de facturation. Une fois atteint, l'import est suspendu jusqu'au cycle suivant ou jusqu'au passage à une offre supérieure. Les commandes déjà importées sont conservées."
         - heading: "Vos responsabilités"
           items:
             - "Utiliser le service de façon licite et uniquement pour les commandes de votre propre boutique."

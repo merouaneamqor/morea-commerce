@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   post "consent/tracking", to: "consents#tracking", as: :tracking_consent
 
   post "/graphql", to: "graphql#execute"
+  match "/platform/mcp", to: "platform_mcp#handle", via: %i[get post delete]
   match "/mcp", to: "mcp#handle", via: %i[get post delete]
   get "/sitemap.xml", to: "sitemaps#show", as: :sitemap, defaults: { format: :xml }
 
@@ -116,6 +117,10 @@ Rails.application.routes.draw do
 
     root to: "dashboard#show"
     resource :subscription, only: :show
+    resource :platform_agent_api, path: "platform/agent-api", only: :show, controller: "platform_agent_api" do
+      post :token, action: :generate_token
+      delete :token, action: :revoke_token
+    end
     get "platform", to: "platform#show", as: :platform
     resources :platform_users, path: "platform/users", except: %i[show destroy] do
       member { post "lifecycle/:lifecycle", action: :lifecycle, as: :lifecycle, constraints: { lifecycle: /suspend|reactivate|archive|restore/ } }

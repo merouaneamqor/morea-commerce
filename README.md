@@ -113,3 +113,5 @@ Every store continues to serve its own localized catalog, cart and COD checkout.
 Feature contracts and test commands: [order intake](docs/features/order-intake.md) and [confirmation queue](docs/features/confirmation-queue.md). Provider webhooks, new carrier adapters, WhatsApp sending, automatic assignment and financial reports remain later phases.
 
 The additive migrations create import identities and confirmation/attempt history. No existing order or storefront data is backfilled or rewritten. A code rollback can leave these tables intact; rolling down their migrations deletes the new operational history and must be planned separately.
+
+Platform administrators can connect a separate authenticated [superadmin MCP](docs/features/superadmin-mcp.md) for tenant, staff lifecycle and subscription invoice operations.

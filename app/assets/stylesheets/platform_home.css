@@ -701,3 +701,26 @@
     transform: none;
   }
 }
+
+/* Public app directory: full-width row on desktop and in the mobile footer grid. */
+.platform-footer { flex-wrap: wrap; }
+.platform-footer-connect {
+  flex-basis: 100%;
+  grid-column: 1 / -1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 24px;
+  padding-block-start: 20px;
+  border-top: 1px solid #2b3557;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.platform-footer-connect-title { flex-basis: 100%; font-weight: 600; color: #e2eaff; }
+.platform-footer-connect a { display: inline-flex; align-items: center; min-height: 44px; color: #aab7d8; }
+.platform-footer-connect a:hover { color: white; }
+.platform-footer-connect a:focus-visible { outline: 2px solid #aab7d8; outline-offset: 4px; }
+@media (max-width: 480px) {
+  .platform-footer-connect { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}

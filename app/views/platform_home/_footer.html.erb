@@ -3,4 +3,11 @@
   <p>© <%= Date.current.year %> <%= Store.platform_name %>. <%= t("platform_home.refresh.footer") %></p>
   <%= link_to t("platform_home.footer.admin"), admin_login_path(locale: nil), class: "platform-admin-link" %>
   <div class="platform-languages" role="group" aria-label="<%= t("platform_home.language") %>"><% Morea::Locales::AVAILABLE.each do |locale| %><%= link_to locale.to_s.upcase, platform_home_path(locale: locale), lang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %><% end %></div>
+  <nav class="platform-footer-connect" aria-label="<%= t("seallo_connect_pages.nav.label") %>">
+    <span class="platform-footer-connect-title"><%= t("seallo_connect_pages.nav.label") %></span>
+    <%= link_to t("seallo_connect_pages.nav.overview"), seallo_connect_page_path(locale: I18n.locale) %>
+    <%= link_to t("seallo_connect_pages.nav.pricing"), seallo_connect_pricing_path(locale: I18n.locale) %>
+    <%= link_to t("seallo_connect_pages.nav.privacy"), seallo_connect_privacy_path(locale: I18n.locale) %>
+    <%= link_to t("seallo_connect_pages.nav.terms"), seallo_connect_terms_path(locale: I18n.locale) %>
+  </nav>
 </footer>

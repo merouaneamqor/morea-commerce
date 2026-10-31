@@ -36,6 +36,15 @@ RSpec.describe "Seallo Connect public pages", type: :request do
     expect(response.body).to include("customer redaction or shop redaction")
   end
 
+  it "publishes the processor terms and the retention period" do
+    get "/seallo-connect/terms", params: { locale: "en" }
+    expect(response.body).to include("you are the controller and Seallo is the processor")
+    expect(response.body).to include("personal data breach")
+
+    get "/seallo-connect/privacy", params: { locale: "en" }
+    expect(response.body).to include("180 days after the order is completed")
+  end
+
   it "shows a configured support address as a mail link" do
     ENV["SEALLO_SUPPORT_EMAIL"] = "support@synthetic.test"
 

@@ -69,6 +69,7 @@ fr:
           items:
             - "Tant que l'application est connectée, les commandes sont importées et conservées dans l'espace du marchand comme ses documents commerciaux."
             - "À la désinstallation ou à la déconnexion, l'import s'arrête et les identifiants de connexion sont supprimés. Les données de session Shopify de la boutique sont effacées. Les commandes déjà importées restent dans l'espace du marchand jusqu'à leur suppression par celui-ci ou l'application d'une demande de confidentialité Shopify."
+            - "Même sans demande, les coordonnées de l'acheteur, les notes et les événements des commandes importées sont effacés 180 jours après la clôture de la commande (livrée, annulée ou retournée). Les montants, statuts et identifiants nécessaires à la comptabilité et à la prévention d'un nouvel import sont conservés."
             - "Lorsque Shopify envoie une demande de suppression de données d'un client ou d'une boutique, nous effaçons les coordonnées de l'acheteur, les notes et les événements des commandes concernées une fois celles-ci terminées. Les commandes en cours de livraison sont conservées et signalées au marchand pour examen jusqu'à leur clôture, afin de ne pas compromettre les livraisons. Les montants, statuts et identifiants nécessaires à la comptabilité et à la prévention d'un nouvel import sont conservés."
         - heading: "Demandes de confidentialité des acheteurs"
           body:
@@ -97,6 +98,9 @@ fr:
             - "Utiliser le service de façon licite et uniquement pour les commandes de votre propre boutique."
             - "Informer vos acheteurs de l'utilisation de leurs données et les traiter de façon licite, y compris pour les appels de confirmation et les livraisons."
             - "Vérifier les commandes importées. Vous restez responsable de leur confirmation, de leur expédition et de leur exécution."
+        - heading: "Traitement des données"
+          body:
+            - "Pour les données personnelles de vos acheteurs que Seallo Connect traite, telles que décrites dans la politique de confidentialité, vous êtes le responsable du traitement et Seallo est le sous-traitant. Seallo ne les traite que sur vos instructions documentées, à savoir ces conditions et votre utilisation du service. Seallo les maintient confidentielles et sécurisées ; ne recourt qu'aux prestataires d'infrastructure nécessaires au fonctionnement du service, soumis à des obligations équivalentes ; vous aide à répondre aux demandes des acheteurs ; les supprime à la fin du service comme indiqué dans la politique de confidentialité ; et vous informe dans les meilleurs délais après avoir eu connaissance d'une violation de données personnelles les concernant. Vous pouvez nous demander les informations nécessaires pour démontrer le respect de ces obligations."
         - heading: "Disponibilité"
           body:
             - "Nous veillons à la fiabilité des imports, via des webhooks et une synchronisation de rattrapage, mais ne pouvons garantir un service ininterrompu. Des incidents chez Shopify ou les transporteurs peuvent retarder les imports. Consultez l'état de la connexion dans l'application et dans Seallo."

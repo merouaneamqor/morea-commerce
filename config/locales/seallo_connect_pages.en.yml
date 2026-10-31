@@ -69,6 +69,7 @@ en:
           items:
             - "While the app is connected, orders are imported and kept in the merchant's workspace as its business records."
             - "When the app is uninstalled or disconnected, importing stops and connection credentials are removed. Shopify session data for the shop is deleted. Orders already imported stay in the merchant's workspace until the merchant deletes them or a Shopify privacy request applies."
+            - "Even without a request, buyer contact details, notes and events on imported orders are redacted 180 days after the order is completed (delivered, cancelled or returned). Amounts, statuses and identifiers needed for accounting and to prevent re-importing are kept."
             - "When Shopify sends a customer redaction or shop redaction request, we redact buyer contact details, notes and events on the affected orders once they are completed. Orders still being delivered are held, and flagged for the merchant to review, until they are completed, so that deliveries are not broken. Amounts, statuses and identifiers needed for accounting and to prevent re-importing are kept."
         - heading: "Privacy requests from buyers"
           body:
@@ -97,6 +98,9 @@ en:
             - "Use the service lawfully and only for your own store's orders."
             - "Inform your buyers how their data is used, and handle their data lawfully, including confirmation calls and deliveries."
             - "Review imported orders. You remain responsible for confirming, shipping and fulfilling them."
+        - heading: "Data processing"
+          body:
+            - "For the personal data of your buyers that Seallo Connect processes, as described in the privacy policy, you are the controller and Seallo is the processor. Seallo processes it only on your documented instructions, which are these terms and your use of the service. Seallo keeps it confidential and secure; uses only the infrastructure providers needed to run the service, under equivalent obligations; helps you respond to buyers' requests; deletes it when the service ends as described in the privacy policy; and tells you without undue delay after becoming aware of a personal data breach affecting it. You can ask us for the information needed to show that these obligations are met."
         - heading: "Availability"
           body:
             - "We work to keep imports reliable, with webhooks and a catch-up sync, but we cannot guarantee uninterrupted service. Shopify or carrier outages may delay imports. Check the connection status in the app and in Seallo."

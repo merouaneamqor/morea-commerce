@@ -5,6 +5,10 @@ module PlatformOauth
     layout "admin_platform"
     before_action :prevent_caching
 
+    def default_url_options
+      {}
+    end
+
     def show
       @ticket = params[:ticket]
       @query = @ticket.present? ? Oauth::Tickets.read(@ticket) : initial_query
@@ -65,6 +69,11 @@ module PlatformOauth
     end
 
     def authorize_actor
+      session_user = User.active.find_by(id: session[:user_id]) if session[:user_id]
+      if session_user && session[:session_version].to_i == session_user.session_version && !session_user.super_admin?
+        render :forbidden, status: :forbidden
+        return false
+      end
       unless current_admin_user
         session[:return_to] = platform_oauth_authorize_path(ticket: @ticket)
         redirect_to admin_login_path

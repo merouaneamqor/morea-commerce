@@ -146,7 +146,7 @@ RSpec.describe "Platform OAuth", type: :request do
       sign_in
       ticket = consent_ticket
       expect(response.headers["Referrer-Policy"]).to eq("same-origin")
-      token = Nokogiri::HTML(response.body).at_css('input[name="authenticity_token"]')["value"]
+      token = Nokogiri::HTML(response.body).at_css('form[action="/platform/oauth/authorize"] input[name="authenticity_token"]')["value"]
       post "/platform/oauth/authorize", params: { ticket: ticket, decision: "allow", authenticity_token: token },
         headers: { "Origin" => "http://#{Store.base_domain}" }
       expect(response).to have_http_status(:see_other)
@@ -156,7 +156,7 @@ RSpec.describe "Platform OAuth", type: :request do
     it "still rejects cross-origin consent and missing CSRF tokens" do
       sign_in
       ticket = consent_ticket
-      token = Nokogiri::HTML(response.body).at_css('input[name="authenticity_token"]')["value"]
+      token = Nokogiri::HTML(response.body).at_css('form[action="/platform/oauth/authorize"] input[name="authenticity_token"]')["value"]
       expect do
         post "/platform/oauth/authorize", params: { ticket: ticket, decision: "allow", authenticity_token: token },
           headers: { "Origin" => "https://untrusted.example.test" }
@@ -169,5 +169,4 @@ RSpec.describe "Platform OAuth", type: :request do
       expect(response).to have_http_status(:unprocessable_entity)
     end
   end
-
 end

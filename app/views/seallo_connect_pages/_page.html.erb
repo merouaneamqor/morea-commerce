@@ -11,6 +11,7 @@
       <a href="<%= seallo_connect_page_path %>" class="sc-brand"><%= image_tag "/brand/seallo-logo.png", alt: Store.platform_name, class: "sc-logo" %><span>Seallo Connect</span></a>
       <nav class="sc-nav" aria-label="<%= t("seallo_connect_pages.nav.label") %>">
         <%= link_to t("seallo_connect_pages.nav.overview"), seallo_connect_page_path, "aria-current": (page_key == "overview" ? "page" : nil) %>
+        <%= link_to t("seallo_connect_pages.nav.pricing"), seallo_connect_pricing_path, "aria-current": (page_key == "pricing" ? "page" : nil) %>
         <%= link_to t("seallo_connect_pages.nav.privacy"), seallo_connect_privacy_path, "aria-current": (page_key == "privacy" ? "page" : nil) %>
         <%= link_to t("seallo_connect_pages.nav.terms"), seallo_connect_terms_path, "aria-current": (page_key == "terms" ? "page" : nil) %>
       </nav>

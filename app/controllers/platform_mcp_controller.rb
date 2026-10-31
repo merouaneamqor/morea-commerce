@@ -27,13 +27,16 @@ class PlatformMcpController < ActionController::API
 
   def authenticate_platform_token!
     scheme, secret = request.authorization.to_s.split(" ", 2)
-    grant = PlatformApiToken.authenticate(secret) if scheme.to_s.casecmp("Bearer").zero?
+    if scheme.to_s.casecmp("Bearer").zero?
+      grant = PlatformApiToken.authenticate(secret) || PlatformOauthToken.authenticate(secret)
+      grant = nil if grant.is_a?(PlatformOauthToken) && grant.resource != "#{request.base_url}/platform/mcp"
+    end
     if grant
       @platform_user = grant.user
       return
     end
 
-    response.set_header("WWW-Authenticate", 'Bearer realm="morea-platform"')
+    response.set_header("WWW-Authenticate", %(Bearer realm="morea-platform", resource_metadata="#{request.base_url}/.well-known/oauth-protected-resource/platform/mcp"))
     response.set_header("Cache-Control", "no-store")
     render json: { error: "Unauthorized" }, status: :unauthorized
   end

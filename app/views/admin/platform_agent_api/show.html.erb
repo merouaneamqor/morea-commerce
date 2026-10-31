@@ -5,7 +5,15 @@
 </div>
 <div class="admin-stack">
   <section class="admin-card">
-    <div class="admin-card__header"><h2 class="admin-card__title">Platform credentials</h2></div>
+    <div class="admin-card__header"><h2 class="admin-card__title">Connect with OAuth</h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <p class="admin-help">In your MCP client, add <code><%= @mcp_url %></code> and choose OAuth authentication. Sign in with your superadmin account, then review and approve platform access. No store selection or copied token is needed.</p>
+      <p class="admin-help">This connection can read all workspaces, manage staff status and update subscription invoices. Only approve clients you trust.</p>
+      <%= button_to "Revoke agent connections", connections_admin_platform_agent_api_path, method: :delete, class: "admin-btn", form: { data: { turbo: false } } %>
+    </div>
+  </section>
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title">Manual token (advanced)</h2></div>
     <div class="space-y-4 px-4 pb-4">
       <p class="admin-help">Connect an agent to platform administration at <code><%= @mcp_url %></code>. This credential grants platform-wide access as your superadmin account. Store tokens cannot access this endpoint.</p>
       <% if @grant %>
@@ -24,13 +32,6 @@
         <% end %>
       </div>
       <p class="admin-help">Generating a token replaces your previous token. Tokens expire after 90 days. Suspended, archived or demoted accounts cannot use platform tokens.</p>
-    </div>
-  </section>
-  <section class="admin-card">
-    <div class="admin-card__header"><h2 class="admin-card__title">Connect an MCP client</h2></div>
-    <div class="space-y-4 px-4 pb-4">
-      <p class="admin-help">Use a client that supports a bearer Authorization header. Platform OAuth is not available.</p>
-      <pre class="admin-input overflow-x-auto whitespace-pre-wrap text-sm"><%= JSON.pretty_generate(mcpServers: { morea_platform: { url: @mcp_url, headers: { Authorization: "Bearer <platform_api_token>" } } }) %></pre>
     </div>
   </section>
 </div>

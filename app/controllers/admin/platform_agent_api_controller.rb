@@ -23,6 +23,14 @@ module Admin
       redirect_to admin_platform_agent_api_path, notice: "Platform token revoked.", status: :see_other
     end
 
+    def revoke_connections
+      current_user.with_lock do
+        PlatformOauthToken.where(user: current_user, revoked_at: nil).update_all(revoked_at: Time.current)
+        PlatformOauthCode.where(user: current_user).delete_all
+      end
+      redirect_to admin_platform_agent_api_path, notice: "Agent connections revoked.", status: :see_other
+    end
+
     private
 
     def prepare_page

@@ -110,13 +110,7 @@ class ShopifyPrivacyRequest < ApplicationRecord
   end
 
   def redact_order!(order)
-    # Preserve financial amounts, inventory, provider identity and shipping state.
-    # Free text may contain copied contact details, so erase it with snapshots.
-    order.update_columns(customer_name: "Redacted", customer_phone: "redacted-#{order.id}", customer_city: "Redacted",
-      customer_address: "Redacted", customer_district: nil, notes: nil, cancel_reason: nil,
-      sendit_district_name: nil, sendit_message: nil, sendit_error: nil, tags: nil, updated_at: Time.current)
-    order.order_events.update_all(body: "[Redacted]")
-    order.order_confirmation&.confirmation_attempts&.update_all(notes: nil)
+    Connections::OrderRedaction.call(order)
   end
 
   def encryptor

@@ -17,7 +17,7 @@ RSpec.describe Connections::SealloConnect do
     allow(Connections::SealloBridge).to receive(:graphql).and_return(verification)
     allow(Connections::SealloBridge).to receive(:entitlement).and_return(
       "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601,
-      "plan_name" => "Seallo Basic", "order_limit" => 30
+      "plan_name" => "Seallo Basic", "order_limit" => 19
     )
   end
 
@@ -149,7 +149,7 @@ RSpec.describe "Concurrent Seallo workspace linking" do
     )
     allow(Connections::SealloBridge).to receive(:entitlement).and_return(
       "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601,
-      "plan_name" => "Seallo Basic", "order_limit" => 30
+      "plan_name" => "Seallo Basic", "order_limit" => 19
     )
   end
 

@@ -16,13 +16,15 @@ Use Shopify App Pricing's hosted plans, not legacy Billing API charge creation:
 
 | Plan | Monthly USD | Imported orders per billing cycle | Trial |
 | --- | ---: | ---: | --- |
-| Seallo Basic | 9 | 30 | 7 days |
-| Seallo Pro | 25 | 100 | 7 days |
-| Seallo Premium | 50 | Unlimited | 7 days |
+| Seallo Basic | Free | 0–19 | No trial needed |
+| Seallo Pro | 9 | 20–99 (99 total) | 7 days |
+| Seallo Premium | 27 | 100+ (unlimited) | 7 days |
 
 The app verifies canonical subscription state with the Partner API and recognizes configured pricing item handles `seallo-basic`, `seallo-pro`, `seallo-premium`. It does not grant access for an unknown plan. Prices, terms, handles and hosted welcome links must be configured in Shopify before activation. Partner account ID is distinct from the Dev Dashboard organization ID; do not substitute one for the other.
 
-Morea caches a verified entitlement for at most 15 minutes and never beyond the current Shopify billing/trial end. Its existing ten-minute Shopify job renews that entitlement before sync, including for a subscription-gated workspace. A verified paid Shopify subscription grants operational access without altering manual invoice status or existing paid periods. Disconnect/uninstall removes this source of access. Cancellation can take up to the remaining cache lifetime to stop new webhook imports; authenticated app reads verify current subscription state. Privacy handling remains available without a subscription.
+Roll out these limits together with the paired app and Shopify hosted plans: Basic must return an active verified free-plan entitlement with a monthly period and limit 19; Pro must return limit 99; Premium remains unlimited. Existing cached allowances may remain valid for up to 15 minutes. This repository does not configure Shopify prices or the paired app. Upgrades remain merchant-selected; there are no automatic tier charges.
+
+Morea caches a verified entitlement for at most 15 minutes and never beyond the current Shopify billing/trial end. Its existing ten-minute Shopify job renews that entitlement before sync, including for a subscription-gated workspace. A verified active Shopify plan grants operational access without altering manual invoice status or existing paid periods. Disconnect/uninstall removes this source of access. Cancellation can take up to the remaining cache lifetime to stop new webhook imports; authenticated app reads verify current subscription state. Privacy handling remains available without a subscription.
 
 Allowances count accepted receipts by import time in Shopify's current billing cycle. They do not count duplicate deliveries, rejections or local/manual orders. The connection lock serializes quota checks with intake. At the limit, intake returns `order_limit_reached`; it creates no order, stock movement or accepted receipt. Polling stops and retains its window/cursor, so a later upgrade or new cycle can recover pending orders instead of advancing past them. A trial with no billing cycle uses the configured seven-day window ending at Shopify's canonical trial end. Trial extensions need additional verification before use.
 

@@ -33,8 +33,9 @@ docker compose up --build
   - Platform: https://ollazen.com/admin
   - Store example: https://morea.ollazen.com
   - New tenants: `https://{slug}.ollazen.com` (DNS wildcard already set)
-- Super admin: `admin@morea.website` / `morea123` → **/admin/platform**
-- Platform-only: `super@morea.website` / `morea123`
+- Super admin: `admin@morea.website` → **/admin/platform**
+- Platform-only: `super@morea.website`
+- Seeded accounts have no published password. Locally (`db:seed`) they use `morea-local-password-123`, or the value of `SEED_ADMIN_PASSWORD` (12+ characters). In production set `SEED_ADMIN_PASSWORD` before the first seed, or sign in through the password-reset email.
 
 ```bash
 docker compose exec web bin/rails db:migrate db:seed

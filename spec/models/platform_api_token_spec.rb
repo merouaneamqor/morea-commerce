@@ -27,11 +27,11 @@ RSpec.describe PlatformApiToken, type: :model do
     expect(described_class.authenticate(old_secret)).to be_nil
     grant = described_class.authenticate(secret)
     # Keep subsecond precision: travel_to otherwise rounds down before expiry.
-    travel_to(grant.expires_at - 1.microsecond, with_usec: true) do
+    travel_to(grant.expires_at - Rational(1, 1_000_000), with_usec: true) do
       expect(described_class.authenticate(secret)).to eq(grant)
     end
     travel_to(grant.expires_at, with_usec: true) { expect(described_class.authenticate(secret)).to be_nil }
-    travel_to(grant.expires_at + 1.microsecond, with_usec: true) { expect(described_class.authenticate(secret)).to be_nil }
+    travel_to(grant.expires_at + Rational(1, 1_000_000), with_usec: true) { expect(described_class.authenticate(secret)).to be_nil }
     grant.update!(revoked_at: Time.current)
     expect(described_class.authenticate(secret)).to be_nil
   end

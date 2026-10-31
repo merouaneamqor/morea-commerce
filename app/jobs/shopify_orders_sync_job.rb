@@ -10,12 +10,37 @@ class ShopifyOrdersSyncJob < ApplicationJob
     scope = StoreConnection.where(provider: "shopify", active: true, shopify_oauth: true)
     scope = scope.where(id: connection_id) if connection_id
     scope.find_each do |connection|
-      result = Connections::ShopifyOrderSync.new(connection).call
-      Rails.logger.info("[ShopifyOrdersSyncJob] connection=#{connection.id} imported=#{result.imported} rejected=#{result.rejected} replayed=#{result.replayed} complete=#{result.complete}")
-    rescue Connections::ShopifyApi::Error => error
-      Rails.logger.warn("[ShopifyOrdersSyncJob] connection=#{connection.id} error=#{error.code}")
-    rescue Connections::WebhookIntake::Error => error
-      Rails.logger.warn("[ShopifyOrdersSyncJob] connection=#{connection.id} intake=#{error.message}")
+      if connection.shopify_app == "seallo_connect"
+        begin
+          unless Connections::SealloEntitlement.refresh!(connection)
+            connection.update!(shopify_sync_state: "failed", shopify_sync_error: "subscription_required")
+            next
+          end
+        rescue Connections::SealloBridge::Error => error
+          connection.update!(shopify_sync_state: "failed", shopify_sync_error: error.message)
+          next
+        end
+      end
+      next unless connection.store.operational_access?
+
+      # Commit the start marker before the long-running import transaction so
+      # status reads can show progress while the connection lock is held.
+      connection.update!(shopify_sync_state: "running", shopify_sync_started_at: Time.current, shopify_sync_error: nil)
+      # Serialize overlapping manual/scheduled jobs and cursor updates. Imports
+      # already serialize on this same connection and retain receipt identities.
+      connection.with_lock do
+        next unless connection.active? && connection.store.operational_access?
+
+        begin
+          result = Connections::ShopifyOrderSync.new(connection).call
+          connection.update!(shopify_sync_state: result.complete ? "complete" : "catching_up", shopify_sync_finished_at: Time.current,
+            shopify_sync_counts: { imported: result.imported, rejected: result.rejected, replayed: result.replayed })
+        rescue Connections::ShopifyApi::Error => error
+          connection.update!(shopify_sync_state: "failed", shopify_sync_error: error.code, shopify_sync_finished_at: Time.current)
+        rescue Connections::WebhookIntake::Error => error
+          connection.update!(shopify_sync_state: "failed", shopify_sync_error: error.message, shopify_sync_finished_at: Time.current)
+        end
+      end
     end
   end
 end

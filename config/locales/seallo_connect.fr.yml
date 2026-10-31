@@ -1,0 +1,41 @@
+fr:
+  seallo_connect:
+    title: Seallo Connect
+    instructions: Générez un code, puis collez-le dans Seallo Connect depuis votre administration Shopify. Le code expire après 10 minutes et relie la boutique à cet espace de travail. Gardez-le confidentiel.
+    generate_code: Générer un code de connexion
+    import_help: Les commandes marocaines éligibles, en MAD et payables à la livraison, arrivent comme nouvelles commandes. La confirmation, le stock et l’expédition suivent les règles existantes de votre espace de travail.
+    connection_states:
+      configured: En attente de vérification
+      verified: Connectée
+      disconnected: Déconnectée
+    sync_states:
+      waiting: En attente de synchronisation
+      queued: Synchronisation en file d’attente
+      running: Synchronisation en cours
+      complete: Synchronisation terminée
+      catching_up: Rattrapage en cours
+      failed: Échec de la synchronisation
+    privacy:
+      link: Demandes de confidentialité
+      title: Demandes de confidentialité Shopify
+      instructions: Traitez les demandes sous 30 jours. Les exports de données clients doivent être transmis de manière sécurisée au marchand demandeur. Toute conservation de données nécessite une décision juridique documentée.
+      empty: Aucune demande de confidentialité.
+      request: "Demande n° %{id}"
+      request_title: "Demande de confidentialité n° %{id}"
+      due: "Échéance : %{date}"
+      secure_response: Téléchargez l’export et transmettez-le de manière sécurisée au marchand demandeur. Marquez la demande comme terminée uniquement après sa transmission.
+      retained_records: Les commandes en cours ou les fiches clients partagées doivent être examinées. Réglez les obligations opérationnelles et évaluez les exigences de conservation, puis réessayez. Les données financières et les états des commandes sont conservés.
+      download: Télécharger l’export confidentiel
+      confirm_delivery: Confirmer la transmission sécurisée
+      retry_redaction: Réessayer l’effacement
+      completed_notice: La demande a été marquée comme terminée.
+      retained_alert: Traitez les données commerciales conservées avant de terminer cette demande.
+      queued_notice: Le traitement a été mis en file d’attente.
+      topics:
+        customers/data_request: Demande de données client
+        customers/redact: Effacement des données client
+        shop/redact: Effacement des données de la boutique
+      statuses:
+        pending: En attente
+        needs_review: À examiner
+        completed: Terminée

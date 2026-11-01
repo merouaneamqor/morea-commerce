@@ -36,23 +36,20 @@ fr:
             - "Elle ne lit ni les adresses e-mail des clients ni les moyens de paiement."
         - heading: "Offres"
           body:
-            - "Les offres sont gérées par Shopify : Basic est gratuit pour moins de 20 commandes importées par cycle de facturation, Pro coûte 9 $ par mois pour 20 à 99 commandes et Premium coûte 27 $ par mois à partir de 100 commandes, avec des imports illimités. Les prix en vigueur sont affichés sur la page de tarifs de Shopify. Les commandes rejouées ou rejetées ne consomment pas votre quota, et les imports bloqués à la limite reprennent après le passage à une offre supérieure."
+            - "Les offres sont gérées par Shopify : Starter coûte 19 $ par mois, Intermediate coûte 39 $ par mois, Professionnel coûte 59 $ par mois et Business coûte 129 $ par mois, avec des commandes importées illimitées. Les prix en vigueur sont affichés sur la page de tarifs de Shopify. Les commandes rejouées ou rejetées ne consomment pas votre quota, et les imports bloqués à la limite reprennent après le passage à une offre supérieure."
         - heading: "Déconnexion"
           body:
             - "Vous pouvez vous déconnecter depuis l'application ou la désinstaller depuis Shopify à tout moment. L'import s'arrête et les identifiants de connexion sont supprimés. Les commandes déjà importées restent dans votre espace."
     pricing:
       title: "Tarifs"
-      summary: "Une offre gratuite et des offres mensuelles payantes simples, gérées via Shopify."
+      summary: "Des offres mensuelles payantes simples, gérées via Shopify."
       sections:
-        - heading: "Seallo Basic : Gratuit"
+        - heading: "Seallo Starter : 19 $ par mois"
+        - heading: "Seallo Intermediate : 39 $ par mois"
+        - heading: "Seallo Professionnel : 59 $ par mois"
+        - heading: "Seallo Business : 129 $ par mois"
           body:
-            - "Moins de 20 commandes importées par cycle de facturation (jusqu'à 19)."
-        - heading: "Seallo Pro : 9 $ par mois"
-          body:
-            - "Pour 20 à 99 commandes importées par cycle de facturation (jusqu'à 99)."
-        - heading: "Seallo Premium : 27 $ par mois"
-          body:
-            - "À partir de 100 commandes importées par cycle de facturation. Imports illimités."
+            - "Commandes importées illimitées."
         - heading: "Inclus dans chaque offre"
           items:
             - "7 jours d'essai gratuit pour les offres payantes."
@@ -117,7 +114,7 @@ fr:
             - "Vous devez être autorisé à installer des applications sur la boutique Shopify et à la connecter à l'espace Seallo choisi. Une boutique ne peut être liée qu'à un seul espace à la fois. Gardez vos codes de connexion confidentiels : ils sont à usage unique et expirent."
         - heading: "Abonnement et facturation"
           body:
-            - "Seallo Connect est proposé via des offres gratuites et payantes gérées par Shopify, avec une période d'essai pour les offres payantes. La facturation, les changements d'offre et la résiliation sont gérés par Shopify selon ses conditions. Chaque offre inclut un nombre de commandes importées par cycle de facturation. Une fois atteint, l'import est suspendu jusqu'au cycle suivant ou jusqu'au passage à une offre supérieure. Les commandes déjà importées sont conservées."
+            - "Seallo Connect est proposé via des offres payantes gérées par Shopify, avec une période d'essai pour les offres payantes. La facturation, les changements d'offre et la résiliation sont gérés par Shopify selon ses conditions. Chaque offre inclut un nombre de commandes importées par cycle de facturation. Une fois atteint, l'import est suspendu jusqu'au cycle suivant ou jusqu'au passage à une offre supérieure. Les commandes déjà importées sont conservées."
         - heading: "Vos responsabilités"
           items:
             - "Utiliser le service de façon licite et uniquement pour les commandes de votre propre boutique."

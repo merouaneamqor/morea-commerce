@@ -16,13 +16,16 @@ Use Shopify App Pricing's hosted plans, not legacy Billing API charge creation:
 
 | Plan | Monthly USD | Imported orders per billing cycle | Trial |
 | --- | ---: | ---: | --- |
-| Seallo Basic | Free | 0–19 | No trial needed |
-| Seallo Pro | 9 | 20–99 (99 total) | 7 days |
-| Seallo Premium | 27 | 100+ (unlimited) | 7 days |
+| Starter | 19 | Pending confirmation | 7 days |
+| Intermediate | 39 | Pending confirmation | 7 days |
+| Professionnel | 59 | Pending confirmation | 7 days |
+| Business | 129 | Unlimited | 7 days |
 
-The app verifies canonical subscription state with the Partner API and recognizes configured pricing item handles `seallo-basic`, `seallo-pro`, `seallo-premium`. It does not grant access for an unknown plan. Prices, terms, handles and hosted welcome links must be configured in Shopify before activation. Partner account ID is distinct from the Dev Dashboard organization ID; do not substitute one for the other.
+These are the proposed public plans. Order limits for Starter, Intermediate and Professionnel still need confirmation before billing activation. The public copy does not advertise an unconfirmed allowance.
 
-Roll out these limits together with the paired app and Shopify hosted plans: Basic must return an active verified free-plan entitlement with a monthly period and limit 19; Pro must return limit 99; Premium remains unlimited. Existing cached allowances may remain valid for up to 15 minutes. This repository does not configure Shopify prices or the paired app. Upgrades remain merchant-selected; there are no automatic tier charges.
+The existing entitlement contract still recognizes `Seallo Basic` (19), `Seallo Pro` (99) and `Seallo Premium` (unlimited), with paired-app pricing item handles `seallo-basic`, `seallo-pro`, `seallo-premium`. Do not deploy the new pricing copy as an active billing offer until this contract, the paired app and Shopify hosted plans are updated together with confirmed limits and canonical plan names/handles. Unknown plans remain rejected. Prices, terms, handles and hosted welcome links must be configured in Shopify before activation. Partner account ID is distinct from the Dev Dashboard organization ID; do not substitute one for the other.
+
+Existing cached allowances may remain valid for up to 15 minutes. This repository does not configure Shopify prices or the paired app. Upgrades remain merchant-selected; there are no automatic tier charges.
 
 Morea caches a verified entitlement for at most 15 minutes and never beyond the current Shopify billing/trial end. Its existing ten-minute Shopify job renews that entitlement before sync, including for a subscription-gated workspace. A verified active Shopify plan grants operational access without altering manual invoice status or existing paid periods. Disconnect/uninstall removes this source of access. Cancellation can take up to the remaining cache lifetime to stop new webhook imports; authenticated app reads verify current subscription state. Privacy handling remains available without a subscription.
 

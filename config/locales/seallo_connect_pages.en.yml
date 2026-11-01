@@ -36,23 +36,20 @@ en:
             - "It does not read customer email addresses or payment details."
         - heading: "Plans"
           body:
-            - "Plans are managed through Shopify: Basic is free for fewer than 20 imported orders per billing cycle, Pro is $9 per month for 20–99 orders, and Premium is $27 per month for 100 or more orders with unlimited imports. Current prices are shown on Shopify's pricing page. Replayed and rejected orders do not use your allowance, and imports that reach the limit resume after you upgrade."
+            - "Plans are managed through Shopify: Starter is $19 per month, Intermediate is $39 per month, Professionnel is $59 per month, and Business is $129 per month with unlimited imported orders. Current prices are shown on Shopify's pricing page. Replayed and rejected orders do not use your allowance, and imports that reach the limit resume after you upgrade."
         - heading: "Disconnecting"
           body:
             - "You can disconnect from the app or uninstall it from Shopify at any time. Importing stops and the connection credentials are removed. Orders already imported remain in your workspace."
     pricing:
       title: "Pricing"
-      summary: "A free plan and simple paid monthly plans managed through Shopify."
+      summary: "Simple paid monthly plans managed through Shopify."
       sections:
-        - heading: "Seallo Basic: Free"
+        - heading: "Seallo Starter: $19 per month"
+        - heading: "Seallo Intermediate: $39 per month"
+        - heading: "Seallo Professionnel: $59 per month"
+        - heading: "Seallo Business: $129 per month"
           body:
-            - "Fewer than 20 imported orders in each billing cycle (up to 19)."
-        - heading: "Seallo Pro: $9 per month"
-          body:
-            - "For 20–99 imported orders in each billing cycle (up to 99)."
-        - heading: "Seallo Premium: $27 per month"
-          body:
-            - "For 100 or more imported orders in each billing cycle. Unlimited imported orders."
+            - "Unlimited imported orders."
         - heading: "What every plan includes"
           items:
             - "A 7-day free trial on paid plans."
@@ -117,7 +114,7 @@ en:
             - "You must be authorised to install apps on the Shopify store and to connect it to the Seallo workspace you choose. A store can be linked to one workspace at a time. Keep your connection codes private. They are single-use and expire."
         - heading: "Subscription and billing"
           body:
-            - "Seallo Connect is offered through Shopify-managed free and paid plans, with a trial period on paid plans. Billing, plan changes and cancellation are handled by Shopify under its terms. Each plan includes a number of imported orders per billing cycle. When it is reached, importing pauses until the next cycle or until you upgrade. Orders already imported are preserved."
+            - "Seallo Connect is offered through Shopify-managed paid plans, with a trial period on paid plans. Billing, plan changes and cancellation are handled by Shopify under its terms. Each plan includes a number of imported orders per billing cycle. When it is reached, importing pauses until the next cycle or until you upgrade. Orders already imported are preserved."
         - heading: "Your responsibilities"
           items:
             - "Use the service lawfully and only for your own store's orders."

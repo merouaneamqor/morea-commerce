@@ -36,12 +36,14 @@ RSpec.describe "Seallo Connect public pages", type: :request do
     expect(response.body).to include("customer redaction or shop redaction")
   end
 
-  it "publishes the three plans, their allowances and the trial" do
+  it "publishes the four plans, unlimited Business imports and the trial" do
     get "/seallo-connect/pricing", params: { locale: "en" }
 
-    expect(response.body).to include("Seallo Basic: Free", "Fewer than 20 imported orders")
-    expect(response.body).to include("Seallo Pro: $9 per month", "For 20–99 imported orders")
-    expect(response.body).to include("Seallo Premium: $27 per month", "Unlimited imported orders")
+    expect(response.body).to include("Seallo Starter: $19 per month")
+    expect(response.body).to include("Seallo Intermediate: $39 per month")
+    expect(response.body).to include("Seallo Professionnel: $59 per month")
+    expect(response.body).to include("Seallo Business: $129 per month")
+    expect(response.body).to include("Unlimited imported orders")
     expect(response.body).to include("7-day free trial on paid plans")
   end
 

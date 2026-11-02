@@ -26,9 +26,9 @@
             <button type="button" class="admin-topbar__menu md:hidden" data-action="admin-menu#toggle" aria-label="Menu">
               <%= admin_icon(:menu) %>
             </button>
-            <%= link_to admin_root_path, class: "admin-topbar__brand min-w-0" do %>
-              <%= image_tag "/brand/seallo-icon.png", alt: "", width: 28, height: 28, class: "seallo-admin-icon" %>
-              <span class="truncate"><%= current_store&.name || "Store" %></span>
+            <%= link_to admin_root_path, class: "admin-topbar__brand min-w-0 md:hidden" do %>
+              <span class="admin-wordmark">seallo</span>
+              <span class="sr-only"><%= current_store&.name || "Store" %></span>
             <% end %>
           </div>
 
@@ -60,11 +60,17 @@
         </header>
 
         <aside class="admin-sidebar" data-admin-menu-target="sidebar">
+          <%= link_to admin_root_path, class: "admin-sidebar__brand" do %>
+            <span class="admin-wordmark">seallo</span>
+          <% end %>
           <nav class="admin-sidebar__nav">
             <%= render "admin/shared/sidebar_nav" %>
           </nav>
 
           <div class="admin-sidebar__footer">
+            <div class="admin-workspace">
+              <strong class="truncate"><%= (current_store&.name || "Store").upcase %></strong>
+            </div>
             <% if super_admin? %>
               <%= admin_nav_link "Platform", admin_platform_path, icon: :external, active: false %>
             <% end %>

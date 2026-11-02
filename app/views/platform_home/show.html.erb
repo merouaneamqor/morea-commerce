@@ -1,55 +1,59 @@
 <% content_for :title, t("platform_home.title") %>
 <% content_for :head do %>
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="light">
   <%= render "shared/platform_icons" %>
   <%= stylesheet_link_tag "platform_home", "data-turbo-track": "reload" %>
 <% end %>
 <% h = ->(key) { t("platform_home.refresh.#{key}") } %>
 <div class="platform-landing" dir="<%= rtl? ? "rtl" : "ltr" %>">
   <%= render "platform_home/header" %>
-  <main>
-    <section class="platform-hero" aria-labelledby="platform-title">
-      <div class="platform-container platform-hero-copy">
+  <main id="top">
+    <section class="platform-container platform-hero" aria-labelledby="platform-title">
+      <div class="platform-hero-copy">
         <p class="platform-eyebrow"><span aria-hidden="true"></span><%= h.("eyebrow") %></p>
         <h1 id="platform-title"><%= h.("headline") %><br><span><%= h.("headline_accent") %></span></h1>
-        <p class="platform-lead"><%= h.("lead") %></p>
+        <p class="platform-lead"><%= t("platform_home.landing.sub") %></p>
         <div class="platform-actions">
           <%= link_to t("platform_home.hero.primary"), signup_path(locale: I18n.locale), class: "platform-button" %>
-          <%= link_to signup_path(locale: I18n.locale), class: "platform-button platform-button-secondary platform-agent-button" do %>
-            <span><%= h.("agent_button") %></span>
-            <%= render "platform_home/agent_logos" %>
-          <% end %>
+          <a href="#journey" class="platform-button platform-button-secondary"><%= t("platform_home.hero.secondary") %></a>
         </div>
-        <a href="#journey" class="platform-journey-link"><%= t("platform_home.hero.secondary") %><span aria-hidden="true"> ↓</span></a>
-        <ul class="platform-badges"><% h.("badges").each do |badge| %><li><%= badge %></li><% end %></ul>
       </div>
-      <div class="platform-map" aria-hidden="true"><%= render "platform_home/network_map" %></div>
+      <div class="platform-map" dir="ltr" aria-hidden="true"><%= render "platform_home/network_map" %></div>
     </section>
-    <section id="features" class="platform-container platform-features" aria-labelledby="features-title">
-      <h2 id="features-title"><%= h.("features_title") %></h2>
-      <p class="platform-section-lead"><%= h.("features_lead") %></p>
+
+    <%= render "platform_home/partners" %>
+    <%= render "platform_home/dashboard_demo" %>
+
+    <section id="features" class="platform-container platform-section" aria-labelledby="features-title">
+      <div class="platform-section-head">
+        <h2 id="features-title"><%= h.("features_title") %></h2>
+        <p><%= h.("features_lead") %></p>
+      </div>
       <ul class="platform-cards">
         <% h.("features").each_with_index do |item, index| %>
           <li class="platform-card">
             <span class="platform-icon" aria-hidden="true">
-              <% if index == 0 %><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>
-              <% elsif index == 1 %><svg viewBox="0 0 24 24"><path d="M3 6h11v11H3zM14 10h4l3 4v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>
-              <% else %><svg viewBox="0 0 24 24"><path d="M5 19V12M12 19V5M19 19V9"/></svg><% end %>
+              <% if index == 0 %><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/><path d="m14.5 6.5 2 2 4-4"/></svg>
+              <% elsif index == 1 %><svg viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.6a1 1 0 0 0-.2-.6l-3.5-4.4A1 1 0 0 0 17.5 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+              <% else %><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-6"/><path d="M15 8h5v5"/></svg><% end %>
             </span>
             <h3><%= item[:title] %></h3><p><%= item[:body] %></p>
           </li>
         <% end %>
       </ul>
     </section>
-    <section id="journey" class="platform-container platform-journey" aria-labelledby="journey-title">
-      <h2 id="journey-title"><%= h.("journey_title") %></h2>
+
+    <section id="journey" class="platform-container platform-section" aria-labelledby="journey-title">
+      <div class="platform-section-head"><h2 id="journey-title"><%= h.("journey_title") %></h2></div>
+      <% steps = h.("steps") %>
       <ol class="platform-timeline">
-        <% h.("steps").each_with_index do |step, index| %>
-          <li><span class="platform-step"><%= index + 1 %></span><h3><%= step[:title] %></h3><p><%= step[:body] %></p></li>
+        <% steps.each_with_index do |step, index| %>
+          <li><span class="platform-step<%= " platform-step-last" if index == steps.length - 1 %>"><%= index + 1 %></span><h3><%= step[:title] %></h3><p><%= step[:body] %></p></li>
         <% end %>
       </ol>
     </section>
-    <section id="contact" class="platform-container platform-contact" aria-labelledby="contact-title">
+
+    <section id="contact" class="platform-container platform-section" aria-labelledby="contact-title">
       <div class="platform-cta"><h2 id="contact-title"><%= h.("cta_title") %></h2><p><%= h.("cta_body") %></p><%= link_to t("platform_home.hero.primary"), signup_path(locale: I18n.locale), class: "platform-button platform-button-white" %></div>
     </section>
   </main>

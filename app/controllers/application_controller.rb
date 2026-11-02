@@ -80,9 +80,12 @@ class ApplicationController < ActionController::Base
     path == "/" ||
       path == "/sitemap.xml" ||
       path.start_with?("/signup") ||
+      path == "/seallo-connect" ||
+      path.start_with?("/seallo-connect/") ||
       path == "/up" ||
       path == "/graphql" ||
       path == "/mcp" ||
+      path.start_with?("/platform/oauth/") ||
       path.start_with?("/admin") ||
       path.start_with?("/superadmin") ||
       path.start_with?("/oauth") ||

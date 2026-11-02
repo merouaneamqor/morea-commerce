@@ -62,6 +62,7 @@ module Connections
       raise Error, "invalid_external_id" unless external_id.match?(/\A[a-zA-Z0-9_-]{1,255}\z/)
       receipt = @connection.external_order_receipts.find_or_initialize_by(external_id: external_id)
       return Result.new(receipt: receipt, replayed: true) if receipt.persisted? && receipt.status == "accepted"
+      SealloAllowance.check!(@connection)
 
       begin
         attrs = OrderNormalizer.new(@connection).call(payload)
@@ -99,7 +100,13 @@ module Connections
     def authenticate!(body, headers)
       header = { "shopify" => "X-Shopify-Hmac-SHA256", "woocommerce" => "X-WC-Webhook-Signature", "youcan" => "X-YOUCAN-SIGNATURE" }.fetch(@connection.provider)
       # OAuth connections are signed by the shared app; legacy ones by their own secret.
-      secret = @connection.shopify_api_configured? ? ENV["SHOPIFY_CLIENT_SECRET"].to_s : @connection.webhook_secret.to_s
+      secret = if @connection.shopify_app == "seallo_connect"
+        ENV["SEALLO_SHOPIFY_CLIENT_SECRET"].to_s
+      elsif @connection.shopify_api_configured?
+        ENV["SHOPIFY_CLIENT_SECRET"].to_s
+      else
+        @connection.webhook_secret.to_s
+      end
       raise Error.new("secret_unavailable", status: 503) if secret.blank?
       digest = OpenSSL::HMAC.digest("sha256", secret, body)
       expected = @connection.provider == "youcan" ? digest.unpack1("H*") : Base64.strict_encode64(digest)

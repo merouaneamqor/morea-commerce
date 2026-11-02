@@ -1,0 +1,21 @@
+<% content_for :title, t("seallo_connect.authorize.title") %>
+<h1 class="admin-page-title"><%= t("seallo_connect.authorize.title") %></h1>
+<section class="admin-card p-5 space-y-4">
+  <p><%= t("seallo_connect.authorize.body") %></p>
+  <dl class="space-y-2">
+    <div>
+      <dt class="admin-label"><%= t("seallo_connect.authorize.workspace") %></dt>
+      <dd><%= current_store.name %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("seallo_connect.authorize.shop") %></dt>
+      <dd dir="ltr"><%= @request_values[:shop] %></dd>
+    </div>
+  </dl>
+  <div class="flex flex-wrap gap-3">
+    <%= button_to t("seallo_connect.authorize.confirm"), admin_seallo_connect_path,
+      params: { shop: @request_values[:shop], state: @request_values[:state], return_to: @request_values[:return_to] },
+      form: { data: { turbo: false } }, class: "admin-btn" %>
+    <%= link_to t("seallo_connect.authorize.cancel"), admin_root_path, class: "admin-btn-secondary" %>
+  </div>
+</section>

@@ -2,10 +2,13 @@
 
 class StoreConnection < ApplicationRecord
   PROVIDERS = %w[shopify woocommerce youcan].freeze
+  # Shopify connects only through Seallo Connect; these providers are added by hand.
+  MANUAL_PROVIDERS = %w[woocommerce youcan].freeze
   SHOPIFY_API_ERRORS = %w[config_missing credentials_missing disconnected invalid_credentials shop_not_permitted missing_scopes source_mismatch rate_limited unavailable invalid_response].freeze
 
   belongs_to :store
   has_many :external_order_receipts, dependent: :restrict_with_error
+  has_many :shopify_privacy_requests, dependent: :restrict_with_error
   attr_readonly :store_id, :provider, :external_domain, :external_store_id, :token
 
   before_validation :normalize_identity, if: :new_record?
@@ -16,6 +19,7 @@ class StoreConnection < ApplicationRecord
   validates :webhook_secret, length: { minimum: 16, maximum: 1024 }, allow_nil: true
   validates :shopify_api_error_code, inclusion: { in: SHOPIFY_API_ERRORS }, allow_nil: true
   validate :shopify_oauth_provider
+  validates :shopify_app, inclusion: { in: %w[seallo_connect] }, allow_nil: true
   validates :token, uniqueness: true
   validates :external_domain, format: { with: /\A[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?\z/ }, length: { maximum: 253 }
   validates :external_domain, uniqueness: { scope: %i[store_id provider] }
@@ -51,6 +55,8 @@ class StoreConnection < ApplicationRecord
   end
 
   def shopify_api_connected?
+    return active? && shopify_api_verified_at.present? && shopify_api_error_code.nil? if shopify_app == "seallo_connect"
+
     active? && shopify_api_configured? && shopify_api_verified_at.present? && shopify_api_error_code.nil? &&
       ((shopify_access_token_ciphertext.present? && shopify_access_token_expires_at&.future?) ||
         (shopify_refresh_token_ciphertext.present? && shopify_refresh_token_expires_at&.future?))

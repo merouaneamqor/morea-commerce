@@ -1,31 +1,65 @@
-<% content_for :title, "Customers — Admin" %>
+<% content_for :title, "#{t('admin_menu.items.customers')} — Admin" %>
+<% counts = @segments.counts %>
 
 <div class="admin-page-header">
-  <h1 class="admin-page-header__title">Customers</h1>
+  <div>
+    <h1 class="admin-page-header__title"><%= t("admin_menu.items.customers") %></h1>
+    <p class="admin-page-header__meta"><%= t("admin.customers_segments.subtitle") %></p>
+  </div>
 </div>
 
-<%= form_with url: admin_customers_path, method: :get, class: "admin-topbar__search mb-4 max-w-md" do %>
+<nav class="seallo-segments mb-4">
+  <% [ [ "all", nil ], [ "loyal", "loyal" ], [ "at_risk", "at_risk" ], [ "new", "new" ] ].each do |label, key| %>
+    <%= link_to admin_customers_path(segment: key, q: params[:q].presence),
+          class: "seallo-segment seallo-segment--#{label} #{'is-active' if @segment == key}" do %>
+      <span><%= t("admin.customers_segments.#{label}") %></span>
+      <strong><%= counts.fetch(label) %></strong>
+    <% end %>
+  <% end %>
+</nav>
+
+<%= form_with url: admin_customers_path, method: :get, class: "admin-topbar__search mb-4 max-w-none !flex" do %>
+  <%= hidden_field_tag :segment, @segment if @segment %>
   <%= admin_icon(:search, size: 16) %>
-  <%= search_field_tag :q, params[:q], placeholder: "Search customers", "aria-label": "Search customers", class: "admin-input !border-0 !shadow-none" %>
+  <%= search_field_tag :q, params[:q], placeholder: "Nom, téléphone ou ville", "aria-label": "Search customers", class: "admin-input !border-0 !shadow-none" %>
 <% end %>
 
 <div class="admin-card">
   <div class="admin-table-wrap">
     <table class="admin-table">
-    <thead><tr><th>Customer name</th><th>Phone</th><th>Email</th><th>Location</th><th class="is-numeric">Orders</th></tr></thead>
+    <thead>
+      <tr>
+        <th>Client</th><th>Ville</th><th class="is-numeric">Commandes</th>
+        <th class="is-numeric"><%= t("admin.customers_segments.delivered") %></th>
+        <th class="is-numeric"><%= t("admin.customers_segments.returns") %></th>
+        <th class="is-numeric"><%= t("admin.customers_segments.total_delivered") %></th>
+        <th><%= t("admin.customers_segments.last_order") %></th>
+        <th><%= t("admin.customers_segments.profile") %></th>
+      </tr>
+    </thead>
     <tbody>
       <% @customers.each do |customer| %>
+        <% stats = @segments.for(customer) %>
         <tr>
           <td>
-            <%= link_to admin_customer_path(customer), class: "flex items-center gap-3" do %>
-              <span class="admin-avatar !h-8 !w-8 !rounded-full"><%= customer.name.to_s.first.upcase %></span>
-              <span class="admin-link"><%= customer.name %></span>
+            <%= link_to admin_customer_path(customer), class: "block" do %>
+              <span class="admin-link block"><%= customer.name %></span>
+              <span class="admin-muted text-xs"><%= customer.phone %></span>
             <% end %>
           </td>
-          <td class="admin-muted"><%= customer.phone %></td>
-          <td class="admin-muted"><%= customer.email.presence || "—" %></td>
           <td class="admin-muted"><%= customer.city %></td>
-          <td class="is-numeric"><%= pluralize(customer.orders_count, "order", locale: :en) %></td>
+          <td class="is-numeric">
+            <%= customer.orders_count %>
+            <% if stats.in_progress.positive? %><span class="seallo-chip seallo-chip--blue"><%= t("admin.customers_segments.in_progress", count: stats.in_progress) %></span><% end %>
+          </td>
+          <td class="is-numeric"><%= stats.delivered %></td>
+          <td class="is-numeric"><%= stats.returns %></td>
+          <td class="is-numeric"><%= money(stats.delivered_cents) %></td>
+          <td class="admin-muted"><%= stats.last_order_at ? stats.last_order_at.strftime("%-d/%m/%Y") : "—" %></td>
+          <td>
+            <% tone = { "loyal" => "success", "at_risk" => "critical", "new" => "info" }.fetch(stats.segment) %>
+            <span class="admin-badge admin-badge--<%= tone %>"><%= t("admin.customers_segments.#{stats.segment}_badge") %></span>
+          </td>
         </tr>
       <% end %>
     </tbody>

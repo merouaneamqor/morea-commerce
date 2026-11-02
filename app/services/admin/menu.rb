@@ -22,7 +22,8 @@ module Admin
         entry(:purchases, :admin_purchases_path, :purchases, placeholder: true),
         entry(:expenses, :admin_expenses_path, :expenses, controllers: "store_expenses"),
         entry(:delivery, :admin_delivery_path, :delivery, controllers: "delivery"),
-        entry(:call_center, :admin_confirmations_path, :call_center, controllers: "confirmations")
+        entry(:call_center, :admin_confirmations_path, :call_center, controllers: "confirmations"),
+        entry(:my_stats, :admin_my_stats_path, :analytics, controllers: "my_stats")
       ] ],
       [ :channels, [
         entry(:stores, :admin_store_connections_path, :external, controllers: "store_connections"),

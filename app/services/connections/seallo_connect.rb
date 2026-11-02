@@ -21,10 +21,14 @@ module Connections
         connection = StoreConnection.find_by(shopify_app: "seallo_connect", external_domain: shop)
         raise Error, "already_linked" if connection && connection.store_id != store.id
         connection ||= store.store_connections.find_by(provider: "shopify", external_domain: shop)
-        raise Error, "existing_connection" if connection && connection.shopify_app != "seallo_connect"
-        # Disconnected Seallo rows are reactivated below; an active one is already linked here.
-        raise Error, "existing_connection" if connection&.active?
+        if connection && connection.shopify_app != "seallo_connect"
+          # A manually signed source is a different integration and is never converted.
+          raise Error, "existing_connection" unless connection.shopify_oauth?
 
+          adopt_standalone(connection)
+        end
+
+        # Reconnecting is safe whatever the state: the same row is reactivated and re-verified.
         connection ||= store.store_connections.new(provider: "shopify", external_domain: shop, name: "Seallo Connect · #{shop}", shopify_oauth: true, shopify_app: "seallo_connect")
         connection.active = true
         connection.save!
@@ -37,5 +41,15 @@ module Connections
     rescue ActiveRecord::RecordNotUnique
       raise Error, "already_linked"
     end
+
+    # The standalone Shopify app is retired. Its connection for this shop becomes the Seallo
+    # connection: identity and receipt history stay, the retired app's credentials do not.
+    def self.adopt_standalone(connection)
+      connection.update!(shopify_app: "seallo_connect", shopify_access_token: nil, shopify_refresh_token: nil,
+        shopify_access_token_expires_at: nil, shopify_refresh_token_expires_at: nil,
+        shopify_oauth_state_digest: nil, shopify_oauth_state_expires_at: nil,
+        shopify_granted_scopes: [], shopify_api_verified_at: nil, shopify_api_error_code: nil)
+    end
+    private_class_method :adopt_standalone
   end
 end

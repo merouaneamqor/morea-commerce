@@ -6,7 +6,7 @@ module Admin
     layout "admin_platform"
     before_action :require_super_admin!
     before_action :enter_platform_mode, only: %i[index new create edit update]
-    before_action :set_store, only: %i[edit update enter]
+    before_action :set_store, only: %i[edit update enter reset]
 
     def index
       redirect_to admin_platform_path
@@ -72,6 +72,14 @@ module Admin
       else
         render :edit, status: :unprocessable_entity
       end
+    end
+
+    # Wipes the workspace's data and settings back to a freshly provisioned state.
+    def reset
+      Platform::StoreReset.new(store: @store, actor: current_user, ip: request.remote_ip).call(confirmation: params[:confirmation])
+      redirect_to admin_platform_path, notice: t("platform_admin.reset.done", name: @store.name), status: :see_other
+    rescue Platform::StoreReset::Denied => e
+      redirect_to edit_admin_tenant_path(@store), alert: t("platform_admin.reset.denied.#{e.reason}"), status: :see_other
     end
 
     # Apex sessions can operate any workspace without requiring its public host.

@@ -55,3 +55,15 @@ en:
     first_admin: "First administrator"
     approve_and_create_workspace: "Approve and create workspace"
     create_workspace: "Create workspace"
+    reset:
+      title: "Reset workspace"
+      description: "Return this workspace to a brand-new state. This cannot be undone. Meant for test workspaces."
+      removes: "Removes all orders, customers, products, collections, discounts, pages, menus, connections, ad data, expenses, agent payments and tokens, and resets every store setting."
+      keeps: "Keeps the workspace name, slug, contact details, billing, invoices and staff accounts. Default online store content is reinstalled when the storefront is enabled."
+      confirm_label: "Type %{slug} to confirm"
+      confirm_dialog: "Permanently erase all data in %{name}?"
+      submit: "Reset workspace"
+      done: "%{name} was reset to a brand-new workspace."
+      denied:
+        confirmation_mismatch: "The text you typed does not match the workspace slug. Nothing was changed."
+        not_super_admin: "Super admin access required."

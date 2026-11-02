@@ -2,7 +2,7 @@
 
 Shopify now uses the shared Seallo app's [OAuth API connection](shopify-api-connection.md). Its admin setup contains no webhook instructions, signing-secret field or delivery URL. Existing imported orders remain available. Automatic API import and synchronization are not enabled by connecting the API.
 
-WooCommerce and YouCan retain signed order intake without local catalog products. Storefront visibility is a separate setting; existing Codify checkout remains available when enabled. These two platforms use manual webhook setup. There is no remote subscription creation, historical backfill, polling, outbound order update or inventory synchronization.
+WooCommerce and YouCan retain signed order intake without local catalog products. Storefront visibility is a separate setting; existing Codify checkout remains available when enabled. These two platforms use manual webhook setup; for WooCommerce the optional [Seallo Connect plugin](woocommerce-plugin.md) connects through OAuth approval and creates that webhook with a generated secret. There is no remote subscription creation, historical backfill, polling, outbound order update or inventory synchronization.
 
 ## Provider setup and verified evidence
 

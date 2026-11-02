@@ -1,0 +1,10 @@
+<%# Partner logos shipped with the seallo landing page. %>
+<% partners = [["Meta Ads", "meta", "s"], ["Shopify", "shopify", "l"], ["TikTok Ads", "tiktok", "l"], ["Sendit", "sendit", "l"], ["Ozon Express", "ozon", "l"], ["Cathedis", "cathedis", "s"], ["Ameex", "ameex", "xs"]] %>
+<section class="platform-container platform-partners" aria-label="<%= t("platform_home.landing.partners") %>">
+  <p><%= t("platform_home.landing.partners") %></p>
+  <ul>
+    <% partners.each do |name, file, size| %>
+      <li><img src="/images/partners/<%= file %>.png" alt="<%= name %>" title="<%= name %>" class="platform-partner-<%= size %>" loading="lazy"></li>
+    <% end %>
+  </ul>
+</section>

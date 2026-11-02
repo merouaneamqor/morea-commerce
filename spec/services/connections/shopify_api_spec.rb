@@ -6,7 +6,7 @@ RSpec.describe Connections::ShopifyApi do
   # An in-memory connection keeps these transport/permission tests independent
   # of network services. Request specs cover encrypted storage and tenant records.
   let(:connection) do
-    Struct.new(:provider, :active, :external_domain, :shopify_oauth,
+    Struct.new(:provider, :active, :external_domain, :shopify_oauth, :shopify_app,
       :shopify_access_token, :shopify_access_token_expires_at, :shopify_granted_scopes,
       :shopify_refresh_token, :shopify_refresh_token_expires_at,
       :shopify_api_verified_at, :shopify_api_error_code, keyword_init: true) do

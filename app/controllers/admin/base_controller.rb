@@ -1,6 +1,7 @@
 module Admin
   class BaseController < ApplicationController
     include SubscriptionAccess
+    include PersonalDataAccessLogging
 
     layout "admin"
     before_action :require_admin!

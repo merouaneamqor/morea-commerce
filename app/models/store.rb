@@ -21,6 +21,7 @@ class Store < ApplicationRecord
   has_many :invoices, dependent: :destroy
   has_many :agent_changesets, dependent: :destroy
   has_many :store_connections, dependent: :destroy
+  has_many :seallo_connection_codes, dependent: :delete_all
   has_many :store_expenses, dependent: :destroy
   has_many :storefront_themes, dependent: :destroy
 
@@ -160,6 +161,7 @@ class Store < ApplicationRecord
   # need a paid, current billing period before merchant operations are available.
   def operational_access?
     return true unless subscription_required?
+    return true if store_connections.where(shopify_app: "seallo_connect", active: true).where("shopify_entitled_until > ?", Time.current).exists?
 
     billing_status == "active" && billing_period_ends_on.present? && billing_period_ends_on >= Date.current
   end

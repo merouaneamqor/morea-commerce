@@ -1,7 +1,11 @@
 module AdminHelper
   def admin_language_switch_path(locale)
-    if controller_path == "admin/store_connections" && action_name == "shopify_callback"
-      return "#{admin_store_connections_path}?#{ { locale: locale }.to_query}"
+    if controller_path == "platform_oauth/authorizations"
+      return platform_oauth_authorize_path(ticket: params[:ticket].presence || @ticket, locale: locale)
+    end
+
+    if controller_path == "admin/seallo_connections"
+      return "#{admin_seallo_connect_path}?#{ { locale: locale }.to_query}"
     end
 
     path = if !request.get? && action_name.in?(%w[create update])

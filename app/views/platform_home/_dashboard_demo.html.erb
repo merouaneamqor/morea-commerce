@@ -1,0 +1,37 @@
+<%# Static illustration of the admin overview; the figures are examples, not data. %>
+<% d = ->(key) { t("platform_home.landing.#{key}") } %>
+<% menu = d.("menu"); kpis = d.("kpis"); cols = d.("cols"); status = d.("status") %>
+<% values = ["1 248", "68 %", "74 %", "972"]; deltas = ["+9 %", "+3 %", "+5 %", "+12 %"] %>
+<% bars = [42, 58, 51, 66, 61, 78, 88] %>
+<% rows = [["Yassine B.", "Montre Classic", "349 MAD", 0], ["Salma K.", "Sac Cuir", "420 MAD", 1], ["Omar E.", "Écouteurs Pro", "259 MAD", 2], ["Hajar M.", "Crème Argan", "189 MAD", 0], ["Karim A.", "Montre Classic", "349 MAD", 3]] %>
+<section id="demo" class="platform-container platform-section" aria-labelledby="demo-title">
+  <div class="platform-section-head"><h2 id="demo-title"><%= d.("demo_title") %></h2><p><%= d.("demo_sub") %></p></div>
+  <div class="platform-demo" aria-hidden="true">
+    <div class="platform-demo-bar" dir="ltr"><i></i><i></i><i></i><span><%= Store.base_domain %></span></div>
+    <div class="platform-demo-body">
+      <aside class="platform-demo-side">
+        <strong dir="ltr"><%= Store.platform_name %></strong>
+        <ul><% menu.each_with_index do |item, i| %><li class="<%= "is-active" if i.zero? %>"><span></span><%= item %></li><% end %></ul>
+      </aside>
+      <div class="platform-demo-main">
+        <div class="platform-demo-title"><h3><%= menu.first %></h3><span><%= d.("period") %></span></div>
+        <div class="platform-demo-kpis">
+          <% kpis.each_with_index do |label, i| %>
+            <div class="<%= "is-dark" if i == 3 %>"><small><%= label %></small><b dir="ltr"><%= values[i] %></b><em dir="ltr"><%= deltas[i] %></em></div>
+          <% end %>
+        </div>
+        <div class="platform-demo-panels">
+          <div class="platform-demo-chart"><p><%= d.("chart") %></p><div dir="ltr"><% bars.each_with_index do |b, i| %><span class="<%= "is-last" if i == bars.length - 1 %>" style="height: <%= b %>%"></span><% end %></div></div>
+          <div class="platform-demo-table">
+            <p><%= d.("recent") %></p>
+            <table>
+              <thead><tr><% cols.each_with_index do |c, i| %><th class="<%= "hide-sm" if i == 1 %>"><%= c %></th><% end %></tr></thead>
+              <tbody><% rows.each do |customer, product, amount, s| %><tr><td><%= customer %></td><td class="hide-sm"><%= product %></td><td dir="ltr"><%= amount %></td><td><span class="platform-badge-<%= s %>"><%= status[s] %></span></td></tr><% end %></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="platform-demo-note"><%= d.("demo_note") %></p>
+</section>

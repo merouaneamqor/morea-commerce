@@ -20,7 +20,7 @@ module Connections
         connection = store.store_connections.find(connection_id)
         raise Error.new("credentials_missing") unless connection.shopify_api_configured?
         raise Error.new("disconnected") unless connection.active?
-        unless connection.shopify_access_token_ciphertext.present? || connection.shopify_refresh_token_ciphertext.present?
+        unless connection.shopify_app == "seallo_connect" || connection.shopify_access_token_ciphertext.present? || connection.shopify_refresh_token_ciphertext.present?
           raise Error.new("credentials_missing")
         end
 
@@ -31,6 +31,7 @@ module Connections
       scope = store.store_connections.where(provider: "shopify", active: true, shopify_oauth: true)
       ready = scope.where.not(shopify_access_token_ciphertext: [ nil, "" ])
         .or(scope.where.not(shopify_refresh_token_ciphertext: [ nil, "" ]))
+        .or(scope.where(shopify_app: "seallo_connect"))
       count = 0
       ready.find_each do |connection|
         ShopifyOrdersSyncJob.perform_later(connection.id)

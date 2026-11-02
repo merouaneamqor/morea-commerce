@@ -168,7 +168,8 @@ ActiveRecord::Base.transaction do
   doc = Nokogiri::HTML(external_http.response.body)
   assert.call("external-only dashboard works without products or sources", external_http.response.status == 200)
   assert.call("external-only dashboard hides boutique activity", doc.at_css('[data-dashboard-mode="connected"]') && !doc.at_css("[data-dashboard-storefront]") && !doc.at_css("[data-dashboard-inventory]"))
-  %w[shopify woocommerce youcan].each do |provider|
+  assert.call("external workspace offers no standalone Shopify setup", doc.css("a").none? { |link| link["href"].to_s.include?("provider=shopify") })
+  %w[woocommerce youcan].each do |provider|
     assert.call("external workspace offers #{provider} setup", doc.css("a").any? { |link| link["href"].to_s.include?("/admin/store_connections/new") && link["href"].include?("provider=#{provider}") })
     external_http.get "/admin/store_connections/new", params: { provider: provider }
     form = Nokogiri::HTML(external_http.response.body)

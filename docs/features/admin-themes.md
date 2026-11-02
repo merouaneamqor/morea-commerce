@@ -6,7 +6,7 @@ The theme is applied as `data-admin-theme` on the admin `<body>`. The "Seallo lo
 
 ## History
 
-The earlier blue, dark, light and current themes were removed. Migration `20261102130000_reduce_admin_themes_to_seallo` maps existing workspaces and registrations: `dark` becomes `seallo_dark`; `blue`, `light` and `current` become `seallo`. Rolling it back restores `dark` for dark seallo and `current` (workspaces) or `blue` (registrations) for the rest, so an earlier explicit blue or light choice is not recovered.
+The earlier blue, dark, light and current themes were removed. Migration `20261102190100_reduce_admin_themes_to_seallo` maps existing workspaces and registrations: `dark` becomes `seallo_dark`; `blue`, `light` and `current` become `seallo`. Rolling it back restores `dark` for dark seallo and `current` (workspaces) or `blue` (registrations) for the rest, so an earlier explicit blue or light choice is not recovered.
 
 ## Adding a theme
 

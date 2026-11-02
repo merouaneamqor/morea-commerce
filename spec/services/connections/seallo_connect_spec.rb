@@ -121,6 +121,19 @@ RSpec.describe Connections::SealloConnect do
     expect(store.store_connections.count).to eq(1)
   end
 
+  it "refuses a second link while the shop is already active in this workspace" do
+    store.store_connections.create!(provider: "shopify", external_domain: shop, name: "Active shop", shopify_oauth: true, shopify_app: "seallo_connect")
+    expect { connect }.to raise_error(described_class::Error, "existing_connection")
+    expect(store.store_connections.count).to eq(1)
+  end
+
+  it "consumes a code only for the shop it was minted for" do
+    bound = SealloConnectionCode.issue!(store: store, user: staff, shop: "bound-#{SecureRandom.hex(4)}.myshopify.com")
+    expect { described_class.call(code: bound, shop: shop) }.to raise_error(described_class::Error, "invalid_code")
+    expect(SealloConnectionCode.find_by!(digest: Digest::SHA256.hexdigest(bound)).consumed_at).to be_nil
+    expect(store.store_connections).to be_empty
+  end
+
   it "does not issue a workspace code to another workspace's staff" do
     expect { SealloConnectionCode.issue!(store: other_store, user: staff) }.to raise_error(ActiveRecord::RecordNotFound)
   end

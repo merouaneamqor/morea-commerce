@@ -33,7 +33,7 @@ ActiveRecord::Base.transaction do
   %w[fr en ar].each do |locale|
     http.get "/admin/store_connections/#{api_connection.id}", params: { locale: locale }
     doc = Nokogiri::HTML(http.response.body)
-    assert.call("localized API connection setup #{locale}", http.response.status == 200 && !doc.at_css(".translation_missing") && !doc.at_css("#webhook-url") && doc.at_css("input[name='operation'][value='authorize_shopify']"))
+    assert.call("localized API connection page #{locale}", http.response.status == 200 && !doc.at_css(".translation_missing") && !doc.at_css("#webhook-url") && !doc.at_css("input[name='operation'][value='authorize_shopify']"))
     assert.call("Shopify no longer requests a webhook secret #{locale}", !doc.at_css("input[name='store_connection[webhook_secret]']"))
     assert.call("Shopify merchants do not enter app credentials #{locale}", !doc.at_css("input[name='store_connection[shopify_client_id]']") && !doc.at_css("input[name='store_connection[shopify_client_secret]']"))
   end

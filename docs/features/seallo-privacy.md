@@ -23,3 +23,7 @@ The integration does not delete records in Shopify or contact customers automati
 ## Verification
 
 The service/model specs use synthetic tenants and disconnected providers. They cover forged signatures, payload-domain mismatch, unknown shops, replay deduplication, encrypted minimal identifiers, scoped export, redaction of terminal snapshots, preservation of active/shared records and finance/state, and isolated uninstall. Run them only with the dedicated `RAILS_ENV=test` database described in `spec/README.md`. Live uninstall, privacy delivery and secure customer response remain deployment/review checks.
+
+## Time-based retention
+
+`SealloRetentionJob` runs daily (`config/schedule.yml`, `SEALLO_RETENTION_CRON`, or disable with `SEALLO_RETENTION_EXTERNAL_CRON` when an external runner does it). `Connections::SealloRetention` redacts buyer contact details, notes and event text on orders imported through a Seallo Connect connection once they have been delivered, cancelled or returned for **180 days** (`RETENTION`). The period is published on the privacy page; change both together. It uses the same `Connections::OrderRedaction` rules as Shopify privacy requests, keeps amounts, status and replay identity, never touches active shipments or orders from other providers, anonymizes a buyer profile only when none of their orders still hold contact details, and keeps running after a store disconnects. Runs are idempotent.

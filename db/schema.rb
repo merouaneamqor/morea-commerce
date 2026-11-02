@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_31_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_02_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -727,9 +727,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_31_140000) do
     t.datetime "consumed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "shop_domain"
     t.index ["digest"], name: "index_seallo_connection_codes_on_digest", unique: true
     t.index ["store_id"], name: "index_seallo_connection_codes_on_store_id"
     t.index ["user_id"], name: "index_seallo_connection_codes_on_user_id"
+    t.check_constraint "shop_domain IS NULL OR char_length(shop_domain::text) <= 253", name: "seallo_connection_code_shop_domain_length"
   end
 
   create_table "shopify_privacy_requests", force: :cascade do |t|

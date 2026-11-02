@@ -14,9 +14,12 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
       shopify_oauth: true, shopify_app: "seallo_connect", shopify_api_verified_at: Time.current)
   end
 
+  let(:app_url) { "https://seallo-app.example.test" }
+
   before do
     allow(ENV).to receive(:[]).and_call_original
     allow(ENV).to receive(:[]).with("SEALLO_BRIDGE_SECRET").and_return(secret)
+    allow(ENV).to receive(:[]).with("SEALLO_APP_URL").and_return(app_url)
     allow(Connections::SealloBridge).to receive(:entitlement).and_return(
       "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601,
       "plan_name" => "Seallo Basic", "order_limit" => 19
@@ -38,44 +41,127 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
     expect(response).to have_http_status(:redirect)
   end
 
+  def authorization_params(overrides = {})
+    { shop: shop, state: "synthetic-state-#{SecureRandom.hex(16)}", return_to: "#{app_url}/connect/callback" }.merge(overrides)
+  end
+
+  def minted_code_from(location)
+    query = Rack::Utils.parse_query(URI.parse(location).query)
+    query.fetch("code")
+  end
+
   it "requires Morea sign-in before offering a connection code" do
-    get "/admin/seallo/connect"
+    get "/admin/seallo/connect", params: authorization_params
     expect(response).to redirect_to(admin_login_path)
-    post "/admin/seallo/connect"
+    post "/admin/seallo/connect", params: authorization_params
     expect(response).to redirect_to(admin_login_path)
     expect(SealloConnectionCode.count).to eq(0)
   end
 
-  it "issues a private, expiring code for the authenticated workspace and ignores submitted store IDs" do
-    foreign = Store.create!(slug: "seallo-foreign-#{SecureRandom.hex(5)}", name: "Foreign workspace", currency: "MAD")
+  it "returns an authenticated user to the authorization request after sign-in" do
+    params = authorization_params
+    host! "#{store.slug}.#{Store.base_domain}"
+    get "/admin/seallo/connect", params: params
+    expect(response).to redirect_to(admin_login_path)
     sign_in
-    post "/admin/seallo/connect", params: { store_id: foreign.id, user_id: 999_999 }
+    location = URI.parse(response.location)
+    expect(location.path).to eq("/admin/seallo/connect")
+    expect(Rack::Utils.parse_query(location.query)).to eq(params.stringify_keys)
+  end
+
+  it "shows a confirmation page without minting a code on the GET navigation" do
+    sign_in
+    get "/admin/seallo/connect", params: authorization_params
     expect(response).to have_http_status(:ok)
     expect(response.headers["Cache-Control"]).to include("no-store")
-    plaintext = Nokogiri::HTML(response.body).at_css("code").text.strip
+    expect(response.body).not_to match(/\b[0-9a-f]{48}\b/)
+    expect(SealloConnectionCode.count).to eq(0)
+  end
+
+  it "mints a single code bound to the shop, then redirects back with the state unchanged" do
+    foreign = Store.create!(slug: "seallo-foreign-#{SecureRandom.hex(5)}", name: "Foreign workspace", currency: "MAD")
+    sign_in
+    params = authorization_params
+    post "/admin/seallo/connect", params: params.merge(store_id: foreign.id, user_id: 999_999)
+    expect(response).to have_http_status(:found)
+    expect(response.headers["Cache-Control"]).to include("no-store")
+    location = URI.parse(response.location)
+    expect("#{location.scheme}://#{location.host}#{location.path}").to eq("#{app_url}/connect/callback")
+    expect(Rack::Utils.parse_query(location.query).fetch("state")).to eq(params[:state])
+
+    plaintext = minted_code_from(response.location)
     expect(plaintext).to match(/\A[0-9a-f]{48}\z/)
     record = SealloConnectionCode.find_by!(digest: Digest::SHA256.hexdigest(plaintext))
     expect(record.store_id).to eq(store.id)
     expect(record.user_id).to eq(staff.id)
+    expect(record.shop_domain).to eq(shop)
     expect(record.expires_at).to be_within(2.seconds).of(10.minutes.from_now)
     expect(record.attributes.values).not_to include(plaintext)
     expect(foreign.store_connections).to be_empty
   end
 
+  it "refuses any return_to other than the app's exact callback, without minting" do
+    sign_in
+    [
+      "https://evil.example/connect/callback",
+      "#{app_url}/connect/callback/../../steal",
+      "#{app_url}/connect/callback?next=evil",
+      "#{app_url}.evil.example/connect/callback",
+      "#{app_url}/connect/callbackX"
+    ].each do |return_to|
+      get "/admin/seallo/connect", params: authorization_params(return_to: return_to)
+      expect(response).to have_http_status(:bad_request)
+      post "/admin/seallo/connect", params: authorization_params(return_to: return_to)
+      expect(response).to have_http_status(:bad_request)
+    end
+    expect(SealloConnectionCode.count).to eq(0)
+  end
+
+  it "refuses malformed shop domains and missing or oversized state" do
+    sign_in
+    [ "https://evil.example", "shop.myshopify.com.evil.example", "UPPER.myshopify.com", "a#{"b" * 260}.myshopify.com" ].each do |bad_shop|
+      post "/admin/seallo/connect", params: authorization_params(shop: bad_shop)
+      expect(response).to have_http_status(:bad_request)
+    end
+    [ nil, "", "s" * 1025 ].each do |state|
+      post "/admin/seallo/connect", params: authorization_params(state: state)
+      expect(response).to have_http_status(:bad_request)
+    end
+    expect(SealloConnectionCode.count).to eq(0)
+  end
+
+  it "answers 503 without minting when the app origin or bridge secret is not configured" do
+    allow(ENV).to receive(:[]).with("SEALLO_APP_URL").and_return(nil)
+    sign_in
+    post "/admin/seallo/connect", params: authorization_params
+    expect(response).to have_http_status(:service_unavailable)
+    expect(SealloConnectionCode.count).to eq(0)
+  end
+
   it "rejects a platform-only session with no workspace" do
     platform_user = User.create!(email: "seallo-platform-#{SecureRandom.hex(5)}@example.test", password: password, super_admin: true, admin: true)
     sign_in(platform_user, Store.base_domain)
-    get "/admin/seallo/connect"
+    get "/admin/seallo/connect", params: authorization_params
     expect(response).to have_http_status(:not_found)
-    post "/admin/seallo/connect"
+    post "/admin/seallo/connect", params: authorization_params
     expect(response).to have_http_status(:not_found)
+    expect(SealloConnectionCode.count).to eq(0)
+  end
+
+  it "does not mint for a staff member of another workspace on this workspace's host" do
+    other_store = Store.create!(slug: "seallo-other-#{SecureRandom.hex(5)}", name: "Other workspace", currency: "MAD")
+    outsider = other_store.users.create!(email: "seallo-outsider-#{SecureRandom.hex(5)}@example.test", password: password, admin: true)
+    host! "#{store.slug}.#{Store.base_domain}"
+    post "/admin/login", params: { email: outsider.email, password: password }
+    post "/admin/seallo/connect", params: authorization_params
+    expect(response).to redirect_to(admin_login_path)
     expect(SealloConnectionCode.count).to eq(0)
   end
 
   it "keeps confirmation agents out of the connection workflow" do
     agent = store.users.create!(email: "seallo-agent-#{SecureRandom.hex(5)}@example.test", password: password, confirmation_role: "agent")
     sign_in(agent)
-    post "/admin/seallo/connect"
+    post "/admin/seallo/connect", params: authorization_params
     expect(response).to redirect_to(home_admin_confirmations_path)
     expect(SealloConnectionCode.count).to eq(0)
   end
@@ -237,11 +323,11 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
         expect(document.at_css(".translation_missing")).to be_nil
         expect(response.body).not_to include("Translation missing", "translation missing")
       end
-      post "/admin/seallo/connect", params: { locale: locale }
+      get "/admin/seallo/connect", params: authorization_params(locale: locale)
       expect(response).to have_http_status(:ok)
       document = Nokogiri::HTML(response.body)
       expect(document.at_css(".translation_missing")).to be_nil
-      expect(document.at_css("code")["dir"]).to eq("ltr")
+      expect(document.at_css("dd[dir='ltr']").text).to eq(shop)
       expect(document.at_css("html")["dir"]).to eq(locale == "ar" ? "rtl" : "ltr")
     end
   end

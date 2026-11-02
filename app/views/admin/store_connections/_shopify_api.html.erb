@@ -27,8 +27,6 @@
     <%= button_to t("connections.shopify_api.test"), admin_store_connection_path(@connection), method: :patch, params: { operation: "verify_shopify_api" }, class: "admin-btn" %>
   <% end %>
   <% if @connection.shopify_app == "seallo_connect" %>
-    <%= link_to "Link through Seallo Connect", admin_seallo_connect_path, class: "admin-btn-secondary" %>
-  <% elsif @connection.active? %>
-    <%= button_to t(@connection.shopify_access_token_ciphertext.present? ? "connections.shopify_api.reauthorize" : "connections.shopify_api.connect"), admin_store_connection_path(@connection), method: :patch, params: { operation: "authorize_shopify" }, form: { data: { turbo: false } }, disabled: !@shopify_configured, class: "admin-btn-secondary" %>
+    <%= link_to "Seallo Connect", admin_seallo_connect_path, class: "admin-btn-secondary" %>
   <% end %>
 </section>

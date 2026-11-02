@@ -9,7 +9,7 @@ module PlatformHomeHelper
     team: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14a6.5 6.5 0 0 1 3.5 6"/>',
     flow_ok: '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
     flow_truck: '<path d="M3 6h11v10H3z"/><path d="M14 9h4l3 3v4h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
-    pin: '<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>',
+    pin: '<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>'
   }.freeze
 
   PLATFORM_FEATURE_ICONS = %i[bag confirm delivery ads profit team].freeze
@@ -17,9 +17,9 @@ module PlatformHomeHelper
   PLATFORM_WHY_ICONS = %i[bag confirm delivery pin ads profit].freeze
 
   PLATFORM_PARTNER_GROUPS = [
-    [:stores, [["Shopify", "shopify", 24], ["YouCan", "youcan", 24], ["WooCommerce", "woocommerce", 24]]],
-    [:delivery, [["Sendit", "sendit", 24], ["Ozon Express", "ozon", 24], ["Cathedis", "cathedis", 15], ["Ameex", "ameex", 13]]],
-    [:ads, [["Meta Ads", "meta", 15], ["TikTok Ads", "tiktok", 24]]],
+    [ :stores, [ [ "Shopify", "shopify", 24 ], [ "YouCan", "youcan", 24 ], [ "WooCommerce", "woocommerce", 24 ] ] ],
+    [ :delivery, [ [ "Sendit", "sendit", 24 ], [ "Ozon Express", "ozon", 24 ], [ "Cathedis", "cathedis", 15 ], [ "Ameex", "ameex", 13 ] ] ],
+    [ :ads, [ [ "Meta Ads", "meta", 15 ], [ "TikTok Ads", "tiktok", 24 ] ] ]
   ].freeze
 
   def platform_icon(name)

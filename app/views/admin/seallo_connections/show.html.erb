@@ -2,8 +2,6 @@
 <section class="admin-card p-5 space-y-3">
   <h2 class="admin-card__title"><%= current_store.name %></h2>
   <p><%= t("seallo_connect.instructions") %></p>
-  <%= button_to t("seallo_connect.generate_code"), admin_seallo_connect_path, class: "admin-btn", data: { turbo: false } %>
-  <% if @code %><p role="status"><code dir="ltr"><%= @code %></code></p><% end %>
   <p><%= t("seallo_connect.import_help") %></p>
   <%= link_to t("seallo_connect.privacy.link"), admin_shopify_privacy_requests_path, class: "admin-btn-secondary" %>
 </section>

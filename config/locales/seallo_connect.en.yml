@@ -1,8 +1,14 @@
 en:
   seallo_connect:
     title: Seallo Connect
-    instructions: Generate a code, then paste it into Seallo Connect in your Shopify admin. The code expires after 10 minutes and links the shop to this workspace. Keep it private.
-    generate_code: Generate connection code
+    instructions: Install Seallo Connect from the Shopify App Store, choose a plan there and approve the connection. Shopify returns you here to confirm. Nothing needs to be copied.
+    authorize:
+      title: Connect Shopify store
+      body: Confirm that this Shopify store should send its orders to this workspace. You can disconnect it at any time from Connected stores.
+      workspace: Workspace
+      shop: Shopify store
+      confirm: Connect store
+      cancel: Cancel
     import_help: Eligible Moroccan MAD cash-on-delivery orders arrive as New orders. Confirmations, stock and shipping follow your existing workspace rules.
     connection_states:
       configured: Awaiting verification

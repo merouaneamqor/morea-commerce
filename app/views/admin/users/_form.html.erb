@@ -38,6 +38,11 @@
         <%= f.select :confirmation_role, User::CONFIRMATION_ROLES.map { |role| [t("admin.confirmations.roles.#{role}"), role] }, {}, class: "admin-input" %>
         <p class="admin-help"><%= t("admin.confirmations.agent_not_admin") %></p>
       </div>
+      <div>
+        <%= f.label :pay_per_delivery, t("admin.team.rate_label"), class: "admin-label" %>
+        <%= text_field_tag "user[pay_per_delivery]", (@user.pay_per_delivery_cents.to_i / 100.0).then { |v| v == v.to_i ? v.to_i : v }, id: "user_pay_per_delivery", inputmode: "decimal", class: "admin-input" %>
+        <p class="admin-help"><%= t("admin.team.rate_help") %></p>
+      </div>
       <label class="admin-check"><%= f.check_box :admin %> Admin access</label>
     </div>
   </section>

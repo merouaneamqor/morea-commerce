@@ -36,6 +36,8 @@
     <%= hidden_field_tag :attention, params[:attention] if params[:attention] == "delivery_issues" %>
     <%= label_tag :connection_id, t("connections.source"), class: "admin-label" %>
     <%= select_tag :connection_id, options_from_collection_for_select(@connections, :id, :name, params[:connection_id]), include_blank: t("connections.all_sources"), class: "admin-input !w-auto" %>
+    <%= hidden_field_tag :group, @group if @group %>
+    <%= select_tag :agent_id, options_for_select([ [ t("admin.orders_groups.unassigned"), "none" ] ] + @agents.map { |a| [ a.name.presence || a.email, a.id ] }, params[:agent_id]), include_blank: t("admin.orders_groups.all_agents"), class: "admin-input !w-auto" %>
     <%= submit_tag t("connections.filter"), class: "admin-btn-secondary" %>
   <% end %>
   <% if params[:attention] == "delivery_issues" %>
@@ -44,14 +46,15 @@
       <%= link_to t("dashboard.filters.clear"), admin_orders_path(connection_id: params[:connection_id].presence, q: params[:q].presence), class: "admin-link" %>
     </div>
   <% end %>
+  <% keep = { q: params[:q].presence, connection_id: params[:connection_id].presence, agent_id: params[:agent_id].presence } %>
   <nav class="admin-tabs" aria-label="Filter orders">
-    <%= link_to "All", admin_orders_path(q: params[:q].presence, connection_id: params[:connection_id].presence), class: "admin-tab #{'is-active' if @status.blank?}" %>
-    <% Order::STATUSES.each do |status| %>
-      <%= link_to Order::STATUS_LABELS.fetch(status, status.humanize),
-            admin_orders_path(status: status, q: params[:q].presence, connection_id: params[:connection_id].presence),
-            class: "admin-tab #{'is-active' if @status == status}" %>
+    <% Admin::OrdersController::ORDER_GROUPS.each_key do |key| %>
+      <% active = !@archived && @status.blank? && (@group || "all") == key %>
+      <%= link_to admin_orders_path(keep.merge(group: (key unless key == "all"))), class: "admin-tab #{'is-active' if active}" do %>
+        <%= t("admin.orders_groups.#{key}") %> <span class="admin-tab__count"><%= @group_counts&.fetch(key) %></span>
+      <% end %>
     <% end %>
-    <%= link_to "Archived", admin_orders_path(status: "archived", q: params[:q].presence, connection_id: params[:connection_id].presence), class: "admin-tab #{'is-active' if @archived}" %>
+    <%= link_to "Archived", admin_orders_path(keep.merge(status: "archived")), class: "admin-tab #{'is-active' if @archived}" %>
   </nav>
 
   <% if params[:q].present? %>
@@ -64,7 +67,7 @@
   <div class="admin-table-wrap">
     <table class="admin-table">
       <thead>
-        <tr><th>Order</th><th><%= t("connections.source") %></th><th>Date</th><th>Customer</th><th>Phone</th><th>City</th><th>Status</th><th>Sendit</th><th class="is-numeric">Total</th></tr>
+        <tr><th>Order</th><th><%= t("connections.source") %></th><th>Date</th><th>Customer</th><th>Phone</th><th>City</th><th><%= t("admin.orders_groups.agent") %></th><th>Status</th><th>Sendit</th><th class="is-numeric">Total</th></tr>
       </thead>
       <tbody>
         <% @orders.each do |order| %>
@@ -80,6 +83,8 @@
             <td><%= order.customer_name %></td>
             <td class="admin-muted"><%= order.customer_phone %></td>
             <td class="admin-muted"><%= order.customer_city %></td>
+            <% agent = order.order_confirmation&.assigned_user %>
+            <td><%= agent ? tag.span(class: "seallo-agent") { tag.i((agent.name.presence || agent.email).first.upcase) + (agent.name.presence || agent.email) } : tag.span(t("admin.orders_groups.unassigned"), class: "admin-subdued") %></td>
             <td><%= admin_badge(order.status) %></td>
             <td><%= sendit_badge(order) || tag.span("—", class: "admin-subdued") %></td>
             <td class="is-numeric"><%= order.total_display %></td>

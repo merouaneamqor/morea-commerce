@@ -8,6 +8,21 @@ module Admin
       duplicate archive unarchive packing_slip comments tags collect refund
     ]
 
+    IN_PROGRESS = (Order::FLOW - %w[new confirmed preparing delivered] + Order::PROBLEM_STATUSES).freeze
+
+    # Tabs on the orders list: confirmation outcome while an order is new, delivery stage after.
+    ORDER_GROUPS = {
+      "all" => ->(scope) { scope },
+      "new" => ->(scope) { scope.left_joins(:order_confirmation).where(status: "new").where(order_confirmations: { disposition: [ nil, "pending" ] }) },
+      "no_answer" => ->(scope) { scope.joins(:order_confirmation).where(status: "new", order_confirmations: { disposition: "no_answer" }) },
+      "callbacks" => ->(scope) { scope.joins(:order_confirmation).where(status: "new", order_confirmations: { disposition: "callback" }) },
+      "confirmed" => ->(scope) { scope.where(status: %w[confirmed preparing]) },
+      "cancelled" => ->(scope) { scope.where(status: "cancelled") },
+      "in_progress" => ->(scope) { scope.where(status: IN_PROGRESS) },
+      "delivered" => ->(scope) { scope.where(status: "delivered") },
+      "returns" => ->(scope) { scope.where(status: "returned") }
+    }.freeze
+
     def index
       @status = params[:status]
       @archived = @status == "archived"
@@ -23,6 +38,15 @@ module Admin
       else
         @orders.active
       end
+      @agents = current_store.users.active.where(confirmation_role: "agent").or(current_store.users.active.where(admin: true)).order(:email)
+      if params[:agent_id].present?
+        @orders = params[:agent_id] == "none" ? @orders.left_joins(:order_confirmation).where(order_confirmations: { assigned_user_id: nil }) :
+          @orders.joins(:order_confirmation).where(order_confirmations: { assigned_user_id: @agents.find(params[:agent_id]).id })
+      end
+      @group_counts = ORDER_GROUPS.keys.index_with { |key| group_scope(@orders, key).count } unless @archived
+      @group = ORDER_GROUPS.key?(params[:group]) ? params[:group] : nil
+      @orders = group_scope(@orders, @group) if @group && !@archived
+      @orders = @orders.includes(order_confirmation: :assigned_user)
       @orders = @orders.by_status(@status) if @status.present? && !@archived
       @orders = @orders.where(status: Order::PROBLEM_STATUSES) if params[:attention] == "delivery_issues"
       if params[:q].present?
@@ -246,6 +270,10 @@ end
     end
 
     private
+
+    def group_scope(scope, key)
+      ORDER_GROUPS.fetch(key).call(scope)
+    end
 
     def require_shopify_workspace!
       head :not_found unless current_store

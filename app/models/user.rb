@@ -14,6 +14,7 @@ class User < ApplicationRecord
   has_many :order_events, dependent: :nullify
   has_many :confirmation_shifts, dependent: :nullify
   has_many :push_subscriptions, dependent: :destroy
+  has_many :agent_payments, dependent: :destroy
 
   STATUSES = %w[active suspended archived].freeze
   CONFIRMATION_ROLES = %w[agent supervisor].freeze

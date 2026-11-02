@@ -4,6 +4,14 @@ module Admin
 
     def index
       @customers = current_store.customers.order(orders_count: :desc, created_at: :desc)
+      @segments = Customers::Segments.new(current_store)
+      @segment = Customers::Segments::SEGMENTS.include?(params[:segment]) ? params[:segment] : nil
+      if @segment == "new"
+        # Customers with no order rows at all also count as new.
+        @customers = @customers.where.not(id: @segments.stats.keys - @segments.ids_in("new"))
+      elsif @segment
+        @customers = @customers.where(id: @segments.ids_in(@segment))
+      end
       if params[:q].present?
         q = "%#{Customer.sanitize_sql_like(params[:q].strip)}%"
         @customers = @customers.where("name ILIKE :q OR phone ILIKE :q OR email ILIKE :q OR city ILIKE :q", q: q)

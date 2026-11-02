@@ -137,7 +137,10 @@ Rails.application.routes.draw do
     end
     resources :collections
     resources :discounts, except: %i[show]
-    resources :users, path: "staff", except: %i[show]
+    resources :users, path: "staff", except: %i[show] do
+      member { post :pay }
+    end
+    get "my_stats", to: "my_stats#show", as: :my_stats
     get "media", to: "media#index", as: :media
     post "media/upload", to: "media#upload", as: :media_upload
     post "media/edits", to: "media#edits", as: :media_edits

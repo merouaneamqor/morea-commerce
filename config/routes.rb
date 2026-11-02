@@ -47,6 +47,7 @@ Rails.application.routes.draw do
     post "seallo/status", to: "seallo#status"
     post "seallo/sync", to: "seallo#sync"
     post "seallo/disconnect", to: "seallo#disconnect"
+    post "woocommerce/connect", to: "woocommerce#connect"
     namespace :v1 do
       resources :order_imports, only: :create
     end
@@ -110,6 +111,8 @@ Rails.application.routes.draw do
   namespace :admin do
     get "seallo/connect", to: "seallo_connections#show", as: :seallo_connect
     post "seallo/connect", to: "seallo_connections#create"
+    get "woocommerce/connect", to: "woocommerce_connections#show", as: :woocommerce_connect
+    post "woocommerce/connect", to: "woocommerce_connections#create"
     resources :shopify_privacy_requests, only: %i[index show] do
       member do
         get :export

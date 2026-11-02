@@ -228,6 +228,7 @@ module Types
     end
 
     def customers(query: nil, limit: nil)
+      audit_personal_data("customers")
       scope = store.customers.order(orders_count: :desc, name: :asc)
       if query.present?
         term = "%#{ActiveRecord::Base.sanitize_sql_like(query)}%"
@@ -237,10 +238,13 @@ module Types
     end
 
     def customer(phone:)
-      store.customers.includes(:addresses).find_by(phone: Catalog::StoreOps.normalize_phone(phone))
+      found = store.customers.includes(:addresses).find_by(phone: Catalog::StoreOps.normalize_phone(phone))
+      audit_personal_data("customer", subject: found)
+      found
     end
 
     def abandoned_carts(older_than_hours: nil, limit: nil)
+      audit_personal_data("abandoned_carts")
       store_ops { Catalog::StoreOps.abandoned_carts(store, older_than_hours: older_than_hours, limit: limit) }
     end
 
@@ -279,6 +283,7 @@ module Types
     end
 
     def export_csv(kind:)
+      audit_personal_data("export_csv", kind: kind) if kind.to_s == "customers"
       store_ops { Catalog::StoreOps.export_csv(store, kind: kind) }
     end
 
@@ -301,12 +306,14 @@ module Types
     end
 
     def order_desk(number:, include_contact: false)
+      audit_personal_data("order_desk") if include_contact
       Catalog::OrderDesk.details(store, number: number, include_contact: include_contact)
     rescue Catalog::OrderDesk::Error => e
       raise GraphQL::ExecutionError, e.message
     end
 
     def shipping_label(number:)
+      audit_personal_data("shipping_label")
       Catalog::OrderDesk.label(store, number: number)
     rescue Catalog::OrderDesk::Error => e
       raise GraphQL::ExecutionError, e.message
@@ -316,6 +323,13 @@ module Types
 
     def store
       context.fetch(:store)
+    end
+
+    # Fields that return buyer contact details record who read them and through
+    # which surface ("api" for GraphQL clients, "mcp" for agent tools).
+    def audit_personal_data(operation, subject: nil, **metadata)
+      PersonalDataAudit.record(store: store, source: context[:source] || "api", surface: "graphql.#{operation}",
+        actor_label: context[:actor_label], ip: context[:ip], subject: subject, **metadata)
     end
 
     def analytics

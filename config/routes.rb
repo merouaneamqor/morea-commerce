@@ -12,7 +12,16 @@ Rails.application.routes.draw do
   post "webhooks/shopify/uninstalled", to: "webhooks/shopify_lifecycle#uninstall", as: :shopify_uninstalled
   post "consent/tracking", to: "consents#tracking", as: :tracking_consent
 
+  get "/.well-known/oauth-protected-resource/platform/mcp", to: "platform_oauth/metadata#protected_resource"
+  get "/.well-known/oauth-authorization-server/platform/oauth", to: "platform_oauth/metadata#authorization_server"
+  get "/platform/oauth/.well-known/oauth-authorization-server", to: "platform_oauth/metadata#authorization_server"
+  get "/platform/oauth/authorize", to: "platform_oauth/authorizations#show", as: :platform_oauth_authorize
+  post "/platform/oauth/authorize", to: "platform_oauth/authorizations#create"
+  post "/platform/oauth/token", to: "platform_oauth/tokens#create", as: :platform_oauth_token
+  match "/platform/oauth/token", to: "platform_oauth/tokens#preflight", via: :options
+
   post "/graphql", to: "graphql#execute"
+  match "/platform/mcp", to: "platform_mcp#handle", via: %i[get post delete]
   match "/mcp", to: "mcp#handle", via: %i[get post delete]
   get "/sitemap.xml", to: "sitemaps#show", as: :sitemap, defaults: { format: :xml }
 
@@ -51,6 +60,13 @@ Rails.application.routes.draw do
   end
 
   get "/", to: "platform_home#show", as: :platform_home, constraints: ->(request) { Store.apex_host?(request.host) }
+  # Public Seallo Connect pages linked from the Shopify app listing; apex only, never tenant hosts.
+  constraints ->(request) { Store.apex_host?(request.host) } do
+    get "/seallo-connect", to: "seallo_connect_pages#show", as: :seallo_connect_page
+    get "/seallo-connect/pricing", to: "seallo_connect_pages#pricing", as: :seallo_connect_pricing
+    get "/seallo-connect/privacy", to: "seallo_connect_pages#privacy", as: :seallo_connect_privacy
+    get "/seallo-connect/terms", to: "seallo_connect_pages#terms", as: :seallo_connect_terms
+  end
   get "/signup", to: "signups#new", as: :signup
   post "/signup", to: "signups#create"
   get "/signup/thanks", to: "signups#thanks", as: :signup_thanks
@@ -110,6 +126,11 @@ Rails.application.routes.draw do
 
     root to: "dashboard#show"
     resource :subscription, only: :show
+    resource :platform_agent_api, path: "platform/agent-api", only: :show, controller: "platform_agent_api" do
+      post :token, action: :generate_token
+      delete :token, action: :revoke_token
+      delete :connections, action: :revoke_connections
+    end
     get "platform", to: "platform#show", as: :platform
     resources :platform_users, path: "platform/users", except: %i[show destroy] do
       member { post "lifecycle/:lifecycle", action: :lifecycle, as: :lifecycle, constraints: { lifecycle: /suspend|reactivate|archive|restore/ } }

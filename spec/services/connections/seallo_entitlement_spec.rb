@@ -9,7 +9,7 @@ RSpec.describe Connections::SealloEntitlement do
       shopify_app: "seallo_connect", shopify_oauth: true)
   end
   let(:payload) do
-    { "active" => true, "plan_name" => "Seallo Basic", "order_limit" => 30,
+    { "active" => true, "plan_name" => "Seallo Basic", "order_limit" => 19,
       "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601 }
   end
 

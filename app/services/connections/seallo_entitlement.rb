@@ -3,7 +3,7 @@ module Connections
     # Shopify remains authoritative. A short cache lets signed order deliveries
     # proceed without a network call and bounds access after a plan cancellation.
     CACHE_LIFETIME = 15.minutes
-    PLANS = { "Seallo Basic" => 30, "Seallo Pro" => 100, "Seallo Premium" => nil }.freeze
+    PLANS = { "Seallo Basic" => 19, "Seallo Pro" => 99, "Seallo Premium" => nil }.freeze
 
     def self.refresh!(connection)
       return unless connection.shopify_app == "seallo_connect"

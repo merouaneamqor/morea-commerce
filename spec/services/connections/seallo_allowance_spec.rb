@@ -6,7 +6,7 @@ RSpec.describe Connections::SealloAllowance do
   let(:store) { Store.create!(slug: "seallo-allowance-#{SecureRandom.hex(5)}", name: "Synthetic quota workspace", currency: "MAD", storefront_enabled: false) }
   let(:connection) do
     store.store_connections.create!(provider: "shopify", name: "Synthetic paid shop", external_domain: "allowance-#{SecureRandom.hex(5)}.myshopify.com",
-      shopify_app: "seallo_connect", shopify_oauth: true, shopify_plan_name: "Basic", shopify_order_limit: 30,
+      shopify_app: "seallo_connect", shopify_oauth: true, shopify_plan_name: "Basic", shopify_order_limit: 19,
       shopify_entitled_until: 1.day.from_now, shopify_billing_period_start: 10.days.ago, shopify_billing_period_end: 20.days.from_now)
   end
   let(:customer) { store.customers.create!(name: "Synthetic quota customer", phone: "+212600000099", city: "Synthetic City") }
@@ -22,23 +22,23 @@ RSpec.describe Connections::SealloAllowance do
       .to raise_error(Connections::WebhookIntake::Error) { |error| expect([ error.message, error.status ]).to eq([ code, status ]) }
   end
 
-  it "allows the 30th Basic import, then blocks the 31st without creating a receipt" do
-    29.times { accepted_receipt }
-    expect(described_class.used(connection)).to eq(29)
+  it "allows the 19th Basic import, then blocks the 20th without creating a receipt" do
+    18.times { accepted_receipt }
+    expect(described_class.used(connection)).to eq(18)
     expect { connection.with_lock { described_class.check!(connection) } }.not_to raise_error
     accepted_receipt
-    expect(described_class.used(connection)).to eq(30)
+    expect(described_class.used(connection)).to eq(19)
     expect_failure("order_limit_reached", 429)
-    expect(connection.external_order_receipts.count).to eq(30)
+    expect(connection.external_order_receipts.count).to eq(19)
   end
 
-  it "allows the 100th Pro import and blocks the next one" do
-    connection.update!(shopify_plan_name: "Pro", shopify_order_limit: 100)
-    99.times { accepted_receipt }
+  it "allows the 99th Pro import and blocks the next one" do
+    connection.update!(shopify_plan_name: "Pro", shopify_order_limit: 99)
+    98.times { accepted_receipt }
     expect { connection.with_lock { described_class.check!(connection) } }.not_to raise_error
     accepted_receipt
     expect_failure("order_limit_reached", 429)
-    expect(described_class.used(connection)).to eq(100)
+    expect(described_class.used(connection)).to eq(99)
   end
 
   it "permits unlimited imports only while Premium has a current entitlement" do

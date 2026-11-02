@@ -605,6 +605,50 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_120000) do
     t.index ["product_id"], name: "index_product_variants_on_product_id"
   end
 
+  create_table "platform_api_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "token_digest", null: false
+    t.string "last_four", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token_digest"], name: "index_platform_api_tokens_on_token_digest", unique: true
+    t.index ["user_id"], name: "index_platform_api_tokens_on_user_id"
+    t.index ["user_id"], name: "index_platform_api_tokens_one_live_per_user", unique: true, where: "(revoked_at IS NULL)"
+  end
+
+  create_table "platform_oauth_codes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "code_digest", null: false
+    t.string "client_id", null: false
+    t.string "redirect_uri", null: false
+    t.string "code_challenge", null: false
+    t.string "resource", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "consumed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code_digest"], name: "index_platform_oauth_codes_on_code_digest", unique: true
+    t.index ["user_id"], name: "index_platform_oauth_codes_on_user_id"
+  end
+
+  create_table "platform_oauth_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "token_digest", null: false
+    t.string "refresh_digest", null: false
+    t.string "client_id", null: false
+    t.string "resource", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "refresh_expires_at", null: false
+    t.datetime "revoked_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["refresh_digest"], name: "index_platform_oauth_tokens_on_refresh_digest", unique: true
+    t.index ["token_digest"], name: "index_platform_oauth_tokens_on_token_digest", unique: true
+    t.index ["user_id"], name: "index_platform_oauth_tokens_on_user_id"
+  end
+
   create_table "products", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.string "name", null: false
@@ -882,6 +926,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_120000) do
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying::text, 'suspended'::character varying::text, 'archived'::character varying::text])", name: "users_status_check"
   end
 
+  add_foreign_key "platform_oauth_codes", "users", on_delete: :cascade
+  add_foreign_key "platform_oauth_tokens", "users", on_delete: :cascade
+  add_foreign_key "platform_api_tokens", "users", on_delete: :cascade
   add_foreign_key "access_requests", "stores", on_delete: :nullify
   add_foreign_key "access_requests", "users", column: "reviewed_by_id", on_delete: :nullify
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

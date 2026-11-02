@@ -3088,8 +3088,8 @@ main {
     .admin-dashboard-metric__delta, .admin-dashboard-secondary__metric span { color: var(--s-muted); }
     .admin-dashboard-metric .admin-metric__value, .admin-dashboard-secondary__metric strong { color: var(--s-ink); }
     .admin-dashboard-eyebrow { color: var(--s-rust); }
-    .admin-dashboard-period { background: var(--s-soft2); border-radius: 999px; padding: 3px; }
-    .admin-dashboard-period a { border-radius: 999px; color: var(--s-muted); }
+    .admin-dashboard-period { align-items: center; background: var(--s-soft2); border-radius: 999px; height: 2rem; padding: 3px; }
+    .admin-dashboard-period a { align-items: center; border-radius: 999px; color: var(--s-muted); display: inline-flex; font-size: 13px; height: 100%; line-height: 1; padding: 0 0.875rem; white-space: nowrap; }
     .admin-dashboard-period a:hover, .admin-dashboard-period a.is-active { background: var(--s-strong); box-shadow: none; color: var(--s-strong-text); }
     .admin-action-center, .admin-momentum { background: var(--s-card); border: 1px solid var(--s-line); border-radius: 18px; box-shadow: none; color: var(--s-ink); }
     .admin-action-center__item { background: var(--s-soft); border-color: var(--s-line); border-radius: 14px; }
@@ -3151,14 +3151,18 @@ main {
     }
   }
 
-  /* Auth pages (sign in, sign up, password reset): cream canvas, white card, rust button */
-  .seallo-auth { color: var(--s-ink); }
+}
+
+/* Auth pages (sign in, sign up, password reset): cream canvas, white card, rust button.
+   Deliberately outside @layer: the overrides below must beat the text-white and
+   text-[#b9d3ff] utilities in the markup, and utilities outrank the components layer. */
+  .seallo-auth { --s-card: #fff; --s-ink: #1f1a17; --s-ink-2: #3b312c; --s-ctl: #e3d9cf; --s-rust: #a2402a; color: var(--s-ink); }
   .seallo-auth .admin-wordmark { color: #a2402a; font-size: 1.625rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
   .seallo-auth .fx-stage { background: #f6f1ec; color: var(--s-ink); }
   .seallo-auth .fx-stage::before, .seallo-auth .fx-orb { display: none; }
   .seallo-auth .fx-glass { background: var(--s-card); border: 1px solid #ece4dc; border-radius: 1.5rem; box-shadow: 0 24px 60px -36px rgba(60, 30, 15, 0.35); -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .seallo-auth .fx-input { background: var(--s-card); border-color: var(--s-ctl); color: var(--s-ink); }
-  .seallo-auth .fx-input::placeholder { color: #a79b91; }
+  .seallo-auth .fx-input { background: var(--s-card); border-color: #8f837a; color: var(--s-ink); }
+  .seallo-auth .fx-input::placeholder { color: #8a7f77; }
   .seallo-auth .fx-input:focus { border-color: #a2402a; box-shadow: 0 0 0 3px rgba(162, 64, 42, 0.15); }
   .seallo-auth .fx-label { color: var(--s-ink-2); }
   .seallo-auth .fx-btn { background: #a2402a; border-color: #a2402a; box-shadow: none; }
@@ -3169,11 +3173,18 @@ main {
   .seallo-auth .fx-chip { background: #ead6cc; border-color: transparent; color: #5a2a1c; }
   .seallo-auth .fx-gradient-text { background: none; color: var(--s-ink); }
   .seallo-auth .text-white { color: var(--s-ink); }
-  .seallo-auth [class*="text-[#b9d3ff]"], .seallo-auth [class*="text-[#7f9bc9]"] { color: #7a6f67; }
+  .seallo-auth [class*="text-[#b9d3ff]"], .seallo-auth [class*="text-[#7f9bc9]"] { color: #6b6059; }
   .seallo-auth .border-white\/15 { border-color: #ece4dc; }
+  .seallo-auth .fx-dot { background: var(--s-rust); box-shadow: none; animation: none; }
+  .seallo-auth .theme-picker__option { background: var(--s-card); border-color: var(--s-ctl); }
+  .seallo-auth .theme-picker__option:hover { border-color: #a2402a; }
+  .seallo-auth .theme-picker__option:has(input:checked) { border-color: #a2402a; box-shadow: 0 0 0 3px rgba(162, 64, 42, 0.18); }
+  .seallo-auth .theme-picker__option:has(input:focus-visible) { outline-color: #a2402a; }
+  .seallo-auth .theme-picker__desc { color: #6b6059; opacity: 1; }
   .seallo-auth .fx-stage header a.fx-link, .seallo-auth .fx-stage header nav a { color: #7a6f67; }
   .seallo-auth .fx-stage header nav a.font-semibold { color: var(--s-ink); }
 
+@layer components {
   /* Seallo page components: stat tiles, team cards, statistics, segments */
   .admin-body:is([data-admin-theme="seallo"], [data-admin-theme="seallo_dark"]) {
 

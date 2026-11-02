@@ -7,7 +7,7 @@
       <h1 class="admin-page-header__title"><%= t("dashboard.title") %></h1>
       <p class="admin-muted mt-1"><%= t("dashboard.subtitle") %></p>
     </div>
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap items-center gap-2">
       <nav class="admin-dashboard-period" aria-label="<%= t('dashboard.period') %>">
         <% %w[7 30].each do |period| %><%= link_to t("dashboard.days", count: period.to_i), admin_root_path(period: period), class: @overview.days == period.to_i ? "is-active" : nil, aria: { current: @overview.days == period.to_i ? "page" : nil } %><% end %>
       </nav>

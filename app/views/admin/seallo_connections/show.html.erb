@@ -1,15 +1,36 @@
-<h1 class="admin-page-title"><%= t("seallo_connect.title") %></h1>
-<section class="admin-card p-5 space-y-3">
-  <h2 class="admin-card__title"><%= current_store.name %></h2>
-  <p><%= t("seallo_connect.instructions") %></p>
-  <%= button_to t("seallo_connect.generate_code"), admin_seallo_connect_path, class: "admin-btn", data: { turbo: false } %>
-  <% if @code %><p role="status"><code dir="ltr"><%= @code %></code></p><% end %>
-  <p><%= t("seallo_connect.import_help") %></p>
+<% state_badges = { "verified" => "success", "configured" => "attention", "disconnected" => "neutral" } %>
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("seallo_connect.title") %></h1>
+    <p class="admin-page-header__meta"><%= current_store.name %></p>
+  </div>
   <%= link_to t("seallo_connect.privacy.link"), admin_shopify_privacy_requests_path, class: "admin-btn-secondary" %>
+</div>
+
+<section class="admin-card">
+  <div class="grid gap-6 p-5 md:grid-cols-2 md:gap-0 md:divide-x md:divide-[#ece4dc]">
+    <div class="flex items-start gap-4 md:pe-8">
+      <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#ead6cc] text-sm font-bold text-[#5a2a1c]" aria-hidden="true">1</span>
+      <p class="text-[15px] leading-6"><%= t("seallo_connect.instructions") %></p>
+    </div>
+    <div class="flex items-start gap-4 md:ps-8">
+      <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#ead6cc] text-sm font-bold text-[#5a2a1c]" aria-hidden="true">2</span>
+      <p class="admin-muted text-[15px] leading-6"><%= t("seallo_connect.import_help") %></p>
+    </div>
+  </div>
 </section>
-<% @connections.each do |connection| %>
-  <section class="admin-card p-5 mt-4">
-    <%= link_to connection.name, admin_store_connection_path(connection), class: "font-semibold" %>
-    <p><%= t("seallo_connect.connection_states.#{connection.connection_state}") %> · <%= t("seallo_connect.sync_states.#{connection.shopify_sync_state || 'waiting'}") %></p>
+
+<% if @connections.any? %>
+  <section class="admin-card mt-4 divide-y divide-[#ece4dc]">
+    <% @connections.each do |connection| %>
+      <% sync_state = connection.shopify_sync_state || "waiting" %>
+      <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4">
+        <%= link_to connection.name, admin_store_connection_path(connection), class: "font-semibold hover:underline" %>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="admin-muted text-[13px]"><%= t("seallo_connect.sync_states.#{sync_state}") %></span>
+          <span class="admin-badge admin-badge--<%= state_badges.fetch(connection.connection_state, "neutral") %>"><%= t("seallo_connect.connection_states.#{connection.connection_state}") %></span>
+        </div>
+      </div>
+    <% end %>
   </section>
 <% end %>

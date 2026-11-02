@@ -12,26 +12,15 @@ module Admin
 
     def new
       @connection = current_store.store_connections.new
-      @connection.provider = params[:provider] if StoreConnection::PROVIDERS.include?(params[:provider])
-      # App launches may suggest a domain, but only the submitted form and OAuth
-      # approval can connect it. Never prefill credentials or tenant identity.
-      shop = params[:shop]
-      if @connection.provider == "shopify" && shop.is_a?(String) && shop.bytesize <= 253 && shop.match?(/\A[a-z0-9][a-z0-9-]*\.myshopify\.com\z/)
-        @connection.external_domain = shop
-      end
+      @connection.provider = params[:provider] if StoreConnection::MANUAL_PROVIDERS.include?(params[:provider])
     end
 
+    # Shopify connects only through Seallo Connect, never from this form.
     def create
       @connection = current_store.store_connections.new(connection_params)
-      if @connection.provider == "shopify" && !@shopify_configured
-        @connection.errors.add(:base, t("connections.shopify_api.errors.config_missing"))
-        return render :new, status: :unprocessable_entity
-      end
-      @connection.shopify_oauth = true if @connection.provider == "shopify"
+      return head :unprocessable_entity unless StoreConnection::MANUAL_PROVIDERS.include?(@connection.provider)
+
       if @connection.save
-        if @connection.provider == "shopify"
-          return redirect_to shopify_authorization_url, allow_other_host: true, status: :see_other
-        end
         redirect_to admin_store_connection_path(@connection), notice: t("connections.saved")
       else
         render :new, status: :unprocessable_entity
@@ -50,17 +39,6 @@ module Admin
       end
     end
 
-    def shopify_callback
-      @connection, code = Connections::ShopifyOauth.consume_callback!(query_string: request.query_string,
-        session: session, store: current_store, user_id: current_user.id)
-      Connections::ShopifyApi.new(connection: @connection).authorize!(code: code)
-      ShopifyOrdersSyncJob.perform_later(@connection.id)
-      redirect_to admin_store_connection_path(@connection), notice: t("connections.shopify_api.verified")
-    rescue Connections::ShopifyOauth::Error, Connections::ShopifyApi::Error => error
-      @oauth_error_code = error.code
-      render :oauth_error, status: :unprocessable_entity
-    end
-
     def update
       # Connection identity and secret cannot be silently replaced underneath an
       # existing import identity. A new provider/store uses a new connection.
@@ -73,10 +51,6 @@ module Admin
         end
       when "reconnect"
         @connection.with_lock { @connection.update!(active: true, verified_at: nil, last_error_code: nil, shopify_api_verified_at: nil) }
-      when "authorize_shopify"
-        return head :unprocessable_entity unless @connection.provider == "shopify"
-
-        return redirect_to shopify_authorization_url, allow_other_host: true, status: :see_other
       when "verify_shopify_api"
         return head :unprocessable_entity unless @connection.provider == "shopify"
 
@@ -104,7 +78,7 @@ module Admin
     rescue ActiveRecord::RecordInvalid
       @receipts = @connection.external_order_receipts.order(received_at: :desc).limit(50).includes(:order)
       render :show, status: :unprocessable_entity
-    rescue Connections::ShopifyApi::Error, Connections::ShopifyOauth::Error, Connections::ShopifySyncRequest::Error => error
+    rescue Connections::ShopifyApi::Error, Connections::ShopifySyncRequest::Error => error
       @connection.reload
       @connection.errors.add(:base, t("connections.shopify_api.errors.#{error.code}"))
       @receipts = @connection.external_order_receipts.order(received_at: :desc).limit(50).includes(:order)
@@ -115,13 +89,6 @@ module Admin
 
     def set_shopify_configuration
       @shopify_configured = Connections::ShopifyOauth.configured?
-    end
-
-    def shopify_authorization_url
-      raise Connections::ShopifyOauth::Error.new("disconnected") if @connection.shopify_app == "seallo_connect"
-
-      callback = admin_shopify_callback_url(host: Store.base_domain, protocol: Rails.env.local? ? "http" : "https", port: ENV["APP_PORT"].presence)
-      Connections::ShopifyOauth.authorization_url(connection: @connection, session: session, user_id: current_user.id, callback_url: callback)
     end
 
     def require_workspace!
@@ -135,8 +102,7 @@ module Admin
 
     def connection_params
       input = params.require(:store_connection)
-      fields = input[:provider] == "shopify" ? [] : %i[external_store_id webhook_secret]
-      input.permit(:name, :provider, :external_domain, *fields)
+      input.permit(:name, :provider, :external_domain, :external_store_id, :webhook_secret)
     end
   end
 end

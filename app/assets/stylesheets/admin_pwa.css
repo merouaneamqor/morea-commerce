@@ -6,10 +6,10 @@
   gap: 16px;
   margin-bottom: 20px;
   padding: 16px;
-  border: 1px solid #b9d3ff;
-  border-radius: 12px;
-  background: #edf5ff;
-  color: #132c50;
+  border: 1px solid #ece4dc;
+  border-radius: 16px;
+  background: #fff;
+  color: #3b312c;
   font-size: 13px;
   line-height: 1.5;
 }

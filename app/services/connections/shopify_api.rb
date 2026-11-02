@@ -36,6 +36,7 @@ module Connections
       end
     end
 
+    # Retained for the legacy token-exchange tests. No HTTP route calls it any more.
     # The OAuth callback caller must already have validated HMAC, state and shop.
     def authorize!(code:)
       synchronize do

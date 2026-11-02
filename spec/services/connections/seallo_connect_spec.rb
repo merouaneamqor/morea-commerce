@@ -107,8 +107,24 @@ RSpec.describe Connections::SealloConnect do
     expect(existing.reload).not_to be_active
   end
 
-  it "does not replace a legacy connection for the same shop" do
-    existing = store.store_connections.create!(provider: "shopify", external_domain: shop, name: "Existing Shopify app", shopify_oauth: true)
+  it "adopts the retired standalone app's connection for the same shop, keeping receipts but not its credentials" do
+    existing = store.store_connections.create!(provider: "shopify", external_domain: shop, name: "Existing Shopify app", shopify_oauth: true,
+      shopify_access_token: "synthetic-old-access", shopify_access_token_expires_at: 1.hour.from_now,
+      shopify_refresh_token: "synthetic-old-refresh", shopify_refresh_token_expires_at: 30.days.from_now)
+    existing.external_order_receipts.create!(external_id: "synthetic-order-1", status: "rejected", error_code: "incomplete_payload", received_at: Time.current)
+
+    result = connect
+    expect(result.id).to eq(existing.id)
+    expect(result.shopify_app).to eq("seallo_connect")
+    expect(result).to be_shopify_api_connected
+    expect(result.shopify_access_token_ciphertext).to be_nil
+    expect(result.shopify_refresh_token_ciphertext).to be_nil
+    expect(result.external_order_receipts.count).to eq(1)
+    expect(store.store_connections.count).to eq(1)
+  end
+
+  it "does not convert a manually signed source for the same shop" do
+    existing = store.store_connections.create!(provider: "shopify", external_domain: shop, name: "Signed source", webhook_secret: "synthetic-signing-secret-123")
     expect { connect }.to raise_error(described_class::Error, "existing_connection")
     expect(existing.reload.shopify_app).to be_nil
     expect(store.store_connections.count).to eq(1)
@@ -119,6 +135,20 @@ RSpec.describe Connections::SealloConnect do
     expect(connect.id).to eq(existing.id)
     expect(existing.reload).to be_active
     expect(store.store_connections.count).to eq(1)
+  end
+
+  it "reconnects a shop that is already active in this workspace without creating another connection" do
+    existing = store.store_connections.create!(provider: "shopify", external_domain: shop, name: "Active shop", shopify_oauth: true, shopify_app: "seallo_connect")
+    expect(connect.id).to eq(existing.id)
+    expect(existing.reload).to be_shopify_api_connected
+    expect(store.store_connections.count).to eq(1)
+  end
+
+  it "consumes a code only for the shop it was minted for" do
+    bound = SealloConnectionCode.issue!(store: store, user: staff, shop: "bound-#{SecureRandom.hex(4)}.myshopify.com")
+    expect { described_class.call(code: bound, shop: shop) }.to raise_error(described_class::Error, "invalid_code")
+    expect(SealloConnectionCode.find_by!(digest: Digest::SHA256.hexdigest(bound)).consumed_at).to be_nil
+    expect(store.store_connections).to be_empty
   end
 
   it "does not issue a workspace code to another workspace's staff" do

@@ -1,8 +1,14 @@
 fr:
   seallo_connect:
     title: Seallo Connect
-    instructions: Générez un code, puis collez-le dans Seallo Connect depuis votre administration Shopify. Le code expire après 10 minutes et relie la boutique à cet espace de travail. Gardez-le confidentiel.
-    generate_code: Générer un code de connexion
+    instructions: Installez Seallo Connect depuis l’App Store Shopify, choisissez un forfait puis approuvez la connexion. Shopify vous renvoie ici pour confirmer. Rien à copier.
+    authorize:
+      title: Connecter la boutique Shopify
+      body: Confirmez que cette boutique Shopify doit envoyer ses commandes à cet espace de travail. Vous pouvez la déconnecter à tout moment depuis Boutiques connectées.
+      workspace: Espace de travail
+      shop: Boutique Shopify
+      confirm: Connecter la boutique
+      cancel: Annuler
     import_help: Les commandes marocaines éligibles, en MAD et payables à la livraison, arrivent comme nouvelles commandes. La confirmation, le stock et l’expédition suivent les règles existantes de votre espace de travail.
     connection_states:
       configured: En attente de vérification

@@ -2,6 +2,8 @@
 
 class StoreConnection < ApplicationRecord
   PROVIDERS = %w[shopify woocommerce youcan].freeze
+  # Shopify connects only through Seallo Connect; these providers are added by hand.
+  MANUAL_PROVIDERS = %w[woocommerce youcan].freeze
   SHOPIFY_API_ERRORS = %w[config_missing credentials_missing disconnected invalid_credentials shop_not_permitted missing_scopes source_mismatch rate_limited unavailable invalid_response].freeze
 
   belongs_to :store

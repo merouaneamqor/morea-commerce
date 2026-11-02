@@ -3,40 +3,28 @@ en:
     heading: "Choose your theme"
     help: "Pick how your workspace looks. You can change it later in Settings."
     names:
-      blue: "Blue"
-      dark: "Dark"
-      light: "Light"
-      current: "Current"
+      seallo: "Seallo"
+      seallo_dark: "Dark Seallo"
     descriptions:
-      blue: "Navy sidebar, soft blue pages"
-      dark: "Easy on the eyes at night"
-      light: "Clean white and bright"
-      current: "The original grey look"
+      seallo: "Warm cream pages, rust accents"
+      seallo_dark: "Warm charcoal, easy on the eyes at night"
 fr:
   admin_theme:
     heading: "Choisissez votre thème"
     help: "Choisissez l’apparence de votre espace. Vous pourrez la modifier plus tard dans Paramètres."
     names:
-      blue: "Bleu"
-      dark: "Sombre"
-      light: "Clair"
-      current: "Actuel"
+      seallo: "Seallo"
+      seallo_dark: "Seallo sombre"
     descriptions:
-      blue: "Menu bleu nuit, pages bleu clair"
-      dark: "Reposant le soir"
-      light: "Blanc, net et lumineux"
-      current: "L’apparence grise d’origine"
+      seallo: "Pages crème, accents rouille"
+      seallo_dark: "Anthracite chaud, reposant le soir"
 ar:
   admin_theme:
     heading: "اختر المظهر"
     help: "اختر مظهر مساحة عملك. يمكنك تغييره لاحقاً من الإعدادات."
     names:
-      blue: "أزرق"
-      dark: "داكن"
-      light: "فاتح"
-      current: "الحالي"
+      seallo: "سياللو"
+      seallo_dark: "سياللو داكن"
     descriptions:
-      blue: "قائمة كحلية وصفحات زرقاء فاتحة"
-      dark: "مريح للعين ليلاً"
-      light: "أبيض نظيف ومشرق"
-      current: "المظهر الرمادي الأصلي"
+      seallo: "صفحات بلون الكريم ولمسات قرميدية"
+      seallo_dark: "فحمي دافئ، مريح للعين ليلاً"

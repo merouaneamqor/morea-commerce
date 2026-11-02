@@ -37,7 +37,9 @@
           "Explore your workspace and subscribe to start using your tools"
         ]
       },
-      "no_account": "Don’t have an account?"
+      "no_account": "Don’t have an account?",
+      "forgot_password": "Forgot your password?",
+      "create_account": "Create an account"
     },
     "registration_mailer": {
       "subject": "Verify your email — %{name}",
@@ -136,7 +138,9 @@
           "Explorez votre espace et abonnez-vous pour utiliser vos outils"
         ]
       },
-      "no_account": "Vous n’avez pas encore de compte ?"
+      "no_account": "Vous n’avez pas encore de compte ?",
+      "forgot_password": "Mot de passe oublié ?",
+      "create_account": "Créer un compte"
     },
     "registration_mailer": {
       "subject": "Vérifiez votre email — %{name}",
@@ -235,7 +239,9 @@
           "استكشف مساحة عملك واشترك لاستخدام أدواتك"
         ]
       },
-      "no_account": "ليس لديك حساب بعد؟"
+      "no_account": "ليس لديك حساب بعد؟",
+      "forgot_password": "نسيت كلمة المرور؟",
+      "create_account": "إنشاء حساب"
     },
     "registration_mailer": {
       "subject": "تأكيد بريدك الإلكتروني — %{name}",

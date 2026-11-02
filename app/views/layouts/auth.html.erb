@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title><%= content_for?(:title) ? yield(:title) : "Sign in" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="color-scheme" content="dark">
+    <meta name="color-scheme" content="light">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= render "shared/platform_icons" %>
@@ -15,7 +15,7 @@
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
-  <body class="bg-[#04122e]" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
+  <body class="seallo-auth bg-[#f6f1ec]" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
     <% brand = current_store&.name.presence || Store.platform_name %>
     <div class="fx-stage" dir="<%= localized && rtl? ? "rtl" : "ltr" %>">
       <span class="fx-orb" style="width: 28rem; height: 28rem; top: -8rem; right: -6rem" aria-hidden="true"></span>
@@ -24,7 +24,7 @@
       <div class="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col px-5 sm:px-8">
         <header class="flex flex-wrap items-center justify-between gap-4 py-6">
           <a href="/" class="flex items-center gap-2 text-base font-semibold tracking-tight text-white">
-            <%= image_tag "/brand/seallo-logo.png", alt: Store.platform_name, class: "seallo-brand-image" %>
+            <span class="admin-wordmark" aria-label="<%= Store.platform_name %>">seallo</span>
             <% if current_store %><span><%= current_store.name %></span><% end %>
           </a>
           <div class="flex flex-wrap items-center gap-4 text-xs text-[#b9d3ff]">

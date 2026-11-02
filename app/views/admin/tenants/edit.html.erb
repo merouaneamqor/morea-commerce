@@ -35,3 +35,21 @@
     <%= f.submit "Save billing", class: "admin-btn" %>
   </div>
 <% end %>
+
+<section class="admin-card mt-4" id="reset-workspace">
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= t("platform_admin.reset.title") %></h2></div>
+  <%= form_with url: reset_admin_tenant_path(@store), method: :post, class: "space-y-4 px-4 pb-4", data: { turbo_confirm: t("platform_admin.reset.confirm_dialog", name: @store.name) } do |f| %>
+    <p class="admin-help"><%= t("platform_admin.reset.description") %></p>
+    <ul class="admin-help list-disc ps-5">
+      <li><%= t("platform_admin.reset.removes") %></li>
+      <li><%= t("platform_admin.reset.keeps") %></li>
+    </ul>
+    <div>
+      <%= f.label :confirmation, t("platform_admin.reset.confirm_label", slug: @store.slug), class: "admin-label" %>
+      <%= f.text_field :confirmation, value: nil, autocomplete: "off", required: true, class: "admin-input", placeholder: @store.slug %>
+    </div>
+    <div class="flex justify-end">
+      <%= f.submit t("platform_admin.reset.submit"), class: "admin-btn" %>
+    </div>
+  <% end %>
+</section>

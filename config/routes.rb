@@ -47,6 +47,7 @@ Rails.application.routes.draw do
     post "seallo/status", to: "seallo#status"
     post "seallo/sync", to: "seallo#sync"
     post "seallo/disconnect", to: "seallo#disconnect"
+    post "woocommerce/connect", to: "woocommerce#connect"
     namespace :v1 do
       resources :order_imports, only: :create
     end
@@ -110,6 +111,8 @@ Rails.application.routes.draw do
   namespace :admin do
     get "seallo/connect", to: "seallo_connections#show", as: :seallo_connect
     post "seallo/connect", to: "seallo_connections#create"
+    get "woocommerce/connect", to: "woocommerce_connections#show", as: :woocommerce_connect
+    post "woocommerce/connect", to: "woocommerce_connections#create"
     resources :shopify_privacy_requests, only: %i[index show] do
       member do
         get :export
@@ -144,6 +147,7 @@ Rails.application.routes.draw do
     resources :tenants, only: %i[index new create edit update] do
       member do
         post :enter
+        post :reset
       end
       resources :invoices, only: %i[index new create show] do
         member do
@@ -154,8 +158,6 @@ Rails.application.routes.draw do
       end
     end
     resource :store, only: %i[edit update]
-    get "shopify", to: "shopify#show", as: :shopify
-    get "shopify/callback", to: "store_connections#shopify_callback", as: :shopify_callback
     resources :store_connections, only: %i[index new create show update destroy]
     resource :agent_api, only: :show, controller: "agent_api" do
       post :token, action: :generate_token
@@ -172,7 +174,10 @@ Rails.application.routes.draw do
     end
     resources :collections
     resources :discounts, except: %i[show]
-    resources :users, path: "staff", except: %i[show]
+    resources :users, path: "staff", except: %i[show] do
+      member { post :pay }
+    end
+    get "my_stats", to: "my_stats#show", as: :my_stats
     get "media", to: "media#index", as: :media
     post "media/upload", to: "media#upload", as: :media_upload
     post "media/edits", to: "media#edits", as: :media_edits

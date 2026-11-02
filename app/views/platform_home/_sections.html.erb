@@ -1,0 +1,61 @@
+<%# Sections opened from the menu in a window over the page: demo, features, why, advertising, contact. %>
+<% s = ->(key) { t("platform_home.seallo.#{key}") } %>
+<% ids = %w[demo features why ads contact] %>
+<div class="platform-modal" data-modal hidden>
+  <div class="platform-dialog<%= " is-wide" %>" role="dialog" aria-modal="true" data-dialog>
+    <div class="platform-dialog-bar">
+      <div class="platform-dialog-tabs">
+        <% s.("nav").each_with_index do |label, i| %><button type="button" data-open="<%= ids[i] %>"><%= label %></button><% end %>
+      </div>
+      <button type="button" class="platform-dialog-close" data-close aria-label="<%= s.("close") %>">✕</button>
+    </div>
+
+    <div data-section="demo" hidden>
+      <div class="platform-section-head"><h2><%= s.("demo_title") %></h2><p><%= s.("demo_sub") %></p></div>
+      <%= render "platform_home/dashboard_demo" %>
+    </div>
+
+    <div data-section="features" hidden>
+      <div class="platform-section-head"><h2><%= s.("f_title") %></h2><p><%= s.("f_sub") %></p></div>
+      <ol class="platform-feats">
+        <% s.("feats").each_with_index do |(title, body), i| %>
+          <li><div><span class="platform-icon"><%= platform_icon(PlatformHomeHelper::PLATFORM_FEATURE_ICONS[i]) %></span><em>0<%= i + 1 %></em></div><h3><%= title %></h3><p><%= body %></p></li>
+        <% end %>
+      </ol>
+    </div>
+
+    <div data-section="why" hidden>
+      <div class="platform-section-head"><h2><%= s.("why_title") %></h2><p><%= s.("why_sub") %></p></div>
+      <div class="platform-why">
+        <div class="platform-why-head"><span class="is-before"><%= s.("before") %></span><i></i><span class="is-after"><%= s.("after") %></span></div>
+        <% topics = s.("why_topics") %>
+        <% s.("why").each_with_index do |(pain, fix), i| %>
+          <div class="platform-why-row">
+            <div class="platform-why-topic"><span class="platform-icon"><%= platform_icon(PlatformHomeHelper::PLATFORM_WHY_ICONS[i]) %></span><b><%= topics[i] %></b></div>
+            <p class="is-pain"><span>✕</span><%= pain %></p>
+            <div class="platform-why-mid"><span class="platform-icon"><%= platform_icon(PlatformHomeHelper::PLATFORM_WHY_ICONS[i]) %></span><b><%= topics[i] %></b></div>
+            <p class="is-fix"><span>✓</span><%= fix %></p>
+          </div>
+        <% end %>
+        <p class="platform-why-result"><%= s.("why_result") %></p>
+      </div>
+    </div>
+
+    <div data-section="ads" hidden>
+      <div class="platform-section-head"><h2><%= s.("ads_title") %></h2><p><%= s.("ads_sub") %></p></div>
+      <ul class="platform-cards">
+        <% s.("ads").each do |title, body| %>
+          <li class="platform-card"><span class="platform-icon"><%= platform_icon(:ads) %></span><h3><%= title %></h3><p><%= body %></p></li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div data-section="contact" hidden>
+      <div class="platform-contact">
+        <h2><%= s.("contact_title") %></h2>
+        <p><%= s.("contact_sub") %></p>
+        <a href="mailto:contact@seallo.ma" class="platform-button" dir="ltr">contact@seallo.ma</a>
+      </div>
+    </div>
+  </div>
+</div>

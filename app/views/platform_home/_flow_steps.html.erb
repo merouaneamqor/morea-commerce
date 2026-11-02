@@ -1,0 +1,24 @@
+<%# Order journey: advances by itself, a click on a step explains it in detail (as on the seallo landing page). %>
+<% s = ->(key) { t("platform_home.seallo.#{key}") } %>
+<% flow = s.("flow") %>
+<div class="platform-flow-steps" data-flow>
+  <ol>
+    <% flow.each_with_index do |(title, sub, detail), i| %>
+      <li>
+        <% if i < flow.length - 1 %><span class="platform-flow-link"><span></span></span><% end %>
+        <button type="button" data-flow-step="<%= i %>" data-title="<%= title %>" data-detail="<%= detail %>" aria-pressed="<%= i.zero? %>">
+          <span class="platform-flow-icon"><%= platform_icon(PlatformHomeHelper::PLATFORM_FLOW_ICONS[i]) %></span>
+          <strong dir="auto"><%= title %></strong>
+          <small dir="auto"><%= sub %></small>
+        </button>
+      </li>
+    <% end %>
+  </ol>
+  <div class="platform-flow-detail" aria-live="polite">
+    <div>
+      <p><span data-flow-count data-word="<%= s.("step_word") %>" data-of="<%= s.("of_word") %>"><%= s.("step_word") %> 1 <%= s.("of_word") %> <%= flow.length %></span> <b data-flow-title><%= flow[0][0] %></b></p>
+      <div class="platform-flow-dots" dir="ltr"><% flow.each_with_index do |_, i| %><button type="button" data-flow-dot="<%= i %>" aria-label="<%= s.("step_word") %> <%= i + 1 %>"></button><% end %></div>
+    </div>
+    <p data-flow-body><%= flow[0][2] %></p>
+  </div>
+</div>

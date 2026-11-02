@@ -14,13 +14,16 @@ module Connections
         user = pending.user.reload
         store = pending.store
         unless pending.consumed_at.nil? && pending.expires_at.future? && user.active? &&
-            (user.super_admin? || (user.admin? && user.store_id == store.id))
+            (user.super_admin? || (user.admin? && user.store_id == store.id)) &&
+            (pending.shop_domain.nil? || pending.shop_domain == shop)
           raise Error, "invalid_code"
         end
         connection = StoreConnection.find_by(shopify_app: "seallo_connect", external_domain: shop)
         raise Error, "already_linked" if connection && connection.store_id != store.id
         connection ||= store.store_connections.find_by(provider: "shopify", external_domain: shop)
         raise Error, "existing_connection" if connection && connection.shopify_app != "seallo_connect"
+        # Disconnected Seallo rows are reactivated below; an active one is already linked here.
+        raise Error, "existing_connection" if connection&.active?
 
         connection ||= store.store_connections.new(provider: "shopify", external_domain: shop, name: "Seallo Connect · #{shop}", shopify_oauth: true, shopify_app: "seallo_connect")
         connection.active = true

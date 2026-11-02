@@ -1553,12 +1553,11 @@
   .admin-dashboard-doughnut {
     @apply relative mx-auto h-48 max-w-56;
     color: #9a6f72;
-    background: #fff;
   }
 
   .admin-dashboard-total {
     @apply text-2xl tabular-nums;
-    color: #1a1716;
+    color: var(--s-ink, #1a1716);
   }
 
   .admin-dashboard-status {
@@ -3305,6 +3304,7 @@ main {
     --s-strong: #f2ebe5;
     --s-strong-text: #1f1a17;
     --chart-1: #5fb374; --chart-2: #e07a5f; --chart-3: #c98a6b; --chart-4: #d9684a; --chart-5: #8a6a5c; --chart-6: #7d716a;
+    --chart-status-shipped: #d9c8bd; --chart-status-preparing: #8a7a70; --chart-status-delivered: #5fb374;
 
     .admin-btn, .admin-btn:hover { color: #fff; }
     .admin-btn { background: #b9503a; }

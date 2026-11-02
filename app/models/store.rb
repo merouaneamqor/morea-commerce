@@ -3,7 +3,7 @@ class Store < ApplicationRecord
 
   RESERVED_SUBDOMAINS = %w[www app admin api].freeze
   # Look of the merchant admin; "current" is the original grey interface.
-  ADMIN_THEMES = %w[blue dark light current].freeze
+  ADMIN_THEMES = %w[seallo seallo_dark].freeze
   BILLING_INTERVALS = %w[monthly yearly].freeze
   BILLING_STATUSES = %w[trial active past_due canceled].freeze
 

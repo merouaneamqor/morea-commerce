@@ -1,6 +1,6 @@
 <%# Admin look picker. `form` is the registration or store form builder; works on the dark signup page and in settings. %>
 <% legend = local_assigns.fetch(:legend, true) %>
-<% selected = form.object.admin_theme.presence || "blue" %>
+<% selected = form.object.admin_theme.presence || "seallo" %>
 <fieldset class="theme-picker" data-theme-picker>
   <legend class="<%= legend ? "theme-picker__legend" : "sr-only" %>"><%= t("admin_theme.heading") %></legend>
   <% if legend %><p class="theme-picker__help"><%= t("admin_theme.help") %></p><% end %>

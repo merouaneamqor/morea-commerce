@@ -13,22 +13,22 @@ RSpec.describe "Admin theme", type: :request do
   describe "onboarding" do
     before { host! Store.base_domain }
 
-    it "offers blue, dark, light and current with blue preselected" do
+    it "offers seallo and dark seallo with seallo preselected" do
       get "/signup", params: { locale: "en" }
       expect(response).to have_http_status(:ok)
       inputs = document.css("input[name='registration[admin_theme]']")
-      expect(inputs.map { |input| input["value"] }).to eq(%w[blue dark light current])
-      expect(inputs.select { |input| input["checked"] }.map { |input| input["value"] }).to eq(%w[blue])
+      expect(inputs.map { |input| input["value"] }).to eq(%w[seallo seallo_dark])
+      expect(inputs.select { |input| input["checked"] }.map { |input| input["value"] }).to eq(%w[seallo])
     end
 
     it "stores the chosen theme and applies it to the workspace created on confirmation" do
-      post "/signup", params: { registration: { business_name: "Theme #{suffix}", email: "theme-#{suffix}@example.test", admin_theme: "dark" }, locale: "en" }
+      post "/signup", params: { registration: { business_name: "Theme #{suffix}", email: "theme-#{suffix}@example.test", admin_theme: "seallo_dark" }, locale: "en" }
       registration = Registration.find_by!(email: "theme-#{suffix}@example.test")
-      expect(registration.admin_theme).to eq("dark")
+      expect(registration.admin_theme).to eq("seallo_dark")
 
       user = Registrations::Confirm.call(token: registration.verification_token, password: password, password_confirmation: password)
       expect(user).to be_a(User)
-      expect(user.store.admin_theme).to eq("dark")
+      expect(user.store.admin_theme).to eq("seallo_dark")
     end
 
     it "rejects an unknown theme without creating a registration" do
@@ -48,20 +48,20 @@ RSpec.describe "Admin theme", type: :request do
       post "/admin/login", params: { email: staff.email, password: password }
     end
 
-    it "keeps existing workspaces on the current look" do
-      expect(store.admin_theme).to eq("current")
+    it "defaults workspaces to the seallo look" do
+      expect(store.admin_theme).to eq("seallo")
       get "/admin"
-      expect(document.at_css("body.admin-body")["data-admin-theme"]).to eq("current")
+      expect(document.at_css("body.admin-body")["data-admin-theme"]).to eq("seallo")
     end
 
     it "lets staff change the theme in settings and rejects unknown values" do
-      patch "/admin/store", params: { store: { admin_theme: "light" } }
-      expect(store.reload.admin_theme).to eq("light")
+      patch "/admin/store", params: { store: { admin_theme: "seallo_dark" } }
+      expect(store.reload.admin_theme).to eq("seallo_dark")
       get "/admin"
-      expect(document.at_css("body.admin-body")["data-admin-theme"]).to eq("light")
+      expect(document.at_css("body.admin-body")["data-admin-theme"]).to eq("seallo_dark")
 
       patch "/admin/store", params: { store: { admin_theme: "neon" } }
-      expect(store.reload.admin_theme).to eq("light")
+      expect(store.reload.admin_theme).to eq("seallo_dark")
     end
   end
 end

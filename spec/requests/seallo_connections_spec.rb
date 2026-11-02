@@ -135,7 +135,16 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
     sign_in
     post "/admin/seallo/connect", params: authorization_params
     expect(response).to have_http_status(:service_unavailable)
+    get "/admin/seallo/connect", params: authorization_params
+    expect(response).to have_http_status(:service_unavailable)
     expect(SealloConnectionCode.count).to eq(0)
+  end
+
+  it "still opens the connections overview when the app origin is not configured" do
+    allow(ENV).to receive(:[]).with("SEALLO_APP_URL").and_return(nil)
+    sign_in
+    get "/admin/seallo/connect"
+    expect(response).to have_http_status(:ok)
   end
 
   it "rejects a platform-only session with no workspace" do

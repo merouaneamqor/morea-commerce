@@ -10,7 +10,8 @@ module Admin
     skip_before_action :require_subscription_access!
     prepend_before_action :remember_connection_request, only: :show
     before_action -> { head :not_found unless current_store }
-    before_action :require_app_configured!
+    # Only a connection request needs the app origin and bridge secret; the overview page must still open.
+    before_action :require_app_configured!, if: -> { action_name == "create" || connection_request_present? }
 
     def show
       return authorize_connection if connection_request_present?

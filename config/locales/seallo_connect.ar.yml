@@ -1,8 +1,14 @@
 ar:
   seallo_connect:
     title: Seallo Connect
-    instructions: أنشئ رمزًا، ثم الصقه في Seallo Connect من لوحة إدارة Shopify. تنتهي صلاحية الرمز بعد 10 دقائق ويربط المتجر بمساحة العمل هذه. حافظ على سريته.
-    generate_code: إنشاء رمز الربط
+    instructions: ثبّت Seallo Connect من متجر تطبيقات Shopify، واختر الباقة هناك، ثم وافق على الربط. تعيدك Shopify إلى هنا للتأكيد. لا حاجة لنسخ أي شيء.
+    authorize:
+      title: ربط متجر Shopify
+      body: أكّد أن متجر Shopify هذا يجب أن يرسل طلباته إلى مساحة العمل هذه. يمكنك فصله في أي وقت من المتاجر المتصلة.
+      workspace: مساحة العمل
+      shop: متجر Shopify
+      confirm: ربط المتجر
+      cancel: إلغاء
     import_help: تصل الطلبات المغربية المؤهلة بالدرهم المغربي والدفع عند الاستلام كطلبات جديدة. وتخضع عمليات التأكيد والمخزون والشحن للقواعد الحالية لمساحة العمل.
     connection_states:
       configured: في انتظار التحقق

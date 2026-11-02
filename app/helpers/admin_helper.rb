@@ -4,10 +4,6 @@ module AdminHelper
       return "#{admin_seallo_connect_path}?#{ { locale: locale }.to_query}"
     end
 
-    if controller_path == "admin/store_connections" && action_name == "shopify_callback"
-      return "#{admin_store_connections_path}?#{ { locale: locale }.to_query}"
-    end
-
     path = if !request.get? && action_name.in?(%w[create update])
       target = if action_name == "create"
         "new"

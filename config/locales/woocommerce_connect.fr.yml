@@ -1,0 +1,9 @@
+fr:
+  woocommerce_connect:
+    title: Connecter WooCommerce
+    body: Le plugin Seallo Connect pour WooCommerce demande à envoyer les nouvelles commandes de ce site WooCommerce vers cet espace. L’approbation crée une connexion WooCommerce et remet son secret de signature au plugin. Rien à copier.
+    workspace: Espace de travail
+    site: Site WooCommerce
+    warning: N’approuvez que si vous reconnaissez ce site et avez lancé cette connexion depuis son administration WordPress. Quiconque détient le secret de la connexion peut envoyer des commandes vers cet espace.
+    confirm: Approuver la connexion
+    cancel: Annuler

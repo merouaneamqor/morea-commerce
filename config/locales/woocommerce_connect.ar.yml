@@ -1,0 +1,9 @@
+ar:
+  woocommerce_connect:
+    title: ربط WooCommerce
+    body: تطلب إضافة Seallo Connect لـ WooCommerce إرسال الطلبات الجديدة من موقع WooCommerce أدناه إلى مساحة العمل هذه. تؤدي الموافقة إلى إنشاء اتصال WooCommerce وتسليم سرّ التوقيع للإضافة. لا حاجة لنسخ أي شيء.
+    workspace: مساحة العمل
+    site: موقع WooCommerce
+    warning: وافق فقط إذا كنت تعرف هذا الموقع وبدأت هذا الربط من لوحة إدارة WordPress الخاصة به. يمكن لأي شخص يملك سرّ الاتصال إرسال طلبات إلى مساحة العمل هذه.
+    confirm: الموافقة على الربط
+    cancel: إلغاء

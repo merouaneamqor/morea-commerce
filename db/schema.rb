@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_02_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_02_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -926,6 +926,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_120000) do
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying::text, 'suspended'::character varying::text, 'archived'::character varying::text])", name: "users_status_check"
   end
 
+  create_table "woocommerce_connection_codes", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "user_id", null: false
+    t.string "digest", null: false
+    t.string "site_domain", null: false
+    t.string "code_challenge", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "consumed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["digest"], name: "index_woocommerce_connection_codes_on_digest", unique: true
+    t.index ["store_id"], name: "index_woocommerce_connection_codes_on_store_id"
+    t.index ["user_id"], name: "index_woocommerce_connection_codes_on_user_id"
+    t.check_constraint "char_length(code_challenge::text) = 43", name: "woocommerce_connection_code_challenge_length"
+    t.check_constraint "char_length(site_domain::text) <= 253", name: "woocommerce_connection_code_site_domain_length"
+  end
+
   add_foreign_key "platform_oauth_codes", "users", on_delete: :cascade
   add_foreign_key "platform_oauth_tokens", "users", on_delete: :cascade
   add_foreign_key "platform_api_tokens", "users", on_delete: :cascade
@@ -998,4 +1015,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_120000) do
   add_foreign_key "store_translations", "stores"
   add_foreign_key "storefront_themes", "stores"
   add_foreign_key "users", "stores"
+  add_foreign_key "woocommerce_connection_codes", "stores"
+  add_foreign_key "woocommerce_connection_codes", "users"
 end

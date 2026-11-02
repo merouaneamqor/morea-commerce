@@ -147,6 +147,7 @@ Rails.application.routes.draw do
     resources :tenants, only: %i[index new create edit update] do
       member do
         post :enter
+        post :reset
       end
       resources :invoices, only: %i[index new create show] do
         member do

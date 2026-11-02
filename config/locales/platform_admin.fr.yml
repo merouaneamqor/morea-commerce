@@ -55,3 +55,15 @@ fr:
     first_admin: "Premier administrateur"
     approve_and_create_workspace: "Approuver et créer l’espace"
     create_workspace: "Créer l’espace"
+    reset:
+      title: "Réinitialiser l’espace"
+      description: "Remet cet espace à neuf. Action irréversible, prévue pour les espaces de test."
+      removes: "Supprime toutes les commandes, clients, produits, collections, remises, pages, menus, connexions, données publicitaires, dépenses, paiements d’agents et jetons, et réinitialise tous les paramètres de la boutique."
+      keeps: "Conserve le nom, le sous-domaine, les coordonnées, la facturation, les factures et les comptes du personnel. Le contenu par défaut de la boutique en ligne est réinstallé si la vitrine est activée."
+      confirm_label: "Saisissez %{slug} pour confirmer"
+      confirm_dialog: "Effacer définitivement toutes les données de %{name} ?"
+      submit: "Réinitialiser l’espace"
+      done: "%{name} a été remis à neuf."
+      denied:
+        confirmation_mismatch: "Le texte saisi ne correspond pas au sous-domaine de l’espace. Rien n’a été modifié."
+        not_super_admin: "Accès super administrateur requis."

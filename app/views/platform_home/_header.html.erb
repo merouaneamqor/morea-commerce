@@ -1,18 +1,19 @@
 <header class="platform-header">
   <div class="platform-container platform-header-inner">
-    <a href="<%= platform_home_path(locale: I18n.locale) %>" class="platform-brand"><%= image_tag "/brand/seallo-logo.png", alt: Store.platform_name, class: "seallo-brand-image" %></a>
+    <a href="<%= platform_home_path(locale: I18n.locale) %>" class="platform-brand" aria-label="<%= Store.platform_name %>"><span dir="ltr"><%= Store.platform_name %></span></a>
     <nav class="platform-nav" aria-label="<%= t("platform_home.refresh.navigation") %>">
+      <a href="#demo"><%= t("platform_home.landing.nav_demo") %></a>
       <a href="#features"><%= t("platform_home.nav.features") %></a>
       <a href="#journey"><%= t("platform_home.refresh.nav_journey") %></a>
       <a href="#contact"><%= t("platform_home.refresh.nav_contact") %></a>
-      <%= link_to t("platform_home.nav.sign_in"), admin_login_path(locale: I18n.locale), class: "platform-login-nav" %>
     </nav>
     <div class="platform-header-actions">
-      <div class="platform-languages" role="group" aria-label="<%= t("platform_home.language") %>">
+      <div class="platform-languages" dir="ltr" role="group" aria-label="<%= t("platform_home.language") %>">
         <% Morea::Locales::AVAILABLE.each do |locale| %>
           <%= link_to locale.to_s.upcase, platform_home_path(locale: locale), lang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
         <% end %>
       </div>
+      <%= link_to t("platform_home.nav.sign_in"), admin_login_path(locale: I18n.locale), class: "platform-login-nav" %>
       <%= link_to t("platform_home.nav.signup"), signup_path(locale: I18n.locale), class: "platform-button platform-header-button" %>
     </div>
   </div>

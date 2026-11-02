@@ -3180,10 +3180,10 @@ main {
 
 /* ——— Seallo look ———
    Warm cream canvas, floating light sidebar, rust accent, pill tabs. Applied to every
-   workspace by the admin layout (data-admin-theme="seallo"); the blue/dark/light/current
+   workspace by the admin layout (data-admin-theme="current"); the blue/dark/light/current
    palettes above no longer match, so these rules are the only theme styling. */
 @layer components {
-  .admin-body[data-admin-theme="seallo"] {
+  .admin-body[data-admin-theme="current"] {
     --s-page: #f6f1ec;
     --s-card: #fff;
     --s-side: #efe8e1;
@@ -3292,7 +3292,7 @@ main {
 
   /* Desktop: sidebar floats as a rounded panel, language pill sits top right */
   @media (min-width: 768px) {
-    .admin-body[data-admin-theme="seallo"] {
+    .admin-body[data-admin-theme="current"] {
       .admin-topbar { inset-inline-start: 16.5rem; }
       .admin-sidebar { border-radius: 22px; bottom: 0.75rem; inset-inline-start: 0.75rem; top: 0.75rem; width: 15rem; }
       .admin-sidebar__brand { display: block; }
@@ -3325,7 +3325,7 @@ main {
   .seallo-auth .fx-stage header nav a.font-semibold { color: #1f1a17; }
 
   /* Language switcher as a pill group (FR | EN | AR) */
-  .admin-body[data-admin-theme="seallo"] [data-admin-language-switcher] { background: #ebe3db; border-radius: 999px; gap: 0; padding: 3px; }
-  .admin-body[data-admin-theme="seallo"] [data-admin-language-switcher] a { border-radius: 999px; color: var(--s-muted); font-size: 12px; font-weight: 600; padding: 0.25rem 0.625rem; text-decoration: none; }
-  .admin-body[data-admin-theme="seallo"] [data-admin-language-switcher] a.font-semibold { background: #1f1a17; color: #fff; text-decoration: none; }
+  .admin-body[data-admin-theme="current"] [data-admin-language-switcher] { background: #ebe3db; border-radius: 999px; gap: 0; padding: 3px; }
+  .admin-body[data-admin-theme="current"] [data-admin-language-switcher] a { border-radius: 999px; color: var(--s-muted); font-size: 12px; font-weight: 600; padding: 0.25rem 0.625rem; text-decoration: none; }
+  .admin-body[data-admin-theme="current"] [data-admin-language-switcher] a.font-semibold { background: #1f1a17; color: #fff; text-decoration: none; }
 }

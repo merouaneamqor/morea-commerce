@@ -18,7 +18,7 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="admin-body" data-admin-theme="seallo">
+  <body class="admin-body" data-admin-theme="<%= current_store&.admin_theme || "current" %>">
     <% if current_admin_user %>
       <div class="admin-shell" data-controller="admin-menu">
         <header class="admin-topbar">
@@ -28,6 +28,7 @@
             </button>
             <%= link_to admin_root_path, class: "admin-topbar__brand min-w-0 md:hidden" do %>
               <span class="admin-wordmark">seallo</span>
+              <span class="sr-only"><%= current_store&.name || "Store" %></span>
             <% end %>
           </div>
 

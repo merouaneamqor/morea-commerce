@@ -121,11 +121,12 @@ RSpec.describe "Merchant dashboard", type: :request do
     get "/admin", params: { locale: "en" }
     expect(document.at_css('[data-dashboard-mode="connected"]')).to be_present
     expect(document.at_css("[data-dashboard-storefront]")).to be_nil
-    %w[shopify woocommerce youcan].each do |provider|
-      hrefs = document.css("a[href]").map { |link| link["href"] }
+    hrefs = document.css("a[href]").map { |link| link["href"] }
+    expect(hrefs).not_to include(a_string_matching(%r{provider=shopify}))
+    %w[woocommerce youcan].each do |provider|
       expect(hrefs).to include(a_string_matching(%r{/admin/store_connections/new\?.*provider=#{provider}}))
     end
-    %w[shopify woocommerce youcan].each do |provider|
+    %w[woocommerce youcan].each do |provider|
       get "/admin/store_connections/new", params: { provider: provider }
       expect(response).to have_http_status(:ok)
       expect(document.at_css('input[type="hidden"][name="store_connection[provider]"]')["value"]).to eq(provider)

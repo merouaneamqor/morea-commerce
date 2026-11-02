@@ -1,4 +1,8 @@
 <span class="admin-muted">
+  <% if connection.shopify_sync_state.present? %>
+    <span><%= connection.shopify_sync_state.humanize %></span>
+    <% if connection.shopify_sync_error %><span role="alert"><%= connection.shopify_sync_error.humanize %></span><% end %>
+  <% end %>
   <% if connection.shopify_orders_synced_at %>
     <%= t("shopify_sync.checked_through") %>
     <time datetime="<%= connection.shopify_orders_synced_at.iso8601 %>"><%= l(connection.shopify_orders_synced_at.in_time_zone("Africa/Casablanca"), format: "%d/%m/%Y %H:%M") %></time>

@@ -1,0 +1,18 @@
+<h1 class="admin-page-title"><%= t("seallo_connect.privacy.request_title", id: @privacy_request.id) %></h1>
+<section class="admin-card p-5 space-y-3">
+  <p><%= t("seallo_connect.privacy.topics.#{@privacy_request.topic}") %> · <%= t("seallo_connect.privacy.statuses.#{@privacy_request.status}") %></p>
+  <p><%= t("seallo_connect.privacy.due", date: l((@privacy_request.created_at + 30.days).to_date, format: "%d/%m/%Y")) %></p>
+  <% if @privacy_request.error_code == "secure_response_required" %>
+    <p><%= t("seallo_connect.privacy.secure_response") %></p>
+  <% elsif @privacy_request.error_code == "retained_business_records" %>
+    <p role="alert"><%= t("seallo_connect.privacy.retained_records") %></p>
+  <% end %>
+  <% if @privacy_request.status != "completed" %>
+    <% if @privacy_request.topic == "customers/data_request" %>
+      <%= link_to t("seallo_connect.privacy.download"), export_admin_shopify_privacy_request_path(@privacy_request), class: "admin-btn-secondary" %>
+      <%= button_to t("seallo_connect.privacy.confirm_delivery"), complete_admin_shopify_privacy_request_path(@privacy_request), class: "admin-btn" %>
+    <% else %>
+      <%= button_to t("seallo_connect.privacy.retry_redaction"), retry_processing_admin_shopify_privacy_request_path(@privacy_request), class: "admin-btn" %>
+    <% end %>
+  <% end %>
+</section>

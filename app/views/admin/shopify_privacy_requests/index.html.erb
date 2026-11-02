@@ -1,0 +1,9 @@
+<h1 class="admin-page-title"><%= t("seallo_connect.privacy.title") %></h1>
+<p><%= t("seallo_connect.privacy.instructions") %></p>
+<section class="admin-card p-5 space-y-3">
+  <% if @requests.empty? %><p><%= t("seallo_connect.privacy.empty") %></p><% end %>
+  <% @requests.each do |privacy_request| %>
+    <p><%= link_to t("seallo_connect.privacy.request", id: privacy_request.id), admin_shopify_privacy_request_path(privacy_request), class: "admin-link" %>
+      · <%= t("seallo_connect.privacy.topics.#{privacy_request.topic}") %> · <%= t("seallo_connect.privacy.statuses.#{privacy_request.status}") %> · <%= t("seallo_connect.privacy.due", date: l((privacy_request.created_at + 30.days).to_date, format: "%d/%m/%Y")) %></p>
+  <% end %>
+</section>

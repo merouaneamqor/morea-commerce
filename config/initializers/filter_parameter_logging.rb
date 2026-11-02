@@ -9,6 +9,7 @@ Rails.application.config.filter_parameters += [
 
 # Shopify authorization codes and callback signatures must not enter request logs.
 Rails.application.config.filter_parameters += [ :code, :hmac, :state ]
+Rails.application.config.filter_parameters += [ :signature, :payload, :orders_requested, :orders_to_redact ]
 
 # Imported customer contacts and confirmation notes must not enter request logs.
 Rails.application.config.filter_parameters += [

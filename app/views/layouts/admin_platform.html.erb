@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#2e4dd5">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="<%= Store.platform_name %>">
+    <%= yield :head %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= render "shared/platform_icons" %>
@@ -44,6 +45,7 @@
             <%= admin_nav_link t("platform_admin.overview"), admin_platform_path, icon: :home, active: controller_name == "platform" %>
             <%= admin_nav_link t("platform_admin.access_requests"), admin_access_requests_path, icon: :staff, active: controller_name == "access_requests" %>
             <%= admin_nav_link t("platform_users.nav"), admin_platform_users_path, icon: :staff, active: controller_name == "platform_users" %>
+            <%= admin_nav_link "Superadmin MCP", admin_platform_agent_api_path, icon: :settings, active: controller_name == "platform_agent_api" %>
             <%= admin_nav_link "Feature flags", superadmin_feature_flags_path, icon: :settings, active: false %>
             <%= admin_nav_link t("platform_admin.workspaces"), admin_platform_path(anchor: "workspaces"), icon: :store, active: false %>
             <%= admin_nav_link t("platform_admin.new_workspace"), new_admin_tenant_path, icon: :products, active: controller_name == "tenants" %>

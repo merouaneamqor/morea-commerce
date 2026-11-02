@@ -1,0 +1,9 @@
+en:
+  woocommerce_connect:
+    title: Connect WooCommerce
+    body: The Seallo Connect for WooCommerce plugin is asking to send this workspace's new orders from the WooCommerce site below. Approving creates a WooCommerce connection and gives the plugin its signing secret. Nothing needs to be copied.
+    workspace: Workspace
+    site: WooCommerce site
+    warning: Only approve if you recognise this site and started this connection from its WordPress admin. Anyone holding the connection's secret can submit orders to this workspace.
+    confirm: Approve connection
+    cancel: Cancel

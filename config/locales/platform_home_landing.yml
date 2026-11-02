@@ -1,0 +1,48 @@
+fr:
+  platform_home:
+    landing:
+      nav_demo: "Démo"
+      sub: "Confirmez vos commandes COD, expédiez avec votre société de livraison et suivez vos commandes depuis une seule plateforme."
+      partners: "Connecté à vos outils"
+      demo_title: "Votre tableau de bord"
+      demo_sub: "Tout ce qui compte, sur un seul écran."
+      demo_note: "Illustration de l’espace d’administration. Les chiffres sont des exemples, pas des données réelles."
+      period: "7j"
+      chart: "Ventes livrées · 7 derniers jours"
+      recent: "Dernières commandes"
+      menu: ["Tableau de bord", "Commandes", "Confirmation", "Livraison", "Produits", "Stock", "Suivi", "Équipe"]
+      kpis: ["Commandes", "Taux de confirmation", "Taux de livraison", "Colis livrés"]
+      cols: ["Client", "Produit", "Montant", "Statut"]
+      status: ["Livrée", "Confirmée", "En cours", "Annulée"]
+en:
+  platform_home:
+    landing:
+      nav_demo: "Demo"
+      sub: "Confirm your COD orders, ship with your delivery company and follow your orders from a single platform."
+      partners: "Connected to your tools"
+      demo_title: "Your dashboard"
+      demo_sub: "Everything that matters, on one screen."
+      demo_note: "Illustration of the admin overview. The figures are examples, not real data."
+      period: "7d"
+      chart: "Delivered sales · last 7 days"
+      recent: "Latest orders"
+      menu: ["Dashboard", "Orders", "Confirmation", "Delivery", "Products", "Stock", "Tracking", "Team"]
+      kpis: ["Orders", "Confirmation rate", "Delivery rate", "Parcels delivered"]
+      cols: ["Customer", "Product", "Amount", "Status"]
+      status: ["Delivered", "Confirmed", "In transit", "Cancelled"]
+ar:
+  platform_home:
+    landing:
+      nav_demo: "العرض"
+      sub: "أكّد طلبات الدفع عند الاستلام، واشحن مع شركة التوصيل الخاصة بك، وتابع طلباتك من منصة واحدة."
+      partners: "متصل بأدواتك"
+      demo_title: "لوحة التحكم الخاصة بك"
+      demo_sub: "كل ما يهمّك في شاشة واحدة."
+      demo_note: "رسم توضيحي للوحة الإدارة. الأرقام أمثلة وليست بيانات حقيقية."
+      period: "7 أيام"
+      chart: "المبيعات المُسلَّمة · آخر 7 أيام"
+      recent: "آخر الطلبات"
+      menu: ["لوحة التحكم", "الطلبات", "التأكيد", "التوصيل", "المنتجات", "المخزون", "التتبع", "الفريق"]
+      kpis: ["الطلبات", "نسبة التأكيد", "نسبة التوصيل", "طرود مُسلَّمة"]
+      cols: ["الزبون", "المنتج", "المبلغ", "الحالة"]
+      status: ["مُسلَّمة", "مؤكَّدة", "قيد التوصيل", "ملغاة"]

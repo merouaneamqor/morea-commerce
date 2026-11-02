@@ -13,7 +13,7 @@ class GraphqlController < ActionController::API
     result = MoreaSchema.execute(
       query,
       variables: prepare_variables(params[:variables]),
-      context: { store: current_api_store },
+      context: { store: current_api_store, source: "api", actor_label: "api-token", ip: request.remote_ip },
       operation_name: params[:operationName]
     )
     render json: result

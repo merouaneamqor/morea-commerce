@@ -74,6 +74,15 @@ RSpec.describe "Seller integrations page", type: :request do
       expect(response.body).to include('!catalog.providers[k].unavailable')
     end
 
+    it "gives Digylog and Olivraison their real logos and falls back to a letter badge when an image fails" do
+      get "/integrations"
+      providers = catalog["providers"]
+      expect(providers["digylog"]["logo"]).to match(%r{\A/assets/carriers/digylog-\h+\.png\z})
+      expect(providers["olivraison"]["logo"]).to match(%r{\A/assets/carriers/olivraison-\h+\.png\z})
+      expect(providers.values_at("sendit", "ozon", "ameex", "cathedis").map { |p| p["logo"] }).to all(start_with("/images/partners/"))
+      expect(response.body).to include("data-logo-img", "rounded-full", 'addEventListener("error"')
+    end
+
     it "keeps an account on a removed carrier working and marks it as currently unavailable" do
       account = store.delivery_accounts.create!(provider: "forcelog", name: "ForceLog historique", account_type: "normal", is_active: true)
       get "/integrations"

@@ -15,7 +15,7 @@
   catalog = {
     regions: Carriers.regions.transform_values { |name| sl(name) },
     countries: Carriers.countries.transform_values { |name| sl(name) },
-    providers: Carriers.providers.transform_values { |p| { name: p["name"], desc: sl(p["desc"]), region: p["region"], countries: p["countries"], logo: p["logo"], unavailable: p["unavailable"] == true } }
+    providers: Carriers.providers.transform_values { |p| { name: p["name"], desc: sl(p["desc"]), region: p["region"], countries: p["countries"], logo: (p["asset"] ? asset_path(p["asset"]) : p["logo"]), unavailable: p["unavailable"] == true } }
   }
   accounts_json = @delivery_accounts.map do |a|
     { id: a.id, provider: a.provider, name: a.name, contact_name: a.contact_name, contact_phone: a.contact_phone, account_type: a.account_type, pickup_city: a.pickup_city,
@@ -185,13 +185,23 @@
     var state = { provider: null, account: null, region: "all", country: "all", q: "" };
     var field = "h-11 w-full min-w-0 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#a8432e] focus:ring-2 focus:ring-[#a8432e]/20";
 
-    var logo = function (p, size) {
-      size = size || "size-11";
-      if (p.logo) return '<img src="' + esc(p.logo) + '" alt="' + esc(p.name) + '" class="' + size + ' shrink-0 rounded-xl border border-[#f0ebe7] bg-white object-contain p-1">';
+    var placeholder = function (p, size) {
       var hue = 7; for (var i = 0; i < p.name.length; i++) hue = (hue * 31 + p.name.charCodeAt(i)) % 360;
       var initials = p.name.split(/[\s.]+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join("").toUpperCase();
-      return '<span class="' + size + ' grid shrink-0 place-items-center rounded-xl text-sm font-bold" style="background-color:hsl(' + hue + ' 55% 93%);color:hsl(' + hue + ' 45% 32%)">' + esc(initials) + "</span>";
+      return '<span class="' + size + ' grid shrink-0 place-items-center rounded-full text-sm font-bold" style="background-color:hsl(' + hue + ' 55% 93%);color:hsl(' + hue + ' 45% 32%)">' + esc(initials) + "</span>";
     };
+    // Every logo sits in the same round box, scaled to fit without stretching; a broken image falls back to the letter badge.
+    var logo = function (p, size) {
+      size = size || "size-11";
+      if (p.logo) return '<img src="' + esc(p.logo) + '" alt="' + esc(p.name) + '" data-logo-img data-size="' + size + '" class="' + size + ' shrink-0 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">';
+      return placeholder(p, size);
+    };
+    document.addEventListener("error", function (event) {
+      var img = event.target;
+      if (!img || img.tagName !== "IMG" || !img.hasAttribute("data-logo-img")) return;
+      var p = Object.keys(catalog.providers).map(function (k) { return catalog.providers[k]; }).filter(function (c) { return c.name === img.alt; })[0] || { name: img.alt || "?" };
+      img.outerHTML = placeholder(p, img.dataset.size || "size-11");
+    }, true);
     document.querySelectorAll("[data-logo]").forEach(function (el) { el.outerHTML = logo(catalog.providers[el.dataset.logo] || catalog.providers.other); });
 
     var entries = function () { return Object.keys(catalog.providers).filter(function (k) { return k !== "other" && !catalog.providers[k].unavailable; }).map(function (k) { return [k, catalog.providers[k]]; }); };

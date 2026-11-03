@@ -1,4 +1,5 @@
 # Delivery companies offered in the seller workspace, copied from seallo (config/carriers.php).
+# `logo` is a file under public/; `asset` is a file under app/assets/images (fingerprinted). Without either, a letter badge is shown.
 # `unavailable: true` hides a company from the picker; accounts already created for it keep working and are flagged.
 # Each account a merchant adds points to one of these keys. Companies without an API connector work in manual mode.
 regions:
@@ -16,8 +17,8 @@ providers:
   ozon: { name: "Ozon Express", desc: "Livraison rapide et fiable", region: africa, countries: [MA], logo: "/images/partners/ozon.png" }
   ameex: { name: "Ameex", desc: "Livraison professionnelle", region: africa, countries: [MA], logo: "/images/partners/ameex.png" }
   cathedis: { name: "Cathedis", desc: "Livraison spécialisée e-commerce", region: africa, countries: [MA], logo: "/images/partners/cathedis.png" }
-  digylog: { name: "Digylog", desc: "Livraison au Maroc", region: africa, countries: [MA] }
-  olivraison: { name: "Olivraison", desc: "Livraison au Maroc", region: africa, countries: [MA] }
+  digylog: { name: "Digylog", desc: "Livraison au Maroc", region: africa, countries: [MA], asset: "carriers/digylog.png" }
+  olivraison: { name: "Olivraison", desc: "Livraison au Maroc", region: africa, countries: [MA], asset: "carriers/olivraison.png" }
   forcelog: { name: "ForceLog", desc: "Livraison au Maroc", region: africa, countries: [MA], unavailable: true }
   onesta: { name: "Onesta.ma", desc: "Livraison fiable", region: africa, countries: [MA], unavailable: true }
   kargo: { name: "Kargo Express", desc: "Service de livraison rapide", region: africa, countries: [MA], unavailable: true }

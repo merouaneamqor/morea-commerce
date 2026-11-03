@@ -26,7 +26,7 @@ providers:
   goldcolis: { name: "GoldColis", desc: "Service de livraison", region: africa, countries: [MA], unavailable: true }
   expressrelais: { name: "Express Relais", desc: "Point relais et livraison à domicile", region: africa, countries: [MA], unavailable: true }
   livo: { name: "Livo", desc: "Fulfillment, entrepôt et livraison", region: africa, countries: [MA], unavailable: true }
-  navex: { name: "Navex Delivery", desc: "Livraison contre remboursement en Tunisie", region: africa, countries: [TN] }
-  hlexpress: { name: "HL Express", desc: "Livraison express", region: america, countries: [CR, PA] }
+  navex: { name: "Navex Delivery", desc: "Livraison contre remboursement en Tunisie", region: africa, countries: [TN], asset: "carriers/navex.png" }
+  hlexpress: { name: "HL Express", desc: "Livraison express", region: america, countries: [CR, PA], asset: "carriers/hlexpress.png" }
   # Any other company: parcels are followed by hand
   other: { name: "Autre société", desc: "Votre société n'est pas dans la liste", countries: [] }

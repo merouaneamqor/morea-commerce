@@ -79,6 +79,8 @@ RSpec.describe "Seller integrations page", type: :request do
       providers = catalog["providers"]
       expect(providers["digylog"]["logo"]).to match(%r{\A/assets/carriers/digylog-\h+\.png\z})
       expect(providers["olivraison"]["logo"]).to match(%r{\A/assets/carriers/olivraison-\h+\.png\z})
+      expect(providers["navex"]["logo"]).to match(%r{\A/assets/carriers/navex-\h+\.png\z})
+      expect(providers["hlexpress"]["logo"]).to match(%r{\A/assets/carriers/hlexpress-\h+\.png\z})
       expect(providers.values_at("sendit", "ozon", "ameex", "cathedis").map { |p| p["logo"] }).to all(start_with("/images/partners/"))
       expect(response.body).to include("data-logo-img", "rounded-full", 'addEventListener("error"')
     end

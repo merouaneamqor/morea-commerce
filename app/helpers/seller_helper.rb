@@ -42,7 +42,8 @@ module SellerHelper
   SELLER_ACTIVE_BY_CONTROLLER = {
     "dashboard" => "dashboard", "orders" => "orders", "confirmations" => "confirmation", "my_stats" => "stats",
     "customers" => "clients", "delivery" => "delivery", "products" => "products", "variants" => "products",
-    "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations"
+    "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
+    "seallo_connections" => "integrations", "woocommerce_connections" => "integrations"
   }.freeze
 
   SELLER_STATUS_BADGES = {

@@ -11,6 +11,12 @@ sendit_poll:
   queue: default
   active_job: true
   description: "Refresh Sendit parcels (shipped, unreachable, refused, returns)"
+sendit_cities_refresh:
+  cron: "<%= ENV.fetch("SENDIT_CITIES_CRON", "0 3 * * 1") %>"
+  class: "SenditCitiesRefreshJob"
+  queue: default
+  active_job: true
+  description: "Refresh the Sendit city list of every workspace with Sendit, weekly"
 <% end %>
 <% unless ENV["SHOPIFY_EXTERNAL_CRON"].present? %>
 shopify_orders_sync:

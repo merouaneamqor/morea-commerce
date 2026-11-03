@@ -1,0 +1,30 @@
+# Delivery companies offered in the seller workspace, copied from seallo (config/carriers.php).
+# Each account a merchant adds points to one of these keys. Companies without an API connector work in manual mode.
+regions:
+  africa: "Afrique"
+  america: "Amérique"
+
+countries:
+  MA: "Maroc"
+  TN: "Tunisie"
+  CR: "Costa Rica"
+  PA: "Panama"
+
+providers:
+  sendit: { name: "Sendit", desc: "Livraison moderne partout au Maroc", region: africa, countries: [MA], logo: "/images/partners/sendit.png" }
+  ozon: { name: "Ozon Express", desc: "Livraison rapide et fiable", region: africa, countries: [MA], logo: "/images/partners/ozon.png" }
+  ameex: { name: "Ameex", desc: "Livraison professionnelle", region: africa, countries: [MA], logo: "/images/partners/ameex.png" }
+  cathedis: { name: "Cathedis", desc: "Livraison spécialisée e-commerce", region: africa, countries: [MA], logo: "/images/partners/cathedis.png" }
+  forcelog: { name: "ForceLog", desc: "Livraison au Maroc", region: africa, countries: [MA] }
+  onesta: { name: "Onesta.ma", desc: "Livraison fiable", region: africa, countries: [MA] }
+  kargo: { name: "Kargo Express", desc: "Service de livraison rapide", region: africa, countries: [MA] }
+  speedaf: { name: "Speedaf Express", desc: "Express international", region: africa, countries: [MA] }
+  goldcolis: { name: "GoldColis", desc: "Service de livraison", region: africa, countries: [MA] }
+  expressrelais: { name: "Express Relais", desc: "Point relais et livraison à domicile", region: africa, countries: [MA] }
+  livo: { name: "Livo", desc: "Fulfillment, entrepôt et livraison", region: africa, countries: [MA] }
+  olivraison: { name: "Olivraison", desc: "Livraison au Maroc", region: africa, countries: [MA] }
+  digylog: { name: "Digylog", desc: "Livraison au Maroc", region: africa, countries: [MA] }
+  navex: { name: "Navex Delivery", desc: "Livraison contre remboursement en Tunisie", region: africa, countries: [TN] }
+  hlexpress: { name: "HL Express", desc: "Livraison express", region: america, countries: [CR, PA] }
+  # Any other company: parcels are followed by hand
+  other: { name: "Autre société", desc: "Votre société n'est pas dans la liste", countries: [] }

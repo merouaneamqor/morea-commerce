@@ -21,7 +21,7 @@ RSpec.describe "Integration polling schedules" do
 
   it "schedules both integrations and the Seallo retention sweep by default" do
     result = schedules
-    expect(result.keys).to contain_exactly("sendit_poll", "shopify_orders_sync", "seallo_retention")
+    expect(result.keys).to contain_exactly("sendit_poll", "sendit_cities_refresh", "shopify_orders_sync", "seallo_retention")
     expect(result.fetch("sendit_poll")).to include("cron" => "*/15 * * * *", "class" => "SenditPollJob", "active_job" => true)
     expect(result.fetch("shopify_orders_sync")).to include("cron" => "*/10 * * * *", "class" => "ShopifyOrdersSyncJob", "queue" => "default", "active_job" => true)
   end
@@ -31,7 +31,7 @@ RSpec.describe "Integration polling schedules" do
   end
 
   it "keeps Sendit polling when Shopify uses an external runner" do
-    expect(schedules(shopify_external: "1").keys).to contain_exactly("sendit_poll", "seallo_retention")
+    expect(schedules(shopify_external: "1").keys).to contain_exactly("sendit_poll", "sendit_cities_refresh", "seallo_retention")
   end
 
   it "keeps only the retention sweep when both integrations use external runners" do

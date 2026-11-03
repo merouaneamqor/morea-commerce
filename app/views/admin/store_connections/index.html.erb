@@ -161,7 +161,7 @@
 <div data-delivery-modal hidden class="fixed inset-0 z-50 grid place-items-center bg-[#1f2430]/30 p-4 backdrop-blur-sm"
      data-catalog="<%= catalog.to_json %>" data-accounts="<%= accounts_json.to_json %>" data-strings="<%= modal_strings.to_json %>"
      data-currency="<%= currency %>" data-action="<%= seller_delivery_accounts_path %>" data-edit-path="/livraison/societes/"
-     data-sendit="<%= t("seller_integrations.sendit").except(:errors).merge(network_error: t("seller_integrations.sendit.errors.network")).to_json %>"
+     data-sendit="<%= t("seller_integrations.sendit").except(:errors).merge(browser_error: t("seller_integrations.sendit.errors.browser"), server_error: t("seller_integrations.sendit.errors.server_error", status: "%{status}"), detail_label: t("seller_integrations.sendit.errors.detail_label")).to_json %>"
      data-sendit-url="https://app.sendit.ma/edit-profile?tab=tabAPI"></div>
 
 <script>
@@ -343,13 +343,25 @@
       var button = form.querySelector("[type=submit]"), box = form.querySelector("[data-sendit-error]"), label = button.textContent;
       box.hidden = true; button.disabled = true; button.textContent = SD.connecting;
       var token = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
+      var fail = function (message, detail) {
+        box.textContent = message;
+        if (detail) { var line = document.createElement("span"); line.className = "mt-1.5 block text-xs opacity-80"; line.textContent = SD.detail_label + " : " + detail; box.appendChild(line); }
+        box.hidden = false; button.disabled = false; button.textContent = label;
+      };
       fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json", "X-CSRF-Token": token }, credentials: "same-origin" })
-        .then(function (res) { return res.json().then(function (json) { return { ok: res.ok && json.ok, json: json }; }); })
+        .then(function (res) {
+          // The answer can be seallo's own error page (not JSON): say so instead of blaming the network.
+          return res.text().then(function (text) {
+            var json = null; try { json = JSON.parse(text); } catch (e) {}
+            return { ok: res.ok && json && json.ok, status: res.status, json: json };
+          });
+        })
         .then(function (r) {
           if (r.ok) { state.done = { webhook_url: r.json.webhook_url }; return render(); }
-          box.textContent = r.json.error || SD.network_error; box.hidden = false; button.disabled = false; button.textContent = label;
+          if (r.json && r.json.error) return fail(r.json.error, r.json.detail);
+          fail(SD.server_error.replace("%{status}", r.status), null);
         })
-        .catch(function () { box.textContent = SD.network_error; box.hidden = false; button.disabled = false; button.textContent = label; });
+        .catch(function () { fail(SD.browser_error, null); });
     });
     root.addEventListener("input", function (e) {
       if (!e.target.matches("[data-search]")) return;

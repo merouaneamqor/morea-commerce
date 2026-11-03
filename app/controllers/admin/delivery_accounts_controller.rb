@@ -51,7 +51,7 @@ module Admin
       begin
         Sendit::Client.verify!(current_store, public_key: keys["api_key"], secret_key: keys["api_secret"])
       rescue Sendit::Client::Error => error
-        return render_sendit_error(sendit_error_message(error))
+        return render_sendit_error(sendit_error_message(error), code: error.kind, detail: error.detail)
       end
 
       account.name = submitted[:name].presence || account.name.presence || "Sendit"
@@ -67,17 +67,14 @@ module Admin
       render json: { ok: true, webhook_url: account.webhook_url }
     end
 
-    def render_sendit_error(message)
-      render json: { ok: false, error: message }, status: :unprocessable_entity
+    def render_sendit_error(message, code: nil, detail: nil)
+      render json: { ok: false, error: message, code: code, detail: detail }.compact, status: :unprocessable_entity
     end
 
-    # Sendit answers 4xx when it refuses the keys; anything else (timeout, 5xx) is a temporary problem on its side.
+    # A different message for each way the login check can fail, so the merchant knows what to do.
     def sendit_error_message(error)
-      if error.status.to_i.between?(400, 499)
-        t("seller_integrations.sendit.errors.invalid_keys")
-      else
-        t("seller_integrations.sendit.errors.unreachable")
-      end
+      key = { invalid_keys: :invalid_keys, blocked: :blocked, network: :network, rejected: :rejected }.fetch(error.kind, :unexpected)
+      t("seller_integrations.sendit.errors.#{key}", status: error.status || "—", message: error.message.to_s.squish.first(160))
     end
 
     def submitted

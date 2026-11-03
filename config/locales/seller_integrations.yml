@@ -31,9 +31,14 @@ fr:
       done: "Terminer"
       errors:
         missing_keys: "Saisissez la clé publique et la clé privée."
-        invalid_keys: "Clés Sendit invalides. Vérifiez la clé publique et la clé privée dans Sendit → Edit profile → Intégration API."
-        unreachable: "Sendit est injoignable pour le moment. Réessayez dans un instant."
-        network: "Connexion impossible. Vérifiez votre connexion et réessayez."
+        invalid_keys: "Sendit a refusé ces clés (identifiants invalides). Vérifiez la clé publique et la clé privée dans Sendit → Edit profile → Intégration API."
+        blocked: "Sendit n'a pas pu vérifier vos clés : sa protection Cloudflare bloque les requêtes automatiques venant de ce serveur (HTTP %{status}). Vos clés ne sont pas en cause. Demandez à Sendit d'autoriser l'adresse IP de ce serveur, puis réessayez."
+        network: "Impossible de joindre Sendit depuis ce serveur (réseau, DNS ou délai dépassé). Réessayez dans un instant."
+        unexpected: "Réponse inattendue de Sendit (HTTP %{status}) : vos clés n'ont pas pu être vérifiées. Réessayez ; si le problème continue, contactez Sendit."
+        rejected: "Sendit a refusé la connexion (HTTP %{status}) : %{message}"
+        browser: "Impossible de joindre seallo. Vérifiez votre connexion internet et réessayez."
+        server_error: "Erreur du serveur seallo (HTTP %{status}). Réessayez ; si le problème continue, contactez le support."
+        detail_label: "Détail technique"
 en:
   seller_integrations:
     shopify_steps: "Install the seallo app from Shopify, then paste the connection code into seallo."
@@ -66,9 +71,14 @@ en:
       done: "Done"
       errors:
         missing_keys: "Enter the public key and the secret key."
-        invalid_keys: "Invalid Sendit keys. Check the public and secret keys in Sendit → Edit profile → Intégration API."
-        unreachable: "Sendit is unreachable right now. Try again in a moment."
-        network: "Could not connect. Check your connection and try again."
+        invalid_keys: "Sendit refused these keys (invalid credentials). Check the public and secret keys in Sendit → Edit profile → Intégration API."
+        blocked: "Sendit could not check your keys: its Cloudflare protection blocks automated requests from this server (HTTP %{status}). Your keys are not the problem. Ask Sendit to allow this server's IP address, then try again."
+        network: "Could not reach Sendit from this server (network, DNS or timeout). Try again in a moment."
+        unexpected: "Unexpected answer from Sendit (HTTP %{status}): your keys could not be checked. Try again; if it keeps happening, contact Sendit."
+        rejected: "Sendit refused the connection (HTTP %{status}): %{message}"
+        browser: "Could not reach seallo. Check your internet connection and try again."
+        server_error: "seallo server error (HTTP %{status}). Try again; if it keeps happening, contact support."
+        detail_label: "Technical detail"
 ar:
   seller_integrations:
     shopify_steps: "ثبّت تطبيق seallo من Shopify، ثم الصق رمز الاتصال في seallo."
@@ -101,6 +111,11 @@ ar:
       done: "تم"
       errors:
         missing_keys: "أدخل المفتاح العام والمفتاح الخاص."
-        invalid_keys: "مفاتيح Sendit غير صالحة. تحقّق من المفتاحين في Sendit → Edit profile → Intégration API."
-        unreachable: "Sendit غير متاح حاليًا. حاول مرة أخرى بعد قليل."
-        network: "تعذّر الاتصال. تحقّق من اتصالك وحاول مجددًا."
+        invalid_keys: "رفض Sendit هذه المفاتيح (بيانات اعتماد غير صالحة). تحقّق من المفتاحين في Sendit → Edit profile → Intégration API."
+        blocked: "لم يتمكّن Sendit من التحقق من مفاتيحك: حماية Cloudflare لديه تحجب الطلبات الآلية القادمة من هذا الخادم (HTTP %{status}). المفاتيح ليست السبب. اطلب من Sendit السماح بعنوان IP لهذا الخادم ثم أعد المحاولة."
+        network: "تعذّر الوصول إلى Sendit من هذا الخادم (الشبكة أو DNS أو انتهاء المهلة). حاول مرة أخرى بعد قليل."
+        unexpected: "ردّ غير متوقع من Sendit (HTTP %{status}): تعذّر التحقق من مفاتيحك. أعد المحاولة، وإن استمر ذلك فتواصل مع Sendit."
+        rejected: "رفض Sendit الاتصال (HTTP %{status}): %{message}"
+        browser: "تعذّر الوصول إلى seallo. تحقّق من اتصالك بالإنترنت وحاول مجددًا."
+        server_error: "خطأ في خادم seallo (HTTP %{status}). أعد المحاولة، وإن استمر ذلك فتواصل مع الدعم."
+        detail_label: "تفاصيل تقنية"

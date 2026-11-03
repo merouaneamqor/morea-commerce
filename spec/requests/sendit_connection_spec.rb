@@ -19,7 +19,9 @@ RSpec.describe "Sendit connection from the Integrations API page", type: :reques
     post "/livraison/societes", params: { delivery_account: { provider: "sendit", name: "Sendit principal" }.merge(keys).merge(fields) }, headers: { "Accept" => "application/json" }
   end
 
-  def refused(status: 401) = Sendit::Client::Error.new("Unauthorized", status: status)
+  def refused(status: 401, kind: :invalid_keys, message: "Unauthorized", detail: "HTTP #{status}")
+    Sendit::Client::Error.new(message, status: status, kind: kind, detail: detail)
+  end
 
   describe "connecting" do
     before { allow(Sendit::Client).to receive(:verify!).and_return("session-token") }
@@ -87,17 +89,35 @@ RSpec.describe "Sendit connection from the Integrations API page", type: :reques
       allow(Sendit::Client).to receive(:verify!).and_raise(refused)
       expect { connect_sendit }.not_to change(DeliveryAccount, :count)
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(json).to eq("ok" => false, "error" => I18n.t("seller_integrations.sendit.errors.invalid_keys"))
+      expect(json).to eq("ok" => false, "code" => "invalid_keys", "detail" => "HTTP 401", "error" => I18n.t("seller_integrations.sendit.errors.invalid_keys"))
       expect(store.reload.sendit_configured?).to be(false)
     end
 
-    it "tells the difference when Sendit cannot be reached" do
-      allow(Sendit::Client).to receive(:verify!).and_raise(Sendit::Client::Error.new("Sendit unreachable: timeout"))
-      expect { connect_sendit }.not_to change(DeliveryAccount, :count)
-      expect(json["error"]).to eq(I18n.t("seller_integrations.sendit.errors.unreachable"))
-      allow(Sendit::Client).to receive(:verify!).and_raise(refused(status: 503))
+    it "gives each kind of failure its own message and technical detail, and saves nothing" do
+      cases = {
+        invalid_keys: [ refused(status: 422), /refusé ces clés/ ],
+        blocked: [ refused(status: 403, kind: :blocked, detail: "HTTP 403 · Cloudflare · « Attention Required! | Cloudflare »"), /Cloudflare.*HTTP 403.*Vos clés ne sont pas en cause/ ],
+        network: [ Sendit::Client::Error.new("Sendit unreachable: x", kind: :network, detail: "SocketError"), /Impossible de joindre Sendit depuis ce serveur/ ],
+        unexpected: [ refused(status: 502, kind: :unexpected, detail: "HTTP 502"), /Réponse inattendue de Sendit \(HTTP 502\)/ ],
+        rejected: [ refused(status: 403, kind: :rejected, message: "Compte désactivé", detail: "HTTP 403 · Compte désactivé"), /refusé la connexion \(HTTP 403\) : Compte désactivé/ ],
+        none: [ Sendit::Client::Error.new("boom", status: 500), /Réponse inattendue de Sendit \(HTTP 500\)/ ]
+      }
+      cases.each do |kind, (error, message)|
+        allow(Sendit::Client).to receive(:verify!).and_raise(error)
+        expect { connect_sendit }.not_to change(DeliveryAccount, :count)
+        expect(response).to have_http_status(:unprocessable_entity)
+        answer = JSON.parse(response.body)
+        expect(answer["error"]).to match(message), "kind #{kind}: #{answer["error"]}"
+        expect(answer["detail"]).to eq(error.detail) if error.detail
+      end
+      expect(cases.values.map { |_, message| message }.length).to eq(6)
+      expect(%w[invalid_keys blocked network unexpected rejected].map { |key| I18n.t("seller_integrations.sendit.errors.#{key}", status: 1, message: "m") }.uniq.length).to eq(5)
+    end
+
+    it "never puts the keys in the error answer" do
+      allow(Sendit::Client).to receive(:verify!).and_raise(refused(message: "bad key pub-123", detail: "HTTP 401"))
       connect_sendit
-      expect(json["error"]).to eq(I18n.t("seller_integrations.sendit.errors.unreachable"))
+      expect(response.body).not_to include("sec-456")
     end
 
     it "needs both keys and does not call Sendit without them" do

@@ -21,6 +21,11 @@
       <% agent = current_admin_user.confirmation_agent_view? %>
       <% new_orders = current_store ? Seller::DashboardStats.new(store: current_store).new_orders_count : 0 %>
       <% missing_costs = current_store && !agent ? Seller::DashboardStats.new(store: current_store).missing_costs : 0 %>
+      <%# Class strings are plain literals so Tailwind's scanner always generates them. %>
+      <% nav_on = "bg-[#f4e4de] font-semibold text-[#a8432e]" %>
+      <% nav_off = "text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" %>
+      <% badge_on = "bg-white text-[#a8432e]" %>
+      <% badge_off = "bg-[#f4e4de] text-[#a8432e]" %>
       <% sidebar = capture do %>
         <nav class="flex h-full flex-col overflow-y-auto rounded-2xl border border-[#e8e3df] bg-white p-3">
           <div class="flex items-center justify-between px-3 pt-2 pb-5">
@@ -34,9 +39,9 @@
                 <% if href.nil? %>
                   <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#a49d99]" title="<%= sl("Bientôt disponible") %>"><%= seller_icon(icon) %> <%= sl(label) %></span>
                 <% else %>
-                  <%= link_to href, class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm #{on ? "bg-[#f4e4de] font-semibold text-[#a8432e]" : "text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]"}" do %>
+                  <%= link_to href, class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm #{on ? nav_on : nav_off}" do %>
                     <%= seller_icon(icon) %> <%= sl(label) %>
-                    <% if key == "orders" && new_orders.positive? %><span class="ms-auto rounded-full px-2 py-0.5 text-[11px] font-semibold <%= on ? "bg-white text-[#a8432e]" : "bg-[#f4e4de] text-[#a8432e]" %>"><%= new_orders %></span><% end %>
+                    <% if key == "orders" && new_orders.positive? %><span class="ms-auto rounded-full px-2 py-0.5 text-[11px] font-semibold <%= on ? badge_on : badge_off %>"><%= new_orders %></span><% end %>
                     <% if key == "products" && missing_costs.positive? %><span class="ms-auto rounded-full bg-[#fbe7ea] px-2 py-0.5 text-[11px] font-semibold text-[#b4344e]" title="<%= sl("produits sans coût") %>"><%= missing_costs %></span><% end %>
                   <% end %>
                 <% end %>

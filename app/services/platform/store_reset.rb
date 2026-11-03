@@ -20,7 +20,7 @@ module Platform
       seallo_connection_codes store_connections store_expenses store_translations storefront_themes
       woocommerce_connection_codes
     ].freeze
-    KEPT_TABLES = %w[access_requests admin_sessions audit_events invoices users].freeze
+    KEPT_TABLES = %w[access_requests admin_sessions audit_events invoices payments users].freeze
 
     # Settings put back to the column default. Identity (name, slug, email, phone,
     # currency, storefront switch), billing and the platform's feature flag stay.

@@ -7,36 +7,27 @@ class SignupsController < ApplicationController
   rate_limit to: 10, within: 1.hour, only: %i[create resend], with: -> { render_throttled }
 
   def new
-    @registration = Registration.new
+    @signup = SelfServiceSignup.new(currency: session.dig(:signup_plan, "currency") || Plans.reference_currency)
   end
 
   def create
-    # Bots receive the same response without creating records or sending mail.
-    return redirect_to(signup_thanks_path) if params[:website].present?
+    # Bots receive the same response without creating records.
+    return redirect_to(root_path) if params[:website].present?
 
-    @registration = Registration.new(signup_params.merge(locale: I18n.locale.to_s))
-    # Structural errors behave identically for known and unknown addresses.
-    # Never expose the uniqueness validator in an invalid form response.
-    @registration.valid?
-    @registration.errors.delete(:email, :taken)
-    if @registration.errors.any?
-      render :new, status: :unprocessable_entity
-    elsif duplicate_identity?
-      redirect_to signup_thanks_path
+    @signup = SelfServiceSignup.new(signup_params)
+    user = @signup.save(plan_choice: session[:signup_plan])
+    if user
+      session.delete(:signup_plan)
+      reset_session
+      session[:user_id] = user.id
+      session[:session_version] = user.session_version
+      session[:admin_mode] = "store"
+      store = user.store
+      paid_trial = store.plan_selected? && !store.free_plan?
+      redirect_to paid_trial ? payment_path(locale: I18n.locale) : admin_root_path, notice: t("registration.verified")
     else
-      @registration.verification_sent_at = Time.current
-      if @registration.save
-        RegistrationMailer.verification(@registration).deliver_later
-        redirect_to signup_thanks_path
-      elsif duplicate_identity?
-        redirect_to signup_thanks_path
-      else
-        @registration.errors.delete(:email, :taken)
-        render :new, status: :unprocessable_entity
-      end
+      render :new, status: :unprocessable_entity
     end
-  rescue ActiveRecord::RecordNotUnique
-    redirect_to signup_thanks_path
   end
 
   def thanks
@@ -90,16 +81,12 @@ class SignupsController < ApplicationController
   end
 
   def signup_params
-    params.require(:registration).permit(:business_name, :email, :admin_theme)
+    params.require(:signup).permit(:name, :store_name, :phone, :email, :password, :password_confirmation, :currency)
   end
 
-  def duplicate_identity?
-    @registration.email.present? &&
-      (Registration.exists?(email: @registration.email) || User.exists?(email: @registration.email))
-  end
 
   def render_throttled
-    @registration = Registration.new
+    @signup = SelfServiceSignup.new
     flash.now[:alert] = t("signup.throttled")
     render :new, status: :too_many_requests
   end

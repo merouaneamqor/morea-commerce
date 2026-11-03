@@ -1,0 +1,24 @@
+<%# Signup progress: 1 Compte, 2 Plan, 3 Paiement (as on the seallo signup). `links` makes earlier steps clickable. %>
+<% done_until = local_assigns.fetch(:done_until, current - 1) %>
+<% links = local_assigns.fetch(:links, {}) %>
+<ol class="flex flex-wrap gap-2">
+  <% ["Compte", "Plan", "Paiement"].each_with_index do |label, i| %>
+    <% n = i + 1 %>
+    <% active = n == current %>
+    <% done = n <= done_until %>
+    <% href = active ? nil : links[n] %>
+    <% base = "flex items-center gap-2.5 rounded-xl border px-3.5 py-2 text-sm font-semibold" %>
+    <% badge = "flex size-6 items-center justify-center rounded-full text-xs font-bold #{active || done ? "bg-[#a8432e] text-white" : "bg-[#ece6e2] text-[#8a8380]"}" %>
+    <li>
+      <% if href %>
+        <a href="<%= href %>" title="<%= st("Revenir à l'étape") %> <%= st(label) %>" class="<%= base %> border-transparent text-[#8a8380] transition hover:border-[#e8e3df] hover:bg-white hover:text-[#1f2430]">
+          <span class="<%= badge %>"><%= done ? "✓" : n %></span><%= st(label) %>
+        </a>
+      <% else %>
+        <span class="<%= base %> <%= active ? "border-[#a8432e] bg-white text-[#1f2430]" : "border-transparent text-[#8a8380]" %>">
+          <span class="<%= badge %>"><%= done ? "✓" : n %></span><%= st(label) %>
+        </span>
+      <% end %>
+    </li>
+  <% end %>
+</ol>

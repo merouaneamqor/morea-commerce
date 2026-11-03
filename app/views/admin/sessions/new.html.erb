@@ -1,5 +1,5 @@
 <% content_for :localized, "1" %>
-<% content_for :title, t("sign_in.page_title", name: current_store&.name.presence || Store.platform_name) %>
+<% content_for :title, st("Connexion") %>
 <% content_for :back_label, t("sign_in.back") %>
 <% content_for :topbar do %>
   <nav class="flex items-center gap-2" aria-label="<%= t("sign_in.language") %>">
@@ -10,50 +10,53 @@
     <% end %>
   </nav>
 <% end %>
-<% content_for :aside do %>
-  <p class="fx-chip"><span class="fx-dot" aria-hidden="true"></span><%= t("sign_in.aside.chip") %></p>
-  <h2 class="fx-gradient-text mt-6 text-5xl font-bold leading-[1.05] tracking-tight"><%= t("sign_in.aside.headline") %></h2>
-  <ul class="mt-8 space-y-4 text-[#b9d3ff]">
-    <% t("sign_in.aside.points").each do |point| %>
-      <li class="flex items-center gap-3"><span class="fx-dot" aria-hidden="true"></span><%= point %></li>
-    <% end %>
-  </ul>
-<% end %>
+<% apex = Store.apex_host?(request.host) %>
+<% show_workspace = apex %>
+<% account_origin = apex ? "" : Store.platform_origin %>
+<% label_class = "text-sm font-medium text-[#1f2430]" %>
+<% eye = '<svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'.html_safe %>
 
-<div class="fx-glass p-7 sm:p-9">
-  <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("sign_in.heading") %></h1>
-  <p class="mt-2 text-sm text-[#b9d3ff]">
-    <%= Store.apex_host?(request.host) ? t("sign_in.workspace_subtitle") : t("sign_in.tenant_subtitle", name: current_store&.name) %>
-  </p>
-
-  <% if alert.present? %>
-    <div role="alert" class="fx-alert mt-6"><%= alert %></div>
-  <% end %>
-
-  <%= form_with url: admin_login_path, method: :post, class: "mt-7 space-y-5" do %>
-    <div>
-      <%= label_tag :email, t("sign_in.email"), class: "fx-label" %>
-      <%= email_field_tag :email, params[:email], required: true, autofocus: true, autocomplete: "username", placeholder: "you@company.com", class: "fx-input" %>
-    </div>
-    <div>
-      <%= label_tag :password, t("sign_in.password"), class: "fx-label" %>
-      <%= password_field_tag :password, nil, required: true, autocomplete: "current-password", placeholder: "••••••••", class: "fx-input" %>
-    </div>
-    <% if Store.apex_host?(request.host) %>
-      <div>
-        <%= label_tag :workspace, t("sign_in.workspace"), class: "fx-label" %>
-        <%= text_field_tag :workspace, params[:workspace], autocomplete: "off", autocapitalize: "none", spellcheck: false, "aria-describedby": "workspace-help", class: "fx-input" %>
-        <p id="workspace-help" class="mt-2 text-xs text-[#b9d3ff]"><%= t("sign_in.workspace_help") %></p>
-      </div>
-    <% end %>
-    <%= submit_tag t("sign_in.submit"), class: "fx-btn" %>
-  <% end %>
-  <% account_origin = Store.apex_host?(request.host) ? "" : Store.platform_origin %>
-  <p class="mt-5 text-center text-sm">
-    <%= link_to t("registration.forgot_password"), "#{account_origin}#{new_password_reset_path(locale: I18n.locale)}", class: "fx-link" %>
-  </p>
-  <p class="mt-6 border-t border-white/15 pt-6 text-center text-sm text-[#b9d3ff]">
-    <%= t("registration.no_account") %>
-    <%= link_to t("registration.create_account"), "#{account_origin}#{signup_path(locale: I18n.locale)}", class: "fx-link font-semibold underline underline-offset-4" %>
-  </p>
+<div class="mb-5">
+  <h1><%= st("Bon retour sur seallo") %></h1>
+  <p class="mt-1 text-sm text-[#6b6059]"><%= apex ? st("Connectez-vous pour suivre vos commandes.") : t("sign_in.tenant_subtitle", name: current_store&.name) %></p>
 </div>
+
+<% if alert.present? %><div role="alert" class="fx-alert mb-4"><%= alert %></div><% end %>
+<% if notice.present? %><div class="mb-4 text-center text-sm font-medium text-green-600"><%= notice %></div><% end %>
+
+<%= form_with url: admin_login_path, method: :post, class: "flex flex-col gap-6" do %>
+  <div class="grid gap-6">
+    <div class="grid gap-2">
+      <%= label_tag :email, st("E-mail"), class: label_class %>
+      <%= email_field_tag :email, params[:email], required: true, autofocus: true, autocomplete: "username", placeholder: st("vous@exemple.com"), class: "fx-input !mt-0" %>
+    </div>
+    <div class="grid gap-2">
+      <div class="flex items-center">
+        <%= label_tag :password, st("Mot de passe"), class: label_class %>
+        <%= link_to st("Mot de passe oublié ?"), "#{account_origin}#{new_password_reset_path(locale: I18n.locale)}", class: "fx-link ms-auto text-sm underline underline-offset-4" %>
+      </div>
+      <div class="relative">
+        <%= password_field_tag :password, nil, required: true, autocomplete: "current-password", placeholder: st("Votre mot de passe"), class: "fx-input !mt-0 pe-10" %>
+        <button type="button" data-toggle-password class="absolute inset-y-0 end-0 flex items-center px-3 text-[#8a8380] hover:text-[#1f2430]" tabindex="-1" aria-label="<%= st("Mot de passe") %>"><%= eye %></button>
+      </div>
+    </div>
+    <% if show_workspace %>
+      <details class="text-sm text-[#6b6059]" <%= "open" if params[:workspace].present? %>>
+        <summary class="cursor-pointer select-none"><%= t("signup_flow.workspace_label") %></summary>
+        <div class="mt-2 grid gap-2">
+          <%= text_field_tag :workspace, params[:workspace], autocomplete: "off", autocapitalize: "none", spellcheck: false, "aria-label": t("signup_flow.workspace_label"), "aria-describedby": "workspace-help", class: "fx-input !mt-0" %>
+          <p id="workspace-help" class="text-xs"><%= t("signup_flow.workspace_help") %></p>
+        </div>
+      </details>
+    <% end %>
+    <div class="flex items-center gap-3">
+      <%= check_box_tag :remember, "1", params[:remember] == "1", class: "size-4 rounded border-[#e8e3df] accent-[#a8432e]" %>
+      <%= label_tag :remember, st("Se souvenir de moi"), class: label_class %>
+    </div>
+    <%= submit_tag st("Se connecter"), class: "fx-btn mt-4" %>
+  </div>
+  <div class="text-center text-sm text-[#6b6059]">
+    <%= st("Pas encore de compte ?") %>
+    <%= link_to st("Créer un compte"), "#{account_origin}#{signup_path(locale: I18n.locale)}", class: "fx-link font-semibold underline underline-offset-4" %>
+  </div>
+<% end %>

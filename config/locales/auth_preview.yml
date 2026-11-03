@@ -1,0 +1,82 @@
+# Strings for the animated preview panel beside the auth forms (same copy as the seallo sign-in page).
+fr:
+  auth_preview:
+    eyebrow: "Une commande, de bout en bout"
+    headline: "Votre e-commerce,"
+    headline_accent: "sous contrôle."
+    tagline: "Confirmez, livrez, encaissez et voyez le vrai bénéfice de chaque commande, au même endroit."
+    live: "En direct"
+    new_order: "Nouvelle commande · Shopify"
+    steps: ["Passée", "Confirmée", "Expédiée", "Livrée", "Payée"]
+    step_notes:
+      - "Commande reçue de votre boutique"
+      - "Confirmée par votre agent"
+      - "Envoyée automatiquement à la livraison"
+      - "Colis livré au client"
+      - "Argent encaissé, bénéfice calculé"
+    revenue: "Chiffre d'affaires"
+    profit: "Bénéfice net"
+    revenue_short: "CA"
+    profit_short: "Bénéfice"
+    days_30: "30 jours"
+    months: ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]
+    best_sellers: "★ Meilleurs produits"
+    orders_abbr: "cmd"
+    partner_titles:
+      stores: "Boutiques"
+      delivery: "Livraison"
+      ads: "Publicité"
+en:
+  auth_preview:
+    eyebrow: "One order, end to end"
+    headline: "Your e-commerce,"
+    headline_accent: "under control."
+    tagline: "Confirm, deliver, collect and see the real profit of every order, in one place."
+    live: "Live"
+    new_order: "New order · Shopify"
+    steps: ["Placed", "Confirmed", "Shipped", "Delivered", "Paid"]
+    step_notes:
+      - "Order received from your store"
+      - "Confirmed by your agent"
+      - "Sent automatically to delivery"
+      - "Parcel delivered to the customer"
+      - "Cash collected, profit calculated"
+    revenue: "Revenue"
+    profit: "Net profit"
+    revenue_short: "Revenue"
+    profit_short: "Profit"
+    days_30: "30 days"
+    months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    best_sellers: "★ Best sellers"
+    orders_abbr: "orders"
+    partner_titles:
+      stores: "Stores"
+      delivery: "Delivery"
+      ads: "Advertising"
+ar:
+  auth_preview:
+    eyebrow: "طلب واحد من البداية إلى النهاية"
+    headline: "تجارتك الإلكترونية،"
+    headline_accent: "تحت السيطرة."
+    tagline: "أكّد واشحن واقبض وشاهد الربح الحقيقي لكل طلب، في مكان واحد."
+    live: "مباشر"
+    new_order: "طلب جديد · Shopify"
+    steps: ["مُسجَّل", "مؤكَّد", "مشحون", "مُسلَّم", "مدفوع"]
+    step_notes:
+      - "وصل الطلب من متجرك"
+      - "أكّده وكيلك"
+      - "أُرسل تلقائيًا إلى التوصيل"
+      - "سُلّم الطرد للزبون"
+      - "تمّ القبض وحُسب الربح"
+    revenue: "رقم المعاملات"
+    profit: "صافي الربح"
+    revenue_short: "المعاملات"
+    profit_short: "الربح"
+    days_30: "30 يومًا"
+    months: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"]
+    best_sellers: "★ الأكثر مبيعًا"
+    orders_abbr: "طلب"
+    partner_titles:
+      stores: "المتاجر"
+      delivery: "شركات التوصيل"
+      ads: "الإعلانات"

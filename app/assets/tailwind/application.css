@@ -3183,6 +3183,107 @@ main {
   .seallo-auth .fx-stage header a.fx-link, .seallo-auth .fx-stage header nav a { color: #7a6f67; }
   .seallo-auth .fx-stage header nav a.font-semibold { color: var(--s-ink); }
 
+/* Split layout for the auth pages: animated preview panel on the left, form on the right (as on the seallo sign-in page). */
+  .seallo-auth { background: #f3f1ef; }
+  .sa-split { display: grid; min-height: 100dvh; background: #f3f1ef; color: #1f2430; }
+  .sa-panel { display: none; position: sticky; top: 0; height: 100dvh; overflow: hidden; padding: 2rem; flex-direction: column; }
+  .sa-form-col { display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+  .sa-form-wrap { width: 100%; max-width: 32rem; }
+  .sa-form-top { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1.5rem; }
+  @media (min-width: 1024px) {
+    .sa-split { grid-template-columns: 1.3fr 1fr; }
+    .sa-panel { display: flex; }
+    .sa-form-top .sa-mark { visibility: hidden; }
+  }
+  @media (min-width: 1280px) { .sa-panel { padding-inline: 3rem; } }
+
+  .sa-mark { display: inline-flex; align-items: baseline; gap: .5rem; color: #a8432e; font-size: 1.5rem; font-weight: 800; letter-spacing: -.025em; text-decoration: none; }
+  .sa-mark em { color: #8a8380; font-size: .875rem; font-style: normal; font-weight: 600; letter-spacing: 0; }
+  .sa-mark-small { font-size: 1.875rem; }
+  .sa-lang nav { display: flex; align-items: center; padding: 2px; border: 1px solid #e8e3df; border-radius: 999px; background: #fff; }
+  .sa-lang nav a { padding: .125rem .5rem; border-radius: 999px; color: #8a8380 !important; font-size: .75rem; font-weight: 600; text-decoration: none; }
+  .sa-lang nav a:hover { color: #1f2430 !important; text-decoration: none; }
+  .sa-lang nav a[aria-current="true"] { background: #1f2430; color: #fff !important; }
+
+  .sa-intro { margin-top: 1.5rem; }
+  .sa-eyebrow { color: #a8432e; font-size: .75rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+  .sa-intro h2 { margin-top: .5rem; color: #1f2430; font-size: 1.875rem; font-weight: 800; line-height: 1.2; }
+  .sa-intro h2 .nowrap { white-space: nowrap; }
+  .sa-intro h2 span:last-child { color: #a8432e; }
+  .sa-tagline { max-width: 32rem; margin-top: .5rem; color: #5e5a58; font-size: .875rem; }
+  @media (min-width: 1280px) { .sa-intro h2 { font-size: 2.25rem; } }
+  @media (max-height: 700px) { .sa-eyebrow, .sa-tagline { display: none; } .sa-intro { margin-top: 1rem; } }
+
+  .sa-card { border: 1px solid #e8e3df; border-radius: 1rem; background: #fff; padding: 1rem; color: #1f2430; }
+  .sa-metric-label { display: flex; align-items: center; gap: .375rem; color: #8a8380; font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+  .sa-metric-label i { width: .5rem; height: .5rem; border-radius: 50%; }
+  .sa-metric-label i.is-brand { background: #a8432e; }
+  .sa-metric-label i.is-green { background: #10b981; }
+  .sa-metric { margin-top: .125rem; font-size: 1rem; font-weight: 700; }
+  .sa-metric small { color: #059669; font-size: 11px; font-weight: 600; }
+  .sa-metric.is-green { color: #059669; }
+  .sa-pill { margin-inline-start: auto; align-self: flex-start; padding: .25rem .5rem; border: 1px solid #e8e3df; border-radius: .5rem; color: #8a8380; font-size: 10px; font-weight: 600; }
+  .sa-chart { margin-top: 1.25rem; padding: .75rem 1rem .5rem; }
+  .sa-chart-head { display: flex; align-items: flex-start; gap: 1.5rem; }
+  .sa-chart-plot { position: relative; margin-top: .5rem; }
+  .sa-chart-plot svg { display: block; width: 100%; height: 56px; overflow: visible; }
+  @media (min-height: 700px) { .sa-chart-plot svg { height: 5rem; } }
+  @media (min-height: 900px) { .sa-chart-plot svg { height: 8rem; } }
+  .sa-dot { position: absolute; width: .625rem; height: .625rem; transform: translate(-50%, -50%); border: 2px solid #fff; border-radius: 50%; box-shadow: 0 1px 3px rgb(0 0 0 / .25); pointer-events: none; }
+  .sa-dot.is-brand { background: #a8432e; }
+  .sa-dot.is-green { background: #10b981; }
+  .sa-tip { position: absolute; top: -.25rem; right: 4%; padding: .25rem .5rem; border-radius: .5rem; background: #1f2430; color: #fff; font-size: 10px; line-height: 1.3; white-space: nowrap; box-shadow: 0 8px 20px -6px rgb(0 0 0 / .4); pointer-events: none; }
+  .sa-tip p:first-child { color: rgb(255 255 255 / .7); font-weight: 600; }
+  .sa-tip .is-green { color: #6ee7b7; }
+  .sa-axis { display: flex; justify-content: space-between; margin-top: .25rem; color: #a49d99; font-size: 10px; }
+
+  .sa-row { display: grid; grid-template-columns: 3fr 2fr; gap: .75rem; margin-top: .75rem; }
+  .sa-order { box-shadow: 0 20px 50px -30px rgb(31 36 48 / .25); }
+  .sa-order-head { display: flex; align-items: center; justify-content: space-between; }
+  .sa-live { display: flex; align-items: center; gap: .375rem; color: #059669; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+  .sa-live i { width: .5rem; height: .5rem; border-radius: 50%; background: #10b981; }
+  .sa-order-body { display: flex; align-items: center; gap: .75rem; margin-top: .75rem; }
+  .sa-order-body > div { flex: 1; min-width: 0; }
+  .sa-order-body small { display: block; overflow: hidden; color: #8a8380; font-size: .875rem; text-overflow: ellipsis; white-space: nowrap; }
+  .sa-order-icon { display: flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: .75rem; background: #f4e4de; font-size: 1.125rem; }
+  .sa-order-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: .375rem; margin-top: 1rem; }
+  .sa-order-steps span { display: block; height: .375rem; overflow: hidden; border-radius: 999px; background: #ece6e2; }
+  .sa-order-steps i { display: block; width: 0; height: 100%; border-radius: 999px; background: #a8432e; transition: width .7s; }
+  .sa-order-steps p { margin-top: .375rem; color: #b3aca8; font-size: 11px; text-align: center; }
+  .sa-order-steps .is-done p { color: #1f2430; font-weight: 600; }
+  .sa-order-note { margin-top: .75rem; padding: .5rem .75rem; border-radius: .5rem; background: #f3f1ef; color: #5e5a58; font-size: .75rem; }
+
+  .sa-best ul { display: grid; gap: .5rem; margin-top: .625rem; }
+  .sa-best li { display: flex; align-items: center; gap: .625rem; }
+  .sa-best li > div { flex: 1; min-width: 0; }
+  .sa-medal { display: flex; flex: none; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; border-radius: 50%; color: #fff; font-size: 10px; font-weight: 700; }
+  .sa-best-line { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; }
+  .sa-best-line p { overflow: hidden; font-size: .75rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+  .sa-best-line b { flex: none; font-size: .75rem; white-space: nowrap; }
+  .sa-best-bar { display: flex; align-items: center; gap: .5rem; margin-top: .25rem; }
+  .sa-best-bar > span { flex: 1; height: .25rem; overflow: hidden; border-radius: 999px; background: #ece6e2; }
+  .sa-best-bar i { display: block; height: 100%; border-radius: 999px; background: #a8432e; }
+  .sa-best-bar small { flex: none; color: #8a8380; font-size: 10px; }
+
+  .sa-partners { display: inline-flex; align-self: flex-start; margin-top: .75rem; padding: .75rem 0; border: 1px solid #e8e3df; border-radius: 1rem; background: rgb(255 255 255 / .7); }
+  .sa-partners > div { display: flex; flex-direction: column; gap: .5rem; padding: 0 1.25rem; }
+  .sa-partners > div + div { border-inline-start: 1px solid #ece6e2; }
+  .sa-partners p { color: #a49d99; font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+  .sa-partners ul { display: flex; align-items: center; gap: .875rem; height: 1.5rem; }
+  .sa-partners img { width: auto; object-fit: contain; opacity: .75; filter: grayscale(1); }
+
+  /* Form column: no card, Seallo-style fields */
+  .seallo-auth .sa-form-wrap .fx-glass { padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .seallo-auth .sa-form-wrap h1 { color: #1f2430; font-size: 1.5rem; font-weight: 700; letter-spacing: 0; }
+  .seallo-auth .sa-form-wrap .fx-label { color: #1f2430; font-size: .875rem; font-weight: 500; letter-spacing: 0; }
+  .seallo-auth .sa-form-wrap .fx-input { min-height: 2.75rem; border: 1px solid #e8e3df; border-radius: .5rem; background: #fdfcfb; color: #1f2430; }
+  .seallo-auth .sa-form-wrap .fx-input::placeholder { color: #8a8380; }
+  .seallo-auth .sa-form-wrap .fx-input:focus { border-color: #a8432e; box-shadow: 0 0 0 3px rgb(168 67 46 / .15); outline: none; }
+  .seallo-auth .sa-form-wrap .fx-btn { min-height: 2.75rem; border: 0; border-radius: .5rem; background: #a8432e; font-weight: 600; }
+  .seallo-auth .sa-form-wrap .fx-btn:hover { background: #8e3624; }
+  .seallo-auth .sa-form-wrap .fx-link { color: #1f2430; }
+  .seallo-auth .sa-form-wrap .fx-link:hover { color: #a8432e; }
+
 @layer components {
   /* Seallo page components: stat tiles, team cards, statistics, segments */
   .admin-body:is([data-admin-theme="seallo"], [data-admin-theme="seallo_dark"]) {

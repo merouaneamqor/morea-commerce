@@ -1,40 +1,42 @@
 # frozen_string_literal: true
 
 raise "Signup smoke requires the isolated test environment" unless Rails.env.test?
-ActiveJob::Base.queue_adapter = :test
 checks = 0
 assert = lambda { |message, condition| raise message unless condition; checks += 1 }
 
 ActiveRecord::Base.transaction do
   suffix = SecureRandom.hex(6)
   password = "Synthetic-signup-#{suffix}"
-  email = "signup-#{suffix}@example.test"
+  email = "owner-#{suffix}@example.test"
   http = ActionDispatch::Integration::Session.new(Rails.application)
   http.host! Store.base_domain
   %w[fr en ar].each do |locale|
     http.get "/signup", params: { locale: locale }
-    assert.call("localized signup renders #{locale}", http.response.status == 200 && http.response.body.include?("registration[email]") && http.response.body.include?(%(lang="#{locale}")))
+    assert.call("localized signup renders #{locale}", http.response.status == 200 && http.response.body.include?("signup[email]") && http.response.body.include?(%(lang="#{locale}")))
+    http.get "/abonnement", params: { locale: locale }
+    assert.call("localized plans render #{locale}", http.response.status == 200 && http.response.body.include?("data-plans"))
   end
-  store_count, user_count, request_count = Store.count, User.count, AccessRequest.count
-  http.post "/signup", params: { locale: "en", registration: {
-    business_name: "Synthetic Workspace #{suffix}", email: email
+  store_count, user_count = Store.count, User.count
+  http.post "/abonnement", params: { plan: "starter", billing: "monthly", currency: "USD" }
+  assert.call("a guest plan choice continues to account creation", http.response.redirect? && http.response.location.include?("/signup"))
+  http.post "/signup", params: { locale: "en", signup: {
+    name: "Synthetic Owner", store_name: "Synthetic Workspace #{suffix}", phone: "0612345678", email: email,
+    password: password, password_confirmation: password, currency: "USD"
   } }
-  assert.call("signup redirects to email instructions", http.response.redirect? && http.response.location.include?("/signup/thanks"))
-  registration = Registration.find_by!(email: email)
-  assert.call("signup awaits verification without provisioning or approval", Store.count == store_count && User.count == user_count && AccessRequest.count == request_count && !registration.verified?)
-  token = registration.verification_token
-  http.get "/signup/verify", params: { token: token }
-  assert.call("email scanners cannot activate accounts", http.response.status == 200 && !registration.reload.verified? && Store.count == store_count)
-  http.post "/signup/confirm", params: { token: token, password: password, password_confirmation: password }
-  assert.call("confirmation activates exactly one account", http.response.redirect? && registration.reload.verified? && Store.count == store_count + 1 && User.count == user_count + 1)
-  owner = registration.user
-  assert.call("account preserves password and starts unpublished", owner.authenticate(password) && !owner.store.storefront_enabled? && owner.store.subscription_required?)
+  assert.call("signup creates the workspace and continues to payment", http.response.redirect? && http.response.location.include?("/paiement") && Store.count == store_count + 1 && User.count == user_count + 1)
+  owner = User.find_by!(email: email)
+  assert.call("account preserves the password, starts unpublished and on a trial", owner.authenticate(password) && !owner.store.storefront_enabled? && owner.store.trial_active?)
+  http.get "/paiement"
+  assert.call("payment step shows the transfer details", http.response.status == 200 && http.response.body.include?(Plans.bank["rib"]))
+  http.post "/paiement/virement", params: { reference: "SMOKE-#{suffix}" }
+  assert.call("a transfer is recorded as pending", owner.store.payments.pending.count == 1)
   http.get "/admin"
-  assert.call("verified user reaches overview", http.response.status == 200)
+  assert.call("owner reaches overview", http.response.status == 200)
   http.get "/admin/products"
-  assert.call("operations require subscription", http.response.redirect? && http.response.location.include?("/admin/subscription"))
-  http.post "/signup/confirm", params: { token: token, password: password, password_confirmation: password }
-  assert.call("confirmation token is single-use", http.response.status == 422 && Store.count == store_count + 1)
+  assert.call("operations are open during the trial", http.response.status == 200)
+  owner.store.update!(trial_ends_at: 1.day.ago)
+  http.get "/admin/products"
+  assert.call("operations require a subscription once the trial ends", http.response.redirect? && http.response.location.include?("/admin/subscription"))
   puts "Self-service signup checks passed: #{checks}"
   raise ActiveRecord::Rollback
 end

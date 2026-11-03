@@ -19,6 +19,7 @@ class Store < ApplicationRecord
   has_many :pages, dependent: :destroy
   has_many :menu_items, dependent: :destroy
   has_many :invoices, dependent: :destroy
+  has_many :payments, dependent: :destroy
   has_many :agent_changesets, dependent: :destroy
   has_many :store_connections, dependent: :destroy
   has_many :seallo_connection_codes, dependent: :delete_all
@@ -42,6 +43,7 @@ class Store < ApplicationRecord
   validates :billing_amount_cents, numericality: { greater_than_or_equal_to: 0 }
   validates :billing_interval, inclusion: { in: BILLING_INTERVALS }
   validates :billing_status, inclusion: { in: BILLING_STATUSES }
+  validates :plan, inclusion: { in: ->(_) { Plans.list.keys } }, allow_nil: true
   validates :meta_pixel_id, format: { with: /\A\d{5,20}\z/, message: "must be 5–20 digits" }, allow_blank: true
   validates :tiktok_pixel_id, format: { with: /\A[A-Za-z0-9]{10,40}\z/, message: "must be 10–40 letters or numbers" }, allow_blank: true
 
@@ -163,7 +165,45 @@ class Store < ApplicationRecord
     return true unless subscription_required?
     return true if store_connections.where(shopify_app: "seallo_connect", active: true).where("shopify_entitled_until > ?", Time.current).exists?
 
+    return true if trial_active?
+
     billing_status == "active" && billing_period_ends_on.present? && billing_period_ends_on >= Date.current
+  end
+
+  def trial_active?
+    billing_status == "trial" && trial_ends_at.present? && trial_ends_at.future?
+  end
+
+  # Workspaces created before plans existed have no plan and keep their billing policy.
+  def plan_selected?
+    plan.present?
+  end
+
+  def free_plan?
+    Plans.free?(plan)
+  end
+
+  # Amount to pay for the current plan and billing, in US dollars.
+  def amount_due
+    Plans.amount_due(plan, billing_interval == "yearly" ? "annual" : "monthly")
+  end
+
+  # Applies a plan chosen on the seallo plans page. The free trial of a paid plan starts at the
+  # first choice and is never restarted; a free plan needs no payment and no trial.
+  def choose_plan!(plan:, billing:, currency:)
+    paid_plan_active = billing_status == "active" && !free_plan? && billing_period_ends_on.present? && billing_period_ends_on >= Date.current
+    attributes = {
+      plan: plan, currency: currency,
+      billing_interval: billing == "annual" ? "yearly" : "monthly",
+      subscription_required: !Plans.free?(plan)
+    }
+    if Plans.free?(plan)
+      attributes[:billing_status] = "active"
+    else
+      attributes[:trial_ends_at] = trial_ends_at || Time.current + Plans.trial_days.days
+      attributes[:billing_status] = "trial" unless paid_plan_active
+    end
+    update!(attributes)
   end
 
   def billing_past_due?

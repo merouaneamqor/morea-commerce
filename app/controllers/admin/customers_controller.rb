@@ -1,21 +1,33 @@
 module Admin
   class CustomersController < BaseController
+    PER_PAGE = 25
+    # The seallo URLs say "risky"; the segment service says "at_risk".
+    SEGMENT_PARAMS = { "loyal" => "loyal", "risky" => "at_risk", "at_risk" => "at_risk", "new" => "new" }.freeze
+
     before_action :set_customer, only: %i[show edit update]
 
+    # Customers list in the seallo design: one phone number = one customer, filled by orders.
     def index
-      @customers = current_store.customers.order(orders_count: :desc, created_at: :desc)
       @segments = Customers::Segments.new(current_store)
-      @segment = Customers::Segments::SEGMENTS.include?(params[:segment]) ? params[:segment] : nil
+      @segment = SEGMENT_PARAMS[params[:segment].to_s]
+      scope = current_store.customers
       if @segment == "new"
         # Customers with no order rows at all also count as new.
-        @customers = @customers.where.not(id: @segments.stats.keys - @segments.ids_in("new"))
+        scope = scope.where.not(id: @segments.stats.keys - @segments.ids_in("new"))
       elsif @segment
-        @customers = @customers.where(id: @segments.ids_in(@segment))
+        scope = scope.where(id: @segments.ids_in(@segment))
       end
       if params[:q].present?
         q = "%#{Customer.sanitize_sql_like(params[:q].strip)}%"
-        @customers = @customers.where("name ILIKE :q OR phone ILIKE :q OR email ILIKE :q OR city ILIKE :q", q: q)
+        scope = scope.where("customers.name ILIKE :q OR customers.phone ILIKE :q OR customers.email ILIKE :q OR customers.city ILIKE :q", q: q)
       end
+
+      @total = scope.count
+      @page = [ params[:page].to_i, 1 ].max
+      @pages = [ (@total / PER_PAGE.to_f).ceil, 1 ].max
+      @page = @pages if @page > @pages
+      last_order = "(SELECT MAX(orders.created_at) FROM orders WHERE orders.customer_id = customers.id)"
+      @customers = scope.order(Arel.sql("#{last_order} DESC NULLS LAST"), created_at: :desc).limit(PER_PAGE).offset((@page - 1) * PER_PAGE)
     end
 
     def show

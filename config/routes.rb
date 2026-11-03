@@ -68,6 +68,15 @@ Rails.application.routes.draw do
     get "/seallo-connect/privacy", to: "seallo_connect_pages#privacy", as: :seallo_connect_privacy
     get "/seallo-connect/terms", to: "seallo_connect_pages#terms", as: :seallo_connect_terms
   end
+  # Seller workspace URLs, as on seallo. Each batch moves a page here; the others still open their current admin page.
+  get "/dashboard", to: "admin/dashboard#show", as: :seller_dashboard
+  {
+    "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations", "/mes-statistiques" => "/admin/my_stats",
+    "/clients" => "/admin/customers", "/livraison" => "/admin/delivery", "/produits" => "/admin/products",
+    "/equipe" => "/admin/staff", "/integrations" => "/admin/agent_api", "/settings/profile" => "/admin/store/edit"
+  }.each do |from, target|
+    get from, to: redirect { |_params, request| [ target, request.query_string.presence ].compact.join("?") }
+  end
   get "/signup", to: "signups#new", as: :signup
   post "/signup", to: "signups#create"
   # Seallo signup steps 2 and 3: plans (with or without an account) and payment.

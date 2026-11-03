@@ -53,11 +53,11 @@ RSpec.describe "Admin PWA", type: :request do
     end
   end
 
-  it "offers installation to authenticated merchants in unpublished workspaces" do
+  it "does not offer installation inside the seller workspace, which follows the seallo design" do
     user = store.users.create!(email: "pwa-merchant-#{SecureRandom.hex(5)}@example.test", password: password, admin: true)
     post "/admin/login", params: { email: user.email, password: password }
     get "/admin"
     expect(response).to have_http_status(:ok)
-    expect(document.at_css("[data-admin-pwa]")).to be_present
+    expect(document.at_css("[data-admin-pwa]")).to be_nil
   end
 end

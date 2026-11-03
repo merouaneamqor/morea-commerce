@@ -1,52 +1,234 @@
-<% content_for :title, "#{t('dashboard.title')} — #{Store.platform_name}" %>
-<% content_for :admin_page_class, "admin-page--dashboard" %>
-<% primary_label, primary_path = dashboard_primary_action(@dashboard) %>
-<div data-dashboard-mode="<%= @dashboard.mode %>">
-  <div class="admin-page-header">
-    <div>
-      <h1 class="admin-page-header__title"><%= t("dashboard.title") %></h1>
-      <p class="admin-muted mt-1"><%= t("dashboard.subtitle") %></p>
-    </div>
-    <div class="flex flex-wrap items-center gap-2">
-      <nav class="admin-dashboard-period" aria-label="<%= t('dashboard.period') %>">
-        <% %w[7 30].each do |period| %><%= link_to t("dashboard.days", count: period.to_i), admin_root_path(period: period), class: @overview.days == period.to_i ? "is-active" : nil, aria: { current: @overview.days == period.to_i ? "page" : nil } %><% end %>
-      </nav>
-      <%= link_to t("dashboard.create_order"), new_admin_order_path, class: "admin-btn" %>
-    </div>
+<%# Seller dashboard, ported from the seallo dashboard page. Figures come from Seller::DashboardStats. %>
+<% content_for :title, sl("Tableau de bord") %>
+<% content_for :seller_lang, "1" %>
+<% content_for :admin_page_class, "seller-page" %>
+<% stats = @stats %>
+<% k = stats[:kpis] %>
+<% cur = stats[:currency] %>
+<% first_name = current_admin_user.name.to_s.strip.split(/\s+/).first.to_s %>
+<% number = ->(value) { seller_number(value) } %>
+<% delta_text = ->(d) { d.nil? ? sl("sur la période") : "#{d.positive? ? "+" : ""}#{d} % #{sl("vs période précédente")}" } %>
+<% delta_class = ->(d) { d.nil? ? "text-[#6f6967]" : (d.negative? ? "text-[#b4344e]" : "text-[#2f7a4a]") } %>
+<%
+  tiles = [
+    { label: "Chiffre d'affaires", value: "#{number.(k[:revenue])} #{cur}", sub: delta_text.(k[:revenue_delta]), sub_class: delta_class.(k[:revenue_delta]),
+      extra: (k[:average_order] ? "#{sl("Panier moyen")} #{number.(k[:average_order])} #{cur}" : nil), bg: "bg-[#e7f2ea]" },
+    { label: "Profit net", value: "#{number.(k[:net_profit])} #{cur}", sub: sl("après produits, pub, livraison et agents"),
+      sub_class: (k[:net_profit].negative? ? "text-[#b4344e]" : "text-[#6f6967]"), extra: nil, bg: "bg-[#f8e6e8]" },
+    { label: "Commandes", value: number.(k[:orders]), sub: delta_text.(k[:orders_delta]), sub_class: delta_class.(k[:orders_delta]),
+      extra: (k[:confirmation_rate] ? "#{k[:confirmation_rate]} % #{sl("confirmées")}" : nil), bg: "bg-[#eeecfa]" },
+    { label: "Taux de livraison", value: (k[:delivery_rate] ? "#{k[:delivery_rate]} %" : "—"), sub: "#{number.(k[:delivered])} #{sl("livrées")}",
+      sub_class: "text-[#6f6967]", extra: nil, bg: "bg-[#e8eefa]" }
+  ]
+  pipeline = [
+    [ "En attente de confirmation", k[:awaiting], (k[:awaiting].positive? ? "#{number.(k[:awaiting_amount])} #{cur} #{sl("à confirmer")}" : sl("Tout est confirmé")), "#4b4fb0", "/confirmation" ],
+    [ "Annulées", k[:cancelled], (k[:cancel_rate] ? "#{k[:cancel_rate]} % #{sl("des commandes")}" : sl("sur la période")), "#b4344e", "/commandes?status=cancelled" ],
+    [ "En cours de livraison", k[:in_transit], "#{number.(k[:in_transit_amount])} #{cur} #{sl("sur la route")}", "#d08a1f", "/commandes?status=in_transit" ],
+    [ "Refusées", k[:refused], (k[:refusal_rate] ? "#{k[:refusal_rate]} % #{sl("des colis")}" : sl("sur la période")), "#e0896a", "/commandes?status=returned" ]
+  ]
+
+  # Smooth line through the points; control points stay between neighbours so the curve never overshoots.
+  smooth = lambda do |pts|
+    between = ->(v, a, b) { [ [ v, [ a, b ].min ].max, [ a, b ].max ].min }
+    d = "M#{pts[0][0].round(2)},#{pts[0][1].round(2)}"
+    (0...pts.length - 1).each do |i|
+      p0 = i.zero? ? pts[0] : pts[i - 1]
+      p1 = pts[i]
+      p2 = pts[i + 1]
+      p3 = pts[i + 2] || p2
+      c1y = between.(p1[1] + (p2[1] - p0[1]) / 6.0, p1[1], p2[1])
+      c2y = between.(p2[1] - (p3[1] - p1[1]) / 6.0, p1[1], p2[1])
+      d += " C#{(p1[0] + (p2[0] - p0[0]) / 6.0).round(2)},#{c1y.round(2)} #{(p2[0] - (p3[0] - p1[0]) / 6.0).round(2)},#{c2y.round(2)} #{p2[0].round(2)},#{p2[1].round(2)}"
+    end
+    d
+  end
+  series = stats[:series]
+  width = 520.0
+  height = 170.0
+  peak = [ 1, *series.map { |d| d[:sales] }, *series.map { |d| d[:ads] } ].max * 1.12
+  to_points = ->(values) { values.each_with_index.map { |v, i| [ i / [ 1, values.length - 1 ].max.to_f * width, height - v / peak * height ] } }
+  sales_pts = to_points.(series.map { |d| d[:sales] })
+  ads_pts = to_points.(series.map { |d| d[:ads] })
+  empty_chart = series.all? { |d| d[:sales].zero? && d[:ads].zero? }
+  ticks = series.length <= 7 ? (0...series.length).to_a : (0..4).map { |i| (i * (series.length - 1) / 4.0).round }
+  locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR")
+%>
+
+<header class="flex flex-wrap items-start justify-between gap-3">
+  <div>
+    <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= sl("Bonjour") %><%= first_name.present? ? ", #{first_name}" : "" %></h1>
+    <p class="text-sm">
+      <%= stats[:pending].positive? ? "#{number.(stats[:pending])} #{sl("commandes attendent une confirmation.")}" : sl("Aucune commande en attente de confirmation.") %>
+    </p>
   </div>
-  <%= render "overview" %>
-  <div class="admin-layout">
-    <div class="space-y-5">
-      <%= render "setup" %>
-      <%= render "channels" %>
+  <div class="flex flex-wrap items-center gap-2">
+    <%= form_with url: "/commandes", method: :get, class: "hidden h-11 items-center gap-2 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm sm:flex" do %>
+      <span class="text-[#8a8380]"><%= seller_icon(:search) %></span>
+      <input name="q" placeholder="<%= sl("Rechercher une commande") %>" class="w-44 bg-transparent outline-none placeholder:text-[#a49d99]">
+    <% end %>
+    <%= render "admin/shared/language_switcher" %>
+    <select onchange="window.location = '/dashboard?period=' + this.value" aria-label="<%= sl("Période") %>"
+            class="h-11 cursor-pointer rounded-xl border border-[#e8e3df] bg-white px-3 text-sm font-medium text-[#1f2430] outline-none">
+      <% { "today" => "Aujourd'hui", "7d" => "7 derniers jours", "30d" => "30 derniers jours" }.each do |value, label| %>
+        <option value="<%= value %>" <%= "selected" if stats[:period] == value %>><%= sl(label) %></option>
+      <% end %>
+    </select>
+    <%= link_to sl("Confirmer les commandes"), "/commandes?status=new", class: "flex h-11 items-center rounded-xl bg-[#a8432e] px-4 text-sm font-semibold text-white shadow-[0_10px_24px_-12px_rgba(168,67,46,0.9)] hover:bg-[#8e3624]" %>
+  </div>
+</header>
+
+<% if stats[:missing_costs].positive? %>
+  <section class="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#8f2a40]">
+    <p><b>⁦<%= stats[:missing_costs] %>⁩ <%= sl("produits sans coût") %></b> : <%= sl("le profit est faux tant que le coût n'est pas saisi (le produit est compté comme gratuit).") %></p>
+    <%= link_to sl("Les compléter"), "/produits?missing=1", class: "font-semibold underline underline-offset-2" %>
+  </section>
+<% end %>
+
+<section class="grid grid-cols-2 gap-3 xl:grid-cols-4">
+  <% tiles.each do |tile| %>
+    <div class="rounded-2xl p-4 sm:p-5 <%= tile[:bg] %>">
+      <p class="text-sm"><%= sl(tile[:label]) %></p>
+      <p class="mt-1 text-2xl font-bold whitespace-nowrap text-[#1f2430] sm:text-[28px]"><%= tile[:value] %></p>
+      <p class="mt-1 text-xs <%= tile[:sub_class] %>"><%= tile[:sub] %></p>
+      <% if tile[:extra] %><p class="mt-0.5 text-xs text-[#6f6967]"><%= tile[:extra] %></p><% end %>
     </div>
-    <div class="space-y-5">
-      <section class="admin-card">
-        <div class="admin-card__header"><h2 class="admin-card__title"><%= t("dashboard.work_heading") %></h2></div>
-        <div class="divide-y divide-[#ebebeb]">
-          <% [{key: "pending", count: @dashboard.pending_count, path: admin_confirmations_path(filter: "all")}, {key: "callbacks", count: @dashboard.callbacks_due_count, path: admin_confirmations_path(filter: "callbacks_due")}, {key: "delivery_issues", count: @dashboard.delivery_issues_count, path: admin_orders_path(attention: "delivery_issues")}].each do |work| %>
-            <%= link_to work[:path], class: "admin-dashboard-work-row", data: { dashboard_work: work[:key] } do %>
-              <span class="font-medium"><%= t("dashboard.work.#{work[:key]}") %></span>
-              <span class="admin-dashboard-work-count <%= work[:count].positive? ? 'is-attention' : nil %>"><%= number_with_delimiter(work[:count]) %></span>
-            <% end %>
+  <% end %>
+</section>
+
+<section class="grid grid-cols-2 gap-3 xl:grid-cols-4">
+  <% pipeline.each do |label, value, sub, color, href| %>
+    <%= link_to href, class: "group rounded-2xl border border-[#e8e3df] bg-white p-4 transition hover:border-[#d6cfca] hover:shadow-[0_8px_24px_-16px_rgba(31,36,48,0.35)]" do %>
+      <p class="flex items-start gap-2 text-sm">
+        <span class="mt-1 size-2.5 shrink-0 rounded-full" style="background-color: <%= color %>"></span>
+        <span class="leading-tight"><%= sl(label) %></span>
+        <span class="ms-auto text-[#c0b8b3] transition group-hover:translate-x-0.5 group-hover:text-[#1f2430] rtl:rotate-180">→</span>
+      </p>
+      <p class="mt-2 text-2xl leading-none font-bold text-[#1f2430]"><%= number.(value) %></p>
+      <p class="mt-2 truncate text-xs text-[#8a8380]"><%= sub %></p>
+    <% end %>
+  <% end %>
+</section>
+
+<section class="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
+  <div class="rounded-2xl border border-[#e8e3df] bg-white p-5">
+    <div class="flex items-center justify-between">
+      <h2 class="font-semibold text-[#1f2430]"><%= sl("Ventes livrées vs publicité") %></h2>
+      <span class="text-xs text-[#8a8380]"><%= cur %></span>
+    </div>
+    <div class="mt-4">
+      <div class="relative" dir="ltr" data-sales-chart data-locale="<%= locale_tag %>" data-currency="<%= cur %>"
+           data-series="<%= series.to_json %>" data-sales-points="<%= sales_pts.to_json %>" data-width="<%= width.to_i %>" data-height="<%= height.to_i %>"
+           data-sales-label="<%= sl("Ventes livrées") %>" data-ads-label="<%= sl("Publicité") %>">
+        <% if empty_chart %><p class="absolute inset-x-0 top-14 z-10 text-center text-sm text-[#8a8380]" dir="auto"><%= sl("Pas encore de ventes livrées sur cette période.") %></p><% end %>
+        <svg viewBox="0 0 <%= width.to_i %> <%= height.to_i %>" preserveAspectRatio="none" class="h-44 w-full overflow-visible" data-chart-svg>
+          <defs>
+            <linearGradient id="sales-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A8432E" stop-opacity="0.14"/><stop offset="1" stop-color="#A8432E" stop-opacity="0"/></linearGradient>
+          </defs>
+          <% [ 0.25, 0.5, 0.75 ].each do |g| %><line x1="0" x2="<%= width.to_i %>" y1="<%= height * g %>" y2="<%= height * g %>" stroke="#ece6e2" vector-effect="non-scaling-stroke"/><% end %>
+          <% if sales_pts.length > 1 %>
+            <path d="<%= smooth.(sales_pts) %> L<%= width.to_i %>,<%= height.to_i %> L0,<%= height.to_i %> Z" fill="url(#sales-fill)"/>
+            <path d="<%= smooth.(sales_pts) %>" fill="none" stroke="#A8432E" stroke-width="2.2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+            <path d="<%= smooth.(ads_pts) %>" fill="none" stroke="#c98a9a" stroke-width="2" stroke-dasharray="6 5" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
           <% end %>
+          <line data-chart-cursor hidden y1="0" y2="<%= height.to_i %>" stroke="#1f2430" stroke-opacity="0.15" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <span data-chart-dot hidden class="pointer-events-none absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-[#a8432e] shadow"></span>
+        <div data-chart-tip hidden class="pointer-events-none absolute top-0 rounded-lg bg-[#1f2430] px-2.5 py-1.5 text-[11px] leading-tight whitespace-nowrap text-white shadow-lg"></div>
+        <div class="relative mt-2 h-4 text-xs text-[#8a8380]">
+          <% ticks.each do |i| %><span class="absolute -translate-x-1/2 whitespace-nowrap" data-tick="<%= series[i][:date] %>" style="left: <%= (i / [ 1, series.length - 1 ].max.to_f * 100).round(2) %>%"></span><% end %>
         </div>
-      </section>
-      <% if @dashboard.has_tracked_inventory %>
-        <section class="admin-card" data-dashboard-inventory>
-          <div class="admin-card__header"><h2 class="admin-card__title"><%= t("dashboard.inventory") %></h2><%= link_to t("dashboard.products"), admin_products_path, class: "admin-btn-plain" %></div>
-          <% if @dashboard.low_stock.empty? %><p class="admin-empty"><%= t("dashboard.stock_ok") %></p><% else %>
-            <p class="px-4 pt-3 font-medium"><%= t("dashboard.stock_alert", count: @dashboard.low_stock_count) %></p>
-            <ul class="py-2"><% @dashboard.low_stock.each do |product| %><li><%= link_to edit_admin_product_path(product), class: "flex items-center justify-between gap-3 px-4 py-3 hover:bg-[#f7f7f7]" do %><span class="min-w-0 truncate font-medium"><%= product.name %></span><span class="admin-badge admin-badge--warning"><%= dashboard_stock_label(product) %></span><% end %></li><% end %></ul>
-          <% end %>
-        </section>
-      <% end %>
-      <% if @dashboard.store.storefront_enabled? %>
-        <section class="admin-card admin-dashboard-storefront" data-dashboard-storefront>
-          <h2 class="admin-card__title"><%= t("dashboard.storefront") %></h2><p class="admin-dashboard-storefront__value"><%= number_with_delimiter(@dashboard.active_carts_count) %></p><p class="admin-muted"><%= t("dashboard.carts", count: @dashboard.active_carts_count) %></p>
-          <div class="mt-3 flex flex-wrap gap-3"><%= link_to t("dashboard.review_carts"), admin_carts_path, class: "admin-link" %><%= link_to t("dashboard.storefront_settings"), edit_admin_store_path, class: "admin-link" %></div>
-        </section>
-      <% end %>
+      </div>
+    </div>
+    <div class="mt-3 flex gap-5 text-xs">
+      <span class="flex items-center gap-1.5"><span class="h-0.5 w-4 rounded bg-[#a8432e]"></span> <%= sl("Ventes livrées") %></span>
+      <span class="flex items-center gap-1.5"><span class="h-0.5 w-4 border-t-2 border-dashed border-[#c98a9a]"></span> <%= sl("Publicité") %></span>
     </div>
   </div>
-</div>
+
+  <div class="rounded-2xl border border-[#e8e3df] bg-white p-5">
+    <h2 class="font-semibold text-[#1f2430]"><%= sl("Profit par produit") %></h2>
+    <% if stats[:products].any? %>
+      <ul class="mt-4 space-y-2">
+        <% stats[:products].each do |row| %>
+          <li class="flex items-center justify-between gap-3 rounded-xl px-3.5 py-3 text-sm <%= row[:profit].negative? ? "bg-[#fbe7ea]" : "bg-[#f3f1ef]" %>">
+            <span class="truncate text-[#1f2430]" dir="auto"><%= row[:name] %></span>
+            <span class="shrink-0 font-semibold <%= row[:profit].negative? ? "text-[#b4344e]" : "text-[#2f7a4a]" %>" dir="ltr"><%= row[:profit] >= 0 ? "+" : "−" %><%= number.(row[:profit].abs) %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="mt-6 text-center text-sm text-[#8a8380]"><%= sl("Le bénéfice par produit apparaît dès les premières livraisons.") %></p>
+    <% end %>
+    <% if stats[:profit][:revenue].positive? %>
+      <% breakdown = [ [ "Ventes livrées", stats[:profit][:revenue] ], [ "Coût des produits", -stats[:profit][:products] ], [ "Livraison", -stats[:profit][:delivery] ],
+                       [ "Publicité", -stats[:profit][:ads] ], [ "Agents", -stats[:profit][:agents] ] ] %>
+      <dl class="mt-4 space-y-1 border-t border-[#f0ebe7] pt-3 text-xs">
+        <% breakdown.each do |label, value| %>
+          <div class="flex justify-between"><dt><%= sl(label) %></dt><dd dir="ltr"><%= value.negative? ? "−" : "" %><%= number.(value.abs) %></dd></div>
+        <% end %>
+        <div class="flex justify-between font-semibold text-[#1f2430]"><dt><%= sl("Profit net") %></dt><dd dir="ltr"><%= stats[:profit][:net].negative? ? "−" : "" %><%= number.(stats[:profit][:net].abs) %> <%= cur %></dd></div>
+      </dl>
+    <% end %>
+  </div>
+</section>
+
+<section class="rounded-2xl border border-[#e8e3df] bg-white p-5">
+  <h2 class="font-semibold text-[#1f2430]"><%= sl("Dernières commandes") %></h2>
+  <% if stats[:latest].any? %>
+    <div class="mt-3 overflow-x-auto">
+      <table class="w-full min-w-[520px] text-sm">
+        <thead>
+          <tr class="border-b border-[#f0ebe7] text-start text-xs text-[#8a8380]">
+            <% [ "Commande", "Client", "Ville", "Total", "Statut" ].each do |heading| %><th class="px-2 py-2.5 text-start font-medium"><%= sl(heading) %></th><% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% stats[:latest].each do |order| %>
+            <% label, badge = seller_status_badge(order[:status]) %>
+            <tr class="border-b border-[#f6f2ef] last:border-0">
+              <td class="px-2 py-3 font-semibold text-[#1f2430]" dir="ltr"><%= order[:number] %></td>
+              <td class="px-2 py-3 text-[#1f2430]" dir="auto"><%= order[:customer].presence || "—" %></td>
+              <td class="px-2 py-3" dir="auto"><%= order[:city].presence || "—" %></td>
+              <td class="px-2 py-3 text-[#1f2430]" dir="ltr"><%= number.(order[:total]) %> <%= cur %></td>
+              <td class="px-2 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= badge %>"><%= sl(label) %></span></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p class="mt-6 mb-2 text-center text-sm text-[#8a8380]"><%= sl("Vos commandes apparaîtront ici dès que votre boutique sera connectée.") %></p>
+  <% end %>
+</section>
+
+<script>
+  (function () {
+    var chart = document.querySelector("[data-sales-chart]");
+    if (!chart) return;
+    var series = JSON.parse(chart.dataset.series), pts = JSON.parse(chart.dataset.salesPoints);
+    var W = Number(chart.dataset.width), H = Number(chart.dataset.height), locale = chart.dataset.locale, cur = chart.dataset.currency;
+    var fmt = function (v) { return "⁦" + Number(v).toLocaleString("fr-FR").replace(/[  ]/g, " ") + "⁩"; };
+    var label = function (iso) {
+      var d = new Date(iso + "T12:00:00");
+      return series.length <= 7 ? d.toLocaleDateString(locale, { weekday: "short" }) : d.toLocaleDateString(locale, { day: "numeric", month: "short" });
+    };
+    chart.querySelectorAll("[data-tick]").forEach(function (el) { el.textContent = label(el.dataset.tick); });
+    var svg = chart.querySelector("[data-chart-svg]"), cursor = chart.querySelector("[data-chart-cursor]");
+    var dot = chart.querySelector("[data-chart-dot]"), tip = chart.querySelector("[data-chart-tip]");
+    var hide = function () { cursor.hidden = dot.hidden = tip.hidden = true; };
+    svg.addEventListener("mouseleave", hide);
+    svg.addEventListener("mousemove", function (e) {
+      var r = svg.getBoundingClientRect();
+      var i = Math.max(0, Math.min(series.length - 1, Math.round(((e.clientX - r.left) / r.width) * (series.length - 1))));
+      cursor.setAttribute("x1", pts[i][0]); cursor.setAttribute("x2", pts[i][0]);
+      dot.style.left = (pts[i][0] / W * 100) + "%"; dot.style.top = (pts[i][1] / H * 100) + "%";
+      tip.style.left = (pts[i][0] / W * 100) + "%";
+      tip.style.transform = "translateX(" + (i > series.length * 0.65 ? "-108%" : "10px") + ")";
+      tip.innerHTML = '<p style="font-weight:600;opacity:.7"></p><p></p><p style="color:#e6b3bf"></p>';
+      tip.children[0].textContent = label(series[i].date);
+      tip.children[1].innerHTML = chart.dataset.salesLabel + " <b>" + fmt(series[i].sales) + " " + cur + "</b>";
+      tip.children[2].innerHTML = chart.dataset.adsLabel + " <b>" + fmt(series[i].ads) + " " + cur + "</b>";
+      cursor.hidden = dot.hidden = tip.hidden = false;
+    });
+  })();
+</script>

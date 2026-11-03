@@ -15,7 +15,7 @@
   catalog = {
     regions: Carriers.regions.transform_values { |name| sl(name) },
     countries: Carriers.countries.transform_values { |name| sl(name) },
-    providers: Carriers.providers.transform_values { |p| { name: p["name"], desc: sl(p["desc"]), region: p["region"], countries: p["countries"], logo: p["logo"] } }
+    providers: Carriers.providers.transform_values { |p| { name: p["name"], desc: sl(p["desc"]), region: p["region"], countries: p["countries"], logo: p["logo"], unavailable: p["unavailable"] == true } }
   }
   accounts_json = @delivery_accounts.map do |a|
     { id: a.id, provider: a.provider, name: a.name, contact_name: a.contact_name, contact_phone: a.contact_phone, account_type: a.account_type, pickup_city: a.pickup_city,
@@ -111,7 +111,7 @@
           <span data-logo="<%= account.provider %>"></span>
           <div class="min-w-0 flex-1">
             <p class="truncate text-sm font-semibold text-[#1f2430]" dir="auto"><%= account.name %> <span class="ms-1 text-xs font-medium text-[#8a8380]" dir="ltr"><%= account.code %></span></p>
-            <p class="truncate text-xs text-[#8a8380]"><%= info["name"] %><% if account.pickup_city.present? %> · <%= account.pickup_city %><% end %></p>
+            <p class="truncate text-xs text-[#8a8380]"><%= info["name"] %><% if info["unavailable"] %> · <%= t("seller_integrations.provider_unavailable") %><% end %><% if account.pickup_city.present? %> · <%= account.pickup_city %><% end %></p>
           </div>
           <% if account.is_active? %>
             <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
@@ -194,7 +194,7 @@
     };
     document.querySelectorAll("[data-logo]").forEach(function (el) { el.outerHTML = logo(catalog.providers[el.dataset.logo] || catalog.providers.other); });
 
-    var entries = function () { return Object.keys(catalog.providers).filter(function (k) { return k !== "other"; }).map(function (k) { return [k, catalog.providers[k]]; }); };
+    var entries = function () { return Object.keys(catalog.providers).filter(function (k) { return k !== "other" && !catalog.providers[k].unavailable; }).map(function (k) { return [k, catalog.providers[k]]; }); };
     var chip = function (on) { return "flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm transition " + (on ? "border-[#a8432e] bg-[#f4e4de]/50 font-semibold text-[#a8432e]" : "border-transparent text-[#1f2430] hover:bg-[#f3f1ef]"); };
     var count = function (n, on) { return '<span class="rounded-md px-1.5 text-xs font-semibold ' + (on ? "bg-white text-[#a8432e]" : "bg-[#f1eee9] text-[#6f6967]") + '">' + n + "</span>"; };
 

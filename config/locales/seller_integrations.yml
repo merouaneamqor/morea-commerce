@@ -9,6 +9,7 @@ fr:
     disconnected_note: "Déconnectée"
     add_another_store: "Ajouter une autre boutique"
     delete_account_confirm: "Supprimer cette société ?"
+    provider_unavailable: "Actuellement indisponible"
     sendit:
       name_label: "Libellé"
       name_placeholder: "Sendit principal"
@@ -49,6 +50,7 @@ en:
     disconnected_note: "Disconnected"
     add_another_store: "Add another store"
     delete_account_confirm: "Delete this company?"
+    provider_unavailable: "Currently unavailable"
     sendit:
       name_label: "Label"
       name_placeholder: "Sendit main"
@@ -89,6 +91,7 @@ ar:
     disconnected_note: "غير متصلة"
     add_another_store: "إضافة متجر آخر"
     delete_account_confirm: "حذف هذه الشركة؟"
+    provider_unavailable: "غير متاح حاليًا"
     sendit:
       name_label: "التسمية"
       name_placeholder: "Sendit الرئيسي"

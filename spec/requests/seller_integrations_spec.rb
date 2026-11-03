@@ -65,6 +65,25 @@ RSpec.describe "Seller integrations page", type: :request do
       expect(providers["sendit"]).to include("name" => "Sendit", "logo" => "/images/partners/sendit.png")
     end
 
+    it "offers six Morocco carriers in order and flags the other seven as unavailable" do
+      get "/integrations"
+      providers = catalog["providers"]
+      offered = providers.reject { |key, p| key == "other" || p["unavailable"] }
+      expect(offered.select { |_, p| p["countries"].include?("MA") }.values.map { |p| p["name"] }).to eq([ "Sendit", "Ozon Express", "Ameex", "Cathedis", "Digylog", "Olivraison" ])
+      expect(providers.select { |_, p| p["unavailable"] }.keys).to match_array(%w[forcelog onesta kargo speedaf goldcolis expressrelais livo])
+      expect(response.body).to include('!catalog.providers[k].unavailable')
+    end
+
+    it "keeps an account on a removed carrier working and marks it as currently unavailable" do
+      account = store.delivery_accounts.create!(provider: "forcelog", name: "ForceLog historique", account_type: "normal", is_active: true)
+      get "/integrations"
+      row = document.at_css("[data-account='#{account.id}']")
+      expect(row.text).to include("ForceLog", "Actuellement indisponible", "Connectée")
+      expect(account.reload.provider).to eq("forcelog")
+      patch "/livraison/societes/#{account.id}", params: { delivery_account: { name: "ForceLog renommé" } }
+      expect(account.reload.name).to eq("ForceLog renommé")
+    end
+
     it "connects a provider with its API keys, keeps them encrypted, and shows it connected on the same page" do
       add_account(api_key: "pub-123", api_secret: "secret-456", pickup_city: "Casablanca", delivery_fee: "25", return_fee: "12.5")
       expect(response).to redirect_to(%r{/integrations})

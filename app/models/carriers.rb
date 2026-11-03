@@ -10,5 +10,6 @@ module Carriers
   def countries = CATALOG.fetch("countries")
   def providers = CATALOG.fetch("providers")
   def provider(key) = providers[key.to_s] || providers.fetch("other")
+  def unavailable?(key) = provider(key)["unavailable"] == true
   def provider?(key) = providers.key?(key.to_s)
 end

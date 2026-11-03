@@ -8,6 +8,7 @@ module Admin
 
     def index
       @connections = current_store.store_connections.order(created_at: :desc).limit(100)
+      @delivery_accounts = current_store.delivery_accounts.order(is_active: :desc, name: :asc)
     end
 
     def new

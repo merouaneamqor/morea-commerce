@@ -10,6 +10,27 @@
 <% linked_by_provider = @connections.select(&:active?).group_by(&:provider) %>
 <% ad_networks = [ [ "Meta Ads", "/images/partners/meta.png" ], [ "TikTok Ads", "/images/partners/tiktok.png" ] ] %>
 <% locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>
+<% currency = current_store.currency.to_s.upcase == "DH" ? "MAD" : current_store.currency.to_s.upcase %>
+<%
+  catalog = {
+    regions: Carriers.regions.transform_values { |name| sl(name) },
+    countries: Carriers.countries.transform_values { |name| sl(name) },
+    providers: Carriers.providers.transform_values { |p| { name: p["name"], desc: sl(p["desc"]), region: p["region"], countries: p["countries"], logo: p["logo"] } }
+  }
+  accounts_json = @delivery_accounts.map do |a|
+    { id: a.id, provider: a.provider, name: a.name, contact_name: a.contact_name, contact_phone: a.contact_phone, account_type: a.account_type, pickup_city: a.pickup_city,
+      allow_open: a.allow_open, delivery_fee: a.delivery_fee&.to_f, return_fee: a.return_fee&.to_f, is_active: a.is_active, has_credentials: a.credentials? }
+  end
+  modal_strings = [
+    "Choisissez une région", "Toutes les régions", "fournisseurs", "Pays pris en charge", "Tous", "Fournisseurs disponibles", "résultats", "Rechercher un fournisseur…",
+    "Configurer", "Autre société", "Votre société n'est pas dans la liste : suivi des colis à la main en attendant son intégration.", "Fournisseur", "Détails",
+    "Sélectionner le fournisseur de livraison", "Choisissez votre société de livraison pour commencer.", "Nom du compte", "Nom de la société", "Contact",
+    "Téléphone du contact", "Ville de ramassage", "Type de compte", "Normal", "Premium", "Frais par colis livré", "Frais par colis retourné", "Connexion API",
+    "Clés fournies par", "dans votre espace client. Elles sont gardées chiffrées ; l'envoi automatique des colis sera activé dès que le connecteur sera disponible.",
+    "Clé enregistrée (laisser vide pour garder)", "Clé publique / identifiant", "Clé secrète / token", "Ouvrir le colis", "Le client peut ouvrir le colis avant de payer.",
+    "Compte actif", "Retour", "Enregistrer", "Ajouter la société"
+  ].index_with { |text| sl(text) }
+%>
 
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div>
@@ -57,7 +78,7 @@
 
         <button type="button" data-connect="<%= platform[:key] %>" class="mt-auto pt-4">
           <span class="flex h-11 w-full items-center justify-center rounded-xl text-sm font-semibold <%= linked.any? ? "border border-[#e8e3df] text-[#1f2430] hover:bg-[#f3f1ef]" : "bg-[#a8432e] text-white hover:bg-[#8e3624]" %>">
-            <%= linked.any? ? "+ #{sl("Ajouter une autre boutique")}" : sl("Connecter") %>
+            <%= linked.any? ? "+ #{t("seller_integrations.add_another_store")}" : sl("Connecter") %>
           </span>
         </button>
       </article>
@@ -67,7 +88,7 @@
 
 <section>
   <h2 class="mb-2.5 text-sm font-semibold text-[#1f2430]"><%= sl("Sociétés de livraison") %></h2>
-  <%= link_to "/livraison", class: "group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4 transition hover:border-[#d6cfca]" do %>
+  <button type="button" data-delivery-new class="group flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4 text-start transition hover:border-[#d6cfca]">
     <span class="flex items-center gap-3">
       <span class="flex -space-x-2 rtl:space-x-reverse">
         <% %w[sendit ozon cathedis ameex].each do |key| %><img src="/images/partners/<%= key %>.png" alt="" class="size-10 rounded-full border-2 border-white bg-white object-contain p-0.5 shadow-sm"><% end %>
@@ -78,6 +99,29 @@
       </span>
     </span>
     <span class="text-sm font-semibold text-[#a8432e]"><%= sl("Gérer les sociétés de livraison") %> →</span>
+  </button>
+
+  <% if @delivery_accounts.any? %>
+    <ul class="mt-3 space-y-2" data-delivery-accounts>
+      <% @delivery_accounts.each do |account| %>
+        <% info = account.provider_info %>
+        <li class="flex flex-wrap items-center gap-3 rounded-2xl border bg-white p-3.5 <%= account.is_active? ? "border-[#bfe0c9]" : "border-[#e8e3df]" %>" data-account="<%= account.id %>">
+          <span data-logo="<%= account.provider %>"></span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-sm font-semibold text-[#1f2430]" dir="auto"><%= account.name %> <span class="ms-1 text-xs font-medium text-[#8a8380]" dir="ltr"><%= account.code %></span></p>
+            <p class="truncate text-xs text-[#8a8380]"><%= info["name"] %><% if account.pickup_city.present? %> · <%= account.pickup_city %><% end %></p>
+          </div>
+          <% if account.is_active? %>
+            <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
+          <% else %>
+            <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= sl("Non connectée") %></span>
+          <% end %>
+          <button type="button" data-delivery-edit="<%= account.id %>" class="h-9 rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]"><%= sl("Modifier") %></button>
+          <%= button_to sl("Supprimer"), seller_delivery_account_path(account.id), method: :delete, class: "h-9 rounded-lg px-3 text-xs font-semibold text-[#b4344e] hover:bg-[#fbe7ea]",
+                form: { onsubmit: "return confirm(#{t("seller_integrations.delete_account_confirm").to_json})" } %>
+        </li>
+      <% end %>
+    </ul>
   <% end %>
 </section>
 
@@ -112,6 +156,10 @@
   </div>
 <% end %>
 
+<div data-delivery-modal hidden class="fixed inset-0 z-50 grid place-items-center bg-[#1f2430]/30 p-4 backdrop-blur-sm"
+     data-catalog="<%= catalog.to_json %>" data-accounts="<%= accounts_json.to_json %>" data-strings="<%= modal_strings.to_json %>"
+     data-currency="<%= currency %>" data-action="<%= seller_delivery_accounts_path %>" data-edit-path="/livraison/societes/"></div>
+
 <script>
   (function () {
     var locale = "<%= locale_tag %>";
@@ -123,6 +171,138 @@
     document.querySelectorAll("[data-modal]").forEach(function (m) {
       m.addEventListener("click", function (e) { if (e.target === m || e.target.closest("[data-close-modal]")) m.hidden = true; });
     });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") document.querySelectorAll("[data-modal]").forEach(function (m) { m.hidden = true; }); });
+
+    /* ---- Delivery companies: two-step dialog (1 Fournisseur, 2 Détails), as on the seallo Delivery page ---- */
+    var root = document.querySelector("[data-delivery-modal]");
+    var catalog = JSON.parse(root.dataset.catalog), accounts = JSON.parse(root.dataset.accounts), S = JSON.parse(root.dataset.strings);
+    var currency = root.dataset.currency;
+    var FLAGS = { MA: "🇲🇦", TN: "🇹🇳", CR: "🇨🇷", PA: "🇵🇦" };
+    var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+    var state = { provider: null, account: null, region: "all", country: "all", q: "" };
+    var field = "h-11 w-full min-w-0 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#a8432e] focus:ring-2 focus:ring-[#a8432e]/20";
+
+    var logo = function (p, size) {
+      size = size || "size-11";
+      if (p.logo) return '<img src="' + esc(p.logo) + '" alt="' + esc(p.name) + '" class="' + size + ' shrink-0 rounded-xl border border-[#f0ebe7] bg-white object-contain p-1">';
+      var hue = 7; for (var i = 0; i < p.name.length; i++) hue = (hue * 31 + p.name.charCodeAt(i)) % 360;
+      var initials = p.name.split(/[\s.]+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join("").toUpperCase();
+      return '<span class="' + size + ' grid shrink-0 place-items-center rounded-xl text-sm font-bold" style="background-color:hsl(' + hue + ' 55% 93%);color:hsl(' + hue + ' 45% 32%)">' + esc(initials) + "</span>";
+    };
+    document.querySelectorAll("[data-logo]").forEach(function (el) { el.outerHTML = logo(catalog.providers[el.dataset.logo] || catalog.providers.other); });
+
+    var entries = function () { return Object.keys(catalog.providers).filter(function (k) { return k !== "other"; }).map(function (k) { return [k, catalog.providers[k]]; }); };
+    var chip = function (on) { return "flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm transition " + (on ? "border-[#a8432e] bg-[#f4e4de]/50 font-semibold text-[#a8432e]" : "border-transparent text-[#1f2430] hover:bg-[#f3f1ef]"); };
+    var count = function (n, on) { return '<span class="rounded-md px-1.5 text-xs font-semibold ' + (on ? "bg-white text-[#a8432e]" : "bg-[#f1eee9] text-[#6f6967]") + '">' + n + "</span>"; };
+
+    var providerCards = function () {
+      var inRegion = entries().filter(function (e) { return state.region === "all" || e[1].region === state.region; });
+      var list = inRegion.filter(function (e) { return state.country === "all" || e[1].countries.indexOf(state.country) >= 0; })
+        .filter(function (e) { return !state.q || (e[1].name + " " + e[1].desc).toLowerCase().indexOf(state.q.toLowerCase()) >= 0; });
+      return { list: list, html: list.map(function (e) {
+        return '<div class="flex items-center gap-3 rounded-xl border border-[#e8e3df] p-3 transition hover:border-[#d6cfca] hover:bg-[#fdfcfb]">' + logo(e[1]) +
+          '<div class="min-w-0 flex-1"><p class="truncate text-sm font-semibold text-[#1f2430]">' + esc(e[1].name) + '</p><p class="truncate text-xs text-[#8a8380]">' + esc(e[1].desc) + "</p></div>" +
+          '<button type="button" data-pick="' + e[0] + '" class="h-9 shrink-0 rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]">' + esc(S["Configurer"]) + "</button></div>";
+      }).join("") };
+    };
+
+    var step1 = function () {
+      var all = entries();
+      var inRegion = all.filter(function (e) { return state.region === "all" || e[1].region === state.region; });
+      var countries = Object.keys(catalog.countries).filter(function (c) { return inRegion.some(function (e) { return e[1].countries.indexOf(c) >= 0; }); });
+      var regions = [["all", S["Toutes les régions"]]].concat(Object.keys(catalog.regions).map(function (k) { return [k, catalog.regions[k]]; }));
+      var html = '<h2 class="text-lg font-bold text-[#1f2430]">' + esc(S["Sélectionner le fournisseur de livraison"]) + '</h2><p class="mb-5 text-sm">' + esc(S["Choisissez votre société de livraison pour commencer."]) + "</p>" +
+        '<p class="mb-2 text-[11px] font-semibold tracking-wider text-[#8a8380] uppercase">' + esc(S["Choisissez une région"]) + '</p><div class="grid gap-2 sm:grid-cols-3">' +
+        regions.map(function (r) {
+          var n = r[0] === "all" ? all.length : all.filter(function (e) { return e[1].region === r[0]; }).length, on = state.region === r[0];
+          return '<button type="button" data-region="' + r[0] + '" class="flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-start transition ' + (on ? "border-[#a8432e] bg-[#f4e4de]/40" : "border-[#e8e3df] hover:bg-[#f3f1ef]") + '"><span><span class="block text-sm font-semibold text-[#1f2430]">' + esc(r[1]) +
+            '</span><span class="text-xs text-[#8a8380]">' + n + " " + esc(S["fournisseurs"]) + "</span></span>" + (on ? '<span class="grid size-5 place-items-center rounded-full bg-[#a8432e] text-[11px] text-white">✓</span>' : "") + "</button>";
+        }).join("") + "</div>" +
+        '<p class="mt-5 mb-2 text-[11px] font-semibold tracking-wider text-[#8a8380] uppercase">' + esc(S["Pays pris en charge"]) + '</p><div class="flex flex-wrap gap-1.5">' +
+        '<button type="button" data-country="all" class="' + chip(state.country === "all") + '">🌍 ' + esc(S["Tous"]) + " " + count(inRegion.length, state.country === "all") + "</button>" +
+        countries.map(function (c) { return '<button type="button" data-country="' + c + '" class="' + chip(state.country === c) + '">' + (FLAGS[c] || c) + " " + esc(catalog.countries[c]) + " " + count(inRegion.filter(function (e) { return e[1].countries.indexOf(c) >= 0; }).length, state.country === c) + "</button>"; }).join("") + "</div>";
+      var cards = providerCards();
+      html += '<div class="mt-5 flex items-center justify-between"><p class="text-sm font-semibold text-[#1f2430]">' + esc(S["Fournisseurs disponibles"]) + '</p><p class="text-xs text-[#8a8380]"><span data-result-count>' + cards.list.length + "</span> " + esc(S["résultats"]) + "</p></div>" +
+        '<label class="mt-2 flex h-11 items-center gap-2 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm"><span class="text-[#8a8380]"><svg viewBox="0 0 24 24" class="size-[18px] fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round]" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>' +
+        '<input data-search value="' + esc(state.q) + '" placeholder="' + esc(S["Rechercher un fournisseur…"]) + '" class="w-full bg-transparent text-[#1f2430] outline-none placeholder:text-[#a49d99]"></label>' +
+        '<div class="mt-3 grid gap-2 sm:grid-cols-2" data-provider-list>' + cards.html + "</div>" +
+        '<button type="button" data-pick="other" class="mt-3 flex w-full items-center gap-3 rounded-xl border border-dashed border-[#d9d1cc] p-3 text-start hover:border-[#a8432e]"><span class="grid size-11 shrink-0 place-items-center rounded-xl bg-[#f3f1ef] text-lg text-[#8a8380]">+</span><span><span class="block text-sm font-semibold text-[#1f2430]">' +
+        esc(S["Autre société"]) + '</span><span class="text-xs text-[#8a8380]">' + esc(S["Votre société n'est pas dans la liste : suivi des colis à la main en attendant son intégration."]) + "</span></span></button>";
+      return html;
+    };
+
+    var toggle = function (name, on, label) {
+      return '<input type="hidden" name="delivery_account[' + name + ']" value="' + on + '" data-toggle-input="' + name + '"><button type="button" role="switch" aria-checked="' + on + '" aria-label="' + esc(label) + '" data-toggle="' + name + '" class="relative h-6 w-11 shrink-0 rounded-full transition ' + (on ? "bg-[#2f7a4a]" : "bg-[#d9d1cc]") + '"><span class="absolute top-0.5 size-5 rounded-full bg-white shadow transition-all ' + (on ? "start-[22px]" : "start-0.5") + '"></span></button>';
+    };
+
+    var step2 = function () {
+      var key = state.provider, a = state.account, p = catalog.providers[key] || catalog.providers.other;
+      var v = function (x, d) { return esc(a && a[x] != null ? a[x] : d); };
+      var label = "mb-1 block text-xs font-semibold text-[#8a8380]";
+      var token = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
+      var html = '<form method="post" action="' + esc(a ? root.dataset.editPath + a.id : root.dataset.action) + '" data-delivery-form>' +
+        '<input type="hidden" name="authenticity_token" value="' + esc(token) + '">' + (a ? '<input type="hidden" name="_method" value="patch">' : '<input type="hidden" name="delivery_account[provider]" value="' + esc(key) + '">') +
+        '<div class="mb-5 flex items-center gap-3 rounded-xl bg-[#f3f1ef] p-3">' + logo(p) + '<div><p class="font-semibold text-[#1f2430]">' + esc(p.name) + '</p><p class="text-xs text-[#8a8380]">' + esc(p.desc) + "</p></div></div>" +
+        '<div class="grid gap-3 sm:grid-cols-2">' +
+        '<label class="block sm:col-span-2"><span class="' + label + '">' + esc(S["Nom du compte"]) + '</span><input name="delivery_account[name]" value="' + (a ? esc(a.name) : (key === "other" ? "" : esc(p.name))) + '" class="' + field + '" required dir="auto" placeholder="' + (key === "other" ? esc(S["Nom de la société"]) : esc(p.name) + " (WALKFIT)") + '"></label>' +
+        '<label class="block"><span class="' + label + '">' + esc(S["Contact"]) + '</span><input name="delivery_account[contact_name]" value="' + v("contact_name", "") + '" class="' + field + '" dir="auto"></label>' +
+        '<label class="block"><span class="' + label + '">' + esc(S["Téléphone du contact"]) + '</span><input name="delivery_account[contact_phone]" value="' + v("contact_phone", "") + '" class="' + field + '" dir="ltr" inputmode="tel"></label>' +
+        '<label class="block"><span class="' + label + '">' + esc(S["Ville de ramassage"]) + '</span><input name="delivery_account[pickup_city]" value="' + v("pickup_city", "") + '" class="' + field + '" dir="auto" placeholder="Casablanca - Aïn Sebaâ"></label>' +
+        '<label class="block"><span class="' + label + '">' + esc(S["Type de compte"]) + '</span><select name="delivery_account[account_type]" class="h-11 w-full cursor-pointer rounded-xl border border-[#e8e3df] bg-white px-3 text-sm font-medium text-[#1f2430] outline-none focus:border-[#a8432e]"><option value="normal"' + (a && a.account_type === "premium" ? "" : " selected") + ">" + esc(S["Normal"]) + '</option><option value="premium"' + (a && a.account_type === "premium" ? " selected" : "") + ">" + esc(S["Premium"]) + "</option></select></label>" +
+        '<label class="block"><span class="' + label + '">' + esc(S["Frais par colis livré"]) + " (" + esc(currency) + ')</span><input type="number" min="0" step="0.01" name="delivery_account[delivery_fee]" value="' + v("delivery_fee", "") + '" class="' + field + '" dir="ltr"></label>' +
+        '<label class="block"><span class="' + label + '">' + esc(S["Frais par colis retourné"]) + " (" + esc(currency) + ')</span><input type="number" min="0" step="0.01" name="delivery_account[return_fee]" value="' + v("return_fee", "") + '" class="' + field + '" dir="ltr"></label></div>';
+      if (key !== "other") {
+        html += '<div class="mt-4 rounded-xl border border-[#f0ebe7] p-3.5"><p class="text-sm font-semibold text-[#1f2430]">' + esc(S["Connexion API"]) + '</p><p class="mt-0.5 text-xs text-[#8a8380]">' + esc(S["Clés fournies par"]) + " " + esc(p.name) + " " + esc(S["dans votre espace client. Elles sont gardées chiffrées ; l'envoi automatique des colis sera activé dès que le connecteur sera disponible."]) + "</p>" +
+          '<div class="mt-3 grid gap-3 sm:grid-cols-2"><input name="delivery_account[api_key]" class="' + field + '" dir="ltr" autocomplete="off" placeholder="' + esc(a && a.has_credentials ? S["Clé enregistrée (laisser vide pour garder)"] : S["Clé publique / identifiant"]) + '">' +
+          '<input name="delivery_account[api_secret]" type="password" class="' + field + '" dir="ltr" autocomplete="new-password" placeholder="' + (a && a.has_credentials ? "••••••••" : esc(S["Clé secrète / token"])) + '"></div></div>';
+      }
+      html += '<div class="mt-4 space-y-3"><label class="flex items-center justify-between gap-3 text-sm"><span><span class="block font-medium text-[#1f2430]">' + esc(S["Ouvrir le colis"]) + '</span><span class="text-xs text-[#8a8380]">' + esc(S["Le client peut ouvrir le colis avant de payer."]) + "</span></span>" + toggle("allow_open", a ? a.allow_open : true, S["Ouvrir le colis"]) + "</label>" +
+        '<label class="flex items-center justify-between gap-3 text-sm"><span class="font-medium text-[#1f2430]">' + esc(S["Compte actif"]) + "</span>" + toggle("is_active", a ? a.is_active : true, S["Compte actif"]) + "</label></div>" +
+        '<div class="mt-6 flex items-center justify-between">' + (a ? "<span></span>" : '<button type="button" data-back class="text-sm font-semibold text-[#8a8380] hover:text-[#1f2430]">← ' + esc(S["Retour"]) + "</button>") +
+        '<button type="submit" class="h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624]">' + esc(a ? S["Enregistrer"] : S["Ajouter la société"]) + "</button></div></form>";
+      return html;
+    };
+
+    var render = function () {
+      var step = state.provider ? 2 : 1, editing = !!state.account;
+      var stepCls = function (n) { return "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold " + (step === n ? "bg-[#a8432e] text-white" : "text-[#8a8380]"); };
+      root.innerHTML = '<div class="flex max-h-[92dvh] w-full max-w-2xl flex-col rounded-2xl bg-white shadow-2xl" role="dialog" aria-modal="true"><div class="flex items-center justify-between border-b border-[#f0ebe7] px-6 py-4"><div class="flex items-center gap-2">' +
+        (editing ? "" : '<span class="' + stepCls(1) + '">1 · ' + esc(S["Fournisseur"]) + '</span><span class="h-px w-6 bg-[#e8e3df]"></span>') + '<span class="' + stepCls(2) + '">' + (editing ? "" : "2 · ") + esc(S["Détails"]) + "</span></div>" +
+        '<button type="button" data-close class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="✕">✕</button></div><div class="overflow-y-auto px-6 py-5">' + (step === 1 ? step1() : step2()) + "</div></div>";
+    };
+    var show = function () { render(); root.hidden = false; };
+    var close = function () { root.hidden = true; };
+
+    root.addEventListener("click", function (e) {
+      var t = e.target;
+      if (t === root || t.closest("[data-close]")) return close();
+      var pick = t.closest("[data-pick]"); if (pick) { state.provider = pick.dataset.pick; return render(); }
+      if (t.closest("[data-back]")) { state.provider = null; return render(); }
+      var region = t.closest("[data-region]"); if (region) { state.region = region.dataset.region; state.country = "all"; return render(); }
+      var country = t.closest("[data-country]"); if (country) { state.country = country.dataset.country; return render(); }
+      var sw = t.closest("[data-toggle]");
+      if (sw) {
+        var input = root.querySelector('[data-toggle-input="' + sw.dataset.toggle + '"]'), on = input.value !== "true";
+        input.value = String(on); sw.setAttribute("aria-checked", on); sw.classList.toggle("bg-[#2f7a4a]", on); sw.classList.toggle("bg-[#d9d1cc]", !on);
+        var knob = sw.firstElementChild; knob.classList.toggle("start-[22px]", on); knob.classList.toggle("start-0.5", !on);
+      }
+    });
+    root.addEventListener("input", function (e) {
+      if (!e.target.matches("[data-search]")) return;
+      state.q = e.target.value;
+      var cards = providerCards();
+      root.querySelector("[data-provider-list]").innerHTML = cards.html;
+      root.querySelector("[data-result-count]").textContent = cards.list.length;
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      close();
+      document.querySelectorAll("[data-modal]").forEach(function (m) { m.hidden = true; });
+    });
+
+    var begin = function (account) { state = { provider: account ? account.provider : null, account: account, region: "all", country: "all", q: "" }; show(); };
+    document.querySelectorAll("[data-delivery-new]").forEach(function (b) { b.addEventListener("click", function () { begin(null); }); });
+    document.querySelectorAll("[data-delivery-edit]").forEach(function (b) {
+      b.addEventListener("click", function () { begin(accounts.filter(function (a) { return a.id === Number(b.dataset.deliveryEdit); })[0]); });
+    });
   })();
 </script>

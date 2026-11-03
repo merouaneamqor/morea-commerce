@@ -20,6 +20,7 @@ class Store < ApplicationRecord
   has_many :menu_items, dependent: :destroy
   has_many :invoices, dependent: :destroy
   has_many :payments, dependent: :destroy
+  has_many :delivery_accounts, dependent: :destroy
   has_many :agent_changesets, dependent: :destroy
   has_many :store_connections, dependent: :destroy
   has_many :seallo_connection_codes, dependent: :delete_all

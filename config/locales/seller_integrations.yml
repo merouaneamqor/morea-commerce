@@ -7,6 +7,8 @@ fr:
     continue: "Continuer"
     details: "Détails"
     disconnected_note: "Déconnectée"
+    add_another_store: "Ajouter une autre boutique"
+    delete_account_confirm: "Supprimer cette société ?"
 en:
   seller_integrations:
     shopify_steps: "Install the seallo app from Shopify, then paste the connection code into seallo."
@@ -15,6 +17,8 @@ en:
     continue: "Continue"
     details: "Details"
     disconnected_note: "Disconnected"
+    add_another_store: "Add another store"
+    delete_account_confirm: "Delete this company?"
 ar:
   seller_integrations:
     shopify_steps: "ثبّت تطبيق seallo من Shopify، ثم الصق رمز الاتصال في seallo."
@@ -23,3 +27,5 @@ ar:
     continue: "متابعة"
     details: "التفاصيل"
     disconnected_note: "غير متصلة"
+    add_another_store: "إضافة متجر آخر"
+    delete_account_confirm: "حذف هذه الشركة؟"

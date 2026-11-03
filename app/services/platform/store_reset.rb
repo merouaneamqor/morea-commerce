@@ -14,7 +14,7 @@ module Platform
     # store-owned table appears in neither list, so every migration has to decide.
     CLEARED_TABLES = %w[
       advertising_accounts agent_changesets agent_payments carts collections confirmation_attempts
-      confirmation_shifts customers discounts home_sections menu_items meta_ads_ad_accounts
+      confirmation_shifts customers delivery_accounts discounts home_sections menu_items meta_ads_ad_accounts
       meta_ads_ad_sets meta_ads_ads meta_ads_campaigns meta_ads_connections meta_ads_daily_insights
       oauth_access_tokens order_confirmations order_imports orders pages products push_subscriptions
       seallo_connection_codes store_connections store_expenses store_translations storefront_themes

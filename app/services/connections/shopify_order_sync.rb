@@ -24,6 +24,7 @@ module Connections
           pageInfo { hasNextPage endCursor }
           nodes {
             legacyResourceId createdAt currencyCode phone cancelledAt
+            customAttributes { key value }
             displayFinancialStatus displayFulfillmentStatus paymentGatewayNames
             totalPriceSet { shopMoney { amount } }
             totalTaxSet { shopMoney { amount } }
@@ -130,6 +131,8 @@ module Connections
         "financial_status" => node["displayFinancialStatus"].to_s.downcase,
         "payment_gateway_names" => node["paymentGatewayNames"],
         "cancelled_at" => node["cancelledAt"],
+        # Cart attributes (note attributes in the webhook shape): where merchants' scripts store the ad's UTM parameters.
+        "note_attributes" => node["customAttributes"].to_a.map { |attribute| { "name" => attribute["key"], "value" => attribute["value"] } },
         "fulfillment_status" => fulfillment == "UNFULFILLED" ? nil : fulfillment.downcase.presence,
         "line_items" => node.dig("lineItems", "nodes").to_a.map do |line|
           {

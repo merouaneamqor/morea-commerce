@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_03_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -687,14 +687,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_120000) do
     t.integer "collected_cents"
     t.datetime "collected_at"
     t.integer "refunded_cents", default: 0, null: false
+    t.string "meta_campaign_id", limit: 25
+    t.string "meta_adset_id", limit: 25
+    t.string "meta_ad_id", limit: 25
     t.index ["archived_at"], name: "index_orders_on_archived_at"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["customer_phone"], name: "index_orders_on_customer_phone"
     t.index ["status"], name: "index_orders_on_status"
+    t.index ["store_id", "meta_ad_id", "created_at"], name: "index_orders_on_meta_ad", where: "(meta_ad_id IS NOT NULL)"
+    t.index ["store_id", "meta_adset_id", "created_at"], name: "index_orders_on_meta_adset", where: "(meta_adset_id IS NOT NULL)"
+    t.index ["store_id", "meta_campaign_id", "created_at"], name: "index_orders_on_meta_campaign", where: "(meta_campaign_id IS NOT NULL)"
     t.index ["store_id", "number"], name: "index_orders_on_store_id_and_number", unique: true
     t.index ["store_id", "sendit_code"], name: "index_orders_on_store_id_and_sendit_code", unique: true, where: "(sendit_code IS NOT NULL)"
     t.index ["store_id"], name: "index_orders_on_store_id"
+    t.check_constraint "(meta_adset_id IS NULL AND meta_ad_id IS NULL) OR meta_campaign_id IS NOT NULL", name: "orders_meta_ids_need_campaign"
     t.check_constraint "collected_cents IS NULL OR collected_cents >= 0", name: "orders_collected_cents_nonnegative"
+    t.check_constraint "meta_ad_id IS NULL OR meta_ad_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_ad_id_numeric"
+    t.check_constraint "meta_adset_id IS NULL OR meta_adset_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_adset_id_numeric"
+    t.check_constraint "meta_campaign_id IS NULL OR meta_campaign_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_campaign_id_numeric"
     t.check_constraint "refunded_cents >= 0", name: "orders_refunded_cents_nonnegative"
   end
 

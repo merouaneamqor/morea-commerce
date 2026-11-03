@@ -26,7 +26,9 @@ module Connections
       subtotal = result[:lines].sum { |line| line[:total_cents] }
       total = money(@data["total_price"] || @data["total"])
       raise Error, "totals_mismatch" unless subtotal + result[:shipping_cents] == total
-      result.merge(subtotal_cents: subtotal, total_cents: total, currency: @connection.store.currency, discount_cents: 0)
+      # Which Meta ad brought the order (UTM parameters on the ad); empty when it cannot be told for sure.
+      attribution = Attribution::Meta.from_payload(@connection.provider, @data)
+      result.merge(subtotal_cents: subtotal, total_cents: total, currency: @connection.store.currency, discount_cents: 0).merge(attribution)
     rescue KeyError, TypeError, NoMethodError
       raise Error, "incomplete_payload"
     end

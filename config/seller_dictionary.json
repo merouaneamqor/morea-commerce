@@ -19,6 +19,14 @@
   "Cancelled",
   "ملغاة"
  ],
+ "Aucun client ne correspond.": [
+  "No customer matches.",
+  "لا يوجد زبون مطابق."
+ ],
+ "Aucun client pour le moment.": [
+  "No customers yet.",
+  "لا يوجد زبائن حتى الآن."
+ ],
  "Aucune commande en attente de confirmation.": [
   "No orders waiting for confirmation.",
   "لا توجد طلبات في انتظار التأكيد."
@@ -47,6 +55,10 @@
   "This Shopify store is already linked to another seallo account.",
   "هذا المتجر مرتبط بحساب seallo آخر."
  ],
+ "Chaque numéro de téléphone est un client. La liste se remplit toute seule avec vos commandes.": [
+  "Each phone number is a customer. The list fills itself from your orders.",
+  "كل رقم هاتف زبون. تمتلئ القائمة وحدها من طلباتك."
+ ],
  "Chiffre d'affaires": [
   "Revenue",
   "رقم المعاملات"
@@ -54,6 +66,10 @@
  "Client": [
   "Customer",
   "الزبون"
+ ],
+ "Client fidèle": [
+  "Loyal customer",
+  "زبون وفي"
  ],
  "Clients": [
   "Customers",
@@ -83,6 +99,10 @@
   "Product cost",
   "تكلفة المنتجات"
  ],
+ "Dernière commande": [
+  "Last order",
+  "آخر طلب"
+ ],
  "Dernières commandes": [
   "Latest orders",
   "آخر الطلبات"
@@ -98,6 +118,10 @@
  "En cours de livraison": [
   "Out for delivery",
   "قيد التوصيل"
+ ],
+ "Fidèles": [
+  "Loyal",
+  "أوفياء"
  ],
  "Gratuit": [
   "Free",
@@ -139,9 +163,25 @@
   "Delivered",
   "مُسلَّم"
  ],
+ "Livrées": [
+  "Delivered",
+  "مُسلَّمة"
+ ],
  "Mes statistiques": [
   "My statistics",
   "إحصائياتي"
+ ],
+ "Nom, téléphone ou ville": [
+  "Name, phone or city",
+  "الاسم أو الهاتف أو المدينة"
+ ],
+ "Nouveau": [
+  "New",
+  "جديد"
+ ],
+ "Nouveaux": [
+  "New",
+  "جدد"
  ],
  "Nouvelle": [
   "New",
@@ -163,6 +203,10 @@
   "Products",
   "المنتجات"
  ],
+ "Profil": [
+  "Profile",
+  "التصنيف"
+ ],
  "Profit": [
   "Profit",
   "الربح"
@@ -174,6 +218,10 @@
  "Profit par produit": [
   "Profit by product",
   "الربح حسب المنتج"
+ ],
+ "Précédent": [
+  "Previous",
+  "السابق"
  ],
  "Publicité": [
   "Advertising",
@@ -203,6 +251,10 @@
   "Returned",
   "مُرتجَعة"
  ],
+ "Retours": [
+  "Returns",
+  "المرتجَعات"
+ ],
  "Se déconnecter": [
   "Sign out",
   "تسجيل الخروج"
@@ -210,6 +262,10 @@
  "Statut": [
   "Status",
   "الحالة"
+ ],
+ "Suivant": [
+  "Next",
+  "التالي"
  ],
  "Synchronisation lancée. Actualisez dans un instant.": [
   "Sync started. Refresh in a moment.",
@@ -231,6 +287,14 @@
   "Total",
   "المجموع"
  ],
+ "Total livré": [
+  "Total delivered",
+  "مجموع المُسلَّم"
+ ],
+ "Tous": [
+  "All",
+  "الكل"
+ ],
  "Tout est confirmé": [
   "All confirmed",
   "كل شيء مؤكَّد"
@@ -247,6 +311,18 @@
   "City",
   "المدينة"
  ],
+ "Voir les commandes": [
+  "View orders",
+  "عرض الطلبات"
+ ],
+ "Voir ses commandes": [
+  "View their orders",
+  "عرض طلباته"
+ ],
+ "Vos clients apparaissent ici dès leur première commande.": [
+  "Your customers appear here from their first order.",
+  "يظهر زبائنك هنا منذ أول طلب."
+ ],
  "Vos commandes apparaîtront ici dès que votre boutique sera connectée.": [
   "Your orders will appear here once your store is connected.",
   "ستظهر طلباتك هنا بمجرّد ربط متجرك."
@@ -255,17 +331,37 @@
   "after products, ads, delivery and agents",
   "بعد المنتجات والإعلانات والتوصيل والوكلاء"
  ],
+ "commandes": [
+  "orders",
+  "طلبًا"
+ ],
+ "en cours": [
+  "in progress",
+  "قيد المعالجة"
+ ],
  "le profit est faux tant que le coût n'est pas saisi (le produit est compté comme gratuit).": [
   "profit is wrong until the cost is entered (the product is counted as free).",
   "الربح غير صحيح ما دامت التكلفة غير مُدخَلة (يُحسب المنتج وكأنه مجاني)."
+ ],
+ "livrées": [
+  "delivered",
+  "مُسلَّمة"
  ],
  "produits sans coût": [
   "products without a cost",
   "منتجات بدون تكلفة"
  ],
+ "retours": [
+  "returns",
+  "مرتجَعات"
+ ],
  "sur la période": [
   "in this period",
   "خلال الفترة"
+ ],
+ "À risque": [
+  "At risk",
+  "مُخاطِر"
  ],
  "Équipe": [
   "Team",

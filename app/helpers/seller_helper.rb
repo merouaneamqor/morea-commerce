@@ -82,6 +82,11 @@ module SellerHelper
     "⁦#{text}⁩"
   end
 
+  # Whole currency units (no decimals), kept left-to-right inside Arabic text.
+  def seller_money(cents, currency)
+    "⁦#{number_with_delimiter(cents.to_i.fdiv(100).round, delimiter: " ")} #{currency}⁩"
+  end
+
   def seller_menu(user)
     agent = user&.confirmation_agent_view?
     SELLER_MENU.select { |key, *| agent ? %w[confirmation stats orders].include?(key) : key != "stats" }

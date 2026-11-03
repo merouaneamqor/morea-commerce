@@ -1,71 +1,132 @@
-<% content_for :title, "#{t('admin_menu.items.customers')} — Admin" %>
+<%# Customers, ported from the seallo "Clients" page: one phone number = one customer. Segments come from Customers::Segments. %>
+<% content_for :title, sl("Clients") %>
+<% content_for :admin_page_class, "seller-page" %>
+<% content_for :seller_lang, "1" %>
 <% counts = @segments.counts %>
+<% currency = current_store.currency.to_s.upcase == "DH" ? "MAD" : current_store.currency.to_s.upcase %>
+<% tags = { "loyal" => [ "Client fidèle", "bg-[#e3f3e8] text-[#2f7a4a]" ], "at_risk" => [ "À risque", "bg-[#fbe7ea] text-[#b4344e]" ], "new" => [ "Nouveau", "bg-[#ebe9fb] text-[#4b4fb0]" ] } %>
+<% tabs = [ [ "all", nil, "Tous", "text-[#1f2430]" ], [ "loyal", "loyal", "Fidèles", "text-[#2f7a4a]" ], [ "at_risk", "risky", "À risque", "text-[#b4344e]" ], [ "new", "new", "Nouveaux", "text-[#4b4fb0]" ] ] %>
+<% locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>
+<% first_row = (@page - 1) * Admin::CustomersController::PER_PAGE + 1 %>
+<% page_path = ->(page) { admin_customers_path(segment: (@segment == "at_risk" ? "risky" : @segment), q: params[:q].presence, page: (page > 1 ? page : nil)) } %>
 
-<div class="admin-page-header">
+<header class="flex flex-wrap items-start justify-between gap-3">
   <div>
-    <h1 class="admin-page-header__title"><%= t("admin_menu.items.customers") %></h1>
-    <p class="admin-page-header__meta"><%= t("admin.customers_segments.subtitle") %></p>
+    <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= sl("Clients") %></h1>
+    <p class="text-sm"><%= sl("Chaque numéro de téléphone est un client. La liste se remplit toute seule avec vos commandes.") %></p>
   </div>
-</div>
+  <%= render "admin/shared/language_switcher" %>
+</header>
 
-<nav class="seallo-segments mb-4">
-  <% [ [ "all", nil ], [ "loyal", "loyal" ], [ "at_risk", "at_risk" ], [ "new", "new" ] ].each do |label, key| %>
-    <%= link_to admin_customers_path(segment: key, q: params[:q].presence),
-          class: "seallo-segment seallo-segment--#{label} #{'is-active' if @segment == key}" do %>
-      <span><%= t("admin.customers_segments.#{label}") %></span>
-      <strong><%= counts.fetch(label) %></strong>
+<section class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+  <% tabs.each do |count_key, param, label, tone| %>
+    <% active = param.nil? ? @segment.nil? : Admin::CustomersController::SEGMENT_PARAMS[param] == @segment %>
+    <%= link_to admin_customers_path(segment: param, q: params[:q].presence), class: "rounded-2xl border bg-white p-4 text-start transition #{active ? "border-[#1f2430] ring-1 ring-[#1f2430]" : "border-[#e8e3df] hover:border-[#d6cfca]"}" do %>
+      <p class="text-sm"><%= sl(label) %></p>
+      <p class="mt-1 text-2xl font-bold <%= tone %>"><%= seller_number(counts.fetch(count_key)) %></p>
     <% end %>
   <% end %>
-</nav>
+</section>
 
-<%= form_with url: admin_customers_path, method: :get, class: "admin-topbar__search mb-4 max-w-none !flex" do %>
-  <%= hidden_field_tag :segment, @segment if @segment %>
-  <%= admin_icon(:search, size: 16) %>
-  <%= search_field_tag :q, params[:q], placeholder: "Nom, téléphone ou ville", "aria-label": "Search customers", class: "admin-input !border-0 !shadow-none" %>
+<%= form_with url: admin_customers_path, method: :get, class: "flex h-11 items-center gap-2 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm", data: { customers_search: true } do %>
+  <% if @segment %><%= hidden_field_tag :segment, (@segment == "at_risk" ? "risky" : @segment) %><% end %>
+  <span class="text-[#8a8380]"><%= seller_icon(:search) %></span>
+  <%= search_field_tag :q, params[:q], placeholder: sl("Nom, téléphone ou ville"), "aria-label": sl("Nom, téléphone ou ville"), class: "w-full bg-transparent text-[#1f2430] outline-none placeholder:text-[#a49d99]" %>
 <% end %>
 
-<div class="admin-card">
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-    <thead>
-      <tr>
-        <th>Client</th><th>Ville</th><th class="is-numeric">Commandes</th>
-        <th class="is-numeric"><%= t("admin.customers_segments.delivered") %></th>
-        <th class="is-numeric"><%= t("admin.customers_segments.returns") %></th>
-        <th class="is-numeric"><%= t("admin.customers_segments.total_delivered") %></th>
-        <th><%= t("admin.customers_segments.last_order") %></th>
-        <th><%= t("admin.customers_segments.profile") %></th>
-      </tr>
-    </thead>
-    <tbody>
+<section class="overflow-hidden rounded-2xl border border-[#e8e3df] bg-white">
+  <% if @customers.empty? %>
+    <div class="px-6 py-16 text-center">
+      <p class="font-semibold text-[#1f2430]"><%= params[:q].present? || @segment ? sl("Aucun client ne correspond.") : sl("Aucun client pour le moment.") %></p>
+      <p class="mt-1 text-sm"><%= sl("Vos clients apparaissent ici dès leur première commande.") %></p>
+      <%= link_to sl("Voir les commandes"), "/commandes", class: "mt-5 inline-flex h-11 items-center rounded-xl border border-[#e8e3df] px-4 text-sm font-medium text-[#1f2430] hover:bg-[#f3f1ef]" %>
+    </div>
+  <% else %>
+    <ul class="divide-y divide-[#f0ebe7] md:hidden">
       <% @customers.each do |customer| %>
         <% stats = @segments.for(customer) %>
-        <tr>
-          <td>
-            <%= link_to admin_customer_path(customer), class: "block" do %>
-              <span class="admin-link block"><%= customer.name %></span>
-              <span class="admin-muted text-xs"><%= customer.phone %></span>
-            <% end %>
-          </td>
-          <td class="admin-muted"><%= customer.city %></td>
-          <td class="is-numeric">
-            <%= customer.orders_count %>
-            <% if stats.in_progress.positive? %><span class="seallo-chip seallo-chip--blue"><%= t("admin.customers_segments.in_progress", count: stats.in_progress) %></span><% end %>
-          </td>
-          <td class="is-numeric"><%= stats.delivered %></td>
-          <td class="is-numeric"><%= stats.returns %></td>
-          <td class="is-numeric"><%= money(stats.delivered_cents) %></td>
-          <td class="admin-muted"><%= stats.last_order_at ? stats.last_order_at.strftime("%-d/%m/%Y") : "—" %></td>
-          <td>
-            <% tone = { "loyal" => "success", "at_risk" => "critical", "new" => "info" }.fetch(stats.segment) %>
-            <span class="admin-badge admin-badge--<%= tone %>"><%= t("admin.customers_segments.#{stats.segment}_badge") %></span>
-          </td>
-        </tr>
+        <% label, badge = tags.fetch(stats.segment) %>
+        <li class="cursor-pointer px-4 py-3.5" data-orders-for="<%= customer.phone %>">
+          <div class="flex items-center justify-between gap-2">
+            <p class="truncate font-semibold text-[#1f2430]" dir="auto"><%= customer.name.presence || "—" %></p>
+            <span class="rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap <%= badge %>"><%= sl(label) %></span>
+          </div>
+          <p class="text-xs text-[#8a8380]"><span dir="ltr"><%= customer.phone %></span><% if customer.city.present? %><span dir="auto"> · <%= customer.city %></span><% end %></p>
+          <p class="mt-1.5 flex justify-between text-xs">
+            <span><%= seller_number(customer.orders_count) %> <%= sl("commandes") %> · <%= seller_number(stats.delivered) %> <%= sl("livrées") %> · <%= seller_number(stats.returns) %> <%= sl("retours") %></span>
+            <b class="text-[#1f2430]"><%= seller_money(stats.delivered_cents, currency) %></b>
+          </p>
+        </li>
       <% end %>
-    </tbody>
-    </table>
-    <% if @customers.empty? %>
-      <p class="admin-empty">Customers appear here after their first order.</p>
-    <% end %>
-  </div>
-</div>
+    </ul>
+    <div class="hidden overflow-x-auto md:block">
+      <table class="w-full min-w-[860px] text-sm">
+        <thead>
+          <tr class="border-b border-[#f0ebe7] text-xs text-[#8a8380]">
+            <% [ "Client", "Ville", "Commandes", "Livrées", "Retours", "Total livré", "Dernière commande", "Profil" ].each do |heading| %><th class="px-4 py-3 text-start font-medium"><%= sl(heading) %></th><% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @customers.each do |customer| %>
+            <% stats = @segments.for(customer) %>
+            <% label, badge = tags.fetch(stats.segment) %>
+            <tr class="cursor-pointer border-b border-[#f6f2ef] last:border-0 hover:bg-[#fbf9f8]" title="<%= sl("Voir ses commandes") %>" data-orders-for="<%= customer.phone %>">
+              <td class="px-4 py-3.5">
+                <p class="font-semibold text-[#1f2430]" dir="auto"><%= customer.name.presence || "—" %></p>
+                <p class="text-xs text-[#8a8380]" dir="ltr"><%= customer.phone %></p>
+              </td>
+              <td class="px-4 py-3.5" dir="auto"><%= customer.city.presence || "—" %></td>
+              <td class="px-4 py-3.5 text-[#1f2430]">
+                <%= seller_number(customer.orders_count) %>
+                <% if stats.in_progress.positive? %><span class="ms-2 rounded-md bg-[#ebe9fb] px-1.5 py-0.5 text-[11px] font-semibold text-[#4b4fb0]"><%= seller_number(stats.in_progress) %> <%= sl("en cours") %></span><% end %>
+              </td>
+              <td class="px-4 py-3.5 font-medium text-[#2f7a4a]"><%= seller_number(stats.delivered) %></td>
+              <td class="px-4 py-3.5 font-medium <%= stats.returns.positive? ? "text-[#b4344e]" : "text-[#8a8380]" %>"><%= seller_number(stats.returns) %></td>
+              <td class="px-4 py-3.5 font-semibold whitespace-nowrap text-[#1f2430]"><%= seller_money(stats.delivered_cents, currency) %></td>
+              <td class="px-4 py-3.5 whitespace-nowrap"><% if stats.last_order_at %><time datetime="<%= stats.last_order_at.to_date.iso8601 %>" data-short-date><%= stats.last_order_at.to_date.iso8601 %></time><% else %>—<% end %></td>
+              <td class="px-4 py-3.5"><span class="rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap <%= badge %>"><%= sl(label) %></span></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <% if @pages > 1 %>
+    <div class="flex items-center justify-between border-t border-[#f0ebe7] px-4 py-3 text-sm">
+      <span class="text-[#8a8380]" dir="ltr"><%= first_row %>–<%= first_row + @customers.size - 1 %> / <%= @total %></span>
+      <div class="flex gap-2">
+        <% if @page > 1 %>
+          <%= link_to sl("Précédent"), page_path.(@page - 1), class: "rounded-lg border border-[#e8e3df] px-3 py-1.5 font-medium text-[#1f2430] hover:bg-[#f3f1ef]" %>
+        <% else %>
+          <span class="rounded-lg border border-[#f0ebe7] px-3 py-1.5 text-[#c9c2be]"><%= sl("Précédent") %></span>
+        <% end %>
+        <% if @page < @pages %>
+          <%= link_to sl("Suivant"), page_path.(@page + 1), class: "rounded-lg border border-[#e8e3df] px-3 py-1.5 font-medium text-[#1f2430] hover:bg-[#f3f1ef]" %>
+        <% else %>
+          <span class="rounded-lg border border-[#f0ebe7] px-3 py-1.5 text-[#c9c2be]"><%= sl("Suivant") %></span>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</section>
+
+<script>
+  (function () {
+    var locale = "<%= locale_tag %>";
+    document.querySelectorAll("time[data-short-date]").forEach(function (el) {
+      el.textContent = new Date(el.getAttribute("datetime") + "T12:00:00").toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
+    });
+    document.querySelectorAll("[data-orders-for]").forEach(function (row) {
+      row.addEventListener("click", function () { window.location = "/commandes?q=" + encodeURIComponent(row.dataset.ordersFor); });
+    });
+    var form = document.querySelector("[data-customers-search]");
+    var input = form && form.querySelector("input[name=q]");
+    if (!input) return;
+    var timer, last = input.value.trim();
+    input.addEventListener("input", function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () { if (input.value.trim() !== last) { last = input.value.trim(); form.requestSubmit(); } }, 350);
+    });
+  })();
+</script>

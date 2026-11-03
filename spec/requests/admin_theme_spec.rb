@@ -13,29 +13,23 @@ RSpec.describe "Admin theme", type: :request do
   describe "onboarding" do
     before { host! Store.base_domain }
 
-    it "offers seallo and dark seallo with seallo preselected" do
-      get "/signup", params: { locale: "en" }
-      expect(response).to have_http_status(:ok)
-      inputs = document.css("input[name='registration[admin_theme]']")
-      expect(inputs.map { |input| input["value"] }).to eq(%w[seallo seallo_dark])
-      expect(inputs.select { |input| input["checked"] }.map { |input| input["value"] }).to eq(%w[seallo])
+    it "starts workspaces created by signup on the seallo look" do
+      post "/signup", params: { signup: { name: "Theme Owner", store_name: "Theme #{suffix}", phone: "0612345678", email: "maker-#{suffix}@example.test",
+                                          password: password, password_confirmation: password, currency: "USD" }, locale: "en" }
+      expect(User.find_by!(email: "maker-#{suffix}@example.test").store.admin_theme).to eq("seallo")
     end
 
-    it "stores the chosen theme and applies it to the workspace created on confirmation" do
-      post "/signup", params: { registration: { business_name: "Theme #{suffix}", email: "theme-#{suffix}@example.test", admin_theme: "seallo_dark" }, locale: "en" }
-      registration = Registration.find_by!(email: "theme-#{suffix}@example.test")
-      expect(registration.admin_theme).to eq("seallo_dark")
-
+    it "applies the theme of a pending registration to the workspace created on confirmation" do
+      registration = Registration.create!(business_name: "Theme #{suffix}", email: "pending-#{suffix}@example.test", locale: "en",
+                                          admin_theme: "seallo_dark", verification_sent_at: Time.current)
       user = Registrations::Confirm.call(token: registration.verification_token, password: password, password_confirmation: password)
       expect(user).to be_a(User)
       expect(user.store.admin_theme).to eq("seallo_dark")
     end
 
-    it "rejects an unknown theme without creating a registration" do
-      expect do
-        post "/signup", params: { registration: { business_name: "Theme #{suffix}", email: "bad-#{suffix}@example.test", admin_theme: "neon" }, locale: "en" }
-      end.not_to change(Registration, :count)
-      expect(response).to have_http_status(:unprocessable_entity)
+    it "rejects an unknown theme on a registration" do
+      registration = Registration.new(business_name: "Theme #{suffix}", email: "bad-#{suffix}@example.test", locale: "en", admin_theme: "neon")
+      expect(registration).not_to be_valid
     end
   end
 

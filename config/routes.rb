@@ -70,6 +70,11 @@ Rails.application.routes.draw do
   end
   get "/signup", to: "signups#new", as: :signup
   post "/signup", to: "signups#create"
+  # Seallo signup steps 2 and 3: plans (with or without an account) and payment.
+  get "/abonnement", to: "subscription_setup#plans", as: :plans
+  post "/abonnement", to: "subscription_setup#choose"
+  get "/paiement", to: "subscription_setup#payment", as: :payment
+  post "/paiement/virement", to: "subscription_setup#transfer", as: :payment_transfer
   get "/signup/thanks", to: "signups#thanks", as: :signup_thanks
   get "/signup/verify", to: "signups#verify", as: :signup_verify
   post "/signup/confirm", to: "signups#confirm", as: :signup_confirm

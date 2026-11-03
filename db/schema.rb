@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_02_190100) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_03_100100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -720,6 +720,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_190100) do
     t.index ["store_id"], name: "index_pages_on_store_id"
   end
 
+  create_table "payments", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "plan", null: false
+    t.string "billing", null: false
+    t.integer "amount", null: false
+    t.string "currency", limit: 3, default: "USD", null: false
+    t.string "payment_method", null: false
+    t.string "status", default: "pending", null: false
+    t.string "reference", limit: 100
+    t.datetime "paid_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_payments_on_store_id"
+    t.index ["store_id"], name: "index_payments_one_pending_transfer", unique: true, where: "(((status)::text = 'pending'::text) AND ((payment_method)::text = 'transfer'::text))"
+    t.check_constraint "amount >= 0", name: "payments_amount_non_negative"
+    t.check_constraint "billing::text = ANY (ARRAY['monthly'::character varying, 'annual'::character varying]::text[])", name: "payments_billing_known"
+    t.check_constraint "payment_method::text = ANY (ARRAY['transfer'::character varying, 'card'::character varying]::text[])", name: "payments_method_known"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'paid'::character varying, 'rejected'::character varying]::text[])", name: "payments_status_known"
+  end
+
   create_table "product_translations", force: :cascade do |t|
     t.bigint "product_id", null: false
     t.string "locale", null: false
@@ -1049,11 +1069,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_190100) do
     t.boolean "subscription_required", default: false, null: false
     t.string "admin_theme", default: "seallo", null: false
     t.boolean "storefront_theme_editor_enabled", default: false, null: false
+    t.string "plan"
+    t.datetime "trial_ends_at"
     t.index ["api_token_digest"], name: "index_stores_on_api_token_digest", unique: true
     t.index ["billing_interval"], name: "index_stores_on_billing_interval"
     t.index ["billing_status"], name: "index_stores_on_billing_status"
     t.index ["slug"], name: "index_stores_on_slug", unique: true
     t.check_constraint "admin_theme::text = ANY (ARRAY['seallo'::character varying, 'seallo_dark'::character varying]::text[])", name: "stores_admin_theme"
+    t.check_constraint "plan IS NULL OR (plan::text = ANY (ARRAY['free'::character varying, 'starter'::character varying, 'intermediate'::character varying, 'professional'::character varying, 'business'::character varying]::text[]))", name: "stores_plan_known"
   end
 
   create_table "users", force: :cascade do |t|
@@ -1175,6 +1198,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_190100) do
   add_foreign_key "page_sections", "pages"
   add_foreign_key "page_translations", "pages"
   add_foreign_key "pages", "stores"
+  add_foreign_key "payments", "stores", on_delete: :cascade
   add_foreign_key "product_translations", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "stores"

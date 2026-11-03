@@ -1,0 +1,466 @@
+{
+ "+15 000 commandes ? Plan sur mesure →": [
+  "15,000+ orders? Custom plan →",
+  "أكثر من 15 000 طلب؟ خطة مخصّصة ←"
+ ],
+ "/ an": [
+  "/ year",
+  "/ سنة"
+ ],
+ "/ mois": [
+  "/ month",
+  "/ شهر"
+ ],
+ "30 jours": [
+  "30 days",
+  "30 يومًا"
+ ],
+ "8 caractères minimum": [
+  "At least 8 characters",
+  "8 أحرف على الأقل"
+ ],
+ "Activation sous 24 h": [
+  "Activated within 24 h",
+  "تفعيل خلال 24 ساعة"
+ ],
+ "Annuel": [
+  "Yearly",
+  "سنوي"
+ ],
+ "Argent encaissé, bénéfice calculé": [
+  "Cash collected, profit calculated",
+  "تمّ القبض وحُسب الربح"
+ ],
+ "Aucun paiement exigé avant le": [
+  "No payment required before",
+  "لا يُطلب أي دفع قبل"
+ ],
+ "Banque": [
+  "Bank",
+  "البنك"
+ ],
+ "Bientôt disponible": [
+  "Coming soon",
+  "قريبًا"
+ ],
+ "Bon retour sur seallo": [
+  "Welcome back to seallo",
+  "مرحبًا بعودتك إلى seallo"
+ ],
+ "Boutique Atlas": [
+  "Atlas Store",
+  "متجر الأطلس"
+ ],
+ "Boutiques illimitées": [
+  "Unlimited stores",
+  "متاجر غير محدودة"
+ ],
+ "Bénéfice": [
+  "Profit",
+  "الربح"
+ ],
+ "Bénéfice net": [
+  "Net profit",
+  "صافي الربح"
+ ],
+ "Bénéfice réel": [
+  "Real profit",
+  "الربح الحقيقي"
+ ],
+ "CA": [
+  "Revenue",
+  "المعاملات"
+ ],
+ "Carte bancaire": [
+  "Bank card",
+  "بطاقة بنكية"
+ ],
+ "Changer": [
+  "Change",
+  "تغيير"
+ ],
+ "Chiffre d'affaires": [
+  "Revenue",
+  "رقم المعاملات"
+ ],
+ "Choisissez votre plan": [
+  "Choose your plan",
+  "اختر خطتك"
+ ],
+ "Colis livré au client": [
+  "Parcel delivered to the customer",
+  "سُلّم الطرد للزبون"
+ ],
+ "Commande reçue de votre boutique": [
+  "Order received from your store",
+  "وصل الطلب من متجرك"
+ ],
+ "Commandes automatiques": [
+  "Automatic orders",
+  "طلبات تلقائية"
+ ],
+ "Commandes du jour": [
+  "Orders today",
+  "طلبات اليوم"
+ ],
+ "Commandes entrantes": [
+  "Incoming orders",
+  "الطلبات الواردة"
+ ],
+ "Commandes illimitées": [
+  "Unlimited orders",
+  "طلبات غير محدودة"
+ ],
+ "Commencer": [
+  "Get started",
+  "ابدأ"
+ ],
+ "Compte": [
+  "Account",
+  "الحساب"
+ ],
+ "Confirmation par équipe": [
+  "Team confirmation",
+  "تأكيد عبر الفريق"
+ ],
+ "Confirmer le mot de passe": [
+  "Confirm password",
+  "تأكيد كلمة المرور"
+ ],
+ "Confirmez, livrez, encaissez et voyez le vrai bénéfice de chaque commande, au même endroit.": [
+  "Confirm, deliver, collect and see the real profit of every order, in one place.",
+  "أكّد واشحن واقبض وشاهد الربح الحقيقي لكل طلب، في مكان واحد."
+ ],
+ "Confirmée": [
+  "Confirmed",
+  "مؤكَّد"
+ ],
+ "Confirmée par votre agent": [
+  "Confirmed by your agent",
+  "أكّده وكيلك"
+ ],
+ "Connectez-vous pour suivre vos commandes.": [
+  "Sign in to track your orders.",
+  "سجّل الدخول لمتابعة طلباتك."
+ ],
+ "Connexion": [
+  "Sign in",
+  "تسجيل الدخول"
+ ],
+ "Continuer l'essai, payer plus tard": [
+  "Continue the trial, pay later",
+  "أكمل التجربة وادفع لاحقًا"
+ ],
+ "Copier": [
+  "Copy",
+  "نسخ"
+ ],
+ "Copié ✓": [
+  "Copied ✓",
+  "تم النسخ ✓"
+ ],
+ "Créer mon compte": [
+  "Create my account",
+  "إنشاء حسابي"
+ ],
+ "Créer un compte": [
+  "Create an account",
+  "إنشاء حساب"
+ ],
+ "Créez votre compte seallo": [
+  "Create your seallo account",
+  "أنشئ حسابك في seallo"
+ ],
+ "Devise": [
+  "Currency",
+  "العملة"
+ ],
+ "Devise de votre boutique": [
+  "Your store currency",
+  "عملة متجرك"
+ ],
+ "E-mail": [
+  "Email",
+  "البريد الإلكتروني"
+ ],
+ "Effectuez un virement de": [
+  "Make a transfer of",
+  "قم بتحويل مبلغ"
+ ],
+ "En attendant, payez par virement ou continuez votre essai gratuit.": [
+  "Meanwhile, pay by transfer or keep using your free trial.",
+  "في الأثناء، ادفع بالتحويل أو أكمل تجربتك المجانية."
+ ],
+ "En direct": [
+  "Live",
+  "مباشر"
+ ],
+ "Envoi à la livraison": [
+  "Sent to delivery",
+  "إرسال إلى التوصيل"
+ ],
+ "Envoyée automatiquement à la livraison": [
+  "Sent automatically to delivery",
+  "أُرسل تلقائيًا إلى التوصيل"
+ ],
+ "Ex. : numéro de l'opération sur votre reçu": [
+  "E.g. the transaction number on your receipt",
+  "مثال: رقم العملية في الإيصال"
+ ],
+ "Expédiée": [
+  "Shipped",
+  "مشحون"
+ ],
+ "Facturation annuelle": [
+  "Yearly billing",
+  "فوترة سنوية"
+ ],
+ "Facturation mensuelle": [
+  "Monthly billing",
+  "فوترة شهرية"
+ ],
+ "Gratuit": [
+  "Free",
+  "مجاني"
+ ],
+ "Gratuit, en moins d’une minute.": [
+  "Free, in less than a minute.",
+  "مجاني، في أقل من دقيقة."
+ ],
+ "Inclus partout :": [
+  "Included everywhere:",
+  "مضمّن في كل الخطط:"
+ ],
+ "J'ai effectué le virement": [
+  "I have made the transfer",
+  "لقد قمت بالتحويل"
+ ],
+ "Le paiement par carte va s'ouvrir sur la page sécurisée de notre prestataire.": [
+  "Card payment will open on our provider’s secure page.",
+  "سيُفتح الدفع بالبطاقة في الصفحة الآمنة لمزوّد الدفع."
+ ],
+ "Le plus populaire": [
+  "Most popular",
+  "الأكثر طلبًا"
+ ],
+ "Livrée": [
+  "Delivered",
+  "مُسلَّم"
+ ],
+ "Mensuel": [
+  "Monthly",
+  "شهري"
+ ],
+ "Mettre à jour la référence": [
+  "Update the reference",
+  "تحديث المرجع"
+ ],
+ "Montant": [
+  "Amount",
+  "المبلغ"
+ ],
+ "Mot de passe": [
+  "Password",
+  "كلمة المرور"
+ ],
+ "Mot de passe oublié ?": [
+  "Forgot password?",
+  "نسيت كلمة المرور؟"
+ ],
+ "Moyen de paiement": [
+  "Payment method",
+  "طريقة الدفع"
+ ],
+ "Nom complet": [
+  "Full name",
+  "الاسم الكامل"
+ ],
+ "Nom de la boutique": [
+  "Store name",
+  "اسم المتجر"
+ ],
+ "Nous activons votre abonnement dès réception, en général sous 24 h.": [
+  "We activate your subscription as soon as it arrives, usually within 24 h.",
+  "نفعّل اشتراكك فور وصول التحويل، عادةً خلال 24 ساعة."
+ ],
+ "Nouvelle commande · Shopify": [
+  "New order · Shopify",
+  "طلب جديد · Shopify"
+ ],
+ "Offre de lancement": [
+  "Launch offer",
+  "عرض الإطلاق"
+ ],
+ "Paiement": [
+  "Payment",
+  "الدفع"
+ ],
+ "Paiement par carte bientôt disponible": [
+  "Card payment coming soon",
+  "الدفع بالبطاقة قريبًا"
+ ],
+ "Pas encore de compte ?": [
+  "No account yet?",
+  "ليس لديك حساب؟"
+ ],
+ "Passée": [
+  "Placed",
+  "مُسجَّل"
+ ],
+ "Payée": [
+  "Paid",
+  "مدفوع"
+ ],
+ "Plan": [
+  "Plan",
+  "الخطة"
+ ],
+ "Plan actuel": [
+  "Current plan",
+  "خطتك الحالية"
+ ],
+ "Plan choisi": [
+  "Selected plan",
+  "الخطة المختارة"
+ ],
+ "Prix": [
+  "Price",
+  "السعر"
+ ],
+ "Pubs Meta et TikTok": [
+  "Meta & TikTok ads",
+  "إعلانات Meta وTikTok"
+ ],
+ "Retapez le mot de passe": [
+  "Re-enter the password",
+  "أعد كتابة كلمة المرور"
+ ],
+ "Récapitulatif": [
+  "Summary",
+  "الملخّص"
+ ],
+ "Référence": [
+  "Reference",
+  "المرجع"
+ ],
+ "Référence du virement": [
+  "Transfer reference",
+  "مرجع التحويل"
+ ],
+ "Sans carte, sans engagement": [
+  "No card, no commitment",
+  "بلا بطاقة ولا التزام"
+ ],
+ "Se connecter": [
+  "Sign in",
+  "تسجيل الدخول"
+ ],
+ "Se connecter →": [
+  "Sign in →",
+  "تسجيل الدخول ←"
+ ],
+ "Se déconnecter": [
+  "Sign out",
+  "تسجيل الخروج"
+ ],
+ "Se souvenir de moi": [
+  "Remember me",
+  "تذكّرني"
+ ],
+ "Starter": [
+  "Starter",
+  "Starter"
+ ],
+ "Suivi des colis": [
+  "Parcel tracking",
+  "تتبّع الطرود"
+ ],
+ "Support WhatsApp": [
+  "WhatsApp support",
+  "دعم عبر واتساب"
+ ],
+ "Tableau de bord →": [
+  "Dashboard →",
+  "لوحة التحكم ←"
+ ],
+ "Titulaire": [
+  "Account holder",
+  "صاحب الحساب"
+ ],
+ "Total": [
+  "Total",
+  "المجموع"
+ ],
+ "Tous les outils, illimités": [
+  "All tools, unlimited",
+  "كل الأدوات بلا حدود"
+ ],
+ "Toutes les fonctionnalités dans chaque plan. Prix en dollars, ou dans la devise de votre pays.": [
+  "Every feature in every plan. Prices in dollars, or in your country’s currency.",
+  "كل المميزات في كل خطة. الأسعار بالدولار أو بعملة بلدك."
+ ],
+ "Téléphone": [
+  "Phone",
+  "الهاتف"
+ ],
+ "Un instant…": [
+  "One moment…",
+  "لحظة…"
+ ],
+ "Une commande, de bout en bout": [
+  "One order, end to end",
+  "طلب واحد من البداية إلى النهاية"
+ ],
+ "Virement bancaire": [
+  "Bank transfer",
+  "تحويل بنكي"
+ ],
+ "Virement en cours de vérification": [
+  "Transfer being verified",
+  "التحويل قيد التحقّق"
+ ],
+ "Visa, Mastercard, CMI": [
+  "Visa, Mastercard, CMI",
+  "Visa وMastercard وCMI"
+ ],
+ "Votre essai gratuit est actif jusqu'au": [
+  "Your free trial is active until",
+  "تجربتك المجانية فعّالة حتى"
+ ],
+ "Votre mot de passe": [
+  "Your password",
+  "كلمة المرور"
+ ],
+ "Vous avez déjà un compte ?": [
+  "Already have an account?",
+  "لديك حساب بالفعل؟"
+ ],
+ "Vous pouvez payer maintenant ou plus tard.": [
+  "You can pay now or later.",
+  "يمكنك الدفع الآن أو لاحقًا."
+ ],
+ "cmd": [
+  "orders",
+  "طلب"
+ ],
+ "vers ce compte :": [
+  "to this account:",
+  "إلى هذا الحساب:"
+ ],
+ "vous@exemple.com": [
+  "you@example.com",
+  "you@example.com"
+ ],
+ "Économie": [
+  "You save",
+  "التوفير"
+ ],
+ "↑ 18 % vs lundi dernier": [
+  "↑ 18% vs last Monday",
+  "↑ 18 % مقارنة بالاثنين الماضي"
+ ],
+ "★ Meilleurs produits": [
+  "★ Best sellers",
+  "★ الأكثر مبيعًا"
+ ]
+}

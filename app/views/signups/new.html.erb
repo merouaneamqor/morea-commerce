@@ -1,41 +1,65 @@
-<% content_for :title, t("registration.title", name: Store.platform_name) %>
 <%= render "signups/chrome" %>
-<% errors = @registration.errors.attribute_names %>
+<% content_for :title, st("Créer un compte") %>
+<% field_error = ->(attribute) { @signup.errors[attribute].first&.then { |message| tag.p(message, class: "text-sm text-red-600") } } %>
+<% label_class = "text-sm font-medium text-[#1f2430]" %>
+<% eye = '<svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'.html_safe %>
 
-<div class="fx-glass p-7 sm:p-9">
-  <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("registration.heading") %></h1>
-  <p class="mt-2 text-sm leading-6 text-[#b9d3ff]"><%= t("registration.lead") %></p>
-
-  <% if alert.present? || errors.any? %>
-    <div role="alert" class="fx-alert mt-6">
-      <% if alert.present? %><p><%= alert %></p><% end %>
-      <% if errors.any? %>
-        <p><%= t("registration.fix_fields") %></p>
-        <ul class="mt-2 list-inside list-disc"><% @registration.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
-      <% end %>
-    </div>
-  <% end %>
-
-  <%= form_with model: @registration, url: signup_path(locale: I18n.locale), method: :post, class: "mt-7 space-y-5" do |f| %>
-    <div class="hidden" aria-hidden="true">
-      <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
-    </div>
-    <div>
-      <%= f.label :business_name, t("registration.business_name"), class: "fx-label" %>
-      <%= f.text_field :business_name, required: true, autocomplete: "organization", autofocus: true, maxlength: 80,
-            "aria-invalid": (errors.include?(:business_name) ? "true" : nil), class: "fx-input" %>
-    </div>
-    <div>
-      <%= f.label :email, t("registration.email"), class: "fx-label" %>
-      <%= f.email_field :email, required: true, autocomplete: "email", maxlength: 160, autocapitalize: "none", spellcheck: false,
-            "aria-invalid": (errors.include?(:email) ? "true" : nil), class: "fx-input" %>
-    </div>
-    <%= render "shared/theme_picker", form: f %>
-    <p class="text-sm leading-6 text-[#b9d3ff]"><%= t("registration.subscription_note") %></p>
-    <%= f.submit t("registration.submit"), class: "fx-btn" %>
-  <% end %>
-  <p class="mt-6 border-t border-white/15 pt-6 text-center text-sm text-[#b9d3ff]">
-    <%= t("registration.have_account") %>
-    <%= link_to t("registration.sign_in"), admin_login_path(locale: I18n.locale), class: "fx-link font-semibold underline underline-offset-4" %>
-  </p>
+<div class="mb-5">
+  <h1><%= st("Créez votre compte seallo") %></h1>
+  <p class="mt-1 text-sm text-[#6b6059]"><%= st("Gratuit, en moins d’une minute.") %></p>
 </div>
+<div class="mb-5"><%= render "signups/steps", current: 1, links: { 2 => plans_path } %></div>
+
+<% if alert.present? %><div role="alert" class="fx-alert mb-4"><%= alert %></div><% end %>
+
+<%= form_with model: @signup, scope: :signup, url: signup_path(locale: I18n.locale), method: :post, class: "flex flex-col gap-4" do |f| %>
+  <div class="hidden" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+  <div class="grid gap-x-4 gap-y-3.5 sm:grid-cols-2">
+    <div class="grid gap-1.5">
+      <%= f.label :name, st("Nom complet"), class: label_class %>
+      <%= f.text_field :name, required: true, autofocus: true, autocomplete: "name", placeholder: "Youssef El Amrani", maxlength: 120, class: "fx-input !mt-0" %>
+      <%= field_error.(:name) %>
+    </div>
+    <div class="grid gap-1.5">
+      <%= f.label :store_name, st("Nom de la boutique"), class: label_class %>
+      <%= f.text_field :store_name, required: true, autocomplete: "organization", placeholder: st("Boutique Atlas"), maxlength: 120, class: "fx-input !mt-0" %>
+      <%= field_error.(:store_name) %>
+    </div>
+    <div class="grid gap-1.5">
+      <%= f.label :phone, st("Téléphone"), class: label_class %>
+      <%= f.telephone_field :phone, required: true, autocomplete: "tel", inputmode: "tel", placeholder: "06 12 34 56 78", class: "fx-input !mt-0" %>
+      <%= field_error.(:phone) %>
+    </div>
+    <div class="grid gap-1.5">
+      <%= f.label :email, st("E-mail"), class: label_class %>
+      <%= f.email_field :email, required: true, autocomplete: "email", placeholder: st("vous@exemple.com"), maxlength: 160, autocapitalize: "none", spellcheck: false, class: "fx-input !mt-0" %>
+      <%= field_error.(:email) %>
+    </div>
+    <div class="grid gap-1.5">
+      <%= f.label :password, st("Mot de passe"), class: label_class %>
+      <div class="relative">
+        <%= f.password_field :password, value: nil, required: true, autocomplete: "new-password", minlength: User::MIN_PASSWORD_LENGTH, maxlength: 72, placeholder: t("signup_flow.password_hint", count: User::MIN_PASSWORD_LENGTH), class: "fx-input !mt-0 pe-10" %>
+        <button type="button" data-toggle-password class="absolute inset-y-0 end-0 flex items-center px-3 text-[#8a8380] hover:text-[#1f2430]" tabindex="-1" aria-label="<%= st("Mot de passe") %>"><%= eye %></button>
+      </div>
+      <%= field_error.(:password) %>
+    </div>
+    <div class="grid gap-1.5">
+      <%= f.label :password_confirmation, st("Confirmer le mot de passe"), class: label_class %>
+      <div class="relative">
+        <%= f.password_field :password_confirmation, value: nil, required: true, autocomplete: "new-password", minlength: User::MIN_PASSWORD_LENGTH, maxlength: 72, placeholder: st("Retapez le mot de passe"), class: "fx-input !mt-0 pe-10" %>
+        <button type="button" data-toggle-password class="absolute inset-y-0 end-0 flex items-center px-3 text-[#8a8380] hover:text-[#1f2430]" tabindex="-1" aria-label="<%= st("Confirmer le mot de passe") %>"><%= eye %></button>
+      </div>
+      <%= field_error.(:password_confirmation) %>
+    </div>
+    <div class="grid gap-1.5 sm:col-span-2">
+      <%= f.label :currency, st("Devise de votre boutique"), class: label_class %>
+      <%= f.select :currency, Plans.currencies.map { |code, c| ["#{code} · #{c["name"]}", code] }, {}, class: "fx-input !mt-0" %>
+      <%= field_error.(:currency) %>
+    </div>
+    <%= f.submit st("Créer mon compte"), class: "fx-btn mt-1 sm:col-span-2" %>
+  </div>
+  <p class="text-center text-sm text-[#6b6059]">
+    <%= st("Vous avez déjà un compte ?") %>
+    <%= link_to st("Se connecter"), admin_login_path(locale: I18n.locale), class: "fx-link font-semibold underline underline-offset-4" %>
+  </p>
+<% end %>

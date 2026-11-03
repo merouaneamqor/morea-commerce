@@ -29,5 +29,13 @@
         </div>
       </div>
     </div>
+    <script>
+      document.addEventListener("click", function (e) {
+        var button = e.target.closest("[data-toggle-password]");
+        if (!button) return;
+        var input = button.parentNode.querySelector("input");
+        if (input) input.type = input.type === "password" ? "text" : "password";
+      });
+    </script>
   </body>
 </html>

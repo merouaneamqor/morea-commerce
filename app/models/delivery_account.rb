@@ -34,6 +34,27 @@ class DeliveryAccount < ApplicationRecord
     credentials_ciphertext.present?
   end
 
+  def sendit?
+    provider == "sendit"
+  end
+
+  # URL the merchant pastes in Sendit (Intégration API > Intégration Webhooks); the token authenticates Sendit's calls.
+  def webhook_url
+    return if webhook_token.blank?
+
+    "#{Store.platform_origin}/webhooks/sendit/#{store.slug}?token=#{webhook_token}"
+  end
+
+  def generate_webhook_token
+    self.webhook_token ||= SecureRandom.urlsafe_base64(24)
+  end
+
+  # The secret key is never shown again in full: only its last characters, to recognise it.
+  def secret_hint
+    secret = credentials["api_secret"].to_s
+    secret.empty? ? nil : "••••••••#{secret.last(4)}"
+  end
+
   private
 
   # SEN1, SEN2, OZO1...: the first three letters of the company name and a number.

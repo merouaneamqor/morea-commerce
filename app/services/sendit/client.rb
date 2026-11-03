@@ -20,9 +20,23 @@ module Sendit
       store&.sendit_configured?
     end
 
-    def initialize(store)
+    # Checks a pair of keys against Sendit's login (POST /login). Raises Error when they are refused or Sendit is unreachable.
+    # The workspace's cached session is not touched.
+    def self.verify!(store, public_key:, secret_key:)
+      new(store, credentials: { public_key: public_key, secret_key: secret_key }).login!
+    end
+
+    def initialize(store, credentials: nil)
       @store = store
+      @credentials = credentials
       raise ArgumentError, "Store is required" unless @store
+    end
+
+    # Returns the bearer token Sendit issues for the keys.
+    def login!
+      keys = @credentials || { public_key: store.sendit_public_key, secret_key: store.sendit_secret_key }
+      response = perform(:post, URI.join(base_url, "login"), { public_key: keys[:public_key], secret_key: keys[:secret_key] }, nil)
+      parse!(response).dig("data", "token").presence || raise(Error.new("Sendit login returned no token"))
     end
 
     def base_url
@@ -69,11 +83,9 @@ module Sendit
     end
 
     def token
-      Rails.cache.fetch(token_cache_key, expires_in: 6.hours) do
-        response = perform(:post, URI.join(base_url, "login"),
-                           { public_key: store.sendit_public_key, secret_key: store.sendit_secret_key }, nil)
-        parse!(response).dig("data", "token").presence || raise(Error.new("Sendit login returned no token"))
-      end
+      return login! if @credentials
+
+      Rails.cache.fetch(token_cache_key, expires_in: 6.hours) { login! }
     end
 
     def perform(method, uri, body, bearer)

@@ -2,18 +2,24 @@
 
 module Admin
   # Delivery company accounts added from the Integrations API page (seallo's two-step "provider, details" dialog).
+  # Sendit is a real integration: its keys are checked against Sendit's login before anything is saved.
   class DeliveryAccountsController < BaseController
     before_action :require_workspace!
     before_action :set_account, only: %i[update destroy]
 
     def create
-      account = current_store.delivery_accounts.new(account_params.merge(provider: submitted[:provider].to_s))
+      account = current_store.delivery_accounts.new(provider: submitted[:provider].to_s)
+      return connect_sendit(account) if account.sendit?
+
+      account.assign_attributes(account_params)
       account.credentials = credentials_from(submitted, {})
       account.connected_at = Time.current if account.credentials? && account.provider != "other"
       save(account, helpers.sl("Société ajoutée."))
     end
 
     def update
+      return connect_sendit(@account) if @account.sendit?
+
       @account.assign_attributes(account_params)
       # Keys left empty keep the saved ones.
       @account.credentials = credentials_from(submitted, @account.credentials)
@@ -30,19 +36,48 @@ module Admin
 
     def save(account, message)
       if account.save
-        sync_sendit(account)
         redirect_to seller_integrations_path, notice: message, status: :see_other
       else
         redirect_to seller_integrations_path, alert: account.errors.full_messages.to_sentence, status: :see_other
       end
     end
 
-    # Morea's existing Sendit integration reads its keys from the workspace, so a Sendit account feeds them.
-    def sync_sendit(account)
-      keys = account.credentials
-      return unless account.provider == "sendit" && account.is_active? && keys["api_key"].present? && keys["api_secret"].present?
+    # Sendit: check the keys with Sendit's login, store them encrypted (the secret key is never rendered back),
+    # give the account its webhook token, and fetch the city list. Answers JSON for the dialog.
+    def connect_sendit(account)
+      keys = credentials_from(submitted, account.persisted? ? account.credentials : {})
+      return render_sendit_error(t("seller_integrations.sendit.errors.missing_keys")) unless keys["api_key"].present? && keys["api_secret"].present?
 
-      current_store.update!(sendit_public_key: keys["api_key"], sendit_secret_key: keys["api_secret"])
+      begin
+        Sendit::Client.verify!(current_store, public_key: keys["api_key"], secret_key: keys["api_secret"])
+      rescue Sendit::Client::Error => error
+        return render_sendit_error(sendit_error_message(error))
+      end
+
+      account.name = submitted[:name].presence || account.name.presence || "Sendit"
+      account.credentials = keys
+      account.is_active = true
+      account.connected_at = Time.current
+      account.generate_webhook_token
+      return render_sendit_error(account.errors.full_messages.to_sentence) unless account.save
+
+      Rails.cache.delete("sendit:token:store:#{current_store.id}")
+      SenditCitiesRefreshJob.perform_later(current_store.id)
+      flash[:notice] = helpers.sl(account.previously_new_record? ? "Société ajoutée." : "Société modifiée.")
+      render json: { ok: true, webhook_url: account.webhook_url }
+    end
+
+    def render_sendit_error(message)
+      render json: { ok: false, error: message }, status: :unprocessable_entity
+    end
+
+    # Sendit answers 4xx when it refuses the keys; anything else (timeout, 5xx) is a temporary problem on its side.
+    def sendit_error_message(error)
+      if error.status.to_i.between?(400, 499)
+        t("seller_integrations.sendit.errors.invalid_keys")
+      else
+        t("seller_integrations.sendit.errors.unreachable")
+      end
     end
 
     def submitted

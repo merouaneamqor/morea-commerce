@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_03_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_03_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -308,8 +308,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_110000) do
     t.datetime "connected_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "webhook_token"
+    t.integer "cities_count"
+    t.datetime "cities_synced_at"
     t.index ["store_id", "code"], name: "index_delivery_accounts_on_store_id_and_code", unique: true
     t.index ["store_id"], name: "index_delivery_accounts_on_store_id"
+    t.index ["webhook_token"], name: "index_delivery_accounts_on_webhook_token", unique: true, where: "(webhook_token IS NOT NULL)"
     t.check_constraint "account_type::text = ANY (ARRAY['normal'::character varying::text, 'premium'::character varying::text])", name: "delivery_accounts_account_type_known"
     t.check_constraint "delivery_fee IS NULL OR delivery_fee >= 0::numeric", name: "delivery_accounts_delivery_fee_non_negative"
     t.check_constraint "return_fee IS NULL OR return_fee >= 0::numeric", name: "delivery_accounts_return_fee_non_negative"

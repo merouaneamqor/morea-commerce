@@ -55,8 +55,10 @@ class Store < ApplicationRecord
 
   PRIVACY_SYNC_ATTRIBUTES = %i[legal_entity_name cndp_authorization privacy_rights_contact name email phone].freeze
 
+  # Stores with Sendit keys, either in an active Sendit delivery account (encrypted) or in the older plain columns.
   scope :with_sendit, -> {
-    where.not(sendit_public_key: [ nil, "" ]).where.not(sendit_secret_key: [ nil, "" ])
+    legacy = where.not(sendit_public_key: [ nil, "" ]).where.not(sendit_secret_key: [ nil, "" ])
+    legacy.or(where(id: DeliveryAccount.where(provider: "sendit", is_active: true).where.not(credentials_ciphertext: nil).select(:store_id)))
   }
 
   # Product name shown on the apex landing page and sign-in (not a tenant store name).
@@ -122,6 +124,26 @@ class Store < ApplicationRecord
     when "DH", "MAD" then "MAD"
     else currency.to_s.upcase.presence || "MAD"
     end
+  end
+
+  # The active Sendit account, whose keys are stored encrypted. It wins over the older plain columns.
+  def sendit_delivery_account
+    return @sendit_delivery_account if defined?(@sendit_delivery_account)
+
+    @sendit_delivery_account = delivery_accounts.where(provider: "sendit", is_active: true).where.not(credentials_ciphertext: nil).order(:id).first
+  end
+
+  def sendit_public_key
+    sendit_delivery_account&.credentials&.dig("api_key").presence || super
+  end
+
+  def sendit_secret_key
+    sendit_delivery_account&.credentials&.dig("api_secret").presence || super
+  end
+
+  def reload(*)
+    remove_instance_variable(:@sendit_delivery_account) if defined?(@sendit_delivery_account)
+    super
   end
 
   def sendit_configured?

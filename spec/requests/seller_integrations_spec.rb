@@ -42,7 +42,7 @@ RSpec.describe "Seller integrations page", type: :request do
     end
 
     def add_account(**fields)
-      post "/livraison/societes", params: { delivery_account: { provider: "sendit", name: "Sendit (WALKFIT)", account_type: "normal", allow_open: "true", is_active: "true" }.merge(fields) }
+      post "/livraison/societes", params: { delivery_account: { provider: "ozon", name: "Ozon (WALKFIT)", account_type: "normal", allow_open: "true", is_active: "true" }.merge(fields) }
     end
 
     it "opens in place from the delivery card instead of leading to the Delivery page" do
@@ -69,7 +69,7 @@ RSpec.describe "Seller integrations page", type: :request do
       add_account(api_key: "pub-123", api_secret: "secret-456", pickup_city: "Casablanca", delivery_fee: "25", return_fee: "12.5")
       expect(response).to redirect_to(%r{/integrations})
       account = store.delivery_accounts.sole
-      expect(account).to have_attributes(provider: "sendit", name: "Sendit (WALKFIT)", code: "SEN1", pickup_city: "Casablanca", is_active: true)
+      expect(account).to have_attributes(provider: "ozon", name: "Ozon (WALKFIT)", code: "OZO1", pickup_city: "Casablanca", is_active: true)
       expect(account.delivery_fee).to eq(25)
       expect(account.credentials).to eq("api_key" => "pub-123", "api_secret" => "secret-456")
       expect(account.credentials_ciphertext).not_to include("secret-456")
@@ -78,22 +78,20 @@ RSpec.describe "Seller integrations page", type: :request do
       follow_redirect!
       expect(response).to have_http_status(:ok)
       row = document.at_css("[data-account='#{account.id}']")
-      expect(row.text).to include("Sendit (WALKFIT)", "SEN1", "Connectée")
+      expect(row.text).to include("Ozon (WALKFIT)", "OZO1", "Connectée")
       expect(response.body).not_to include("secret-456", "pub-123")
     end
 
     it "numbers the codes per company and supports several accounts at one company" do
-      add_account(name: "Sendit 1")
-      add_account(name: "Sendit 2")
-      add_account(provider: "ozon", name: "Ozon")
-      expect(store.delivery_accounts.order(:id).pluck(:code)).to eq(%w[SEN1 SEN2 OZO1])
+      add_account(name: "Ozon 1")
+      add_account(name: "Ozon 2")
+      add_account(provider: "cathedis", name: "Cathedis")
+      expect(store.delivery_accounts.order(:id).pluck(:code)).to eq(%w[OZO1 OZO2 CAT1])
     end
 
-    it "feeds Morea's existing Sendit integration with the keys of a Sendit account" do
-      add_account(api_key: "sendit-pub", api_secret: "sendit-secret")
-      expect(store.reload).to have_attributes(sendit_public_key: "sendit-pub", sendit_secret_key: "sendit-secret")
-      add_account(provider: "ozon", name: "Ozon", api_key: "ozon-pub", api_secret: "ozon-secret")
-      expect(store.reload.sendit_public_key).to eq("sendit-pub")
+    it "does not feed Sendit's keys from other companies" do
+      add_account(api_key: "ozon-pub", api_secret: "ozon-secret")
+      expect(store.reload.sendit_configured?).to be(false)
     end
 
     it "adds another company without API keys in manual mode" do

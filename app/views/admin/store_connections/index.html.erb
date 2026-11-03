@@ -19,7 +19,9 @@
   }
   accounts_json = @delivery_accounts.map do |a|
     { id: a.id, provider: a.provider, name: a.name, contact_name: a.contact_name, contact_phone: a.contact_phone, account_type: a.account_type, pickup_city: a.pickup_city,
-      allow_open: a.allow_open, delivery_fee: a.delivery_fee&.to_f, return_fee: a.return_fee&.to_f, is_active: a.is_active, has_credentials: a.credentials? }
+      allow_open: a.allow_open, delivery_fee: a.delivery_fee&.to_f, return_fee: a.return_fee&.to_f, is_active: a.is_active, has_credentials: a.credentials?,
+      public_key: (a.credentials["api_key"] if a.sendit?), secret_hint: (a.secret_hint if a.sendit?), webhook_url: a.webhook_url,
+      cities_count: a.cities_count, cities_synced: a.cities_synced_at.present? }
   end
   modal_strings = [
     "Choisissez une région", "Toutes les régions", "fournisseurs", "Pays pris en charge", "Tous", "Fournisseurs disponibles", "résultats", "Rechercher un fournisseur…",
@@ -158,7 +160,9 @@
 
 <div data-delivery-modal hidden class="fixed inset-0 z-50 grid place-items-center bg-[#1f2430]/30 p-4 backdrop-blur-sm"
      data-catalog="<%= catalog.to_json %>" data-accounts="<%= accounts_json.to_json %>" data-strings="<%= modal_strings.to_json %>"
-     data-currency="<%= currency %>" data-action="<%= seller_delivery_accounts_path %>" data-edit-path="/livraison/societes/"></div>
+     data-currency="<%= currency %>" data-action="<%= seller_delivery_accounts_path %>" data-edit-path="/livraison/societes/"
+     data-sendit="<%= t("seller_integrations.sendit").except(:errors).merge(network_error: t("seller_integrations.sendit.errors.network")).to_json %>"
+     data-sendit-url="https://app.sendit.ma/edit-profile?tab=tabAPI"></div>
 
 <script>
   (function () {
@@ -262,15 +266,51 @@
       return html;
     };
 
+    /* ---- Sendit: real connection (keys checked against Sendit's login, webhook URL shown afterwards) ---- */
+    var SD = JSON.parse(root.dataset.sendit), SENDIT_URL = root.dataset.senditUrl;
+    var eyeIcon = '<svg viewBox="0 0 24 24" class="size-[18px] fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+    var webhookBlock = function (url) {
+      return '<div class="mt-4 rounded-xl border border-[#f0ebe7] p-3.5"><p class="text-sm font-semibold text-[#1f2430]">' + esc(SD.webhook_title) + '</p><p class="mt-0.5 text-xs text-[#8a8380]">' + esc(SD.webhook_help) + "</p>" +
+        '<div class="mt-3 flex gap-2"><input readonly value="' + esc(url) + '" dir="ltr" data-webhook-url class="' + field + ' text-xs" onfocus="this.select()">' +
+        '<button type="button" data-copy-webhook class="h-11 shrink-0 rounded-xl border border-[#e8e3df] px-4 text-sm font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]">' + esc(SD.copy) + "</button></div></div>";
+    };
+    var citiesLine = function (a) {
+      if (!a) return "";
+      var text = a.cities_count ? SD.cities.replace("%{count}", a.cities_count) : SD.cities_pending;
+      return '<p class="mt-3 text-xs text-[#8a8380]">' + esc(text) + "</p>";
+    };
+    var senditStep = function () {
+      var a = state.account, p = catalog.providers.sendit, label = "mb-1 block text-xs font-semibold text-[#8a8380]";
+      var token = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
+      var html = '<form method="post" action="' + esc(a ? root.dataset.editPath + a.id : root.dataset.action) + '" data-sendit-form>' +
+        '<input type="hidden" name="authenticity_token" value="' + esc(token) + '">' + (a ? '<input type="hidden" name="_method" value="patch">' : '<input type="hidden" name="delivery_account[provider]" value="sendit">') +
+        '<div class="mb-5 flex items-center gap-3 rounded-xl bg-[#f3f1ef] p-3">' + logo(p) + '<div><p class="font-semibold text-[#1f2430]">' + esc(p.name) + '</p><p class="text-xs text-[#8a8380]">' + esc(p.desc) + "</p></div></div>" +
+        '<p data-sendit-error hidden role="alert" class="mb-4 rounded-xl bg-[#fbe7ea] px-3.5 py-2.5 text-sm text-[#b4344e]"></p>' +
+        '<div class="grid gap-3"><label class="block"><span class="' + label + '">' + esc(SD.name_label) + '</span><input name="delivery_account[name]" value="' + (a ? esc(a.name) : "") + '" required dir="auto" class="' + field + '" placeholder="' + esc(SD.name_placeholder) + '"></label>' +
+        '<label class="block"><span class="' + label + '">' + esc(SD.public_key) + '</span><input name="delivery_account[api_key]" value="' + (a ? esc(a.public_key) : "") + '" required dir="ltr" autocomplete="off" spellcheck="false" class="' + field + '"></label>' +
+        '<label class="block"><span class="' + label + '">' + esc(SD.secret_key) + '</span><span class="relative block"><input name="delivery_account[api_secret]" type="password" ' + (a && a.has_credentials ? "" : "required ") + 'dir="ltr" autocomplete="new-password" spellcheck="false" class="' + field + ' pe-11" placeholder="' + esc(a && a.has_credentials ? (a.secret_hint || SD.secret_saved) : "") + '">' +
+        '<button type="button" data-eye aria-label="' + esc(SD.toggle_secret) + '" class="absolute inset-y-0 end-0 flex items-center px-3 text-[#8a8380] hover:text-[#1f2430]" tabindex="-1">' + eyeIcon + "</button></span></label></div>" +
+        '<p class="mt-3 text-xs text-[#8a8380]">' + esc(SD.help) + ' <a href="' + esc(SENDIT_URL) + '" target="_blank" rel="noopener" class="font-semibold text-[#a8432e] hover:underline">' + esc(SD.help_link) + " ↗</a></p>" +
+        (a && a.webhook_url ? webhookBlock(a.webhook_url) + citiesLine(a) : "") +
+        '<div class="mt-6 flex items-center justify-between">' + (a ? "<span></span>" : '<button type="button" data-back class="text-sm font-semibold text-[#8a8380] hover:text-[#1f2430]">← ' + esc(S["Retour"]) + "</button>") +
+        '<button type="submit" class="h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624] disabled:opacity-60">' + esc(SD.connect) + "</button></div></form>";
+      return html;
+    };
+    var senditDone = function () {
+      return '<div class="text-center"><span class="mx-auto grid size-12 place-items-center rounded-full bg-[#e3f3e8] text-xl text-[#2f7a4a]">✓</span><h2 class="mt-3 text-lg font-bold text-[#1f2430]">' + esc(SD.success_title) + '</h2><p class="mt-1 text-sm">' + esc(SD.success_text) + "</p></div>" +
+        webhookBlock(state.done.webhook_url) + citiesLine({ cities_count: null }) +
+        '<div class="mt-6 flex justify-end"><button type="button" data-done class="h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624]">' + esc(SD.done) + "</button></div>";
+    };
+
     var render = function () {
       var step = state.provider ? 2 : 1, editing = !!state.account;
       var stepCls = function (n) { return "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold " + (step === n ? "bg-[#a8432e] text-white" : "text-[#8a8380]"); };
       root.innerHTML = '<div class="flex max-h-[92dvh] w-full max-w-2xl flex-col rounded-2xl bg-white shadow-2xl" role="dialog" aria-modal="true"><div class="flex items-center justify-between border-b border-[#f0ebe7] px-6 py-4"><div class="flex items-center gap-2">' +
         (editing ? "" : '<span class="' + stepCls(1) + '">1 · ' + esc(S["Fournisseur"]) + '</span><span class="h-px w-6 bg-[#e8e3df]"></span>') + '<span class="' + stepCls(2) + '">' + (editing ? "" : "2 · ") + esc(S["Détails"]) + "</span></div>" +
-        '<button type="button" data-close class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="✕">✕</button></div><div class="overflow-y-auto px-6 py-5">' + (step === 1 ? step1() : step2()) + "</div></div>";
+        '<button type="button" data-close class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="✕">✕</button></div><div class="overflow-y-auto px-6 py-5">' + (state.done ? senditDone() : step === 1 ? step1() : state.provider === "sendit" ? senditStep() : step2()) + "</div></div>";
     };
     var show = function () { render(); root.hidden = false; };
-    var close = function () { root.hidden = true; };
+    var close = function () { if (state.done) return window.location.reload(); root.hidden = true; };
 
     root.addEventListener("click", function (e) {
       var t = e.target;
@@ -279,12 +319,37 @@
       if (t.closest("[data-back]")) { state.provider = null; return render(); }
       var region = t.closest("[data-region]"); if (region) { state.region = region.dataset.region; state.country = "all"; return render(); }
       var country = t.closest("[data-country]"); if (country) { state.country = country.dataset.country; return render(); }
+      if (t.closest("[data-done]")) return window.location.reload();
+      var eye = t.closest("[data-eye]");
+      if (eye) { var secret = eye.parentNode.querySelector("input"); secret.type = secret.type === "password" ? "text" : "password"; return; }
+      var copyBtn = t.closest("[data-copy-webhook]");
+      if (copyBtn) {
+        var url = root.querySelector("[data-webhook-url]").value;
+        var copied = function () { copyBtn.textContent = SD.copied; setTimeout(function () { copyBtn.textContent = SD.copy; }, 1500); };
+        if (navigator.clipboard) navigator.clipboard.writeText(url).then(copied); else { var input = root.querySelector("[data-webhook-url]"); input.select(); document.execCommand("copy"); copied(); }
+        return;
+      }
       var sw = t.closest("[data-toggle]");
       if (sw) {
         var input = root.querySelector('[data-toggle-input="' + sw.dataset.toggle + '"]'), on = input.value !== "true";
         input.value = String(on); sw.setAttribute("aria-checked", on); sw.classList.toggle("bg-[#2f7a4a]", on); sw.classList.toggle("bg-[#d9d1cc]", !on);
         var knob = sw.firstElementChild; knob.classList.toggle("start-[22px]", on); knob.classList.toggle("start-0.5", !on);
       }
+    });
+    root.addEventListener("submit", function (e) {
+      var form = e.target.closest("[data-sendit-form]");
+      if (!form) return;
+      e.preventDefault();
+      var button = form.querySelector("[type=submit]"), box = form.querySelector("[data-sendit-error]"), label = button.textContent;
+      box.hidden = true; button.disabled = true; button.textContent = SD.connecting;
+      var token = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
+      fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json", "X-CSRF-Token": token }, credentials: "same-origin" })
+        .then(function (res) { return res.json().then(function (json) { return { ok: res.ok && json.ok, json: json }; }); })
+        .then(function (r) {
+          if (r.ok) { state.done = { webhook_url: r.json.webhook_url }; return render(); }
+          box.textContent = r.json.error || SD.network_error; box.hidden = false; button.disabled = false; button.textContent = label;
+        })
+        .catch(function () { box.textContent = SD.network_error; box.hidden = false; button.disabled = false; button.textContent = label; });
     });
     root.addEventListener("input", function (e) {
       if (!e.target.matches("[data-search]")) return;

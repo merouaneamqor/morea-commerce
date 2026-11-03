@@ -1,15 +1,19 @@
 # frozen_string_literal: true
 
 module Webhooks
-  # Receives Sendit "delivery.status.update" events (HMAC-SHA256 of the raw body
-  # in X-Sendit-Signature, keyed with the API key chosen when creating the webhook)
+  # Receives Sendit "delivery.status.update" events and updates the parcel's order in real time.
+  #
+  # A workspace that connected Sendit from the Integrations page has a secret token in its webhook URL
+  # (`?token=...`); every call must carry it. Workspaces that only have the older HMAC setup
+  # (X-Sendit-Signature, keyed with the secret chosen when the webhook was created) keep working
+  # until they connect Sendit from the Integrations page.
   class SenditController < ActionController::API
     def create
       store = Store.find_by(slug: params[:store_slug].to_s)
       return head(:not_found) unless store
 
       body = request.raw_post
-      return head(:unauthorized) unless valid_signature?(store, body, request.headers["X-Sendit-Signature"].to_s)
+      return head(:unauthorized) unless authorized?(store, body)
 
       payload = JSON.parse(body)
       order = store.orders.find_by(sendit_code: payload["code"].to_s)
@@ -29,6 +33,20 @@ module Webhooks
     end
 
     private
+
+    def authorized?(store, body)
+      tokens = store.delivery_accounts.where(provider: "sendit", is_active: true).where.not(webhook_token: nil).pluck(:webhook_token)
+      return valid_token?(tokens) if tokens.any?
+
+      valid_signature?(store, body, request.headers["X-Sendit-Signature"].to_s)
+    end
+
+    def valid_token?(tokens)
+      given = params[:token].to_s
+      return false if given.blank?
+
+      tokens.map { |token| ActiveSupport::SecurityUtils.secure_compare(token, given) }.any?
+    end
 
     def valid_signature?(store, body, signature)
       return false if signature.blank?

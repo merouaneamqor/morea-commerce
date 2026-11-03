@@ -11,12 +11,8 @@ module Admin
       @segments = Customers::Segments.new(current_store)
       @segment = SEGMENT_PARAMS[params[:segment].to_s]
       scope = current_store.customers
-      if @segment == "new"
-        # Customers with no order rows at all also count as new.
-        scope = scope.where.not(id: @segments.stats.keys - @segments.ids_in("new"))
-      elsif @segment
-        scope = scope.where(id: @segments.ids_in(@segment))
-      end
+      # Customers with no order rows at all also count as new.
+      scope = @segments.filter(scope, @segment) if @segment
       if params[:q].present?
         q = "%#{Customer.sanitize_sql_like(params[:q].strip)}%"
         scope = scope.where("customers.name ILIKE :q OR customers.phone ILIKE :q OR customers.email ILIKE :q OR customers.city ILIKE :q", q: q)
@@ -27,7 +23,8 @@ module Admin
       @pages = [ (@total / PER_PAGE.to_f).ceil, 1 ].max
       @page = @pages if @page > @pages
       last_order = "(SELECT MAX(orders.created_at) FROM orders WHERE orders.customer_id = customers.id)"
-      @customers = scope.order(Arel.sql("#{last_order} DESC NULLS LAST"), created_at: :desc).limit(PER_PAGE).offset((@page - 1) * PER_PAGE)
+      @customers = scope.order(Arel.sql("#{last_order} DESC NULLS LAST"), created_at: :desc).limit(PER_PAGE).offset((@page - 1) * PER_PAGE).load
+      @segments.preload(@customers.map(&:id))
     end
 
     def show

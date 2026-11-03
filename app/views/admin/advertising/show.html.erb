@@ -2,7 +2,7 @@
 <% totals = @summary.totals; money = ->(cents) { number_to_currency(cents / 100.0, unit: 'MAD ', precision: 2) }; ratio = ->(metrics) { @summary.roas(metrics) ? "#{number_with_precision(@summary.roas(metrics), precision: 2)}×" : '—' } %>
 <div class="admin-page-header">
   <div><h1 class="admin-page-header__title"><%= t("advertising.text_0") %></h1><p class="admin-page-header__meta"><%= t("advertising.text_1") %></p></div>
-  <a href="#add-account" class="admin-btn"><%= t("advertising.text_2") %></a>
+  <div class="flex flex-wrap gap-3"><%= link_to t("meta_ads.title"), admin_meta_ads_path, class: "admin-btn-secondary" %><a href="#add-account" class="admin-btn"><%= t("advertising.text_2") %></a></div>
 </div>
 <p class="admin-banner mb-5"><%= t("advertising.note_0") %></p>
 <% if @error.present? %><p role="alert" class="admin-banner admin-banner--critical mb-4"><%= @error %></p><% end %>

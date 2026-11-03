@@ -1,0 +1,38 @@
+fr:
+  meta_ads:
+    back_home: "Retour à l’accueil"
+    valid_until: "Accès valable jusqu’au %{date}"
+    permissions: "Autorisations :"
+    missing_business_management: "L’autorisation business_management n’a pas été accordée : seuls les comptes publicitaires de votre profil sont visibles, pas ceux d’un portefeuille Business. Reconnectez-vous pour l’accorder."
+    not_selectable: "non sélectionnable"
+    disconnected_revoked: "Meta est déconnecté et les autorisations ont été retirées chez Meta."
+    notice:
+      expires_soon: "Votre connexion Meta Ads expire le %{date}. Reconnectez-vous avant cette date pour ne pas interrompre la synchronisation des dépenses."
+      needs_reconnect: "Votre connexion Meta Ads doit être renouvelée : la synchronisation des dépenses est en pause."
+    account_status:
+      active: "Actif"
+      disabled: "Désactivé"
+      unsettled: "Paiement en attente"
+      pending_risk_review: "En cours de vérification"
+      pending_settlement: "Règlement en attente"
+      grace_period: "Période de grâce"
+      pending_closure: "Fermeture en cours"
+      closed: "Fermé"
+      unknown: "Statut inconnu"
+    products_title: "Publicités et produits"
+    products_lead: "Associez chaque publicité au produit qu’elle fait vendre : la dépense est alors comptée dans le profit de ce produit. Les associations automatiques viennent du nom de la publicité (SKU ou nom du produit) ; une association manuelle les remplace."
+    no_product: "Aucun produit"
+    save_links: "Enregistrer les associations"
+    links_saved: "Associations enregistrées."
+    link_source:
+      manual: "Manuelle"
+      auto: "Automatique"
+    errors:
+      account_not_selectable: "Ce compte publicitaire est désactivé ou en attente de règlement : il ne peut pas être relié."
+    deletion:
+      title: "Suppression de vos données Meta"
+      code: "Code de confirmation :"
+      not_found: "Cette demande de suppression est introuvable."
+      status:
+        pending: "Votre demande est en cours de traitement."
+        completed: "Vos accès Meta ont été supprimés de seallo."

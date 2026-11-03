@@ -1,0 +1,38 @@
+en:
+  meta_ads:
+    back_home: "Back to home"
+    valid_until: "Access valid until %{date}"
+    permissions: "Permissions:"
+    missing_business_management: "The business_management permission was not granted: only the ad accounts of your own profile are visible, not those of a Business portfolio. Reconnect to grant it."
+    not_selectable: "not selectable"
+    disconnected_revoked: "Meta is disconnected and the permissions were removed on Meta’s side."
+    notice:
+      expires_soon: "Your Meta Ads connection expires on %{date}. Reconnect before then so spend syncing is not interrupted."
+      needs_reconnect: "Your Meta Ads connection needs to be renewed: spend syncing is paused."
+    account_status:
+      active: "Active"
+      disabled: "Disabled"
+      unsettled: "Payment due"
+      pending_risk_review: "Under review"
+      pending_settlement: "Settlement pending"
+      grace_period: "Grace period"
+      pending_closure: "Closing"
+      closed: "Closed"
+      unknown: "Unknown status"
+    products_title: "Ads and products"
+    products_lead: "Link each ad to the product it sells: its spend is then counted in that product’s profit. Automatic links come from the ad name (SKU or product name); a manual link replaces them."
+    no_product: "No product"
+    save_links: "Save links"
+    links_saved: "Links saved."
+    link_source:
+      manual: "Manual"
+      auto: "Automatic"
+    errors:
+      account_not_selectable: "This ad account is disabled or has an unsettled balance: it cannot be linked."
+    deletion:
+      title: "Deletion of your Meta data"
+      code: "Confirmation code:"
+      not_found: "This deletion request could not be found."
+      status:
+        pending: "Your request is being processed."
+        completed: "Your Meta access has been removed from seallo."

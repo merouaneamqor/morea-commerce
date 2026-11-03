@@ -15,7 +15,7 @@ RSpec.describe "Platform workspace access", type: :request do
   end
 
   def workspace_name
-    Nokogiri::HTML(response.body).at_css(".admin-topbar__brand").text
+    Nokogiri::HTML(response.body).at_css("[data-seller-store]").text
   end
 
   it "opens and switches published and unpublished workspaces on the platform host" do

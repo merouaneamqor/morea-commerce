@@ -3375,9 +3375,6 @@ main {
   }
 
   /* Language switcher as a pill group (FR | EN | AR) */
-  .admin-body:is([data-admin-theme="seallo"], [data-admin-theme="seallo_dark"]) [data-admin-language-switcher] { background: var(--s-soft2); border-radius: 999px; gap: 0; padding: 3px; }
-  .admin-body:is([data-admin-theme="seallo"], [data-admin-theme="seallo_dark"]) [data-admin-language-switcher] a { border-radius: 999px; color: var(--s-muted); font-size: 12px; font-weight: 600; padding: 0.25rem 0.625rem; text-decoration: none; }
-  .admin-body:is([data-admin-theme="seallo"], [data-admin-theme="seallo_dark"]) [data-admin-language-switcher] a.font-semibold { background: var(--s-strong); color: var(--s-strong-text); text-decoration: none; }
 
   /* Dark seallo: same structure, warm charcoal palette */
   .admin-body[data-admin-theme="seallo_dark"] {
@@ -3431,3 +3428,6 @@ main {
     [class*="border-[#ebebeb]"], [class*="divide-[#ebebeb]"] > *, [class*="border-[#d4d4d4]"] { border-color: var(--s-line); }
   }
 }
+
+/* Pages in the seallo design: the shell supplies spacing, so the old page padding and width cap are dropped. */
+.admin-page.seller-page { max-width: none; margin: 0; padding: 0; display: grid; gap: 1rem; }

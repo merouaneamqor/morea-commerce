@@ -24,7 +24,7 @@ class SignupsController < ApplicationController
       session[:admin_mode] = "store"
       store = user.store
       paid_trial = store.plan_selected? && !store.free_plan?
-      redirect_to paid_trial ? payment_path(locale: I18n.locale) : admin_root_path, notice: t("registration.verified")
+      redirect_to paid_trial ? payment_path(locale: I18n.locale) : admin_root_path
     else
       render :new, status: :unprocessable_entity
     end

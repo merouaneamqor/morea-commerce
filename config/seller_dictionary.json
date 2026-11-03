@@ -1,0 +1,274 @@
+{
+ "30 derniers jours": [
+  "Last 30 days",
+  "آخر 30 يومًا"
+ ],
+ "7 derniers jours": [
+  "Last 7 days",
+  "آخر 7 أيام"
+ ],
+ "Agents": [
+  "Agents",
+  "الوكلاء"
+ ],
+ "Annulée": [
+  "Cancelled",
+  "ملغاة"
+ ],
+ "Annulées": [
+  "Cancelled",
+  "ملغاة"
+ ],
+ "Aucune commande en attente de confirmation.": [
+  "No orders waiting for confirmation.",
+  "لا توجد طلبات في انتظار التأكيد."
+ ],
+ "Aujourd'hui": [
+  "Today",
+  "اليوم"
+ ],
+ "Bientôt disponible": [
+  "Coming soon",
+  "قريبًا"
+ ],
+ "Bonjour": [
+  "Hello",
+  "مرحبًا"
+ ],
+ "Boutique Shopify connectée. Import des produits et commandes en cours…": [
+  "Shopify store connected. Importing products and orders…",
+  "تمّ ربط متجر Shopify. جارٍ استيراد المنتجات والطلبات…"
+ ],
+ "Boutique connectée. Import des produits et commandes en cours…": [
+  "Store connected. Importing products and orders…",
+  "تم ربط المتجر. جارٍ استيراد المنتجات والطلبات…"
+ ],
+ "Cette boutique Shopify est déjà reliée à un autre compte seallo.": [
+  "This Shopify store is already linked to another seallo account.",
+  "هذا المتجر مرتبط بحساب seallo آخر."
+ ],
+ "Chiffre d'affaires": [
+  "Revenue",
+  "رقم المعاملات"
+ ],
+ "Client": [
+  "Customer",
+  "الزبون"
+ ],
+ "Clients": [
+  "Customers",
+  "الزبائن"
+ ],
+ "Commande": [
+  "Order",
+  "الطلب"
+ ],
+ "Commandes": [
+  "Orders",
+  "الطلبات"
+ ],
+ "Confirmation": [
+  "Confirmation",
+  "التأكيد"
+ ],
+ "Confirmer les commandes": [
+  "Confirm orders",
+  "تأكيد الطلبات"
+ ],
+ "Confirmée": [
+  "Confirmed",
+  "مؤكَّد"
+ ],
+ "Coût des produits": [
+  "Product cost",
+  "تكلفة المنتجات"
+ ],
+ "Dernières commandes": [
+  "Latest orders",
+  "آخر الطلبات"
+ ],
+ "En attente de confirmation": [
+  "Awaiting confirmation",
+  "في انتظار التأكيد"
+ ],
+ "En cours": [
+  "In transit",
+  "قيد التوصيل"
+ ],
+ "En cours de livraison": [
+  "Out for delivery",
+  "قيد التوصيل"
+ ],
+ "Gratuit": [
+  "Free",
+  "مجاني"
+ ],
+ "Injoignable": [
+  "Unreachable",
+  "لا يجيب"
+ ],
+ "Intégrations API": [
+  "API integrations",
+  "تكاملات API"
+ ],
+ "L'app Shopify de seallo n'est pas encore configurée (clés dans le fichier .env).": [
+  "seallo's Shopify app is not configured yet (keys in the .env file).",
+  "تطبيق Shopify الخاص بـ seallo غير مُعدّ بعد (المفاتيح في ملف ‎.env)."
+ ],
+ "L'app YouCan de seallo n'est pas encore configurée (clés dans le fichier .env).": [
+  "seallo's YouCan app is not configured yet (keys in the .env file).",
+  "تطبيق seallo على YouCan غير مُعَدّ بعد (المفاتيح في ملف .env)."
+ ],
+ "La connexion de la boutique a été annulée.": [
+  "The store connection was cancelled.",
+  "تم إلغاء ربط المتجر."
+ ],
+ "Le bénéfice par produit apparaît dès les premières livraisons.": [
+  "Profit by product appears with the first deliveries.",
+  "يظهر الربح حسب المنتج مع أولى عمليات التسليم."
+ ],
+ "Les compléter": [
+  "Fill them in",
+  "أكمِلها"
+ ],
+ "Livraison": [
+  "Delivery",
+  "التوصيل"
+ ],
+ "Livrée": [
+  "Delivered",
+  "مُسلَّم"
+ ],
+ "Mes statistiques": [
+  "My statistics",
+  "إحصائياتي"
+ ],
+ "Nouvelle": [
+  "New",
+  "جديد"
+ ],
+ "Paramètres": [
+  "Settings",
+  "الإعدادات"
+ ],
+ "Pas encore de ventes livrées sur cette période.": [
+  "No delivered sales in this period yet.",
+  "لا توجد مبيعات مُسلَّمة في هذه الفترة بعد."
+ ],
+ "Plan": [
+  "Plan",
+  "الخطة"
+ ],
+ "Produits": [
+  "Products",
+  "المنتجات"
+ ],
+ "Profit": [
+  "Profit",
+  "الربح"
+ ],
+ "Profit net": [
+  "Net profit",
+  "صافي الربح"
+ ],
+ "Profit par produit": [
+  "Profit by product",
+  "الربح حسب المنتج"
+ ],
+ "Publicité": [
+  "Advertising",
+  "الإعلانات"
+ ],
+ "Publicités": [
+  "Ads",
+  "الإعلانات"
+ ],
+ "Période": [
+  "Period",
+  "الفترة"
+ ],
+ "Rechercher une commande": [
+  "Search an order",
+  "ابحث عن طلب"
+ ],
+ "Refusées": [
+  "Refused",
+  "مرفوضة"
+ ],
+ "Reportée": [
+  "Postponed",
+  "مؤجَّلة"
+ ],
+ "Retournée": [
+  "Returned",
+  "مُرتجَعة"
+ ],
+ "Se déconnecter": [
+  "Sign out",
+  "تسجيل الخروج"
+ ],
+ "Statut": [
+  "Status",
+  "الحالة"
+ ],
+ "Synchronisation lancée. Actualisez dans un instant.": [
+  "Sync started. Refresh in a moment.",
+  "بدأت المزامنة. حدّث الصفحة بعد لحظة."
+ ],
+ "Synchroniser": [
+  "Sync",
+  "مزامنة"
+ ],
+ "Tableau de bord": [
+  "Dashboard",
+  "لوحة التحكم"
+ ],
+ "Taux de livraison": [
+  "Delivery rate",
+  "نسبة التوصيل"
+ ],
+ "Total": [
+  "Total",
+  "المجموع"
+ ],
+ "Tout est confirmé": [
+  "All confirmed",
+  "كل شيء مؤكَّد"
+ ],
+ "Ventes livrées": [
+  "Delivered sales",
+  "المبيعات المُسلَّمة"
+ ],
+ "Ventes livrées vs publicité": [
+  "Delivered sales vs ads",
+  "المبيعات المُسلَّمة مقابل الإعلانات"
+ ],
+ "Ville": [
+  "City",
+  "المدينة"
+ ],
+ "Vos commandes apparaîtront ici dès que votre boutique sera connectée.": [
+  "Your orders will appear here once your store is connected.",
+  "ستظهر طلباتك هنا بمجرّد ربط متجرك."
+ ],
+ "après produits, pub, livraison et agents": [
+  "after products, ads, delivery and agents",
+  "بعد المنتجات والإعلانات والتوصيل والوكلاء"
+ ],
+ "le profit est faux tant que le coût n'est pas saisi (le produit est compté comme gratuit).": [
+  "profit is wrong until the cost is entered (the product is counted as free).",
+  "الربح غير صحيح ما دامت التكلفة غير مُدخَلة (يُحسب المنتج وكأنه مجاني)."
+ ],
+ "produits sans coût": [
+  "products without a cost",
+  "منتجات بدون تكلفة"
+ ],
+ "sur la période": [
+  "in this period",
+  "خلال الفترة"
+ ],
+ "Équipe": [
+  "Team",
+  "الفريق"
+ ]
+}

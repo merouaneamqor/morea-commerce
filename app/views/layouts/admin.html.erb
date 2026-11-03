@@ -1,115 +1,102 @@
 <!DOCTYPE html>
 <html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
-    <title><%= content_for?(:title) ? yield(:title) : "Admin — #{current_store&.name || "Store"}" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : "#{Store.platform_name} — #{current_store&.name || "seallo"}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="manifest" href="<%= admin_pwa_manifest_path %>">
-    <meta name="theme-color" content="#2e4dd5">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="<%= Store.platform_name %>">
+    <meta name="theme-color" content="#a8432e">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= render "shared/platform_icons" %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;800&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "admin_pwa" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="admin-body" data-admin-theme="<%= current_store&.admin_theme || "seallo" %>">
+  <body class="admin-body" data-admin-theme="<%= current_store&.admin_theme || "seallo" %>" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
     <% if current_admin_user %>
-      <div class="admin-shell" data-controller="admin-menu">
-        <header class="admin-topbar">
-          <div class="flex min-w-0 items-center gap-2">
-            <button type="button" class="admin-topbar__menu md:hidden" data-action="admin-menu#toggle" aria-label="Menu">
-              <%= admin_icon(:menu) %>
-            </button>
-            <%= link_to admin_root_path, class: "admin-topbar__brand min-w-0 md:hidden" do %>
-              <span class="admin-wordmark">seallo</span>
-              <span class="sr-only"><%= current_store&.name || "Store" %></span>
-            <% end %>
+      <% active = seller_active_key %>
+      <% agent = current_admin_user.confirmation_agent_view? %>
+      <% new_orders = current_store ? Seller::DashboardStats.new(store: current_store).new_orders_count : 0 %>
+      <% missing_costs = current_store && !agent ? Seller::DashboardStats.new(store: current_store).missing_costs : 0 %>
+      <% sidebar = capture do %>
+        <nav class="flex h-full flex-col overflow-y-auto rounded-2xl border border-[#e8e3df] bg-white p-3">
+          <div class="flex items-center justify-between px-3 pt-2 pb-5">
+            <%= link_to (agent ? "/confirmation" : "/dashboard"), class: "text-2xl font-extrabold tracking-tight text-[#a8432e]", dir: "ltr" do %>seallo<% end %>
+            <button type="button" data-seller-close class="text-[#8a8380] lg:hidden" aria-label="✕">✕</button>
           </div>
-
-          <%= form_with url: admin_orders_path, method: :get, class: "admin-topbar__search" do %>
-            <%= admin_icon(:search, size: 16) %>
-            <%= search_field_tag :q, params[:q], placeholder: "Search orders", "aria-label": "Search orders" %>
-          <% end %>
-
-          <div class="admin-topbar__account shrink-0 gap-3">
-            <%= render "admin/shared/language_switcher" %>
-            <div class="contents"
-                 data-controller="order-alerts"
-                 data-order-alerts-public-key-value="<%= Rails.configuration.x.web_push[:public_key] %>"
-                 data-order-alerts-subscribe-url-value="<%= admin_push_subscription_path %>"
-                 data-order-alerts-on-label-value="<%= t('admin.order_alerts.on') %>"
-                 data-order-alerts-off-label-value="<%= t('admin.order_alerts.off') %>"
-                 data-order-alerts-blocked-label-value="<%= t('admin.order_alerts.blocked') %>">
-              <button type="button" class="admin-btn-plain" hidden
-                      aria-pressed="false" data-order-alerts-target="toggle" data-action="order-alerts#toggle">
-                <span data-order-alerts-target="label"><%= t("admin.order_alerts.off") %></span>
-              </button>
-            </div>
-            <% if super_admin? %>
-              <%= link_to "Platform", admin_platform_path, class: "admin-btn-plain hidden sm:inline" %>
+          <ul class="space-y-1">
+            <% seller_menu(current_admin_user).each do |key, icon, label, href| %>
+              <% on = key == active %>
+              <li>
+                <% if href.nil? %>
+                  <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#a49d99]" title="<%= sl("Bientôt disponible") %>"><%= seller_icon(icon) %> <%= sl(label) %></span>
+                <% else %>
+                  <%= link_to href, class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm #{on ? "bg-[#f4e4de] font-semibold text-[#a8432e]" : "text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]"}" do %>
+                    <%= seller_icon(icon) %> <%= sl(label) %>
+                    <% if key == "orders" && new_orders.positive? %><span class="ms-auto rounded-full px-2 py-0.5 text-[11px] font-semibold <%= on ? "bg-white text-[#a8432e]" : "bg-[#f4e4de] text-[#a8432e]" %>"><%= new_orders %></span><% end %>
+                    <% if key == "products" && missing_costs.positive? %><span class="ms-auto rounded-full bg-[#fbe7ea] px-2 py-0.5 text-[11px] font-semibold text-[#b4344e]" title="<%= sl("produits sans coût") %>"><%= missing_costs %></span><% end %>
+                  <% end %>
+                <% end %>
+              </li>
             <% end %>
-            <span class="admin-avatar"><%= current_store&.name.to_s.first.presence || "M" %></span>
-            <span class="hidden sm:inline"><%= current_store&.name || "Store" %></span>
-          </div>
-        </header>
-
-        <aside class="admin-sidebar" data-admin-menu-target="sidebar">
-          <%= link_to admin_root_path, class: "admin-sidebar__brand" do %>
-            <span class="admin-wordmark">seallo</span>
-          <% end %>
-          <nav class="admin-sidebar__nav">
-            <%= render "admin/shared/sidebar_nav" %>
-          </nav>
-
-          <div class="admin-sidebar__footer">
-            <div class="admin-workspace">
-              <strong class="truncate"><%= (current_store&.name || "Store").upcase %></strong>
-            </div>
-            <% if super_admin? %>
-              <%= admin_nav_link "Platform", admin_platform_path, icon: :external, active: false %>
-            <% end %>
-            <% settings_open = controller_name.in?(%w[stores pixels agent_api]) %>
-            <%= admin_nav_link "Settings", edit_admin_store_path, icon: :settings, active: settings_open %>
-            <% if settings_open %>
-              <div class="admin-subnav">
-                <%= link_to "General", edit_admin_store_path, class: "admin-subnav__item #{'is-active' if controller_name == 'stores'}" %>
-                <%= link_to "Pixels", edit_admin_pixels_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pixels'}" %>
-                <%= link_to "Agent API", admin_agent_api_path, class: "admin-subnav__item #{'is-active' if controller_name == 'agent_api'}" %>
+          </ul>
+          <div class="mt-auto space-y-1 border-t border-[#f0ebe7] pt-3">
+            <% if current_store && !agent %>
+              <div class="mb-2 rounded-xl bg-[#f3f1ef] px-3 py-2.5">
+                <p data-seller-store class="truncate text-sm font-semibold text-[#1f2430]"><%= current_store.name %></p>
+                <% if seller_plan_label(current_store) %><p class="text-xs text-[#8a8380]">Plan · <%= seller_plan_label(current_store) %></p><% end %>
               </div>
             <% end %>
-            <%= button_to admin_logout_path, method: :delete, class: "admin-nav-item w-full" do %>
-              <%= admin_icon(:logout) %><span>Sign out</span>
+            <% if super_admin? %>
+              <%= link_to admin_platform_path, class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" do %><%= seller_icon(:plug) %> Platform<% end %>
             <% end %>
+            <%= link_to "/settings/profile", class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" do %><%= seller_icon(:settings) %> <%= sl("Paramètres") %><% end %>
+            <%= button_to admin_logout_path, method: :delete, class: "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" do %><%= seller_icon(:logout) %> <%= sl("Se déconnecter") %><% end %>
           </div>
-        </aside>
-        <div class="admin-scrim md:hidden" data-action="click->admin-menu#close"></div>
+        </nav>
+      <% end %>
 
-        <main class="admin-main">
-          <div class="admin-page <%= yield(:admin_page_class) %>">
+      <div class="min-h-dvh bg-[#f3f1ef] text-[#5e5a58]" data-seller-shell>
+        <div class="mx-auto flex max-w-[1400px] gap-5 p-4 lg:p-5">
+          <aside class="sticky top-5 hidden h-[calc(100dvh-2.5rem)] w-56 shrink-0 lg:block"><%= sidebar %></aside>
+
+          <div data-seller-drawer hidden class="fixed inset-0 z-50 bg-[#1f2430]/30 p-4 backdrop-blur-sm lg:hidden">
+            <div class="h-full w-64"><%= sidebar %></div>
+          </div>
+
+          <main class="min-w-0 flex-1 space-y-4">
+            <div class="flex items-center justify-between lg:hidden">
+              <button type="button" data-seller-open class="rounded-lg border border-[#e8e3df] bg-white p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>
+              <span class="text-xl font-extrabold tracking-tight text-[#a8432e]" dir="ltr">seallo</span>
+              <span class="w-9"></span>
+            </div>
             <% if current_store&.subscription_required? && !subscription_access? %>
-              <div class="admin-banner admin-banner--critical">
+              <p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]">
                 <%= t("subscriptions.required") %>
                 <%= link_to t("subscriptions.title"), admin_subscription_path, class: "underline font-semibold" %>
-              </div>
+              </p>
             <% end %>
             <% if store_billing_past_due? %>
-              <div class="admin-banner admin-banner--critical">
-                Subscription payment is overdue. Your storefront stays online, but renew with the platform owner to clear billing.
-              </div>
+              <p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]">Subscription payment is overdue. Your storefront stays online, but renew with the platform owner to clear billing.</p>
             <% end %>
-            <% if notice.present? %><div class="admin-banner admin-banner--success"><%= notice %></div><% end %>
-            <% if alert.present? %><div class="admin-banner admin-banner--critical"><%= alert %></div><% end %>
-            <%= render "admin/shared/pwa_install" %>
-            <%= yield %>
-          </div>
-        </main>
+            <% if notice.present? %><p class="rounded-xl bg-[#e3f3e8] px-4 py-3 text-sm text-[#2f7a4a]"><%= notice %></p><% end %>
+            <% if alert.present? %><p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= alert %></p><% end %>
+            <% unless content_for?(:seller_lang) %><div class="flex justify-end"><%= render "admin/shared/language_switcher" %></div><% end %>
+            <div class="admin-page <%= yield(:admin_page_class) %>"><%= yield %></div>
+          </main>
+        </div>
       </div>
+      <script>
+        (function () {
+          var drawer = document.querySelector("[data-seller-drawer]");
+          if (!drawer) return;
+          document.querySelector("[data-seller-open]").addEventListener("click", function () { drawer.hidden = false; });
+          drawer.addEventListener("click", function (e) { if (e.target === drawer || e.target.closest("[data-seller-close]")) drawer.hidden = true; });
+        })();
+      </script>
     <% else %>
       <div class="flex min-h-screen items-center justify-center px-4">
         <%= yield %>

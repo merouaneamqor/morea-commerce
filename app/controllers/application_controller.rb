@@ -58,7 +58,7 @@ class ApplicationController < ActionController::Base
   end
 
   def apex_admin_workspace
-    return unless request.path.start_with?("/admin") && session[:user_id]
+    return unless (request.path.start_with?("/admin") || seller_path?) && session[:user_id]
 
     user = User.active.find_by(id: session[:user_id])
     return unless user && session[:session_version].to_i == user.session_version
@@ -68,6 +68,13 @@ class ApplicationController < ActionController::Base
     elsif user.admin? || user.confirmation_agent?
       user.store
     end
+  end
+
+  # Seller workspace pages (as on seallo) are served on the shared admin host as well as on tenant hosts.
+  SELLER_PATHS = %w[/dashboard /commandes /confirmation /mes-statistiques /clients /livraison /produits /equipe /integrations /settings].freeze
+
+  def seller_path?
+    SELLER_PATHS.any? { |path| request.path == path || request.path.start_with?("#{path}/") }
   end
 
   def storefront_request?
@@ -82,6 +89,7 @@ class ApplicationController < ActionController::Base
       path.start_with?("/signup") ||
       path == "/abonnement" ||
       path.start_with?("/paiement") ||
+      seller_path? ||
       path == "/seallo-connect" ||
       path.start_with?("/seallo-connect/") ||
       path == "/up" ||

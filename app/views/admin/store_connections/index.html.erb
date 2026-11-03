@@ -1,30 +1,128 @@
-<% content_for :title, t("connections.title") %>
-<div class="admin-page-header">
+<%# Intégrations API, ported from the seallo page: online-store platforms, delivery companies and ad networks. %>
+<% content_for :title, sl("Intégrations API") %>
+<% content_for :admin_page_class, "seller-page" %>
+<% content_for :seller_lang, "1" %>
+<% platforms = [
+     { key: "shopify", name: "Shopify", logo: "/images/partners/shopify.png", desc: "Commandes et produits en direct, dès leur création.", steps: t("seller_integrations.shopify_steps"), href: admin_seallo_connect_path },
+     { key: "woocommerce", name: "WooCommerce", logo: "/images/partners/woocommerce.png", desc: "Votre site WordPress : autorisation en un clic ou clés API.", steps: t("seller_integrations.woocommerce_steps"), href: admin_woocommerce_connect_path },
+     { key: "youcan", name: "YouCan", logo: "/images/partners/youcan.png", desc: "Votre boutique YouCan reliée en quelques secondes.", steps: t("seller_integrations.youcan_steps"), href: new_admin_store_connection_path(provider: "youcan") }
+   ] %>
+<% linked_by_provider = @connections.select(&:active?).group_by(&:provider) %>
+<% ad_networks = [ [ "Meta Ads", "/images/partners/meta.png" ], [ "TikTok Ads", "/images/partners/tiktok.png" ] ] %>
+<% locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>
+
+<header class="flex flex-wrap items-start justify-between gap-3">
   <div>
-    <h1 class="admin-page-header__title"><%= t("connections.title") %></h1>
-    <p class="admin-page-header__meta"><%= t("connections.lead") %></p>
+    <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= sl("Intégrations API") %></h1>
+    <p class="max-w-2xl text-sm"><%= sl("Reliez vos outils à seallo : les commandes arrivent toutes seules, et le tableau de bord se remplit en temps réel.") %></p>
   </div>
-  <%= link_to t("connections.add"), new_admin_store_connection_path, class: "admin-btn" %>
-</div>
-<section class="admin-card p-5 mb-4 space-y-3" aria-labelledby="shopify-connect-title">
-  <h2 id="shopify-connect-title" class="admin-card__title">Seallo Connect</h2>
-  <%= link_to "Seallo Connect", admin_seallo_connect_path, class: "admin-btn-secondary" %>
-</section>
-<section class="admin-card">
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-      <thead><tr><th><%= t("connections.name") %></th><th><%= t("connections.provider") %></th><th><%= t("connections.domain") %></th><th><%= t("connections.status") %></th></tr></thead>
-      <tbody>
-        <% @connections.each do |connection| %>
-          <tr>
-            <td><%= link_to connection.name, admin_store_connection_path(connection), class: "admin-link" %></td>
-            <td><%= t("connections.providers.#{connection.provider}") %></td>
-            <td><%= connection.external_domain %></td>
-            <td><%= connection_state(connection) %></td>
-          </tr>
+  <%= render "admin/shared/language_switcher" %>
+</header>
+
+<section>
+  <h2 class="mb-2.5 text-sm font-semibold text-[#1f2430]"><%= sl("Boutique en ligne") %></h2>
+  <div class="grid gap-3 md:grid-cols-3">
+    <% platforms.each do |platform| %>
+      <% linked = linked_by_provider.fetch(platform[:key], []) %>
+      <article class="flex flex-col rounded-2xl border bg-white p-5 <%= linked.any? ? "border-[#bfe0c9]" : "border-[#e8e3df]" %>">
+        <div class="flex items-start justify-between gap-3">
+          <img src="<%= platform[:logo] %>" alt="<%= platform[:name] %>" class="size-12 rounded-xl object-contain">
+          <% if linked.any? %>
+            <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
+          <% else %>
+            <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= sl("Non connectée") %></span>
+          <% end %>
+        </div>
+        <h3 class="mt-3 text-base font-semibold text-[#1f2430]"><%= platform[:name] %></h3>
+        <p class="mt-0.5 text-sm"><%= sl(platform[:desc]) %></p>
+
+        <% linked.each do |connection| %>
+          <% synced_at = connection.shopify_orders_synced_at || connection.last_received_at %>
+          <div class="mt-4 rounded-xl bg-[#f3f1ef] p-3 text-sm">
+            <p class="truncate font-semibold text-[#1f2430]" dir="ltr"><%= connection.external_domain %></p>
+            <p class="mt-0.5 text-xs text-[#8a8380]"><%= sl("Dernière synchronisation") %> : <% if synced_at %><time datetime="<%= synced_at.iso8601 %>" data-when><%= synced_at.iso8601 %></time><% else %>—<% end %></p>
+            <div class="mt-3 flex gap-2">
+              <% if connection.provider == "shopify" && @shopify_configured %>
+                <%= button_to sl("Synchroniser"), admin_store_connection_path(connection), method: :patch, params: { operation: "sync_shopify_orders" },
+                      class: "flex h-9 w-full items-center justify-center rounded-lg bg-white px-3 text-xs font-semibold text-[#1f2430] hover:bg-[#ebe6e2]", form_class: "flex-1" %>
+              <% else %>
+                <%= link_to t("seller_integrations.details"), admin_store_connection_path(connection), class: "flex h-9 flex-1 items-center justify-center rounded-lg bg-white text-xs font-semibold text-[#1f2430] hover:bg-[#ebe6e2]" %>
+              <% end %>
+              <%= button_to sl("Déconnecter"), admin_store_connection_path(connection), method: :patch, params: { operation: "disconnect" },
+                    class: "h-9 rounded-lg px-3 text-xs font-semibold text-[#b4344e] hover:bg-[#fbe7ea]",
+                    form: { onsubmit: "return confirm(#{sl("Déconnecter cette boutique ? Les nouvelles commandes n'arriveront plus dans seallo.").to_json})" } %>
+            </div>
+          </div>
         <% end %>
-      </tbody>
-    </table>
-    <% if @connections.empty? %><p class="admin-empty"><%= t("connections.empty") %></p><% end %>
+
+        <button type="button" data-connect="<%= platform[:key] %>" class="mt-auto pt-4">
+          <span class="flex h-11 w-full items-center justify-center rounded-xl text-sm font-semibold <%= linked.any? ? "border border-[#e8e3df] text-[#1f2430] hover:bg-[#f3f1ef]" : "bg-[#a8432e] text-white hover:bg-[#8e3624]" %>">
+            <%= linked.any? ? "+ #{sl("Ajouter une autre boutique")}" : sl("Connecter") %>
+          </span>
+        </button>
+      </article>
+    <% end %>
   </div>
 </section>
+
+<section>
+  <h2 class="mb-2.5 text-sm font-semibold text-[#1f2430]"><%= sl("Sociétés de livraison") %></h2>
+  <%= link_to "/livraison", class: "group flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4 transition hover:border-[#d6cfca]" do %>
+    <span class="flex items-center gap-3">
+      <span class="flex -space-x-2 rtl:space-x-reverse">
+        <% %w[sendit ozon cathedis ameex].each do |key| %><img src="/images/partners/<%= key %>.png" alt="" class="size-10 rounded-full border-2 border-white bg-white object-contain p-0.5 shadow-sm"><% end %>
+      </span>
+      <span>
+        <span class="block text-sm font-semibold text-[#1f2430]"><%= sl("Sendit, Ozon Express, Cathedis, Ameex et 10 autres") %></span>
+        <span class="text-xs text-[#8a8380]"><%= sl("Ajoutez vos comptes de livraison, leurs tarifs et leur ville de ramassage.") %></span>
+      </span>
+    </span>
+    <span class="text-sm font-semibold text-[#a8432e]"><%= sl("Gérer les sociétés de livraison") %> →</span>
+  <% end %>
+</section>
+
+<section>
+  <h2 class="mb-2.5 text-sm font-semibold text-[#1f2430]"><%= sl("Publicité") %></h2>
+  <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <% ad_networks.each do |name, logo| %>
+      <div class="flex items-center gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4">
+        <img src="<%= logo %>" alt="<%= name %>" class="size-10 shrink-0 rounded-lg object-contain">
+        <div class="min-w-0">
+          <p class="truncate text-sm font-semibold text-[#1f2430]"><%= name %></p>
+          <p class="text-xs text-[#8a8380]"><%= sl("Bientôt disponible") %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<% platforms.each do |platform| %>
+  <div data-modal="<%= platform[:key] %>" hidden class="fixed inset-0 z-50 grid place-items-center bg-[#1f2430]/30 p-4 backdrop-blur-sm">
+    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl" role="dialog" aria-modal="true">
+      <div class="mb-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <img src="<%= platform[:logo] %>" alt="" class="size-10 rounded-lg object-contain">
+          <h2 class="text-lg font-bold text-[#1f2430]"><%= sl("Connecter") %> <%= platform[:name] %></h2>
+        </div>
+        <button type="button" data-close-modal class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="✕">✕</button>
+      </div>
+      <p class="text-sm"><%= platform[:steps] %></p>
+      <%= link_to t("seller_integrations.continue"), platform[:href], class: "mt-5 flex h-11 w-full items-center justify-center rounded-xl bg-[#a8432e] text-sm font-semibold text-white hover:bg-[#8e3624]" %>
+    </div>
+  </div>
+<% end %>
+
+<script>
+  (function () {
+    var locale = "<%= locale_tag %>";
+    document.querySelectorAll("time[data-when]").forEach(function (el) {
+      el.textContent = new Date(el.getAttribute("datetime")).toLocaleString(locale, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    });
+    var open = function (key) { var m = document.querySelector('[data-modal="' + key + '"]'); if (m) m.hidden = false; };
+    document.querySelectorAll("[data-connect]").forEach(function (b) { b.addEventListener("click", function () { open(b.dataset.connect); }); });
+    document.querySelectorAll("[data-modal]").forEach(function (m) {
+      m.addEventListener("click", function (e) { if (e.target === m || e.target.closest("[data-close-modal]")) m.hidden = true; });
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") document.querySelectorAll("[data-modal]").forEach(function (m) { m.hidden = true; }); });
+  })();
+</script>

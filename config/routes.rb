@@ -71,10 +71,11 @@ Rails.application.routes.draw do
   # Seller workspace URLs, as on seallo. Each batch moves a page here; the others still open their current admin page.
   get "/dashboard", to: "admin/dashboard#show", as: :seller_dashboard
   get "/clients", to: "admin/customers#index", as: :seller_customers
+  get "/integrations", to: "admin/store_connections#index", as: :seller_integrations
   {
     "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations", "/mes-statistiques" => "/admin/my_stats",
     "/livraison" => "/admin/delivery", "/produits" => "/admin/products",
-    "/equipe" => "/admin/staff", "/integrations" => "/admin/agent_api", "/settings/profile" => "/admin/store/edit"
+    "/equipe" => "/admin/staff", "/settings/profile" => "/admin/store/edit"
   }.each do |from, target|
     get from, to: redirect { |_params, request| [ target, request.query_string.presence ].compact.join("?") }
   end

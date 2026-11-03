@@ -7,9 +7,21 @@
   "Last 7 days",
   "آخر 7 أيام"
  ],
+ "Adresse de votre boutique Shopify": [
+  "Your Shopify store address",
+  "عنوان متجرك على Shopify"
+ ],
+ "Adresse de votre site WooCommerce": [
+  "Your WooCommerce site address",
+  "عنوان موقعك على WooCommerce"
+ ],
  "Agents": [
   "Agents",
   "الوكلاء"
+ ],
+ "Ajoutez vos comptes de livraison, leurs tarifs et leur ville de ramassage.": [
+  "Add your delivery accounts, their rates and pickup city.",
+  "أضف حسابات التوصيل وأسعارها ومدينة الاستلام."
  ],
  "Annulée": [
   "Cancelled",
@@ -51,9 +63,21 @@
   "Store connected. Importing products and orders…",
   "تم ربط المتجر. جارٍ استيراد المنتجات والطلبات…"
  ],
+ "Boutique déconnectée. Vos commandes déjà reçues sont gardées.": [
+  "Store disconnected. Orders already received are kept.",
+  "تم فصل المتجر. الطلبات التي وصلت تبقى محفوظة."
+ ],
+ "Boutique en ligne": [
+  "Online store",
+  "المتجر الإلكتروني"
+ ],
  "Cette boutique Shopify est déjà reliée à un autre compte seallo.": [
   "This Shopify store is already linked to another seallo account.",
   "هذا المتجر مرتبط بحساب seallo آخر."
+ ],
+ "Cette boutique est déjà reliée à un autre compte seallo.": [
+  "This store is already linked to another seallo account.",
+  "هذا المتجر مربوط بحساب seallo آخر."
  ],
  "Chaque numéro de téléphone est un client. La liste se remplit toute seule avec vos commandes.": [
   "Each phone number is a customer. The list fills itself from your orders.",
@@ -83,6 +107,10 @@
   "Orders",
   "الطلبات"
  ],
+ "Commandes et produits en direct, dès leur création.": [
+  "Orders and products live, as soon as they are created.",
+  "الطلبات والمنتجات مباشرة فور إنشائها."
+ ],
  "Confirmation": [
   "Confirmation",
   "التأكيد"
@@ -95,6 +123,18 @@
   "Confirmed",
   "مؤكَّد"
  ],
+ "Connecter": [
+  "Connect",
+  "ربط"
+ ],
+ "Connectée": [
+  "Connected",
+  "مربوط"
+ ],
+ "Continuer avec YouCan": [
+  "Continue with YouCan",
+  "المتابعة مع YouCan"
+ ],
  "Coût des produits": [
   "Product cost",
   "تكلفة المنتجات"
@@ -103,9 +143,21 @@
   "Last order",
   "آخر طلب"
  ],
+ "Dernière synchronisation": [
+  "Last sync",
+  "آخر مزامنة"
+ ],
  "Dernières commandes": [
   "Latest orders",
   "آخر الطلبات"
+ ],
+ "Déconnecter": [
+  "Disconnect",
+  "فصل"
+ ],
+ "Déconnecter cette boutique ? Les nouvelles commandes n'arriveront plus dans seallo.": [
+  "Disconnect this store? New orders will no longer reach seallo.",
+  "فصل هذا المتجر؟ لن تصل الطلبات الجديدة إلى seallo."
  ],
  "En attente de confirmation": [
   "Awaiting confirmation",
@@ -127,6 +179,10 @@
   "Free",
   "مجاني"
  ],
+ "Gérer les sociétés de livraison": [
+  "Manage delivery companies",
+  "إدارة شركات التوصيل"
+ ],
  "Injoignable": [
   "Unreachable",
   "لا يجيب"
@@ -135,6 +191,10 @@
   "API integrations",
   "تكاملات API"
  ],
+ "J'ai déjà mes clés API": [
+  "I already have my API keys",
+  "لديّ مفاتيح API"
+ ],
  "L'app Shopify de seallo n'est pas encore configurée (clés dans le fichier .env).": [
   "seallo's Shopify app is not configured yet (keys in the .env file).",
   "تطبيق Shopify الخاص بـ seallo غير مُعدّ بعد (المفاتيح في ملف ‎.env)."
@@ -142,6 +202,10 @@
  "L'app YouCan de seallo n'est pas encore configurée (clés dans le fichier .env).": [
   "seallo's YouCan app is not configured yet (keys in the .env file).",
   "تطبيق seallo على YouCan غير مُعَدّ بعد (المفاتيح في ملف .env)."
+ ],
+ "L'application seallo n'est pas encore configurée pour cette plateforme (clés dans le fichier .env).": [
+  "seallo's app is not configured yet for this platform (keys in the .env file).",
+  "تطبيق seallo غير مُعَدّ بعد لهذه المنصة (المفاتيح في ملف .env)."
  ],
  "La connexion de la boutique a été annulée.": [
   "The store connection was cancelled.",
@@ -174,6 +238,10 @@
  "Nom, téléphone ou ville": [
   "Name, phone or city",
   "الاسم أو الهاتف أو المدينة"
+ ],
+ "Non connectée": [
+  "Not connected",
+  "غير مربوط"
  ],
  "Nouveau": [
   "New",
@@ -243,9 +311,17 @@
   "Refused",
   "مرفوضة"
  ],
+ "Reliez vos outils à seallo : les commandes arrivent toutes seules, et le tableau de bord se remplit en temps réel.": [
+  "Connect your tools to seallo: orders arrive on their own and the dashboard fills in real time.",
+  "اربط أدواتك بـ seallo: تصل الطلبات وحدها وتمتلئ لوحة التحكم مباشرة."
+ ],
  "Reportée": [
   "Postponed",
   "مؤجَّلة"
+ ],
+ "Retour": [
+  "Returned",
+  "مرتجَع"
  ],
  "Retournée": [
   "Returned",
@@ -258,6 +334,14 @@
  "Se déconnecter": [
   "Sign out",
   "تسجيل الخروج"
+ ],
+ "Sendit, Ozon Express, Cathedis, Ameex et 10 autres": [
+  "Sendit, Ozon Express, Cathedis, Ameex and 10 more",
+  "Sendit وOzon Express وCathedis وAmeex و10 أخرى"
+ ],
+ "Sociétés de livraison": [
+  "Delivery companies",
+  "شركات التوصيل"
  ],
  "Statut": [
   "Status",
@@ -326,6 +410,30 @@
  "Vos commandes apparaîtront ici dès que votre boutique sera connectée.": [
   "Your orders will appear here once your store is connected.",
   "ستظهر طلباتك هنا بمجرّد ربط متجرك."
+ ],
+ "Votre boutique YouCan reliée en quelques secondes.": [
+  "Your YouCan store connected in seconds.",
+  "متجرك على YouCan مربوط في ثوانٍ."
+ ],
+ "Votre site WordPress : autorisation en un clic ou clés API.": [
+  "Your WordPress site: one-click approval or API keys.",
+  "موقعك على WordPress: موافقة بضغطة أو مفاتيح API."
+ ],
+ "Vous serez redirigé vers Shopify pour autoriser seallo.": [
+  "You will be sent to Shopify to approve seallo.",
+  "سيتم توجيهك إلى Shopify للموافقة على seallo."
+ ],
+ "Vous serez redirigé vers YouCan pour autoriser seallo.": [
+  "You will be sent to YouCan to approve seallo.",
+  "سيتم توجيهك إلى YouCan للموافقة على seallo."
+ ],
+ "Vous serez redirigé vers votre site pour autoriser seallo.": [
+  "You will be sent to your site to approve seallo.",
+  "سيتم توجيهك إلى موقعك للموافقة على seallo."
+ ],
+ "WooCommerce › Réglages › Avancé › API REST › Ajouter une clé (droits Lecture/Écriture).": [
+  "WooCommerce › Settings › Advanced › REST API › Add key (Read/Write).",
+  "WooCommerce › الإعدادات › متقدم › REST API › إضافة مفتاح (قراءة/كتابة)."
  ],
  "après produits, pub, livraison et agents": [
   "after products, ads, delivery and agents",

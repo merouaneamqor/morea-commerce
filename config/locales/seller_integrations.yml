@@ -1,0 +1,25 @@
+# Copy that exists only in Morea: how each platform connects here (seallo itself uses redirects from the page).
+fr:
+  seller_integrations:
+    shopify_steps: "Installez l’application seallo depuis Shopify, puis collez le code de connexion dans seallo."
+    woocommerce_steps: "Installez le plugin seallo sur votre site WordPress, puis autorisez la connexion."
+    youcan_steps: "Ajoutez votre boutique YouCan et configurez le webhook signé pour recevoir les commandes."
+    continue: "Continuer"
+    details: "Détails"
+    disconnected_note: "Déconnectée"
+en:
+  seller_integrations:
+    shopify_steps: "Install the seallo app from Shopify, then paste the connection code into seallo."
+    woocommerce_steps: "Install the seallo plugin on your WordPress site, then authorize the connection."
+    youcan_steps: "Add your YouCan store and set up the signed webhook to receive orders."
+    continue: "Continue"
+    details: "Details"
+    disconnected_note: "Disconnected"
+ar:
+  seller_integrations:
+    shopify_steps: "ثبّت تطبيق seallo من Shopify، ثم الصق رمز الاتصال في seallo."
+    woocommerce_steps: "ثبّت إضافة seallo على موقع WordPress الخاص بك، ثم اسمح بالاتصال."
+    youcan_steps: "أضف متجر YouCan وأعدّ الـ webhook الموقَّع لاستقبال الطلبات."
+    continue: "متابعة"
+    details: "التفاصيل"
+    disconnected_note: "غير متصلة"

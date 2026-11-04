@@ -61,8 +61,15 @@ module Team
       ConfirmationAttempt.where(store: @store, user: user, outcome: "cancelled", created_at: @range).count
     end
 
+    # Orders this agent holds or confirmed. Recording an outcome clears the claim, so the
+    # audit attempt (outcome "confirmed" by this user) is what keeps the credit afterwards.
     def claims(user)
-      Order.joins(:order_confirmation).where(store: @store, order_confirmations: { assigned_user_id: user.id })
+      confirmed_by_user = ConfirmationAttempt.joins(:order_confirmation)
+        .where(store: @store, user: user, outcome: "confirmed").select("order_confirmations.order_id")
+      Order.joins(:order_confirmation).where(store: @store)
+        .where(order_confirmations: { assigned_user_id: user.id }).or(
+          Order.joins(:order_confirmation).where(store: @store, id: confirmed_by_user)
+        )
     end
 
     # Orders this agent confirmed. `by` picks the timestamp the range applies to.

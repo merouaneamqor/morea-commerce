@@ -78,6 +78,7 @@ ar:
       agent: "الوكيل"
       unassigned: "غير معيّنة"
       all_agents: "كل الوكلاء"
+      manual: "يدوي"
     customers_segments:
       all: "الكل"
       loyal: "أوفياء"

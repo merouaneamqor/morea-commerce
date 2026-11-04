@@ -226,6 +226,7 @@ Rails.application.routes.draw do
         post :sendit_sync_all
         post :shopify_sync_all
         get :product_search
+        post :quick_product
       end
       member do
         post :sendit

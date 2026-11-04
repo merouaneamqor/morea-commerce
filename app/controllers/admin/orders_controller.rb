@@ -3,6 +3,8 @@
 module Admin
   class OrdersController < BaseController
     before_action :require_shopify_workspace!, only: :shopify_sync_all
+    before_action :agents_read_only!
+    helper_method :agent_view?
     before_action :set_order, only: %i[
       show edit update transition sendit sendit_label
       duplicate archive unarchive packing_slip comments tags collect refund
@@ -28,7 +30,7 @@ module Admin
       @archived = @status == "archived"
       @connections = current_store.store_connections.order(:name)
       @shopify_connections = @connections.where(provider: "shopify", shopify_oauth: true).limit(100)
-      @orders = current_store.orders.recent.includes(:customer, external_order_receipt: :store_connection)
+      @orders = visible_orders.recent.includes(:customer, external_order_receipt: :store_connection)
       if params[:connection_id].present?
         connection = current_store.store_connections.find(params[:connection_id])
         @orders = @orders.joins(:external_order_receipt).where(external_order_receipts: { store_connection_id: connection.id })
@@ -39,7 +41,7 @@ module Admin
         @orders.active
       end
       @agents = current_store.users.active.where(confirmation_role: "agent").or(current_store.users.active.where(admin: true)).order(:email)
-      if params[:agent_id].present?
+      if params[:agent_id].present? && !agent_view?
         @orders = params[:agent_id] == "none" ? @orders.left_joins(:order_confirmation).where(order_confirmations: { assigned_user_id: nil }) :
           @orders.joins(:order_confirmation).where(order_confirmations: { assigned_user_id: @agents.find(params[:agent_id]).id })
       end
@@ -60,6 +62,7 @@ module Admin
 
     def show
       @events = @order.order_events.includes(:user).recent
+      render :agent_show if agent_view?
     end
 
     def new
@@ -68,6 +71,7 @@ module Admin
         shipping_cents: current_store.shipping_cents.to_i
       )
       @line_items = []
+      @assignable_agents = assignable_agents
     end
 
     def create
@@ -79,6 +83,7 @@ module Admin
         @order = current_store.orders.new(fallback_order_attrs)
         @line_items = preview_lines
         @editor_errors = editor.errors
+        @assignable_agents = assignable_agents
         flash.now[:alert] = editor.errors.full_messages.to_sentence.presence || "Could not create order."
         render :new, status: :unprocessable_entity
       end
@@ -183,42 +188,26 @@ end
     end
 
     def product_search
-      q = params[:q].to_s.strip
-      products = current_store.products.active.includes(:product_variants, images_attachments: :blob).limit(20)
-      if q.present?
-        like = "%#{Order.sanitize_sql_like(q)}%"
-        products = products.where("name ILIKE :q OR sku ILIKE :q OR slug ILIKE :q", q: like)
+      products = Orders::ProductSearch.new(store: current_store, query: params[:q]).products
+      render json: products.flat_map { |product| search_items(product) }.first(25)
+    end
+
+    # "+ Créer le produit" on the order form: a minimal product made on the spot, then picked as a line.
+    def quick_product
+      name = params[:name].to_s.strip
+      price = begin
+        parse_mad_cents(params[:price])
+      rescue ArgumentError
+        nil
+      end
+      if name.blank? || price.nil? || price <= 0
+        return render(json: { error: "Enter a product name and a price above 0." }, status: :unprocessable_entity)
       end
 
-      results = products.flat_map do |product|
-        image = helpers.product_image_url(product)
-        variants = product.product_variants.active
-        if variants.any?
-          variants.map do |variant|
-            {
-              product_id: product.id,
-              product_variant_id: variant.id,
-              label: "#{product.name} — #{variant.display_name}",
-              price_cents: variant.unit_price_cents,
-              price_display: money_label(variant.unit_price_cents),
-              stock: product.track_inventory ? variant.stock : nil,
-              image_url: image
-            }
-          end
-        else
-          [ {
-            product_id: product.id,
-            product_variant_id: nil,
-            label: product.name,
-            price_cents: product.price_cents,
-            price_display: money_label(product.price_cents),
-            stock: product.track_inventory ? product.stock : nil,
-            image_url: image
-          } ]
-        end
-      end
-
-      render json: results.first(25)
+      product = current_store.products.create!(name: name, price_cents: price, status: "active", slug: unique_slug(name))
+      render json: search_items(product).first, status: :created
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { error: e.record.errors.full_messages.to_sentence }, status: :unprocessable_entity
     end
 
     # Send / retry / refresh / cancel the Sendit parcel for one order
@@ -280,7 +269,31 @@ end
     end
 
     def set_order
-      @order = current_store.orders.find(params[:id])
+      @order = visible_orders.find(params[:id])
+    end
+
+    def agent_view?
+      current_user.confirmation_agent_view?
+    end
+
+    # Agents may look at orders (never change them here): unassigned ones and their own,
+    # not the ones another agent holds. Owners and managers see everything of the store.
+    def visible_orders
+      return current_store.orders unless agent_view?
+
+      held_by_others = OrderConfirmation.where(store: current_store).where.not(assigned_user_id: [ nil, current_user.id ]).select(:order_id)
+      current_store.orders.where.not(id: held_by_others)
+    end
+
+    def agents_read_only!
+      return unless agent_view?
+      return if %w[index show].include?(action_name)
+
+      redirect_to admin_orders_path, alert: "Agents can look at orders but not change them here."
+    end
+
+    def assignable_agents
+      current_store.users.active.where(confirmation_role: "agent").order(:name, :email)
     end
 
     def order_params
@@ -290,7 +303,7 @@ end
     def editor_attrs
       raw = params.fetch(:order, {}).permit(
         :name, :phone, :phone_country, :city, :district, :address, :notes, :tags,
-        :shipping_dh, :discount_code, :discount_dh,
+        :shipping_dh, :discount_code, :discount_dh, :agent_id,
         lines: [ :product_id, :product_variant_id, :quantity ]
       )
       lines = raw[:lines]
@@ -318,6 +331,8 @@ end
       raw_lines = params.dig(:order, :lines)
       raw_lines = raw_lines.values if raw_lines.respond_to?(:values) && !raw_lines.is_a?(Array)
       Array(raw_lines).filter_map do |line|
+        next unless line.respond_to?(:to_unsafe_h) || line.is_a?(Hash)
+
         h = line.respond_to?(:to_unsafe_h) ? line.to_unsafe_h : line.to_h
         h = h.with_indifferent_access
         next if h[:product_id].blank? || h[:quantity].to_i <= 0
@@ -346,6 +361,34 @@ end
         unit_price_cents: item.unit_price_cents,
         image_url: item.product && helpers.product_image_url(item.product)
       }
+    end
+
+    def search_items(product)
+      image = helpers.product_image_url(product)
+      variants = product.product_variants.select(&:active)
+      return variants.map { |variant| search_item(product, variant, image) } if variants.any?
+
+      [ search_item(product, nil, image) ]
+    end
+
+    def search_item(product, variant, image)
+      price = variant&.unit_price_cents || product.price_cents
+      {
+        product_id: product.id,
+        product_variant_id: variant&.id,
+        label: variant ? "#{product.name} — #{variant.display_name}" : product.name,
+        price_cents: price,
+        price_display: money_label(price),
+        stock: product.track_inventory ? (variant ? variant.stock : product.stock) : nil,
+        image_url: image
+      }
+    end
+
+    def unique_slug(name)
+      base = name.parameterize.presence || "product"
+      slug = base
+      slug = "#{base}-#{SecureRandom.hex(2)}" while current_store.products.exists?(slug: slug)
+      slug
     end
 
     def money_label(cents)

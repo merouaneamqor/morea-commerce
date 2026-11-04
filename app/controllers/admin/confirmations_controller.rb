@@ -7,6 +7,8 @@ module Admin
     helper_method :agent_view?
 
     def index
+      @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
+      @needs_clock_in = agent_view? && @open_shift.nil?
       @page = params[:page].to_i.clamp(1, 100_000)
       @filters = agent_view? ? FILTERS - %w[all] : FILTERS
       @filter = @filters.include?(params[:filter]) ? params[:filter] : "available"

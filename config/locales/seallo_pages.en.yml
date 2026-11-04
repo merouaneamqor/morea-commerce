@@ -78,6 +78,7 @@ en:
       agent: "Agent"
       unassigned: "Unassigned"
       all_agents: "All agents"
+      manual: "Manual"
     customers_segments:
       all: "All"
       loyal: "Loyal"

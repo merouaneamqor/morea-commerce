@@ -156,7 +156,10 @@ RSpec.describe "Manual Shopify order synchronization", type: :request do
     agent = store.users.create!(email: "sync-agent-#{SecureRandom.hex(5)}@example.test", password: password, confirmation_role: "agent")
     sign_in(agent)
     post "/admin/orders/shopify_sync_all"
-    expect(response).to redirect_to("/admin/confirmations/home")
+    expect(response).to redirect_to("/admin/subscription") # the blocked subscription answers first
+    store.update!(subscription_required: false, billing_status: "active")
+    post "/admin/orders/shopify_sync_all"
+    expect(response).to redirect_to("/admin/orders") # agents may look at orders, never sync them
     expect(sync_jobs).to be_empty
   end
 

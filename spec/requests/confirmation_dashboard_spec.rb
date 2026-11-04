@@ -110,8 +110,11 @@ RSpec.describe "Confirmation dashboard", type: :request do
       sign_in(agent)
       expect(response).to redirect_to("/admin/confirmations/home")
 
-      get "/admin/orders"
+      get "/admin/products"
       expect(response).to redirect_to("/admin/confirmations/home")
+
+      get "/admin/orders" # agents can look at orders (read-only)
+      expect(response).to have_http_status(:ok)
     end
 
     it "shows points, the orders in hand and time spent on the home page" do
@@ -159,6 +162,7 @@ RSpec.describe "Confirmation dashboard", type: :request do
 
     it "claims an order from the queue" do
       sign_in(agent)
+      ConfirmationShift.create!(store: store, user: agent, started_at: 5.minutes.ago)
       order = new_order
 
       post "/admin/confirmations/#{order.id}/claim"

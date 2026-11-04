@@ -5,8 +5,7 @@
 </div>
 <section class="admin-card p-4 mb-5">
   <%= form_with url: admin_delivery_path, method: :get, class: "flex flex-wrap items-end gap-3" do |form| %>
-    <div><%= form.label :start_date, t("delivery_dashboard.from"), class: "block admin-muted mb-1" %><%= form.date_field :start_date, value: @delivery.start_date, class: "admin-input", required: true %></div>
-    <div><%= form.label :end_date, t("delivery_dashboard.through"), class: "block admin-muted mb-1" %><%= form.date_field :end_date, value: @delivery.end_date, class: "admin-input", required: true %></div>
+    <div><%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_delivery_path, align: "start", extra: { status: @delivery.status, q: @delivery.query }.compact_blank %><%= hidden_field_tag :from, @date_range.from.iso8601, id: nil %><%= hidden_field_tag :to, @date_range.to.iso8601, id: nil %><%= hidden_field_tag :preset, @date_range_preset, id: nil if @date_range_preset %></div>
     <div><%= form.label :status, t("delivery_dashboard.status"), class: "block admin-muted mb-1" %><%= form.select :status, Admin::DeliverySummary::GROUPS.keys.map { |key| [t("delivery_dashboard.groups.#{key}"), key] }, { include_blank: t("delivery_dashboard.all_statuses"), selected: @delivery.status }, class: "admin-input" %></div>
     <div><%= form.label :q, t("delivery_dashboard.search"), class: "block admin-muted mb-1" %><%= form.search_field :q, value: @delivery.query, placeholder: t("delivery_dashboard.placeholder"), class: "admin-input" %></div>
     <%= form.submit t("delivery_dashboard.apply"), class: "admin-btn" %><%= link_to t("delivery_dashboard.reset"), admin_delivery_path, class: "admin-btn-plain" %>

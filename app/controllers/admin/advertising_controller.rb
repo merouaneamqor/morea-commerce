@@ -1,9 +1,18 @@
 module Admin
   class AdvertisingController < BaseController
+    include DateRangeSelection
+
     before_action :require_workspace!
 
     def show
-      @summary = AdvertisingSummary.new(store: current_store, start_date: params[:start_date], end_date: params[:end_date], sort: params[:sort])
+      @date_range = selected_date_range(scope: "advertising", default: "last_30", **legacy_dates)
+      @summary = AdvertisingSummary.new(store: current_store, start_date: @date_range.from.iso8601, end_date: @date_range.to.iso8601, sort: params[:sort])
+      # The summary keeps at most a year; show the days it really used.
+      used = DateRange.build(@summary.start_date, @summary.end_date)
+      if used && used != @date_range
+        @date_range = used
+        @date_range_preset = nil
+      end
       @report ||= if params[:report_campaign_id].present?
         scoped_campaigns.find(params[:report_campaign_id]).advertising_performances.find_or_initialize_by(date: (Date.iso8601(params[:report_date].to_s) rescue Date.current))
       else
@@ -52,6 +61,13 @@ module Admin
     end
 
     private
+
+    # An older link with ?start_date=&end_date= still works.
+    def legacy_dates
+      return {} unless params[:from].blank? && (params[:start_date].present? || params[:end_date].present?)
+
+      { from: params[:start_date], to: params[:end_date] }
+    end
 
     def require_workspace!
       head :not_found unless current_store

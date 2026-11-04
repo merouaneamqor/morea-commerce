@@ -15,11 +15,7 @@
     <h1 class="admin-page-header__title"><%= t("admin.my_stats.title") %></h1>
     <p class="admin-page-header__meta"><%= t("admin.my_stats.greeting", name: name) %></p>
   </div>
-  <nav class="admin-dashboard-period" aria-label="<%= t('admin.my_stats.title') %>">
-    <% %w[today week month].each do |p| %>
-      <%= link_to t("admin.my_stats.#{p}"), admin_my_stats_path(period: p), class: ("is-active" if @period == p) %>
-    <% end %>
-  </nav>
+  <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_my_stats_path %>
 </div>
 
 <h2 class="seallo-section"><%= t("admin.my_stats.orders") %></h2>
@@ -70,11 +66,11 @@
     <h2 class="admin-card__title"><%= t("admin.my_stats.per_day") %></h2>
     <% max = [ @by_day.values.max.to_i, 1 ].max %>
     <div class="seallo-bars">
-      <% @week_days.each do |day| %>
+      <% @chart_days.each do |day| %>
         <% n = @by_day.fetch(day, 0) %>
         <div class="seallo-bars__col" title="<%= day %> · <%= n %>">
           <span class="seallo-bars__bar" style="height: <%= n.zero? ? 3 : (n * 100.0 / max).round %>%"></span>
-          <small><%= day.strftime("%a") %></small>
+          <small><%= day.strftime(@chart_days.length > 7 ? "%d" : "%a") %></small>
         </div>
       <% end %>
     </div>

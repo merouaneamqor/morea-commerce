@@ -24,7 +24,7 @@ RSpec.describe Seller::DashboardStats do
 
   it "no longer computes any money result: that belongs to AccountingStats" do
     order(status: "delivered", total: 20_000, delivered_at: now - 1.day)
-    expect(stats.keys).to match_array(%i[period currency pending kpis latest])
+    expect(stats.keys).to match_array(%i[range currency pending kpis latest])
     expect(stats[:kpis].keys).not_to include(:revenue, :net_profit, :average_order, :revenue_delta)
   end
 
@@ -69,7 +69,7 @@ RSpec.describe Seller::DashboardStats do
   end
 
   it "falls back to seven days for an unknown period" do
-    expect(described_class.new(store: store, period: "nonsense", now: now).period).to eq("7d")
+    expect(described_class.new(store: store, period: "nonsense", now: now).range).to have_attributes(days: 7, to: Date.new(2026, 11, 3))
   end
 
   it "lists the six most recent orders" do

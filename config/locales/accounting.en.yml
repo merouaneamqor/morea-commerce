@@ -6,10 +6,8 @@ en:
     delivered: "Delivered"
     shipped: "Shipped"
     basis_delivered_hint: "Calculated on delivered orders, on their delivery date."
-    basis_shipped_hint: "Calculated on orders shipped this month that were delivered."
-    month: "Month"
+    basis_shipped_hint: "Calculated on orders shipped during the period that were delivered."
     export: "Export"
-    months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     new: "New"
     points: "pts"
     vs_previous: "vs previous period"
@@ -50,7 +48,7 @@ en:
       delivery: "Delivery"
       ads: "Advertising"
       profit: "Net profit"
-      loss_note: "This month expenses exceed revenue: you lose %{amount} %{currency}. Here is how the expenses split."
+      loss_note: "In this period expenses exceed revenue: you lose %{amount} %{currency}. Here is how the expenses split."
       none: "No revenue in this period."
     side:
       receivables: "Receivables"

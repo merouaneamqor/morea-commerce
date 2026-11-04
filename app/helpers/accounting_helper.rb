@@ -3,11 +3,11 @@
 # Printing of the Comptabilité figures. This is the only place that rounds: AccountingStats hands over whole
 # centimes and exact fractions, and they are turned into text here.
 module AccountingHelper
-  DASH = "—"
-  MINUS = "−"
-  SPACE = " "
-  LTR_START = "⁦" # keeps a number left-to-right inside Arabic text
-  LTR_END = "⁩"
+  DASH = 0x2014.chr(Encoding::UTF_8) # an em dash
+  MINUS = 0x2212.chr(Encoding::UTF_8) # a real minus sign
+  SPACE = 0x00A0.chr(Encoding::UTF_8) # non-breaking space
+  LTR_START = 0x2066.chr(Encoding::UTF_8) # keeps a number left-to-right inside Arabic text
+  LTR_END = 0x2069.chr(Encoding::UTF_8)
 
   # Whole centimes as "186 450" (or "186 450,25" when there are centimes).
   def acc_amount(cents)
@@ -92,10 +92,6 @@ module AccountingHelper
       safe_join([ tag.polyline(points: points.join(" "), fill: "none", stroke: color, "stroke-width": 1.8, "stroke-linecap": "round", "stroke-linejoin": "round"),
                   tag.circle(cx: last[0], cy: last[1], r: 2.6, fill: "#fff", stroke: color, "stroke-width": 1.6) ])
     end
-  end
-
-  def acc_month_label(date)
-    "#{t("accounting.months")[date.month - 1]} #{date.year}"
   end
 
   private

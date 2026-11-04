@@ -92,12 +92,14 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     expect(document.at_css("h1").text).to include("Salma")
   end
 
-  it "keeps the period in the URL and falls back to seven days" do
+  it "opens an older ?period= link on the matching range, and falls back to seven days" do
     sign_in(owner)
     get "/dashboard", params: { period: "30d" }
-    expect(document.at_css("select option[selected]")["value"]).to eq("30d")
+    expect(document.at_css("[data-date-range-label]").text.squish).to eq("30 derniers jours")
+    host! "#{store.slug}.#{Store.base_domain}"
+    cookies.delete("dr_dashboard")
     get "/dashboard", params: { period: "bogus" }
-    expect(document.at_css("select option[selected]")["value"]).to eq("7d")
+    expect(document.at_css("[data-date-range-label]").text.squish).to eq("7 derniers jours")
   end
 
   %w[fr en ar].each do |locale|

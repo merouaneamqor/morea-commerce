@@ -265,7 +265,7 @@ RSpec.describe AccountingStats do
 
     it "falls back to the current month for a missing, malformed or future month" do
       [ nil, "", "garbage", "2026-13", "2027-01", "2026-1" ].each do |value|
-        expect(described_class.new(store: store, month: value, now: now).month).to eq(Date.new(2026, 11, 1)), "month #{value.inspect}"
+        expect(described_class.new(store: store, month: value, now: now).date_range.from).to eq(Date.new(2026, 11, 1)), "month #{value.inspect}"
       end
     end
 

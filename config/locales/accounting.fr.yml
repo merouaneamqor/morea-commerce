@@ -6,10 +6,8 @@ fr:
     delivered: "Livrées"
     shipped: "Expédiées"
     basis_delivered_hint: "Calculé sur les commandes livrées, à leur date de livraison."
-    basis_shipped_hint: "Calculé sur les commandes expédiées ce mois-ci, qui ont été livrées."
-    month: "Mois"
+    basis_shipped_hint: "Calculé sur les commandes expédiées pendant la période, qui ont été livrées."
     export: "Exporter"
-    months: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
     new: "Nouveau"
     points: "pts"
     vs_previous: "vs période précédente"
@@ -50,7 +48,7 @@ fr:
       delivery: "Livraison"
       ads: "Publicité"
       profit: "Bénéfice net"
-      loss_note: "Ce mois-ci les dépenses dépassent le chiffre d'affaires : vous perdez %{amount} %{currency}. Voici comment se répartissent les dépenses."
+      loss_note: "Sur cette période les dépenses dépassent le chiffre d'affaires : vous perdez %{amount} %{currency}. Voici comment se répartissent les dépenses."
       none: "Aucun chiffre d'affaires sur la période."
     side:
       receivables: "Créances"

@@ -35,7 +35,7 @@ module Team
 
     # Confirmed orders per day inside the range, for the bar chart.
     def confirmed_by_day(user)
-      confirmed_orders(user, @range, by: :confirmed_at).group_by { |o| o.confirmed_at.to_date }.transform_values(&:size)
+      confirmed_orders(user, @range, by: :confirmed_at).group_by { |o| o.confirmed_at.in_time_zone(DateRange::ZONE).to_date }.transform_values(&:size)
     end
 
     private

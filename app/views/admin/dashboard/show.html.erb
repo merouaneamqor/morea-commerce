@@ -37,12 +37,7 @@
       <input name="q" placeholder="<%= sl("Rechercher une commande") %>" class="w-44 bg-transparent outline-none placeholder:text-[#a49d99]">
     <% end %>
     <%= render "admin/shared/language_switcher" %>
-    <select onchange="window.location = '/dashboard?period=' + this.value" aria-label="<%= sl("Période") %>"
-            class="h-11 cursor-pointer rounded-xl border border-[#e8e3df] bg-white px-3 text-sm font-medium text-[#1f2430] outline-none">
-      <% { "today" => "Aujourd'hui", "7d" => "7 derniers jours", "30d" => "30 derniers jours" }.each do |value, label| %>
-        <option value="<%= value %>" <%= "selected" if stats[:period] == value %>><%= sl(label) %></option>
-      <% end %>
-    </select>
+    <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: seller_dashboard_path %>
     <%= link_to sl("Confirmer les commandes"), "/commandes?status=new", class: "flex h-11 items-center rounded-xl bg-[#a8432e] px-4 text-sm font-semibold text-white shadow-[0_10px_24px_-12px_rgba(168,67,46,0.9)] hover:bg-[#8e3624]" %>
   </div>
 </header>

@@ -39,7 +39,7 @@ fr:
       needs_reauthorization: "Reconnexion requise"
       failed: "Échec de la synchronisation"
     errors:
-      config_missing: "Meta n’est pas encore configuré sur cette plateforme."
+      config_missing: "Meta n’est pas encore configuré sur cette plateforme : il manque META_APP_ID, META_APP_SECRET, META_LOGIN_CONFIG_ID ou META_REDIRECT_URI."
       invalid_state: "L’autorisation Meta n’a pas pu être vérifiée. Recommencez."
       authorization_expired: "L’autorisation Meta a expiré. Recommencez."
       authorization_denied: "L’accès Meta n’a pas été accordé."

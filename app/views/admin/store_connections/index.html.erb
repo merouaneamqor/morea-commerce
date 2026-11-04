@@ -144,7 +144,7 @@
         <%= link_to "#{t("meta_ads.manage")} →", admin_meta_ads_path, class: "text-sm font-semibold text-[#a8432e]" %>
       <% else %>
         <%= button_to "#{t(meta_state == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect")} →", connect_admin_meta_ads_path, method: :post,
-              disabled: !MetaAds::Oauth.configured?, class: "text-sm font-semibold text-[#a8432e] disabled:opacity-50" %>
+              class: "text-sm font-semibold text-[#a8432e]" %>
       <% end %>
     </span>
   </div>

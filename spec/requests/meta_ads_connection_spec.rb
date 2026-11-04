@@ -174,6 +174,18 @@ RSpec.describe "Meta Ads connection", type: :request do
     expect(flash[:alert]).to eq(I18n.t("meta_ads.errors.config_missing"))
   end
 
+  it "keeps the Connect buttons clickable when Meta is not configured, and explains what is missing" do
+    stub_meta_env("META_LOGIN_CONFIG_ID" => nil)
+    sign_in
+    [ "/integrations", "/admin/meta-ads" ].each do |path|
+      get path
+      button = Nokogiri::HTML(response.body).at_css("form[action='/admin/meta-ads/connect'] button")
+      expect(button["disabled"]).to be_nil, "#{path} button must not be disabled"
+    end
+    post "/admin/meta-ads/connect"
+    expect(flash[:alert]).to include("META_LOGIN_CONFIG_ID")
+  end
+
   it "never lets one store read, select or sync another store's accounts" do
     other_connection = MetaAds::Connection.create!(store: other_store, access_token: "synthetic-other-token")
     foreign = other_store.meta_ads_ad_accounts.create!(connection: other_connection, meta_ad_account_id: "act_77", name: "Foreign", currency: "EUR", timezone_name: "UTC", account_status: 1)

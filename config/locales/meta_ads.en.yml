@@ -39,7 +39,7 @@ en:
       needs_reauthorization: "Reconnection required"
       failed: "Sync failed"
     errors:
-      config_missing: "Meta is not configured for this platform yet."
+      config_missing: "Meta is not configured for this platform yet: META_APP_ID, META_APP_SECRET, META_LOGIN_CONFIG_ID or META_REDIRECT_URI is missing."
       invalid_state: "The Meta authorization could not be verified. Start again."
       authorization_expired: "The Meta authorization expired. Start again."
       authorization_denied: "Meta access was not granted."

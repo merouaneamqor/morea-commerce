@@ -53,6 +53,8 @@ RSpec.describe "Admin theme", type: :request do
       expect(store.reload.admin_theme).to eq("seallo_dark")
       get "/admin"
       expect(document.at_css("body.admin-body")["data-admin-theme"]).to eq("seallo_dark")
+      expect(document.css("link[rel=stylesheet]").map { |link| link["href"] }.join(" ")).to include("admin_dark")
+      expect(document.at_css("meta[name=theme-color]")["content"]).to eq("#15110f")
 
       patch "/admin/store", params: { store: { admin_theme: "neon" } }
       expect(store.reload.admin_theme).to eq("seallo_dark")

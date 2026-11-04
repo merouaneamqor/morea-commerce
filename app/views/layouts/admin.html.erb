@@ -3,7 +3,7 @@
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "#{Store.platform_name} — #{current_store&.name || "seallo"}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="#a8432e">
+    <meta name="theme-color" content="<%= current_store&.admin_theme == "seallo_dark" ? "#15110f" : "#a8432e" %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= render "shared/platform_icons" %>
@@ -15,6 +15,7 @@
     <%= stylesheet_link_tag "liquid_glass" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "admin_responsive", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin_dark", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
   <body class="admin-body" data-admin-theme="<%= current_store&.admin_theme || "seallo" %>" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">

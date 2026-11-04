@@ -137,7 +137,16 @@
         <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.ads_subtitle") %></span>
       </span>
     </span>
-    <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= sl("Bientôt disponible") %></span>
+    <% meta_state = @meta_connection&.needs_reconnect? ? "needs_reauthorization" : (@meta_connection&.status || "disconnected") %>
+    <span class="flex items-center gap-2" data-meta-card="<%= meta_state %>">
+      <% if meta_state == "active" %>
+        <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
+        <%= link_to "#{t("meta_ads.manage")} →", admin_meta_ads_path, class: "text-sm font-semibold text-[#a8432e]" %>
+      <% else %>
+        <%= button_to "#{t(meta_state == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect")} →", connect_admin_meta_ads_path, method: :post,
+              disabled: !MetaAds::Oauth.configured?, class: "text-sm font-semibold text-[#a8432e] disabled:opacity-50" %>
+      <% end %>
+    </span>
   </div>
 </section>
 

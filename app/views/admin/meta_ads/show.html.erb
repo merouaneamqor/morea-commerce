@@ -29,11 +29,11 @@
     <p class="mt-2 text-xs text-[#8a8380]"><%= t("meta_ads.read_only_note") %></p>
     <% unless @configured %><p class="mt-3 rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= t("meta_ads.errors.config_missing") %></p><% end %>
     <% if status == "needs_reauthorization" %><p role="alert" class="mt-3 rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= t("meta_ads.reauthorize_note") %></p><% end %>
-    <% if @connection&.expires_soon? %><p role="alert" class="mt-3 rounded-xl bg-[#fdf0d9] px-4 py-3 text-sm text-[#8a5a12]"><%= t("meta_ads.notice.expires_soon", date: l(@connection.token_expires_at.to_date, format: :long)) %></p><% end %>
+    <% if @connection&.expires_soon? %><p role="alert" class="mt-3 rounded-xl bg-[#fdf0d9] px-4 py-3 text-sm text-[#8a5a12]"><%= t("meta_ads.notice.expires_soon", date: l(@connection.token_expires_at.to_date, format: "%d/%m/%Y")) %></p><% end %>
     <% if missing_business %><p class="mt-3 rounded-xl bg-[#fdf0d9] px-4 py-3 text-sm text-[#8a5a12]"><%= t("meta_ads.missing_business_management") %></p><% end %>
     <% if active %>
       <p class="mt-3 text-xs text-[#8a8380]">
-        <% if @connection.token_expires_at %><%= t("meta_ads.valid_until", date: l(@connection.token_expires_at.to_date, format: :long)) %> · <% end %>
+        <% if @connection.token_expires_at %><%= t("meta_ads.valid_until", date: l(@connection.token_expires_at.to_date, format: "%d/%m/%Y")) %> · <% end %>
         <%= t("meta_ads.permissions") %> <span dir="ltr"><%= @connection.granted_scopes.join(", ") %></span>
       </p>
     <% end %>

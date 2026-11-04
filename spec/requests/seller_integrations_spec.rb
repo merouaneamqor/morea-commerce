@@ -35,7 +35,7 @@ RSpec.describe "Seller integrations page", type: :request do
     expect(response).to have_http_status(:ok)
     expect(document.at_css("h1").text).to eq("Intégrations API")
     expect(document.at_css("aside nav ul a.font-semibold")["href"]).to eq("/integrations")
-    expect(response.body).to include("Bientôt disponible")
+    expect(response.body).to include("TikTok Ads : bientôt disponible")
   end
 
   it "shows online stores, delivery companies and ad networks as the same wide card" do

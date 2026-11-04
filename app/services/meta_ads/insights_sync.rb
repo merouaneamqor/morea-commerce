@@ -164,7 +164,8 @@ module MetaAds
     def object(kind, meta_id, name, **parents)
       @objects[kind][meta_id] ||= begin
         record = { campaign: @account.campaigns, ad_set: @account.ad_sets, ad: @account.ads }.fetch(kind).find_or_initialize_by(meta_id: meta_id)
-        record.assign_attributes(store_id: @store.id, name: name.presence&.truncate(255) || record.name, last_seen_at: @now, **parents)
+        record.store_id = @store.id if record.new_record?
+        record.assign_attributes(name: name.presence&.truncate(255) || record.name, last_seen_at: @now, **parents)
         record.save! if record.changed?
         record
       end

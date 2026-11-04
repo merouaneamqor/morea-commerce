@@ -7,6 +7,8 @@ class Store < ApplicationRecord
   BILLING_INTERVALS = %w[monthly yearly].freeze
   BILLING_STATUSES = %w[trial active past_due canceled].freeze
 
+  # Meta rows reference products and each other through foreign keys, so they go first.
+  before_destroy -> { MetaAds.purge_store!(id) }, prepend: true
   has_many :products, dependent: :destroy
   has_many :collections, dependent: :destroy
   has_many :customers, dependent: :destroy

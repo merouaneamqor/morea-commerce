@@ -13,7 +13,7 @@ class MetaAdsSyncJob < ApplicationJob
     return unless account
 
     # Skip a run another worker started less than half an hour ago.
-    return if account.sync_status == "running" && account.last_attempt_at&.> 30.minutes.ago
+    return if account.sync_status == "running" && account.last_attempt_at.present? && account.last_attempt_at > 30.minutes.ago
 
     MetaAds::InsightsSync.new(ad_account: account).call
   end

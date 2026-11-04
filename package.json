@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "test:responsive": "RESPONSIVE_TAILWIND=tmp/responsive-tailwind.css node script/responsive_smoke.mjs",
-    "build:test-css": "npx @tailwindcss/cli -i app/assets/tailwind/application.css -o tmp/responsive-tailwind.css"
+    "build:test-css": "npx @tailwindcss/cli -i app/assets/tailwind/application.css -o tmp/responsive-tailwind.css",
+    "test:dark": "node script/dark_theme_test.mjs"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.3.4",

@@ -165,4 +165,5 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run build:test-css
       - run: npm run test:responsive
+      - run: npm run test:dark
       - run: node --test script/tracking_consent_test.mjs

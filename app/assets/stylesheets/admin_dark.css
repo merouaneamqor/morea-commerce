@@ -1,0 +1,110 @@
+/* The seller workspace includes both reusable components and palette utilities.
+   Match whole utility tokens: a hover:bg-white or bg-white/10 class is not bg-white. */
+.admin-body[data-admin-theme="seallo_dark"] {
+  color-scheme: dark;
+  background-color: var(--s-page);
+  color: var(--s-ink);
+  --s-danger: #f2a0b0;
+  --s-danger-soft: #3b222b;
+  --s-warning: #f0c47a;
+  --s-warning-soft: #3b301f;
+  --s-purple: #c2acf0;
+  --s-purple-soft: #30263f;
+}
+
+/* Neutral canvas, card, inset and selection colors used by the current shell. */
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="bg-[#f3f1ef]"], [class~="bg-[#f7f5f2]"]) { background-color: var(--s-page); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="bg-white"], [class~="bg-[#faf9f7]"]) { background-color: var(--s-card); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="bg-[#f1eee9]"], [class~="bg-[#fafafa]"], [class~="bg-[#f1f1f1]"], [class~="bg-[#f5f5f5]"], [class~="bg-[#f7f7f7]"]) { background-color: var(--s-soft); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="bg-[#e8e3df]"], [class~="bg-[#e8dfd6]"], [class~="bg-[#d9d1cc]"], [class~="bg-[#e8e8e8]"], [class~="bg-[#eee5dc]"]) { background-color: var(--s-soft2); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="bg-[#f4e4de]"], [class~="bg-[#ead6cc]"], [class~="bg-[#f4e4de]/50"], [class~="bg-[#f4e4de]/40"]) { background-color: var(--s-pill); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="hover:bg-[#f3f1ef]"], [class~="hover:bg-[#fafafa]"], [class~="hover:bg-[#f6f6f7]"], [class~="hover:bg-[#f7f7f7]"], [class~="hover:bg-[#faf9f7]"], [class~="hover:bg-[#fbf9f8]"], [class~="hover:bg-[#faf6f2]"], [class~="hover:bg-[#fdfcfb]"], [class~="hover:bg-white"]):hover { background-color: var(--s-soft2); }
+
+.admin-body[data-admin-theme="seallo_dark"] [class~="hover:bg-[#fbe7ea]"]:hover { background-color: var(--s-danger-soft); }
+
+/* Explicit foreground tokens include the newer accounting, calendar and dashboard copy. */
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="text-[#1f2430]"], [class~="text-[#303030]"], [class~="text-[#1a1a1a]"]) { color: var(--s-ink); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="text-[#5e5a58]"] { color: var(--s-ink-2); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="text-[#8a8380]"], [class~="text-[#6f6967]"], [class~="text-[#6b6059]"], [class~="text-[#616161]"], [class~="text-[#8a8a8a]"], [class~="text-[#737373]"], [class~="text-[#a49d99]"], [class~="text-[#c0b8b3]"], [class~="text-[#c9c2be]"]) { color: var(--s-muted); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="text-[#a8432e]"], [class~="text-[#5a2a1c]"]) { color: var(--s-rust); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="hover:text-[#1f2430]"]:hover { color: var(--s-ink); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="hover:text-[#a8432e]"]:hover { color: var(--s-rust); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="group"]:hover [class~="group-hover:text-[#1f2430]"] { color: var(--s-ink); }
+
+/* Status backgrounds remain distinct, with matching readable foregrounds. */
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="bg-[#e3f3e8]"], [class~="bg-[#eaf6ee]"]) { background-color: var(--s-green-soft); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="text-[#2f7a4a]"] { color: #8bd6a0; }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="bg-[#fbe7ea]"], [class~="bg-[#fdeff1]"], [class~="bg-[#f8dcd9]"]) { background-color: var(--s-danger-soft); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="text-[#b4344e]"], [class~="text-[#8f2a40]"], [class~="text-[#8e0b21]"], [class~="text-[#b0342a]"]) { color: var(--s-danger); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="bg-[#fcf0dc]"], [class~="bg-[#fdf0d9]"]) { background-color: var(--s-warning-soft); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="text-[#9a6412]"], [class~="text-[#8a5a12]"], [class~="text-[#d08a1f]"]) { color: var(--s-warning); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="bg-[#e8eefa]"], [class~="bg-[#eef3fc]"]) { background-color: var(--s-blue-soft); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="text-[#3d63b8]"] { color: #a6b9fb; }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="bg-[#ebe9fb]"], [class~="bg-[#eeecfa]"]) { background-color: var(--s-purple-soft); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="text-[#4b4fb0]"], [class~="text-[#8f6bc1]"]) { color: var(--s-purple); }
+
+/* Keep solid action buttons high-contrast, rather than using the pale link accent. */
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="bg-[#a8432e]"], [class~="bg-[#c9482c]"]) { background-color: #b9503a; }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="hover:bg-[#8e3624]"], [class~="hover:bg-[#b03d24]"]):hover { background-color: #a2402a; }
+.admin-body[data-admin-theme="seallo_dark"] .seallo-btn-green { background-color: #2f6b3f; color: #fff; }
+.admin-body[data-admin-theme="seallo_dark"] .seallo-btn-green:hover { background-color: #245632; }
+
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="border-[#e8e3df]"], [class~="border-[#ebebeb]"], [class~="border-[#f0ebe7]"], [class~="border-[#e3e3e3]"], [class~="border-[#dedede]"], [class~="border-[#e1dbd6]"], [class~="border-[#f6f2ef]"], [class~="border-[#d4d4d4]"], [class~="border-[#f1f1f1]"], [class~="border-[#d9d1cc]"], [class~="border-[#d6cfca]"]) { border-color: var(--s-line); }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="divide-[#ebebeb]"], [class~="divide-[#f0ebe7]"]) > :not(:last-child) { border-color: var(--s-line); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="border-[#a8432e]"] { border-color: var(--s-rust); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="border-[#bfe0c9]"] { border-color: #355b40; }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="border-[#f0c6cd]"], [class~="border-[#f0c2bd]"]) { border-color: #74404c; }
+.admin-body[data-admin-theme="seallo_dark"] [class~="border-[#cbd9f3]"] { border-color: #43547b; }
+.admin-body[data-admin-theme="seallo_dark"] :is([class~="hover:border-[#d6cfca]"], [class~="hover:border-[#e1dbd6]"]):hover { border-color: var(--s-ctl-hover); }
+
+/* Native fields and menus use the same dark palette as the surrounding page. */
+.admin-body[data-admin-theme="seallo_dark"] :is(input, select, textarea) { color-scheme: dark; }
+.admin-body[data-admin-theme="seallo_dark"] :is(input, select, textarea)::placeholder { color: var(--s-muted); }
+.admin-body[data-admin-theme="seallo_dark"] :is(select option, select optgroup) { background-color: var(--s-card); color: var(--s-ink); }
+.admin-body[data-admin-theme="seallo_dark"] :is(input, select, textarea):focus-visible { outline-color: var(--s-rust); }
+.admin-body[data-admin-theme="seallo_dark"] :is(button, a):focus-visible { outline: 2px solid var(--s-rust); outline-offset: 3px; }
+.admin-body[data-admin-theme="seallo_dark"] [data-date-range-picker-target="panel"] { background-color: var(--s-card); color: var(--s-ink); border-color: var(--s-line); }
+.admin-body[data-admin-theme="seallo_dark"] [data-date-range-picker-target="presets"] [aria-current="true"] { background-color: var(--s-pill); color: var(--s-pill-text); }
+.admin-body[data-admin-theme="seallo_dark"] [data-admin-language-switcher] [aria-current="true"] { background-color: var(--s-soft2); color: var(--s-ink); }
+
+/* The featured accounting card keeps its amber identity with a dark amber surface. */
+.admin-body[data-admin-theme="seallo_dark"] [data-card][class~="bg-gradient-to-br"] { background-image: linear-gradient(135deg, #49351e, #352719); color: #f7dfb0; }
+.admin-body[data-admin-theme="seallo_dark"] [data-card] :is([class~="text-[#7a5a1e]"], [class~="text-[#6d4f17]"]) { color: #e8cda5; }
+.admin-body[data-admin-theme="seallo_dark"] [data-card][class~="bg-gradient-to-br"] :is(polyline, circle) { stroke: #f7dfb0; }
+.admin-body[data-admin-theme="seallo_dark"] [data-card] circle[fill="#fff"] { fill: var(--s-card); }
+
+/* Shared floating surfaces were intentionally translucent white in the light theme. */
+.admin-body[data-admin-theme="seallo_dark"] .lg-scrim { background-color: rgb(0 0 0 / .55); }
+.admin-body[data-admin-theme="seallo_dark"] .lg-panel { color: var(--s-ink); border-color: var(--s-ctl); background: linear-gradient(180deg, rgb(38 31 27 / .96), rgb(32 26 23 / .94)); box-shadow: 0 30px 80px -24px #0009, inset 0 1px rgb(255 255 255 / .08); }
+.admin-body[data-admin-theme="seallo_dark"] :is(.admin-media-dialog, .admin-media-preview, .admin-variant-options, .admin-pwa) { color: var(--s-ink); background-color: var(--s-card); border-color: var(--s-line); }
+.admin-body[data-admin-theme="seallo_dark"] :is(.admin-media-dialog__header, .admin-media-dialog__footer, .admin-variant-media-summary, .admin-dropzone, .admin-variant-image) { color: var(--s-ink); background-color: var(--s-soft); border-color: var(--s-line); }
+.admin-body[data-admin-theme="seallo_dark"] :is(.admin-media-close, .admin-variant-image):hover { background-color: var(--s-soft2); }
+.admin-body[data-admin-theme="seallo_dark"] :is(.admin-media-filename, .admin-variant-media-status) { color: var(--s-muted); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-media-dialog::backdrop { background: #0009; }
+.admin-body[data-admin-theme="seallo_dark"] .seallo-segment--at_risk strong { color: var(--s-danger); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-table--sticky :is(th, td):nth-child(-n+2) { background-color: var(--s-card); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-table--sticky tr:hover td:nth-child(-n+2) { background-color: var(--s-soft); }
+
+/* Legacy media controls and reporting tracks also contain compiled literal colors. */
+.admin-body[data-admin-theme="seallo_dark"] :is(.admin-thumb, .admin-media-item, .admin-media-choice__image) { background-color: var(--s-soft); border-color: var(--s-line); color: var(--s-muted); }
+.admin-body[data-admin-theme="seallo_dark"] :is(.admin-media-item__bar, .admin-dashboard-status) { color: var(--s-muted); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-media-item__btn { color: var(--s-ink); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-media-item__btn:hover { background-color: var(--s-soft2); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-media-item.is-selected { outline-color: var(--s-rust); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-media-item:first-child:not(.admin-media-item--pending) { box-shadow: inset 0 0 0 2px var(--s-rust); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-media-choice.is-selected .admin-media-choice__image { border-color: var(--s-rust); box-shadow: 0 0 0 2px var(--s-pill); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-media-select { accent-color: var(--s-rust); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-dashboard-storefront { background: var(--s-card); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-dashboard-channel-count { color: var(--s-ink); }
+.admin-body[data-admin-theme="seallo_dark"] :is(.admin-dashboard-status__track, [class~="bg-gray-100"]) { background-color: var(--s-soft2); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="bg-gray-800"] { background-color: var(--s-rust); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="bg-gray-400"] { background-color: var(--s-blue); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="text-gray-600"] { color: var(--s-muted); }
+.admin-body[data-admin-theme="seallo_dark"] [class~="border-gray-300"] { border-color: var(--s-ctl); }
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .admin-body[data-admin-theme="seallo_dark"] .lg-panel { background: var(--s-card); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .admin-body[data-admin-theme="seallo_dark"] .lg-panel { background: var(--s-card); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

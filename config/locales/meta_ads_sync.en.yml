@@ -37,3 +37,4 @@ en:
         pending: "Your request is being processed."
         completed: "Your Meta access has been removed from seallo."
     manage: "Manage Meta Ads"
+    back_button: "Back"

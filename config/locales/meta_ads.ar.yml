@@ -39,7 +39,7 @@ ar:
       needs_reauthorization: "يلزم إعادة الاتصال"
       failed: "فشلت المزامنة"
     errors:
-      config_missing: "لم يتم إعداد Meta على هذه المنصة بعد."
+      config_missing: "لم يتم إعداد Meta على هذه المنصة بعد: ينقص META_APP_ID أو META_APP_SECRET أو META_LOGIN_CONFIG_ID أو META_REDIRECT_URI."
       invalid_state: "تعذر التحقق من تفويض Meta. ابدأ من جديد."
       authorization_expired: "انتهت صلاحية تفويض Meta. ابدأ من جديد."
       authorization_denied: "لم يتم منح الوصول إلى Meta."

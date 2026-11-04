@@ -21,6 +21,7 @@ module Admin
           .where("order_confirmations.callback_at <= ?", Time.current)
       elsif @filter == "available"
         orders = orders.where("order_confirmations.assigned_user_id IS NULL")
+          .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition <> 'wrong_number'")
           .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
       end
       @orders = orders.includes(:order_items).order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC"))
@@ -69,6 +70,28 @@ module Admin
       redirect_to admin_confirmations_path, alert: e.message
     end
 
+    # Call panel endpoints (JSON, used by the panel's Stimulus controller).
+    def call
+      confirmation = desk.open_call(params[:order_id])
+      render json: { order_id: confirmation.order_id, call_started_at: confirmation.call_started_at.iso8601(3), server_now: Time.current.iso8601(3) }
+    rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid => e
+      render json: { error: e.message }, status: :unprocessable_content
+    end
+
+    def abandon_call
+      desk.abandon_call(params[:order_id])
+      render json: { ok: true }
+    rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid => e
+      render json: { error: e.message }, status: :unprocessable_content
+    end
+
+    def finish_call
+      desk.finish_call(params[:order_id], outcome: params[:outcome], notes: params[:notes], callback_at: params[:callback_at], changes: call_changes)
+      render json: { ok: true, next_order_id: next_available_order_id(excluding: params[:order_id]) }
+    rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid, ArgumentError => e
+      render json: { error: e.message }, status: :unprocessable_content
+    end
+
     def release
       desk.release(params[:order_id])
       redirect_to admin_confirmations_path(filter: "mine"), notice: t("admin.confirmations.released")
@@ -84,6 +107,26 @@ module Admin
     end
 
     private
+
+    # The edits sent by the panel, in the order editor's shape; nil when the panel sent none.
+    def call_changes
+      return unless params[:order].present?
+
+      raw = params.require(:order).permit(:name, :phone, :second_phone, :city, :district, :address, lines: [ :product_id, :product_variant_id, :quantity ])
+      lines = raw[:lines]
+      lines = lines.values if lines.respond_to?(:values) && !lines.is_a?(Array)
+      raw.to_h.symbolize_keys.merge(lines: Array(lines))
+    end
+
+    # Oldest order waiting for a first call (unassigned, due, not a wrong number), skipping the one just handled.
+    def next_available_order_id(excluding:)
+      current_store.orders.active.where(status: "new", sendit_code: [ nil, "" ]).where.not(id: excluding)
+        .joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")
+        .where("order_confirmations.assigned_user_id IS NULL")
+        .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition <> 'wrong_number'")
+        .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
+        .order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC")).pick("orders.id")
+    end
 
     def require_store_context!
       head :not_found unless current_store

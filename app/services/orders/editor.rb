@@ -97,6 +97,7 @@ module Orders
           customer_city: contact[:city],
           customer_district: contact[:district],
           customer_address: contact[:address],
+          second_phone: attrs.key?(:second_phone) ? contact[:second_phone] : order.second_phone,
           notes: attrs.key?(:notes) ? attrs[:notes].presence : order.notes,
           tags: attrs.key?(:tags) ? normalize_tags(attrs[:tags]) : order.tags,
           **totals,
@@ -188,6 +189,7 @@ module Orders
       {
         name: attrs[:name].to_s.strip,
         phone: attrs[:phone].to_s.strip,
+        second_phone: attrs[:second_phone].to_s.strip.presence,
         phone_country: attrs[:phone_country].presence || "MA",
         city: attrs[:city].to_s.strip,
         district: attrs[:district].to_s.strip.presence,
@@ -232,6 +234,12 @@ module Orders
       phone = Checkout.normalize_phone(contact[:phone], country: contact[:phone_country])
       errors.add(:phone, "is invalid") if contact[:phone].present? && phone.blank?
       contact[:phone] = phone if phone.present?
+
+      if contact[:second_phone]
+        second = Checkout.normalize_phone(contact[:second_phone], country: contact[:phone_country])
+        errors.add(:second_phone, "is invalid") if second.blank?
+        contact[:second_phone] = second
+      end
 
       errors.add(:base, "Add at least one product.") if lines.empty?
 

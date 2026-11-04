@@ -216,6 +216,9 @@ Rails.application.routes.draw do
       end
       member do
         post :claim
+        post :call
+        post :abandon_call
+        post :finish_call
         post :release
         post :outcome
       end

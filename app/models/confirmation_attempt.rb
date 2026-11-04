@@ -1,5 +1,7 @@
 class ConfirmationAttempt < ApplicationRecord
-  OUTCOMES = %w[no_answer callback confirmed cancelled].freeze
+  OUTCOMES = %w[no_answer callback confirmed cancelled wrong_number abandoned].freeze
+  # What an agent can pick as the result of a call; "abandoned" is only written when a call panel is closed.
+  RESULTS = (OUTCOMES - %w[abandoned]).freeze
 
   belongs_to :store
   belongs_to :order_confirmation
@@ -12,6 +14,7 @@ class ConfirmationAttempt < ApplicationRecord
   validates :outcome, inclusion: { in: OUTCOMES }
   validates :notes, length: { maximum: 2000 }
   validates :handled_seconds, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :call_seconds, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :callback_at, presence: true, if: -> { outcome == "callback" }
   validate :same_store_records
 

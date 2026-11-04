@@ -240,6 +240,19 @@ RSpec.describe "Comptabilité page", type: :request do
       sign_in(owner)
     end
 
+    it "is laid out compact: 36px rows, at most 900px wide, thin totals, a 72px header with 32px buttons" do
+      get "/comptabilite", params: { tab: "income", month: "2026-10" }
+      section = document.at_css("[data-income]")
+      expect(section["class"]).to include("max-w-[900px]")
+      expect(section["class"]).not_to include("mx-auto")
+      expect(section.css("[data-block=revenue] .h-9").size).to eq(2) # sales line and total line
+      expect(section.css("[data-block=net]").first["class"]).to include("h-9")
+      expect(section["class"]).not_to match(/p-[56]\b|sm:p-6/)
+      header = document.at_css("[data-header]")
+      expect(header["class"]).to include("min-h-[72px]")
+      expect(header.css("a.h-8, button.h-8").size).to be >= 2 # export and picker
+    end
+
     it "prints the statement with the same figures as the overview, to the centime" do
       get "/comptabilite", params: { tab: "income", month: "2026-10" }
       expect(response).to have_http_status(:ok)

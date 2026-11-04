@@ -101,6 +101,30 @@ class AccountingStats
     { shares: largest_remainder(parts, parts.values.sum), loss: loss }
   end
 
+  # Cost of goods by product, then by variant, from the frozen unit costs of the delivered orders counted above.
+  # A product (or variant) shows one unit cost when all its units were bought at the same cost, nil when the cost
+  # changed in between. The product totals add up to totals.goods (checked in #invariants).
+  def goods_breakdown
+    @goods_breakdown ||= begin
+      ids = lines.select { |line| line.kind == "delivered" }.map(&:order_id)
+      rows = OrderItem.where(order_id: ids).group(:product_name, :variant_name, :unit_cost_cents).sum(:quantity)
+      rows.group_by { |(product, _variant, _cost), _quantity| product }.map do |product, entries|
+        variants = entries.group_by { |(_p, variant, _cost), _quantity| variant }.map do |variant, parts|
+          cost_line(variant, parts.map { |(_p, _v, cost), quantity| [ cost, quantity ] })
+        end
+        cost_line(product, entries.map { |(_p, _v, cost), quantity| [ cost, quantity ] }).merge(variants: variants.sort_by { |variant| [ -variant[:cents], variant[:name].to_s ] })
+      end.sort_by { |product| [ -product[:cents], product[:name].to_s ] }
+    end
+  end
+
+  # Delivery fees of delivered parcels, and return fees of returned ones (their sum is totals.delivery).
+  def delivery_split
+    @delivery_split ||= {
+      delivered: lines.select { |line| line.kind == "delivered" }.sum(&:delivery),
+      returned: lines.select { |line| line.kind == "returned" }.sum(&:delivery)
+    }
+  end
+
   # Things the merchant must know before trusting the figures. Counts of delivered or returned orders in the month.
   def warnings
     @warnings ||= begin
@@ -151,6 +175,8 @@ class AccountingStats
     failures << "totals = sum of lines" unless [ t.revenue, t.goods, t.delivery, t.ads ] ==
       [ lines.sum(&:revenue), lines.sum(&:goods), lines.sum(&:delivery), lines.sum(&:ads) ]
     failures << "daily = month" unless daily.values.sum(&:revenue) == t.revenue && daily.values.sum(&:net) == t.net
+    failures << "goods by product = goods" unless goods_breakdown.sum { |product| product[:cents] } == t.goods
+    failures << "delivery split = delivery" unless delivery_split.values.sum == t.delivery
     failures
   end
 
@@ -209,6 +235,13 @@ class AccountingStats
   end
 
   def day_of(time) = time.in_time_zone(ZONE).to_date
+
+  # One row of the goods breakdown from [unit cost, quantity] pairs; a missing cost counts as 0.
+  def cost_line(name, pairs)
+    costs = pairs.map { |cost, _quantity| cost.to_i }.uniq
+    { name: name, quantity: pairs.sum { |_cost, quantity| quantity }, cents: pairs.sum { |cost, quantity| cost.to_i * quantity },
+      unit_cost_cents: (costs.first if costs.one?) }
+  end
 
   def totals_of(list)
     Totals.new(orders: list.count { |line| line.kind == "delivered" }, revenue: list.sum(&:revenue), goods: list.sum(&:goods),

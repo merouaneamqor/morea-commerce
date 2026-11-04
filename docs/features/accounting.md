@@ -38,6 +38,10 @@ profit margin  = net profit / revenue                # "—" with no revenue
 - **"Où vont 100 MAD":** each part is its share of revenue in tenths of a point; the biggest remainders get the last tenths, so the four parts are exactly 100.0. In a month that loses money, profit is 0 and the three expenses share the 100.
 - **Créances:** delivered parcels whose COD cash was not recorded as received (all time). **Inventaire:** stock x purchase cost (products without a cost are left out and counted). **Dettes:** no data yet (suppliers and agent payouts are not recorded).
 
+## Compte de résultat (income statement)
+
+Same data as the overview, laid out as a statement: revenue (product sales), cost of goods sold by product with its quantity and unit cost (a "see detail" opens the variants; the unit cost is shown only when it did not change between orders), gross margin and its share of revenue, advertising, delivery costs (delivered parcels and return fees), operating expenses, net profit (or net loss, in red) and its share of revenue. Amounts always show two decimals and costs are in brackets. Operating expenses show 0 with a note: they are not part of the accounting yet, so net profit does not include the older store expenses list. `AccountingStats#goods_breakdown` and `#delivery_split` feed it, and their sums are checked against the totals.
+
 ## Always-true checks
 
-`AccountingStats#invariants` returns an empty list when: gross margin = revenue - goods; expenses + net = revenue; the split adds up to 1000 tenths; totals = sum of lines; the daily figures add up to the month. The specs assert them on hand-worked data and on random orders, and check that the export's totals row equals the sum of its rows.
+`AccountingStats#invariants` returns an empty list when: gross margin = revenue - goods; expenses + net = revenue; the split adds up to 1000 tenths; totals = sum of lines; the daily figures add up to the month; the goods by product add up to the total goods; the delivery and return fees add up to the delivery total. The specs assert them on hand-worked data and on random orders, and check that the export's totals row equals the sum of its rows.

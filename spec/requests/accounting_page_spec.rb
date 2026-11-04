@@ -21,12 +21,14 @@ RSpec.describe "Comptabilité page", type: :request do
     post "/admin/login", params: { email: user.email, password: password }
   end
 
-  def order(store: self.store, status:, total:, cost: 0, delivered_at: nil, returned_at: nil, shipped_at: nil, delivery_fee: nil, return_fee: nil)
+  def order(store: self.store, status:, total:, cost: 0, delivered_at: nil, returned_at: nil, shipped_at: nil, delivery_fee: nil, return_fee: nil, items: nil)
     cust = store.customers.first || store.customers.create!(name: "Client", phone: "0612345678", email: "c-#{SecureRandom.hex(3)}@example.test")
     record = store.orders.create!(customer: cust, number: "A#{SecureRandom.hex(4)}", status: status, currency: "MAD", customer_name: "Client", customer_phone: "0612345678",
       customer_city: "Fès", customer_address: "Rue 1", subtotal_cents: total, total_cents: total, delivered_at: delivered_at, returned_at: returned_at, shipped_at: shipped_at,
       delivery_fee_cents: delivery_fee, return_fee_cents: return_fee)
-    record.order_items.create!(product_name: "Montre", quantity: 1, unit_price_cents: total, total_cents: total, unit_cost_cents: cost)
+    (items || [ [ 1, cost, "Montre", nil ] ]).each do |quantity, unit_cost, name, variant|
+      record.order_items.create!(product_name: name, variant_name: variant, quantity: quantity, unit_price_cents: total, total_cents: total, unit_cost_cents: unit_cost)
+    end
     record
   end
 
@@ -167,7 +169,7 @@ RSpec.describe "Comptabilité page", type: :request do
 
     it "keeps the other tabs for later" do
       sign_in(owner)
-      %w[income receivables debts inventory].each do |tab|
+      %w[receivables debts inventory].each do |tab|
         get "/comptabilite", params: { tab: tab, month: "2026-10" }
         expect(document.at_css("[data-tab-later=#{tab}]")).to be_present
         expect(document.at_css("[data-tabs] a[aria-current=page]").text.squish).to eq(I18n.t("accounting.tabs.#{tab}", locale: :fr))
@@ -188,6 +190,77 @@ RSpec.describe "Comptabilité page", type: :request do
       get "/comptabilite", params: { month: "2026-10" }
       text = clean(document.at_css("[data-warnings]").text)
       expect(text).to include("1 commandes livrées ont un produit sans coût", "1 commandes livrées sans frais de livraison connus")
+    end
+  end
+
+  describe "the Compte de résultat tab" do
+    def amount(key) = clean(document.at_css("[data-amount=#{key}]").text)
+
+    before do
+      order(status: "delivered", total: 150_000, items: [ [ 2, 19_600, "Tracksuit", "M" ], [ 1, 19_600, "Tracksuit", "L" ] ], delivered_at: zone.local(2026, 10, 5, 10, 0), delivery_fee: 2_500)
+      order(status: "delivered", total: 60_000, items: [ [ 1, 15_000, "Tracksuit", "M" ] ], delivered_at: zone.local(2026, 10, 6, 10, 0), delivery_fee: 2_500)
+      order(status: "delivered", total: 150_000, items: [ [ 5, 15_587, "Basic", nil ] ], delivered_at: zone.local(2026, 10, 7, 10, 0), delivery_fee: 2_500)
+      order(status: "returned", total: 9_000, items: [ [ 1, 3_000, "Tracksuit", "M" ] ], returned_at: zone.local(2026, 10, 8, 10, 0), return_fee: 1_500)
+      sign_in(owner)
+    end
+
+    it "prints the statement with the same figures as the overview, to the centime" do
+      get "/comptabilite", params: { tab: "income", month: "2026-10" }
+      expect(response).to have_http_status(:ok)
+      expect(document.at_css("[data-tabs] a[aria-current=page]").text.squish).to eq("Compte de résultat")
+      expect(document.at_css("[data-tab-later]")).to be_nil
+      expect(amount("product_sales")).to eq("3 600,00 MAD")
+      expect(amount("revenue")).to eq("3 600,00 MAD")
+      expect(amount("product_costs")).to eq("1 517,35 MAD")           # 779,35 + 738,00
+      expect(amount("goods")).to eq("(1 517,35 MAD)")
+      expect(amount("gross_margin")).to eq("2 082,65 MAD")            # 3 600 - 1 517,35
+      expect(clean(document.at_css("[data-share=gross]").text)).to eq("57,9 %") # 2 082,65 / 3 600
+      expect(amount("ads")).to eq("(0,00 MAD)")
+      expect(amount("delivery_delivered")).to eq("75,00 MAD")         # 3 x 25
+      expect(amount("delivery_returned")).to eq("15,00 MAD")
+      expect(amount("delivery")).to eq("(90,00 MAD)")
+      expect(amount("operating")).to eq("(0,00 MAD)")
+      expect(amount("net")).to eq("1 992,65 MAD")                     # 3 600 - 1 517,35 - 90 - 0
+      expect(clean(document.at_css("[data-share=net]").text)).to eq("55,4 %") # 1 992,65 / 3 600
+      expect(clean(document.at_css("[data-block=goods]").text)).to include("Basé sur les commandes livrées")
+    end
+
+    it "lists the cost of goods by product with its quantity and unit cost, and the variants in a detail" do
+      get "/comptabilite", params: { tab: "income", month: "2026-10" }
+      basic = document.at_css("[data-product=Basic]")
+      expect(clean(basic.text)).to include("5 × 155,87 MAD", "779,35")
+      expect(basic.at_css("details")).to be_nil # one variant without a name: nothing to detail
+      tracksuit = document.at_css("[data-product=Tracksuit]")
+      expect(clean(tracksuit.text)).to include("4 unités", "738,00", "Voir le détail (2 variantes)") # the cost changed: no single unit cost
+      expect(tracksuit.css("details li[data-variant]").map { |li| clean(li.text) }).to eq([ "M 3 unités 542,00", "L 1 × 196,00 MAD 196,00" ])
+      shown = document.css("[data-amount=product]").sum { |node| (BigDecimal(clean(node.text).delete(" ").tr(",", ".")) * 100).to_i }
+      expect(shown).to eq(151_735)
+    end
+
+    it "follows the basis and the month" do
+      get "/comptabilite", params: { tab: "income", month: "2026-10", basis: "shipped" }
+      expect(clean(document.at_css("[data-block=goods]").text)).to include("Basé sur les commandes expédiées")
+      get "/comptabilite", params: { tab: "income", month: "2026-09" }
+      expect(amount("revenue")).to eq("0,00 MAD")
+      expect(document.at_css("[data-income]").text).to include("Aucune commande livrée ou retournée")
+    end
+
+    it "shows a net loss in red when the month loses money" do
+      order(status: "delivered", total: 1_000, items: [ [ 1, 900_000, "Cher", nil ] ], delivered_at: zone.local(2026, 10, 9, 10, 0), delivery_fee: 0)
+      get "/comptabilite", params: { tab: "income", month: "2026-10" }
+      block = document.at_css("[data-block=net]")
+      expect(clean(block.text)).to include("Perte nette")
+      expect(block["class"]).to include("bg-[#fdeff1]")
+      expect(amount("net")).to start_with("−")
+    end
+
+    %w[en ar].each do |locale|
+      it "renders in #{locale} without missing translations" do
+        get "/comptabilite", params: { tab: "income", month: "2026-10", locale: locale }
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to match(/translation missing/i)
+        expect(document.at_css("[data-income] h2").text.squish).to eq(I18n.t("accounting.income.title", locale: locale))
+      end
     end
   end
 

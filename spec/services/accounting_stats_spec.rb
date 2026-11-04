@@ -17,7 +17,9 @@ RSpec.describe AccountingStats do
       customer_name: "Client", customer_phone: "0612345678", customer_city: "Fès", customer_address: "Rue 1",
       subtotal_cents: total, total_cents: total, delivered_at: delivered_at, shipped_at: shipped_at, returned_at: returned_at,
       delivery_fee_cents: delivery_fee, return_fee_cents: return_fee, archived_at: archived_at, created_at: zone.local(2026, 8, 1))
-    items.each { |quantity, cost| record.order_items.create!(product_name: "Montre", quantity: quantity, unit_price_cents: total / items.size, total_cents: total / items.size, unit_cost_cents: cost) }
+    items.each do |quantity, cost, name, variant|
+      record.order_items.create!(product_name: name || "Montre", variant_name: variant, quantity: quantity, unit_price_cents: total / items.size, total_cents: total / items.size, unit_cost_cents: cost)
+    end
     record
   end
 
@@ -154,6 +156,40 @@ RSpec.describe AccountingStats do
       expect(october.split_per_100[:shares].values.sum).to eq(1_000)
       expect(october.lines.sum(&:revenue)).to eq(t.revenue)
       expect(october.daily.values.sum(&:net)).to eq(t.net)
+    end
+  end
+
+  describe "goods breakdown and delivery split (the income statement)" do
+    before do
+      order(status: "delivered", total: 150_000, items: [ [ 2, 19_600, "Tracksuit", "M" ], [ 1, 19_600, "Tracksuit", "L" ] ], delivered_at: zone.local(2026, 10, 5, 10, 0), delivery_fee: 2_500)
+      order(status: "delivered", total: 60_000, items: [ [ 1, 15_000, "Tracksuit", "M" ] ], delivered_at: zone.local(2026, 10, 6, 10, 0), delivery_fee: 2_500) # cost changed in between
+      order(status: "delivered", total: 150_000, items: [ [ 5, 15_587, "Basic", nil ] ], delivered_at: zone.local(2026, 10, 7, 10, 0), delivery_fee: 2_500)
+      order(status: "returned", total: 9_000, items: [ [ 1, 3_000, "Tracksuit", "M" ] ], returned_at: zone.local(2026, 10, 8, 10, 0), return_fee: 1_500) # its goods do not count
+    end
+
+    it "details the cost of goods by product and variant, showing one unit cost only when it did not change" do
+      expect(october.goods_breakdown).to eq([
+        { name: "Basic", quantity: 5, cents: 77_935, unit_cost_cents: 15_587, variants: [ { name: nil, quantity: 5, cents: 77_935, unit_cost_cents: 15_587 } ] },
+        { name: "Tracksuit", quantity: 4, cents: 73_800, unit_cost_cents: nil, variants: [
+          { name: "M", quantity: 3, cents: 54_200, unit_cost_cents: nil }, # 2 x 19 600 + 1 x 15 000
+          { name: "L", quantity: 1, cents: 19_600, unit_cost_cents: 19_600 }
+        ] }
+      ])
+    end
+
+    it "adds up to the cost of goods, and splits delivery from return fees" do
+      expect(october.totals.goods).to eq(151_735) # 77 935 + 73 800
+      expect(october.goods_breakdown.sum { |product| product[:cents] }).to eq(october.totals.goods)
+      expect(october.delivery_split).to eq(delivered: 7_500, returned: 1_500)
+      expect(october.delivery_split.values.sum).to eq(october.totals.delivery)
+      expect(october.invariants).to eq([])
+    end
+
+    it "counts a missing unit cost as 0 in the breakdown, like in the total" do
+      order(status: "delivered", total: 10_000, items: [ [ 2, nil, "Gratuit", nil ] ], delivered_at: zone.local(2026, 10, 9, 10, 0), delivery_fee: 0)
+      free = october.goods_breakdown.find { |product| product[:name] == "Gratuit" }
+      expect(free).to include(quantity: 2, cents: 0, unit_cost_cents: 0)
+      expect(october.invariants).to eq([])
     end
   end
 

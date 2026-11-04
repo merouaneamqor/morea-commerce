@@ -22,6 +22,19 @@ module AccountingHelper
     "#{LTR_START}#{sign}#{text}#{LTR_END}"
   end
 
+  # Whole centimes with the two decimals always shown ("4 738,00"), as in a statement.
+  def acc_exact(cents)
+    cents = cents.round if cents.is_a?(Rational)
+    sign = cents.negative? ? MINUS : ""
+    digits = (cents.abs / 100).to_s.reverse.scan(/\d{1,3}/).join(SPACE).reverse
+    "#{LTR_START}#{sign}#{digits},#{format("%02d", cents.abs % 100)}#{LTR_END}"
+  end
+
+  # A cost in brackets, as expenses are written in a statement: "(2 151,33 MAD)".
+  def acc_expense(cents, currency)
+    "(#{acc_exact(cents)}#{SPACE}#{currency})"
+  end
+
   # A ratio (0.325 is 32.5 %) as "32,5", one decimal, half up.
   def acc_percent(ratio)
     return DASH if ratio.nil?

@@ -143,6 +143,8 @@
       <% end %>
     </div>
   </section>
+<% elsif @tab == "income" %>
+  <%= render "income", stats: stats %>
 <% else %>
   <section class="rounded-2xl border border-[#e8e3df] bg-white p-10 text-center text-sm text-[#8a8380]" data-tab-later="<%= @tab %>"><%= t("accounting.tab_later") %></section>
 <% end %>

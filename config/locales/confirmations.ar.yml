@@ -100,7 +100,9 @@
           "no_answer": "لا إجابة",
           "callback": "إعادة الاتصال",
           "confirmed": "مؤكّد",
-          "cancelled": "ملغى"
+          "cancelled": "ملغى",
+          "wrong_number": "رقم خاطئ",
+          "abandoned": "أُغلقت المكالمة دون نتيجة"
         }
       }
     }

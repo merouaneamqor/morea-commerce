@@ -1,5 +1,5 @@
 class OrderConfirmation < ApplicationRecord
-  DISPOSITIONS = %w[pending no_answer callback confirmed cancelled].freeze
+  DISPOSITIONS = %w[pending no_answer callback confirmed cancelled wrong_number].freeze
 
   belongs_to :store
   belongs_to :order

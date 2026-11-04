@@ -103,7 +103,7 @@
                 <%= form_with url: outcome_admin_confirmation_path(order), class: "grid gap-3 max-w-2xl py-2" do |form| %>
                   <div>
                     <%= form.label :outcome, t("admin.confirmations.outcome"), for: "outcome_#{order.id}", class: "block text-sm mb-1" %>
-                    <%= form.select :outcome, ConfirmationAttempt::OUTCOMES.map { |value| [t("admin.confirmations.outcomes.#{value}"), value] }, {}, id: "outcome_#{order.id}", class: "w-full rounded border border-gray-300 p-2" %>
+                    <%= form.select :outcome, ConfirmationAttempt::RESULTS.map { |value| [t("admin.confirmations.outcomes.#{value}"), value] }, {}, id: "outcome_#{order.id}", class: "w-full rounded border border-gray-300 p-2" %>
                   </div>
                   <div>
                     <%= form.label :callback_at, t("admin.confirmations.callback_time"), for: "callback_#{order.id}", class: "block text-sm mb-1" %>

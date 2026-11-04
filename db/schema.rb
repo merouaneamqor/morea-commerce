@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_04_230000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -256,11 +256,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_04_230000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "handled_seconds"
+    t.integer "call_seconds"
     t.index ["order_confirmation_id"], name: "index_confirmation_attempts_on_order_confirmation_id"
     t.index ["store_id"], name: "index_confirmation_attempts_on_store_id"
     t.index ["user_id"], name: "index_confirmation_attempts_on_user_id"
     t.check_constraint "handled_seconds IS NULL OR handled_seconds >= 0", name: "confirmation_attempt_handled_nonnegative"
-    t.check_constraint "outcome::text = ANY (ARRAY['no_answer'::character varying::text, 'callback'::character varying::text, 'confirmed'::character varying::text, 'cancelled'::character varying::text])", name: "confirmation_attempt_outcome"
+    t.check_constraint "call_seconds IS NULL OR call_seconds >= 0", name: "confirmation_attempt_call_seconds_nonnegative"
+    t.check_constraint "outcome::text = ANY (ARRAY['no_answer'::character varying::text, 'callback'::character varying::text, 'confirmed'::character varying::text, 'cancelled'::character varying::text, 'wrong_number'::character varying::text, 'abandoned'::character varying::text])", name: "confirmation_attempt_outcome"
   end
 
   create_table "confirmation_shifts", force: :cascade do |t|
@@ -654,13 +656,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_04_230000) do
     t.datetime "claimed_at"
     t.string "disposition", default: "pending", null: false
     t.datetime "callback_at"
+    t.datetime "call_started_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["assigned_user_id"], name: "index_order_confirmations_on_assigned_user_id"
     t.index ["order_id"], name: "index_order_confirmations_on_order_id", unique: true
     t.index ["store_id", "disposition", "callback_at"], name: "index_confirmation_queue"
     t.index ["store_id"], name: "index_order_confirmations_on_store_id"
-    t.check_constraint "disposition::text = ANY (ARRAY['pending'::character varying::text, 'no_answer'::character varying::text, 'callback'::character varying::text, 'confirmed'::character varying::text, 'cancelled'::character varying::text])", name: "confirmation_disposition"
+    t.check_constraint "disposition::text = ANY (ARRAY['pending'::character varying::text, 'no_answer'::character varying::text, 'callback'::character varying::text, 'confirmed'::character varying::text, 'cancelled'::character varying::text, 'wrong_number'::character varying::text])", name: "confirmation_disposition"
   end
 
   create_table "order_events", force: :cascade do |t|
@@ -718,6 +721,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_04_230000) do
     t.string "customer_phone", null: false
     t.string "customer_city", null: false
     t.string "customer_address", null: false
+    t.string "second_phone", limit: 30
     t.text "notes"
     t.datetime "confirmed_at"
     t.datetime "shipped_at"

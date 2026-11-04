@@ -100,7 +100,9 @@
           "no_answer": "No answer",
           "callback": "Callback",
           "confirmed": "Confirmed",
-          "cancelled": "Cancelled"
+          "cancelled": "Cancelled",
+          "wrong_number": "Wrong number",
+          "abandoned": "Call closed without a result"
         }
       }
     }

@@ -1,0 +1,305 @@
+[
+  {
+    "url": "https://cashod.ma/en/features/advertising",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "68c39e9e316c6be25c17dd3188e46beb788fcd4b28de9ba5524bf67390a92d06"
+  },
+  {
+    "url": "https://cashod.ma/en/features/ai-agent",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "b821f8a65e81a07cbe530b06908b5524499827b302c1c231d62afa0279a2cb5a"
+  },
+  {
+    "url": "https://cashod.ma/en/features/analytics",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "c784af3e2052319e4f815db00c71197392087cdfe3c95f1ecae5f33cb535b547"
+  },
+  {
+    "url": "https://cashod.ma/en/features/auto-confirmation",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "cfd41edab1eac60ad69078d3b4e832aea86cb19c9eb2dd08364d3274af259441"
+  },
+  {
+    "url": "https://cashod.ma/en/features/call-center",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "4c3babcbc76f0c9c4bcd73e066a797494790b64b7b736450e537b8a636516021"
+  },
+  {
+    "url": "https://cashod.ma/en/features/client-management",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "4cd6b2e3142084ca87183befb5746a90ecf3d9121036c72e3b3fc012c959bf02"
+  },
+  {
+    "url": "https://cashod.ma/en/features/delivery-management",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "e4c24716c867110b622d4d9e666907d048cef3d1f898221751eaf0a66a957026"
+  },
+  {
+    "url": "https://cashod.ma/en/features/integrations",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "ceb53a00b1b721bf3a20e3eb42caff40077167c85ba7e58c34e154dc06e3c3f5"
+  },
+  {
+    "url": "https://cashod.ma/en/features/inventory-management",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "f33ea89282c8930f87c0db423d91fe50a5f8d1c8c2b24e1b05938fdd545c3d2f"
+  },
+  {
+    "url": "https://cashod.ma/en/features/multi-language",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "fe88bbec975f725c25cb9c5cc644022c696181cec9a19966b99ef6ff32a65992"
+  },
+  {
+    "url": "https://cashod.ma/en/features/multi-store",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "59bdbfdb5fe48bcdef179d03a537342c7bbfd78404279ce6e16feaa4c9b2fd7b"
+  },
+  {
+    "url": "https://cashod.ma/en/features/order-management",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "5dcbd18c49bd9fd1019d6eb596df57b4f8dee14ecc4ad77c9f43ad9b1e505866"
+  },
+  {
+    "url": "https://cashod.ma/en/features/product-catalog",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "f93a97b921ad6518bf877aaaf5955766e34f1eef743f22f00a63a9534a75a401"
+  },
+  {
+    "url": "https://cashod.ma/en/features/production-planning",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "f46e06fa73c69f5c2d21a69ccdfbd443d027afd4323d82d3a89eb355266541d0"
+  },
+  {
+    "url": "https://cashod.ma/en/features/purchase-orders",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "8ac02c8c69a27df8ac5013eebe37a23755693e324f20afd1ed57779b8435f928"
+  },
+  {
+    "url": "https://cashod.ma/en/features/returns",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "9e329c85d55afee5d912a98e86ae81c4d7c375c5b32200c870278653ac4f1f16"
+  },
+  {
+    "url": "https://cashod.ma/en/features/suppliers",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "79b1746dc424460ab89ed5f60f842232e14cdd42300d0b1e502cb8d7b1d1191e"
+  },
+  {
+    "url": "https://cashod.ma/en/features/user-management",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "e671489e0ce754747cdee0a4a92b3eb434864259dbc702ee6491ee8928d50498"
+  },
+  {
+    "url": "https://cashod.ma/en/features/whatsapp",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "abebaa45d915d24fe06289f1089ee34a3bcbc7f0a7ea94ca4b2eeea008e6584d"
+  },
+  {
+    "url": "https://cashod.ma/en/features/workflows",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "7b8426cdde4e54ea6b029413dc47d91fc178101dbdb31bf1dfdba9a236bb6327"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/ameex",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "4da1805b4836bdd8dfd03aeb931728fb398b97cd2482529da7a8087930a0ae53"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/cathedis",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "b86cde777554f80eb63792fdb2634ac7293488dc792d6a6a59a0ec8b0822606e"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/digylog",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "2641a6d2824acb0e23ba2bc10049d47517ef49149147bd752fca74a0baf64c3e"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/express-relais",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "562c67777d6ec40711970d385423adea1a20ef4e4720ffeec07df6511f37aae5"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/forcelog",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "5234d8c26addad3bc197b5fcec4aa56a1cc2dc882be1fde2dca606e42a1afa14"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/goldcolis",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "6ddee672a606accd91fcfd174991c970b35154df0b995d7983f752c311ec9e60"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/google-ads",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "cb1a544a6f7e229b5f43082ee902075f0e465528bf63d3f3a7e3b1b42deaef0b"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/google-sheets",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "652a03e408872452ccb1406dc3653f52b6a0391e0ad21627d45a7e82321320ea"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/hl-express",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "64ccc721ab918fadf3ddd0e0db4c8bac0edee12016428b7363c26622b9275533"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/kargoexpress",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "fd1394d084d888f670aa579957009729681bcaa7feb285e9cbb83e0050ea6a57"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/lightfunnels",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "82b73095ef4ed0ef074950354ebbd07c3e7a65365ce35498d6322c0f8a9c9ad6"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/livo",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "6183ad9d4607008c8b04bb997da2cb9bde7bc2120823eb0fbdc5aed958d1c05c"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/meta-ads",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "c2215e2c3379cc59541742f7f6df39cd8e621ba88f75edefb6d8b916e69d2d49"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/navex",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "0d33f18b71e543fbfe46dd7f55dfbaedc009e50fbeefcc53099f119ecac5d3b5"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/olivraison",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "e657012690725c59dac5ebe7dbe07b04301ba92801752ad1a03fab05e2042330"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/onesta",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "200410b816817b79545cd954fa64c46a301502f6fed0764ec819d5f5c6e34a27"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/ozonexpress",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "2a154a523c7ddde36b9f7cb5975569e524b8551aa36d0293a16898f426ecb6cb"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/sendit",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "d6ee803a6a1a9fec4acac2ac136b3ff52f18dfd3801f71530cf9a995bae987c3"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/shopify",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "9a921babfd3bbe4485062eb8dfd772d76131ce532a22b5d9e2d8784c592a5fdf"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/snapchat-ads",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "029056139cd066753ebac18b7eaa933e70056d49109a02f6fa47bd18407fb86b"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/speedaf-express",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "862aa5b94f0ee5198d463c1f9247072c3d23ea700ad59b9bed95d98c25fa9273"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/storeep",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "ce3227790c3a1177cc0c058cc248e0feb776ca6d69b0918ab57684a4c1925106"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/tiktok-ads",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "9355950e7b82ba6d6cb9385d4ed79779e7be9e7ef44221c5dcb64350b5d8452e"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/webhook",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "d6da8ef59f1cd711270096e87ceb1c7c47ddd4ccfff9eac61dd99988205175c2"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/whatsapp-business",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "b1f9d21e3f9a8aca4008eccc5fa6dd6c0260f7dcf985f0adee9a5e75f32e0bd0"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/woocommerce",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "6ead8e469505f0b7bc97968f7faf43298fdcf3145e0b580ee74beb0a934eb8fa"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/xpage",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "abd43bda585d618e300be9f60eaa6e9ecf7fbed58ebe51673d7f65b96ca5723f"
+  },
+  {
+    "url": "https://cashod.ma/en/integrations/youcan",
+    "http_status": "200",
+    "retrieved": "2026-10-24",
+    "sha256": "17be44d49dcb47142e86a113a07a440d6e7566d2b76a1491533bc3ba6f5ee1a1"
+  },
+  {
+    "url": "https://api.cashod.ma/api/v1/openapi.json",
+    "retrieved": "2026-10-24",
+    "sha256": "64bf5e1709927e38dae1d363acb5936b0965d8e42b9379f4bff88430eb33d3b9"
+  },
+  {
+    "url": "https://cashod.ma/en/developers",
+    "retrieved": "2026-10-24",
+    "sha256": "a4cd278ea243158546526228bc3e26bd03c6991d68150f5d40c48d64cea351ad"
+  },
+  {
+    "url": "https://cashod.ma/llms-full.txt",
+    "retrieved": "2026-10-24",
+    "sha256": "61b47fdbd885e6027621dbefff6548c9b37ba14d0c4a64c33f106a22136dd09c"
+  }
+]

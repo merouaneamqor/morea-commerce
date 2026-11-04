@@ -1,0 +1,3348 @@
+{
+  "tools": [
+    {
+      "name": "list_stores",
+      "title": "List Stores",
+      "description": "List all stores the user has access to",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "string"
+                },
+                "isActive": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "limit": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_order_stats",
+      "title": "Get Order Stats",
+      "description": "Get order statistics including counts by confirmation status (PENDING, CONFIRMED, CANCELLED) and shipping status (NOT_SHIPPED, SHIPPED, DELIVERED, etc.) with rates",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "totalOrders": {
+            "type": "number"
+          },
+          "pendingOrders": {
+            "type": "number"
+          },
+          "confirmedOrders": {
+            "type": "number"
+          },
+          "shippedOrders": {
+            "type": "number"
+          },
+          "deliveredOrders": {
+            "type": "number"
+          },
+          "cancelledOrders": {
+            "type": "number"
+          },
+          "returnedOrders": {
+            "type": "number"
+          },
+          "returnInProgressOrders": {
+            "type": "number"
+          },
+          "outForDeliveryOrders": {
+            "type": "number"
+          },
+          "failedDeliveryOrders": {
+            "type": "number"
+          },
+          "totalShippedOut": {
+            "type": "number"
+          },
+          "totalRevenue": {
+            "type": "number"
+          },
+          "avgOrderValue": {
+            "type": "number"
+          },
+          "conversionRate": {
+            "type": "number"
+          },
+          "deliveryRate": {
+            "type": "number"
+          },
+          "returnedRate": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_orders",
+      "title": "List Orders",
+      "description": "List orders with optional filtering by status, search term, and pagination",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "status": {
+            "type": "string",
+            "description": "Shipping status filter. Valid values: NOT_SHIPPED, PROCESSING, SHIPPED, OUT_FOR_DELIVERY, SCHEDULED, DELIVERED, RETURN_IN_PROGRESS, RETURNED, FAILED_DELIVERY"
+          },
+          "confirmationStatus": {
+            "type": "string",
+            "description": "Confirmation status filter. Valid values: PENDING, CONFIRMED, CANCELLED, DUPLICATED, FAKE, RESCHEDULED"
+          },
+          "search": {
+            "type": "string",
+            "description": "Search by order ID, customer name, or phone"
+          },
+          "page": {
+            "type": "string",
+            "description": "Page number (default 1)"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Items per page (default 20)"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_order_details",
+      "title": "Get Order Details",
+      "description": "Get detailed information about a specific order including customer, items, shipments, and call logs",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "The order ID"
+          },
+          "storeId": {
+            "type": "string",
+            "description": "Store ID"
+          }
+        },
+        "required": [
+          "orderId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_daily_revenue",
+      "title": "Get Daily Revenue",
+      "description": "Get daily revenue data for charting and trend analysis. Each entry has name (date), revenue, and orders count.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_order_status_distribution",
+      "title": "Get Order Status Distribution",
+      "description": "Get order counts grouped by status for pie/bar charts. Each entry has name, value (count), and color.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_confirmation_stats",
+      "title": "Get Confirmation Stats",
+      "description": "Get order confirmation statistics (pending, confirmed, cancelled, rescheduled, duplicated, fake counts, rates, call metrics)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "pending": {
+            "type": "number"
+          },
+          "confirmed": {
+            "type": "number"
+          },
+          "cancelled": {
+            "type": "number"
+          },
+          "rescheduled": {
+            "type": "number"
+          },
+          "duplicated": {
+            "type": "number"
+          },
+          "fake": {
+            "type": "number"
+          },
+          "confirmedToday": {
+            "type": "number"
+          },
+          "cancelledToday": {
+            "type": "number"
+          },
+          "totalCallsToday": {
+            "type": "number"
+          },
+          "confirmationRate": {
+            "type": "number"
+          },
+          "avgCallDuration": {
+            "type": "number"
+          },
+          "totalCallLogs": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_confirmation_queue",
+      "title": "Get Confirmation Queue",
+      "description": "Get the current queue of orders awaiting confirmation calls, with customer and item details",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "page": {
+            "type": "string",
+            "description": "Page number"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Items per page"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_agent_performance",
+      "title": "Get Agent Performance",
+      "description": "Get performance metrics for confirmation agents (calls made, confirmation rate, average call time)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "agents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "agentId": {
+                  "type": "string"
+                },
+                "agentName": {
+                  "type": "string"
+                },
+                "totalCalls": {
+                  "type": "number"
+                },
+                "confirmed": {
+                  "type": "number"
+                },
+                "cancelled": {
+                  "type": "number"
+                },
+                "completed": {
+                  "type": "number"
+                },
+                "totalDuration": {
+                  "type": "number"
+                },
+                "avgCallTime": {
+                  "type": "number"
+                },
+                "confirmationRate": {
+                  "type": "number"
+                },
+                "currentPendingLoad": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "dateRange": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "agents"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_agent_leaderboard",
+      "title": "Get Agent Leaderboard",
+      "description": "Get ranked leaderboard of confirmation agents by performance",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "leaderboard": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "rank": {
+                  "type": "number"
+                },
+                "agentId": {
+                  "type": "string"
+                },
+                "agentName": {
+                  "type": "string"
+                },
+                "totalCalls": {
+                  "type": "number"
+                },
+                "confirmed": {
+                  "type": "number"
+                },
+                "cancelled": {
+                  "type": "number"
+                },
+                "completed": {
+                  "type": "number"
+                },
+                "totalDuration": {
+                  "type": "number"
+                },
+                "avgCallTime": {
+                  "type": "number"
+                },
+                "confirmationRate": {
+                  "type": "number"
+                },
+                "currentPendingLoad": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "dateRange": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "leaderboard"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_hourly_stats",
+      "title": "Get Hourly Stats",
+      "description": "Get hourly breakdown of confirmation activity for spotting peak hours",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "hourly": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "hour": {
+                  "type": "number"
+                },
+                "confirmed": {
+                  "type": "number"
+                },
+                "cancelled": {
+                  "type": "number"
+                },
+                "calls": {
+                  "type": "number"
+                },
+                "avgDuration": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_dashboard_kpis",
+      "title": "Get Dashboard KPIs",
+      "description": "Get key performance indicators: revenue, orders, confirmation/cancellation/delivery/return rates, average order value, active/new customers, revenue by day, orders by status, top products, low stock alerts, pending confirmations.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string"
+              },
+              "end": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "kpis": {
+            "type": "object",
+            "properties": {
+              "totalRevenue": {
+                "type": "number"
+              },
+              "totalOrders": {
+                "type": "number"
+              },
+              "confirmedOrders": {
+                "type": "number"
+              },
+              "cancelledOrders": {
+                "type": "number"
+              },
+              "confirmationRate": {
+                "type": "number"
+              },
+              "cancellationRate": {
+                "type": "number"
+              },
+              "deliverySuccessRate": {
+                "type": "number"
+              },
+              "returnRate": {
+                "type": "number"
+              },
+              "averageOrderValue": {
+                "type": "number"
+              },
+              "activeCustomers": {
+                "type": "number"
+              },
+              "newCustomers": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          },
+          "revenueByDay": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "revenue": {
+                  "type": "number"
+                },
+                "orders": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "lowStockAlerts": {
+            "type": "number"
+          },
+          "pendingConfirmations": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_revenue_analytics",
+      "title": "Get Revenue Analytics",
+      "description": "Get detailed revenue analytics with breakdowns by period (day/week/month)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          },
+          "granularity": {
+            "type": "string",
+            "description": "Time granularity (daily, weekly, monthly)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string"
+              },
+              "end": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "groupBy": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "period": {
+                  "type": "string"
+                },
+                "revenue": {
+                  "type": "number"
+                },
+                "orders": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_customer_analytics",
+      "title": "Get Customer Analytics",
+      "description": "Get customer analytics: new vs returning breakdown, top customers by spend, geographic distribution by city.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "newVsReturning": {
+            "type": "object",
+            "properties": {
+              "new": {
+                "type": "number"
+              },
+              "returning": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          },
+          "topCustomers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "totalOrders": {
+                  "type": "number"
+                },
+                "totalSpent": {
+                  "type": "number"
+                },
+                "city": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "geographicDistribution": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "city": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_delivery_performance",
+      "title": "Get Delivery Performance",
+      "description": "Get delivery performance by company: total orders, delivered, returned, pending, success rate, return rate, revenue, average delivery days.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "companies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "totalOrders": {
+                  "type": "number"
+                },
+                "delivered": {
+                  "type": "number"
+                },
+                "returned": {
+                  "type": "number"
+                },
+                "pending": {
+                  "type": "number"
+                },
+                "successRate": {
+                  "type": "number"
+                },
+                "returnRate": {
+                  "type": "number"
+                },
+                "revenue": {
+                  "type": "number"
+                },
+                "avgDeliveryDays": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_inventory",
+      "title": "Get Inventory",
+      "description": "Get inventory list with stock levels, optionally filtered by low stock or search term",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "search": {
+            "type": "string",
+            "description": "Search by product name or SKU"
+          },
+          "lowStock": {
+            "type": "string",
+            "description": "Set to \"true\" to show only low stock items"
+          },
+          "page": {
+            "type": "string",
+            "description": "Page number"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Items per page"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "productName": {
+                  "type": "string"
+                },
+                "sku": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number"
+                },
+                "minStock": {
+                  "type": "number"
+                },
+                "isLowStock": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "totalPages": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_inventory_valuation",
+      "title": "Get Inventory Valuation",
+      "description": "Get total inventory valuation with per-product breakdown, lot details, and summary totals.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "valuations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "productId": {
+                  "type": "string"
+                },
+                "productName": {
+                  "type": "string"
+                },
+                "sku": {
+                  "type": "string"
+                },
+                "totalQuantity": {
+                  "type": "number"
+                },
+                "totalValue": {
+                  "type": "number"
+                },
+                "averageCost": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "totalProducts": {
+                "type": "number"
+              },
+              "totalQuantity": {
+                "type": "number"
+              },
+              "totalValue": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_customer_stats",
+      "title": "Get Customer Stats",
+      "description": "Get customer statistics: total, active, blocked (blacklisted), VIP counts, average lifetime value, and top customers.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "totalCustomers": {
+            "type": "number"
+          },
+          "activeCustomers": {
+            "type": "number"
+          },
+          "inactiveCustomers": {
+            "type": "number"
+          },
+          "blockedCustomers": {
+            "type": "number"
+          },
+          "vipCustomers": {
+            "type": "number"
+          },
+          "avgLifetimeValue": {
+            "type": "number"
+          },
+          "topCustomers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "firstName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "totalOrders": {
+                  "type": "number"
+                },
+                "totalSpent": {
+                  "type": "number"
+                },
+                "isBlacklisted": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "search_customers",
+      "title": "Search Customers",
+      "description": "Search and list customers with filtering options",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "search": {
+            "type": "string",
+            "description": "Search by name, email, or phone"
+          },
+          "page": {
+            "type": "string",
+            "description": "Page number"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Items per page"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "firstName": {
+                  "type": "string"
+                },
+                "lastName": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "isBlacklisted": {
+                  "type": "boolean"
+                },
+                "totalOrders": {
+                  "type": "number"
+                },
+                "totalSpent": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "totalPages": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_products",
+      "title": "List Products",
+      "description": "Browse the product catalog with images. Returns product list with name, price, stock, status, and a thumbnail image for each product.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "search": {
+            "type": "string",
+            "description": "Search by product name or SKU"
+          },
+          "category": {
+            "type": "string",
+            "description": "Filter by category"
+          },
+          "stockStatus": {
+            "type": "string",
+            "description": "Filter by stock status (in_stock, low_stock, out_of_stock)"
+          },
+          "page": {
+            "type": "string",
+            "description": "Page number"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Items per page (max 20)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "sku": {
+                  "type": "string"
+                },
+                "retailPrice": {
+                  "type": "number"
+                },
+                "totalStock": {
+                  "type": "number"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "totalPages": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_product_details",
+      "title": "Get Product Details",
+      "description": "Get full product details with all images and variant information.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "description": "Product ID"
+          },
+          "storeId": {
+            "type": "string",
+            "description": "Store ID"
+          }
+        },
+        "required": [
+          "productId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "retailPrice": {
+            "type": "number"
+          },
+          "salePrice": {
+            "type": "number"
+          },
+          "totalStock": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "sku": {
+                  "type": "string"
+                },
+                "size": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "number"
+                },
+                "costPrice": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "order": {
+                  "type": "number"
+                },
+                "type": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_product_stats",
+      "title": "Get Product Stats",
+      "description": "Get product catalog overview: total products, total variants, low/out of stock counts, total inventory value.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "totalProducts": {
+            "type": "number"
+          },
+          "totalVariants": {
+            "type": "number"
+          },
+          "lowStockVariants": {
+            "type": "number"
+          },
+          "outOfStockVariants": {
+            "type": "number"
+          },
+          "totalInventoryValue": {
+            "type": "number"
+          },
+          "availableSources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_top_products",
+      "title": "Get Top Products",
+      "description": "Get best-selling products ranked by revenue. Returns an array with id, name, sales, revenue, and quantity.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Number of top products to return (default 10)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_product_analytics",
+      "title": "Get Product Performance Analytics",
+      "description": "Deep product performance analytics: top selling products and variants, size/color distribution, profit margins, confirmation/return rates, stock velocity, and upsell performance.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          },
+          "productIds": {
+            "type": "string",
+            "description": "Comma-separated product IDs to analyze"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "topSelling": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "product": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "sku": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "totalSold": {
+                  "type": "number"
+                },
+                "revenue": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "topSellingVariants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "variant": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "sku": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "size": {
+                      "type": "string"
+                    },
+                    "color": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "totalSold": {
+                  "type": "number"
+                },
+                "revenue": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_product_drilldown",
+      "title": "Get Product Drilldown",
+      "description": "Deep analysis of a single product: per-variant sales breakdown, daily sales trend, top cities.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "description": "Product ID to drill down into"
+          },
+          "storeId": {
+            "type": "string",
+            "description": "Store ID"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "required": [
+          "productId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "variantId": {
+                  "type": "string"
+                },
+                "sku": {
+                  "type": "string"
+                },
+                "size": {
+                  "type": "string"
+                },
+                "color": {
+                  "type": "string"
+                },
+                "totalSold": {
+                  "type": "number"
+                },
+                "revenue": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "salesTrend": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "totalSold": {
+                  "type": "number"
+                },
+                "revenue": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "topCities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "city": {
+                  "type": "string"
+                },
+                "orderCount": {
+                  "type": "number"
+                },
+                "revenue": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_product_inventory",
+      "title": "Get Product Inventory",
+      "description": "Smart stock overview with inventory levels, min/max thresholds, warehouse info, and low stock flags.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "lowStock": {
+            "type": "string",
+            "description": "Set to \"true\" to show only low stock items"
+          },
+          "search": {
+            "type": "string",
+            "description": "Search by product name or SKU"
+          },
+          "category": {
+            "type": "string",
+            "description": "Filter by category"
+          },
+          "status": {
+            "type": "string",
+            "description": "Filter by status (active, archived)"
+          },
+          "page": {
+            "type": "string",
+            "description": "Page number"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Items per page"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "productId": {
+                  "type": "string"
+                },
+                "productName": {
+                  "type": "string"
+                },
+                "variantId": {
+                  "type": "string"
+                },
+                "variantName": {
+                  "type": "string"
+                },
+                "sku": {
+                  "type": "string"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "number"
+                },
+                "costPrice": {
+                  "type": "number"
+                },
+                "currentStock": {
+                  "type": "number"
+                },
+                "minStock": {
+                  "type": "number"
+                },
+                "maxStock": {
+                  "type": "number"
+                },
+                "warehouse": {
+                  "type": "string"
+                },
+                "warehouseId": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "sold": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "totalPages": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_delivery_companies",
+      "title": "List Delivery Companies",
+      "description": "Browse delivery partners with active status, provider type, and order counts.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "isActive": {
+            "type": "string",
+            "description": "Filter by active status (\"true\" or \"false\")"
+          },
+          "page": {
+            "type": "string",
+            "description": "Page number"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Items per page"
+          },
+          "includeOrderCount": {
+            "type": "string",
+            "description": "Include order count per company (\"true\" or \"false\")"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "providerType": {
+                  "type": "string"
+                },
+                "isActive": {
+                  "type": "boolean"
+                },
+                "logoUrl": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "totalPages": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_delivery_company_stats",
+      "title": "Get Delivery Company Stats",
+      "description": "Overall delivery overview: total companies, active count, total orders handled, shipping revenue, and top companies.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "totalCompanies": {
+            "type": "number"
+          },
+          "activeCompanies": {
+            "type": "number"
+          },
+          "totalOrders": {
+            "type": "number"
+          },
+          "totalShippingRevenue": {
+            "type": "number"
+          },
+          "topCompanies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "orderCount": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_delivery_company_cities",
+      "title": "Get Delivery Company Cities",
+      "description": "City coverage and pricing for a delivery company. Returns an array of cities with name, price, and pickup (ramassage) availability.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "deliveryCompanyId": {
+            "type": "string",
+            "description": "Delivery company ID"
+          },
+          "storeId": {
+            "type": "string",
+            "description": "Store ID"
+          }
+        },
+        "required": [
+          "deliveryCompanyId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "list_shipments",
+      "title": "List Shipments",
+      "description": "Browse shipments with status filter. Supports: PENDING, CREATED, PICKED_UP, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED, FAILED_DELIVERY, RETURN_IN_PROGRESS, RETURNED, CANCELLED. Includes tracking number, recipient, delivery company, and tracking events.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "status": {
+            "type": "string",
+            "description": "Shipment status filter: PENDING, CREATED, PICKED_UP, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED, FAILED_DELIVERY, RETURN_IN_PROGRESS, RETURNED, CANCELLED"
+          },
+          "deliveryCompanyId": {
+            "type": "string",
+            "description": "Filter by delivery company ID"
+          },
+          "search": {
+            "type": "string",
+            "description": "Search by tracking number, order ID, or recipient"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          },
+          "page": {
+            "type": "string",
+            "description": "Page number"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Items per page"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "trackingNumber": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "recipientName": {
+                  "type": "string"
+                },
+                "deliveryCompany": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "totalPages": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_shipment_stats",
+      "title": "Get Shipment Stats",
+      "description": "Shipment statistics: total, delivered/returned/failed counts, success/return rates, status distribution, and weekly performance trend.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "deliveryCompanyId": {
+            "type": "string",
+            "description": "Filter by delivery company"
+          },
+          "status": {
+            "type": "string",
+            "description": "Filter by shipment status"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "totalShipments": {
+            "type": "number"
+          },
+          "deliveredCount": {
+            "type": "number"
+          },
+          "returnedCount": {
+            "type": "number"
+          },
+          "failedCount": {
+            "type": "number"
+          },
+          "successRate": {
+            "type": "number"
+          },
+          "returnRate": {
+            "type": "number"
+          },
+          "pendingPickupCount": {
+            "type": "number"
+          },
+          "inTransitCount": {
+            "type": "number"
+          },
+          "statusDistribution": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "count": {
+                  "type": "number"
+                },
+                "percentage": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "weeklyPerformance": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "delivered": {
+                  "type": "number"
+                },
+                "returned": {
+                  "type": "number"
+                },
+                "failed": {
+                  "type": "number"
+                },
+                "inTransit": {
+                  "type": "number"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_delivery_company_performance",
+      "title": "Get Delivery Company Performance",
+      "description": "Compare delivery company performance. Returns an array with per-company totals: shipments, delivered, returned, failed, success rate.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_shipment_tracking",
+      "title": "Get Shipment Tracking",
+      "description": "Live tracking for a shipment. Returns shipment details and real-time tracking info with events from the delivery provider.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "shipmentId": {
+            "type": "string",
+            "description": "Shipment ID"
+          }
+        },
+        "required": [
+          "shipmentId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "shipment": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "trackingNumber": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "recipientName": {
+                "type": "string"
+              },
+              "recipientCity": {
+                "type": "string"
+              },
+              "codAmount": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          },
+          "trackingInfo": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string"
+              },
+              "rawStatus": {
+                "type": "string"
+              },
+              "deliveryDate": {
+                "type": "string"
+              },
+              "events": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "timestamp": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "location": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_shipment_by_order",
+      "title": "Get Shipment by Order",
+      "description": "Get the shipment linked to a specific order. Returns full shipment with tracking events and delivery company.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "Order ID"
+          },
+          "storeId": {
+            "type": "string",
+            "description": "Store ID"
+          }
+        },
+        "required": [
+          "orderId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "trackingNumber": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "recipientName": {
+            "type": "string"
+          },
+          "recipientCity": {
+            "type": "string"
+          },
+          "codAmount": {
+            "type": "number"
+          },
+          "deliveryCompany": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "providerType": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_delivery_invoices",
+      "title": "List Delivery Invoices",
+      "description": "Browse delivery invoices with amounts, status (PENDING, VERIFIED, PAID, DISPUTED), and delivery company.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "deliveryCompanyId": {
+            "type": "string",
+            "description": "Filter by delivery company ID"
+          },
+          "status": {
+            "type": "string",
+            "description": "Invoice status filter: PENDING, VERIFIED, PAID, DISPUTED"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          },
+          "page": {
+            "type": "string",
+            "description": "Page number"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Items per page"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "amount": {
+                  "type": "number"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "deliveryCompany": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "createdAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "totalPages": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_delivery_invoice_stats",
+      "title": "Get Delivery Invoice Stats",
+      "description": "Invoice summary: total invoices, total amount, and breakdowns by status (pending, paid, disputed).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "deliveryCompanyId": {
+            "type": "string",
+            "description": "Filter by delivery company"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (ISO 8601)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (ISO 8601)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "totalInvoices": {
+            "type": "number"
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "pendingCount": {
+            "type": "number"
+          },
+          "pendingAmount": {
+            "type": "number"
+          },
+          "paidCount": {
+            "type": "number"
+          },
+          "paidAmount": {
+            "type": "number"
+          },
+          "disputedCount": {
+            "type": "number"
+          },
+          "disputedAmount": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "send_order_to_delivery",
+      "title": "Send Order to Delivery",
+      "description": "Send a confirmed order to the assigned delivery company. Creates a shipment with a tracking number.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "Order ID to send to delivery"
+          }
+        },
+        "required": [
+          "orderId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "shipment": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "trackingNumber": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "recipientName": {
+                "type": "string"
+              },
+              "deliveryCompany": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "trackingNumber": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "bulk_send_to_delivery",
+      "title": "Bulk Send to Delivery",
+      "description": "Send multiple confirmed orders to delivery at once. Returns success/failed arrays with tracking numbers and error details.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "orderIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of order IDs to send to delivery"
+          }
+        },
+        "required": [
+          "orderIds"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "orderId": {
+                  "type": "string"
+                },
+                "orderNumber": {
+                  "type": "string"
+                },
+                "customerName": {
+                  "type": "string"
+                },
+                "trackingNumber": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "failed": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "orderId": {
+                  "type": "string"
+                },
+                "orderNumber": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number"
+              },
+              "successCount": {
+                "type": "number"
+              },
+              "failedCount": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "get_shipping_label",
+      "title": "Get Shipping Label",
+      "description": "Get the shipping label URL for an order. The merchant can click the URL to print.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "Order ID"
+          },
+          "format": {
+            "type": "string",
+            "description": "Label format: \"10x10\" or \"4x4\""
+          }
+        },
+        "required": [
+          "orderId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "labelUrl": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "bulk_get_shipping_labels",
+      "title": "Bulk Get Shipping Labels",
+      "description": "Get shipping label URLs for multiple orders at once. Returns label URLs per order and errors for failed ones.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "orderIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Array of order IDs to get labels for"
+          }
+        },
+        "required": [
+          "orderIds"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "orderId": {
+                  "type": "string"
+                },
+                "orderNumber": {
+                  "type": "string"
+                },
+                "trackingNumber": {
+                  "type": "string"
+                },
+                "labelUrl": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "orderId": {
+                  "type": "string"
+                },
+                "orderNumber": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "number"
+              },
+              "success": {
+                "type": "number"
+              },
+              "failed": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "name": "list_whatsapp_accounts",
+      "title": "List WhatsApp Accounts",
+      "description": "List connected WhatsApp Business accounts. Returns account name, phone number, status, and type (META_API or WEB_SESSION).",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "list_whatsapp_templates",
+      "title": "List WhatsApp Templates",
+      "description": "List available WhatsApp message templates for a specific account. Returns template name, language, status (APPROVED/PENDING/REJECTED), category, and body text. The merchant should choose which template to send.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "string",
+            "description": "WhatsApp account ID"
+          }
+        },
+        "required": [
+          "accountId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_no_answer_orders",
+      "title": "Get No-Answer Orders",
+      "description": "Get orders where customers did not answer confirmation calls. Filter by number of no-answer attempts (e.g. \"2\" for exactly 2, \"3,4\" for 3 or 4, \"5+\" for 5 or more). Useful for identifying customers to follow up via WhatsApp.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "storeId": {
+            "type": "string",
+            "description": "Store ID to filter by"
+          },
+          "noAnswerCount": {
+            "type": "string",
+            "description": "No-answer count filter. Examples: \"2\" (exactly 2), \"2,3,4\" (2 or 3 or 4), \"5+\" (5 or more)"
+          },
+          "whatsappContacted": {
+            "type": "string",
+            "description": "Filter by WhatsApp contact status. \"false\" = not yet contacted via WhatsApp (default), \"true\" = already contacted"
+          },
+          "confirmationStatus": {
+            "type": "string",
+            "description": "Confirmation status filter (default: PENDING). Values: PENDING, CONFIRMED, CANCELLED, RESCHEDULED, DUPLICATED, FAKE"
+          },
+          "page": {
+            "type": "string",
+            "description": "Page number"
+          },
+          "limit": {
+            "type": "string",
+            "description": "Items per page"
+          }
+        },
+        "required": [
+          "noAnswerCount"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "send_whatsapp_template",
+      "title": "Send WhatsApp Template",
+      "description": "Send a WhatsApp template message to a single customer. Requires an account ID, template name, and the customer phone number. Optionally link to an order.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "string",
+            "description": "WhatsApp account ID to send from"
+          },
+          "templateName": {
+            "type": "string",
+            "description": "Template name to send"
+          },
+          "contactPhone": {
+            "type": "string",
+            "description": "Customer phone number"
+          },
+          "contactName": {
+            "type": "string",
+            "description": "Customer name"
+          },
+          "customerId": {
+            "type": "string",
+            "description": "Customer ID"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "Order ID to link"
+          },
+          "languageCode": {
+            "type": "string",
+            "description": "Template language (default: en)"
+          }
+        },
+        "required": [
+          "accountId",
+          "templateName",
+          "contactPhone"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "bulk_send_whatsapp_template",
+      "title": "Bulk Send WhatsApp Template",
+      "description": "Send a WhatsApp template message to multiple customers by order IDs. The customer phone number is looked up from each order automatically. Returns success/failed arrays with summary counts.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "string",
+            "description": "WhatsApp account ID to send from"
+          },
+          "templateName": {
+            "type": "string",
+            "description": "Template name to send (merchant must choose)"
+          },
+          "orderIds": {
+            "type": "string",
+            "description": "Comma-separated order IDs to send to"
+          },
+          "languageCode": {
+            "type": "string",
+            "description": "Template language (default: en)"
+          }
+        },
+        "required": [
+          "accountId",
+          "templateName",
+          "orderIds"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "get_order_call_history",
+      "title": "Get Order Call History",
+      "description": "Get the call attempt history for a specific order. Shows each call attempt with outcome (NO_ANSWER, CONFIRMED, CANCELLED, BUSY, VOICEMAIL, etc.), duration, agent, and notes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "description": "Order ID"
+          }
+        },
+        "required": [
+          "orderId"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    }
+  ],
+  "nextCursor": null
+}

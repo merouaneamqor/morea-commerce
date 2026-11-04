@@ -1,0 +1,1380 @@
+[
+  {
+    "method": "GET",
+    "path": "/ad-accounts/allowance",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "used": "int",
+      "limit": "int",
+      "unlimited": "bool"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/ads/unlinked",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "item": null
+      },
+      "total": "int",
+      "page": "int",
+      "totalPages": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/advertising/adsets",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": {
+        "id": "str",
+        "campaignId": "str",
+        "adsetId": "str",
+        "adsetName": "str",
+        "platform": "str",
+        "status": "str",
+        "effectiveStatus": "str",
+        "optimizationGoal": "str",
+        "bidAmount": "NoneType",
+        "dailyBudget": "str",
+        "targeting": {
+          "age_max": "int",
+          "age_min": "int",
+          "age_range": {
+            "type": "array",
+            "item": "int"
+          },
+          "geo_locations": {
+            "countries": {
+              "type": "array",
+              "item": "str"
+            },
+            "location_types": {
+              "type": "array",
+              "item": "str"
+            }
+          },
+          "user_age_unknown": "bool",
+          "targeting_automation": {
+            "advantage_audience": "int",
+            "individual_setting": {
+              "age": "int",
+              "gender": "int"
+            }
+          }
+        },
+        "spend": "str",
+        "impressions": "int",
+        "clicks": "int",
+        "conversions": "int",
+        "revenue": "str",
+        "roas": "str",
+        "ctr": "str",
+        "cpc": "str",
+        "cpa": "NoneType",
+        "createdAt": "str",
+        "updatedAt": "str",
+        "campaign": {
+          "id": "str",
+          "adAccountId": "str",
+          "storeId": "str",
+          "isSplit": "bool",
+          "storeSource": "NoneType",
+          "campaignId": "str",
+          "campaignName": "str",
+          "platform": "str",
+          "objective": "str",
+          "status": "str",
+          "effectiveStatus": "str",
+          "dailyBudget": "NoneType",
+          "lifetimeBudget": "NoneType",
+          "startTime": "str",
+          "endTime": "NoneType",
+          "targeting": {},
+          "spend": "str",
+          "impressions": "int",
+          "clicks": "int",
+          "conversions": "int",
+          "revenue": "str",
+          "roas": "str",
+          "ctr": "str",
+          "cpc": "str",
+          "cpa": "str",
+          "createdAt": "str",
+          "updatedAt": "str",
+          "adAccount": {
+            "id": "str",
+            "accountName": "str",
+            "platform": "str"
+          }
+        },
+        "_count": {
+          "ads": "int"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/advertising/campaigns",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "campaigns": {
+        "type": "array",
+        "item": null
+      },
+      "total": "int",
+      "page": "int",
+      "limit": "int",
+      "totalPages": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/advertising/campaigns/needs-store-count",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "count": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/advertising/dashboard/metrics",
+    "status": "500",
+    "store_scoped": true,
+    "response_shape": {
+      "statusCode": "int",
+      "message": "str"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/advanced",
+    "status": "400",
+    "store_scoped": true,
+    "response_shape": {
+      "message": "str",
+      "error": "str",
+      "statusCode": "int"
+    },
+    "validation_errors": "storeId is required"
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/customers",
+    "status": "400",
+    "store_scoped": true,
+    "response_shape": {
+      "message": "str",
+      "error": "str",
+      "statusCode": "int"
+    },
+    "validation_errors": "storeId is required"
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/dashboard-kpis",
+    "status": "400",
+    "store_scoped": true,
+    "response_shape": {
+      "message": "str",
+      "error": "str",
+      "statusCode": "int"
+    },
+    "validation_errors": "storeId is required"
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/products",
+    "status": "400",
+    "store_scoped": true,
+    "response_shape": {
+      "message": "str",
+      "error": "str",
+      "statusCode": "int"
+    },
+    "validation_errors": "storeId is required"
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/revenue",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "period": {
+        "start": "str",
+        "end": "str"
+      },
+      "groupBy": "str",
+      "data": {
+        "type": "array",
+        "item": {
+          "period": "str",
+          "revenue": "int",
+          "orders": "int"
+        }
+      },
+      "total": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api-keys",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/apps/installed",
+    "status": "403",
+    "store_scoped": true,
+    "response_shape": {
+      "message": "str",
+      "error": "str",
+      "statusCode": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/apps/marketplace",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": {
+        "id": "str",
+        "name": "str",
+        "slug": "str",
+        "description": "str",
+        "icon": "str",
+        "category": "str",
+        "type": "str",
+        "version": "str",
+        "routePath": "str",
+        "component": "str",
+        "remoteUrl": "NoneType",
+        "iframeUrl": "NoneType",
+        "requiredPermissions": {
+          "type": "array",
+          "item": null
+        },
+        "settings": "NoneType",
+        "isPublished": "bool",
+        "isActive": "bool",
+        "isFree": "bool",
+        "showInMenu": "bool",
+        "menuLabel": "str",
+        "menuIcon": "str",
+        "menuOrder": "int",
+        "createdAt": "str",
+        "updatedAt": "str",
+        "routes": {
+          "type": "array",
+          "item": {
+            "icon": "str",
+            "name": "str",
+            "path": "str",
+            "allowedRoles": {
+              "type": "array",
+              "item": "str"
+            }
+          }
+        },
+        "isInstalled": "bool",
+        "isEnabled": "bool"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/delivery-assignment-rules",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": {
+        "id": "str",
+        "name": "str",
+        "description": "NoneType",
+        "enabled": "bool",
+        "priority": "int",
+        "conditions": {
+          "type": "array",
+          "item": {
+            "type": "str",
+            "value": "str",
+            "operator": "str"
+          }
+        },
+        "deliveryCompanyId": "str",
+        "storeId": "str",
+        "organizationId": "str",
+        "createdAt": "str",
+        "updatedAt": "str",
+        "createdById": "str",
+        "deliveryCompany": {
+          "id": "str",
+          "name": "str",
+          "code": "str",
+          "logoUrl": "str",
+          "accountName": "str"
+        },
+        "store": {
+          "id": "str",
+          "name": "str"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/delivery-assignment-rules/stats",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "total": "int",
+      "active": "int",
+      "inactive": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/delivery-men",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/notifications",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "item": {
+          "id": "str",
+          "type": "str",
+          "title": "str",
+          "message": "str",
+          "data": {
+            "items": {
+              "type": "array",
+              "item": "dict"
+            },
+            "deliveryCompanyId": "str"
+          },
+          "isRead": "bool",
+          "readAt": "NoneType",
+          "userId": "str",
+          "organizationId": "str",
+          "storeId": "NoneType",
+          "createdAt": "str",
+          "updatedAt": "str"
+        }
+      },
+      "meta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/notifications/preferences",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "id": "str",
+      "userId": "str",
+      "organizationId": "str",
+      "emailEnabled": "bool",
+      "pushEnabled": "bool",
+      "smsEnabled": "bool",
+      "orderUpdates": "bool",
+      "deliveryAlerts": "bool",
+      "lowStockAlerts": "bool",
+      "customerMessages": "bool",
+      "weeklyReports": "bool",
+      "createdAt": "str",
+      "updatedAt": "str"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/notifications/unread-count",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "count": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/order-confirmations/counts",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "orders": "int",
+      "leads": "int",
+      "oldestLeadAt": "NoneType"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/subscription/usage-stats",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "subscription": {
+        "isActive": "bool",
+        "isExpired": "bool",
+        "isTrialing": "bool",
+        "isPastDue": "bool",
+        "needsUpgrade": "bool",
+        "planName": "str",
+        "currentPeriodEnd": "str",
+        "features": {
+          "core": {
+            "type": "array",
+            "item": "str"
+          }
+        },
+        "limits": {
+          "maxStores": "int",
+          "maxUsers": "int",
+          "maxOrders": "int",
+          "maxProducts": "int",
+          "maxWorkflows": "int",
+          "maxCampaignMessages": "int",
+          "maxAdAccounts": "int"
+        }
+      },
+      "currentUsage": {
+        "orders": "int",
+        "products": "int",
+        "stores": "int",
+        "users": "int",
+        "adAccounts": "int"
+      },
+      "limits": {
+        "maxStores": "int",
+        "maxUsers": "int",
+        "maxOrders": "int",
+        "maxProducts": "int",
+        "maxWorkflows": "int",
+        "maxCampaignMessages": "int",
+        "maxAdAccounts": "int"
+      },
+      "percentages": {
+        "orders": "float",
+        "products": "float",
+        "stores": "float",
+        "users": "int",
+        "adAccounts": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/support/tickets/my",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/users/roles",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": {
+        "id": "str",
+        "name": "str",
+        "displayName": "str",
+        "description": "str",
+        "permissions": {
+          "apps": {
+            "type": "array",
+            "item": "str"
+          },
+          "help": {
+            "type": "array",
+            "item": "str"
+          },
+          "team": {
+            "type": "array",
+            "item": "str"
+          },
+          "roles": {
+            "type": "array",
+            "item": "str"
+          },
+          "users": {
+            "type": "array",
+            "item": "str"
+          },
+          "orders": {
+            "type": "array",
+            "item": "str"
+          },
+          "stores": {
+            "type": "array",
+            "item": "str"
+          },
+          "ai-chat": {
+            "type": "array",
+            "item": "str"
+          },
+          "billing": {
+            "type": "array",
+            "item": "str"
+          },
+          "clients": {
+            "type": "array",
+            "item": "str"
+          },
+          "delivery": {
+            "type": "array",
+            "item": "str"
+          },
+          "expenses": {
+            "type": "array",
+            "item": "str"
+          },
+          "products": {
+            "type": "array",
+            "item": "str"
+          },
+          "settings": {
+            "type": "array",
+            "item": "str"
+          },
+          "analytics": {
+            "type": "array",
+            "item": "str"
+          },
+          "dashboard": {
+            "type": "array",
+            "item": "str"
+          },
+          "inventory": {
+            "type": "array",
+            "item": "str"
+          },
+          "suppliers": {
+            "type": "array",
+            "item": "str"
+          },
+          "accounting": {
+            "type": "array",
+            "item": "str"
+          },
+          "warehouses": {
+            "type": "array",
+            "item": "str"
+          },
+          "advertising": {
+            "type": "array",
+            "item": "str"
+          },
+          "call-center": {
+            "type": "array",
+            "item": "str"
+          },
+          "integrations": {
+            "type": "array",
+            "item": "str"
+          },
+          "delivery-runs": {
+            "type": "array",
+            "item": "str"
+          },
+          "purchase-orders": {
+            "type": "array",
+            "item": "str"
+          },
+          "purchase_orders": {
+            "type": "array",
+            "item": "str"
+          }
+        },
+        "isSystem": "bool",
+        "isActive": "bool",
+        "organizationId": "NoneType",
+        "createdAt": "str",
+        "updatedAt": "str"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/users/settings",
+    "status": "404",
+    "store_scoped": true,
+    "response_shape": {
+      "message": "str",
+      "error": "str",
+      "statusCode": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/whatsapp-ai-agent/customer-memory",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/whatsapp-ai-agent/error-logs",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/whatsapp/conversations",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "item": {
+          "id": "str",
+          "accountId": "str",
+          "customerId": "str",
+          "contactPhone": "str",
+          "contactName": "str",
+          "contactNameSetByUser": "bool",
+          "contactProfilePic": "NoneType",
+          "isGroup": "bool",
+          "groupSubject": "NoneType",
+          "groupDescription": "NoneType",
+          "status": "str",
+          "isUnread": "bool",
+          "unreadCount": "int",
+          "isArchived": "bool",
+          "archivedAt": "NoneType",
+          "archivedBy": "NoneType",
+          "isPinned": "bool",
+          "pinnedAt": "NoneType",
+          "lastCustomerMessageAt": "str",
+          "canSendFreeform": "bool",
+          "assignedToUserId": "str",
+          "labels": {
+            "type": "array",
+            "item": null
+          },
+          "allowedProductIds": {
+            "type": "array",
+            "item": null
+          },
+          "altPhones": {
+            "type": "array",
+            "item": null
+          },
+          "lastMessagePreview": "str",
+          "lastMessageAt": "str",
+          "referral": "NoneType",
+          "adId": "NoneType",
+          "ctwaClid": "NoneType",
+          "adProductName": "NoneType",
+          "openerSentAt": "NoneType",
+          "createdAt": "str",
+          "updatedAt": "str",
+          "account": {
+            "id": "str",
+            "name": "str",
+            "phoneNumber": "str"
+          },
+          "customer": {
+            "id": "str",
+            "firstName": "str",
+            "lastName": "str",
+            "phone": "str",
+            "profilePicture": "NoneType",
+            "totalOrders": "int",
+            "isBlacklisted": "bool"
+          }
+        }
+      },
+      "meta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/whatsapp/conversations/archived",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "item": null
+      },
+      "meta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/whatsapp/meta-config",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "appId": "str",
+      "configId": "str"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/workflows",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "item": {
+          "id": "str",
+          "storeId": "str",
+          "organizationId": "str",
+          "name": "str",
+          "description": "NoneType",
+          "isActive": "bool",
+          "isTemplate": "bool",
+          "definition": {
+            "edges": {
+              "type": "array",
+              "item": "dict"
+            },
+            "nodes": {
+              "type": "array",
+              "item": "dict"
+            }
+          },
+          "triggerType": "str",
+          "triggerConfig": "NoneType",
+          "maxExecutionsPerDay": "NoneType",
+          "cooldownMinutes": "NoneType",
+          "executeOnce": "bool",
+          "executionCount": "int",
+          "successCount": "int",
+          "failureCount": "int",
+          "lastExecutedAt": "str",
+          "lastSuccessAt": "str",
+          "lastFailureAt": "str",
+          "version": "int",
+          "createdBy": "NoneType",
+          "createdAt": "str",
+          "updatedAt": "str"
+        }
+      },
+      "meta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/workflows/executions/list",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "data": {
+        "type": "array",
+        "item": {
+          "id": "str",
+          "workflowId": "str",
+          "workflowVersion": "int",
+          "triggerType": "str",
+          "entityType": "str",
+          "entityId": "str",
+          "chainDepth": "int",
+          "triggeredByWorkflowId": "NoneType",
+          "status": "str",
+          "currentNodeId": "NoneType",
+          "context": {
+            "to": "str",
+            "from": "str",
+            "orderId": "str",
+            "storeId": "str",
+            "carrierTo": "str",
+            "shipmentId": "str",
+            "carrierFrom": "str",
+            "organizationId": "str"
+          },
+          "startedAt": "str",
+          "completedAt": "str",
+          "scheduledFor": "NoneType",
+          "output": "NoneType",
+          "error": "NoneType",
+          "errorDetails": "NoneType",
+          "retryCount": "int",
+          "maxRetries": "int",
+          "nextRetryAt": "NoneType",
+          "createdAt": "str",
+          "updatedAt": "str",
+          "workflow": {
+            "name": "str",
+            "triggerType": "str"
+          },
+          "steps": {
+            "type": "array",
+            "item": {
+              "id": "str",
+              "executionId": "str",
+              "nodeId": "str",
+              "nodeType": "str",
+              "nodeName": "str",
+              "stepKey": "str",
+              "status": "str",
+              "order": "int",
+              "input": "dict",
+              "output": "dict",
+              "startedAt": "str",
+              "completedAt": "str",
+              "durationMs": "int",
+              "error": "NoneType",
+              "errorCode": "NoneType",
+              "delayUntil": "NoneType",
+              "createdAt": "str",
+              "updatedAt": "str"
+            }
+          }
+        }
+      },
+      "meta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/workflows/stats",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "totalWorkflows": "int",
+      "activeWorkflows": "int",
+      "totalExecutions": "int",
+      "successfulExecutions": "int",
+      "failedExecutions": "int",
+      "successRate": "float",
+      "recentExecutions": {
+        "type": "array",
+        "item": {
+          "id": "str",
+          "workflowId": "str",
+          "workflowVersion": "int",
+          "triggerType": "str",
+          "entityType": "str",
+          "entityId": "str",
+          "chainDepth": "int",
+          "triggeredByWorkflowId": "NoneType",
+          "status": "str",
+          "currentNodeId": "NoneType",
+          "context": {
+            "to": "str",
+            "from": "str",
+            "orderId": "str",
+            "storeId": "str",
+            "carrierTo": "str",
+            "shipmentId": "str",
+            "carrierFrom": "str",
+            "organizationId": "str"
+          },
+          "startedAt": "str",
+          "completedAt": "str",
+          "scheduledFor": "NoneType",
+          "output": "NoneType",
+          "error": "NoneType",
+          "errorDetails": "NoneType",
+          "retryCount": "int",
+          "maxRetries": "int",
+          "nextRetryAt": "NoneType",
+          "createdAt": "str",
+          "updatedAt": "str",
+          "workflow": {
+            "name": "str"
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/workflows/templates",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": {
+        "id": "str",
+        "name": "str",
+        "displayName": "str",
+        "description": "str",
+        "category": "str",
+        "group": "str",
+        "definition": {
+          "edges": {
+            "type": "array",
+            "item": {
+              "id": "str",
+              "source": "str",
+              "target": "str"
+            }
+          },
+          "nodes": {
+            "type": "array",
+            "item": {
+              "id": "str",
+              "name": "str",
+              "type": "str",
+              "config": "dict",
+              "position": "dict"
+            }
+          }
+        },
+        "triggerType": "str",
+        "defaultConfig": "NoneType",
+        "icon": "str",
+        "color": "str",
+        "isPopular": "bool",
+        "displayOrder": "int",
+        "usageCount": "int",
+        "isActive": "bool",
+        "createdAt": "str",
+        "updatedAt": "str"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/integrations?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": {
+        "id": "str",
+        "name": "str",
+        "type": "str",
+        "config": {
+          "shopId": "int",
+          "currency": "str",
+          "shopName": "str",
+          "syncType": "str",
+          "timezone": "str",
+          "shopEmail": "str",
+          "shopDomain": "str",
+          "accessToken": "str",
+          "connectedAt": "str",
+          "importOrders": "bool",
+          "syncSettings": {
+            "autoSync": "bool",
+            "syncType": "str",
+            "syncInterval": "int",
+            "orderImportRange": "str",
+            "productSourceIntegrationId": "NoneType"
+          },
+          "syncDirection": "str",
+          "syncFrequency": "str",
+          "lastConnectedAt": "str",
+          "updateInventory": "bool",
+          "autoSyncProducts": "bool",
+          "orderImportRange": "str",
+          "connectedByUserId": "str",
+          "initialSyncCompleted": "bool"
+        },
+        "isActive": "bool",
+        "storeId": "str",
+        "organizationId": "str",
+        "lastSyncAt": "str",
+        "lastProductSyncAt": "str",
+        "createdAt": "str",
+        "updatedAt": "str",
+        "lastSyncStatus": "str",
+        "totalOrdersSynced": "int",
+        "totalProductsSynced": "int",
+        "totalSyncAttempts": "int",
+        "totalSyncFailures": "int",
+        "autoSync": "bool",
+        "lastSyncError": "str",
+        "deactivationReason": "NoneType",
+        "deactivatedAt": "NoneType",
+        "syncFrequencyMinutes": "int",
+        "externalId": "NoneType",
+        "totalCategoriesSynced": "int",
+        "store": {
+          "id": "str",
+          "name": "str"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/ad-accounts?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": {
+        "id": "str",
+        "storeId": "str",
+        "stores": {
+          "type": "array",
+          "item": {
+            "id": "str",
+            "name": "str"
+          }
+        },
+        "platform": "str",
+        "accountId": "str",
+        "accountName": "str",
+        "currency": "str",
+        "timezone": "str",
+        "status": "str",
+        "lastSyncAt": "str",
+        "syncInterval": "int",
+        "syncPaused": "bool",
+        "syncError": "NoneType",
+        "createdAt": "str",
+        "updatedAt": "str",
+        "campaignCount": "int",
+        "totalSpend": "float"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/custom-metrics?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/ads/linked-products?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": {
+        "id": "str",
+        "name": "str",
+        "sku": "str",
+        "retailPrice": "int",
+        "costPrice": "int",
+        "image": "str",
+        "currency": "str",
+        "metrics": {
+          "totalSpend": "float",
+          "totalImpressions": "int",
+          "totalClicks": "int",
+          "totalConversions": "int",
+          "totalRevenue": "float",
+          "roas": "float",
+          "cpa": "float"
+        },
+        "adsCount": "int",
+        "campaignsCount": "int",
+        "campaigns": {
+          "type": "array",
+          "item": {
+            "id": "str",
+            "campaignId": "str",
+            "campaignName": "str",
+            "status": "str",
+            "platform": "str"
+          }
+        },
+        "ads": {
+          "type": "array",
+          "item": {
+            "id": "str",
+            "adId": "str",
+            "adName": "str",
+            "status": "str",
+            "creativeType": "str",
+            "thumbnailUrl": "str",
+            "isAutoLinked": "bool",
+            "spend": "int",
+            "impressions": "int",
+            "clicks": "int",
+            "conversions": "int",
+            "revenue": "int",
+            "roas": "int",
+            "campaign": {
+              "id": "str",
+              "campaignName": "str",
+              "platform": "str"
+            },
+            "adSet": {
+              "id": "str",
+              "adsetName": "str"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/delivery/overview?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "range": {
+        "from": "str",
+        "to": "str"
+      },
+      "carriers": {
+        "type": "array",
+        "item": {
+          "id": "str",
+          "name": "str",
+          "accountName": "str",
+          "logoUrl": "str",
+          "range": {
+            "n": "int"
+          },
+          "status": {
+            "type": "array",
+            "item": {
+              "st": "str",
+              "n": "int",
+              "cod": "int"
+            }
+          },
+          "daily": {
+            "type": "array",
+            "item": {
+              "dt": "str",
+              "n": "int",
+              "del": "int",
+              "ret": "int",
+              "back": "int",
+              "fail": "int"
+            }
+          },
+          "weekday": {
+            "type": "array",
+            "item": {
+              "dow": "int",
+              "n": "int",
+              "del": "int",
+              "ret": "int",
+              "back": "int"
+            }
+          },
+          "cash": {
+            "collected": "int",
+            "paid": "int",
+            "owed": "int",
+            "fees": "int",
+            "retfees": "int",
+            "delfees": "int",
+            "inflight": "int",
+            "retvalue": "int",
+            "returnFeeSource": {
+              "invoice": "int",
+              "config": "int",
+              "none": "int"
+            },
+            "collectedN": "int",
+            "paidN": "int",
+            "paidNet": "int",
+            "owedN": "int",
+            "owedNet": "int",
+            "owedRetN": "int"
+          },
+          "aging": {
+            "a": "int",
+            "b": "int",
+            "c": "int"
+          },
+          "payout": {
+            "days": "float",
+            "n": "int"
+          },
+          "returnCostConfigured": "bool",
+          "leadtime": {
+            "type": "array",
+            "item": {
+              "b": "str",
+              "n": "int"
+            }
+          },
+          "stuck": {
+            "n": "int",
+            "cod": "int",
+            "retpending": "int",
+            "retold": "int",
+            "notFound": "int"
+          },
+          "cities": {
+            "type": "array",
+            "item": {
+              "city": "str",
+              "n": "int",
+              "del": "int",
+              "ret": "int",
+              "back": "int",
+              "fee": "int",
+              "days": "float"
+            }
+          },
+          "products": {
+            "type": "array",
+            "item": {
+              "p": "str",
+              "n": "int",
+              "del": "int",
+              "ret": "int",
+              "back": "int"
+            }
+          },
+          "value": {
+            "type": "array",
+            "item": {
+              "o": "int",
+              "n": "int",
+              "del": "int",
+              "ret": "int",
+              "back": "int"
+            }
+          },
+          "reasons": {
+            "type": "array",
+            "item": {
+              "r": "str",
+              "n": "int"
+            }
+          },
+          "reasonsOther": {
+            "type": "array",
+            "item": null
+          },
+          "sources": {
+            "type": "array",
+            "item": {
+              "src": "str",
+              "n": "int",
+              "del": "int",
+              "ret": "int",
+              "back": "int"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/planning/calendar?from=2026-10-01&to=2026-10-31",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "timezone": "str",
+      "fields": {
+        "type": "array",
+        "item": "str"
+      },
+      "days": {
+        "type": "array",
+        "item": {
+          "date": "str",
+          "orders": "int",
+          "confirmedOrders": "int",
+          "units": "int",
+          "productCount": "int",
+          "topProducts": {
+            "type": "array",
+            "item": {
+              "name": "str",
+              "variant": "str",
+              "quantity": "int"
+            }
+          },
+          "products": {
+            "type": "array",
+            "item": {
+              "key": "str",
+              "name": "str",
+              "variant": "str",
+              "quantity": "int",
+              "confirmedQuantity": "int",
+              "times": "list"
+            }
+          }
+        }
+      },
+      "entries": {
+        "type": "array",
+        "item": {
+          "key": "str",
+          "id": "str",
+          "orderNumber": "str",
+          "kind": "str",
+          "date": "str",
+          "time": "str",
+          "minutes": "int",
+          "confirmed": "bool",
+          "units": "int",
+          "title": "str",
+          "customerName": "str",
+          "city": "str",
+          "itemCount": "int"
+        }
+      },
+      "truncated": "bool",
+      "unscheduled": "int"
+    }
+  }
+]

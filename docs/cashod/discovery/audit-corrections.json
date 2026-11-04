@@ -1,0 +1,278 @@
+[
+  {
+    "method": "GET",
+    "path": "/accounting/overview?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "revenue": "int",
+      "cogs": "int",
+      "cogsBasis": "str",
+      "deliveryCosts": "int",
+      "grossProfit": "int",
+      "grossMargin": "float",
+      "advertising": "float",
+      "totalExpenses": "int",
+      "netProfit": "float",
+      "netMargin": "float",
+      "orderCount": "int",
+      "avgOrderValue": "float",
+      "trends": {
+        "type": "array",
+        "item": {
+          "date": "str",
+          "revenue": "int",
+          "cogs": "int",
+          "advertising": "int",
+          "expenses": "int",
+          "profit": "int"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/accounting/cash-flow?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "cashIn": {
+        "codCollected": "int",
+        "advancePayments": "int",
+        "onlinePayments": "int",
+        "total": "int"
+      },
+      "cashOut": {
+        "supplierPayments": "int",
+        "expensePayments": "int",
+        "deliveryPayments": "int",
+        "total": "int"
+      },
+      "netCashFlow": "int",
+      "trends": {
+        "type": "array",
+        "item": {
+          "date": "str",
+          "cashIn": "int",
+          "cashOut": "int",
+          "net": "int"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/accounting/cogs-breakdown?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "products": {
+        "type": "array",
+        "item": {
+          "productId": "str",
+          "productName": "str",
+          "sku": "str",
+          "quantityShipped": "int",
+          "quantityWithoutCost": "int",
+          "unitCost": "int",
+          "totalCogs": "int",
+          "totalRevenue": "int",
+          "variants": {
+            "type": "array",
+            "item": {
+              "variantKey": "str",
+              "label": "str",
+              "sku": "str",
+              "quantityShipped": "int",
+              "quantityWithoutCost": "int",
+              "unitCost": "int",
+              "totalCogs": "int"
+            }
+          },
+          "margin": "float",
+          "cogsPercentage": "float"
+        }
+      },
+      "totalCogs": "int",
+      "totalRevenue": "int",
+      "overallMargin": "float"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/accounting/inventory?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "totalInventoryValue": "int",
+      "totalUnitsInStock": "int",
+      "deadStockValue": "int",
+      "deadStockPercent": "int",
+      "topProducts": {
+        "type": "array",
+        "item": {
+          "productId": "str",
+          "productName": "str",
+          "sku": "str",
+          "unitsInStock": "int",
+          "unitCost": "int",
+          "totalValue": "int",
+          "percentOfInventory": "float"
+        }
+      },
+      "inTransitValue": "int",
+      "inTransitUnits": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/accounting/payables?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "total": "int",
+      "supplierDues": {
+        "type": "array",
+        "item": null
+      },
+      "aging": {
+        "type": "array",
+        "item": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/accounting/pnl?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "revenue": {
+        "productSales": "int",
+        "shipping": "int",
+        "discounts": "int",
+        "total": "int"
+      },
+      "cogs": {
+        "productCosts": "int",
+        "total": "int"
+      },
+      "grossProfit": "int",
+      "grossMargin": "float",
+      "advertising": "float",
+      "deliveryCosts": "int",
+      "expenses": {
+        "type": "array",
+        "item": {
+          "category": "str",
+          "amount": "float",
+          "percentage": "float"
+        }
+      },
+      "totalExpenses": "int",
+      "operatingProfit": "float",
+      "operatingMargin": "float",
+      "netProfit": "float",
+      "netMargin": "float"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/accounting/receivables?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "total": "int",
+      "byDeliveryCompany": {
+        "type": "array",
+        "item": {
+          "deliveryCompanyId": "str",
+          "deliveryCompanyName": "str",
+          "deliveryCompanyLogo": "str",
+          "pendingAmount": "int",
+          "orderCount": "int",
+          "oldestOrder": "str"
+        }
+      },
+      "codSettlements": {
+        "type": "array",
+        "item": {
+          "id": "str",
+          "invoiceNumber": "str",
+          "deliveryCompanyName": "str",
+          "deliveryCompanyLogo": "str",
+          "totalAmount": "int",
+          "paidAmount": "int",
+          "status": "str",
+          "invoiceDate": "str",
+          "paidAt": "NoneType"
+        }
+      },
+      "settlementsTotal": "int",
+      "settlementsMeta": {
+        "total": "int",
+        "page": "int",
+        "limit": "int",
+        "totalPages": "int"
+      },
+      "aging": {
+        "type": "array",
+        "item": {
+          "range": "str",
+          "amount": "int",
+          "count": "int",
+          "percentage": "float"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/planning/calendar?startDate=2026-10-01&endDate=2026-10-31",
+    "status": "400",
+    "store_scoped": true,
+    "response_shape": {
+      "message": "str",
+      "error": "str",
+      "statusCode": "int"
+    },
+    "validation_errors": "Dates must be YYYY-MM-DD."
+  },
+  {
+    "method": "GET",
+    "path": "/planning/day?date=2026-10-24",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "date": "str",
+      "timezone": "str",
+      "fields": {
+        "type": "array",
+        "item": "str"
+      },
+      "units": "int",
+      "products": {
+        "type": "array",
+        "item": null
+      },
+      "orders": {
+        "type": "array",
+        "item": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/delivery-companies/template-cities?provider=SENDIT",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "type": "array",
+      "item": {
+        "id": "str",
+        "cityName": "str",
+        "cityCode": "str"
+      }
+    }
+  }
+]

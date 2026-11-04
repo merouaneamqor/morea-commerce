@@ -1,0 +1,1887 @@
+[
+  {
+    "method": "POST",
+    "path_expression": "\"/auth/login\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/auth/login/verify-2fa\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/auth/demo-login\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/auth/register\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/auth/me\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/profile\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/milestones/revenue\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/password\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/users/break-status\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/break-status\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/users/agents\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/assign\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/reassign-fresh\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/unassign\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/orders/auto-assign?${a.toString()}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/organization\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/organization/branding/upload\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/users/organization/custom-domain\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/users/organization/custom-domain/verify\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "\"/users/organization/custom-domain\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/users/settings\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/settings/notifications\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/users/settings/appearance\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/customers\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/customers/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/customers\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/customers/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/customers/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/customers/${t}/block`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/customers/${t}/unblock`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "\"/customers/blacklist-by-phone\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/customers/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/customers/${t}/addresses`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/products\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/products/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/products/refresh-cache\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/products\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/products/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/products/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/products/upload-image\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/workflows/media\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/workflows/options/cities\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/products/variants/${t}/stock`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/products/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/products/analytics/top-products\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/inventory\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/inventory\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/inventory/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/inventory/${t}/adjust`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/inventory/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/inventory/adjust\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/inventory/return\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/inventory/lots/${t}/cost`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/inventory/lots/bulk-cost\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/inventory/lots/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/inventory/fifo-cost/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/inventory/movements/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/inventory/valuation\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/planning/calendar\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/planning/day\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/products/${t}/sync-to-youcan`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/products/${t}/recost-preview`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/products/${t}/recost`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/products/${t}/sync-to-shopify`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/categories\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/categories/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/categories\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/categories/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/categories/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/size-groups\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/size-groups/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/size-groups\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/size-groups/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/size-groups/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/size-groups/preview-assignment\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/size-groups/assign-product\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/size-groups/unlink-product/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/orders/${encodeURIComponent(t)}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/orders/duplicates/${encodeURIComponent(t)}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/duplicates-by-phone\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/orders/customer-history/${encodeURIComponent(t)}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/export\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/export/templates\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/export/templates\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/orders/export/templates/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/orders/${encodeURIComponent(t)}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/orders/${encodeURIComponent(t)}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/merge\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/reroute/candidates\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/reroute/orders/${encodeURIComponent(t)}/accept`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/reroute/orders/${encodeURIComponent(t)}/dismiss`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/reroute/settings\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "\"/reroute/settings\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/split-parcels/settings\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "\"/split-parcels/settings\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/orders/call-log\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/badge-counts\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/analytics/daily-revenue\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/analytics/status-distribution\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/orders/assignment-stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/stores\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/stores/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/stores\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/stores/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/stores/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/stores/${t}/generate-defaults`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/stores/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/stores/${t}/status-configurations`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/stores/${t}/status-configurations`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/delivery-companies\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery-companies/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-companies\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-companies/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/delivery-companies/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/delivery-companies/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/delivery-companies/phone-reputation\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/delivery-companies/${t}/upload-logo`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery-companies/${t}/cities`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/delivery-companies/template-cities\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-companies/${t}/cities/${e}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-companies/${t}/cities/bulk`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/delivery-companies/${t}/cities/${e}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/delivery-companies/${t}/cities`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/delivery-companies/${t}/cities/${e}/ramassage`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-companies/assign-to-store\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery-companies/${t}/stores`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/delivery-companies/${t}/stores`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/delivery-companies/${t}/stores/${e}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/delivery-companies/${t}/test-connection`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/delivery-companies/status-mapping/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/delivery-companies/test-connection-with-credentials\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/warehouses\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/warehouses/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/warehouses\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/warehouses/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/warehouses/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/warehouses/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/warehouses/${t}/inventory`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/stock-items\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/stock-items/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/stock-items\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/stock-items/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/stock-items/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/stock-items/${t}/link`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/stock-items/${t}/unlink`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/dc-warehouse-stock/mappings\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/dc-warehouse-stock/mappings/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/dc-warehouse-stock/mappings\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/dc-warehouse-stock/mappings/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/dc-warehouse-stock/mappings/bulk-delete\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/dc-warehouse-stock/mappings/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/dc-warehouse-stock/mappings/${t}/stock`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/dc-warehouse-stock/components/${t}/stock`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/dc-warehouse-stock/bulk-update-stock\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/dc-warehouse-stock/sync/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/dc-warehouse-stock/product/${t}/breakdown`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/dc-warehouse-stock/mappings/bulk\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/dc-warehouse-stock/dc-products/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/dc-warehouse-stock/summary\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/shipments\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/shipments/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/shipments\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/shipments/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/shipments/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/shipments/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/users/${t}/stores`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/store-access\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/store-access/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/store-access/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/store-access/stores/${t}/users`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/returns\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/returns/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/returns/search\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/returns/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/returns/delivery-companies\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/returns/${t}/verify`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/returns/bulk-verify\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/returns/${t}/mark-returned`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/returns/bulk-mark-returned\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/returns\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/returns/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/returns/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/returns\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/returns/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/returns/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/suppliers\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/suppliers/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/suppliers/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/suppliers/by-product/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/suppliers\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/suppliers/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/suppliers/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/suppliers/${t}/products`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/suppliers/products/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/suppliers/products/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/suppliers/${t}/bulk-link-products`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/purchase-orders\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/purchase-orders/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/purchase-orders/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/purchase-orders\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/items/${e}/unlink-dc-stock`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/purchase-orders/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/submit`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/confirm`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/receive`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/purchase-orders/${t}/payment`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/cancel`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/purchase-orders/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/purchase-orders/${t}/payments`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/purchase-orders/${t}/payments`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/purchase-orders/payments/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/purchase-orders/payments/${t}/proof-url`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/accounts\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp-ai-agent/accounts/${t}/settings`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/whatsapp-ai-agent/accounts/${t}/settings`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp-ai-agent/accounts/${t}/delivery-cities`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp-ai-agent/knowledge/sync\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/knowledge/status\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/voices\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp-ai-agent/voice/preview\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/error-logs\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/tools\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/config-templates\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/available-models\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/product-media/products\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/product-media\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp-ai-agent/product-media/upload\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/product-media/opener\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/product-media/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/ad-mappings\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/ad-mappings/ad-suggestions\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp-ai-agent/ad-mappings\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp-ai-agent/ad-mappings/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/ad-mappings/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/customer-memory\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp-ai-agent/customer-memory/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/customer-memory/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/wallet\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/rate-card\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/transactions\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/usage\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/byok-usage\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/ai-billing/topup\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/ai-billing/checkout\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/ai-billing/status\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/datasets\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp-ai-agent/datasets\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/datasets/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp-ai-agent/datasets/${t}/documents`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp-ai-agent/datasets/${t}/documents`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp-ai-agent/datasets/${t}/documents/upload`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/datasets/${t}/documents/${e}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/ai-knowledge/products\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp-ai-agent/products/${t}/ai-knowledge`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp-ai-agent/products/${t}/ai-knowledge`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp-ai-agent/products/${t}/ai-knowledge/upload`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp-ai-agent/products/${t}/ai-knowledge/${e}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp-ai-agent/products/${t}/ai-knowledge/${e}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp-ai-agent/sav/tickets\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp-ai-agent/sav/tickets/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp-ai-agent/sav/tickets/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/accounts\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/accounts/all\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/business-profile`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/business-profile`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/business-profile/photo`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/embedded-signup\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/exchange-token\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/embedded-signup-token\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/available-numbers\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/meta-config\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/web-session\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/init-session`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/disconnect-session`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/reconnect-session`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/accounts/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/templates/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/accounts/test-connection\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/sync-templates`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/register-phone`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/stores`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/stores/${e}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/accounts/${t}/stores/${e}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/stores`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/users`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/users`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}/permissions`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}/product-restrictions`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}/product-restrictions`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}/delivery-company-restrictions`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/accounts/${t}/users/${e}/delivery-company-restrictions`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/conversations\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/conversations/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/conversations\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/status`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/assign`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/products`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/link-customer`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/unlink-customer`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/conversations/archived\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/archive`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/unarchive`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/pin`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/unpin`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/whatsapp/conversations/${t}/name`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/conversations/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/blocked-contacts\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/conversations/${t}/block`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/blocked-contacts/${encodeURIComponent(t)}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/contacts/${encodeURIComponent(t)}/blocked`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/conversations/${t}/messages`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/text\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/media\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/upload\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/template\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/location\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/messages/forward\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/messages/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/templates`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/quick-replies`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/templates\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/whatsapp/templates/defaults\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/accounts/${t}/submit-default-templates`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/whatsapp/accounts/${t}/default-template-drafts`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "`/whatsapp/accounts/${t}/default-template-drafts`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/accounts/${t}/default-template-drafts/${encodeURIComponent(a)}/${encodeURIComponent(e)}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/whatsapp/templates/submit\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/whatsapp/templates/${t}/meta`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/whatsapp/templates/${t}/refresh`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/notifications\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/notifications/unread-count\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/notifications/${t}/read`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/notifications/mark-all-read\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/notifications/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "\"/notifications\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/notifications/preferences\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PUT",
+    "path_expression": "\"/notifications/preferences\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/expenses\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/expenses/stats\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/expenses/categories\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/expenses/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/expenses\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/expenses\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/expenses/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/expenses/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/expenses/${t}/upload-invoice`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/expenses/${t}/invoice-url`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/expenses/${t}/invoice`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/recurring-expenses\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/recurring-expenses/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/recurring-expenses\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/recurring-expenses/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/recurring-expenses/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "PATCH",
+    "path_expression": "`/recurring-expenses/${t}/toggle-active`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "`/recurring-expenses/${t}/generate`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/recurring-expenses/${t}/expenses`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/overview\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/pnl\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/cash-flow\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/receivables\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/cogs-breakdown\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/payables\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/accounting/inventory\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/support/tickets\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/support/tickets/my\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "`/support/tickets/${t}`",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "GET",
+    "path_expression": "\"/api-keys\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "POST",
+    "path_expression": "\"/api-keys\"",
+    "evidence": "public frontend client; not live verified"
+  },
+  {
+    "method": "DELETE",
+    "path_expression": "`/api-keys/${t}`",
+    "evidence": "public frontend client; not live verified"
+  }
+]

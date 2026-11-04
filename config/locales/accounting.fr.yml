@@ -30,7 +30,7 @@ fr:
       expenses: "Total dépenses"
       margin: "Marge bénéficiaire"
     subs:
-      revenue_diff: "%{amount} %{currency} vs période précédente"
+      revenue_diff: "%{amount} %{currency}"
       revenue_none: "%{count} commandes livrées"
       goods_share: "%{pct} % du CA"
       gross: "CA − marchandise"

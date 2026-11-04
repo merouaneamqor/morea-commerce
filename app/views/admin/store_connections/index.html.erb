@@ -160,8 +160,8 @@
   </div>
 </section>
 
-<div data-modal="stores" hidden class="fixed inset-0 z-50 grid place-items-center bg-[#1f2430]/30 p-4 backdrop-blur-sm">
-  <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl" role="dialog" aria-modal="true">
+<div data-modal="stores" hidden class="lg-scrim fixed inset-0 z-50 grid place-items-center p-4">
+  <div class="lg-panel w-full max-w-md rounded-2xl p-6" role="dialog" aria-modal="true">
     <div class="mb-1 flex items-center justify-between">
       <h2 class="text-lg font-bold text-[#1f2430]"><%= t("seller_integrations.connect_store") %></h2>
       <button type="button" data-close-modal class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="✕">✕</button>
@@ -184,8 +184,8 @@
 </div>
 
 <% platforms.each do |platform| %>
-  <div data-modal="<%= platform[:key] %>" hidden class="fixed inset-0 z-50 grid place-items-center bg-[#1f2430]/30 p-4 backdrop-blur-sm">
-    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl" role="dialog" aria-modal="true">
+  <div data-modal="<%= platform[:key] %>" hidden class="lg-scrim fixed inset-0 z-50 grid place-items-center p-4">
+    <div class="lg-panel w-full max-w-md rounded-2xl p-6" role="dialog" aria-modal="true">
       <div class="mb-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <img src="<%= platform[:logo] %>" alt="" class="size-10 rounded-lg object-contain">
@@ -199,7 +199,7 @@
   </div>
 <% end %>
 
-<div data-delivery-modal hidden class="fixed inset-0 z-50 grid place-items-center bg-[#1f2430]/30 p-4 backdrop-blur-sm"
+<div data-delivery-modal hidden class="lg-scrim fixed inset-0 z-50 grid place-items-center p-4"
      data-catalog="<%= catalog.to_json %>" data-accounts="<%= accounts_json.to_json %>" data-strings="<%= modal_strings.to_json %>"
      data-currency="<%= currency %>" data-action="<%= seller_delivery_accounts_path %>" data-edit-path="/livraison/societes/"
      data-sendit="<%= t("seller_integrations.sendit").except(:errors).merge(browser_error: t("seller_integrations.sendit.errors.browser"), server_error: t("seller_integrations.sendit.errors.server_error", status: "%{status}"), detail_label: t("seller_integrations.sendit.errors.detail_label")).to_json %>"
@@ -357,7 +357,7 @@
     var render = function () {
       var step = state.provider ? 2 : 1, editing = !!state.account;
       var stepCls = function (n) { return "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold " + (step === n ? "bg-[#a8432e] text-white" : "text-[#8a8380]"); };
-      root.innerHTML = '<div class="flex max-h-[92dvh] w-full max-w-2xl flex-col rounded-2xl bg-white shadow-2xl" role="dialog" aria-modal="true"><div class="flex items-center justify-between border-b border-[#f0ebe7] px-6 py-4"><div class="flex items-center gap-2">' +
+      root.innerHTML = '<div class="lg-panel flex max-h-[92dvh] w-full max-w-2xl flex-col rounded-2xl" role="dialog" aria-modal="true"><div class="flex items-center justify-between border-b border-[#f0ebe7] px-6 py-4"><div class="flex items-center gap-2">' +
         (editing ? "" : '<span class="' + stepCls(1) + '">1 · ' + esc(S["Fournisseur"]) + '</span><span class="h-px w-6 bg-[#e8e3df]"></span>') + '<span class="' + stepCls(2) + '">' + (editing ? "" : "2 · ") + esc(S["Détails"]) + "</span></div>" +
         '<button type="button" data-close class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="✕">✕</button></div><div class="overflow-y-auto px-6 py-5">' + (state.done ? senditDone() : step === 1 ? step1() : state.provider === "sendit" ? senditStep() : step2()) + "</div></div>";
     };

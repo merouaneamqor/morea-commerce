@@ -37,6 +37,21 @@ RSpec.describe "Seller integrations page", type: :request do
     expect(document.at_css("aside nav ul a.font-semibold")["href"]).to eq("/integrations")
   end
 
+  it "gives every dialog and the mobile drawer the shared Liquid Glass look, with solid fallbacks in the stylesheet" do
+    get "/integrations"
+    page = document
+    expect(page.at_css("link[href*='liquid_glass']")).to be_present
+    scrims = page.css(".lg-scrim")
+    expect(scrims.length).to eq(1 + 1 + 3 + 1) # drawer, store chooser, three platform dialogs... and the delivery dialog
+    expect(page.css("[data-modal] .lg-panel").length).to eq(4)
+    expect(page.css("[data-seller-drawer].lg-scrim, [data-delivery-modal].lg-scrim").length).to eq(2)
+    expect(response.body).to include("lg-panel flex max-h-[92dvh]")
+    expect(response.body).not_to match(/bg-white shadow-2xl/)
+
+    css = Rails.root.join("app/assets/stylesheets/liquid_glass.css").read
+    expect(css).to include("backdrop-filter: blur(28px) saturate(1.6)", "@supports not", "prefers-reduced-transparency: reduce")
+  end
+
   describe "TikTok Ads button" do
     it "names the missing TikTok settings, and never pretends to connect" do
       post "/admin/tiktok-ads/connect"

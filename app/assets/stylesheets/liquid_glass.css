@@ -1,0 +1,35 @@
+/*
+  Liquid Glass: one shared look for floating surfaces (dialogs and their scrim) in the seller workspace.
+  Translucent white with strong blur and saturation, a bright top edge and a soft shadow, so what is behind
+  stays recognisable without hurting the text on the panel (82% to 70% white keeps contrast above AA on the
+  page background). Flat page cards stay flat, as on seallo.
+  Fallbacks: no backdrop-filter support, or "reduce transparency" in the OS settings, gives solid surfaces.
+*/
+.lg-scrim {
+  background: rgb(31 36 48 / .22);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  backdrop-filter: blur(10px) saturate(1.2);
+}
+
+.lg-panel {
+  position: relative;
+  border: 1px solid rgb(255 255 255 / .7);
+  background: linear-gradient(180deg, rgb(255 255 255 / .82), rgb(255 255 255 / .70));
+  -webkit-backdrop-filter: blur(28px) saturate(1.6);
+  backdrop-filter: blur(28px) saturate(1.6);
+  box-shadow:
+    0 30px 80px -24px rgb(31 36 48 / .35),
+    0 2px 6px rgb(31 36 48 / .06),
+    inset 0 1px 0 rgb(255 255 255 / .9),
+    inset 0 -1px 0 rgb(31 36 48 / .04);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lg-scrim { background: rgb(31 36 48 / .45); }
+  .lg-panel { background: #fff; border-color: #ece4dc; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .lg-scrim { background: rgb(31 36 48 / .45); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .lg-panel { background: #fff; border-color: #ece4dc; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

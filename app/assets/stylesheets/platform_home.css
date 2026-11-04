@@ -282,3 +282,17 @@
 .platform-sm-only { display: inline; }
 .platform-lg-only { display: none; }
 @media (min-width: 640px) { .platform-sm-only { display: none; } .platform-lg-only { display: inline; } }
+
+/* Liquid Glass fallbacks: solid surfaces without backdrop-filter support or with "reduce transparency". */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .platform-header { background: rgb(255 255 255 / .95); }
+  .platform-partners { background: #fff; }
+  .platform-modal { background: rgb(31 36 48 / .45); }
+  .platform-dialog { background: #fff; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .platform-header { background: rgb(255 255 255 / .95); backdrop-filter: none; }
+  .platform-partners { background: #fff; backdrop-filter: none; }
+  .platform-modal { background: rgb(31 36 48 / .45); backdrop-filter: none; }
+  .platform-dialog { background: #fff; backdrop-filter: none; }
+}

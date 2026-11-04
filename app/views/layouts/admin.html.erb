@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;800&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "admin_pwa" %>
+    <%= stylesheet_link_tag "liquid_glass" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -68,7 +69,7 @@
         <div class="mx-auto flex max-w-[1400px] gap-5 p-4 lg:p-5">
           <aside class="sticky top-5 hidden h-[calc(100dvh-2.5rem)] w-56 shrink-0 lg:block"><%= sidebar %></aside>
 
-          <div data-seller-drawer hidden class="fixed inset-0 z-50 bg-[#1f2430]/30 p-4 backdrop-blur-sm lg:hidden">
+          <div data-seller-drawer hidden class="lg-scrim fixed inset-0 z-50 p-4 lg:hidden">
             <div class="h-full w-64"><%= sidebar %></div>
           </div>
 

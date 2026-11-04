@@ -22,8 +22,12 @@ RSpec.describe "Seller integrations page", type: :request do
       webhook_secret: SecureRandom.hex(16), active: active, external_store_id: (provider == "youcan" ? SecureRandom.uuid : nil) }.merge(extra))
   end
 
-  def cards
-    document.css("section").first.css("article")
+  def stores
+    document.css("[data-connected-stores] li")
+  end
+
+  def chooser_rows
+    document.at_css("[data-modal=stores]").css("[data-connect]").to_h { |button| [ button["data-connect"], button.text.strip ] }
   end
 
   it "is served at the seallo URL with the integrations entry highlighted" do
@@ -31,9 +35,19 @@ RSpec.describe "Seller integrations page", type: :request do
     expect(response).to have_http_status(:ok)
     expect(document.at_css("h1").text).to eq("Intégrations API")
     expect(document.at_css("aside nav ul a.font-semibold")["href"]).to eq("/integrations")
-    expect(cards.map { |card| card.at_css("h3").text }).to eq(%w[Shopify WooCommerce YouCan])
-    expect(cards.map { |card| card.text.include?("Non connectée") }).to all(be(true))
     expect(response.body).to include("Bientôt disponible")
+  end
+
+  it "shows online stores, delivery companies and ad networks as the same wide card" do
+    get "/integrations"
+    sections = document.css("main section")
+    expect(sections.map { |section| section.at_css("h2").text }).to eq([ "Boutique en ligne", "Sociétés de livraison", "Publicité" ])
+    summaries = sections.map { |section| section.at_css("span.font-semibold.block").text }
+    expect(summaries).to eq([ "Shopify, WooCommerce, YouCan", "Sendit, Ozon Express, Cathedis, Ameex et 4 autres", "Meta Ads, TikTok Ads" ])
+    expect(sections.map { |section| section.at_css("span.-space-x-2").css("img").map { |img| img["alt"] }.reject(&:empty?) }.first).to eq(%w[Shopify WooCommerce YouCan])
+    expect(sections.map { |section| section.at_css("span.-space-x-2").css("img").length }).to eq([ 3, 4, 2 ])
+    expect(sections.first.at_css("[data-stores-open]").text).to include("Connecter une boutique →")
+    expect(stores).to be_empty
   end
 
   describe "delivery companies dialog" do
@@ -63,6 +77,36 @@ RSpec.describe "Seller integrations page", type: :request do
       expect(catalog["regions"]).to eq("africa" => "Afrique", "america" => "Amérique")
       expect(catalog["countries"].keys).to eq(%w[MA TN CR PA])
       expect(providers["sendit"]).to include("name" => "Sendit", "logo" => "/images/partners/sendit.png")
+    end
+
+    it "offers six Morocco carriers in order and flags the other seven as unavailable" do
+      get "/integrations"
+      providers = catalog["providers"]
+      offered = providers.reject { |key, p| key == "other" || p["unavailable"] }
+      expect(offered.select { |_, p| p["countries"].include?("MA") }.values.map { |p| p["name"] }).to eq([ "Sendit", "Ozon Express", "Ameex", "Cathedis", "Digylog", "Olivraison" ])
+      expect(providers.select { |_, p| p["unavailable"] }.keys).to match_array(%w[forcelog onesta kargo speedaf goldcolis expressrelais livo])
+      expect(response.body).to include('!catalog.providers[k].unavailable')
+    end
+
+    it "gives Digylog and Olivraison their real logos and falls back to a letter badge when an image fails" do
+      get "/integrations"
+      providers = catalog["providers"]
+      expect(providers["digylog"]["logo"]).to match(%r{\A/assets/carriers/digylog-\h+\.png\z})
+      expect(providers["olivraison"]["logo"]).to match(%r{\A/assets/carriers/olivraison-\h+\.png\z})
+      expect(providers["navex"]["logo"]).to match(%r{\A/assets/carriers/navex-\h+\.png\z})
+      expect(providers["hlexpress"]["logo"]).to match(%r{\A/assets/carriers/hlexpress-\h+\.png\z})
+      expect(providers.values_at("sendit", "ozon", "ameex", "cathedis").map { |p| p["logo"] }).to all(start_with("/images/partners/"))
+      expect(response.body).to include("data-logo-img", "rounded-full", 'addEventListener("error"')
+    end
+
+    it "keeps an account on a removed carrier working and marks it as currently unavailable" do
+      account = store.delivery_accounts.create!(provider: "forcelog", name: "ForceLog historique", account_type: "normal", is_active: true)
+      get "/integrations"
+      row = document.at_css("[data-account='#{account.id}']")
+      expect(row.text).to include("ForceLog", "Actuellement indisponible", "Connectée")
+      expect(account.reload.provider).to eq("forcelog")
+      patch "/livraison/societes/#{account.id}", params: { delivery_account: { name: "ForceLog renommé" } }
+      expect(account.reload.name).to eq("ForceLog renommé")
     end
 
     it "connects a provider with its API keys, keeps them encrypted, and shows it connected on the same page" do
@@ -141,14 +185,16 @@ RSpec.describe "Seller integrations page", type: :request do
     connect("youcan", "foreign-#{suffix}.example.test", store: other)
 
     get "/integrations"
-    expect(cards.map { |card| card.text.include?("Connectée") && !card.text.include?("Non connectée") }).to eq([ false, true, false ])
-    expect(cards[1].text).to include("boutique-#{suffix}.example.test")
+    expect(stores.length).to eq(1)
+    expect(stores.first.text).to include("boutique-#{suffix}.example.test", "WooCommerce", "Connectée")
+    expect(stores.first.text).not_to include("Non connectée")
+    expect(chooser_rows).to eq("shopify" => "Connecter", "woocommerce" => "+ Ajouter une autre boutique", "youcan" => "Connecter")
     expect(response.body).not_to include("foreign-#{suffix}", "old-#{suffix}")
   end
 
   it "sends each platform's connect button to the existing connect flow" do
     get "/integrations"
-    modals = document.css("[data-modal]").to_h { |modal| [ modal["data-modal"], modal.at_css("a")["href"] ] }
+    modals = document.css("[data-modal]").reject { |modal| modal["data-modal"] == "stores" }.to_h { |modal| [ modal["data-modal"], modal.at_css("a")["href"] ] }
     expect(modals).to eq("shopify" => "/admin/seallo/connect", "woocommerce" => "/admin/woocommerce/connect",
       "youcan" => "/admin/store_connections/new?provider=youcan")
     expect(document.css("[data-connect]").map { |button| button["data-connect"] }).to eq(%w[shopify woocommerce youcan])
@@ -162,7 +208,8 @@ RSpec.describe "Seller integrations page", type: :request do
     patch "/admin/store_connections/#{connection.id}", params: { operation: "disconnect" }
     expect(connection.reload.active).to be(false)
     get "/integrations"
-    expect(cards[1].text).to include("Non connectée")
+    expect(stores).to be_empty
+    expect(chooser_rows["woocommerce"]).to eq("Connecter")
   end
 
   it "does not let one workspace disconnect another's connection" do

@@ -11,6 +11,13 @@
   </div>
 </div>
 
+<% if @needs_clock_in %>
+  <div class="admin-banner mb-4 flex bg-[#fcf0dc] text-[#9a6412] flex-wrap items-center justify-between gap-3" role="status" data-clock-in-required>
+    <span><%= t("admin.confirmations.clock_in_required") %></span>
+    <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path, class: "admin-btn" %>
+  </div>
+<% end %>
+
 <div class="admin-card overflow-hidden">
   <nav class="admin-tabs px-4" aria-label="<%= t('admin.confirmations.filters') %>">
     <% @filters.each do |filter| %>
@@ -76,14 +83,18 @@
             <td class="is-numeric">
               <div class="flex flex-col items-end gap-2">
                 <% if mine %>
-                  <% if confirmation.claimed_at %>
-                    <p role="timer" class="tabular-nums text-sm" data-controller="shift-timer" data-shift-timer-started-at-value="<%= confirmation.claimed_at.iso8601 %>"><%= shift_clock(Time.current - confirmation.claimed_at) %></p>
+                  <% if confirmation.call_started_at %>
+                    <p role="timer" class="tabular-nums text-sm" data-controller="shift-timer" data-shift-timer-started-at-value="<%= confirmation.call_started_at.iso8601 %>"><%= shift_clock(Time.current - confirmation.call_started_at) %></p>
+                    <%= button_to t("admin.confirmations.abandon_call"), abandon_call_admin_confirmation_path(order), class: "admin-btn-secondary" %>
+                  <% else %>
+                    <%= button_to t("admin.confirmations.start_call"), call_admin_confirmation_path(order), class: "admin-btn", disabled: @needs_clock_in, data: { call_order_id: order.id } %>
+                    <%= button_to t("admin.confirmations.release"), release_admin_confirmation_path(order), class: "admin-btn-secondary" %>
                   <% end %>
-                  <%= button_to t("admin.confirmations.release"), release_admin_confirmation_path(order), class: "admin-btn-secondary" %>
                 <% elsif confirmation&.assigned_user_id %>
                   <span class="admin-muted text-sm"><%= t("admin.confirmations.claimed_elsewhere") %></span>
                 <% elsif confirmation.nil? || confirmation.due? %>
-                  <%= button_to t("admin.confirmations.claim"), claim_admin_confirmation_path(order), class: "admin-btn" %>
+                  <%= button_to t("admin.confirmations.claim"), claim_admin_confirmation_path(order), class: "admin-btn disabled:cursor-not-allowed disabled:opacity-50", disabled: @needs_clock_in, title: (t("admin.confirmations.clock_in_required") if @needs_clock_in) %>
+                  <%= button_to t("admin.confirmations.start_call"), call_admin_confirmation_path(order), class: "admin-btn-secondary", disabled: @needs_clock_in, data: { call_order_id: order.id } %>
                 <% else %>
                   <span class="admin-muted text-sm"><%= t("admin.confirmations.not_due") %></span>
                 <% end %>
@@ -93,10 +104,12 @@
           <% if mine %>
             <tr class="bg-[#fafafa]">
               <td colspan="6">
-                <%= form_with url: outcome_admin_confirmation_path(order), class: "grid gap-3 max-w-2xl py-2" do |form| %>
+                <% call_open = confirmation.call_started_at.present? %>
+                <%= form_with url: (call_open ? finish_call_admin_confirmation_path(order) : outcome_admin_confirmation_path(order)), class: "grid gap-3 max-w-2xl py-2", data: { call_form_order_id: (order.id if call_open) } do |form| %>
+                  <% if call_open %><p class="font-medium" role="status"><%= t("admin.confirmations.call_in_progress") %></p><% end %>
                   <div>
                     <%= form.label :outcome, t("admin.confirmations.outcome"), for: "outcome_#{order.id}", class: "block text-sm mb-1" %>
-                    <%= form.select :outcome, ConfirmationAttempt::OUTCOMES.map { |value| [t("admin.confirmations.outcomes.#{value}"), value] }, {}, id: "outcome_#{order.id}", class: "w-full rounded border border-gray-300 p-2" %>
+                    <%= form.select :outcome, ConfirmationAttempt::RESULTS.map { |value| [t("admin.confirmations.outcomes.#{value}"), value] }, { include_blank: call_open }, id: "outcome_#{order.id}", required: call_open, class: "w-full rounded border border-gray-300 p-2" %>
                   </div>
                   <div>
                     <%= form.label :callback_at, t("admin.confirmations.callback_time"), for: "callback_#{order.id}", class: "block text-sm mb-1" %>
@@ -108,7 +121,7 @@
                     <%= form.text_area :notes, id: "notes_#{order.id}", maxlength: 2000, rows: 2, class: "w-full rounded border border-gray-300 p-2" %>
                   </div>
                   <p class="admin-muted text-sm"><%= t("admin.confirmations.dispatch_note") %></p>
-                  <%= form.submit t("admin.confirmations.save"), class: "admin-btn justify-self-start" %>
+                  <%= form.submit t(call_open ? "admin.confirmations.finish_call" : "admin.confirmations.save"), class: "admin-btn justify-self-start disabled:cursor-not-allowed disabled:opacity-50", disabled: @needs_clock_in %>
                 <% end %>
               </td>
             </tr>

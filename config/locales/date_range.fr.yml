@@ -1,0 +1,30 @@
+fr:
+  date_range:
+    choose: "Choisir une période"
+    start: "Date de début"
+    end: "Date de fin"
+    apply: "Appliquer"
+    cancel: "Annuler"
+    custom: "Plage personnalisée"
+    pick_end: "Choisissez la date de fin"
+    previous_month: "Mois précédent"
+    next_month: "Mois suivant"
+    days:
+      one: "%{count} jour"
+      other: "%{count} jours"
+    presets:
+      today: "Aujourd'hui"
+      yesterday: "Hier"
+      last_3: "3 derniers jours"
+      last_7: "7 derniers jours"
+      last_30: "30 derniers jours"
+      this_month: "Ce mois"
+      last_month: "Mois dernier"
+      this_year: "Cette année"
+      q1: "T1 (Jan-Mar)"
+      q2: "T2 (Avr-Juin)"
+      q3: "T3 (Juil-Sep)"
+      q4: "T4 (Oct-Déc)"
+    months: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
+    months_short: ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]
+    weekdays: ["lu", "ma", "me", "je", "ve", "sa", "di"]

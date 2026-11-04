@@ -3,7 +3,7 @@ module Confirmations
   # Every query is scoped to the store and to this agent only.
   class AgentHome
     # Points per recorded outcome. A no-answer still earns a little for the effort.
-    POINTS = { "confirmed" => 10, "callback" => 3, "cancelled" => 2, "no_answer" => 1 }.freeze
+    POINTS = { "confirmed" => 10, "callback" => 3, "cancelled" => 2, "no_answer" => 1, "wrong_number" => 1 }.freeze
     RECENT_LIMIT = 10
 
     def initialize(store:, user:, range:)
@@ -23,7 +23,8 @@ module Confirmations
     end
 
     def average_handled_seconds
-      times = attempts.filter_map(&:handled_seconds)
+      # The measured call time when there is one (call panel), else the time from claim to outcome.
+      times = attempts.filter_map { |attempt| attempt.call_seconds || attempt.handled_seconds }
       times.empty? ? nil : times.sum / times.size
     end
 

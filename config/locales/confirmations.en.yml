@@ -38,6 +38,7 @@
         "my_shift": "My shift",
         "on_shift_since": "On shift since %{time}",
         "off_shift": "You are off shift. Clock in to start tracking your hours.",
+        "clock_in_required": "Clock in to claim or handle orders.",
         "clock_in": "Clock in",
         "clock_out": "Clock out",
         "clocked_in": "Shift started.",
@@ -99,7 +100,9 @@
           "no_answer": "No answer",
           "callback": "Callback",
           "confirmed": "Confirmed",
-          "cancelled": "Cancelled"
+          "cancelled": "Cancelled",
+          "wrong_number": "Wrong number",
+          "abandoned": "Call closed without a result"
         }
       }
     }

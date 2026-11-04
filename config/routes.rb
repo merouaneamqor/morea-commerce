@@ -10,6 +10,11 @@ Rails.application.routes.draw do
   post "webhooks/seallo", to: "webhooks/seallo#create"
   post "webhooks/store_orders/:token", to: "webhooks/store_orders#create", as: :store_orders_webhook
   post "webhooks/shopify/uninstalled", to: "webhooks/shopify_lifecycle#uninstall", as: :shopify_uninstalled
+
+  # Meta Login redirect URI, data deletion callback and its public status page (platform apex).
+  get "auth/meta/callback", to: "meta_oauth#callback", as: :meta_oauth_callback
+  post "auth/meta/data-deletion", to: "webhooks/meta_data_deletion#create", as: :meta_data_deletion
+  get "auth/meta/data-deletion/:code", to: "meta_oauth#deletion_status", as: :meta_data_deletion_status, constraints: { code: /[0-9a-f]{24}/ }
   post "consent/tracking", to: "consents#tracking", as: :tracking_consent
 
   get "/.well-known/oauth-protected-resource/platform/mcp", to: "platform_oauth/metadata#protected_resource"
@@ -72,6 +77,8 @@ Rails.application.routes.draw do
   get "/dashboard", to: "admin/dashboard#show", as: :seller_dashboard
   get "/clients", to: "admin/customers#index", as: :seller_customers
   get "/integrations", to: "admin/store_connections#index", as: :seller_integrations
+  get "/comptabilite", to: "admin/accounting#show", as: :seller_accounting
+  get "/comptabilite/export", to: "admin/accounting#export", as: :seller_accounting_export, defaults: { format: "csv" }
   post "/livraison/societes", to: "admin/delivery_accounts#create", as: :seller_delivery_accounts
   patch "/livraison/societes/:id", to: "admin/delivery_accounts#update", as: :seller_delivery_account
   delete "/livraison/societes/:id", to: "admin/delivery_accounts#destroy"
@@ -209,6 +216,9 @@ Rails.application.routes.draw do
       end
       member do
         post :claim
+        post :call
+        post :abandon_call
+        post :finish_call
         post :release
         post :outcome
       end
@@ -219,6 +229,7 @@ Rails.application.routes.draw do
         post :sendit_sync_all
         post :shopify_sync_all
         get :product_search
+        post :quick_product
       end
       member do
         post :sendit
@@ -239,6 +250,15 @@ Rails.application.routes.draw do
     resources :carts, only: %i[index show]
 
     get "delivery", to: "delivery#show", as: :delivery
+    post "tiktok-ads/connect", to: "tiktok_ads#connect", as: :connect_tiktok_ads
+    resource :meta_ads, path: "meta-ads", only: :show, controller: "meta_ads" do
+      post :connect
+      post :refresh
+      patch :accounts, action: :select_accounts
+      patch :product_links
+      delete :connection, action: :disconnect
+      get :status if Rails.env.local?
+    end
     resource :advertising, only: :show, controller: "advertising" do
       post :accounts
       patch "accounts/:id", action: :update_account, as: :account

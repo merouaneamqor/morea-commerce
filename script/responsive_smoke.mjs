@@ -10,7 +10,22 @@ const styles = [cssPath, ...["application", "admin_pwa", "platform_home", "seall
 for (const path of styles) assert.ok(existsSync(path), `Missing stylesheet: ${path}`)
 const css = styles.map(path => readFileSync(path, "utf8")).join("\n")
 const long = "CollectionTrèsLongueSansEspaces".repeat(5)
+// Render only the static picker shell; Rails helper output becomes synthetic labels.
+// Classes and panel structure come from the current template, never a duplicate fixture.
+const pickerTemplate = readFileSync(resolve(root, "app/views/admin/shared/_date_range_picker.html.erb"), "utf8")
+const pickerShell = pickerTemplate
+  .replace(/<% date_range_presets[\s\S]*?<% end %>/, '<li><a class="block rounded-lg px-3 py-1.5 text-sm">30 derniers jours</a></li>')
+  .replace(/<%= local_assigns\[:size\][\s\S]*?%>/g, 'h-11 gap-2 rounded-xl px-3 text-sm')
+  .replace(/<%= theme ==[\s\S]*?%>/g, 'border bg-white')
+  .replace(/<%= align ==[\s\S]*?%>/g, 'md:end-0')
+  .replace(/<%=[\s\S]*?%>/g, 'Choisir')
+  .replace(/<%[\s\S]*?%>/g, '')
+const pickerSource = readFileSync(resolve(root, "app/javascript/controllers/date_range_picker_controller.js"), "utf8")
+  .replace(/^import .*$/m, 'class Controller {}')
+  .replace('export default class extends Controller', 'window.RangePicker = class extends Controller')
 const fixtures = {
+  datePicker: `<main class="admin-page seller-page"><div class="flex justify-end p-4">${pickerShell}</div></main>`,
+  accounting: `<main class="admin-page seller-page accounting-page"><section class="grid grid-cols-2 gap-2.5 lg:grid-cols-3 xl:grid-cols-5" data-cards="first">${Array.from({length:5}, (_, i) => `<div class="flex h-[110px] min-w-0 flex-col justify-between rounded-xl px-3.5 py-3" data-card="revenue${i}" data-size="regular"><div class="flex items-center justify-between gap-2"><p class="min-w-0 truncate">Valeur des commandes livrées</p><span class="whitespace-nowrap" data-change="up">+123,45 %</span></div><p class="flex items-baseline gap-x-1 text-[22px] leading-none font-bold whitespace-nowrap" data-value>123 456 789,99 <span class="text-xs">MAD</span></p><p>Comparaison avec la période précédente</p></div>`).join('')}</section><section class="max-w-[900px] rounded-xl border bg-white p-3" data-income><div class="rounded-lg px-3" data-block="goods"><div class="flex h-9 items-center justify-between gap-3 text-[13px]"><span>Coût des produits livrés</span><span data-amount="product_costs">123 456 789,99 MAD</span></div><div class="text-xs" data-product="synthetic"><div class="flex min-h-8 items-center justify-between gap-3"><span class="min-w-0 truncate">${long}</span><span class="flex shrink-0 items-baseline gap-4"><span dir="ltr">1000 × 123456,99 MAD</span><span class="w-24 text-end" data-amount="product">123456789,99</span></span></div></div></div></section></main>`,
   auth: `<div class="seallo-auth"><div class="sa-split"><aside class="sa-panel"></aside><div class="sa-form-col"><div class="sa-form-wrap"><div class="sa-form-top"><a class="sa-mark">seallo</a><div class="sa-lang"><a>FR</a><a>EN</a><a>AR</a></div></div><h1>${long}</h1><input value="${long}"></div></div></div></div>`,
   navigation: `<div class="site-header"><header class="maison-nav"><div class="flex items-center gap-8"><a class="morea-lockup"><span class="morea-lockup__mark"><span class="morea-wordmark-type">MOREA</span></span></a></div><nav class="maison-nav__actions"><a class="maison-link hidden md:inline">Recherche</a><button class="maison-link md:hidden">Menu</button><a class="maison-link bag-link"><span>Panier</span><span>99</span></a><a class="maison-link">FR</a></nav></header></div>`,
   admin: `<main class="admin-page seller-page"><div class="seallo-member-grid"><article class="seallo-member"><h2>${long}</h2><div class="seallo-member__money">123456789 MAD</div></article></div><div class="admin-layout"><section class="admin-card"><div class="admin-card__body"><h1>${long}</h1><div class="admin-field-grid"><label>Nom<input class="admin-input" value="${long}"></label><label>Fichier<input type="file" class="admin-input"></label></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr>${Array.from({length:8}, () => '<th>Montant confirmé</th>').join('')}</tr></thead><tbody><tr>${Array.from({length:8}, () => '<td>123 456 MAD</td>').join('')}</tr></tbody></table></div></div></section><aside class="admin-card admin-card__body">${long}</aside></div></main>`,
@@ -35,7 +50,18 @@ try {
         assert.equal(new URL(page.url()).pathname, new URL(route).pathname, `Unexpected redirect: ${route}`)
         await page.locator("html").evaluate((el, direction) => el.dir = direction, dir)
       } else {
-        await page.setContent(`<!doctype html><html dir="${dir}"><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>${css}</style></head><body class="${route === "admin" ? "admin-body" : "storefront-body"}" data-admin-theme="seallo">${fixtures[route]}</body></html>`)
+        await page.setContent(`<!doctype html><html dir="${dir}"><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>${css}</style></head><body class="${["admin", "accounting", "datePicker"].includes(route) ? "admin-body" : "storefront-body"}" data-admin-theme="seallo">${["admin", "accounting", "datePicker"].includes(route) ? `<div class="flex"><div class="min-w-0 flex-1">${fixtures[route]}</div></div>` : fixtures[route]}</body></html>`)
+      }
+      if (!process.env.RESPONSIVE_URLS && route === "datePicker") {
+        await page.addScriptTag({content: pickerSource})
+        await page.evaluate(() => {
+          const picker = new window.RangePicker()
+          picker.element = document.querySelector('[data-controller="date-range-picker"]')
+          for (const target of ["panel", "button", "calendar", "startField", "endField", "count", "apply", "months", "customToggle"]) picker[`${target}Target`] = picker.element.querySelector(`[data-date-range-picker-target="${target}"]`)
+          picker.configValue = {today:"2026-11-05",from:"2026-10-06",to:"2026-11-05",rtl:document.documentElement.dir === "rtl",months:Array.from({length:12}, (_, i) => `Mois ${i+1}`),monthsShort:Array.from({length:12}, (_,i) => `M${i+1}`),weekdays:["Lu","Ma","Me","Je","Ve","Sa","Di"],labels:{previous:"Précédent",next:"Suivant",pickEnd:"Choisir la fin",daysOne:"1 jour",daysOther:"%{count} jours"}}
+          picker.connect(); picker.open(); picker.showCustom()
+        })
+        assert.ok(await page.locator('button[data-date]').count() >= 28, "Real date controller renders calendar days")
       }
       const geometry = await page.evaluate(() => {
         const viewport = document.documentElement.clientWidth

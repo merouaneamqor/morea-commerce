@@ -3,17 +3,21 @@
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Orders</h1>
   <div class="flex flex-wrap items-center gap-2">
-    <% if @shopify_connections.any? %>
-      <%= button_to t("shopify_sync.button"), shopify_sync_all_admin_orders_path, class: "admin-btn-secondary", disabled: !Connections::ShopifyOauth.configured? %>
+    <% if agent_view? %>
+      <%= link_to t("admin.confirmations.title"), admin_confirmations_path, class: "admin-btn-secondary" %>
+    <% else %>
+      <% if @shopify_connections.any? %>
+        <%= button_to t("shopify_sync.button"), shopify_sync_all_admin_orders_path, class: "admin-btn-secondary", disabled: !Connections::ShopifyOauth.configured? %>
+      <% end %>
+      <% if current_store.sendit_configured? %>
+        <%= button_to "Sync with Sendit", sendit_sync_all_admin_orders_path, class: "admin-btn-secondary" %>
+      <% end %>
+      <%= link_to "Create order", new_admin_order_path, class: "admin-btn" %>
     <% end %>
-    <% if current_store.sendit_configured? %>
-      <%= button_to "Sync with Sendit", sendit_sync_all_admin_orders_path, class: "admin-btn-secondary" %>
-    <% end %>
-    <%= link_to "Create order", new_admin_order_path, class: "admin-btn" %>
   </div>
 </div>
 
-<% if @shopify_connections.any? %>
+<% if @shopify_connections.any? && !agent_view? %>
   <section class="admin-card p-4 mb-4" aria-labelledby="shopify-sync-title">
     <h2 id="shopify-sync-title" class="admin-card__title"><%= t("shopify_sync.title") %></h2>
     <p class="admin-muted mt-1"><%= t("shopify_sync.help") %></p>
@@ -37,7 +41,9 @@
     <%= label_tag :connection_id, t("connections.source"), class: "admin-label" %>
     <%= select_tag :connection_id, options_from_collection_for_select(@connections, :id, :name, params[:connection_id]), include_blank: t("connections.all_sources"), class: "admin-input !w-auto" %>
     <%= hidden_field_tag :group, @group if @group %>
-    <%= select_tag :agent_id, options_for_select([ [ t("admin.orders_groups.unassigned"), "none" ] ] + @agents.map { |a| [ a.name.presence || a.email, a.id ] }, params[:agent_id]), include_blank: t("admin.orders_groups.all_agents"), class: "admin-input !w-auto" %>
+    <% unless agent_view? %>
+      <%= select_tag :agent_id, options_for_select([ [ t("admin.orders_groups.unassigned"), "none" ] ] + @agents.map { |a| [ a.name.presence || a.email, a.id ] }, params[:agent_id]), include_blank: t("admin.orders_groups.all_agents"), class: "admin-input !w-auto" %>
+    <% end %>
     <%= submit_tag t("connections.filter"), class: "admin-btn-secondary" %>
   <% end %>
   <% if params[:attention] == "delivery_issues" %>
@@ -64,30 +70,31 @@
     </div>
   <% end %>
 
-  <div class="admin-table-wrap">
-    <table class="admin-table">
+  <%# The six columns that matter come first; Order and Customer stay pinned while the rest scrolls. %>
+  <div class="admin-table-wrap admin-table-wrap--sticky" data-orders-table>
+    <table class="admin-table admin-table--sticky">
       <thead>
-        <tr><th>Order</th><th><%= t("connections.source") %></th><th>Date</th><th>Customer</th><th>Phone</th><th>City</th><th><%= t("admin.orders_groups.agent") %></th><th>Status</th><th>Sendit</th><th class="is-numeric">Total</th></tr>
+        <tr><th>Order</th><th>Customer</th><th>Phone</th><th>City</th><th>Status</th><th class="is-numeric">Amount</th><th><%= t("connections.source") %></th><th>Date</th><th><%= t("admin.orders_groups.agent") %></th><% unless agent_view? %><th>Sendit</th><% end %></tr>
       </thead>
       <tbody>
         <% @orders.each do |order| %>
-          <tr>
+          <tr data-order-row="<%= order.number %>">
             <td>
               <%= link_to "##{order.number}", admin_order_path(order), class: "admin-link" %>
               <% if order.tag_list.any? %>
                 <span class="admin-muted ms-1 text-xs"><%= order.tag_list.first(2).join(", ") %></span>
               <% end %>
             </td>
-            <td class="admin-muted"><%= order.store_connection&.name || "—" %></td>
-            <td class="admin-muted"><%= order.created_at.strftime("%b %-d, %H:%M") %></td>
-            <td><%= order.customer_name %></td>
+            <td title="<%= order.customer_name %>"><%= order.customer_name %></td>
             <td class="admin-muted"><%= order.customer_phone %></td>
             <td class="admin-muted"><%= order.customer_city %></td>
+            <td><%= admin_badge(order.status) %></td>
+            <td class="is-numeric"><%= order.total_display %></td>
+            <td class="admin-muted" data-source><%= order.store_connection&.name || t("admin.orders_groups.manual") %></td>
+            <td class="admin-muted"><%= order.created_at.strftime("%b %-d, %H:%M") %></td>
             <% agent = order.order_confirmation&.assigned_user %>
             <td><%= agent ? tag.span(class: "seallo-agent") { tag.i((agent.name.presence || agent.email).first.upcase) + (agent.name.presence || agent.email) } : tag.span(t("admin.orders_groups.unassigned"), class: "admin-subdued") %></td>
-            <td><%= admin_badge(order.status) %></td>
-            <td><%= sendit_badge(order) || tag.span("—", class: "admin-subdued") %></td>
-            <td class="is-numeric"><%= order.total_display %></td>
+            <% unless agent_view? %><td><%= sendit_badge(order) || tag.span("—", class: "admin-subdued") %></td><% end %>
           </tr>
         <% end %>
       </tbody>

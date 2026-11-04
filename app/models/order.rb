@@ -268,6 +268,27 @@ end
     STATUS_LABELS.fetch(status, status.humanize)
   end
 
+  # What the carrier charges for this parcel, in whole centimes: the fee Sendit reported for it, else the default
+  # of the workspace's one active delivery account that has one. nil when it cannot be told for sure (several
+  # accounts with different fees, or none): accounting then counts 0 and warns, it never guesses.
+  def carrier_fee_cents(kind)
+    return (sendit_fee * 100).round(0, half: :up).to_i if sendit_fee.present?
+
+    column = kind == :return ? :return_fee : :delivery_fee
+    fees = store.delivery_accounts.where(is_active: true).where.not(column => nil).pluck(column).uniq
+    (fees.first * 100).round(0, half: :up).to_i if fees.one?
+  end
+
+  # Freezes the fee of the current outcome on the order (delivered: delivery fee, returned: return fee).
+  # Fills an empty value only; a value already frozen is never overwritten, so old months cannot change.
+  def freeze_fees!
+    values = {}
+    values[:delivery_fee_cents] = carrier_fee_cents(:delivery) if status == "delivered" && delivery_fee_cents.nil?
+    values[:return_fee_cents] = carrier_fee_cents(:return) if status == "returned" && return_fee_cents.nil?
+    values.compact!
+    update_columns(values) if values.any?
+  end
+
   def total_display
     "#{(total_cents / 100.0).to_i.to_fs(:delimited)} #{currency}"
   end
@@ -287,6 +308,7 @@ end
         self.shipped_at ||= Time.current
       when "delivered"
         self.delivered_at = Time.current
+        self.delivery_fee_cents ||= carrier_fee_cents(:delivery)
       when "cancelled"
         restore_inventory! if inventory_reserved? || RESERVED_STATUSES.include?(from)
         self.cancelled_at = Time.current
@@ -294,6 +316,7 @@ end
       when "returned"
         restore_inventory!(reason: "order_returned") if inventory_reserved? || RESERVED_STATUSES.include?(from) || from == "delivered"
         self.returned_at = Time.current
+        self.return_fee_cents ||= carrier_fee_cents(:return)
         self.cancel_reason = reason
       end
 

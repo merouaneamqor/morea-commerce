@@ -38,7 +38,8 @@
         "my_shift": "Mon poste",
         "on_shift_since": "En poste depuis %{time}",
         "off_shift": "Vous n’êtes pas en poste. Pointez pour suivre vos heures.",
-        "clock_in": "Pointer l’arrivée",
+        "clock_in_required": "Pointez pour prendre ou traiter des commandes.",
+        "clock_in":"Pointer l’arrivée",
         "clock_out": "Pointer la sortie",
         "clocked_in": "Poste commencé.",
         "clocked_out": "Poste terminé.",
@@ -99,7 +100,9 @@
           "no_answer": "Sans réponse",
           "callback": "Rappel",
           "confirmed": "Confirmée",
-          "cancelled": "Annulée"
+          "cancelled": "Annulée",
+          "wrong_number": "Numéro erroné",
+          "abandoned": "Appel fermé sans résultat"
         }
       }
     }

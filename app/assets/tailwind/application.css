@@ -1764,6 +1764,39 @@
     @apply text-end tabular-nums;
   }
 
+  /* Orders list: one horizontal scrollbar (the wrap), Order and Customer stay in view while the rest scrolls. */
+  .admin-table-wrap--sticky {
+    overscroll-behavior-x: contain;
+  }
+
+  .admin-table--sticky th:nth-child(-n+2),
+  .admin-table--sticky td:nth-child(-n+2) {
+    position: sticky;
+    z-index: 1;
+    background: #fff;
+  }
+
+  .admin-table--sticky th:nth-child(-n+2) {
+    background: #f7f7f7;
+  }
+
+  .admin-table--sticky th:nth-child(1),
+  .admin-table--sticky td:nth-child(1) {
+    inset-inline-start: 0;
+    min-width: 7.5rem;
+    max-width: 7.5rem;
+  }
+
+  .admin-table--sticky th:nth-child(2),
+  .admin-table--sticky td:nth-child(2) {
+    inset-inline-start: 7.5rem;
+    min-width: 11rem;
+    max-width: 11rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-inline-end: 1px solid #ebebeb;
+  }
+
   .admin-thumb {
     @apply inline-flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#f7f7f7] text-[#8a8a8a];
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);

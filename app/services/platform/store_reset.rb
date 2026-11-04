@@ -16,7 +16,7 @@ module Platform
       advertising_accounts agent_changesets agent_payments carts collections confirmation_attempts
       confirmation_shifts customers delivery_accounts discounts home_sections menu_items meta_ads_ad_accounts
       meta_ads_ad_sets meta_ads_ads meta_ads_campaigns meta_ads_connections meta_ads_daily_insights
-      oauth_access_tokens order_confirmations order_imports orders pages products push_subscriptions
+      meta_ads_product_links oauth_access_tokens order_confirmations order_imports orders pages products push_subscriptions
       seallo_connection_codes store_connections store_expenses store_translations storefront_themes
       woocommerce_connection_codes
     ].freeze
@@ -112,6 +112,7 @@ module Platform
 
     # Records with uploaded images go through destroy so Active Storage purges the files.
     def clear_catalog
+      MetaAds::ProductLink.where(store_id: @store.id).delete_all
       @store.products.find_each(&:destroy!)
       @store.collections.find_each(&:destroy!)
       @store.discounts.delete_all
@@ -141,13 +142,8 @@ module Platform
       AgentChangeset.where(store_id: @store.id).delete_all
     end
 
-    # No models exist for these tables, so they are cleared child-first in SQL.
     def clear_meta_ads
-      %w[meta_ads_daily_insights meta_ads_ads meta_ads_ad_sets meta_ads_campaigns meta_ads_ad_accounts meta_ads_connections].each do |table|
-        next unless ActiveRecord::Base.connection.table_exists?(table)
-
-        ActiveRecord::Base.connection.delete(ActiveRecord::Base.sanitize_sql([ "DELETE FROM #{table} WHERE store_id = ?", @store.id ]))
-      end
+      MetaAds.purge_store!(@store.id)
     end
 
     def clear_operations

@@ -1,0 +1,8 @@
+<% content_for :title, t("meta_ads.deletion.title") %>
+
+<main class="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center px-6 text-center">
+  <h1 class="text-2xl font-semibold text-ink"><%= t("meta_ads.deletion.title") %></h1>
+  <p class="mt-4 text-sm leading-6 text-ink-soft"><%= t("meta_ads.deletion.status.#{@request.status}") %></p>
+  <p class="mt-4 text-xs text-ink-soft"><%= t("meta_ads.deletion.code") %> <span class="font-mono" dir="ltr"><%= @request.confirmation_code %></span></p>
+  <p class="mt-1 text-xs text-ink-soft"><%= l(@request.created_at, format: :short) %></p>
+</main>

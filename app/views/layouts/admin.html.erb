@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;800&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "admin_pwa" %>
+    <%= stylesheet_link_tag "liquid_glass" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "admin_responsive", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
@@ -69,7 +70,7 @@
         <div class="mx-auto flex max-w-[1400px] gap-5 p-4 lg:p-5">
           <aside class="sticky top-5 hidden h-[calc(100dvh-2.5rem)] w-56 shrink-0 lg:block"><%= sidebar %></aside>
 
-          <div data-seller-drawer hidden role="dialog" aria-modal="true" aria-label="<%= sl("Menu") %>" class="fixed inset-0 z-50 bg-[#1f2430]/30 p-4 backdrop-blur-sm lg:hidden">
+          <div data-seller-drawer hidden role="dialog" aria-modal="true" aria-label="<%= sl("Menu") %>" class="lg-scrim fixed inset-0 z-50 p-4 lg:hidden">
             <div class="h-full w-64"><%= sidebar %></div>
           </div>
 
@@ -90,6 +91,7 @@
             <% end %>
             <% if notice.present? %><p class="rounded-xl bg-[#e3f3e8] px-4 py-3 text-sm text-[#2f7a4a]"><%= notice %></p><% end %>
             <% if alert.present? %><p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= alert %></p><% end %>
+            <%= render "admin/shared/meta_ads_notice" %>
             <% unless content_for?(:seller_lang) %><div class="flex justify-end"><%= render "admin/shared/language_switcher" %></div><% end %>
             <div class="admin-page <%= yield(:admin_page_class) %>"><%= yield %></div>
           </main>

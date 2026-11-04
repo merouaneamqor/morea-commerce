@@ -1,0 +1,18 @@
+<%# One figure of the overview: label, value, change versus the previous period, a sentence and a small curve. %>
+<% change_text, tone = change %>
+<% unit = "" if value == AccountingHelper::DASH # a figure that cannot be calculated shows a bare dash, without a unit %>
+<% featured = local_assigns.fetch(:featured, false) %>
+<div class="flex flex-col justify-between rounded-2xl p-4 sm:p-5 <%= featured ? "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e] shadow-[0_18px_40px_-24px_rgba(190,120,20,0.8)]" : "border border-[#e8e3df] bg-white" %>" data-card="<%= key %>">
+  <div class="flex items-center justify-between gap-2">
+    <p class="flex items-center gap-2 text-sm font-medium <%= featured ? "" : "text-[#5e5a58]" %>" title="<%= local_assigns[:title] %>">
+      <span class="<%= featured ? "grid size-8 place-items-center rounded-lg bg-[#1f2430] text-white" : "text-[#8a8380]" %>"><%= seller_icon(icon, size: featured ? 16 : 18) %></span>
+      <%= label %>
+    </p>
+    <span class="rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap <%= featured && tone == :flat ? "bg-[#1f2430]/80 text-white" : acc_pill_class(tone, good_when) %>" data-change="<%= tone %>"><%= change_text %></span>
+  </div>
+  <p class="mt-3 flex flex-wrap items-baseline gap-x-1 text-[24px] leading-tight font-bold text-[#1f2430] sm:text-[26px] 2xl:text-[30px]" data-value><%= value %> <span class="text-sm font-semibold <%= featured ? "text-[#7a5a1e]" : "text-[#8a8380]" %>"><%= unit %></span></p>
+  <div class="mt-4 flex items-end justify-between gap-2">
+    <p class="text-xs leading-snug <%= featured ? "text-[#6d4f17]" : "text-[#8a8380]" %>"><%= sub %></p>
+    <%= acc_sparkline(series, color: featured ? "#1f2430" : acc_spark_color(good_when, series)) %>
+  </div>
+</div>

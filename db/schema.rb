@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_04_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_04_230000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -748,6 +748,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_04_100000) do
     t.string "meta_campaign_id", limit: 25
     t.string "meta_adset_id", limit: 25
     t.string "meta_ad_id", limit: 25
+    t.integer "delivery_fee_cents"
+    t.integer "return_fee_cents"
     t.index ["archived_at"], name: "index_orders_on_archived_at"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["customer_phone"], name: "index_orders_on_customer_phone"
@@ -759,11 +761,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_04_100000) do
     t.index ["store_id", "sendit_code"], name: "index_orders_on_store_id_and_sendit_code", unique: true, where: "(sendit_code IS NOT NULL)"
     t.index ["store_id"], name: "index_orders_on_store_id"
     t.check_constraint "collected_cents IS NULL OR collected_cents >= 0", name: "orders_collected_cents_nonnegative"
+    t.check_constraint "delivery_fee_cents IS NULL OR delivery_fee_cents >= 0", name: "orders_delivery_fee_cents_nonnegative"
     t.check_constraint "meta_ad_id IS NULL OR meta_ad_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_ad_id_numeric"
     t.check_constraint "meta_adset_id IS NULL AND meta_ad_id IS NULL OR meta_campaign_id IS NOT NULL", name: "orders_meta_ids_need_campaign"
     t.check_constraint "meta_adset_id IS NULL OR meta_adset_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_adset_id_numeric"
     t.check_constraint "meta_campaign_id IS NULL OR meta_campaign_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_campaign_id_numeric"
     t.check_constraint "refunded_cents >= 0", name: "orders_refunded_cents_nonnegative"
+    t.check_constraint "return_fee_cents IS NULL OR return_fee_cents >= 0", name: "orders_return_fee_cents_nonnegative"
   end
 
   create_table "page_section_translations", force: :cascade do |t|

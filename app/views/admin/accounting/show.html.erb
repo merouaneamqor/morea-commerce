@@ -1,0 +1,148 @@
+<%# Comptabilité. Every figure comes from AccountingStats; nothing is calculated in this view except printing. %>
+<% content_for :title, t("accounting.title") %>
+<% content_for :admin_page_class, "seller-page" %>
+<% content_for :seller_lang, "1" %>
+<% stats = @stats %>
+<% totals = stats.totals %>
+<% cur = stats.currency %>
+<% month_param = stats.month.strftime("%Y-%m") %>
+<% link_for = ->(extra = {}) { seller_accounting_path({ month: month_param, basis: stats.basis, tab: (@tab unless @tab == "overview") }.merge(extra).compact) } %>
+<% daily = stats.daily.values %>
+<% returns_count = stats.lines.count { |line| line.kind == "returned" } %>
+<% warnings = stats.warnings %>
+
+<header class="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-[#1f2430] p-4 text-white sm:p-5">
+  <div class="flex items-center gap-4">
+    <span class="grid size-14 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:calculator, size: 26) %></span>
+    <div>
+      <h1 class="text-2xl font-bold sm:text-[30px]"><%= t("accounting.title") %></h1>
+      <p class="text-sm text-white/70"><%= t("accounting.subtitle") %></p>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <div class="flex rounded-xl bg-white/10 p-1 text-sm font-semibold" role="group" aria-label="<%= t("accounting.delivered") %> / <%= t("accounting.shipped") %>" data-basis-toggle>
+      <% %w[delivered shipped].each do |basis| %>
+        <%= link_to t("accounting.#{basis}"), link_for.(basis: basis), "aria-current": (stats.basis == basis ? "true" : nil), title: t("accounting.basis_#{basis}_hint"),
+              class: "rounded-lg px-4 py-2 transition #{stats.basis == basis ? "bg-white text-[#1f2430]" : "text-white/75 hover:text-white"}" %>
+      <% end %>
+    </div>
+    <%= form_with url: seller_accounting_path, method: :get, class: "flex items-center gap-2 rounded-xl bg-white/10 px-3 text-sm font-semibold", data: { month_form: true } do %>
+      <input type="hidden" name="basis" value="<%= stats.basis %>">
+      <% if @tab != "overview" %><input type="hidden" name="tab" value="<%= @tab %>"><% end %>
+      <label class="flex items-center gap-2 py-2.5">
+        <span class="sr-only"><%= t("accounting.month") %></span>
+        <input type="month" name="month" value="<%= month_param %>" max="<%= Time.find_zone!(AccountingStats::ZONE).now.strftime("%Y-%m") %>" onchange="this.form.requestSubmit()"
+               class="cursor-pointer bg-transparent text-white outline-none [color-scheme:dark]" aria-label="<%= acc_month_label(stats.month) %>">
+      </label>
+    <% end %>
+    <%= link_to seller_accounting_export_path(month: month_param, basis: stats.basis, format: "csv"), data: { export: true },
+          class: "flex h-11 items-center gap-2 rounded-xl bg-[#c9482c] px-4 text-sm font-semibold text-white hover:bg-[#b03d24]" do %>
+      <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
+      <%= t("accounting.export") %>
+    <% end %>
+    <%= render "admin/shared/language_switcher" %>
+  </div>
+</header>
+
+<% if warnings[:missing_cost_orders].positive? || warnings[:missing_delivery_fee_orders].positive? || warnings[:missing_return_fee_orders].positive? || warnings[:unconverted_ad_rows].positive? %>
+  <section class="space-y-2" data-warnings>
+    <% if warnings[:missing_cost_orders].positive? %>
+      <p class="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#8f2a40]"><span><%= t("accounting.warnings.missing_cost", count: warnings[:missing_cost_orders]) %></span>
+        <%= link_to t("accounting.warnings.complete_costs"), "/produits?missing=1", class: "font-semibold underline underline-offset-2" %></p>
+    <% end %>
+    <% if warnings[:missing_delivery_fee_orders].positive? %><p class="rounded-2xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#8f2a40]"><%= t("accounting.warnings.missing_delivery_fee", count: warnings[:missing_delivery_fee_orders]) %></p><% end %>
+    <% if warnings[:missing_return_fee_orders].positive? %><p class="rounded-2xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#8f2a40]"><%= t("accounting.warnings.missing_return_fee", count: warnings[:missing_return_fee_orders]) %></p><% end %>
+    <% if warnings[:unconverted_ad_rows].positive? %><p class="rounded-2xl bg-[#fdf0d9] px-4 py-3 text-sm text-[#8a5a12]"><%= t("accounting.warnings.unconverted_ads", count: warnings[:unconverted_ad_rows]) %></p><% end %>
+  </section>
+<% end %>
+
+<nav class="grid grid-cols-2 gap-1 rounded-2xl border border-[#e8e3df] bg-white p-1.5 text-sm sm:grid-cols-5" aria-label="<%= t("accounting.title") %>" data-tabs>
+  <% { "overview" => :profit, "income" => :orders, "receivables" => :clients, "debts" => :team, "inventory" => :box }.each do |tab, icon| %>
+    <%= link_to link_for.(tab: (tab == "overview" ? nil : tab)), "aria-current": (@tab == tab ? "page" : nil),
+          class: "flex items-center justify-center gap-2 rounded-xl px-3 py-3 font-medium transition #{@tab == tab ? "bg-[#f4e4de] font-semibold text-[#a8432e]" : "text-[#5e5a58] hover:bg-[#f3f1ef]"}" do %>
+      <%= seller_icon(icon, size: 16) %><%= t("accounting.tabs.#{tab}") %>
+    <% end %>
+  <% end %>
+</nav>
+
+<% if @tab == "overview" %>
+  <% money_unit = cur %>
+  <% diff = totals.revenue - stats.previous_totals.revenue %>
+  <% revenue_sub = stats.change(:revenue).is_a?(Rational) || stats.change(:revenue) == :new ? t("accounting.subs.revenue_diff", amount: "#{diff.positive? ? "+" : ""}#{acc_amount(diff)}", currency: cur) : t("accounting.subs.revenue_none", count: totals.orders) %>
+  <section class="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-5" data-cards="first">
+    <%= render "card", key: "revenue", label: t("accounting.cards.revenue"), icon: :profit, value: acc_amount(totals.revenue), unit: money_unit, change: acc_change(stats.change(:revenue)), good_when: :up,
+          sub: revenue_sub, series: daily.map(&:revenue), featured: true %>
+    <%= render "card", key: "goods", label: t("accounting.cards.goods"), title: t("accounting.cards.goods_title"), icon: :box, value: acc_amount(totals.goods), unit: money_unit, change: acc_change(stats.change(:goods)), good_when: :down,
+          sub: t("accounting.subs.goods_share", pct: acc_percent(totals.revenue.positive? ? Rational(totals.goods, totals.revenue) : nil)), series: daily.map(&:goods) %>
+    <%= render "card", key: "gross_margin", label: t("accounting.cards.gross_margin"), icon: :chart, value: acc_amount(totals.gross_margin), unit: money_unit, change: acc_change(stats.change(:gross_margin)), good_when: :up,
+          sub: t("accounting.subs.gross"), series: daily.map(&:gross_margin) %>
+    <%= render "card", key: "delivery", label: t("accounting.cards.delivery"), icon: :truck, value: acc_amount(totals.delivery), unit: money_unit, change: acc_change(stats.change(:delivery)), good_when: :down,
+          sub: t("accounting.subs.delivery_returns", count: returns_count), series: daily.map(&:delivery) %>
+    <%= render "card", key: "net", label: t("accounting.cards.net"), icon: :orders, value: acc_amount(totals.net), unit: money_unit, change: acc_change(stats.change(:net)), good_when: :up,
+          sub: t("accounting.subs.net"), series: daily.map(&:net) %>
+  </section>
+
+  <section class="grid grid-cols-2 gap-3 xl:grid-cols-4" data-cards="second">
+    <%= render "card", key: "basket", label: t("accounting.cards.basket"), icon: :orders, value: acc_amount(totals.average_basket), unit: money_unit, change: acc_change(stats.change(:average_basket)), good_when: :up,
+          sub: t("accounting.subs.basket", count: totals.orders), series: daily.map(&:average_basket) %>
+    <%= render "card", key: "ads", label: t("accounting.cards.ads"), icon: :target, value: acc_amount(totals.ads), unit: money_unit, change: acc_change(stats.change(:ads)), good_when: :down,
+          sub: (totals.ads.positive? && totals.orders.positive? ? t("accounting.subs.ads_per_order", amount: acc_amount(Rational(totals.ads, totals.orders)), currency: cur) : t("accounting.subs.ads_none")), series: daily.map(&:ads) %>
+    <%= render "card", key: "expenses", label: t("accounting.cards.expenses"), icon: :chart, value: acc_amount(totals.expenses), unit: money_unit, change: acc_change(stats.change(:expenses)), good_when: :down,
+          sub: t("accounting.subs.expenses"), series: daily.map(&:expenses) %>
+    <% points_text, = acc_points_change(stats.margin_change_points) %>
+    <%= render "card", key: "margin", label: t("accounting.cards.margin"), icon: :profit, value: acc_percent(totals.margin), unit: (totals.margin ? "%" : ""), change: acc_points_change(stats.margin_change_points), good_when: :up,
+          sub: t("accounting.subs.margin_points", pts: points_text), series: daily.map(&:margin) %>
+  </section>
+
+  <% split = stats.split_per_100 %>
+  <section class="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
+    <div class="rounded-2xl border border-[#e8e3df] bg-white p-5" data-split>
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 class="text-lg font-bold text-[#1f2430]"><%= t("accounting.split.title", currency: cur) %></h2>
+        <span class="text-xs text-[#8a8380]"><%= t("accounting.split.of", amount: acc_amount(totals.revenue), currency: cur) %></span>
+      </div>
+      <% if split.nil? %>
+        <p class="mt-6 text-sm text-[#8a8380]"><%= t("accounting.split.none") %></p>
+      <% else %>
+        <% parts = [ [ :goods, "#d19a4b", totals.goods ], [ :delivery, "#5b7fb9", totals.delivery ], [ :ads, "#8f6bc1", totals.ads ], [ :profit, "#3b7d55", split[:loss] ? 0 : totals.net ] ] %>
+        <% if split[:loss] %><p class="mt-3 rounded-xl bg-[#fbe7ea] px-3 py-2 text-sm text-[#8f2a40]"><%= t("accounting.split.loss_note", amount: acc_amount(-totals.net), currency: cur) %></p><% end %>
+        <div class="mt-5 flex h-3.5 gap-0.5 overflow-hidden rounded-full" role="img" aria-label="<%= t("accounting.split.title", currency: cur) %>">
+          <% parts.each do |key, color, _| %><% next if split[:shares][key].zero? %><span style="width: <%= split[:shares][key] / 10.0 %>%; background-color: <%= color %>" data-share="<%= key %>=<%= split[:shares][key] %>"></span><% end %>
+        </div>
+        <div class="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <% parts.each do |key, color, cents| %>
+            <div data-part="<%= key %>">
+              <p class="flex items-center gap-2 text-sm text-[#5e5a58]"><span class="size-2.5 rounded-full" style="background-color: <%= color %>"></span><%= t("accounting.split.#{key}") %></p>
+              <p class="mt-1 text-2xl font-bold text-[#1f2430]"><%= acc_tenths(split[:shares][key]) %> <span class="text-sm font-semibold text-[#8a8380]"><%= cur %></span></p>
+              <p class="text-xs text-[#8a8380]"><%= acc_amount(cents) %> <%= cur %></p>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="space-y-3" data-side-cards>
+      <% inventory = stats.inventory %>
+      <% side = [
+           [ "receivables", :receivables, acc_amount(stats.receivables[:cents]), t("accounting.side.receivables_sub", count: stats.receivables[:parcels]) ],
+           [ "debts", :debts, acc_amount(nil), t("accounting.side.debts_sub") ],
+           [ "inventory", :inventory, acc_amount(inventory[:cents]), t("accounting.side.inventory_sub", count: inventory[:products], out: inventory[:out_of_stock]) ]
+         ] %>
+      <% side.each do |key, tab, value, sub| %>
+        <%= link_to link_for.(tab: tab), class: "group flex items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4 transition hover:border-[#d6cfca]", data: { side: key } do %>
+          <div>
+            <p class="font-semibold text-[#1f2430]"><%= t("accounting.side.#{key}") %></p>
+            <p class="text-xs text-[#8a8380]"><%= t("accounting.side.#{key}_hint") %></p>
+            <% if key == "inventory" && inventory[:missing_cost].positive? %><p class="mt-1 text-xs text-[#8a5a12]"><%= t("accounting.side.inventory_missing", count: inventory[:missing_cost]) %></p><% end %>
+          </div>
+          <div class="text-end">
+            <p class="text-xl font-bold whitespace-nowrap text-[#1f2430]"><%= value %><% unless value == AccountingHelper::DASH %> <span class="text-sm font-semibold text-[#8a8380]"><%= cur %></span><% end %></p>
+            <p class="text-xs whitespace-nowrap text-[#8a8380]"><%= sub %> <span class="inline-block transition group-hover:translate-x-0.5 rtl:rotate-180">→</span></p>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+<% else %>
+  <section class="rounded-2xl border border-[#e8e3df] bg-white p-10 text-center text-sm text-[#8a8380]" data-tab-later="<%= @tab %>"><%= t("accounting.tab_later") %></section>
+<% end %>

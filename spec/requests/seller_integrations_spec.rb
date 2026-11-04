@@ -35,7 +35,25 @@ RSpec.describe "Seller integrations page", type: :request do
     expect(response).to have_http_status(:ok)
     expect(document.at_css("h1").text).to eq("Intégrations API")
     expect(document.at_css("aside nav ul a.font-semibold")["href"]).to eq("/integrations")
-    expect(response.body).to include("Bientôt disponible")
+  end
+
+  describe "TikTok Ads button" do
+    it "names the missing TikTok settings, and never pretends to connect" do
+      post "/admin/tiktok-ads/connect"
+      expect(response).to redirect_to("/integrations")
+      expect(flash[:alert]).to eq("TikTok n’est pas encore configuré sur cette plateforme : il manque TIKTOK_APP_ID, TIKTOK_APP_SECRET, TIKTOK_REDIRECT_URI.")
+
+      allow(ENV).to receive(:[]).and_call_original
+      %w[TIKTOK_APP_ID TIKTOK_APP_SECRET TIKTOK_REDIRECT_URI].each { |name| allow(ENV).to receive(:[]).with(name).and_return("synthetic") }
+      post "/admin/tiktok-ads/connect"
+      expect(flash[:alert]).to eq(I18n.t("tiktok_ads.errors.not_ready"))
+    end
+
+    it "needs a signed-in operator" do
+      delete "/admin/logout"
+      post "/admin/tiktok-ads/connect"
+      expect(response).to redirect_to(%r{/admin/login})
+    end
   end
 
   it "shows online stores, delivery companies and ad networks as the same wide card" do
@@ -52,8 +70,9 @@ RSpec.describe "Seller integrations page", type: :request do
     expect(networks.map { |card| card.at_css("span.font-semibold.block").text }).to eq([ "Meta Ads", "TikTok Ads" ])
     expect(networks.map { |card| card.at_css("img")["alt"] }).to eq([ "Meta Ads", "TikTok Ads" ])
     expect(networks.first.text).to include("Connecter Meta Ads →")
-    expect(networks.last.text).to include("Bientôt disponible")
-    expect(networks.last.at_css("button, a")).to be_nil
+    expect(networks.last.text).to include("Connecter TikTok Ads →")
+    expect(networks.last.at_css("form[action='/admin/tiktok-ads/connect'] button")["disabled"]).to be_nil
+    expect(response.body).not_to include("Bientôt disponible")
     expect(sections.first.at_css("[data-stores-open]").text).to include("Connecter une boutique →")
     expect(stores).to be_empty
   end

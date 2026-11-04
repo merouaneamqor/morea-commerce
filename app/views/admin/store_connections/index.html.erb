@@ -155,7 +155,7 @@
           <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.tiktok_subtitle") %></span>
         </span>
       </span>
-      <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= sl("Bientôt disponible") %></span>
+      <%= button_to "#{t("tiktok_ads.connect")} →", connect_admin_tiktok_ads_path, method: :post, class: "text-sm font-semibold text-[#a8432e]" %>
     </div>
   </div>
 </section>

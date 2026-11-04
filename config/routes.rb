@@ -244,6 +244,7 @@ Rails.application.routes.draw do
     resources :carts, only: %i[index show]
 
     get "delivery", to: "delivery#show", as: :delivery
+    post "tiktok-ads/connect", to: "tiktok_ads#connect", as: :connect_tiktok_ads
     resource :meta_ads, path: "meta-ads", only: :show, controller: "meta_ads" do
       post :connect
       post :refresh

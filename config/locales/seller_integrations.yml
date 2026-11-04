@@ -16,7 +16,7 @@ fr:
     stores_pick_text: "Choisissez la plateforme de votre boutique en ligne."
     delivery_summary: "Sendit, Ozon Express, Cathedis, Ameex et %{count} autres"
     ads_subtitle: "Suivez vos dépenses et le coût réel par commande livrée."
-    tiktok_subtitle: "Dépenses publicitaires TikTok, bientôt disponibles."
+    tiktok_subtitle: "Reliez votre compte publicitaire TikTok."
     sendit:
       name_label: "Libellé"
       name_placeholder: "Sendit principal"
@@ -64,7 +64,7 @@ en:
     stores_pick_text: "Choose the platform of your online store."
     delivery_summary: "Sendit, Ozon Express, Cathedis, Ameex and %{count} more"
     ads_subtitle: "Track your spend and the real cost per delivered order."
-    tiktok_subtitle: "TikTok ad spend, coming soon."
+    tiktok_subtitle: "Link your TikTok ad account."
     sendit:
       name_label: "Label"
       name_placeholder: "Sendit main"
@@ -112,7 +112,7 @@ ar:
     stores_pick_text: "اختر منصة متجرك الإلكتروني."
     delivery_summary: "Sendit, Ozon Express, Cathedis, Ameex و%{count} أخرى"
     ads_subtitle: "تابع إنفاقك والتكلفة الفعلية لكل طلب مُسلَّم."
-    tiktok_subtitle: "إنفاق إعلانات TikTok، قريبًا."
+    tiktok_subtitle: "اربط حسابك الإعلاني على TikTok."
     sendit:
       name_label: "التسمية"
       name_placeholder: "Sendit الرئيسي"

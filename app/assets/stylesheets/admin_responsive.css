@@ -4,6 +4,8 @@
   min-inline-size: 0;
 }
 .admin-body .admin-page { overflow-wrap: anywhere; }
+/* An implicit auto track can use an accounting section's 900px max-content width. */
+.admin-body .admin-page.seller-page { grid-template-columns: minmax(0, 1fr); }
 .admin-body :where(.admin-table-wrap, .admin-tabs) {
   max-inline-size: 100%;
   min-inline-size: 0;

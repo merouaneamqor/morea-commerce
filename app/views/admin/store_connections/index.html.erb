@@ -208,6 +208,9 @@
 <script>
   (function () {
     var locale = "<%= locale_tag %>";
+    // Dialogs live at the root of the body: inside the page layout, a parent isolates the backdrop and the glass
+    // panel would blur nothing of the page behind it.
+    document.querySelectorAll("[data-modal], [data-delivery-modal]").forEach(function (m) { document.body.appendChild(m); });
     document.querySelectorAll("time[data-when]").forEach(function (el) {
       el.textContent = new Date(el.getAttribute("datetime")).toLocaleString(locale, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
     });

@@ -5,10 +5,10 @@
   page background). Flat page cards stay flat, as on seallo.
   Fallbacks: no backdrop-filter support, or "reduce transparency" in the OS settings, gives solid surfaces.
 */
+/* The scrim only tints. It must not have a backdrop-filter of its own: a parent with one becomes the backdrop
+   root of its children, and the panel would then blur nothing of the page behind it. */
 .lg-scrim {
-  background: rgb(31 36 48 / .22);
-  -webkit-backdrop-filter: blur(10px) saturate(1.2);
-  backdrop-filter: blur(10px) saturate(1.2);
+  background: rgb(31 36 48 / .2);
 }
 
 .lg-panel {
@@ -30,6 +30,6 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .lg-scrim { background: rgb(31 36 48 / .45); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .lg-scrim { background: rgb(31 36 48 / .45); }
   .lg-panel { background: #fff; border-color: #ece4dc; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }

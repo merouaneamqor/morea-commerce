@@ -47,6 +47,8 @@ RSpec.describe "Seller integrations page", type: :request do
     expect(page.css("[data-seller-drawer].lg-scrim, [data-delivery-modal].lg-scrim").length).to eq(2)
     expect(response.body).to include("lg-panel flex max-h-[92dvh]")
     expect(response.body).not_to match(/bg-white shadow-2xl/)
+    # Moved to the root of the body at load, so the panel can blur the page behind it.
+    expect(response.body).to include('document.querySelectorAll("[data-modal], [data-delivery-modal]").forEach(function (m) { document.body.appendChild(m); })')
 
     css = Rails.root.join("app/assets/stylesheets/liquid_glass.css").read
     expect(css).to include("backdrop-filter: blur(28px) saturate(1.6)", "@supports not", "prefers-reduced-transparency: reduce")

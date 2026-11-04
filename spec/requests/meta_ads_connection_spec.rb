@@ -174,13 +174,15 @@ RSpec.describe "Meta Ads connection", type: :request do
     expect(flash[:alert]).to eq(I18n.t("meta_ads.errors.config_missing"))
   end
 
-  it "has a back button to the Integrations page, in every language" do
+  it "has an arrow-only back link to the Integrations page, labelled for screen readers in every language" do
     sign_in
     { "fr" => "Retour", "en" => "Back", "ar" => "رجوع" }.each do |locale, label|
       get "/admin/meta-ads", params: { locale: locale }
       button = Nokogiri::HTML(response.body).at_css("a[data-back-button]")
       expect(button["href"]).to eq("/integrations")
-      expect(button.text.strip).to eq(label)
+      expect(button.text.strip).to be_empty
+      expect(button.at_css("svg")).to be_present
+      expect(button["aria-label"]).to eq(label)
     end
   end
 

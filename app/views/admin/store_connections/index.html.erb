@@ -8,7 +8,6 @@
      { key: "youcan", name: "YouCan", logo: "/images/partners/youcan.png", desc: "Votre boutique YouCan reliée en quelques secondes.", steps: t("seller_integrations.youcan_steps"), href: new_admin_store_connection_path(provider: "youcan") }
    ] %>
 <% linked_by_provider = @connections.select(&:active?).group_by(&:provider) %>
-<% ad_networks = [ [ "Meta Ads", "/images/partners/meta.png" ], [ "TikTok Ads", "/images/partners/tiktok.png" ] ] %>
 <% locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>
 <% currency = current_store.currency.to_s.upcase == "DH" ? "MAD" : current_store.currency.to_s.upcase %>
 <%
@@ -127,26 +126,37 @@
 
 <section>
   <h2 class="mb-2.5 text-sm font-semibold text-[#1f2430]"><%= sl("Publicité") %></h2>
-  <div class="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4">
-    <span class="flex items-center gap-3">
-      <span class="flex -space-x-2 rtl:space-x-reverse">
-        <% ad_networks.each do |name, logo| %><img src="<%= logo %>" alt="<%= name %>" class="size-10 rounded-full border-2 border-white bg-white object-contain p-0.5 shadow-sm"><% end %>
+  <div class="space-y-3">
+    <%# Meta Ads first, TikTok Ads behind it: one card each, same design as the other integrations. %>
+    <div class="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4" data-ad-network="meta">
+      <span class="flex items-center gap-3">
+        <img src="/images/partners/meta.png" alt="Meta Ads" class="size-11 shrink-0 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
+        <span>
+          <span class="block text-sm font-semibold text-[#1f2430]">Meta Ads</span>
+          <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.ads_subtitle") %></span>
+        </span>
       </span>
-      <span>
-        <span class="block text-sm font-semibold text-[#1f2430]"><%= t("seller_integrations.ads_summary") %></span>
-        <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.ads_subtitle") %></span>
+      <% meta_state = @meta_connection&.needs_reconnect? ? "needs_reauthorization" : (@meta_connection&.status || "disconnected") %>
+      <span class="flex items-center gap-2" data-meta-card="<%= meta_state %>">
+        <% if meta_state == "active" %>
+          <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
+          <%= link_to "#{t("meta_ads.manage")} →", admin_meta_ads_path, class: "text-sm font-semibold text-[#a8432e]" %>
+        <% else %>
+          <%= button_to "#{t(meta_state == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect")} →", connect_admin_meta_ads_path, method: :post,
+                class: "text-sm font-semibold text-[#a8432e]" %>
+        <% end %>
       </span>
-    </span>
-    <% meta_state = @meta_connection&.needs_reconnect? ? "needs_reauthorization" : (@meta_connection&.status || "disconnected") %>
-    <span class="flex items-center gap-2" data-meta-card="<%= meta_state %>">
-      <% if meta_state == "active" %>
-        <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
-        <%= link_to "#{t("meta_ads.manage")} →", admin_meta_ads_path, class: "text-sm font-semibold text-[#a8432e]" %>
-      <% else %>
-        <%= button_to "#{t(meta_state == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect")} →", connect_admin_meta_ads_path, method: :post,
-              class: "text-sm font-semibold text-[#a8432e]" %>
-      <% end %>
-    </span>
+    </div>
+    <div class="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4" data-ad-network="tiktok">
+      <span class="flex items-center gap-3">
+        <img src="/images/partners/tiktok.png" alt="TikTok Ads" class="size-11 shrink-0 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
+        <span>
+          <span class="block text-sm font-semibold text-[#1f2430]">TikTok Ads</span>
+          <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.tiktok_subtitle") %></span>
+        </span>
+      </span>
+      <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= sl("Bientôt disponible") %></span>
+    </div>
   </div>
 </section>
 

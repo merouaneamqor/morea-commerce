@@ -35,17 +35,25 @@ RSpec.describe "Seller integrations page", type: :request do
     expect(response).to have_http_status(:ok)
     expect(document.at_css("h1").text).to eq("Intégrations API")
     expect(document.at_css("aside nav ul a.font-semibold")["href"]).to eq("/integrations")
-    expect(response.body).to include("TikTok Ads : bientôt disponible")
+    expect(response.body).to include("Bientôt disponible")
   end
 
   it "shows online stores, delivery companies and ad networks as the same wide card" do
     get "/integrations"
     sections = document.css("main section")
     expect(sections.map { |section| section.at_css("h2").text }).to eq([ "Boutique en ligne", "Sociétés de livraison", "Publicité" ])
-    summaries = sections.map { |section| section.at_css("span.font-semibold.block").text }
-    expect(summaries).to eq([ "Shopify, WooCommerce, YouCan", "Sendit, Ozon Express, Cathedis, Ameex et 4 autres", "Meta Ads, TikTok Ads" ])
-    expect(sections.map { |section| section.at_css("span.-space-x-2").css("img").map { |img| img["alt"] }.reject(&:empty?) }.first).to eq(%w[Shopify WooCommerce YouCan])
-    expect(sections.map { |section| section.at_css("span.-space-x-2").css("img").length }).to eq([ 3, 4, 2 ])
+    summaries = sections.first(2).map { |section| section.at_css("span.font-semibold.block").text }
+    expect(summaries).to eq([ "Shopify, WooCommerce, YouCan", "Sendit, Ozon Express, Cathedis, Ameex et 4 autres" ])
+    expect(sections.first.at_css("span.-space-x-2").css("img").map { |img| img["alt"] }).to eq(%w[Shopify WooCommerce YouCan])
+    expect(sections.first(2).map { |section| section.at_css("span.-space-x-2").css("img").length }).to eq([ 3, 4 ])
+    # Meta Ads first, TikTok Ads behind it, each in its own card.
+    networks = sections.last.css("[data-ad-network]")
+    expect(networks.map { |card| card["data-ad-network"] }).to eq(%w[meta tiktok])
+    expect(networks.map { |card| card.at_css("span.font-semibold.block").text }).to eq([ "Meta Ads", "TikTok Ads" ])
+    expect(networks.map { |card| card.at_css("img")["alt"] }).to eq([ "Meta Ads", "TikTok Ads" ])
+    expect(networks.first.text).to include("Connecter Meta Ads →")
+    expect(networks.last.text).to include("Bientôt disponible")
+    expect(networks.last.at_css("button, a")).to be_nil
     expect(sections.first.at_css("[data-stores-open]").text).to include("Connecter une boutique →")
     expect(stores).to be_empty
   end

@@ -30,7 +30,7 @@ en:
       expenses: "Total expenses"
       margin: "Profit margin"
     subs:
-      revenue_diff: "%{amount} %{currency} vs previous period"
+      revenue_diff: "%{amount} %{currency}"
       revenue_none: "%{count} delivered orders"
       goods_share: "%{pct} % of revenue"
       gross: "Revenue − goods"

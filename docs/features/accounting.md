@@ -38,6 +38,10 @@ profit margin  = net profit / revenue                # "—" with no revenue
 - **"Où vont 100 MAD":** each part is its share of revenue in tenths of a point; the biggest remainders get the last tenths, so the four parts are exactly 100.0. In a month that loses money, profit is 0 and the three expenses share the 100.
 - **Créances:** delivered parcels whose COD cash was not recorded as received (all time). **Inventaire:** stock x purchase cost (products without a cost are left out and counted). **Dettes:** no data yet (suppliers and agent payouts are not recorded).
 
+## Overview layout
+
+Tight on purpose. The tabs are small buttons, left aligned, as wide as their text. The first row is five cards of the same size (110px high: label and change, value, a short sentence and a small curve); Chiffre d'affaires keeps its gold. The second row is four thin cards (65px: label on top, value on the left, change on the right, no curve; the sentence that used to sit under the value is the card's tooltip). Both rows come from one partial, `admin/accounting/_card` (`compact: true` for the thin ones).
+
 ## Compte de résultat (income statement)
 
 Same data as the overview, laid out as a statement: revenue (product sales), cost of goods sold by product with its quantity and unit cost (a "see detail" opens the variants; the unit cost is shown only when it did not change between orders), gross margin and its share of revenue, advertising, delivery costs (delivered parcels and return fees), operating expenses, net profit (or net loss, in red) and its share of revenue. Amounts always show two decimals and costs are in brackets. Operating expenses show 0 with a note: they are not part of the accounting yet, so net profit does not include the older store expenses list. `AccountingStats#goods_breakdown` and `#delivery_split` feed it, and their sums are checked against the totals.

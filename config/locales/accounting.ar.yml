@@ -30,7 +30,7 @@ ar:
       expenses: "مجموع المصاريف"
       margin: "هامش الربح"
     subs:
-      revenue_diff: "%{amount} %{currency} مقابل الفترة السابقة"
+      revenue_diff: "%{amount} %{currency}"
       revenue_none: "%{count} طلبات مُسلَّمة"
       goods_share: "%{pct} % من رقم المعاملات"
       gross: "رقم المعاملات − البضاعة"

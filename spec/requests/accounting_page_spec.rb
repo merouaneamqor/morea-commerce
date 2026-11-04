@@ -114,19 +114,52 @@ RSpec.describe "Comptabilité page", type: :request do
       expect(value_of("expenses")).to eq("130 MAD")     # 100 + 30 + 0
       expect(value_of("margin")).to eq("48,0 %")        # 120 / 250
       expect(clean(document.at_css("[data-card=delivery]").text)).to include("1 retours inclus")
-      expect(clean(document.at_css("[data-card=ads]").text)).to include("Meta + TikTok")
+      expect(document.at_css("[data-card=ads]")["title"]).to include("Meta + TikTok") # the sentence of a thin card is its tooltip
     end
 
-    it "shows the change versus the previous period: Nouveau when it was 0, and a sparkline on every card" do
+    it "shows the change versus the previous period: Nouveau when it was 0, and a curve on the five big cards" do
       sign_in(owner)
       get "/comptabilite", params: { month: "2026-10" }
       expect(document.at_css("[data-card=revenue] [data-change]").text.squish).to eq("Nouveau")
-      expect(document.css("[data-card] svg polyline").length).to eq(9)
+      expect(document.css("[data-cards=first] [data-card] svg polyline").length).to eq(5)
+      expect(document.css("[data-cards=second] [data-card] svg polyline")).to be_empty # the thin cards have no curve (only the small icon of the label)
 
       order(status: "delivered", total: 10_000, cost: 2_000, delivered_at: zone.local(2026, 9, 15, 12, 0), delivery_fee: 1_000)
       get "/comptabilite", params: { month: "2026-10" }
       expect(document.at_css("[data-card=revenue] [data-change]").text.squish).to eq("↗ 150 %") # (250 - 100) / 100
       expect(document.at_css("[data-card=revenue] [data-change]")["data-change"]).to eq("up")
+    end
+
+    it "lays the cards out like the design: five equal 110px cards, then four thin 65px ones with the percent on the right" do
+      sign_in(owner)
+      get "/comptabilite", params: { month: "2026-10" }
+      first_row = document.css("[data-cards=first] [data-card]")
+      second_row = document.css("[data-cards=second] [data-card]")
+      expect(first_row.map { |card| card["data-size"] }).to all(eq("regular"))
+      expect(first_row.map { |card| card["class"][/h-\[\d+px\]/] }.uniq).to eq([ "h-[110px]" ]) # all the same size, the gold one included
+      expect(first_row.first["class"]).to include("from-[#f7d9a4]", "to-[#eeb460]")                  # Chiffre d'affaires keeps its gold
+      expect(first_row.drop(1).map { |card| card["class"] }.join).not_to include("from-[#f7d9a4]")
+      expect(second_row.map { |card| card["data-size"] }).to all(eq("compact"))
+      expect(second_row.map { |card| card["class"][/h-\[\d+px\]/] }.uniq).to eq([ "h-[65px]" ])
+      second_row.each do |card|
+        expect(card.at_css("p").text.squish).to be_present                                           # the label on top
+        expect(card.at_css("[data-value]")).to be_present                                            # the value on the left
+        expect(card.at_css("[data-change]")).to be_present                                           # the change on the right
+        expect(card.css("polyline")).to be_empty                                              # no sparkline
+      end
+      value_row = second_row.first.at_css("[data-value]").parent
+      expect(value_row["class"]).to include("justify-between")
+      expect(value_row.element_children.map { |child| child["data-value"] ? "value" : (child["data-change"] ? "change" : "other") }).to eq(%w[value change])
+    end
+
+    it "makes the tabs small buttons, left aligned, as wide as their text, with no full-width bar" do
+      sign_in(owner)
+      get "/comptabilite", params: { month: "2026-10" }
+      tabs = document.at_css("[data-tabs]")
+      expect(tabs["class"]).to include("w-fit", "flex")
+      expect(tabs["class"]).not_to match(/grid-cols|(^| )w-full/)
+      expect(tabs.css("a").map { |tab| tab["class"] }.join(" ")).not_to match(/justify-center|flex-1|(^| )w-full/)
+      expect(tabs.css("a").map { |tab| tab["class"][/py-[\d.]+/] }.uniq).to eq([ "py-1.5" ])
     end
 
     it "colours a rising cost red and a rising result green" do

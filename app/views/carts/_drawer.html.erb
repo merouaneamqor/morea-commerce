@@ -31,7 +31,7 @@
               <% if item.product_variant %>
                 <p class="mt-1 text-[10px] uppercase tracking-[0.2em] text-ink-faint"><%= item.product_variant.display_name %></p>
               <% end %>
-              <div class="mt-3 flex items-center justify-between gap-3">
+              <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
                 <div class="cart-qty">
                   <%= button_to "−", update_item_cart_path, method: :patch, params: { item_id: item.id, quantity: item.quantity - 1, from: "drawer" },
                         class: "cart-qty__btn", disabled: item.quantity <= 1, "aria-label": t("cart.decrease") %>

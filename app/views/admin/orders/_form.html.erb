@@ -130,7 +130,7 @@ end %>
       <p class="admin-muted text-[13px]" data-order-lines-target="empty" <%= "hidden" if lines.any? %>>No products yet.</p>
       <ul class="divide-y divide-[#ebebeb] rounded-lg border border-[#ebebeb]" data-order-lines-target="list">
         <% lines.each_with_index do |line, i| %>
-          <li class="flex items-center gap-3 px-3 py-2"
+          <li class="admin-order-line flex items-center gap-3 px-3 py-2"
               data-order-line
               data-product-id="<%= line[:product_id] %>"
               data-variant-id="<%= line[:product_variant_id] %>"
@@ -150,7 +150,7 @@ end %>
       </ul>
 
       <template data-order-lines-target="template">
-        <li class="flex items-center gap-3 px-3 py-2"
+        <li class="admin-order-line flex items-center gap-3 px-3 py-2"
             data-order-line
             data-product-id="__PRODUCT_ID__"
             data-variant-id="__VARIANT_ID__"

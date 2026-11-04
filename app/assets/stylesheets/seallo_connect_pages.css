@@ -53,3 +53,6 @@
   .sc-nav a { padding-block: 0.35rem; }
   .sc-footer { gap: 0.25rem 1rem; }
 }
+.sc-doc :where(img, video, svg) { max-width: 100%; height: auto; }
+.sc-main pre { max-width: 100%; overflow-x: auto; }
+.sc-main table { display: block; max-width: 100%; overflow-x: auto; }

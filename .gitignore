@@ -40,3 +40,6 @@
 # Local automation output
 __pycache__/
 /reports/
+
+# Browser regression tooling
+/node_modules/

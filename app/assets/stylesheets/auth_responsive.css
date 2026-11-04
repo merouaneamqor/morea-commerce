@@ -1,0 +1,30 @@
+/* Shared sign-in, registration, recovery and subscription sizing. */
+.seallo-auth *, .seallo-flow * { box-sizing: border-box; }
+.seallo-auth :where(.sa-split, .sa-form-col, .sa-form-wrap),
+.seallo-flow :where(main, section, aside, form) { min-width: 0; }
+.seallo-auth :where(h1, p, label, a),
+.seallo-flow :where(h1, p, label, a, dt, dd) { overflow-wrap: anywhere; }
+.seallo-auth :where(input, select, textarea),
+.seallo-flow :where(input, select, textarea) { min-width: 0; max-width: 100%; }
+.seallo-flow > div > header { flex-wrap: wrap; gap: 1rem; }
+.seallo-flow > div > header > div { flex-wrap: wrap; min-width: 0; }
+.seallo-flow > div > header > div > div { flex-wrap: wrap; }
+.seallo-flow [data-plan] { min-width: 0; }
+.seallo-flow [data-plan] > span { max-width: 100%; }
+.seallo-flow [data-payment] [data-copy-value] { min-height: 2.75rem; }
+/* Account numbers must remain readable when there is no room for a single line. */
+.seallo-flow [data-panel="transfer"] .truncate { white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 639px) {
+  .seallo-auth .sa-form-top { flex-wrap: wrap; gap: 1rem; }
+  .seallo-auth .sa-form-col { padding: 1.5rem 1rem; }
+  .seallo-auth .sa-lang a, .seallo-flow .sa-lang a { display: inline-flex; align-items: center; justify-content: center; min-width: 2.75rem; min-height: 2.75rem; }
+  .seallo-auth :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea),
+  .seallo-flow :where(input:not([type="checkbox"]):not([type="radio"]), select, textarea) { font-size: 1rem; }
+  .seallo-flow [data-plan-grid] { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .seallo-flow [data-plan] { grid-column: auto; }
+  .seallo-flow [data-plan] span.whitespace-nowrap { white-space: normal; }
+  .seallo-flow [data-plan] > span.flex { flex-wrap: wrap; }
+  .seallo-flow [data-plan] > span:last-child { height: auto; min-height: 2.75rem; padding-block: .5rem; }
+  .seallo-flow [data-billing-button] { padding-inline: .75rem; min-height: 2.75rem; }
+  .seallo-flow [data-payment] dl > div { flex-wrap: wrap; gap: .25rem 1rem; }
+}

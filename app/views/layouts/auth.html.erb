@@ -1,6 +1,6 @@
 <% localized = content_for?(:localized) %>
 <!DOCTYPE html>
-<html lang="<%= localized ? I18n.locale : "en" %>">
+<html lang="<%= localized ? I18n.locale : "en" %>" dir="<%= localized && rtl? ? "rtl" : "ltr" %>">
   <head>
     <meta charset="utf-8">
     <title><%= content_for?(:title) ? yield(:title) : "Sign in" %></title>
@@ -14,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "auth_responsive", "data-turbo-track": "reload" %>
   </head>
   <body class="seallo-auth" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
     <div class="sa-split" dir="<%= localized && rtl? ? "rtl" : "ltr" %>">

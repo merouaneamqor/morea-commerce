@@ -53,6 +53,12 @@ module Admin
             shopify_api_verified_at: nil, shopify_granted_scopes: [], shopify_oauth_state_digest: nil, shopify_oauth_state_expires_at: nil)
         end
       when "reconnect"
+        if @connection.provider == "shopify" && @connection.shopify_oauth?
+          destination = helpers.shopify_apps_url(@connection)
+          return head :unprocessable_entity unless destination
+
+          return redirect_to destination, allow_other_host: true, status: :see_other
+        end
         @connection.with_lock { @connection.update!(active: true, verified_at: nil, last_error_code: nil, shopify_api_verified_at: nil) }
       when "verify_shopify_api"
         return head :unprocessable_entity unless @connection.provider == "shopify"

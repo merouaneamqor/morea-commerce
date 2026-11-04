@@ -432,8 +432,8 @@
       document.querySelectorAll("[data-modal]").forEach(function (m) { m.hidden = true; });
     });
 
-    var begin = function (account) { state = { provider: account ? account.provider : null, account: account, region: "all", country: "all", q: "" }; show(); };
-    document.querySelectorAll("[data-delivery-new]").forEach(function (b) { b.addEventListener("click", function () { begin(null); }); });
+    var begin = function (account, provider) { state = { provider: account ? account.provider : (provider || null), account: account, region: "all", country: "all", q: "" }; show(); };
+    document.querySelectorAll("[data-delivery-new]").forEach(function (b) { b.addEventListener("click", function () { begin(null, b.dataset.deliveryNew); }); });
     document.querySelectorAll("[data-delivery-edit]").forEach(function (b) {
       b.addEventListener("click", function () { begin(accounts.filter(function (a) { return a.id === Number(b.dataset.deliveryEdit); })[0]); });
     });

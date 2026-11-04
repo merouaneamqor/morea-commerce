@@ -1,0 +1,29 @@
+{
+  "en": {
+    "shopify_reconnect": {
+      "manage": "Manage",
+      "reconnect": "Reconnect in Shopify",
+      "title": "Reconnect this store",
+      "help": "Open Seallo Connect in the Apps section of %{shop}, or install it again if it was removed. Follow Shopify’s authorization steps, then confirm the connection to %{workspace}.",
+      "preserve_history": "Keep this connection while reconnecting. Its imported orders and history will be reused. It stays disconnected until authorization succeeds."
+    }
+  },
+  "fr": {
+    "shopify_reconnect": {
+      "manage": "Gérer",
+      "reconnect": "Reconnecter dans Shopify",
+      "title": "Reconnecter cette boutique",
+      "help": "Ouvrez Seallo Connect dans la section Applications de %{shop}, ou réinstallez-la si elle a été supprimée. Suivez l’autorisation Shopify, puis confirmez la connexion à %{workspace}.",
+      "preserve_history": "Conservez cette connexion pendant la reconnexion. Ses commandes importées et son historique seront réutilisés. Elle reste déconnectée jusqu’à la réussite de l’autorisation."
+    }
+  },
+  "ar": {
+    "shopify_reconnect": {
+      "manage": "إدارة",
+      "reconnect": "إعادة الربط في Shopify",
+      "title": "إعادة ربط هذا المتجر",
+      "help": "افتح Seallo Connect في قسم التطبيقات بمتجر %{shop}، أو أعد تثبيته إذا حُذف. اتبع خطوات تفويض Shopify ثم أكّد الربط بمساحة %{workspace}.",
+      "preserve_history": "احتفظ بهذا الاتصال أثناء إعادة الربط لإعادة استخدام الطلبات المستوردة وسجلّها. يظل غير متصل حتى نجاح التفويض."
+    }
+  }
+}

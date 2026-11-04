@@ -12,6 +12,7 @@ en:
     connect: Connect Sendit
     existing_connection: Existing Sendit connection
     delete_connection: Delete connection
+    delete_confirm: "Delete this Sendit connection? Saved credentials will be removed. Existing orders will be kept."
     rates_help: "Delivery fees follow the selected city. Cached cities: %{count}."
     refresh_cities: Refresh cities
     view_rates: View Sendit city rates
@@ -45,6 +46,7 @@ fr:
     connect: Connecter Sendit
     existing_connection: Connexion Sendit existante
     delete_connection: Supprimer la connexion
+    delete_confirm: "Supprimer cette connexion Sendit ? Les identifiants enregistrés seront supprimés. Les commandes existantes seront conservées."
     rates_help: "Les frais de livraison dépendent de la ville sélectionnée. Villes en cache : %{count}."
     refresh_cities: Actualiser les villes
     view_rates: Voir les tarifs Sendit par ville
@@ -78,6 +80,7 @@ ar:
     connect: ربط Sendit
     existing_connection: اتصال Sendit الحالي
     delete_connection: حذف الاتصال
+    delete_confirm: "حذف اتصال Sendit؟ ستُحذف بيانات الاعتماد المحفوظة مع الاحتفاظ بالطلبات الحالية."
     rates_help: "تعتمد رسوم التوصيل على المدينة المحددة. المدن المحفوظة: %{count}."
     refresh_cities: تحديث المدن
     view_rates: عرض أسعار Sendit حسب المدينة

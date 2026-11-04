@@ -16,7 +16,7 @@ module Admin
     def show
       return authorize_connection if connection_request_present?
 
-      @connections = current_store.store_connections.where(shopify_app: "seallo_connect").order(:name)
+      @connections = current_store.store_connections.where(provider: "shopify", shopify_oauth: true).order(:name)
       response.headers["Cache-Control"] = "no-store"
     end
 

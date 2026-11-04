@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_04_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -314,7 +314,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.index ["store_id", "code"], name: "index_delivery_accounts_on_store_id_and_code", unique: true
     t.index ["store_id"], name: "index_delivery_accounts_on_store_id"
     t.index ["webhook_token"], name: "index_delivery_accounts_on_webhook_token", unique: true, where: "(webhook_token IS NOT NULL)"
-    t.check_constraint "account_type::text = ANY (ARRAY['normal'::character varying::text, 'premium'::character varying::text])", name: "delivery_accounts_account_type_known"
+    t.check_constraint "account_type::text = ANY (ARRAY['normal'::character varying, 'premium'::character varying]::text[])", name: "delivery_accounts_account_type_known"
     t.check_constraint "delivery_fee IS NULL OR delivery_fee >= 0::numeric", name: "delivery_accounts_delivery_fee_non_negative"
     t.check_constraint "return_fee IS NULL OR return_fee >= 0::numeric", name: "delivery_accounts_return_fee_non_negative"
   end
@@ -331,6 +331,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.datetime "updated_at", null: false
     t.index ["store_id", "code"], name: "index_discounts_on_store_id_and_code", unique: true
     t.index ["store_id"], name: "index_discounts_on_store_id"
+  end
+
+  create_table "exchange_rates", force: :cascade do |t|
+    t.string "base_currency", null: false
+    t.string "quote_currency", null: false
+    t.decimal "rate", precision: 18, scale: 8, null: false
+    t.date "rate_date", null: false
+    t.string "source", null: false
+    t.datetime "fetched_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["base_currency", "quote_currency", "rate_date"], name: "index_exchange_rates_on_pair_and_date", unique: true
+    t.check_constraint "base_currency::text ~ '^[A-Z]{3}$'::text AND quote_currency::text ~ '^[A-Z]{3}$'::text", name: "exchange_rates_currency_format"
+    t.check_constraint "rate > 0::numeric", name: "exchange_rates_positive"
   end
 
   create_table "external_order_receipts", force: :cascade do |t|
@@ -448,6 +462,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.string "last_error_message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "account_status"
     t.index ["advertising_account_id"], name: "index_meta_ads_ad_accounts_on_advertising_account_id"
     t.index ["connection_id"], name: "index_meta_ads_ad_accounts_on_connection_id"
     t.index ["id", "store_id"], name: "index_meta_ads_ad_accounts_on_id_and_store_id", unique: true
@@ -556,14 +571,57 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.datetime "synced_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "ad_set_id"
+    t.bigint "ad_id"
+    t.string "meta_campaign_id"
+    t.string "meta_adset_id"
+    t.string "meta_ad_id"
+    t.string "campaign_name"
+    t.string "adset_name"
+    t.string "ad_name"
+    t.decimal "spend_display", precision: 18, scale: 4
+    t.string "display_currency"
+    t.decimal "fx_rate", precision: 18, scale: 8
+    t.date "fx_date"
+    t.index ["ad_account_id", "ad_id", "date"], name: "index_meta_ads_insights_ad_day", unique: true, where: "((level)::text = 'ad'::text)"
     t.index ["ad_account_id", "campaign_id", "date"], name: "index_meta_ads_insights_campaign_day", unique: true, where: "((level)::text = 'campaign'::text)"
     t.index ["ad_account_id", "date"], name: "index_meta_ads_insights_account_day", unique: true, where: "((level)::text = 'account'::text)"
+    t.index ["ad_id"], name: "index_meta_ads_daily_insights_on_ad_id"
+    t.index ["ad_set_id"], name: "index_meta_ads_daily_insights_on_ad_set_id"
     t.index ["campaign_id"], name: "index_meta_ads_daily_insights_on_campaign_id"
     t.index ["store_id", "date"], name: "index_meta_ads_daily_insights_on_store_id_and_date"
     t.index ["store_id"], name: "index_meta_ads_daily_insights_on_store_id"
-    t.check_constraint "(level::text = 'campaign'::text) = (campaign_id IS NOT NULL)", name: "meta_ads_insight_campaign_presence"
+    t.check_constraint "(level::text = 'ad'::text) = (ad_id IS NOT NULL)", name: "meta_ads_insight_ad_presence"
+    t.check_constraint "(level::text = ANY (ARRAY['campaign'::character varying, 'ad'::character varying]::text[])) = (campaign_id IS NOT NULL)", name: "meta_ads_insight_campaign_presence"
+    t.check_constraint "(spend_display IS NULL) = (fx_rate IS NULL)", name: "meta_ads_insight_display_has_rate"
     t.check_constraint "impressions >= 0 AND reach >= 0 AND clicks >= 0 AND spend >= 0::numeric AND conversions >= 0::numeric AND conversion_value >= 0::numeric", name: "meta_ads_insight_non_negative"
-    t.check_constraint "level::text = ANY (ARRAY['account'::character varying, 'campaign'::character varying]::text[])", name: "meta_ads_insight_level"
+    t.check_constraint "level::text = ANY (ARRAY['account'::character varying, 'campaign'::character varying, 'ad'::character varying]::text[])", name: "meta_ads_insight_level"
+  end
+
+  create_table "meta_ads_deletion_requests", force: :cascade do |t|
+    t.string "confirmation_code", null: false
+    t.string "meta_user_digest", null: false
+    t.string "status", default: "completed", null: false
+    t.integer "connections_removed", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["confirmation_code"], name: "index_meta_ads_deletion_requests_on_confirmation_code", unique: true
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'completed'::character varying]::text[])", name: "meta_ads_deletion_status"
+  end
+
+  create_table "meta_ads_product_links", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "product_id", null: false
+    t.string "object_type", null: false
+    t.string "meta_id", null: false
+    t.string "source", default: "manual", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_meta_ads_product_links_on_product_id"
+    t.index ["store_id", "object_type", "meta_id"], name: "index_meta_ads_product_links_on_object", unique: true
+    t.index ["store_id"], name: "index_meta_ads_product_links_on_store_id"
+    t.check_constraint "object_type::text = ANY (ARRAY['ad'::character varying, 'ad_set'::character varying, 'campaign'::character varying]::text[])", name: "meta_ads_product_link_type"
+    t.check_constraint "source::text = ANY (ARRAY['manual'::character varying, 'auto'::character varying]::text[])", name: "meta_ads_product_link_source"
   end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
@@ -700,9 +758,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.index ["store_id", "number"], name: "index_orders_on_store_id_and_number", unique: true
     t.index ["store_id", "sendit_code"], name: "index_orders_on_store_id_and_sendit_code", unique: true, where: "(sendit_code IS NOT NULL)"
     t.index ["store_id"], name: "index_orders_on_store_id"
-    t.check_constraint "(meta_adset_id IS NULL AND meta_ad_id IS NULL) OR meta_campaign_id IS NOT NULL", name: "orders_meta_ids_need_campaign"
     t.check_constraint "collected_cents IS NULL OR collected_cents >= 0", name: "orders_collected_cents_nonnegative"
     t.check_constraint "meta_ad_id IS NULL OR meta_ad_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_ad_id_numeric"
+    t.check_constraint "meta_adset_id IS NULL AND meta_ad_id IS NULL OR meta_campaign_id IS NOT NULL", name: "orders_meta_ids_need_campaign"
     t.check_constraint "meta_adset_id IS NULL OR meta_adset_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_adset_id_numeric"
     t.check_constraint "meta_campaign_id IS NULL OR meta_campaign_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_campaign_id_numeric"
     t.check_constraint "refunded_cents >= 0", name: "orders_refunded_cents_nonnegative"
@@ -778,44 +836,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'paid'::character varying, 'rejected'::character varying]::text[])", name: "payments_status_known"
   end
 
-  create_table "product_translations", force: :cascade do |t|
-    t.bigint "product_id", null: false
-    t.string "locale", null: false
-    t.string "name"
-    t.text "short_description"
-    t.text "story"
-    t.text "material"
-    t.text "fit"
-    t.text "movement"
-    t.text "dimensions"
-    t.string "origin"
-    t.text "care"
-    t.string "seo_title"
-    t.string "seo_description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["product_id", "locale"], name: "index_product_translations_on_product_id_and_locale", unique: true
-    t.index ["product_id"], name: "index_product_translations_on_product_id"
-  end
-
-  create_table "product_variants", force: :cascade do |t|
-    t.bigint "product_id", null: false
-    t.string "name", null: false
-    t.string "sku"
-    t.string "option1_name"
-    t.string "option1_value"
-    t.string "option2_name"
-    t.string "option2_value"
-    t.integer "price_cents"
-    t.integer "stock", default: 0, null: false
-    t.boolean "active", default: true, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "color_hex"
-    t.jsonb "image_order", default: [], null: false
-    t.index ["product_id"], name: "index_product_variants_on_product_id"
-  end
-
   create_table "platform_api_tokens", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "token_digest", null: false
@@ -858,6 +878,44 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.index ["refresh_digest"], name: "index_platform_oauth_tokens_on_refresh_digest", unique: true
     t.index ["token_digest"], name: "index_platform_oauth_tokens_on_token_digest", unique: true
     t.index ["user_id"], name: "index_platform_oauth_tokens_on_user_id"
+  end
+
+  create_table "product_translations", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.string "locale", null: false
+    t.string "name"
+    t.text "short_description"
+    t.text "story"
+    t.text "material"
+    t.text "fit"
+    t.text "movement"
+    t.text "dimensions"
+    t.string "origin"
+    t.text "care"
+    t.string "seo_title"
+    t.string "seo_description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id", "locale"], name: "index_product_translations_on_product_id_and_locale", unique: true
+    t.index ["product_id"], name: "index_product_translations_on_product_id"
+  end
+
+  create_table "product_variants", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.string "name", null: false
+    t.string "sku"
+    t.string "option1_name"
+    t.string "option1_value"
+    t.string "option2_name"
+    t.string "option2_value"
+    t.integer "price_cents"
+    t.integer "stock", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "color_hex"
+    t.jsonb "image_order", default: [], null: false
+    t.index ["product_id"], name: "index_product_variants_on_product_id"
   end
 
   create_table "products", force: :cascade do |t|
@@ -1159,9 +1217,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
     t.check_constraint "char_length(site_domain::text) <= 253", name: "woocommerce_connection_code_site_domain_length"
   end
 
-  add_foreign_key "platform_oauth_codes", "users", on_delete: :cascade
-  add_foreign_key "platform_oauth_tokens", "users", on_delete: :cascade
-  add_foreign_key "platform_api_tokens", "users", on_delete: :cascade
   add_foreign_key "access_requests", "stores", on_delete: :nullify
   add_foreign_key "access_requests", "users", column: "reviewed_by_id", on_delete: :nullify
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -1218,8 +1273,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
   add_foreign_key "meta_ads_campaigns", "stores"
   add_foreign_key "meta_ads_connections", "stores"
   add_foreign_key "meta_ads_daily_insights", "meta_ads_ad_accounts", column: ["ad_account_id", "store_id"], primary_key: ["id", "store_id"]
+  add_foreign_key "meta_ads_daily_insights", "meta_ads_ad_sets", column: "ad_set_id"
+  add_foreign_key "meta_ads_daily_insights", "meta_ads_ads", column: "ad_id"
   add_foreign_key "meta_ads_daily_insights", "meta_ads_campaigns", column: "campaign_id"
   add_foreign_key "meta_ads_daily_insights", "stores"
+  add_foreign_key "meta_ads_product_links", "products"
+  add_foreign_key "meta_ads_product_links", "stores"
   add_foreign_key "oauth_access_tokens", "stores"
   add_foreign_key "order_confirmations", "orders", on_delete: :cascade
   add_foreign_key "order_confirmations", "stores", on_delete: :cascade
@@ -1238,6 +1297,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_130000) do
   add_foreign_key "page_translations", "pages"
   add_foreign_key "pages", "stores"
   add_foreign_key "payments", "stores", on_delete: :cascade
+  add_foreign_key "platform_api_tokens", "users", on_delete: :cascade
+  add_foreign_key "platform_oauth_codes", "users", on_delete: :cascade
+  add_foreign_key "platform_oauth_tokens", "users", on_delete: :cascade
   add_foreign_key "product_translations", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "stores"

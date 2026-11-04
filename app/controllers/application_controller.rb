@@ -87,6 +87,7 @@ class ApplicationController < ActionController::Base
     path == "/" ||
       path == "/sitemap.xml" ||
       path.start_with?("/signup") ||
+      path.start_with?("/auth/meta/") ||
       path == "/abonnement" ||
       path.start_with?("/paiement") ||
       seller_path? ||

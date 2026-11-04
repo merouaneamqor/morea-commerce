@@ -1,0 +1,6 @@
+ar:
+  tiktok_ads:
+    connect: "ربط TikTok Ads"
+    errors:
+      config_missing: "لم يتم إعداد TikTok على هذه المنصة بعد: ينقص %{settings}."
+      not_ready: "ربط TikTok Ads غير متاح على هذه المنصة بعد."

@@ -1,0 +1,40 @@
+ar:
+  meta_ads:
+    back_home: "العودة إلى الرئيسية"
+    valid_until: "الوصول صالح حتى %{date}"
+    permissions: "الأذونات:"
+    missing_business_management: "لم يتم منح إذن business_management: تظهر فقط الحسابات الإعلانية لملفك الشخصي وليس حسابات محفظة Business. أعد الاتصال لمنحه."
+    not_selectable: "غير قابل للاختيار"
+    disconnected_revoked: "تم فصل Meta وسُحبت الأذونات لدى Meta."
+    notice:
+      expires_soon: "ينتهي اتصال Meta Ads في %{date}. أعد الاتصال قبل ذلك حتى لا تتوقف مزامنة الإنفاق."
+      needs_reconnect: "يجب تجديد اتصال Meta Ads: مزامنة الإنفاق متوقفة."
+    account_status:
+      active: "نشط"
+      disabled: "معطّل"
+      unsettled: "دفعة مستحقة"
+      pending_risk_review: "قيد المراجعة"
+      pending_settlement: "التسوية قيد الانتظار"
+      grace_period: "فترة سماح"
+      pending_closure: "قيد الإغلاق"
+      closed: "مغلق"
+      unknown: "حالة غير معروفة"
+    products_title: "الإعلانات والمنتجات"
+    products_lead: "اربط كل إعلان بالمنتج الذي يبيعه: يُحتسب إنفاقه عندئذٍ في ربح هذا المنتج. الروابط التلقائية تأتي من اسم الإعلان (SKU أو اسم المنتج) والرابط اليدوي يستبدلها."
+    no_product: "بدون منتج"
+    save_links: "حفظ الروابط"
+    links_saved: "تم حفظ الروابط."
+    link_source:
+      manual: "يدوي"
+      auto: "تلقائي"
+    errors:
+      account_not_selectable: "هذا الحساب الإعلاني معطّل أو عليه رصيد غير مسوّى: لا يمكن ربطه."
+    deletion:
+      title: "حذف بياناتك من Meta"
+      code: "رمز التأكيد:"
+      not_found: "تعذّر العثور على طلب الحذف هذا."
+      status:
+        pending: "طلبك قيد المعالجة."
+        completed: "تمت إزالة وصولك إلى Meta من seallo."
+    manage: "إدارة Meta Ads"
+    back_button: "رجوع"

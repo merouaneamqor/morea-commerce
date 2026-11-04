@@ -1,4 +1,4 @@
-<%# The one date picker of the platform. locals: range (DateRange), preset (key or nil), url (page path), extra (other params to keep), align ("end" or "start"), theme ("light" or "dark"). %>
+<%# The one date picker of the platform. locals: range (DateRange), preset (key or nil), url (page path), extra (other params to keep), align ("end" or "start"), theme ("light" or "dark"), size ("compact": 32px high). %>
 <% extra = local_assigns.fetch(:extra, {}) %>
 <% align = local_assigns.fetch(:align, "end") %>
 <% theme = local_assigns.fetch(:theme, "light") %>
@@ -6,7 +6,7 @@
 <% current_key = preset || range.preset_key %>
 <div class="relative" data-controller="date-range-picker" data-date-range-picker-config-value="<%= date_range_config(range: range, url: url, extra: extra).to_json %>" data-date-range-picker="<%= range.from.iso8601 %>/<%= range.to.iso8601 %>">
   <button type="button" data-action="date-range-picker#toggle" data-date-range-picker-target="button" aria-haspopup="dialog" aria-expanded="false" aria-label="<%= t("date_range.choose") %>"
-          class="flex h-11 cursor-pointer items-center gap-2 rounded-xl px-3 text-sm font-semibold whitespace-nowrap transition <%= theme == "dark" ? "bg-white/10 text-white hover:bg-white/15" : "border border-[#e8e3df] bg-white text-[#1f2430] hover:border-[#d6cfca]" %>">
+          class="flex cursor-pointer items-center font-semibold whitespace-nowrap transition <%= local_assigns[:size] == "compact" ? "h-8 gap-1.5 rounded-lg px-2.5 text-[13px]" : "h-11 gap-2 rounded-xl px-3 text-sm" %> <%= theme == "dark" ? "bg-white/10 text-white hover:bg-white/15" : "border border-[#e8e3df] bg-white text-[#1f2430] hover:border-[#d6cfca]" %>">
     <svg viewBox="0 0 24 24" class="size-4 shrink-0 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
     <span data-date-range-label><%= date_range_label(range, current_key) %></span>
     <svg viewBox="0 0 24 24" class="size-3.5 shrink-0 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round] opacity-60" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>

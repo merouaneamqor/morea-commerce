@@ -7,8 +7,7 @@
 <p class="admin-banner mb-5"><%= t("advertising.note_0") %></p>
 <% if @error.present? %><p role="alert" class="admin-banner admin-banner--critical mb-4"><%= @error %></p><% end %>
 <%= form_with url: admin_advertising_path, method: :get, class: 'admin-card p-4 mb-5 flex flex-wrap items-end gap-3' do |f| %>
-  <div><%= f.label :start_date, t("advertising.text_3"), class: 'admin-label' %><%= f.date_field :start_date, value: @summary.start_date, required: true, class: 'admin-input' %></div>
-  <div><%= f.label :end_date, t("advertising.text_4"), class: 'admin-label' %><%= f.date_field :end_date, value: @summary.end_date, required: true, class: 'admin-input' %></div>
+  <div><%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_advertising_path, align: "start", extra: { sort: params[:sort] }.compact_blank %><%= hidden_field_tag :from, @date_range.from.iso8601, id: nil %><%= hidden_field_tag :to, @date_range.to.iso8601, id: nil %><%= hidden_field_tag :preset, @date_range_preset, id: nil if @date_range_preset %></div>
   <div><%= f.label :sort, t("advertising.text_5"), class: 'admin-label' %><%= f.select :sort, [[t("advertising.text_7"), 'name'], [t("advertising.text_8"), 'profit']], { selected: params[:sort] }, class: 'admin-input' %></div>
   <%= f.submit t("advertising.text_6"), class: 'admin-btn-secondary' %>
   <p class="admin-muted"><%= t("advertising.note_1") %></p>

@@ -23,13 +23,13 @@ class AccountingExport
   end
 
   def filename
-    "comptabilite-#{@stats.month.strftime("%Y-%m")}-#{@stats.basis}.csv"
+    "comptabilite-#{@stats.date_range.from.iso8601}-#{@stats.date_range.to.iso8601}-#{@stats.basis}.csv"
   end
 
   def to_csv
     revenue, goods, delivery, ads = totals
     expenses = goods + delivery + ads
-    "﻿" + CSV.generate do |csv|
+    0xFEFF.chr(Encoding::UTF_8) + CSV.generate do |csv| # BOM, so Excel reads the accents
       csv << HEADER
       lines.each do |line|
         csv << [ line.date.iso8601, KINDS.fetch(line.kind), line.number, money(line.revenue), money(line.goods), money(line.delivery), money(line.ads) ]

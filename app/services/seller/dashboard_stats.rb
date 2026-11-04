@@ -5,9 +5,8 @@ module Seller
   # Money results (revenue, cost of goods, delivery, advertising, profit) are not computed here: they belong to
   # AccountingStats, the single source for those numbers, and are shown on the Comptabilité page.
   class DashboardStats
-    PERIODS = %w[today 7d 30d].freeze
-    ZONE = "Africa/Casablanca"
-    DAYS = { "today" => 1, "7d" => 7, "30d" => 30 }.freeze
+    # Older links used ?period=today|7d|30d; they still open the matching range.
+    LEGACY_PERIODS = { "today" => "today", "7d" => "last_7", "30d" => "last_30" }.freeze
 
     # An order waiting for the call centre.
     AWAITING_STATUSES = %w[new].freeze
@@ -16,35 +15,33 @@ module Seller
     CONFIRMED_STATUSES = (Order::STATUSES - %w[new cancelled]).freeze
     SHIPPED_STATUSES = (IN_TRANSIT_STATUSES + %w[delivered returned]).freeze
 
-    attr_reader :period, :from, :to
+    attr_reader :range
 
-    def initialize(store:, period: "7d", now: Time.current)
+    # range: a DateRange (store days, inclusive end); the previous period is the same number of days just before.
+    def initialize(store:, range: nil, period: nil, now: Time.current)
       @store = store
-      @period = PERIODS.include?(period.to_s) ? period.to_s : "7d"
-      days = DAYS.fetch(@period)
-      @to = now.in_time_zone(ZONE).end_of_day
-      @from = (@to.beginning_of_day - (days - 1).days)
-      @previous_to = @from - 1.second
-      @previous_from = @from - days.days
+      today = DateRange.today(now)
+      @range = range || DateRange.preset(LEGACY_PERIODS.fetch(period.to_s, "last_7"), today: today)
+      @previous = @range.previous
     end
 
     def to_h
-      created = orders.where(created_at: from..to)
+      created = orders.where(created_at: range.time_range)
       total = created.count
-      previous_total = orders.where(created_at: @previous_from..@previous_to).count
+      previous_total = orders.where(created_at: @previous.time_range).count
       counts = created.group(:status).count
       confirmed = counts.slice(*CONFIRMED_STATUSES).values.sum
       shipped = counts.slice(*SHIPPED_STATUSES).values.sum
       delivered = counts.fetch("delivered", 0)
       cancelled = counts.fetch("cancelled", 0)
 
-      delivered_in_period = delivered_orders(from, to).count
-      refused = orders.where(status: "returned", returned_at: from..to).count
+      delivered_in_period = delivered_orders(range).count
+      refused = orders.where(status: "returned", returned_at: range.time_range).count
       awaiting = orders.where(status: AWAITING_STATUSES)
       in_transit = orders.where(status: IN_TRANSIT_STATUSES)
 
       {
-        period: period,
+        range: { from: range.from.iso8601, to: range.to.iso8601, days: range.days },
         currency: currency,
         pending: awaiting.count,
         kpis: {
@@ -89,8 +86,8 @@ module Seller
       currency == "MAD" ? %w[DH MAD] : [ currency ]
     end
 
-    def delivered_orders(start, finish)
-      orders.where(status: "delivered", delivered_at: start..finish)
+    def delivered_orders(period)
+      orders.where(status: "delivered", delivered_at: period.time_range)
     end
 
     # Cents, rounded to whole units of 1/100.

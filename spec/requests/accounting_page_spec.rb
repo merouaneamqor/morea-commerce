@@ -83,7 +83,7 @@ RSpec.describe "Comptabilité page", type: :request do
   describe "the page" do
     before { october_orders }
 
-    it "shows the header, the five tabs (no Trésorerie), the toggle, the month picker and the export" do
+    it "shows the header, the five tabs (no Trésorerie), the toggle, the date range picker and the export" do
       sign_in(owner)
       get "/comptabilite", params: { month: "2026-10" }
       expect(response).to have_http_status(:ok)
@@ -93,8 +93,10 @@ RSpec.describe "Comptabilité page", type: :request do
       toggle = document.css("[data-basis-toggle] a")
       expect(toggle.map { |link| link.text.squish }).to eq(%w[Livrées Expédiées])
       expect(toggle.first["aria-current"]).to eq("true")
-      expect(document.at_css("input[type=month]")["value"]).to eq("2026-10")
-      expect(document.at_css("a[data-export]")["href"]).to eq("/comptabilite/export?basis=delivered&month=2026-10")
+      picker = document.at_css("[data-controller=date-range-picker]")
+      expect(picker["data-date-range-picker"]).to eq("2026-10-01/2026-10-31")
+      expect(picker.at_css("[data-date-range-label]").text.squish).to eq("Mois dernier")
+      expect(document.at_css("a[data-export]")["href"]).to eq("/comptabilite/export?basis=delivered&from=2026-10-01&to=2026-10-31")
     end
 
     it "shows the nine figures, calculated by hand, in the right order" do
@@ -143,7 +145,7 @@ RSpec.describe "Comptabilité page", type: :request do
       expect(shares).to eq("goods" => "40,0 MAD", "delivery" => "12,0 MAD", "ads" => "0,0 MAD", "profit" => "48,0 MAD")
       expect(shares.values.sum { |text| text.to_s.delete(" MAD").tr(",", ".").to_f }).to eq(100.0)
       expect(document.css("[data-side-cards] a").map { |link| link["href"] }).to eq(
-        %w[receivables debts inventory].map { |tab| "/comptabilite?basis=delivered&month=2026-10&tab=#{tab}" })
+        %w[receivables debts inventory].map { |tab| "/comptabilite?basis=delivered&from=2026-10-01&preset=last_month&tab=#{tab}&to=2026-10-31" })
       expect(document.css("[data-side-cards] a").map { |link| link["data-side"] }).to eq(%w[receivables debts inventory])
     end
 
@@ -159,11 +161,12 @@ RSpec.describe "Comptabilité page", type: :request do
       expect(value_of("revenue")).to eq("250 MAD")
     end
 
-    it "falls back to the current month for a missing, bad or future month" do
+    it "falls back to this month for a missing, bad or future range" do
       sign_in(owner)
-      [ {}, { month: "garbage" }, { month: "2027-05" }, { month: "2026-13" } ].each do |params|
+      [ {}, { month: "garbage" }, { month: "2027-05" }, { month: "2026-13" }, { from: "bad", to: "2026-10-31" }, { from: "2026-11-10", to: "2026-11-20" } ].each do |params|
         get "/comptabilite", params: params
-        expect(document.at_css("input[type=month]")["value"]).to eq("2026-11"), params.inspect
+        expect(document.at_css("[data-controller=date-range-picker]")["data-date-range-picker"]).to eq("2026-11-01/2026-11-05"), params.inspect
+        expect(document.at_css("[data-date-range-label]").text.squish).to eq("Ce mois")
       end
     end
 
@@ -286,7 +289,7 @@ RSpec.describe "Comptabilité page", type: :request do
       get "/comptabilite/export", params: { month: "2026-10", format: "csv" }
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq("text/csv")
-      expect(response.headers["Content-Disposition"]).to include("comptabilite-2026-10-delivered.csv")
+      expect(response.headers["Content-Disposition"]).to include("comptabilite-2026-10-01-2026-10-31-delivered.csv")
       rows = CSV.parse(response.body.delete_prefix("﻿"), headers: true)
       lines = rows.reject { |row| row["date"].match?(/\A[A-Z_]+\z/) }
       total = rows.find { |row| row["date"] == "TOTAL" }
@@ -303,10 +306,10 @@ RSpec.describe "Comptabilité page", type: :request do
       expect(lines.find { |row| row["type"] == "retour" }.to_h).to include("revenue" => "0.00", "cost_of_goods" => "0.00", "delivery_fees" => "10.00")
     end
 
-    it "follows the same month and basis as the page" do
+    it "follows the same range and basis as the page" do
       sign_in(owner)
       get "/comptabilite/export", params: { month: "2026-10", basis: "shipped", format: "csv" }
-      expect(response.headers["Content-Disposition"]).to include("comptabilite-2026-10-shipped.csv")
+      expect(response.headers["Content-Disposition"]).to include("comptabilite-2026-10-01-2026-10-31-shipped.csv")
     end
   end
 

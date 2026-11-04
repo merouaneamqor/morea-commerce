@@ -25,7 +25,7 @@
 #   total expenses = cost of goods + delivery fees (delivery and return) + advertising
 #   net profit     = revenue - total expenses            (so expenses + net profit = revenue)
 class AccountingStats
-  ZONE = "Africa/Casablanca"
+  ZONE = DateRange::ZONE
   BASES = %w[delivered shipped].freeze
   TENTHS = 1000 # shares are computed in tenths of a point, so 100.0 is exactly 1000
 
@@ -40,20 +40,18 @@ class AccountingStats
     def margin = revenue.positive? ? Rational(net, revenue) : nil
   end
 
-  attr_reader :basis, :range, :previous_range
+  attr_reader :basis, :range, :previous_range, :date_range
 
-  def initialize(store:, month: nil, basis: "delivered", now: Time.current)
+  # range: a DateRange (the picker's choice). month: "2026-10" is a shortcut for a whole month (cut to today).
+  # With neither, the current month to date.
+  def initialize(store:, range: nil, month: nil, basis: "delivered", now: Time.current)
     @store = store
     @basis = BASES.include?(basis.to_s) ? basis.to_s : "delivered"
-    @today = now.in_time_zone(ZONE).to_date
-    @month = parse_month(month)
-    last_day = [ @month.end_of_month, @today ].min
-    @range = @month..last_day
-    days = (@range.end - @range.begin).to_i + 1
-    @previous_range = (@range.begin - days)..(@range.begin - 1)
+    @today = DateRange.today(now)
+    @date_range = range || month_range(month) || DateRange.preset("this_month", today: @today)
+    @range = @date_range.dates
+    @previous_range = @date_range.previous.dates # the same number of days just before
   end
-
-  def month = @month
 
   def currency
     code = @store.currency.to_s.upcase
@@ -182,10 +180,10 @@ class AccountingStats
 
   private
 
-  def parse_month(value)
-    parsed = Date.strptime("#{value}-01", "%Y-%m-%d") if value.to_s.match?(/\A\d{4}-(0[1-9]|1[0-2])\z/)
-    parsed = nil if parsed && parsed > @today.beginning_of_month
-    parsed || @today.beginning_of_month
+  def month_range(value)
+    return unless value.to_s.match?(/\A\d{4}-(0[1-9]|1[0-2])\z/)
+
+    DateRange.for_month(Date.strptime("#{value}-01", "%Y-%m-%d"), today: @today)
   end
 
   def orders

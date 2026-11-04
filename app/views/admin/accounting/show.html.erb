@@ -5,8 +5,9 @@
 <% stats = @stats %>
 <% totals = stats.totals %>
 <% cur = stats.currency %>
-<% month_param = stats.month.strftime("%Y-%m") %>
-<% link_for = ->(extra = {}) { seller_accounting_path({ month: month_param, basis: stats.basis, tab: (@tab unless @tab == "overview") }.merge(extra).compact) } %>
+<% range = stats.date_range %>
+<% range_params = range.to_param.merge(preset: @date_range_preset).compact %>
+<% link_for = ->(extra = {}) { seller_accounting_path({ **range_params, basis: stats.basis, tab: (@tab unless @tab == "overview") }.merge(extra).compact) } %>
 <% daily = stats.daily.values %>
 <% returns_count = stats.lines.count { |line| line.kind == "returned" } %>
 <% warnings = stats.warnings %>
@@ -26,16 +27,9 @@
               class: "rounded-lg px-4 py-2 transition #{stats.basis == basis ? "bg-white text-[#1f2430]" : "text-white/75 hover:text-white"}" %>
       <% end %>
     </div>
-    <%= form_with url: seller_accounting_path, method: :get, class: "flex items-center gap-2 rounded-xl bg-white/10 px-3 text-sm font-semibold", data: { month_form: true } do %>
-      <input type="hidden" name="basis" value="<%= stats.basis %>">
-      <% if @tab != "overview" %><input type="hidden" name="tab" value="<%= @tab %>"><% end %>
-      <label class="flex items-center gap-2 py-2.5">
-        <span class="sr-only"><%= t("accounting.month") %></span>
-        <input type="month" name="month" value="<%= month_param %>" max="<%= Time.find_zone!(AccountingStats::ZONE).now.strftime("%Y-%m") %>" onchange="this.form.requestSubmit()"
-               class="cursor-pointer bg-transparent text-white outline-none [color-scheme:dark]" aria-label="<%= acc_month_label(stats.month) %>">
-      </label>
-    <% end %>
-    <%= link_to seller_accounting_export_path(month: month_param, basis: stats.basis, format: "csv"), data: { export: true },
+    <%= render "admin/shared/date_range_picker", range: range, preset: @date_range_preset, url: seller_accounting_path, theme: "dark",
+          extra: { basis: stats.basis, tab: (@tab unless @tab == "overview") }.compact %>
+    <%= link_to seller_accounting_export_path(range.to_param.merge(basis: stats.basis, format: "csv")), data: { export: true },
           class: "flex h-11 items-center gap-2 rounded-xl bg-[#c9482c] px-4 text-sm font-semibold text-white hover:bg-[#b03d24]" do %>
       <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
       <%= t("accounting.export") %>

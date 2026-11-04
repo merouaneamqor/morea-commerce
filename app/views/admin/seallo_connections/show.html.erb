@@ -25,10 +25,15 @@
     <% @connections.each do |connection| %>
       <% sync_state = connection.shopify_sync_state || "waiting" %>
       <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4">
-        <%= link_to connection.name, admin_store_connection_path(connection), class: "font-semibold hover:underline" %>
+        <%= link_to connection.name, admin_store_connection_path(connection), class: "min-w-0 break-words font-semibold hover:underline" %>
         <div class="flex flex-wrap items-center gap-3">
           <span class="admin-muted text-[13px]"><%= t("seallo_connect.sync_states.#{sync_state}") %></span>
           <span class="admin-badge admin-badge--<%= state_badges.fetch(connection.connection_state, "neutral") %>"><%= t("seallo_connect.connection_states.#{connection.connection_state}") %></span>
+          <% unless connection.active? %>
+            <%= button_to t("connections.delete"), admin_store_connection_path(connection), method: :delete,
+              form: { data: { turbo_confirm: t("connections.delete_confirm", name: connection.name) } },
+              class: "admin-btn-critical" %>
+          <% end %>
         </div>
       </div>
     <% end %>

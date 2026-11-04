@@ -88,4 +88,24 @@ RSpec.describe "Store connection deletion", type: :request do
       expect(response.body).not_to match(/translation missing|translation_missing/i)
     end
   end
+
+  it "offers localized deletion for old disconnected Seallo connections on the overview" do
+    sign_in
+    connection.update!(shopify_app: "seallo_connect", active: false)
+    active_connection = store.store_connections.create!(name: "Active synthetic Seallo", provider: "shopify",
+      external_domain: "active-synthetic.myshopify.com", shopify_oauth: true, shopify_app: "seallo_connect", active: true)
+
+    %w[fr en ar].each do |locale|
+      get admin_seallo_connect_path, params: { locale: locale }
+      expect(response).to have_http_status(:ok)
+      document = Nokogiri::HTML(response.body)
+      delete_input = document.at_css("form[action='#{admin_store_connection_path(connection)}'] input[name='_method'][value='delete']")
+      expect(delete_input).to be_present
+      form = delete_input.ancestors("form").first
+      expect(form["data-turbo-confirm"]).to eq(I18n.t("connections.delete_confirm", locale: locale, name: connection.name))
+      expect(form.at_css("button.admin-btn-critical").text).to include(I18n.t("connections.delete", locale: locale))
+      expect(document.at_css("form[action='#{admin_store_connection_path(active_connection)}'] input[name='_method'][value='delete']")).to be_nil
+      expect(response.body).not_to match(/translation missing|translation_missing/i)
+    end
+  end
 end

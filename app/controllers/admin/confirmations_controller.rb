@@ -70,26 +70,26 @@ module Admin
       redirect_to admin_confirmations_path, alert: e.message
     end
 
-    # Call panel endpoints (JSON, used by the panel's Stimulus controller).
+    # Call endpoints support the queue forms and JSON clients.
     def call
       confirmation = desk.open_call(params[:order_id])
-      render json: { order_id: confirmation.order_id, call_started_at: confirmation.call_started_at.iso8601(3), server_now: Time.current.iso8601(3) }
+      call_response({ order_id: confirmation.order_id, call_started_at: confirmation.call_started_at.iso8601(3), server_now: Time.current.iso8601(3) }, notice: t("admin.confirmations.claimed"))
     rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid => e
-      render json: { error: e.message }, status: :unprocessable_content
+      call_error(e.message)
     end
 
     def abandon_call
       desk.abandon_call(params[:order_id])
-      render json: { ok: true }
+      call_response({ ok: true }, notice: nil)
     rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid => e
-      render json: { error: e.message }, status: :unprocessable_content
+      call_error(e.message)
     end
 
     def finish_call
       desk.finish_call(params[:order_id], outcome: params[:outcome], notes: params[:notes], callback_at: params[:callback_at], changes: call_changes)
-      render json: { ok: true, next_order_id: next_available_order_id(excluding: params[:order_id]) }
+      call_response({ ok: true, next_order_id: next_available_order_id(excluding: params[:order_id]) }, notice: t("admin.confirmations.recorded"))
     rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid, ArgumentError => e
-      render json: { error: e.message }, status: :unprocessable_content
+      call_error(e.message)
     end
 
     def release
@@ -108,6 +108,20 @@ module Admin
 
     private
 
+    def call_response(payload, notice:)
+      respond_to do |format|
+        format.json { render json: payload }
+        format.html { redirect_to admin_confirmations_path(filter: "mine"), notice: notice }
+      end
+    end
+
+    def call_error(message)
+      respond_to do |format|
+        format.json { render json: { error: message }, status: :unprocessable_content }
+        format.html { redirect_to admin_confirmations_path(filter: "mine"), alert: message }
+      end
+    end
+
     # The edits sent by the panel, in the order editor's shape; nil when the panel sent none.
     def call_changes
       return unless params[:order].present?
@@ -115,7 +129,9 @@ module Admin
       raw = params.require(:order).permit(:name, :phone, :second_phone, :city, :district, :address, lines: [ :product_id, :product_variant_id, :quantity ])
       lines = raw[:lines]
       lines = lines.values if lines.respond_to?(:values) && !lines.is_a?(Array)
-      raw.to_h.symbolize_keys.merge(lines: Array(lines))
+      attrs = raw.to_h.symbolize_keys
+      attrs[:lines] = Array(lines) if raw.key?(:lines)
+      attrs
     end
 
     # Oldest order waiting for a first call (unassigned, due, not a wrong number), skipping the one just handled.

@@ -14,7 +14,7 @@ module Admin
 
     def create
       @user = current_store.users.new(user_params)
-      if @user.save
+      if valid_staff_access? && @user.save
         redirect_to admin_users_path, notice: "Staff account created."
       else
         render :new, status: :unprocessable_entity
@@ -32,7 +32,8 @@ module Admin
       attrs = user_params
       attrs = attrs.except(:password, :password_confirmation) if attrs[:password].blank?
 
-      if @user.update(attrs)
+      @user.assign_attributes(attrs)
+      if valid_staff_access? && @user.save
         redirect_to admin_users_path, notice: "Staff account saved."
       else
         render :edit, status: :unprocessable_entity
@@ -69,6 +70,15 @@ module Admin
 
     def set_user
       @user = current_store.users.find(params[:id])
+    end
+
+    # A supervisor needs explicit admin access; never silently save an unusable
+    # account or grant permissions when the checkbox was deliberately cleared.
+    def valid_staff_access?
+      return true if @user.admin? || @user.super_admin? || @user.confirmation_agent?
+
+      @user.errors.add(:base, "Supervisors need Admin access. Select Admin access or choose Confirmation agent.")
+      false
     end
 
     def user_params_without_pay

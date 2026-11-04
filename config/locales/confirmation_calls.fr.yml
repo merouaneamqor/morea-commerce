@@ -1,0 +1,12 @@
+{
+  "fr": {
+    "admin": {
+      "confirmations": {
+        "start_call": "Commencer l’appel",
+        "finish_call": "Terminer l’appel et enregistrer",
+        "abandon_call": "Fermer l’appel sans résultat",
+        "call_in_progress": "Appel en cours — choisissez le résultat avant d’enregistrer."
+      }
+    }
+  }
+}

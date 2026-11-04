@@ -141,7 +141,12 @@ module Confirmations
       # The editor rebuilds the totals from what it is given: keep shipping and discount as they are.
       keep = { shipping_dh: order.shipping_cents.to_i / 100.0, discount_code: order.discount_code.presence,
                discount_dh: (order.discount_code.blank? ? order.discount_cents.to_i / 100.0 : nil) }
-      attrs = keep.merge(attrs.to_h.symbolize_keys)
+      existing = {
+        name: order.customer_name, phone: order.customer_phone, second_phone: order.second_phone,
+        city: order.customer_city, district: order.customer_district, address: order.customer_address,
+        lines: order.order_items.map { |item| { product_id: item.product_id, product_variant_id: item.product_variant_id, quantity: item.quantity } }
+      }
+      attrs = existing.merge(keep).merge(attrs.to_h.symbolize_keys)
       editor = Orders::Editor.new(store: @store, user: @user, external_effects: false)
       raise Error, order.edit_lock_reason.presence || "This order can no longer be edited." unless order.editable?
       raise Error, editor.errors.full_messages.to_sentence.presence || "Could not save the changes." unless editor.update(order, attrs)

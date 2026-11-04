@@ -30,3 +30,9 @@ Keep merchant COD settlement separate from platform subscription invoices. For n
 ## Acceptance checks
 
 Use synthetic test tenants and test job adapters. Cover replay and concurrency, foreign tenant/product/variant IDs, validation rollback, stock before/after confirmation and cancellation, invalid transitions and carrier-owned-state rejection. Relevant existing scripts include `script/mcp_order_desk_smoke.rb` and `script/mcp_inventory_smoke.rb`. Do not dispatch real parcels, send WhatsApp messages, change ad budgets or invoke paid services in tests.
+
+## Reproduce manager-to-agent calls
+
+Use `spec/requests/confirmation_workflow_spec.rb` for the complete HTTP scenario: manager creates a normal order and staff agent, agent signs in and clocks in, starts a call from the queue, saves its outcome, then both users read the saved results. Test HTML forms and explicit JSON clients separately. Never place a real telephone call for this check.
+
+A staff supervisor without Admin access cannot sign in; reject that combination rather than silently creating an unusable account or granting permissions. Confirmation agents remain non-admins. Partial call edits must preserve omitted customer fields and product lines; distinguish omitted lines from an explicit empty collection. In JSON regression requests use `as: :json` when an empty collection must reach the server. Keep the simulated clock advanced while reading reports after a timed call, then restore it.

@@ -11,6 +11,13 @@
   </div>
 </div>
 
+<% if @needs_clock_in %>
+  <div class="admin-banner mb-4 flex bg-[#fcf0dc] text-[#9a6412] flex-wrap items-center justify-between gap-3" role="status" data-clock-in-required>
+    <span><%= t("admin.confirmations.clock_in_required") %></span>
+    <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path, class: "admin-btn" %>
+  </div>
+<% end %>
+
 <div class="admin-card overflow-hidden">
   <nav class="admin-tabs px-4" aria-label="<%= t('admin.confirmations.filters') %>">
     <% @filters.each do |filter| %>
@@ -83,7 +90,7 @@
                 <% elsif confirmation&.assigned_user_id %>
                   <span class="admin-muted text-sm"><%= t("admin.confirmations.claimed_elsewhere") %></span>
                 <% elsif confirmation.nil? || confirmation.due? %>
-                  <%= button_to t("admin.confirmations.claim"), claim_admin_confirmation_path(order), class: "admin-btn" %>
+                  <%= button_to t("admin.confirmations.claim"), claim_admin_confirmation_path(order), class: "admin-btn disabled:cursor-not-allowed disabled:opacity-50", disabled: @needs_clock_in, title: (t("admin.confirmations.clock_in_required") if @needs_clock_in) %>
                 <% else %>
                   <span class="admin-muted text-sm"><%= t("admin.confirmations.not_due") %></span>
                 <% end %>
@@ -108,7 +115,7 @@
                     <%= form.text_area :notes, id: "notes_#{order.id}", maxlength: 2000, rows: 2, class: "w-full rounded border border-gray-300 p-2" %>
                   </div>
                   <p class="admin-muted text-sm"><%= t("admin.confirmations.dispatch_note") %></p>
-                  <%= form.submit t("admin.confirmations.save"), class: "admin-btn justify-self-start" %>
+                  <%= form.submit t("admin.confirmations.save"), class: "admin-btn justify-self-start disabled:cursor-not-allowed disabled:opacity-50", disabled: @needs_clock_in %>
                 <% end %>
               </td>
             </tr>

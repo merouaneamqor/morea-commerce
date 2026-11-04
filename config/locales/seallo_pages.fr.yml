@@ -78,6 +78,7 @@ fr:
       agent: "Agent"
       unassigned: "Non attribuée"
       all_agents: "Tous les agents"
+      manual: "Manuel"
     customers_segments:
       all: "Tous"
       loyal: "Fidèles"

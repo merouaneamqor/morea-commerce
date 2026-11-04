@@ -13,6 +13,7 @@ module Confirmations
 
     def claim(order_id)
       with_order(order_id) do |order, confirmation|
+        require_shift!
         require_open!(order)
         raise Error, "This callback is not due yet." unless confirmation.due?
         if confirmation.assigned_user_id && confirmation.assigned_user_id != @user.id
@@ -43,6 +44,7 @@ module Confirmations
       callback = parse_callback(callback_at, outcome)
 
       with_order(order_id) do |order, confirmation|
+        require_shift!
         require_open!(order)
         require_owner!(confirmation)
         # The order lock serializes this count, so the third unanswered call always cancels.
@@ -87,6 +89,15 @@ module Confirmations
       return if @store && @user&.can_work_desk_for?(@store.id)
 
       raise Error, "Store administration access required."
+    end
+
+    # Agents must be clocked in to claim or handle orders (looking needs no shift). Checked
+    # here so a crafted request cannot skip the disabled buttons.
+    def require_shift!
+      return unless @user.confirmation_agent_view?
+      return if ConfirmationShift.open.exists?(store: @store, user: @user)
+
+      raise Error, I18n.t("admin.confirmations.clock_in_required")
     end
 
     def require_open!(order)

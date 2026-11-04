@@ -20,10 +20,18 @@ module Orders
       contact = normalize_contact(attrs)
       return failure unless valid_for_write?(contact, lines, attrs)
 
+      agent = assignable_agent(attrs[:agent_id])
+      if attrs[:agent_id].present? && agent.nil?
+        errors.add(:base, "Choose an active confirmation agent of this store.")
+        return failure
+      end
+
       ActiveRecord::Base.transaction do
         customer = find_or_create_customer!(contact)
         totals = compute_totals(lines, attrs)
 
+        # Never assigned to the person who typed the order: it waits in "Available now"
+        # unless an agent was picked explicitly.
         @order = store.orders.create!(
           customer: customer,
           customer_name: contact[:name],
@@ -43,6 +51,10 @@ module Orders
         write_lines!(@order, lines)
         customer.increment!(:orders_count)
         @order.record_event!("created", body: "Order created by staff", user: user)
+        if agent
+          OrderConfirmation.create!(store: store, order: @order, assigned_user: agent, claimed_at: Time.current)
+          @order.record_event!("comment", body: "Assigned to #{agent.name.presence || agent.email} at creation", user: user)
+        end
       end
 
       if @external_effects
@@ -242,7 +254,18 @@ module Orders
         errors.add(:discount_code, "is not valid") unless discount
       end
 
+      if errors.empty? && compute_totals(lines, attrs)[:total_cents].zero?
+        errors.add(:base, "The order total must be above 0 #{store.currency}.")
+      end
+
       errors.empty?
+    end
+
+    # The optional "Assign to agent" choice: only an active confirmation agent of this store.
+    def assignable_agent(agent_id)
+      return if agent_id.blank?
+
+      store.users.active.where(confirmation_role: "agent").find_by(id: agent_id)
     end
 
     def find_or_create_customer!(contact)

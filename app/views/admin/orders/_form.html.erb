@@ -10,6 +10,7 @@
 <% city_data = {
   controller: "order-lines checkout-city",
   order_lines_search_url_value: product_search_admin_orders_path,
+  order_lines_quick_url_value: quick_product_admin_orders_path,
   order_lines_currency_value: currency,
   action: "submit->checkout-city#validateCity",
   checkout_city_subtotal_value: @order.subtotal_cents.to_i,
@@ -113,14 +114,14 @@ end %>
       <span class="admin-muted tabular-nums" data-order-lines-target="total">—</span>
     </div>
     <div class="space-y-3 px-4 pb-4">
-      <div class="relative">
+      <div class="relative" data-order-lines-target="picker">
         <%= text_field_tag :product_q, nil,
               class: "admin-input",
               placeholder: "Search products to add…",
               autocomplete: "off",
               data: {
                 order_lines_target: "query",
-                action: "input->order-lines#search"
+                action: "input->order-lines#search focus->order-lines#search click@document->order-lines#closeOutside"
               } %>
         <div class="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-[#ebebeb] bg-white shadow-lg"
              data-order-lines-target="results" hidden></div>
@@ -197,11 +198,19 @@ end %>
         <%= label_tag "order[notes]", "Notes", class: "admin-label" %>
         <%= text_area_tag "order[notes]", @order.notes, rows: 3, class: "admin-input" %>
       </div>
+      <% unless @order.persisted? %>
+        <div>
+          <%= label_tag "order[agent_id]", "Assign to agent (optional)", class: "admin-label" %>
+          <%= select_tag "order[agent_id]", options_from_collection_for_select(local_assigns.fetch(:assignable_agents, []), :id, ->(a) { a.name.presence || a.email }, params.dig(:order, :agent_id)),
+                include_blank: "Nobody — leave it in Available now", class: "admin-input" %>
+          <p class="admin-help">Left empty, the order is unassigned and every agent sees it in "Available now".</p>
+        </div>
+      <% end %>
     </div>
   </section>
 
   <div class="flex justify-end gap-2">
     <%= link_to "Cancel", (@order.persisted? ? admin_order_path(@order) : admin_orders_path), class: "admin-btn-secondary" %>
-    <%= f.submit (@order.persisted? ? "Save order" : "Create order"), class: "admin-btn" %>
+    <%= f.submit (@order.persisted? ? "Save order" : "Create order"), class: "admin-btn disabled:cursor-not-allowed disabled:opacity-50", data: { order_lines_target: "submit" } %>
   </div>
 <% end %>

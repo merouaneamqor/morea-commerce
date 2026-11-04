@@ -26,8 +26,8 @@ module Team
       Summary.new(
         user: user,
         figures: figures_for(user),
-        earned_period: delivered_ids(user, @range).size * rate,
-        earned_total: delivered_ids(user, nil).size * rate,
+        earned_period: delivered_count(user, @range) * rate,
+        earned_total: delivered_count(user, nil) * rate,
         paid_total: payments(user).sum(:amount_cents),
         last_paid_at: payments(user).maximum(:paid_at)
       )
@@ -35,16 +35,17 @@ module Team
 
     # Confirmed orders per day inside the range, for the bar chart.
     def confirmed_by_day(user)
-      confirmed_orders(user, @range, by: :confirmed_at).group_by { |o| o.confirmed_at.in_time_zone(DateRange::ZONE).to_date }.transform_values(&:size)
+      zone = ActiveRecord::Base.connection.quote(DateRange::ZONE)
+      day = Arel.sql("(orders.confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE #{zone})::date")
+      confirmed_orders(user, @range, by: :confirmed_at).group(day).count
     end
 
     private
 
     def figures_for(user)
-      confirmed = confirmed_orders(user, @range, by: :confirmed_at).to_a
-      statuses = confirmed.map(&:status).tally
+      statuses = confirmed_orders(user, @range, by: :confirmed_at).group(:status).count
       Figures.new(
-        confirmed: confirmed.size,
+        confirmed: statuses.values.sum,
         cancelled: cancelled_count(user),
         pickup: sum_of(statuses, PICKUP),
         in_delivery: sum_of(statuses, IN_DELIVERY),
@@ -78,10 +79,10 @@ module Team
       range ? scope.where(by => range) : scope
     end
 
-    def delivered_ids(user, range)
+    def delivered_count(user, range)
       scope = claims(user).where(status: "delivered").where.not(delivered_at: nil)
       scope = scope.where(delivered_at: range) if range
-      scope.pluck(:id)
+      scope.count
     end
 
     def payments(user)

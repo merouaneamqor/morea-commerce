@@ -153,7 +153,8 @@ jobs:
         run: python -m unittest discover -s script -p 'test_*.py'
 
   responsive:
-    runs-on: ubuntu-latest
+    # Playwright 1.58 supports Ubuntu 24.04; latest also includes unsupported 26.04.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4

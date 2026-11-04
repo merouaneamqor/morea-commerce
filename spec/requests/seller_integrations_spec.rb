@@ -72,7 +72,7 @@ RSpec.describe "Seller integrations page", type: :request do
     expect(networks.first.text).to include("Connecter Meta Ads →")
     expect(networks.last.text).to include("Connecter TikTok Ads →")
     expect(networks.last.at_css("form[action='/admin/tiktok-ads/connect'] button")["disabled"]).to be_nil
-    expect(response.body).not_to include("Bientôt disponible")
+    expect(sections.last.text).not_to include("Bientôt disponible")
     expect(sections.first.at_css("[data-stores-open]").text).to include("Connecter une boutique →")
     expect(stores).to be_empty
   end

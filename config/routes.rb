@@ -77,6 +77,8 @@ Rails.application.routes.draw do
   get "/dashboard", to: "admin/dashboard#show", as: :seller_dashboard
   get "/clients", to: "admin/customers#index", as: :seller_customers
   get "/integrations", to: "admin/store_connections#index", as: :seller_integrations
+  get "/comptabilite", to: "admin/accounting#show", as: :seller_accounting
+  get "/comptabilite/export", to: "admin/accounting#export", as: :seller_accounting_export, defaults: { format: "csv" }
   post "/livraison/societes", to: "admin/delivery_accounts#create", as: :seller_delivery_accounts
   patch "/livraison/societes/:id", to: "admin/delivery_accounts#update", as: :seller_delivery_account
   delete "/livraison/societes/:id", to: "admin/delivery_accounts#destroy"

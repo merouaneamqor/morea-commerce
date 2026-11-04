@@ -46,7 +46,8 @@ module Admin
     # Manual ad to product links. An empty choice removes a link; a manual link replaces an automatic one.
     def product_links
       ads = linkable_ads.index_by(&:meta_id)
-      chosen = params.fetch(:links, {}).permit!.to_h
+      links = params[:links]
+      chosen = links.respond_to?(:each_pair) ? links.each_pair.to_h { |meta_id, product_id| [ meta_id.to_s, product_id.to_s ] } : {}
       products = current_store.products.where(id: chosen.values.compact_blank).index_by { |product| product.id.to_s }
       chosen.each do |meta_id, product_id|
         next unless ads.key?(meta_id)

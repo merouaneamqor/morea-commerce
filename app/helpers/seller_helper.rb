@@ -5,6 +5,9 @@
 module SellerHelper
   SELLER_DICTIONARY = JSON.parse(Rails.root.join("config/seller_dictionary.json").read).freeze
 
+  # Words that exist only in Morea (seallo has no such page): [English, Arabic].
+  SELLER_EXTRA = { "Comptabilité" => [ "Accounting", "المحاسبة" ] }.freeze
+
   SELLER_ICONS = {
     home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
     orders: '<path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/>',
@@ -13,6 +16,7 @@ module SellerHelper
     box: '<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
     target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
     profit: '<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+    calculator: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M16 14v4M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M8 18h.01M12 18h.01"/>',
     clients: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/>',
     chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
     plug: '<path d="M9 2v6M15 2v6"/><path d="M6 8h12v3a6 6 0 0 1-12 0V8z"/><path d="M12 17v5"/>',
@@ -33,7 +37,7 @@ module SellerHelper
     [ "delivery", :truck, "Livraison", "/livraison" ],
     [ "products", :box, "Produits", "/produits" ],
     [ "ads", :target, "Publicités", nil ],
-    [ "profit", :profit, "Profit", nil ],
+    [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
     [ "integrations", :plug, "Intégrations API", "/integrations" ]
   ].freeze
@@ -43,7 +47,8 @@ module SellerHelper
     "dashboard" => "dashboard", "orders" => "orders", "confirmations" => "confirmation", "my_stats" => "stats",
     "customers" => "clients", "delivery" => "delivery", "products" => "products", "variants" => "products",
     "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
-    "seallo_connections" => "integrations", "woocommerce_connections" => "integrations", "meta_ads" => "integrations"
+    "seallo_connections" => "integrations", "woocommerce_connections" => "integrations", "meta_ads" => "integrations",
+    "accounting" => "accounting"
   }.freeze
 
   SELLER_STATUS_BADGES = {
@@ -66,7 +71,7 @@ module SellerHelper
   def sl(french)
     return french if I18n.locale == :fr
 
-    pair = SELLER_DICTIONARY[french]
+    pair = SELLER_DICTIONARY[french] || SELLER_EXTRA[french]
     return french unless pair
 
     I18n.locale == :en ? pair[0] : pair[1]

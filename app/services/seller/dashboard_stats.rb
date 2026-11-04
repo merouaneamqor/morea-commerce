@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 module Seller
-  # Dashboard figures for the seller workspace, computed from orders, items, carrier fees,
-  # advertising spend and agent pay. Amounts are returned in whole currency units.
-  #
-  #   net profit = delivered sales - cost of goods - delivery fees - advertising - agent pay
-  #
-  # Every formula is documented in the pull request that introduced this class.
+  # Dashboard figures for the seller workspace: order counts and rates, and the orders waiting for work.
+  # Money results (revenue, cost of goods, delivery, advertising, profit) are not computed here: they belong to
+  # AccountingStats, the single source for those numbers, and are shown on the Comptabilité page.
   class DashboardStats
     PERIODS = %w[today 7d 30d].freeze
     ZONE = "Africa/Casablanca"
@@ -41,8 +38,6 @@ module Seller
       delivered = counts.fetch("delivered", 0)
       cancelled = counts.fetch("cancelled", 0)
 
-      figures = profit(from, to)
-      previous_revenue = delivered_orders(@previous_from, @previous_to).sum(:total_cents)
       delivered_in_period = delivered_orders(from, to).count
       refused = orders.where(status: "returned", returned_at: from..to).count
       awaiting = orders.where(status: AWAITING_STATUSES)
@@ -58,10 +53,6 @@ module Seller
           confirmation_rate: percent(confirmed, total),
           delivered: delivered,
           delivery_rate: percent(delivered, shipped),
-          net_profit: units(figures[:net]),
-          revenue: units(figures[:revenue]),
-          revenue_delta: delta(figures[:revenue], previous_revenue),
-          average_order: delivered_in_period.positive? ? units(figures[:revenue].fdiv(delivered_in_period)) : nil,
           awaiting: awaiting.count,
           awaiting_amount: units(awaiting.sum(:total_cents)),
           in_transit: in_transit.count,
@@ -71,11 +62,7 @@ module Seller
           refused: refused,
           refusal_rate: percent(refused, delivered_in_period + refused)
         },
-        profit: figures.transform_values { |cents| units(cents) },
-        series: series,
-        products: profit_by_product,
-        latest: latest_orders,
-        missing_costs: missing_costs
+        latest: latest_orders
       }
     end
 
@@ -86,6 +73,7 @@ module Seller
 
     def new_orders_count = orders.where(status: "new").count
 
+    # Active products with no cost entered (a count, shown as a badge in the menu).
     def missing_costs
       @store.products.active.where(cost_cents: [ nil, 0 ]).count
     end
@@ -114,58 +102,6 @@ module Seller
 
     def delta(current, previous)
       previous.positive? ? ((current - previous) * 100.0 / previous).round : nil
-    end
-
-    def profit(start, finish)
-      delivered = delivered_orders(start, finish)
-      revenue = delivered.sum(:total_cents)
-      goods = OrderItem.where(order_id: delivered.select(:id)).sum(Arel.sql("quantity * COALESCE(unit_cost_cents, 0)"))
-      # The carrier charges its fee on delivered and on returned parcels.
-      fees = orders.where(status: "delivered", delivered_at: start..finish)
-        .or(orders.where(status: "returned", returned_at: start..finish)).sum(:sendit_fee)
-      delivery = (fees.to_d * 100).round
-      ads = advertising_spend(start.to_date..finish.to_date)
-      agents = agents_pay(delivered)
-      { revenue: revenue, products: goods, delivery: delivery, ads: ads, agents: agents,
-        net: revenue - goods - delivery - ads - agents }
-    end
-
-    def advertising_spend(dates)
-      AdvertisingPerformance.joins(advertising_campaign: :advertising_account)
-        .where(advertising_accounts: { store_id: @store.id }, date: dates).sum(:spend_cents)
-    end
-
-    # Each agent earns their fixed fee for every delivered order they confirmed.
-    def agents_pay(delivered)
-      counts = delivered.joins(:order_confirmation).group("order_confirmations.assigned_user_id").count
-      return 0 if counts.empty?
-
-      @store.users.where(id: counts.keys).where("pay_per_delivery_cents > 0").pluck(:id, :pay_per_delivery_cents)
-        .sum { |id, fee| counts.fetch(id, 0) * fee }
-    end
-
-    # Delivered sales and advertising day by day (at least a week, so the chart stays readable).
-    def series
-      start = period == "today" ? to.beginning_of_day - 6.days : from
-      sales = orders.where(status: "delivered", delivered_at: start..to).pluck(:delivered_at, :total_cents)
-        .group_by { |at, _| at.in_time_zone(ZONE).to_date }.transform_values { |rows| rows.sum { |_, cents| cents } }
-      ads = AdvertisingPerformance.joins(advertising_campaign: :advertising_account)
-        .where(advertising_accounts: { store_id: @store.id }, date: start.to_date..to.to_date)
-        .group(:date).sum(:spend_cents)
-      (start.to_date..to.to_date).map do |day|
-        { date: day.iso8601, sales: units(sales.fetch(day, 0)), ads: units(ads.fetch(day, 0)) }
-      end
-    end
-
-    # Profit of each product on delivered orders of the period; the best four, plus the worst when it loses money.
-    def profit_by_product
-      rows = OrderItem.where(order_id: delivered_orders(from, to).select(:id)).group(:product_name)
-        .pluck(:product_name, Arel.sql("SUM(quantity * unit_price_cents)"), Arel.sql("SUM(quantity * COALESCE(unit_cost_cents, 0))"))
-      list = rows.map { |name, revenue, cost| { name: name, profit: units(revenue - cost) } }.sort_by { |row| -row[:profit] }
-      top = list.first(4)
-      worst = list.last
-      top = top.first(3) + [ worst ] if worst && worst[:profit].negative? && top.none? { |row| row[:name] == worst[:name] }
-      top
     end
 
     def latest_orders

@@ -219,6 +219,8 @@ module Sendit
         sendit_error: nil,
         sendit_synced_at: Time.current
       )
+      # A fee that arrives after the parcel was delivered or returned is frozen as soon as it is known.
+      order.freeze_fees!
 
       target = ORDER_STATUS.fetch(status, :unknown)
       ret = order.sendit_return_status.to_s.upcase

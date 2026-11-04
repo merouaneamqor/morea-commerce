@@ -1,0 +1,119 @@
+/* Shared operations surfaces: keep wide data inside its own scroll region. */
+.admin-body .admin-page,
+.admin-body .admin-page :where(section, article, form, fieldset, .grid, .flex) > * {
+  min-inline-size: 0;
+}
+.admin-body .admin-page { overflow-wrap: anywhere; }
+/* An implicit auto track can use an accounting section's 900px max-content width. */
+.admin-body .admin-page.seller-page { grid-template-columns: minmax(0, 1fr); }
+.admin-body :where(.admin-table-wrap, .admin-tabs) {
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.admin-body .admin-table { text-align: start; }
+.admin-body .admin-input { max-inline-size: 100%; }
+.admin-body :where(.admin-card__header, .admin-summary-row, .admin-media-dialog__footer) {
+  flex-wrap: wrap;
+}
+.admin-body .seallo-member-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(21rem, 100%), 1fr));
+}
+.admin-body :where(.seallo-two, .seallo-three) > * { min-inline-size: 0; }
+.admin-body :where(.seallo-stat, .seallo-kpi, .seallo-member__money, .seallo-member__figures) {
+  overflow-wrap: anywhere;
+}
+.admin-body .admin-media-dialog__body { min-block-size: 0; }
+.admin-body .admin-media-choice__badge { right: auto; inset-inline-end: 8px; }
+
+@media (max-width: 639px) {
+  .admin-body .admin-page-header__title { flex-wrap: wrap; }
+  .admin-body :where(.admin-btn, .admin-btn-secondary, .admin-btn-critical) {
+    min-block-size: 2.75rem;
+    block-size: auto;
+    padding-block: .5rem;
+    max-inline-size: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+  .admin-body :where(input.admin-input, select.admin-input, textarea.admin-input) {
+    font-size: 16px;
+    min-block-size: 2.75rem;
+  }
+  .admin-body .admin-table .admin-input { min-inline-size: 5rem; }
+  .admin-body .admin-media-dialog__header { flex-wrap: wrap; }
+  .admin-body .admin-media-dialog__tools { padding-inline: 1rem; }
+  .admin-body .admin-media-dialog__body { padding-inline: 1rem; }
+  .admin-body .admin-media-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-body .admin-product-media .admin-media-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-body .admin-product-media [data-media-target="list"] > .admin-media-item:first-child {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+  .admin-body .admin-variant-toolbar { flex-wrap: wrap; }
+  .admin-body .admin-order-line { flex-wrap: wrap; }
+  .admin-body .admin-order-line > div { flex-basis: 100%; }
+}
+
+@media (max-width: 389px) {
+  .admin-body :where(.admin-dashboard-metrics, .seallo-stats, .seallo-kpis, .seallo-segments),
+  .admin-body .admin-page > .grid-cols-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-body .seallo-member__money { grid-template-columns: minmax(0, 1fr); }
+  .admin-body .seallo-member__figures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Accounting cards show full amounts and translations without fixed-height clipping. */
+.admin-body [data-card][data-size] {
+  block-size: auto;
+  min-block-size: 110px;
+  gap: .5rem;
+}
+.admin-body [data-card][data-size="compact"] { min-block-size: 65px; }
+.admin-body [data-card] > .flex { flex-wrap: wrap; }
+.admin-body [data-card] [data-value] {
+  flex-wrap: wrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.admin-body [data-card] [data-change] { white-space: normal; }
+.admin-body [data-side] { flex-wrap: wrap; }
+.admin-body [data-side] .whitespace-nowrap { white-space: normal; }
+.admin-body [data-income] :where(.h-9, .h-8) {
+  block-size: auto;
+  min-block-size: 2.25rem;
+  padding-block: .375rem;
+}
+.admin-body [data-income] .justify-between { flex-wrap: wrap; }
+.admin-body [data-income] .shrink-0 { flex-shrink: 1; flex-wrap: wrap; }
+.admin-body [data-income] [data-amount] { overflow-wrap: anywhere; }
+.admin-body [data-controller~="date-range-picker"] { max-inline-size: 100%; }
+.admin-body [data-date-range-picker-target="button"] {
+  max-inline-size: 100%;
+  block-size: auto;
+  min-block-size: 2.75rem;
+  padding-block: .5rem;
+  white-space: normal;
+}
+.admin-body [data-date-range-picker-target="months"] [data-date] {
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+.admin-body [data-date-range-picker-target="panel"] [data-fields] { flex-wrap: wrap; }
+
+/* A wrapped toolbar cannot reliably anchor a tablet popover inside the viewport. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .admin-body [data-date-range-picker-target="panel"] {
+    position: fixed;
+    inset-inline: 1rem;
+    inset-block-start: auto;
+    inset-block-end: 1rem;
+    inline-size: auto;
+    max-inline-size: 46rem;
+    max-block-size: calc(100dvh - 2rem);
+    margin-inline: auto;
+    overflow-y: auto;
+  }
+}

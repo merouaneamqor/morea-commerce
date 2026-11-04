@@ -1,0 +1,92 @@
+/* Scoped to the public storefront layout. */
+.storefront-body {
+/* Public commerce: let content determine height without widening the viewport. */
+main, .site-footer, .mobile-menu__panel, .cart-drawer__panel {
+  overflow-wrap: anywhere;
+}
+:is(.pdp__grid, .checkout-grid, .checkout-fields, .home-products, .site-footer__grid, .site-footer__cols) > *,
+.checkout-step, .checkout-field, .checkout-phone, .collection-toolbar > *,
+.maison-nav > *, .maison-nav__actions, .mobile-buy-bar__stack > * {
+  min-width: 0;
+}
+.checkout-step { min-inline-size: 0; }
+.checkout-select { min-inline-size: 0; max-inline-size: 100%; width: 100%; }
+.checkout-phone select.checkout-phone__prefix { width: auto; }
+:is(.store-page__body, .pdp-accordion__body, .landing-story__body) :is(img, video, iframe) {
+  max-width: 100%;
+  height: auto;
+}
+:is(.store-page__body, .pdp-accordion__body) :is(pre, table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+:is(.maison-button, .maison-cta, .checkout-sticky__button) {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.cart-drawer__items { min-height: 0; overscroll-behavior: contain; }
+.cart-drawer__head { gap: 1rem; }
+.cart-drawer__close { flex-shrink: 0; }
+.cart-drawer__item .cart-qty { flex-shrink: 0; }
+.cart-drawer__item .cart-qty + p { min-width: 0; }
+.cart-drawer__foot > div { flex-wrap: wrap; gap: .5rem 1rem; }
+.mobile-menu__panel { overflow-y: auto; overscroll-behavior: contain; }
+.mobile-menu__head { gap: 1rem; }
+.mobile-menu__close { flex-shrink: 0; }
+.mobile-menu__nav { flex-shrink: 0; }
+.pdp__gallery { min-width: 0; }
+.checkout-phone__prefix { max-width: 48%; }
+.checkout-totals__row > *, .checkout-bag-mobile__summary > * { min-width: 0; }
+.checkout-totals__row > :last-child { text-align: end; }
+.checkout-sticky__bar > * { min-width: 0; }
+.order-done__due { flex-wrap: wrap; }
+.order-done__item-price { max-width: 40%; text-align: end; }
+&:dir(rtl) .flash { transform: translateX(50%); }
+
+&.has-cookie-notice {
+  padding-top: var(--cookie-notice-height, 8rem);
+}
+&.has-cookie-notice .site-header {
+  top: var(--cookie-notice-height, 8rem);
+}
+&.has-cookie-notice .collection-toolbar {
+  top: calc(var(--cookie-notice-height, 8rem) + 7rem);
+}
+.cookie-consent {
+  max-height: 30dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.mobile-menu__panel { max-height: 100dvh; }
+
+@media (max-width: 767px) {
+  /* Keep every header action reachable on the narrowest supported phones. */
+  .maison-nav { gap: .5rem; padding-inline: 1rem; }
+  .maison-nav__actions { gap: .65rem; }
+  .maison-nav .maison-link { min-height: 2.75rem; display: inline-flex; align-items: center; }
+  .maison-nav__actions > .hidden { display: none; }
+  .maison-nav .morea-lockup { max-width: 30vw; }
+  .maison-nav .morea-lockup__mark { min-width: 0; }
+  .maison-nav .morea-wordmark-type { font-size: clamp(.85rem, 4vw, 1.35rem); }
+  .collection-toolbar__sort { max-width: 100%; min-width: 0; }
+  .checkout-input, .checkout-select, .checkout-phone__prefix,
+  .collection-toolbar select, .cart-page input, .pdp input { font-size: 16px; }
+  .cart-drawer__item > div > .flex { flex-wrap: wrap; }
+  .checkout-sticky__button { letter-spacing: .08em; }
+  .checkout-sticky__bar > :first-child { max-width: 40%; }
+  .checkout-line { display: grid; grid-template-columns: auto minmax(0, 1fr); }
+  .checkout-line > :last-child { grid-column: 2; }
+  .order-done__item { flex-wrap: wrap; }
+  .order-done__item-meta { flex-basis: calc(100% - 6rem); }
+  .order-done__item-price { margin-inline-start: auto; max-width: 100%; }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  /* A fixed purchase bar must not cover most of a phone's landscape viewport. */
+  .checkout-sticky, .mobile-buy-bar { position: static; }
+  .mobile-menu__nav { justify-content: flex-start; }
+}
+
+}

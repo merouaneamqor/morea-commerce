@@ -64,7 +64,7 @@
   </nav>
 
   <% if params[:q].present? %>
-    <div class="flex items-center justify-between gap-3 border-b border-[#ebebeb] px-4 py-2 text-[13px]">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#ebebeb] px-4 py-2 text-[13px]">
       <span class="admin-muted">Results for “<%= params[:q] %>”</span>
       <%= link_to "Clear search", admin_orders_path(status: @status.presence, connection_id: params[:connection_id].presence), class: "admin-btn-plain" %>
     </div>

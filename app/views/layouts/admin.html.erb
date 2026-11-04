@@ -14,6 +14,7 @@
     <%= stylesheet_link_tag "admin_pwa" %>
     <%= stylesheet_link_tag "liquid_glass" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin_responsive", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
   <body class="admin-body" data-admin-theme="<%= current_store&.admin_theme || "seallo" %>" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
@@ -69,13 +70,13 @@
         <div class="mx-auto flex max-w-[1400px] gap-5 p-4 lg:p-5">
           <aside class="sticky top-5 hidden h-[calc(100dvh-2.5rem)] w-56 shrink-0 lg:block"><%= sidebar %></aside>
 
-          <div data-seller-drawer hidden class="lg-scrim fixed inset-0 z-50 p-4 lg:hidden">
+          <div data-seller-drawer hidden role="dialog" aria-modal="true" aria-label="<%= sl("Menu") %>" class="lg-scrim fixed inset-0 z-50 p-4 lg:hidden">
             <div class="h-full w-64"><%= sidebar %></div>
           </div>
 
           <main class="min-w-0 flex-1 space-y-4">
             <div class="flex items-center justify-between lg:hidden">
-              <button type="button" data-seller-open class="rounded-lg border border-[#e8e3df] bg-white p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>
+              <button type="button" data-seller-open aria-expanded="false" class="rounded-lg border border-[#e8e3df] bg-white p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>
               <span class="text-xl font-extrabold tracking-tight text-[#a8432e]" dir="ltr">seallo</span>
               <span class="w-9"></span>
             </div>
@@ -100,8 +101,26 @@
         (function () {
           var drawer = document.querySelector("[data-seller-drawer]");
           if (!drawer) return;
-          document.querySelector("[data-seller-open]").addEventListener("click", function () { drawer.hidden = false; });
-          drawer.addEventListener("click", function (e) { if (e.target === drawer || e.target.closest("[data-seller-close]")) drawer.hidden = true; });
+          var trigger = document.querySelector("[data-seller-open]");
+          function closeDrawer() {
+            drawer.hidden = true;
+            trigger.setAttribute("aria-expanded", "false");
+            trigger.focus();
+          }
+          trigger.addEventListener("click", function () {
+            drawer.hidden = false;
+            trigger.setAttribute("aria-expanded", "true");
+            drawer.querySelector("[data-seller-close]").focus();
+          });
+          drawer.addEventListener("click", function (e) { if (e.target === drawer || e.target.closest("[data-seller-close]")) closeDrawer(); });
+          drawer.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") closeDrawer();
+            if (e.key !== "Tab") return;
+            var items = drawer.querySelectorAll("a[href], button:not([disabled])");
+            var first = items[0], last = items[items.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+          });
         })();
       </script>
     <% else %>

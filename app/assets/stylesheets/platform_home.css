@@ -282,3 +282,32 @@
 .platform-sm-only { display: inline; }
 .platform-lg-only { display: none; }
 @media (min-width: 640px) { .platform-sm-only { display: none; } .platform-lg-only { display: inline; } }
+
+/* Allow translated copy and intrinsic media sizes to shrink with their columns. */
+.platform-landing :where(h1, h2, h3, p, a, button) { overflow-wrap: anywhere; }
+.platform-landing :where(img, svg) { max-width: 100%; }
+.platform-feats, .platform-demo-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.platform-landing :where(.platform-card, .platform-demo-chart, .platform-demo-table, .platform-feats li) { min-width: 0; }
+.platform-dialog-bar, .platform-dialog-tabs { min-width: 0; }
+.platform-demo-title { flex-wrap: wrap; gap: .5rem; }
+.platform-demo-bar span { min-width: 0; overflow-wrap: anywhere; padding-inline: .75rem; }
+.platform-partners ul { flex-wrap: wrap; height: auto; min-height: 1.5rem; }
+@media (min-width: 640px) { .platform-feats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1024px) {
+  .platform-feats { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .platform-demo-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 639px) {
+  .platform-header-inner { height: auto; min-height: 4rem; flex-wrap: wrap; padding-block: .5rem; gap: .5rem; }
+  .platform-header-actions { flex-wrap: wrap; justify-content: flex-end; }
+  .platform-login-nav, .platform-header-button { min-height: 2.75rem; display: inline-flex; align-items: center; }
+  .platform-hero h1 .nowrap { white-space: normal; }
+  .platform-hero h1 { font-size: clamp(1.875rem, 8vw, 2.25rem); }
+  .platform-feats { grid-template-columns: minmax(0, 1fr); }
+  .platform-flow-steps ol { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .platform-flow-steps li { min-width: 0; }
+  .platform-modal { padding-top: 1rem; padding-bottom: 1rem; }
+  .platform-dialog { padding-inline: 1rem; }
+  .platform-dialog-close { width: 2.75rem; height: 2.75rem; }
+  .platform-dialog-tabs button { min-height: 2.75rem; }
+}

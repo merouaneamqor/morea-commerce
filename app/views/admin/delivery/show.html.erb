@@ -24,7 +24,7 @@
   <div class="grid gap-3 lg:grid-cols-2">
     <% @delivery.couriers.each do |courier| %>
       <div class="admin-card p-4">
-        <div class="flex items-center justify-between gap-3"><h3 class="admin-card__title"><%= courier[:name] == "Manual" ? t("delivery_dashboard.manual") : courier[:name] %></h3><span class="admin-badge admin-badge--neutral"><%= courier[:name] == "Manual" ? t("delivery_dashboard.staff_managed") : (current_store.sendit_configured? ? t("delivery_dashboard.configured") : t("delivery_dashboard.not_configured")) %></span></div>
+        <div class="flex flex-wrap items-center justify-between gap-3"><h3 class="admin-card__title"><%= courier[:name] == "Manual" ? t("delivery_dashboard.manual") : courier[:name] %></h3><span class="admin-badge admin-badge--neutral"><%= courier[:name] == "Manual" ? t("delivery_dashboard.staff_managed") : (current_store.sendit_configured? ? t("delivery_dashboard.configured") : t("delivery_dashboard.not_configured")) %></span></div>
         <div class="grid grid-cols-3 gap-3 mt-4"><div><p class="admin-muted"><%= t("delivery_dashboard.shipments") %></p><p class="font-semibold mt-1"><%= courier[:total] %></p></div><div><p class="admin-muted"><%= t("delivery_dashboard.delivered") %></p><p class="font-semibold mt-1"><%= courier[:rate] %>%</p></div><div><p class="admin-muted"><%= t("delivery_dashboard.average") %></p><p class="font-semibold mt-1"><%= courier[:average_days] ? t("delivery_dashboard.days", count: courier[:average_days]) : "—" %></p></div></div>
         <% if courier[:name] == "Sendit" %>
           <p class="admin-muted mt-3"><%= courier[:last_sync] ? t("delivery_dashboard.last_sync", time: l(courier[:last_sync], format: :short)) : t("delivery_dashboard.no_sync") %></p>

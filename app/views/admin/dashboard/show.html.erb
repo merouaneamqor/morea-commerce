@@ -111,7 +111,7 @@
 
 <section class="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
   <div class="rounded-2xl border border-[#e8e3df] bg-white p-5">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-wrap items-center justify-between">
       <h2 class="font-semibold text-[#1f2430]"><%= sl("Ventes livrées vs publicité") %></h2>
       <span class="text-xs text-[#8a8380]"><%= cur %></span>
     </div>
@@ -150,7 +150,7 @@
     <% if stats[:products].any? %>
       <ul class="mt-4 space-y-2">
         <% stats[:products].each do |row| %>
-          <li class="flex items-center justify-between gap-3 rounded-xl px-3.5 py-3 text-sm <%= row[:profit].negative? ? "bg-[#fbe7ea]" : "bg-[#f3f1ef]" %>">
+          <li class="flex flex-wrap items-center justify-between gap-3 rounded-xl px-3.5 py-3 text-sm <%= row[:profit].negative? ? "bg-[#fbe7ea]" : "bg-[#f3f1ef]" %>">
             <span class="truncate text-[#1f2430]" dir="auto"><%= row[:name] %></span>
             <span class="shrink-0 font-semibold <%= row[:profit].negative? ? "text-[#b4344e]" : "text-[#2f7a4a]" %>" dir="ltr"><%= row[:profit] >= 0 ? "+" : "−" %><%= number.(row[:profit].abs) %></span>
           </li>

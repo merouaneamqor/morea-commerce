@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= I18n.locale %>">
+<html lang="<%= I18n.locale %>" dir="<%= rtl? ? "rtl" : "ltr" %>">
   <head>
     <meta charset="utf-8">
     <title><%= content_for?(:title) ? yield(:title) : "seallo" %></title>
@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "auth_responsive", "data-turbo-track": "reload" %>
   </head>
   <body class="seallo-flow" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
     <div dir="<%= rtl? ? "rtl" : "ltr" %>" class="flex min-h-dvh flex-col bg-[#f3f1ef] text-[#5e5a58]">

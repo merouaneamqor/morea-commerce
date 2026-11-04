@@ -47,7 +47,7 @@
         <% stats = @segments.for(customer) %>
         <% label, badge = tags.fetch(stats.segment) %>
         <li class="cursor-pointer px-4 py-3.5" data-orders-for="<%= customer.phone %>">
-          <div class="flex items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
             <p class="truncate font-semibold text-[#1f2430]" dir="auto"><%= customer.name.presence || "—" %></p>
             <span class="rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap <%= badge %>"><%= sl(label) %></span>
           </div>
@@ -93,7 +93,7 @@
   <% end %>
 
   <% if @pages > 1 %>
-    <div class="flex items-center justify-between border-t border-[#f0ebe7] px-4 py-3 text-sm">
+    <div class="flex flex-wrap items-center justify-between border-t border-[#f0ebe7] px-4 py-3 text-sm">
       <span class="text-[#8a8380]" dir="ltr"><%= first_row %>–<%= first_row + @customers.size - 1 %> / <%= @total %></span>
       <div class="flex gap-2">
         <% if @page > 1 %>

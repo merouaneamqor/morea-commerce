@@ -184,6 +184,9 @@ Rails.application.routes.draw do
       end
     end
     resource :store, only: %i[edit update]
+    resource :sendit_settings, only: %i[update destroy] do
+      post :refresh_cities
+    end
     resources :store_connections, only: %i[index new create show update destroy]
     resource :agent_api, only: :show, controller: "agent_api" do
       post :token, action: :generate_token

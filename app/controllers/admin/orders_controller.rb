@@ -7,7 +7,7 @@ module Admin
     helper_method :agent_view?
     before_action :set_order, only: %i[
       show edit update transition sendit sendit_label
-      duplicate archive unarchive packing_slip comments tags collect refund
+      duplicate archive unarchive packing_slip comments tags collect refund complete_import_contact
     ]
 
     IN_PROGRESS = (Order::FLOW - %w[new confirmed preparing delivered] + Order::PROBLEM_STATUSES).freeze
@@ -131,6 +131,14 @@ module Admin
       redirect_to admin_order_path(@order), notice: "Order marked as #{label.downcase}."
     rescue ArgumentError, StandardError => e
       redirect_to admin_order_path(@order), alert: e.message
+    end
+
+    def complete_import_contact
+      attrs = params.require(:contact).permit(:name, :phone, :city, :address, :district).to_h.symbolize_keys
+      Orders::CompleteImportedContact.new(store: current_store, user: current_user).call(order: @order, attrs: attrs)
+      redirect_to admin_order_path(@order), notice: t("import_contact.saved")
+    rescue Orders::CompleteImportedContact::Error => error
+      redirect_to admin_order_path(@order), alert: error.message
     end
 
     def duplicate

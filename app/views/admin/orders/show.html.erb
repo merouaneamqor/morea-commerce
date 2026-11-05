@@ -24,6 +24,7 @@
             transition_admin_order_path(@order),
             method: :patch,
             params: { to_status: next_status },
+            disabled: @order.contact_review_required?,
             class: next_status == "returned" ? "admin-btn-secondary" : "admin-btn",
             form: (confirm ? { data: { turbo_confirm: confirm } } : {}) %>
     <% end %>
@@ -51,6 +52,8 @@
     </details>
   </div>
 </div>
+
+<%= render "import_contact_alert", order: @order, allow_correction: !agent_view? %>
 
 <% if @order.external_order_receipt.present? %>
   <div class="admin-banner mb-4">
@@ -239,7 +242,11 @@
       </div>
       <div class="admin-card__section">
         <p class="admin-card__title mb-1">Contact information</p>
-        <p class="admin-link--blue"><%= link_to @order.customer_phone, "tel:#{@order.customer_phone}" %></p>
+        <% if @order.customer_phone.present? && !@order.import_contact_issues.include?("phone") %>
+          <p class="admin-link--blue"><%= link_to @order.customer_phone, "tel:#{@order.customer_phone}" %></p>
+        <% else %>
+          <p class="admin-muted"><%= @order.customer_phone.presence || "—" %></p>
+        <% end %>
       </div>
       <div class="admin-card__section">
         <p class="admin-card__title mb-1">Shipping address</p>

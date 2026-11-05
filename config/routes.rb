@@ -236,6 +236,7 @@ Rails.application.routes.draw do
       end
       member do
         post :sendit
+        patch :complete_import_contact
         get :sendit_label
         patch :transition
         post :duplicate

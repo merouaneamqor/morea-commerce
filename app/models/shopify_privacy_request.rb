@@ -81,6 +81,7 @@ class ShopifyPrivacyRequest < ApplicationRecord
 
               redact_order!(order)
               customer = order.customer
+              next unless customer
               # Shared profiles belong to the merchant's other order histories.
               # Never anonymize another provider's or an active shipment's data.
               if customer.orders.where.not(id: selected_ids).exists? ||

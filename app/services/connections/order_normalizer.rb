@@ -41,12 +41,18 @@ module Connections
       zero!(@data.fetch("total_tax"))
       zero!(@data.fetch("total_discounts"))
       address = @data.fetch("shipping_address")
+      raise Error, "invalid_contact" unless address.is_a?(Hash)
+      phone = address["phone"]
+      raise Error, "invalid_contact" unless phone.nil? || (phone.is_a?(String) && phone.length <= 255)
+      # The webhook and GraphQL catch-up must use the same contact fallback.
+      address = address.merge("phone" => address["phone"].presence || @data["phone"])
       lines = @data.fetch("line_items").map do |line|
         raise Error, "unsupported_fulfillment" if line["fulfillment_status"].present? || line["requires_shipping"] == false
         zero!(line.fetch("total_discount", "0"))
         snapshot(line.fetch("name"), line.fetch("quantity"), line.fetch("price"), variant: line["variant_title"])
       end
-      contact(address, "address1", "address2").merge(lines: lines, shipping_cents: money(@data.fetch("total_shipping_price_set").fetch("shop_money").fetch("amount")))
+      contact(address, "address1", "address2", allow_incomplete: @connection.shopify_app == "seallo_connect")
+        .merge(lines: lines, shipping_cents: money(@data.fetch("total_shipping_price_set").fetch("shop_money").fetch("amount")))
     end
 
     def woocommerce
@@ -82,8 +88,10 @@ module Connections
       contact(address, "first_line", "second_line").merge(lines: lines, shipping_cents: money(shipping.fetch("price")))
     end
 
-    def contact(address, line1, line2)
+    def contact(address, line1, line2, allow_incomplete: false)
       raise Error, "unsupported_country" unless address["country_code"] == "MA" || address["country"] == "MA"
+      return incomplete_contact(address, line1, line2) if allow_incomplete
+
       name = address["name"].presence || [ address["first_name"], address["last_name"] ].compact.join(" ")
       fields = { customer_name: name, customer_phone: address["phone"], customer_city: address["city"], customer_address: address[line1], customer_district: address[line2] }
       fields.except(:customer_district).each_value do |value|
@@ -92,6 +100,26 @@ module Connections
       phone = fields[:customer_phone].gsub(/[^\d+]/, "")
       raise Error, "invalid_contact" unless phone.match?(/\A\+?\d{8,15}\z/)
       fields.merge(customer_phone: phone)
+    end
+
+    # Missing contact data does not erase an otherwise valid Shopify order.
+    # Keep absence explicit and mark the order for review; never invent identity.
+    def incomplete_contact(address, line1, line2)
+      %w[name first_name last_name phone city].push(line1, line2).each do |key|
+        value = address[key]
+        raise Error, "invalid_contact" unless value.nil? || (value.is_a?(String) && value.length <= 255)
+      end
+      name = address["name"].presence || [ address["first_name"], address["last_name"] ].compact_blank.join(" ").presence
+      raise Error, "invalid_contact" if name && name.length > 255
+
+      fields = { customer_name: name&.strip.presence, customer_phone: address["phone"]&.gsub(/[^\d+]/, "").presence,
+        customer_city: address["city"]&.strip.presence, customer_address: address[line1]&.strip.presence,
+        customer_district: address[line2]&.strip.presence }
+      issues = %w[name phone city address].select { |field| fields["customer_#{field}".to_sym].blank? }
+      unless fields[:customer_phone].to_s.match?(/\A\+?\d{8,15}\z/)
+        issues << "phone" unless issues.include?("phone")
+      end
+      fields.merge(import_contact_issues: issues)
     end
 
     def snapshot(name, count, price, variant: nil)

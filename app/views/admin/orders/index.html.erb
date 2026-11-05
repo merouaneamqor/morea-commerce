@@ -81,12 +81,13 @@
           <tr data-order-row="<%= order.number %>">
             <td>
               <%= link_to "##{order.number}", admin_order_path(order), class: "admin-link" %>
+              <%= render "import_contact_alert", order: order, compact: true %>
               <% if order.tag_list.any? %>
                 <span class="admin-muted ms-1 text-xs"><%= order.tag_list.first(2).join(", ") %></span>
               <% end %>
             </td>
-            <td title="<%= order.customer_name %>"><%= order.customer_name %></td>
-            <td class="admin-muted"><%= order.customer_phone %></td>
+            <td title="<%= order.customer_name %>"><%= order.customer_name.presence || "—" %></td>
+            <td class="admin-muted"><%= order.customer_phone.presence || "—" %></td>
             <td class="admin-muted"><%= order.customer_city %></td>
             <td><%= admin_badge(order.status) %></td>
             <td class="is-numeric"><%= order.total_display %></td>

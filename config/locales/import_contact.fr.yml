@@ -1,0 +1,16 @@
+fr:
+  import_contact:
+    title: "Coordonnées à vérifier"
+    help: "Cette commande Shopify a été importée. La confirmation et l’expédition sont bloquées jusqu’à la correction des coordonnées."
+    check_fields: "À vérifier : %{fields}"
+    manager_help: "Demandez à un responsable de compléter les coordonnées de cette commande."
+    blocked: "Complétez les coordonnées avant de confirmer ou d’expédier cette commande."
+    local_correction: "Cette modification met à jour les coordonnées dans Seallo. Elle ne modifie ni la commande Shopify ni ses montants."
+    save: "Enregistrer les coordonnées"
+    saved: "Coordonnées enregistrées. La commande peut être confirmée."
+    fields:
+      name: "Nom du client"
+      phone: "Numéro de téléphone"
+      city: "Ville"
+      address: "Adresse"
+      district: "Quartier (facultatif)"

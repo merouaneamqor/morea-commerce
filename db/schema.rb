@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_05_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -260,8 +260,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.index ["order_confirmation_id"], name: "index_confirmation_attempts_on_order_confirmation_id"
     t.index ["store_id"], name: "index_confirmation_attempts_on_store_id"
     t.index ["user_id"], name: "index_confirmation_attempts_on_user_id"
-    t.check_constraint "handled_seconds IS NULL OR handled_seconds >= 0", name: "confirmation_attempt_handled_nonnegative"
     t.check_constraint "call_seconds IS NULL OR call_seconds >= 0", name: "confirmation_attempt_call_seconds_nonnegative"
+    t.check_constraint "handled_seconds IS NULL OR handled_seconds >= 0", name: "confirmation_attempt_handled_nonnegative"
     t.check_constraint "outcome::text = ANY (ARRAY['no_answer'::character varying::text, 'callback'::character varying::text, 'confirmed'::character varying::text, 'cancelled'::character varying::text, 'wrong_number'::character varying::text, 'abandoned'::character varying::text])", name: "confirmation_attempt_outcome"
   end
 
@@ -316,7 +316,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.index ["store_id", "code"], name: "index_delivery_accounts_on_store_id_and_code", unique: true
     t.index ["store_id"], name: "index_delivery_accounts_on_store_id"
     t.index ["webhook_token"], name: "index_delivery_accounts_on_webhook_token", unique: true, where: "(webhook_token IS NOT NULL)"
-    t.check_constraint "account_type::text = ANY (ARRAY['normal'::character varying, 'premium'::character varying]::text[])", name: "delivery_accounts_account_type_known"
+    t.check_constraint "account_type::text = ANY (ARRAY['normal'::character varying::text, 'premium'::character varying::text])", name: "delivery_accounts_account_type_known"
     t.check_constraint "delivery_fee IS NULL OR delivery_fee >= 0::numeric", name: "delivery_accounts_delivery_fee_non_negative"
     t.check_constraint "return_fee IS NULL OR return_fee >= 0::numeric", name: "delivery_accounts_return_fee_non_negative"
   end
@@ -473,7 +473,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.index ["store_id"], name: "index_meta_ads_ad_accounts_on_store_id"
     t.check_constraint "meta_ad_account_id::text ~ '^act_[0-9]+$'::text", name: "meta_ads_ad_account_id_format"
     t.check_constraint "retry_count >= 0", name: "meta_ads_ad_account_retry_count"
-    t.check_constraint "sync_status::text = ANY (ARRAY['pending'::character varying, 'ok'::character varying, 'running'::character varying, 'rate_limited'::character varying, 'needs_reauthorization'::character varying, 'failed'::character varying]::text[])", name: "meta_ads_ad_account_sync_status"
+    t.check_constraint "sync_status::text = ANY (ARRAY['pending'::character varying::text, 'ok'::character varying::text, 'running'::character varying::text, 'rate_limited'::character varying::text, 'needs_reauthorization'::character varying::text, 'failed'::character varying::text])", name: "meta_ads_ad_account_sync_status"
   end
 
   create_table "meta_ads_ad_sets", force: :cascade do |t|
@@ -549,7 +549,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.index ["oauth_state_digest"], name: "index_meta_ads_connections_on_oauth_state_digest", unique: true
     t.index ["store_id"], name: "index_meta_ads_connections_on_store_id", unique: true
     t.check_constraint "status::text <> 'active'::text OR access_token_ciphertext IS NOT NULL", name: "meta_ads_connection_active_token"
-    t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'needs_reauthorization'::character varying, 'disconnected'::character varying]::text[])", name: "meta_ads_connection_status"
+    t.check_constraint "status::text = ANY (ARRAY['active'::character varying::text, 'needs_reauthorization'::character varying::text, 'disconnected'::character varying::text])", name: "meta_ads_connection_status"
   end
 
   create_table "meta_ads_daily_insights", force: :cascade do |t|
@@ -594,10 +594,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.index ["store_id", "date"], name: "index_meta_ads_daily_insights_on_store_id_and_date"
     t.index ["store_id"], name: "index_meta_ads_daily_insights_on_store_id"
     t.check_constraint "(level::text = 'ad'::text) = (ad_id IS NOT NULL)", name: "meta_ads_insight_ad_presence"
-    t.check_constraint "(level::text = ANY (ARRAY['campaign'::character varying, 'ad'::character varying]::text[])) = (campaign_id IS NOT NULL)", name: "meta_ads_insight_campaign_presence"
+    t.check_constraint "(level::text = ANY (ARRAY['campaign'::character varying::text, 'ad'::character varying::text])) = (campaign_id IS NOT NULL)", name: "meta_ads_insight_campaign_presence"
     t.check_constraint "(spend_display IS NULL) = (fx_rate IS NULL)", name: "meta_ads_insight_display_has_rate"
     t.check_constraint "impressions >= 0 AND reach >= 0 AND clicks >= 0 AND spend >= 0::numeric AND conversions >= 0::numeric AND conversion_value >= 0::numeric", name: "meta_ads_insight_non_negative"
-    t.check_constraint "level::text = ANY (ARRAY['account'::character varying, 'campaign'::character varying, 'ad'::character varying]::text[])", name: "meta_ads_insight_level"
+    t.check_constraint "level::text = ANY (ARRAY['account'::character varying::text, 'campaign'::character varying::text, 'ad'::character varying::text])", name: "meta_ads_insight_level"
   end
 
   create_table "meta_ads_deletion_requests", force: :cascade do |t|
@@ -608,7 +608,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["confirmation_code"], name: "index_meta_ads_deletion_requests_on_confirmation_code", unique: true
-    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'completed'::character varying]::text[])", name: "meta_ads_deletion_status"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying::text, 'completed'::character varying::text])", name: "meta_ads_deletion_status"
   end
 
   create_table "meta_ads_product_links", force: :cascade do |t|
@@ -622,8 +622,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.index ["product_id"], name: "index_meta_ads_product_links_on_product_id"
     t.index ["store_id", "object_type", "meta_id"], name: "index_meta_ads_product_links_on_object", unique: true
     t.index ["store_id"], name: "index_meta_ads_product_links_on_store_id"
-    t.check_constraint "object_type::text = ANY (ARRAY['ad'::character varying, 'ad_set'::character varying, 'campaign'::character varying]::text[])", name: "meta_ads_product_link_type"
-    t.check_constraint "source::text = ANY (ARRAY['manual'::character varying, 'auto'::character varying]::text[])", name: "meta_ads_product_link_source"
+    t.check_constraint "object_type::text = ANY (ARRAY['ad'::character varying::text, 'ad_set'::character varying::text, 'campaign'::character varying::text])", name: "meta_ads_product_link_type"
+    t.check_constraint "source::text = ANY (ARRAY['manual'::character varying::text, 'auto'::character varying::text])", name: "meta_ads_product_link_source"
   end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
@@ -709,7 +709,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
 
   create_table "orders", force: :cascade do |t|
     t.bigint "store_id", null: false
-    t.bigint "customer_id", null: false
+    t.bigint "customer_id"
     t.string "number", null: false
     t.string "status", default: "new", null: false
     t.string "payment_method", default: "cod", null: false
@@ -717,10 +717,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.integer "shipping_cents", default: 0, null: false
     t.integer "total_cents", default: 0, null: false
     t.string "currency", default: "DH", null: false
-    t.string "customer_name", null: false
-    t.string "customer_phone", null: false
-    t.string "customer_city", null: false
-    t.string "customer_address", null: false
+    t.string "customer_name"
+    t.string "customer_phone"
+    t.string "customer_city"
+    t.string "customer_address"
     t.string "second_phone", limit: 30
     t.text "notes"
     t.datetime "confirmed_at"
@@ -754,6 +754,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.string "meta_ad_id", limit: 25
     t.integer "delivery_fee_cents"
     t.integer "return_fee_cents"
+    t.jsonb "import_contact_issues", default: [], null: false
     t.index ["archived_at"], name: "index_orders_on_archived_at"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["customer_phone"], name: "index_orders_on_customer_phone"
@@ -766,6 +767,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.index ["store_id"], name: "index_orders_on_store_id"
     t.check_constraint "collected_cents IS NULL OR collected_cents >= 0", name: "orders_collected_cents_nonnegative"
     t.check_constraint "delivery_fee_cents IS NULL OR delivery_fee_cents >= 0", name: "orders_delivery_fee_cents_nonnegative"
+    t.check_constraint "import_contact_issues <> '[]'::jsonb OR customer_id IS NOT NULL AND customer_name IS NOT NULL AND customer_phone IS NOT NULL AND customer_city IS NOT NULL AND customer_address IS NOT NULL", name: "orders_complete_contact_required"
+    t.check_constraint "import_contact_issues = '[]'::jsonb OR (status::text = ANY (ARRAY['new'::character varying, 'cancelled'::character varying]::text[]))", name: "orders_pending_contact_unshipped"
+    t.check_constraint "jsonb_typeof(import_contact_issues) = 'array'::text AND import_contact_issues <@ '[\"name\", \"phone\", \"city\", \"address\"]'::jsonb", name: "orders_import_contact_issues_valid"
     t.check_constraint "meta_ad_id IS NULL OR meta_ad_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_ad_id_numeric"
     t.check_constraint "meta_adset_id IS NULL AND meta_ad_id IS NULL OR meta_campaign_id IS NOT NULL", name: "orders_meta_ids_need_campaign"
     t.check_constraint "meta_adset_id IS NULL OR meta_adset_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_adset_id_numeric"
@@ -839,9 +843,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.index ["store_id"], name: "index_payments_on_store_id"
     t.index ["store_id"], name: "index_payments_one_pending_transfer", unique: true, where: "(((status)::text = 'pending'::text) AND ((payment_method)::text = 'transfer'::text))"
     t.check_constraint "amount >= 0", name: "payments_amount_non_negative"
-    t.check_constraint "billing::text = ANY (ARRAY['monthly'::character varying, 'annual'::character varying]::text[])", name: "payments_billing_known"
-    t.check_constraint "payment_method::text = ANY (ARRAY['transfer'::character varying, 'card'::character varying]::text[])", name: "payments_method_known"
-    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'paid'::character varying, 'rejected'::character varying]::text[])", name: "payments_status_known"
+    t.check_constraint "billing::text = ANY (ARRAY['monthly'::character varying::text, 'annual'::character varying::text])", name: "payments_billing_known"
+    t.check_constraint "payment_method::text = ANY (ARRAY['transfer'::character varying::text, 'card'::character varying::text])", name: "payments_method_known"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying::text, 'paid'::character varying::text, 'rejected'::character varying::text])", name: "payments_status_known"
   end
 
   create_table "platform_api_tokens", force: :cascade do |t|
@@ -990,7 +994,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.string "admin_theme", default: "seallo", null: false
     t.index ["email"], name: "index_registrations_on_email", unique: true
     t.index ["user_id"], name: "index_registrations_on_user_id", unique: true
-    t.check_constraint "admin_theme::text = ANY (ARRAY['seallo'::character varying, 'seallo_dark'::character varying]::text[])", name: "registrations_admin_theme"
+    t.check_constraint "admin_theme::text = ANY (ARRAY['seallo'::character varying::text, 'seallo_dark'::character varying::text])", name: "registrations_admin_theme"
     t.check_constraint "email::text = lower(email::text)", name: "registrations_normalized_email"
     t.check_constraint "verified_at IS NOT NULL OR user_id IS NULL", name: "registrations_verification_identity"
     t.check_constraint "verified_at IS NULL OR password_digest IS NOT NULL", name: "registrations_verified_password"
@@ -1179,8 +1183,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_030000) do
     t.index ["billing_interval"], name: "index_stores_on_billing_interval"
     t.index ["billing_status"], name: "index_stores_on_billing_status"
     t.index ["slug"], name: "index_stores_on_slug", unique: true
-    t.check_constraint "admin_theme::text = ANY (ARRAY['seallo'::character varying, 'seallo_dark'::character varying]::text[])", name: "stores_admin_theme"
-    t.check_constraint "plan IS NULL OR (plan::text = ANY (ARRAY['free'::character varying, 'starter'::character varying, 'intermediate'::character varying, 'professional'::character varying, 'business'::character varying]::text[]))", name: "stores_plan_known"
+    t.check_constraint "admin_theme::text = ANY (ARRAY['seallo'::character varying::text, 'seallo_dark'::character varying::text])", name: "stores_admin_theme"
+    t.check_constraint "plan IS NULL OR (plan::text = ANY (ARRAY['free'::character varying::text, 'starter'::character varying::text, 'intermediate'::character varying::text, 'professional'::character varying::text, 'business'::character varying::text]))", name: "stores_plan_known"
   end
 
   create_table "users", force: :cascade do |t|

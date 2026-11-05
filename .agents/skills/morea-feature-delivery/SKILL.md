@@ -23,6 +23,8 @@ Add migrations without rewriting historical migrations. Use unique indexes and f
 
 ## Verify proportionately
 
+For platform Seallo support, use the superadmin Seallo connections page. GET must remain provider-free and omit tokens, authorization digests and raw provider errors. Explicit rechecks may refresh verified billing and Shopify access; they must not reactivate disconnected shops, import orders, consume pending links or bypass merchant Shopify approval. Reuse `Connections::SealloEntitlement.attributes_for` for pending-link plan validation so diagnostics and connection creation enforce the same contract. Cover platform-only users without a workspace and denial for merchant accounts.
+
 Run the smallest meaningful checks for changed behavior, then required existing regressions affected by the change. Repository CI uses PostgreSQL, Redis, `RAILS_ENV=test`, Rails autoloading, security/lint checks and smoke scripts listed in `.github/workflows/ci.yml`. Existing scripts create data; inspect their environment guards and use disposable databases with synthetic credentials. Do not run test migrations or smoke scripts against production.
 
 Check tenant denial, replay/concurrency and lifecycle invariants for business-state changes. For views, verify routes and rendered forms, including CSRF and rejection paths. Report unavailable tooling or failed checks precisely; syntax checks do not substitute for database/controller tests.

@@ -1,0 +1,111 @@
+<% timestamp = ->(value) { value&.utc&.strftime("%Y-%m-%d %H:%M UTC") || "—" } %>
+<% api_errors = {
+  "config_missing" => "Seallo bridge configuration is missing. Platform staff must check the bridge configuration.",
+  "credentials_missing" => "Shopify authorization is missing. Ask the merchant to reconnect through Seallo Connect.",
+  "disconnected" => "Disconnected. Ask the merchant to reconnect through Seallo Connect.",
+  "invalid_credentials" => "Shopify authorization was rejected. Ask the merchant to reconnect through Seallo Connect.",
+  "shop_not_permitted" => "Shop access was rejected. Check the connected shop and merchant authorization.",
+  "missing_scopes" => "Order access is missing. Check protected customer data access in Seallo and ask the merchant to reauthorize.",
+  "source_mismatch" => "The connection identity does not match. Ask the merchant to reconnect the correct shop.",
+  "rate_limited" => "Shopify is rate limiting requests. Retry later.",
+  "unavailable" => "The provider is unavailable. Retry later.",
+  "invalid_response" => "Seallo returned an incomplete or unsupported response. Check the deployed bridge and plan contract, then recheck the connection."
+} %>
+<div class="seallo-diagnostics">
+  <p>Review Seallo Connect across all workspaces. This page shows saved status; use a check to contact Seallo. Checks do not reconnect shops or import orders.</p>
+  <section class="panel">
+    <h3>Expected Shopify plans</h3>
+    <div class="panel_contents">
+      <p>Seallo Basic: 30 orders · Seallo Pro: 100 orders · Seallo Premium: unlimited. Shopify manages subscriptions and billing periods. These values are read only.</p>
+      <p>An active trial may have no billing period end. The verification cache still expires after 15 minutes. To reconnect a disconnected shop, the merchant must authorize it through Seallo Connect.</p>
+    </div>
+  </section>
+  <%= form_with url: superadmin_seallo_connections_path, method: :get, class: "seallo-diagnostics__search" do |form| %>
+    <%= form.label :q, "Workspace or shop" %>
+    <%= form.search_field :q, value: @query, maxlength: 200 %>
+    <%= form.submit "Search" %>
+    <%= link_to "Clear", superadmin_seallo_connections_path %>
+  <% end %>
+  <section class="panel">
+    <h3>Connections</h3>
+    <div class="panel_contents">
+      <% if @connections.empty? %>
+        <p>No matching Seallo connections.</p>
+      <% else %>
+        <div class="seallo-diagnostics__scroll" role="region" aria-label="Seallo connections" tabindex="0">
+          <table class="index_table">
+            <thead><tr><th>Workspace / shop</th><th>Saved status</th><th>Saved Shopify billing</th><th>Verification and sync</th><th>Action</th></tr></thead>
+            <tbody>
+            <% @connections.each do |connection| %>
+              <tr>
+                <td><strong><%= connection.store.name %></strong><br><%= connection.store.slug %><br><%= connection.external_domain %></td>
+                <td>
+                  <%= connection.active? ? "Active" : "Disconnected" %><br>
+                  <% if connection.shopify_api_error_code.present? %>
+                    <%= api_errors.fetch(connection.shopify_api_error_code, "A connection check is needed. Recheck to review the next step.") %>
+                  <% elsif connection.shopify_api_verified_at.present? %>
+                    API previously verified
+                  <% else %>
+                    API verification needed
+                  <% end %>
+                </td>
+                <td>
+                  <% if Connections::SealloEntitlement::PLANS.key?(connection.shopify_plan_name) %>
+                    <%= connection.shopify_plan_name %><br>
+                    Order limit: <%= connection.shopify_order_limit.nil? ? "Unlimited" : connection.shopify_order_limit %>
+                  <% else %>
+                    Plan not verified
+                  <% end %>
+                  <br>Period start: <%= timestamp.call(connection.shopify_billing_period_start) %>
+                  <br>Period end: <%= timestamp.call(connection.shopify_billing_period_end) %>
+                  <br>Entitlement cache until: <%= timestamp.call(connection.shopify_entitled_until) %>
+                </td>
+                <td>
+                  API checked: <%= timestamp.call(connection.shopify_api_verified_at) %><br>
+                  Last order sync: <%= timestamp.call(connection.shopify_orders_synced_at) %><br>
+                  <% if connection.shopify_sync_error.present? %>
+                    Order sync needs attention. Recheck access, then review the merchant's integration page.
+                  <% else %>
+                    <%= { "pending" => "Sync pending", "running" => "Sync running", "catching_up" => "Sync catching up", "complete" => "Sync complete", "completed" => "Sync complete", "failed" => "Sync needs attention" }.fetch(connection.shopify_sync_state, "No saved sync status") %>
+                  <% end %>
+                </td>
+                <td><%= button_to "Recheck connection", superadmin_seallo_connections_recheck_path, method: :post, params: { connection_id: connection.id } %></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+      <nav class="seallo-diagnostics__pagination" aria-label="Connections pagination">
+        <% if @page > 1 %><%= link_to "Previous", superadmin_seallo_connections_path(q: @query, page: @page - 1) %><% end %>
+        <span>Page <%= @page %> · Up to 25 connections</span>
+        <% if @has_next_page %><%= link_to "Next", superadmin_seallo_connections_path(q: @query, page: @page + 1) %><% end %>
+      </nav>
+    </div>
+  </section>
+  <section class="panel">
+    <h3>Recent pending authorizations</h3>
+    <div class="panel_contents">
+      <p>Up to 10 pending authorizations created in the last 24 hours, including expired links. Failed first connections may appear here before a connection exists. A check reads the shop entitlement without completing or renewing the link.</p>
+      <% if @authorizations.empty? %>
+        <p>No matching pending authorizations in the last 24 hours.</p>
+      <% else %>
+        <div class="seallo-diagnostics__scroll" role="region" aria-label="Pending Seallo authorizations" tabindex="0">
+          <table class="index_table">
+            <thead><tr><th>Workspace</th><th>Shop</th><th>Link status</th><th>Action</th></tr></thead>
+            <tbody>
+            <% @authorizations.each do |authorization| %>
+              <tr>
+                <td><strong><%= authorization.store.name %></strong><br><%= authorization.store.slug %></td>
+                <td><%= authorization.shop_domain.presence || "Shop not recorded" %></td>
+                <td><%= authorization.expires_at&.future? ? "Pending" : "Expired — merchant must start a new connection" %><br>Created: <%= timestamp.call(authorization.created_at) %><br>Expires: <%= timestamp.call(authorization.expires_at) %></td>
+                <td><%= button_to "Check link", superadmin_seallo_connections_diagnose_link_path, method: :post, params: { authorization_id: authorization.id } %></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+    </div>
+  </section>
+</div>

@@ -14,6 +14,7 @@ ActiveAdmin.register_page "Dashboard", namespace: :superadmin do
         text_node link_to("Users and access", admin_platform_users_path, class: "button")
         text_node link_to("Access requests (#{summary.pending_requests_count})", admin_access_requests_path, class: "button")
         text_node link_to("Feature flags", superadmin_feature_flags_path, class: "button")
+        text_node link_to("Seallo connections", superadmin_seallo_connections_path, class: "button")
       end
 
       div class: "platform-overview__metrics" do

@@ -1,0 +1,40 @@
+.seallo-diagnostics {
+  min-width: 0;
+  overflow-wrap: anywhere;
+
+  &__search, &__pagination { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-block: 16px; }
+  &__search input[type="search"] { box-sizing: border-box; max-width: 100%; min-width: 0; width: 300px; font-size: 16px; }
+  &__search input[type="submit"], button, input[type="submit"] { min-height: 44px; white-space: normal; }
+  &__scroll { overflow-x: auto; max-width: 100%; }
+  &__scroll table { min-width: 900px; }
+  &__scroll th, &__scroll td { max-width: 330px; min-width: 140px; vertical-align: top; }
+  &__scroll form { margin: 0; }
+  &__scroll button { width: 100%; }
+}
+
+// ActiveAdmin's desktop shell has a 990px floor. Keep this diagnostics page
+// intrinsic on phones so only its dense tables need horizontal scrolling.
+body.superadmin_seallo_connections {
+  min-width: 0;
+
+  #wrapper, #main_content_wrapper, #main_content { min-width: 0; }
+  #wrapper { display: block; width: 100%; }
+  #main_content_wrapper { float: none; width: 100%; }
+  #header { height: auto; min-height: 44px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; box-sizing: border-box; }
+  #header h1, #header ul.tabs, #header ul.header-item { display: block; float: none; position: static; height: auto; }
+  #header h1 { width: auto; margin: 0; }
+  #header ul.tabs, #header ul.header-item { margin: 0; padding: 0; }
+  #header ul.tabs { display: flex; flex-wrap: wrap; }
+  #header ul.tabs > li { display: block; }
+  #header a { white-space: normal; }
+  #header ul.tabs > li > a { box-sizing: border-box; display: flex; align-items: center; min-height: 44px; }
+  #title_bar { box-sizing: border-box; }
+  #titlebar_left, #titlebar_right { min-width: 0; }
+  #page_title { overflow-wrap: anywhere; }
+
+  @media (max-width: 600px) {
+    #header, #title_bar, #active_admin_content { padding-inline: 12px; }
+    #title_bar { display: block; }
+    #titlebar_left, #titlebar_right { display: block; width: auto; }
+  }
+}

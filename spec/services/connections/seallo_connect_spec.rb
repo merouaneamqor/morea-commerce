@@ -17,7 +17,7 @@ RSpec.describe Connections::SealloConnect do
     allow(Connections::SealloBridge).to receive(:graphql).and_return(verification)
     allow(Connections::SealloBridge).to receive(:entitlement).and_return(
       "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601,
-      "plan_name" => "Seallo Basic", "order_limit" => 19
+      "plan_name" => "Seallo Basic", "order_limit" => 30
     )
   end
 
@@ -36,6 +36,20 @@ RSpec.describe Connections::SealloConnect do
     expect(SealloConnectionCode.find_by!(digest: Digest::SHA256.hexdigest(code)).consumed_at).to be_present
     expect(ShopifyOrdersSyncJob).to have_been_enqueued.with(result.id)
     expect(Connections::SealloBridge).to have_received(:graphql).with(shop: shop, query: Connections::ShopifyApi::VERIFY_QUERY, variables: {})
+  end
+
+  it "connects the paired app's Pro 100-order trial without a billing cycle end" do
+    freeze_time do
+      allow(Connections::SealloBridge).to receive(:entitlement).and_return(
+        "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => nil,
+        "plan_name" => "Seallo Pro", "order_limit" => 100
+      )
+      result = connect
+      expect(result).to be_shopify_api_connected
+      expect(result).to have_attributes(shopify_plan_name: "Seallo Pro", shopify_order_limit: 100,
+        shopify_billing_period_end: nil, shopify_entitled_until: 15.minutes.from_now)
+      expect(ShopifyOrdersSyncJob).to have_been_enqueued.with(result.id)
+    end
   end
 
   it "rejects replay without queuing another import" do
@@ -179,7 +193,7 @@ RSpec.describe "Concurrent Seallo workspace linking" do
     )
     allow(Connections::SealloBridge).to receive(:entitlement).and_return(
       "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601,
-      "plan_name" => "Seallo Basic", "order_limit" => 19
+      "plan_name" => "Seallo Basic", "order_limit" => 30
     )
   end
 

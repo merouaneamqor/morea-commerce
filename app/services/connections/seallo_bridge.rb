@@ -62,8 +62,16 @@ module Connections
       raise Error, "unavailable" unless status == 200
 
       payload = JSON.parse(response_body)
-      raise Error, "invalid_response" unless payload.is_a?(Hash) && payload["data"].is_a?(Hash)
-      raise Error, "missing_scopes" if payload["errors"].present?
+      raise Error, "invalid_response" unless payload.is_a?(Hash)
+      if payload["errors"].present?
+        errors = payload["errors"]
+        codes = errors.is_a?(Array) ? errors.filter_map { |entry| entry.is_a?(Hash) && entry["extensions"].is_a?(Hash) ? entry["extensions"]["code"] : nil } : []
+        raise Error, "rate_limited" if codes.include?("THROTTLED")
+        raise Error, "missing_scopes" if codes.include?("ACCESS_DENIED")
+
+        raise Error, "invalid_response"
+      end
+      raise Error, "invalid_response" unless payload["data"].is_a?(Hash)
 
       payload["data"]
     rescue URI::InvalidURIError, JSON::ParserError

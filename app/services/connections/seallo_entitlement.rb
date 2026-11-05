@@ -3,7 +3,7 @@ module Connections
     # Shopify remains authoritative. A short cache lets signed order deliveries
     # proceed without a network call and bounds access after a plan cancellation.
     CACHE_LIFETIME = 15.minutes
-    PLANS = { "Seallo Basic" => 19, "Seallo Pro" => 99, "Seallo Premium" => nil }.freeze
+    PLANS = { "Seallo Basic" => 30, "Seallo Pro" => 100, "Seallo Premium" => nil }.freeze
 
     def self.refresh!(connection)
       return unless connection.shopify_app == "seallo_connect"
@@ -15,14 +15,17 @@ module Connections
           return false
         end
         start_time = Time.iso8601(data.fetch("current_period_start"))
-        end_time = Time.iso8601(data.fetch("current_period_end"))
+        # Shopify can report ACTIVE trial subscriptions without a period end.
+        # Keep that absence explicit; access still expires with this short cache.
+        end_value = data.fetch("current_period_end")
+        end_time = end_value.nil? ? nil : Time.iso8601(end_value)
         name = data.fetch("plan_name")
-        unless PLANS.key?(name) && data["order_limit"] == PLANS[name] && start_time <= Time.current && end_time.future? && end_time > start_time
+        unless PLANS.key?(name) && data.fetch("order_limit") == PLANS[name] && start_time <= Time.current && (end_time.nil? || (end_time.future? && end_time > start_time))
           raise SealloBridge::Error, "invalid_response"
         end
         connection.update!(shopify_plan_name: name, shopify_order_limit: PLANS[name],
           shopify_billing_period_start: start_time, shopify_billing_period_end: end_time,
-          shopify_entitled_until: [ CACHE_LIFETIME.from_now, end_time ].min)
+          shopify_entitled_until: [ CACHE_LIFETIME.from_now, end_time ].compact.min)
       end
       true
     rescue ArgumentError, KeyError, TypeError

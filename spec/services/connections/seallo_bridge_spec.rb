@@ -50,4 +50,55 @@ RSpec.describe Connections::SealloBridge do
         .to raise_error(described_class::Error, "config_missing")
     end
   end
+
+  describe "proxy responses" do
+    let(:http) { instance_double(Net::HTTP) }
+    let(:response) { instance_double(Net::HTTPResponse, code: "200") }
+    let(:payload) { { "data" => { "shop" => { "myshopifyDomain" => "synthetic.myshopify.com" } } } }
+
+    before do
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with("SEALLO_APP_URL", "").and_return("https://synthetic-seallo.example.test")
+      allow(Net::HTTP).to receive(:new).and_return(http)
+      %i[use_ssl= open_timeout= read_timeout= write_timeout= max_retries=].each { |setting| allow(http).to receive(setting) }
+      allow(http).to receive(:start).and_yield(http)
+      allow(http).to receive(:request).and_yield(response)
+      allow(response).to receive(:read_body) { |&block| block.call(JSON.generate(payload)) }
+    end
+
+    def graphql
+      described_class.graphql(shop: "synthetic.myshopify.com", query: "query { shop { myshopifyDomain } }")
+    end
+
+    it "returns a successful GraphQL data envelope" do
+      expect(graphql).to eq(payload["data"])
+    end
+
+    it "classifies error-only access denial without requiring a data object" do
+      payload.replace("errors" => [ { "extensions" => { "code" => "ACCESS_DENIED" } } ])
+      expect { graphql }.to raise_error(described_class::Error, "missing_scopes")
+    end
+
+    it "reports throttling separately from missing permissions" do
+      payload.replace("errors" => [ { "extensions" => { "code" => "THROTTLED" } } ])
+      expect { graphql }.to raise_error(described_class::Error, "rate_limited")
+    end
+
+    it "rejects partial data when GraphQL reports an access error" do
+      payload["errors"] = [ { "extensions" => { "code" => "ACCESS_DENIED" } } ]
+      expect { graphql }.to raise_error(described_class::Error, "missing_scopes")
+    end
+
+    it "does not classify arbitrary GraphQL or malformed errors as missing permissions" do
+      [ [ { "message" => "Synthetic invalid query" } ], "malformed" ].each do |errors|
+        payload.replace("errors" => errors)
+        expect { graphql }.to raise_error(described_class::Error, "invalid_response")
+      end
+    end
+
+    it "rejects an incomplete successful response" do
+      payload.replace("data" => nil)
+      expect { graphql }.to raise_error(described_class::Error, "invalid_response")
+    end
+  end
 end

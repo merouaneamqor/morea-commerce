@@ -10,6 +10,7 @@ module Connections
     OVERLAP = 5.minutes
     PAGE_SIZE = 10
     MAX_PAGES = 20
+    CONTACT_RETRY_LIMIT = 10
     WEBHOOK_CHECK_INTERVAL = 1.day
 
     WEBHOOKS_QUERY = <<~GRAPHQL
@@ -53,7 +54,39 @@ module Connections
 
     def call
       ensure_webhook!
-      poll!
+      result = poll!
+      retries = retry_contact_rejections!
+      Result.new(imported: result.imported + retries[:imported], rejected: result.rejected + retries[:rejected],
+        replayed: result.replayed + retries[:replayed], complete: result.complete)
+    end
+
+    # Earlier imports may have advanced the polling watermark past orders that
+    # lacked contact details. Recover a bounded set by their authorized shop IDs
+    # without rewinding the catch-up cursor or retaining a customer payload.
+    def retry_contact_rejections!
+      counts = Hash.new(0)
+      return counts unless @connection.shopify_app == "seallo_connect"
+
+      receipts = @connection.external_order_receipts.where(status: "rejected", error_code: "invalid_contact")
+        .where.not(external_id: Array(@polled_external_ids))
+        .where("external_id ~ ?", "^[0-9]{1,30}$").order(:received_at, :id).limit(CONTACT_RETRY_LIMIT).to_a
+      return counts if receipts.empty?
+
+      ids = receipts.map(&:external_id)
+      query = "(#{ids.map { |id| "id:#{id}" }.join(' OR ')})"
+      page = @api.graphql(query: ORDERS_QUERY, variables: { first: CONTACT_RETRY_LIMIT, after: nil, query: query }).fetch("orders")
+      intake = WebhookIntake.new(connection: @connection)
+      page.fetch("nodes").each do |node|
+        next unless ids.include?(node["legacyResourceId"].to_s)
+
+        result = intake.import(order_payload(node))
+        counts[result.replayed ? :replayed : (result.receipt.status == "accepted" ? :imported : :rejected)] += 1
+      end
+      # Rotate records still rejected or absent from Shopify (for example,
+      # deleted orders), so one old batch cannot starve the remaining receipts.
+      @connection.external_order_receipts.where(id: receipts.map(&:id), status: "rejected", error_code: "invalid_contact")
+        .update_all(received_at: Time.current)
+      counts
     end
 
     def ensure_webhook!
@@ -76,6 +109,7 @@ module Connections
     end
 
     def poll!
+      @polled_external_ids = []
       since = @connection.shopify_orders_synced_at || FIRST_SYNC_DAYS.days.ago(@now)
       filter = "created_at:>='#{(since - OVERLAP).utc.iso8601}' financial_status:pending fulfillment_status:unfulfilled"
       seallo = @connection.shopify_app == "seallo_connect"
@@ -95,6 +129,7 @@ module Connections
       MAX_PAGES.times do
         page = @api.graphql(query: ORDERS_QUERY, variables: { first: PAGE_SIZE, after: cursor, query: filter }).fetch("orders")
         page.fetch("nodes").each do |node|
+          @polled_external_ids << node["legacyResourceId"].to_s
           result = intake.import(order_payload(node))
           counts[result.replayed ? :replayed : (result.receipt.status == "accepted" ? :imported : :rejected)] += 1
           last_seen = Time.iso8601(node["createdAt"]) if node["createdAt"].present?

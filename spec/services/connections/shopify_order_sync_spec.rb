@@ -130,4 +130,80 @@ RSpec.describe Connections::ShopifyOrderSync do
     expect(result.receipt.status).to eq("accepted")
     expect(store.orders.count).to eq(1)
   end
+
+  context "Seallo contact review" do
+    before do
+      connection.update!(shopify_app: "seallo_connect", shopify_plan_name: "Seallo Premium", shopify_order_limit: nil,
+        shopify_billing_period_start: 1.day.ago, shopify_billing_period_end: 29.days.from_now,
+        shopify_entitled_until: 1.hour.from_now)
+    end
+
+    it "imports a missing-phone catch-up order once with its contact alert" do
+      missing = node
+      missing["shippingAddress"]["phone"] = nil
+      run, = sync(orders_page(missing))
+      expect(run.poll!).to have_attributes(imported: 1, rejected: 0, replayed: 0)
+      order = store.orders.sole
+      expect(order).to have_attributes(customer_phone: nil, customer_id: nil, import_contact_issues: [ "phone" ])
+      replay, = sync(orders_page(missing))
+      expect(replay.poll!).to have_attributes(imported: 0, rejected: 0, replayed: 1)
+      expect(store.orders.sole).to eq(order)
+    end
+
+    it "uses the same order-level phone fallback during catch-up" do
+      missing = node
+      missing["shippingAddress"]["phone"] = nil
+      missing["phone"] = "+212 600 000 456"
+      run, = sync(orders_page(missing))
+      expect(run.poll!).to have_attributes(imported: 1, rejected: 0)
+      expect(store.orders.sole).to have_attributes(customer_phone: "+212600000456", import_contact_issues: [])
+      expect(store.customers.sole.phone).to eq("+212600000456")
+    end
+
+    it "recovers rejected contacts older than the polling watermark without rewinding it" do
+      connection.update!(shopify_orders_synced_at: now - 1.hour)
+      receipt = connection.external_order_receipts.create!(external_id: "4004", status: "rejected", error_code: "invalid_contact", received_at: now - 1.day)
+      missing = node(id: "4004", created_at: (now - 2.days).iso8601)
+      missing["shippingAddress"]["phone"] = nil
+      run, fake = sync(orders_page, orders_page(missing))
+      expect(run.call).to have_attributes(imported: 1, rejected: 0, replayed: 0, complete: true)
+      expect(fake.calls.last.last).to eq(first: 10, after: nil, query: "(id:4004)")
+      expect(receipt.reload).to have_attributes(status: "accepted", error_code: nil)
+      expect(receipt.order.import_contact_issues).to eq([ "phone" ])
+      expect(connection.reload.shopify_orders_synced_at).to eq(now)
+      expect(connection.shopify_poll_cursor).to be_nil
+    end
+
+    it "bounds retries, ignores other rejection causes and rotates absent orders" do
+      oldest = 11.times.map do |index|
+        connection.external_order_receipts.create!(external_id: (5000 + index).to_s, status: "rejected", error_code: "invalid_contact", received_at: (12 - index).days.ago)
+      end
+      other = connection.external_order_receipts.create!(external_id: "5999", status: "rejected", error_code: "unsupported_payment", received_at: 20.days.ago)
+      malformed = connection.external_order_receipts.create!(external_id: "5000 OR id:5999", status: "rejected", error_code: "invalid_contact", received_at: 20.days.ago)
+      untouched_time = oldest.last.received_at
+      run, fake = sync(orders_page, orders_page)
+      expect(run.call).to have_attributes(imported: 0, rejected: 0, replayed: 0)
+      query = fake.calls.last.last.fetch(:query)
+      expect(query.scan(/id:\d+/).length).to eq(10)
+      expect(query).to include("id:5000", "id:5009")
+      expect(query).not_to include("id:5010", "id:5999")
+      expect(oldest.first.reload.received_at).to be > 1.minute.ago
+      expect(oldest.last.reload.received_at).to eq(untouched_time)
+      expect(other.reload.error_code).to eq("unsupported_payment")
+      expect(malformed.reload.received_at).to be < 19.days.ago
+    end
+
+    it "does not retry the same rejected contact twice in one sync or query when none remain" do
+      bad = node(id: "6006")
+      bad["shippingAddress"]["phone"] = "1" * 256
+      connection.external_order_receipts.create!(external_id: "6006", status: "rejected", error_code: "invalid_contact", received_at: 1.day.ago)
+      run, fake = sync(orders_page(bad))
+      expect(run.call).to have_attributes(imported: 0, rejected: 1, replayed: 0)
+      expect(fake.calls.length).to eq(1)
+      connection.external_order_receipts.update_all(error_code: "unsupported_payment")
+      again, again_fake = sync(orders_page)
+      expect(again.call).to have_attributes(imported: 0, rejected: 0, replayed: 0)
+      expect(again_fake.calls.length).to eq(1)
+    end
+  end
 end

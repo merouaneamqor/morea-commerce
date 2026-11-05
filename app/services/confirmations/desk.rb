@@ -47,7 +47,8 @@ module Confirmations
 
     # "Annuler" in the panel: nothing is saved, but a call that ran more than 5 seconds is one attempt.
     def abandon_call(order_id)
-      with_order(order_id) do |_order, confirmation|
+      with_order(order_id) do |order, confirmation|
+        require_contact!(order)
         require_owner!(confirmation)
         seconds = call_seconds(confirmation)
         if seconds && seconds > ABANDON_COUNT_AFTER
@@ -200,9 +201,14 @@ module Confirmations
     end
 
     def require_open!(order)
+      require_contact!(order)
       unless order.status == "new" && !order.archived? && order.sendit_code.blank?
         raise Error, "Only active, unshipped new orders can be confirmed here."
       end
+    end
+
+    def require_contact!(order)
+      raise Error, I18n.t("import_contact.blocked") if order.contact_review_required?
     end
 
     def no_answer_count(confirmation)

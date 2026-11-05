@@ -11,6 +11,8 @@
   <%= link_to t("admin.confirmations.title"), admin_confirmations_path, class: "admin-btn-secondary" %>
 </div>
 
+<%= render "import_contact_alert", order: @order, allow_correction: false %>
+
 <div class="grid gap-4 lg:grid-cols-3" data-agent-order>
   <section class="admin-card lg:col-span-2">
     <div class="admin-card__header"><h2 class="admin-card__title">Products</h2></div>
@@ -29,7 +31,11 @@
     <div class="admin-card__header"><h2 class="admin-card__title">Customer</h2></div>
     <div class="space-y-1 px-4 pb-4 text-[13px]">
       <p class="font-medium"><%= @order.customer_name %></p>
-      <p><%= link_to @order.customer_phone, "tel:#{@order.customer_phone.to_s.gsub(/[^\d+]/, '')}", class: "admin-link", dir: "ltr" %></p>
+      <% if @order.customer_phone.present? && !@order.import_contact_issues.include?("phone") %>
+        <p><%= link_to @order.customer_phone, "tel:#{@order.customer_phone.to_s.gsub(/[^\d+]/, '')}", class: "admin-link", dir: "ltr" %></p>
+      <% else %>
+        <p class="admin-muted"><%= @order.customer_phone.presence || "—" %></p>
+      <% end %>
       <p class="admin-muted"><%= [ @order.customer_address, @order.customer_district, @order.customer_city ].compact_blank.join(", ") %></p>
       <% if @order.notes.present? %><p class="admin-muted"><%= @order.notes %></p><% end %>
       <p class="admin-muted pt-2">

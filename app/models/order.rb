@@ -1,6 +1,6 @@
 class Order < ApplicationRecord
   belongs_to :store
-  belongs_to :customer
+  belongs_to :customer, optional: true
   has_many :order_items, dependent: :destroy
   has_many :inventory_movements, dependent: :nullify
   has_many :order_events, dependent: :destroy
@@ -69,7 +69,11 @@ class Order < ApplicationRecord
     "returned" => []
   }.freeze
 
-  validates :number, :status, :customer_name, :customer_phone, :customer_city, :customer_address, presence: true
+  IMPORT_CONTACT_FIELDS = %w[name phone city address].freeze
+
+  validates :number, :status, presence: true
+  validates :customer, :customer_name, :customer_phone, :customer_city, :customer_address, presence: true, unless: :contact_review_required?
+  validate :valid_import_contact_review
   validates :number, uniqueness: { scope: :store_id }
   validates :sendit_code, uniqueness: { scope: :store_id }, allow_nil: true
   validates :status, inclusion: { in: STATUSES }
@@ -84,6 +88,14 @@ class Order < ApplicationRecord
   scope :collected, -> { where.not(collected_at: nil) }
   # Delivered by the carrier but the cash has not reached the merchant yet
   scope :awaiting_remittance, -> { where(status: "delivered", collected_at: nil) }
+
+  def contact_review_required?
+    import_contact_issues.is_a?(Array) && import_contact_issues.any?
+  end
+
+  def ensure_contact_complete!
+    raise ArgumentError, I18n.t("import_contact.blocked") if contact_review_required?
+  end
 
   # Street address with the quartier, as the courier needs it
   def delivery_address
@@ -297,6 +309,7 @@ end
 
   def apply_status_change!(new_status, reason: nil, user: nil, force: false, sync_delivery: true)
     raise ArgumentError, "Invalid transition #{status} → #{new_status}" unless force || can_transition_to?(new_status)
+    ensure_contact_complete! unless %w[new cancelled].include?(new_status)
 
     from = status
     transaction do
@@ -368,6 +381,14 @@ end
       self.number = format("M%06d", SecureRandom.random_number(1_000_000))
       break unless store.orders.exists?(number: number)
     end
+  end
+
+  def valid_import_contact_review
+    unless import_contact_issues.is_a?(Array) && (import_contact_issues - IMPORT_CONTACT_FIELDS).empty?
+      errors.add(:import_contact_issues, :invalid)
+    end
+    errors.add(:base, I18n.t("import_contact.blocked")) if contact_review_required? && !%w[new cancelled].include?(status)
+    errors.add(:customer, :invalid) if customer && customer.store_id != store_id
   end
 
   def reserve_inventory!

@@ -72,12 +72,10 @@ module Connections
           store = @connection.store
           # Match existing intake's lock order for customer identity updates.
           store.with_lock do
-            customer = store.customers.find_or_initialize_by(phone: attrs[:customer_phone])
-            customer.assign_attributes(name: attrs[:customer_name], city: attrs[:customer_city])
-            customer.save!
+            customer = import_customer(store, attrs)
             order = store.orders.create!(attrs.except(:lines).merge(customer: customer, payment_method: "cod", status: "new"))
             attrs[:lines].each { |line| order.order_items.create!(line) }
-            customer.increment!(:orders_count)
+            customer&.increment!(:orders_count)
             order.record_event!("created", body: "Order received from #{@connection.provider}")
             receipt.assign_attributes(order: order, status: "accepted", error_code: nil, received_at: Time.current)
             receipt.save!
@@ -95,6 +93,17 @@ module Connections
         @connection.update!(last_error_code: "invalid_order")
       end
       Result.new(receipt: receipt, replayed: false)
+    end
+
+    def import_customer(store, attrs)
+      issues = Array(attrs[:import_contact_issues])
+      return if issues.intersect?(%w[name phone])
+
+      customer = store.customers.find_or_initialize_by(phone: attrs[:customer_phone])
+      customer.name = attrs[:customer_name]
+      customer.city = attrs[:customer_city] if attrs[:customer_city].present?
+      customer.save!
+      customer
     end
 
     def authenticate!(body, headers)

@@ -4,12 +4,25 @@
   <div><h1 class="admin-page-header__title"><%= @connection.name %></h1>
     <p class="admin-page-header__meta"><%= t("connections.providers.#{@connection.provider}") %> · <%= @connection.external_domain %> · <%= connection_state(@connection) %></p></div>
   <div class="flex flex-wrap gap-3">
-    <%= button_to t(@connection.active? ? "connections.disconnect" : (shopify ? "connections.shopify_api.reconnect" : "connections.reconnect")), admin_store_connection_path(@connection), method: :patch, params: { operation: @connection.active? ? "disconnect" : "reconnect" }, class: "admin-btn-secondary" %>
+    <% if shopify && @connection.shopify_oauth? && !@connection.active? %>
+      <% if (apps_url = shopify_apps_url(@connection)) %>
+        <%= link_to t("shopify_reconnect.reconnect"), apps_url, class: "admin-btn", target: "_blank", rel: "noopener noreferrer", data: { turbo: false } %>
+      <% end %>
+    <% else %>
+      <%= button_to t(@connection.active? ? "connections.disconnect" : (shopify ? "connections.shopify_api.reconnect" : "connections.reconnect")), admin_store_connection_path(@connection), method: :patch, params: { operation: @connection.active? ? "disconnect" : "reconnect" }, class: "admin-btn-secondary" %>
+    <% end %>
     <%= button_to t("connections.delete"), admin_store_connection_path(@connection), method: :delete, form: { data: { turbo_confirm: t("connections.delete_confirm", name: @connection.name) } }, class: "admin-btn-critical" %>
   </div>
 </div>
 <% if @connection.errors.any? %><div role="alert" class="admin-banner admin-banner--critical"><%= @connection.errors.full_messages.to_sentence %></div><% end %>
 <% if shopify %>
+  <% if @connection.shopify_oauth? && !@connection.active? %>
+    <section class="admin-card p-5 mb-4 space-y-3" aria-labelledby="shopify-reconnect-title">
+      <h2 class="admin-card__title" id="shopify-reconnect-title"><%= t("shopify_reconnect.title") %></h2>
+      <p><%= t("shopify_reconnect.help", shop: @connection.external_domain, workspace: current_store.name) %></p>
+      <p class="admin-muted"><%= t("shopify_reconnect.preserve_history") %></p>
+    </section>
+  <% end %>
   <%= render "shopify_api" %>
 <% else %>
 <section class="admin-card p-5 mb-4 space-y-3">

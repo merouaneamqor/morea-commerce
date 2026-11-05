@@ -10,6 +10,7 @@ module Admin
       @connections = current_store.store_connections.order(created_at: :desc).limit(100)
       @delivery_accounts = current_store.delivery_accounts.order(is_active: :desc, name: :asc)
       @meta_connection = current_store.meta_ads_connection
+      load_sendit_settings
     end
 
     def new
@@ -52,6 +53,12 @@ module Admin
             shopify_api_verified_at: nil, shopify_granted_scopes: [], shopify_oauth_state_digest: nil, shopify_oauth_state_expires_at: nil)
         end
       when "reconnect"
+        if @connection.provider == "shopify" && @connection.shopify_oauth?
+          destination = helpers.shopify_apps_url(@connection)
+          return head :unprocessable_entity unless destination
+
+          return redirect_to destination, allow_other_host: true, status: :see_other
+        end
         @connection.with_lock { @connection.update!(active: true, verified_at: nil, last_error_code: nil, shopify_api_verified_at: nil) }
       when "verify_shopify_api"
         return head :unprocessable_entity unless @connection.provider == "shopify"
@@ -88,6 +95,32 @@ module Admin
     end
 
     private
+
+    # Rendering integrations reads cached carrier data only; refreshing is an explicit action.
+    def load_sendit_settings
+      @store = current_store
+      @sendit_pickup_cities = []
+      @sendit_city_rates = {}
+      return unless @store.sendit_configured?
+
+      key = Sendit::Districts.cache_key(@store)
+      @sendit_pickup_cities = Array(Rails.cache.read("#{key}:pickup")).filter_map do |row|
+        next unless row.is_a?(Hash)
+
+        id = (row[:id] || row["id"]).to_i
+        name = (row[:name] || row["name"]).to_s
+        { id: id, name: name } if id.positive? && name.present?
+      end.uniq { |row| row[:id] }.sort_by { |row| row[:name] }
+      Array(Rails.cache.read(key)).each do |row|
+        next unless row.is_a?(Hash)
+
+        city = (row[:ville] || row["ville"]).to_s.strip
+        price = BigDecimal((row[:price] || row["price"]).to_s, exception: false)
+        next unless city.present? && price&.finite? && price >= 0
+
+        @sendit_city_rates[city] ||= (price * 100).to_i
+      end
+    end
 
     def set_shopify_configuration
       @shopify_configured = Connections::ShopifyOauth.configured?

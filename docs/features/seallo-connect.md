@@ -55,3 +55,9 @@ The separate checkout at `../morea-seallo-connect` excludes uncommitted checkout
 ## Verification
 
 Use `RAILS_ENV=test` with an isolated test-named PostgreSQL database. Specs cover signed request/body/operation tampering, actor and tenant boundaries, expired/replayed codes, concurrent connection claims, billing/allowances, preserved legacy connections, import replay/cursor recovery, privacy scoping and EN/FR/AR rendering. Provider and subscription responses are synthetic. Local checks do not prove live subscription charges, protected data approval, Shopify review approval, Render deployment or live installation.
+
+## Managing disconnected Shopify stores
+
+The Seallo Connect overview includes current and retired OAuth connections belonging to the workspace. Manage opens the connection details, where a disconnected store offers Reconnect in Shopify. This opens that persisted shop's Shopify Apps page: open or install Seallo Connect and approve the existing workspace connection. Keep the old record to reuse its identity and imported history.
+
+The local reconnect operation does not reactivate an OAuth connection or queue imports. Only the existing authorized, signed connection exchange re-verifies it. Manually signed webhook sources keep their existing resume behavior. Delete remains available with its existing imported-order and privacy-history restrictions.

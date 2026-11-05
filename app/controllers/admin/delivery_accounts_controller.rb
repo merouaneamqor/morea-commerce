@@ -28,7 +28,21 @@ module Admin
     end
 
     def destroy
-      @account.destroy!
+      sendit = @account.sendit?
+      current_store.with_lock do
+        effective_sendit = sendit && @account.is_active? && @account.credentials?
+        @account.destroy!
+        # Do not silently reactivate an older Store-level connection when the
+        # merchant removes their final active, encrypted Sendit account.
+        if effective_sendit && !current_store.delivery_accounts.where(provider: "sendit", is_active: true).where.not(credentials_ciphertext: nil).exists?
+          current_store.update!(sendit_public_key: nil, sendit_secret_key: nil, sendit_webhook_secret: nil)
+        end
+      end
+      if sendit
+        Rails.cache.delete("sendit:token:store:#{current_store.id}")
+        Rails.cache.delete(Sendit::Districts.cache_key(current_store))
+        Rails.cache.delete("#{Sendit::Districts.cache_key(current_store)}:pickup")
+      end
       redirect_to seller_integrations_path, notice: helpers.sl("Société supprimée."), status: :see_other
     end
 

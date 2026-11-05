@@ -29,6 +29,7 @@
         <div class="flex flex-wrap items-center gap-3">
           <span class="admin-muted text-[13px]"><%= t("seallo_connect.sync_states.#{sync_state}") %></span>
           <span class="admin-badge admin-badge--<%= state_badges.fetch(connection.connection_state, "neutral") %>"><%= t("seallo_connect.connection_states.#{connection.connection_state}") %></span>
+          <%= link_to t("shopify_reconnect.manage"), admin_store_connection_path(connection), class: "admin-btn-secondary" %>
           <% unless connection.active? %>
             <%= button_to t("connections.delete"), admin_store_connection_path(connection), method: :delete,
               form: { data: { turbo_confirm: t("connections.delete_confirm", name: connection.name) } },

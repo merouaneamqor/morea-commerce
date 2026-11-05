@@ -139,6 +139,51 @@ RSpec.describe "Sendit connection from the Integrations API page", type: :reques
     end
   end
 
+  describe "deleting Sendit accounts" do
+    let!(:account) do
+      store.delivery_accounts.create!(provider: "sendit", name: "Synthetic Sendit", credentials: { "api_key" => "current-public", "api_secret" => "current-secret" })
+    end
+
+    before { store.update!(sendit_public_key: "legacy-public", sendit_secret_key: "legacy-secret", sendit_webhook_secret: "legacy-webhook") }
+
+    it "does not reactivate legacy credentials when the last active connection is deleted" do
+      [ "sendit:token:store:#{store.id}", Sendit::Districts.cache_key(store), "#{Sendit::Districts.cache_key(store)}:pickup" ].each do |key|
+        expect(Rails.cache).to receive(:delete).with(key).and_call_original
+      end
+      expect { delete seller_delivery_account_path(account) }.to change(DeliveryAccount, :count).by(-1)
+      expect(response).to have_http_status(:see_other)
+      expect(store.reload.sendit_configured?).to be(false)
+      expect(store).to have_attributes(sendit_webhook_secret: nil)
+      expect(store[:sendit_public_key]).to be_nil
+      expect(store[:sendit_secret_key]).to be_nil
+    end
+
+    it "preserves another active connection when an older active account is deleted" do
+      remaining = store.delivery_accounts.create!(provider: "sendit", name: "Other Sendit", credentials: { "api_key" => "other-public", "api_secret" => "other-secret" })
+      delete seller_delivery_account_path(account)
+      expect(response).to have_http_status(:see_other)
+      expect(store.reload.sendit_delivery_account).to eq(remaining)
+      expect(store.sendit_secret_key).to eq("other-secret")
+      expect(store[:sendit_secret_key]).to eq("legacy-secret")
+    end
+
+    it "keeps the effective legacy connection when an inactive historical account is deleted" do
+      account.update!(is_active: false)
+      delete seller_delivery_account_path(account)
+      expect(response).to have_http_status(:see_other)
+      expect(store.reload.sendit_configured?).to be(true)
+      expect(store.sendit_secret_key).to eq("legacy-secret")
+      expect(store.sendit_webhook_secret).to eq("legacy-webhook")
+    end
+
+    it "cannot delete an account belonging to a different workspace" do
+      foreign_store = Store.create!(name: "Foreign #{suffix}", slug: "foreign-#{suffix}", currency: "MAD")
+      foreign = foreign_store.delivery_accounts.create!(provider: "sendit", name: "Foreign Sendit", credentials: { "api_key" => "foreign-public", "api_secret" => "foreign-secret" })
+      expect { delete seller_delivery_account_path(foreign) }.not_to change(DeliveryAccount, :count)
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
   describe "the webhook" do
     let!(:account) do
       store.delivery_accounts.create!(provider: "sendit", name: "Sendit", credentials: keys.transform_keys(&:to_s), webhook_token: "tok-#{suffix}-abcdefghij", connected_at: Time.current)

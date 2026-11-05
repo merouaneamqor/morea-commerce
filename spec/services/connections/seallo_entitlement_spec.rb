@@ -9,7 +9,7 @@ RSpec.describe Connections::SealloEntitlement do
       shopify_app: "seallo_connect", shopify_oauth: true)
   end
   let(:payload) do
-    { "active" => true, "plan_name" => "Seallo Basic", "order_limit" => 19,
+    { "active" => true, "plan_name" => "Seallo Basic", "order_limit" => 30,
       "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601 }
   end
 
@@ -27,6 +27,26 @@ RSpec.describe Connections::SealloEntitlement do
         expect(connection.shopify_billing_period_start).to eq(Time.iso8601(payload["current_period_start"]))
         expect(connection.shopify_billing_period_end).to eq(Time.iso8601(payload["current_period_end"]))
       end
+    end
+  end
+
+  it "accepts an ACTIVE trial without a cycle end only for the short cache lifetime" do
+    freeze_time do
+      payload["current_period_end"] = nil
+      expect(described_class.refresh!(connection)).to be(true)
+      expect(connection.reload.shopify_billing_period_end).to be_nil
+      expect(connection.shopify_entitled_until).to eq(15.minutes.from_now)
+      expect { Connections::SealloAllowance.check!(connection) }.not_to raise_error
+      travel 15.minutes
+      expect { Connections::SealloAllowance.check!(connection) }.to raise_error(Connections::WebhookIntake::Error)
+    end
+  end
+
+  it "rejects the retired 19 and 99 order limits instead of accepting a mismatched billing contract" do
+    [ [ "Seallo Basic", 19 ], [ "Seallo Pro", 99 ] ].each do |name, limit|
+      payload.merge!("plan_name" => name, "order_limit" => limit)
+      expect { described_class.refresh!(connection) }.to raise_error(Connections::SealloBridge::Error, "invalid_response")
+      expect(connection.reload.shopify_entitled_until).to be_nil
     end
   end
 
@@ -62,12 +82,19 @@ RSpec.describe Connections::SealloEntitlement do
     end
   end
 
+  it "requires an explicit quota key even for an unlimited Premium plan" do
+    payload["plan_name"] = "Seallo Premium"
+    payload.delete("order_limit")
+    expect { described_class.refresh!(connection) }.to raise_error(Connections::SealloBridge::Error, "invalid_response")
+    expect(connection.reload.shopify_entitled_until).to be_nil
+  end
+
   it "rejects expired, future-starting and malformed billing periods" do
     original = payload.dup
     [ { "current_period_end" => 1.second.ago.iso8601 },
       { "current_period_start" => 1.minute.from_now.iso8601 },
       { "current_period_start" => "invalid" },
-      { "current_period_end" => nil } ].each do |attributes|
+      { "current_period_end" => "invalid" } ].each do |attributes|
       payload.replace(original.merge(attributes))
       expect { described_class.refresh!(connection) }.to raise_error(Connections::SealloBridge::Error, "invalid_response")
       expect(connection.reload.shopify_entitled_until).to be_nil

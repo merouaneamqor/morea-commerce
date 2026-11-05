@@ -22,7 +22,7 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
     allow(ENV).to receive(:[]).with("SEALLO_APP_URL").and_return(app_url)
     allow(Connections::SealloBridge).to receive(:entitlement).and_return(
       "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601,
-      "plan_name" => "Seallo Basic", "order_limit" => 19
+      "plan_name" => "Seallo Basic", "order_limit" => 30
     )
     host! Store.base_domain
   end
@@ -198,6 +198,21 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
     saved = store.store_connections.find_by!(external_domain: shop)
     expect(ShopifyOrdersSyncJob).to have_been_enqueued.with(saved.id)
     expect(response.body).not_to include(code, "shopify_access_token", "shopify_refresh_token", secret)
+  end
+
+  it "completes a signed Pro trial connection with the paired app's 100-order entitlement" do
+    code = SealloConnectionCode.issue!(store: store, user: staff)
+    allow(Connections::SealloBridge).to receive(:entitlement).and_return(
+      "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => nil,
+      "plan_name" => "Seallo Pro", "order_limit" => 100
+    )
+    allow(Connections::SealloBridge).to receive(:graphql).and_return(
+      "shop" => { "myshopifyDomain" => shop }, "currentAppInstallation" => { "accessScopes" => [ { "handle" => "read_orders" } ] }
+    )
+    signed_post("connect", { code: code, shop: shop })
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to include("connected" => true, "state" => "verified", "plan_name" => "Seallo Pro", "order_limit" => 100)
+    expect(store.store_connections.find_by!(external_domain: shop).shopify_billing_period_end).to be_nil
   end
 
   it "reports only the new app's matching shop and does not expose legacy Shopify connections" do

@@ -108,7 +108,7 @@ Every store continues to serve its own localized catalog, cart and COD checkout.
 
 - **Admin → Confirmations** (`/admin/confirmations`): claim new orders, record confirmed/cancelled/no-answer outcomes, schedule callbacks and release claims. Confirmation reserves inventory without automatically dispatching to Sendit. Labels are available in EN/FR/AR.
 - **External order intake** (`POST /api/v1/order_imports`): existing store API/OAuth bearer tokens select the store. Repeated source/external IDs return the same order. New imports do not reserve stock, dispatch parcels or send notifications.
-- Repository agents can use three skills under `.agents/skills/` for tenant commerce, COD operations and feature delivery. See `AGENTS.md` and `docs/implementation-workflow.md`.
+- Repository agents can use the skills under `.agents/skills/` for tenant commerce, COD operations, feature delivery and writing cleanup. See `AGENTS.md` and `docs/implementation-workflow.md`.
 
 Feature contracts and test commands: [order intake](docs/features/order-intake.md) and [confirmation queue](docs/features/confirmation-queue.md). Provider webhooks, new carrier adapters, WhatsApp sending, automatic assignment and financial reports remain later phases.
 

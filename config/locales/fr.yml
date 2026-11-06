@@ -320,7 +320,7 @@ fr:
       resolve: "Marquer résolue"
       resolved: "Demande marquée résolue."
   platform_home:
-    title: "Seallo — plateforme e-commerce multi-boutiques"
+    title: "Seallo, plateforme e-commerce multi-boutiques"
     language: "Langue"
     nav: { journey: "Fonctionnement", features: "Fonctionnalités", integrations: "Intégrations", faq: "FAQ", sign_in: "Connexion", signup: "Créer un compte" }
     hero:
@@ -375,7 +375,7 @@ fr:
     footer:
       tagline: "Plateforme e-commerce multi-boutiques"
       admin: "Connexion administration"
-      imprint: "Les informations d’opérateur et les contrats sont décrits sur les pages confidentialité et conditions Seallo Connect. Chaque boutique publie sa propre entité légale, immatriculation et pages de confidentialité."
+      imprint: "Les pages confidentialité et conditions de Seallo Connect indiquent l'opérateur de la plateforme et les contrats. Chaque boutique publie son entité légale, son immatriculation et sa page de confidentialité."
   signup:
     title: "Demander un accès — %{name}"
     heading: "Demander un accès"

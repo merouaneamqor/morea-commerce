@@ -7,7 +7,8 @@
 <% s = ->(key) { t("platform_home.seallo.#{key}") } %>
 <div class="platform-landing" dir="<%= rtl? ? "rtl" : "ltr" %>">
   <%= render "platform_home/header" %>
-  <main id="top">
+  <main id="main-content" tabindex="-1">
+    <span id="top"></span>
     <section class="platform-container platform-hero" aria-labelledby="platform-title">
       <div class="platform-hero-copy">
         <p class="platform-eyebrow"><span aria-hidden="true"></span><%= s.("pill") %></p>

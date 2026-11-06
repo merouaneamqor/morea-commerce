@@ -23,6 +23,12 @@ module DataProtectionHelper
     page_path(slug)
   end
 
+  def cookie_policy_href
+    cookies_page_path_for_store ||
+      (seallo_connect_cookies_path(locale: I18n.locale) if Store.apex_host?(request.host)) ||
+      privacy_page_path_for_store
+  end
+
   def tracking_consent_value
     cookies[TRACKING_CONSENT_COOKIE].to_s
   end
@@ -40,7 +46,9 @@ module DataProtectionHelper
   end
 
   def cookie_notice_pending?
-    current_store.present? && !tracking_consent_decided?
+    return false if tracking_consent_decided?
+
+    current_store.present? || Store.apex_host?(request.host)
   end
 
   def checkout_rights_notice

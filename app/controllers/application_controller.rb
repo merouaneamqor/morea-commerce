@@ -93,6 +93,7 @@ class ApplicationController < ActionController::Base
       seller_path? ||
       path == "/seallo-connect" ||
       path.start_with?("/seallo-connect/") ||
+      path == "/consent/tracking" ||
       path == "/up" ||
       path == "/graphql" ||
       path == "/mcp" ||

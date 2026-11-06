@@ -10,6 +10,7 @@ Use these repository skills when their scope applies:
 - `.agents/skills/morea-cod-operations/SKILL.md`: order intake, confirmation, inventory, carrier and money workflows.
 - `.agents/skills/morea-responsive-design/SKILL.md`: responsive page changes, RTL, browser geometry checks and coordinated layout ownership.
 - `.agents/skills/morea-feature-delivery/SKILL.md`: evidence-driven vertical slices, migrations, verification and review.
+- `.agents/skills/unslop/SKILL.md`: cut AI tells from prose, docs, commit messages, pull requests, and UI copy. Invocation is automatic.
 
 These files are reusable instructions for agents working in this checkout. They do not install hosted ChatGPT plugins or grant API permissions. The separately served catalog skill at `/.well-known/agent-skills/morea-catalog/SKILL.md` remains the store-operation contract.
 

@@ -320,7 +320,7 @@ en:
       resolve: "Mark resolved"
       resolved: "Request marked resolved."
   platform_home:
-    title: "Seallo — multi-store commerce platform"
+    title: "Seallo, multi-store commerce platform"
     language: "Language"
     nav: { journey: "How it works", features: "Features", integrations: "Integrations", faq: "FAQ", sign_in: "Sign in", signup: "Create account" }
     hero:
@@ -375,7 +375,7 @@ en:
     footer:
       tagline: "Multi-store commerce platform"
       admin: "Admin sign in"
-      imprint: "Platform operator details and contracts are described on the Seallo Connect privacy and terms pages. Merchant stores publish their own legal entity, registration and privacy pages."
+      imprint: "The Seallo Connect privacy and terms pages name the platform operator and the contracts. Each merchant store publishes its own legal entity, registration, and privacy page."
   signup:
     title: "Request access — %{name}"
     heading: "Request access"

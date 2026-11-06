@@ -36,7 +36,7 @@ module SellerHelper
     [ "clients", :clients, "Clients", "/clients" ],
     [ "delivery", :truck, "Livraison", "/livraison" ],
     [ "products", :box, "Produits", "/produits" ],
-    [ "ads", :target, "Publicités", nil ],
+    [ "ads", :target, "Publicités", "/publicites" ],
     [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
     [ "integrations", :plug, "Intégrations API", "/integrations" ]
@@ -47,7 +47,8 @@ module SellerHelper
     "dashboard" => "dashboard", "orders" => "orders", "confirmations" => "confirmation", "my_stats" => "stats",
     "customers" => "clients", "delivery" => "delivery", "products" => "products", "variants" => "products",
     "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
-    "seallo_connections" => "integrations", "woocommerce_connections" => "integrations", "meta_ads" => "integrations",
+    "seallo_connections" => "integrations", "woocommerce_connections" => "integrations",
+    "meta_ads" => "ads", "advertising" => "ads", "pixels" => "ads",
     "accounting" => "accounting"
   }.freeze
 

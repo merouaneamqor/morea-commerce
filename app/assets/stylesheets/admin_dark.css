@@ -74,8 +74,21 @@
 .admin-body[data-admin-theme="seallo_dark"] [data-card] circle[fill="#fff"] { fill: var(--s-card); }
 
 /* Shared floating surfaces were intentionally translucent white in the light theme. */
+.admin-body[data-admin-theme="seallo_dark"] .lg-shell {
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgb(73 53 30 / .45), transparent 55%),
+    linear-gradient(180deg, #1a1512 0%, #15110f 100%);
+  color: var(--s-muted);
+}
 .admin-body[data-admin-theme="seallo_dark"] .lg-scrim { background-color: rgb(0 0 0 / .55); }
-.admin-body[data-admin-theme="seallo_dark"] .lg-panel { color: var(--s-ink); border-color: var(--s-ctl); background: linear-gradient(180deg, rgb(38 31 27 / .96), rgb(32 26 23 / .94)); box-shadow: 0 30px 80px -24px #0009, inset 0 1px rgb(255 255 255 / .08); }
+.admin-body[data-admin-theme="seallo_dark"] :is(.lg-panel, .lg-nav, .lg-chrome) {
+  color: var(--s-ink);
+  border-color: var(--s-ctl);
+  background: linear-gradient(180deg, rgb(38 31 27 / .96), rgb(32 26 23 / .94));
+  box-shadow: 0 30px 80px -24px #0009, inset 0 1px rgb(255 255 255 / .08);
+}
+.admin-body[data-admin-theme="seallo_dark"] .lg-nav__store { background: rgb(255 255 255 / .04); border-color: var(--s-line); }
+.admin-body[data-admin-theme="seallo_dark"] .lg-nav__active { background: rgb(168 67 46 / .22); color: #f0c2b4; }
 .admin-body[data-admin-theme="seallo_dark"] :is(.admin-media-dialog, .admin-media-preview, .admin-variant-options, .admin-pwa) { color: var(--s-ink); background-color: var(--s-card); border-color: var(--s-line); }
 .admin-body[data-admin-theme="seallo_dark"] :is(.admin-media-dialog__header, .admin-media-dialog__footer, .admin-variant-media-summary, .admin-dropzone, .admin-variant-image) { color: var(--s-ink); background-color: var(--s-soft); border-color: var(--s-line); }
 .admin-body[data-admin-theme="seallo_dark"] :is(.admin-media-close, .admin-variant-image):hover { background-color: var(--s-soft2); }
@@ -103,8 +116,14 @@
 .admin-body[data-admin-theme="seallo_dark"] [class~="border-gray-300"] { border-color: var(--s-ctl); }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .admin-body[data-admin-theme="seallo_dark"] .lg-panel { background: var(--s-card); }
+  .admin-body[data-admin-theme="seallo_dark"] :is(.lg-panel, .lg-nav, .lg-chrome) { background: var(--s-card); }
+  .admin-body[data-admin-theme="seallo_dark"] .lg-shell { background: #15110f; }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .admin-body[data-admin-theme="seallo_dark"] .lg-panel { background: var(--s-card); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .admin-body[data-admin-theme="seallo_dark"] :is(.lg-panel, .lg-nav, .lg-chrome) {
+    background: var(--s-card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .admin-body[data-admin-theme="seallo_dark"] .lg-shell { background: #15110f; }
 }

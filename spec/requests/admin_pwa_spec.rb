@@ -53,11 +53,14 @@ RSpec.describe "Admin PWA", type: :request do
     end
   end
 
-  it "does not offer installation inside the seller workspace, which follows the seallo design" do
+  it "offers installation inside the seller workspace with the liquid glass install card" do
     user = store.users.create!(email: "pwa-merchant-#{SecureRandom.hex(5)}@example.test", password: password, admin: true)
+    host! "#{store.slug}.#{Store.base_domain}"
     post "/admin/login", params: { email: user.email, password: password }
-    get "/admin"
+    get "/dashboard"
     expect(response).to have_http_status(:ok)
-    expect(document.at_css("[data-admin-pwa]")).to be_nil
+    expect(document.at_css("[data-admin-pwa].lg-panel")).to be_present
+    expect(document.at_css('link[rel="manifest"]')["href"]).to eq("/admin/manifest.webmanifest")
+    expect(document.at_css("meta[name=viewport]")["content"]).to include("user-scalable=no")
   end
 end

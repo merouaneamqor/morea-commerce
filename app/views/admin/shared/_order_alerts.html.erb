@@ -1,0 +1,20 @@
+<%# Opt-in browser push for new orders. Hidden when VAPID is not configured. %>
+<% public_key = Rails.configuration.x.web_push[:public_key] %>
+<% if public_key.present? && current_store %>
+  <div data-controller="order-alerts"
+       data-order-alerts-public-key-value="<%= public_key %>"
+       data-order-alerts-subscribe-url-value="<%= admin_push_subscription_path %>"
+       data-order-alerts-on-label-value="<%= t("admin.order_alerts.on") %>"
+       data-order-alerts-off-label-value="<%= t("admin.order_alerts.off") %>"
+       data-order-alerts-blocked-label-value="<%= t("admin.order_alerts.blocked") %>">
+    <button type="button"
+            data-order-alerts-target="toggle"
+            data-action="order-alerts#toggle"
+            aria-pressed="false"
+            class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]"
+            hidden>
+      <%= seller_icon(:phone) %>
+      <span data-order-alerts-target="label"><%= t("admin.order_alerts.off") %></span>
+    </button>
+  </div>
+<% end %>

@@ -12,7 +12,13 @@ export function setupAdminPwa({ window, document, navigator, storage, now = Date
   let dismissedAt = 0
   let registrationStarted = false
   const banner = () => document.querySelector("[data-admin-pwa]")
-  const adminPath = () => window.location.pathname === "/admin" || window.location.pathname.startsWith("/admin/")
+  // Platform admin (/admin/...) and seller-shell URLs both install the same app.
+  const SELLER_SHELL = /^\/(dashboard|commandes|confirmation|clients|livraison|produits|publicites|comptabilite|equipe|integrations|mes-statistiques|settings\/profile)(\/|$)/
+  const adminPath = () => {
+    const path = window.location.pathname
+    if (path === "/admin" || path.startsWith("/admin/")) return true
+    return SELLER_SHELL.test(path) && Boolean(document.querySelector("[data-seller-shell]"))
+  }
   const standalone = () => installed || navigator.standalone === true ||
     window.matchMedia?.("(display-mode: standalone)").matches
 

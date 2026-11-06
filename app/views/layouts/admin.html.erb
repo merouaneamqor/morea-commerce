@@ -2,8 +2,13 @@
 <html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "#{Store.platform_name} — #{current_store&.name || "seallo"}" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <meta name="theme-color" content="<%= current_store&.admin_theme == "seallo_dark" ? "#15110f" : "#a8432e" %>">
+    <link rel="manifest" href="<%= admin_pwa_manifest_path %>">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="<%= Store.platform_name %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= render "shared/platform_icons" %>
@@ -25,12 +30,12 @@
       <% new_orders = current_store ? Seller::DashboardStats.new(store: current_store).new_orders_count : 0 %>
       <% missing_costs = current_store && !agent ? Seller::DashboardStats.new(store: current_store).missing_costs : 0 %>
       <%# Class strings are plain literals so Tailwind's scanner always generates them. %>
-      <% nav_on = "bg-[#f4e4de] font-semibold text-[#a8432e]" %>
+      <% nav_on = "lg-nav__active font-semibold" %>
       <% nav_off = "text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" %>
       <% badge_on = "bg-white text-[#a8432e]" %>
       <% badge_off = "bg-[#f4e4de] text-[#a8432e]" %>
       <% sidebar = capture do %>
-        <nav class="flex h-full flex-col overflow-y-auto rounded-2xl border border-[#e8e3df] bg-white p-3">
+        <nav class="lg-nav flex h-full flex-col overflow-y-auto rounded-2xl p-3">
           <div class="flex items-center justify-between px-3 pt-2 pb-5">
             <%= link_to (agent ? "/confirmation" : "/dashboard"), class: "text-2xl font-extrabold tracking-tight text-[#a8432e]", dir: "ltr" do %>seallo<% end %>
             <button type="button" data-seller-close class="text-[#8a8380] lg:hidden" aria-label="✕">✕</button>
@@ -51,13 +56,14 @@
               </li>
             <% end %>
           </ul>
-          <div class="mt-auto space-y-1 border-t border-[#f0ebe7] pt-3">
+          <div class="mt-auto space-y-1 border-t border-[#f0ebe7]/pt-3">
             <% if current_store && !agent %>
-              <div class="mb-2 rounded-xl bg-[#f3f1ef] px-3 py-2.5">
+              <div class="lg-nav__store mb-2 rounded-xl px-3 py-2.5">
                 <p data-seller-store class="truncate text-sm font-semibold text-[#1f2430]"><%= current_store.name %></p>
                 <% if seller_plan_label(current_store) %><p class="text-xs text-[#8a8380]">Plan · <%= seller_plan_label(current_store) %></p><% end %>
               </div>
             <% end %>
+            <%= render "admin/shared/order_alerts" %>
             <% if super_admin? %>
               <%= link_to admin_platform_path, class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" do %><%= seller_icon(:plug) %> Platform<% end %>
             <% end %>
@@ -67,7 +73,7 @@
         </nav>
       <% end %>
 
-      <div class="min-h-dvh bg-[#f3f1ef] text-[#5e5a58]" data-seller-shell>
+      <div class="lg-shell text-[#5e5a58]" data-seller-shell>
         <div class="mx-auto flex max-w-[1400px] gap-5 p-4 lg:p-5">
           <aside class="sticky top-5 hidden h-[calc(100dvh-2.5rem)] w-56 shrink-0 lg:block"><%= sidebar %></aside>
 
@@ -76,11 +82,12 @@
           </div>
 
           <main class="min-w-0 flex-1 space-y-4">
-            <div class="flex items-center justify-between lg:hidden">
-              <button type="button" data-seller-open aria-expanded="false" class="rounded-lg border border-[#e8e3df] bg-white p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>
+            <div class="lg-chrome flex items-center justify-between rounded-2xl px-3 py-2.5 lg:hidden">
+              <button type="button" data-seller-open aria-expanded="false" class="rounded-xl border border-[#e8e3df]/bg-white/70 p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>
               <span class="text-xl font-extrabold tracking-tight text-[#a8432e]" dir="ltr">seallo</span>
               <span class="w-9"></span>
             </div>
+            <%= render "admin/shared/pwa_install" %>
             <% if current_store&.subscription_required? && !subscription_access? %>
               <p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]">
                 <%= t("subscriptions.required") %>
@@ -122,10 +129,14 @@
             if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
             else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
           });
+          // Standalone home-screen sessions get safe-area padding on the shell.
+          if (window.matchMedia("(display-mode: standalone)").matches || navigator.standalone) {
+            document.querySelector("[data-seller-shell]")?.classList.add("lg-shell--standalone");
+          }
         })();
       </script>
     <% else %>
-      <div class="flex min-h-screen items-center justify-center px-4">
+      <div class="lg-shell flex min-h-screen items-center justify-center px-4">
         <%= yield %>
       </div>
     <% end %>

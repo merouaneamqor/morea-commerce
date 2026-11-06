@@ -192,7 +192,7 @@ RSpec.describe "Meta Ads connection", type: :request do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include(I18n.t("meta_ads.connection"))
     active = Nokogiri::HTML(response.body).css("aside nav ul a").find { |link| link["href"] == "/publicites" }
-    expect(active["class"]).to include("bg-[#f4e4de]", "font-semibold")
+    expect(active["class"]).to include("lg-nav__active", "font-semibold")
   end
 
   it "keeps the Connect buttons clickable when Meta is not configured, and explains what is missing" do

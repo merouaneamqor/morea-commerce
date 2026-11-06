@@ -17,7 +17,8 @@ module Catalog
 
     def update_checkout!(store, attrs)
       attrs = attrs.to_h.symbolize_keys
-      assign_present(store, attrs, :phone, :whatsapp, :email, :currency, :legal_entity_name, :cndp_authorization, :privacy_rights_contact)
+      assign_present(store, attrs, :phone, :whatsapp, :email, :currency, :legal_entity_name, :cndp_authorization, :privacy_rights_contact,
+                     :legal_registration_number, :legal_address, :minimum_purchase_age)
       store.shipping_dh = attrs[:shipping_dh] unless attrs[:shipping_dh].nil?
       store.low_stock_threshold = attrs[:low_stock_threshold] unless attrs[:low_stock_threshold].nil?
       if attrs[:clear_free_shipping]
@@ -228,7 +229,7 @@ module Catalog
       if attrs[:slug].present?
         page = store.pages.find_by(slug: attrs[:slug])
         raise Error, "Page not found: #{attrs[:slug]}" unless page
-        raise Error, "The privacy page is updated from the legal name and contact, not replaced here." if page.slug == "privacy" && attrs[:new_slug].present?
+        raise Error, "Compliance pages are updated from store legal settings, not renamed here." if compliance_page?(page) && attrs[:new_slug].present?
       else
         page = store.pages.new(published: true)
       end
@@ -236,7 +237,7 @@ module Catalog
       page.slug = attrs[:new_slug] if attrs[:new_slug].present?
       if attrs[:template].present?
         raise Error, "template must be content or landing." unless Page::TEMPLATES.key?(attrs[:template].to_s)
-        raise Error, "The privacy page stays a content page." if page.slug == "privacy" && attrs[:template].to_s == "landing"
+        raise Error, "Compliance pages stay content pages." if compliance_page?(page) && attrs[:template].to_s == "landing"
 
         page.template = attrs[:template].to_s
       end
@@ -251,7 +252,7 @@ module Catalog
 
       page = store.pages.find_by(slug: slug)
       raise Error, "Page not found: #{slug}" unless page
-      raise Error, "The privacy page stays. Change the legal name or contact instead." if page.slug == "privacy"
+      raise Error, "Compliance pages stay. Change the store legal settings instead." if compliance_page?(page)
 
       page.destroy!
       true
@@ -450,6 +451,10 @@ module Catalog
     def csv_cell(value)
       text = value.to_s
       text.match?(/\A[=+\-@]/) ? "'#{text}" : value
+    end
+
+    def compliance_page?(page)
+      DataProtection::Bootstrap::COMPLIANCE_PAGES.key?(page.slug)
     end
   end
 end

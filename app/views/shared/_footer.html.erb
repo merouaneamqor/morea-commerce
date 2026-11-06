@@ -8,6 +8,19 @@
       <% if current_store&.tagline.present? %>
         <p class="mt-4 max-w-xs font-display text-lg leading-snug text-ink-soft"><%= current_store.tagline %></p>
       <% end %>
+      <% if current_store&.business_imprint? %>
+        <div class="site-footer__imprint mt-5 space-y-1 text-xs leading-6 text-ink-faint">
+          <% if current_store.legal_entity_name.present? %>
+            <p><%= current_store.legal_entity_name %></p>
+          <% end %>
+          <% if current_store.legal_registration_number.present? %>
+            <p><%= t("footer.registration", number: current_store.legal_registration_number) %></p>
+          <% end %>
+          <% if current_store.legal_address.present? %>
+            <p><%= current_store.legal_address %></p>
+          <% end %>
+        </div>
+      <% end %>
     </div>
 
     <div class="site-footer__cols">
@@ -36,13 +49,15 @@
           <% if current_store&.cod_note.present? %>
             <p class="mt-2 max-w-xs text-xs leading-6 text-ink-faint"><%= current_store.cod_note %></p>
           <% end %>
+          <p class="mt-3 max-w-xs text-xs leading-6 text-ink-faint"><%= t("footer.age_note", age: current_store&.minimum_purchase_age || 16) %></p>
+          <p class="mt-2 max-w-xs text-xs leading-6 text-ink-faint"><%= t("footer.pricing_note") %></p>
         </div>
       </details>
     </div>
   </div>
 
   <div class="site-footer__bottom">
-    <p>© <%= Date.current.year %> <%= current_store&.name || "Morea" %></p>
+    <p>© <%= Date.current.year %> <%= current_store&.legal_entity_name.presence || current_store&.name || "Morea" %></p>
     <p class="site-footer__pay"><%= current_store&.cod_label || t("store.default_campaign_cta") %></p>
     <%= render "shared/locale_switcher", dropup: true %>
   </div>

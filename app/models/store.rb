@@ -20,6 +20,7 @@ class Store < ApplicationRecord
   has_many :home_sections, dependent: :destroy
   has_many :pages, dependent: :destroy
   has_many :menu_items, dependent: :destroy
+  has_many :privacy_rights_requests, dependent: :destroy
   has_many :invoices, dependent: :destroy
   has_many :payments, dependent: :destroy
   has_many :delivery_accounts, dependent: :destroy
@@ -44,6 +45,7 @@ class Store < ApplicationRecord
   validates :slug, uniqueness: true, format: { with: /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/, message: "must be lowercase letters, numbers, and hyphens" }
   validates :slug, exclusion: { in: RESERVED_SUBDOMAINS }
   validates :shipping_cents, :low_stock_threshold, numericality: { greater_than_or_equal_to: 0 }
+  validates :minimum_purchase_age, numericality: { only_integer: true, greater_than_or_equal_to: 13, less_than_or_equal_to: 21 }
   validates :free_shipping_threshold_cents, numericality: { greater_than: 0 }, allow_nil: true
   validates :billing_amount_cents, numericality: { greater_than_or_equal_to: 0 }
   validates :billing_interval, inclusion: { in: BILLING_INTERVALS }
@@ -57,7 +59,11 @@ class Store < ApplicationRecord
   before_validation :assign_default_billing_period_end, on: :create
   after_save :sync_privacy_policy_page, if: :privacy_settings_changed?
 
-  PRIVACY_SYNC_ATTRIBUTES = %i[legal_entity_name cndp_authorization privacy_rights_contact name email phone].freeze
+  PRIVACY_SYNC_ATTRIBUTES = %i[
+    legal_entity_name cndp_authorization privacy_rights_contact
+    legal_registration_number legal_address minimum_purchase_age
+    name email phone
+  ].freeze
 
   # Stores with Sendit keys, either in an active Sendit delivery account (encrypted) or in the older plain columns.
   scope :with_sendit, -> {
@@ -120,6 +126,10 @@ class Store < ApplicationRecord
 
   def privacy_rights_contact_display
     privacy_rights_contact.presence || email.presence || phone.presence || "—"
+  end
+
+  def business_imprint?
+    legal_entity_name.present? || legal_registration_number.present? || legal_address.present?
   end
 
   # Meta and TikTok expect ISO currency codes; storefront display uses DH.

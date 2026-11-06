@@ -30,6 +30,7 @@ module Platform
       shipping_cents free_shipping_threshold_cents sendit_allow_open sendit_allow_try low_stock_threshold
       meta_pixel_id tiktok_pixel_id sendit_public_key sendit_secret_key sendit_webhook_secret
       discord_orders_webhook_url legal_entity_name cndp_authorization privacy_rights_contact
+      legal_registration_number legal_address
       api_token_digest api_token_last_four agent_profile admin_theme
     ].freeze
 

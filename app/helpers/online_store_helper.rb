@@ -14,6 +14,7 @@ module OnlineStoreHelper
     when "collections" then collections_path(opts)
     when "cart" then cart_path(opts)
     when "track" then track_orders_path(opts)
+    when "privacy_rights" then privacy_rights_path(opts)
     when /\Acollection:([\w-]+)\z/ then collection_path($1, opts)
     when /\Aproduct:([\w-]+)\z/ then product_path($1, opts)
     when /\Apage:([\w-]+)\z/ then page_path($1, opts)
@@ -48,7 +49,7 @@ module OnlineStoreHelper
   # Grouped <select> options for the admin link picker
   def store_link_options(store, selected)
     groups = {
-      "Store" => [ [ "Home page", "home" ], [ "All collections", "collections" ], [ "Cart", "cart" ], [ "Track order", "track" ] ],
+      "Store" => [ [ "Home page", "home" ], [ "All collections", "collections" ], [ "Cart", "cart" ], [ "Track order", "track" ], [ "Data rights", "privacy_rights" ] ],
       "Collections" => store.collections.order(:position).map { |c| [ c.name, "collection:#{c.slug}" ] },
       "Products" => store.products.order(:name).map { |p| [ p.name, "product:#{p.slug}" ] },
       "Pages" => store.pages.map { |p| [ p.title, "page:#{p.slug}" ] },

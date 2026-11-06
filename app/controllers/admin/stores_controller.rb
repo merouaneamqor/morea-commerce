@@ -43,6 +43,7 @@ module Admin
         :sendit_public_key, :sendit_secret_key, :sendit_webhook_secret,
         :discord_orders_webhook_url,
         :legal_entity_name, :cndp_authorization, :privacy_rights_contact,
+        :legal_registration_number, :legal_address, :minimum_purchase_age,
         translations_attributes: %i[
           id locale tagline about cod_label cod_note
           campaign_title campaign_season campaign_cta announcement

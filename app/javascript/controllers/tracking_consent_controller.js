@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Dismisses the informational cookie notice (one tap, no reload).
+// Records accept/reject for measurement cookies and reloads after grant so pixels can load.
 export default class extends Controller {
   static values = { url: String }
 
@@ -17,8 +17,19 @@ export default class extends Controller {
     document.body.style.removeProperty("--cookie-notice-height")
   }
 
-  async accept() {
+  accept(event) {
+    event?.preventDefault()
+    return this.persist("granted", { reload: true })
+  }
+
+  reject(event) {
+    event?.preventDefault()
+    return this.persist("denied", { reload: false })
+  }
+
+  async persist(choice, { reload }) {
     const token = document.querySelector('meta[name="csrf-token"]')?.content
+    const body = new URLSearchParams({ choice })
     const response = await fetch(this.urlValue, {
       method: "POST",
       headers: {
@@ -26,8 +37,11 @@ export default class extends Controller {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/json"
       },
-      credentials: "same-origin"
+      credentials: "same-origin",
+      body
     })
-    if (response.ok) this.element.remove()
+    if (!response.ok) return
+    this.element.remove()
+    if (reload) window.location.reload()
   }
 }

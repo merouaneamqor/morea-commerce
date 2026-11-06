@@ -2279,16 +2279,67 @@
     @apply mx-auto flex max-w-6xl flex-col gap-3 px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:py-3;
   }
 
+  .cookie-consent__title {
+    @apply text-[10px] uppercase tracking-[0.2em] text-ink;
+  }
+
   .cookie-consent__text {
-    @apply text-xs leading-relaxed text-ink-soft sm:text-sm;
+    @apply mt-1 text-xs leading-relaxed text-ink-soft sm:text-sm;
   }
 
   .cookie-consent__link {
     @apply ms-1 text-ink underline decoration-line/60 underline-offset-2;
   }
 
+  .cookie-consent__actions {
+    @apply flex shrink-0 flex-wrap items-center gap-2;
+  }
+
   .cookie-consent__button {
     @apply shrink-0 cursor-pointer bg-ink px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-paper transition;
+  }
+
+  .cookie-consent__button--secondary {
+    @apply border border-line bg-transparent text-ink;
+  }
+
+  .checkout-consent {
+    @apply flex items-start gap-3 text-xs leading-relaxed text-ink-soft;
+  }
+
+  .checkout-consent__input {
+    @apply mt-0.5 size-4 shrink-0 accent-ink;
+  }
+
+  .skip-link {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .skip-link:focus {
+    position: absolute;
+    inset-inline-start: 1rem;
+    top: 1rem;
+    z-index: 60;
+    width: auto;
+    height: auto;
+    margin: 0;
+    clip: auto;
+    overflow: visible;
+    white-space: normal;
+    background: var(--color-ink, #1a1716);
+    color: var(--color-paper, #f7f5f2);
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
   }
 
   .checkout-phone__compact,

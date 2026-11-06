@@ -38,6 +38,9 @@ module Types
       field :legal_entity_name, String, null: true
       field :cndp_authorization, String, null: true
       field :privacy_rights_contact, String, null: true
+      field :legal_registration_number, String, null: true
+      field :legal_address, String, null: true
+      field :minimum_purchase_age, Integer, null: false
       field :translations, [ CopyType ], null: false
 
       def payment_method

@@ -127,6 +127,7 @@ Rails.application.routes.draw do
     end
 
     resource :checkout, only: %i[show create]
+    resource :privacy_rights, only: %i[show create], controller: "privacy_rights"
     resources :orders, only: %i[show], param: :number do
       collection do
         get :track
@@ -145,6 +146,11 @@ Rails.application.routes.draw do
         get :export
         post :complete
         post :retry_processing
+      end
+    end
+    resources :privacy_rights_requests, only: %i[index show] do
+      member do
+        post :resolve
       end
     end
     get "manifest.webmanifest", to: "pwa#manifest", as: :pwa_manifest

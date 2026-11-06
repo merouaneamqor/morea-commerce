@@ -85,7 +85,7 @@ ActiveRecord::Base.transaction do
   assert.call("public add-to-cart works", http.response.redirect? || http.response.successful?)
   http.get "/en/checkout"
   assert.call("customer checkout remains public", http.response.status == 200)
-  http.post "/en/checkout", params: { checkout: attrs.except(:lines) }
+  http.post "/en/checkout", params: { checkout: attrs.except(:lines).merge(privacy_accepted: "1", age_confirmed: "1") }
   assert.call("public COD checkout places order", http.response.redirect? && store.orders.count == 2)
   assert.call("checkout order remains new", store.orders.order(:id).last.status == "new")
   puts "COD requests: #{checks} checks passed"

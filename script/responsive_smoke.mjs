@@ -89,10 +89,13 @@ try {
         assert.ok(banner.y > height * 0.4, "storefront cookie banner must not sit in the top half")
         checks++
       }
-      if (!process.env.RESPONSIVE_URLS && route === "auth" && width <= 767) {
-        const fontSizes = await page.locator(".fx-input").evaluateAll(els => els.map(el => parseFloat(getComputedStyle(el).fontSize)))
-        assert.ok(fontSizes.length, "auth inputs should render")
-        assert.ok(fontSizes.every(size => size >= 16), `auth inputs must be ≥16px to avoid iOS focus zoom (got ${fontSizes.join(", ")})`)
+      if (!process.env.RESPONSIVE_URLS && width <= 767 && ["auth", "admin", "checkout"].includes(route)) {
+        const fontSizes = await page.locator('input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea').evaluateAll(els =>
+          els.map(el => ({ tag: el.tagName, className: el.className, size: parseFloat(getComputedStyle(el).fontSize) }))
+        )
+        assert.ok(fontSizes.length, `${route} text inputs should render`)
+        const tooSmall = fontSizes.filter(entry => entry.size < 16)
+        assert.equal(tooSmall.length, 0, `${route} inputs must be ≥16px to avoid iOS focus zoom (got ${JSON.stringify(tooSmall)})`)
         checks++
       }
     }

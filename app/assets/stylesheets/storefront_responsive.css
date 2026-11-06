@@ -68,6 +68,9 @@ main, .site-footer, .mobile-menu__panel, .cart-drawer__panel {
   .maison-nav .morea-lockup__mark { min-width: 0; }
   .maison-nav .morea-wordmark-type { font-size: clamp(.85rem, 4vw, 1.35rem); }
   .collection-toolbar__sort { max-width: 100%; min-width: 0; }
+  .storefront-body input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]),
+  .storefront-body select,
+  .storefront-body textarea,
   .checkout-input, .checkout-select, .checkout-phone__prefix,
   .collection-toolbar select, .cart-page input, .pdp input { font-size: 16px; }
   .cart-drawer__item > div > .flex { flex-wrap: wrap; }

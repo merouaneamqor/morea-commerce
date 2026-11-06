@@ -27,6 +27,17 @@
 .admin-body .admin-media-dialog__body { min-block-size: 0; }
 .admin-body .admin-media-choice__badge { right: auto; inset-inline-end: 8px; }
 
+@media (max-width: 767px) {
+  .admin-body input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]),
+  .admin-body select,
+  .admin-body textarea,
+  .admin-body .admin-input {
+    font-size: 16px;
+  }
+  .admin-body :where(input.admin-input, select.admin-input, textarea.admin-input) {
+    min-block-size: 2.75rem;
+  }
+}
 @media (max-width: 639px) {
   .admin-body .admin-page-header__title { flex-wrap: wrap; }
   .admin-body :where(.admin-btn, .admin-btn-secondary, .admin-btn-critical) {
@@ -36,10 +47,6 @@
     max-inline-size: 100%;
     white-space: normal;
     text-align: center;
-  }
-  .admin-body :where(input.admin-input, select.admin-input, textarea.admin-input) {
-    font-size: 16px;
-    min-block-size: 2.75rem;
   }
   .admin-body .admin-table .admin-input { min-inline-size: 5rem; }
   .admin-body .admin-media-dialog__header { flex-wrap: wrap; }

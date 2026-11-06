@@ -2156,7 +2156,7 @@
   }
 
   .checkout-input {
-    @apply w-full border border-line bg-stone-floor px-3.5 py-3.5 text-base text-ink outline-none transition focus:border-ink focus:ring-1 focus:ring-ink/15 md:py-3 md:text-sm;
+    @apply w-full border border-line bg-stone-floor px-3.5 py-3.5 text-base text-ink outline-none transition focus:border-ink focus:ring-1 focus:ring-ink/15 md:py-3;
     min-height: 3.25rem;
   }
 
@@ -3508,3 +3508,16 @@ main {
 
 /* Pages in the seallo design: the shell supplies spacing, so the old page padding and width cap are dropped. */
 .admin-page.seller-page { max-width: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+
+/*
+ * Global phone floor for form text. Unlayered + !important so component
+ * classes (.admin-input at 13px, utilities, etc.) cannot reintroduce iOS
+ * Safari focus-zoom on any surface that loads this stylesheet.
+ */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}

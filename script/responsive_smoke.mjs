@@ -6,7 +6,7 @@ const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || "playwright")
 const root = resolve(import.meta.dirname, "..")
 const cssPath = process.env.RESPONSIVE_TAILWIND || resolve(root, "app/assets/builds/tailwind.css")
 assert.ok(existsSync(cssPath), "Build Tailwind first; set RESPONSIVE_TAILWIND to the compiled CSS path")
-const styles = [cssPath, ...["application", "admin_pwa", "platform_home", "seallo_connect_pages", "storefront_responsive", "admin_responsive", "admin_dark", "auth_responsive"].map(name => resolve(root, `app/assets/stylesheets/${name}.css`))]
+const styles = [cssPath, ...["application", "admin_pwa", "liquid_glass", "platform_home", "seallo_connect_pages", "storefront_responsive", "admin_responsive", "admin_dark", "auth_responsive"].map(name => resolve(root, `app/assets/stylesheets/${name}.css`))]
 for (const path of styles) assert.ok(existsSync(path), `Missing stylesheet: ${path}`)
 const css = styles.map(path => readFileSync(path, "utf8")).join("\n")
 const long = "CollectionTrèsLongueSansEspaces".repeat(5)

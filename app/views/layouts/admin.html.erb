@@ -104,21 +104,29 @@
             <div class="admin-page <%= yield(:admin_page_class) %>"><%= yield %></div>
           </main>
         </div>
+        <%= render "admin/shared/bottom_nav", active: active, new_orders: new_orders %>
       </div>
       <script>
         (function () {
           var drawer = document.querySelector("[data-seller-drawer]");
           if (!drawer) return;
-          var trigger = document.querySelector("[data-seller-open]");
+          var triggers = Array.prototype.slice.call(document.querySelectorAll("[data-seller-open]"));
+          var lastTrigger = triggers[0];
+          function setExpanded(value) {
+            triggers.forEach(function (el) { el.setAttribute("aria-expanded", value); });
+          }
           function closeDrawer() {
             drawer.hidden = true;
-            trigger.setAttribute("aria-expanded", "false");
-            trigger.focus();
+            setExpanded("false");
+            if (lastTrigger) lastTrigger.focus();
           }
-          trigger.addEventListener("click", function () {
-            drawer.hidden = false;
-            trigger.setAttribute("aria-expanded", "true");
-            drawer.querySelector("[data-seller-close]").focus();
+          triggers.forEach(function (trigger) {
+            trigger.addEventListener("click", function () {
+              lastTrigger = trigger;
+              drawer.hidden = false;
+              setExpanded("true");
+              drawer.querySelector("[data-seller-close]").focus();
+            });
           });
           drawer.addEventListener("click", function (e) { if (e.target === drawer || e.target.closest("[data-seller-close]")) closeDrawer(); });
           drawer.addEventListener("keydown", function (e) {

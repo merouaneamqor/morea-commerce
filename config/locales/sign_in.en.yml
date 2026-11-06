@@ -2,7 +2,7 @@ en:
   sign_in:
     page_title: "Sign in — %{name}"
     heading: "Sign in"
-    workspace_subtitle: "Sign in to your Codify workspace"
+    workspace_subtitle: "Sign in to your Seallo workspace"
     tenant_subtitle: "Continue to %{name} workspace admin"
     back: "Back to home"
     language: "Language"

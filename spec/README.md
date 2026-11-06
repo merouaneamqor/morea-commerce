@@ -1,4 +1,4 @@
-# Codify specs
+# Seallo specs
 
 Run with `RAILS_ENV=test` against a dedicated PostgreSQL test database, such as `codify_specs_test`. The harness refuses other environments and database names without a separate `test` segment before schema preparation. Active Job uses the test adapter. Regular specs roll back synthetic records; the concurrency specs commit their own synthetic fixtures so worker connections can see them, then remove only those records.
 

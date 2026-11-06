@@ -320,7 +320,7 @@ en:
       resolve: "Mark resolved"
       resolved: "Request marked resolved."
   platform_home:
-    title: "Codify — multi-store commerce platform"
+    title: "Seallo — multi-store commerce platform"
     language: "Language"
     nav: { journey: "How it works", features: "Features", integrations: "Integrations", faq: "FAQ", sign_in: "Sign in", signup: "Create account" }
     hero:

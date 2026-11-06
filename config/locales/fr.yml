@@ -320,7 +320,7 @@ fr:
       resolve: "Marquer résolue"
       resolved: "Demande marquée résolue."
   platform_home:
-    title: "Codify — plateforme e-commerce multi-boutiques"
+    title: "Seallo — plateforme e-commerce multi-boutiques"
     language: "Langue"
     nav: { journey: "Fonctionnement", features: "Fonctionnalités", integrations: "Intégrations", faq: "FAQ", sign_in: "Connexion", signup: "Créer un compte" }
     hero:

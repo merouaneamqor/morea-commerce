@@ -2,7 +2,7 @@ ar:
   sign_in:
     page_title: "تسجيل الدخول — %{name}"
     heading: "تسجيل الدخول"
-    workspace_subtitle: "سجّل الدخول إلى مساحة عملك في Codify"
+    workspace_subtitle: "سجّل الدخول إلى مساحة عملك في Seallo"
     tenant_subtitle: "المتابعة إلى إدارة مساحة عمل %{name}"
     back: "العودة إلى الرئيسية"
     language: "اللغة"

@@ -1,7 +1,7 @@
 en:
   connections:
     title: "Connected stores"
-    lead: "Manage connections to your existing stores. A Codify storefront is optional."
+    lead: "Manage connections to your existing stores. A Seallo storefront is optional."
     add: "Connect a store"
     name: "Connection name"
     provider: "Platform"
@@ -34,7 +34,7 @@ en:
     empty: "Connect your Shopify, WooCommerce or YouCan store."
     deliveries: "Recent order deliveries"
     external_id: "External order ID"
-    order: "Codify order"
+    order: "Seallo order"
     received: "Received"
     accepted: "Received"
     rejected: "Needs attention: %{code}"
@@ -43,7 +43,7 @@ en:
     source: "Source store"
     all_sources: "All sources"
     filter: "Filter"
-    snapshot_help: "Product names and prices come from the source store. These lines do not change Codify inventory. Confirm and fulfill the order here; commercial edits remain locked."
+    snapshot_help: "Product names and prices come from the source store. These lines do not change Seallo inventory. Confirm and fulfill the order here; commercial edits remain locked."
     external_order_locked: "Imported order prices and products are preserved from the source store. Commercial editing and duplication are unavailable."
     shopify_setup:
       title: Connect Shopify

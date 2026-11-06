@@ -73,7 +73,7 @@ class Store < ApplicationRecord
 
   # Product name shown on the apex landing page and sign-in (not a tenant store name).
   def self.platform_name
-    ENV.fetch("PLATFORM_NAME", "Seallo crm")
+    ENV.fetch("PLATFORM_NAME", "Seallo")
   end
 
   def self.base_domain

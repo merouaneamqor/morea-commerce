@@ -48,7 +48,10 @@ main, .site-footer, .mobile-menu__panel, .cart-drawer__panel {
 &.has-cookie-notice {
   padding-bottom: var(--cookie-notice-height, 8rem);
 }
+/* Keep the shared notice on the bottom edge of tenant storefronts. */
 .cookie-consent {
+  top: auto;
+  bottom: 0;
   max-height: 30dvh;
   overflow-y: auto;
   overscroll-behavior: contain;

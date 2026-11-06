@@ -31,6 +31,7 @@ RSpec.describe "Compliance storefront", type: :request do
   it "shows the cookie banner until a choice is recorded and gates pixels" do
     get "/en"
     expect(response.body).to include("cookie-consent")
+    expect(response.body).to include("has-cookie-notice")
     expect(response.body).not_to include("connect.facebook.net")
 
     post tracking_consent_path, params: { choice: "denied" }, as: :json

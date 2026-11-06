@@ -9,11 +9,9 @@
     <div class="cookie-consent__copy">
       <p id="cookie-consent-title" class="cookie-consent__title"><%= t("data_protection.cookie_title") %></p>
       <p id="cookie-consent-body" class="cookie-consent__text">
-        <%= t("data_protection.cookie_body") %>
-        <% if (cookies_path = cookies_page_path_for_store) %>
-          <%= link_to t("data_protection.cookie_policy_link"), cookies_path, class: "cookie-consent__link" %>
-        <% elsif (privacy_path = privacy_page_path_for_store) %>
-          <%= link_to t("data_protection.cookie_policy_link"), privacy_path, class: "cookie-consent__link" %>
+        <%= current_store.present? ? t("data_protection.cookie_body") : t("data_protection.cookie_body_platform") %>
+        <% if (policy_href = cookie_policy_href) %>
+          <%= link_to t("data_protection.cookie_policy_link"), policy_href, class: "cookie-consent__link" %>
         <% end %>
       </p>
     </div>

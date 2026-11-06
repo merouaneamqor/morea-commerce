@@ -6,9 +6,16 @@ fr:
       pricing: "Tarifs"
       privacy: "Politique de confidentialité"
       terms: "Conditions d'utilisation"
+      cookies: "Politique de cookies"
+      refunds: "Remboursements"
+      privacy_rights: "Vos droits"
       language: "Langue"
       home: "Accueil Seallo"
       updated: "Dernière mise à jour : %{date}"
+    footer:
+      registration: "Immatriculation : %{number}"
+      age_note: "Seallo Connect s’adresse aux utilisateurs professionnels de 18 ans ou plus."
+      pricing_note: "Les tarifs des offres figurent sur la page Tarifs et sont facturés par Shopify. Aucun frais d’application caché au-delà de l’offre choisie."
     contact:
       heading: "Contact"
       with_email: "Pour toute demande d'assistance, question sur la confidentialité ou demande relative aux données, écrivez à"
@@ -92,10 +99,14 @@ fr:
           items:
             - "Tant que l'application est connectée, les commandes sont importées et conservées dans l'espace du marchand comme ses documents commerciaux."
             - "À la désinstallation ou à la déconnexion, l'import s'arrête et les identifiants de connexion sont supprimés. Les données de session Shopify de la boutique sont effacées. Les commandes déjà importées restent dans l'espace du marchand jusqu'à leur suppression par celui-ci ou l'application d'une demande de confidentialité Shopify."
+            - "Les commandes Seallo terminées (livrées, annulées ou retournées) voient les coordonnées acheteur effacées après 180 jours par la tâche de rétention de la plateforme ; montants, statuts et identité de rejeu sont conservés."
             - "Lorsque Shopify envoie une demande de suppression de données d'un client ou d'une boutique, nous effaçons les coordonnées de l'acheteur, les notes et les événements des commandes concernées une fois celles-ci terminées. Les commandes en cours de livraison sont conservées et signalées au marchand pour examen jusqu'à leur clôture, afin de ne pas compromettre les livraisons. Les montants, statuts et identifiants nécessaires à la comptabilité et à la prévention d'un nouvel import sont conservés."
+        - heading: "Cookies"
+          body:
+            - "Ces pages publiques utilisent un cookie nécessaire pour mémoriser votre langue. Elles ne chargent pas les pixels Meta ou TikTok. Des polices peuvent être chargées depuis Google Fonts. Voir la politique de cookies pour le détail et vos choix."
         - heading: "Demandes de confidentialité des acheteurs"
           body:
-            - "Les acheteurs doivent s'adresser au marchand auprès duquel ils ont acheté. Lorsque Shopify transmet une demande d'accès aux données d'un client, nous préparons un export des données de commandes importées le concernant, que le marchand examine et fournit. Acheteurs et marchands peuvent aussi nous écrire à l'adresse ci-dessous."
+            - "Les acheteurs doivent s'adresser au marchand auprès duquel ils ont acheté. Lorsque Shopify transmet une demande d'accès aux données d'un client, nous préparons un export des données de commandes importées le concernant, que le marchand examine et fournit. Marchands et autres demandeurs peuvent aussi utiliser le formulaire de droits lié depuis ce site, ou nous écrire à l'adresse ci-dessous."
         - heading: "Sécurité"
           body:
             - "Les requêtes de Shopify sont vérifiées avec la signature de Shopify, et les requêtes de serveur à serveur utilisent une clé de signature distincte avec une courte fenêtre de validité contre la falsification et le rejeu. L'accès aux données d'un espace est limité aux membres autorisés de cet espace."
@@ -132,3 +143,70 @@ fr:
         - heading: "Modifications"
           body:
             - "Nous pouvons mettre à jour ces conditions. La date en haut de page indique la dernière version. La poursuite de l'utilisation vaut acceptation."
+    cookie_policy:
+      title: "Politique de cookies"
+      summary: "Comment les pages publiques Seallo Connect utilisent les cookies et technologies similaires."
+      sections:
+        - heading: "Cookies nécessaires"
+          body:
+            - "Un cookie de langue mémorise le choix FR, EN ou AR sur ces pages pour que la visite suivante reste dans cette langue. Il est nécessaire au fonctionnement tel que vous l’avez configuré."
+        - heading: "Cookies de mesure"
+          body:
+            - "Ces pages Seallo Connect ne chargent ni Meta Pixel, ni TikTok Pixel, ni autre script de mesure d’audience. Si vous visitez ensuite une vitrine marchande sur cette plateforme, cette vitrine a son propre bandeau et ne charge la mesure qu’après acceptation."
+        - heading: "Polices et tiers"
+          body:
+            - "Les polices de la page peuvent être chargées depuis Google Fonts. Cette requête part vers les serveurs de Google. Voir aussi notre politique de confidentialité et l’inventaire des tiers dans la documentation produit."
+        - heading: "Vos choix"
+          body:
+            - "Utilisez Accepter ou Refuser la mesure sur le bandeau. Les cookies nécessaires fonctionnent toujours si vous refusez. Vous pouvez effacer les cookies du site dans votre navigateur à tout moment."
+    refunds:
+      title: "Remboursements et résiliations"
+      summary: "Facturation, résiliation et remboursements des offres Seallo Connect."
+      sections:
+        - heading: "Qui facture"
+          body:
+            - "Les offres Seallo Connect sont vendues et facturées par Shopify sur votre facture Shopify. Les montants apparaissent en dollars américains selon les conditions de facturation de Shopify."
+        - heading: "Résiliation"
+          body:
+            - "Changez ou résiliez votre offre depuis l’application Seallo Connect dans l’admin Shopify. La résiliation arrête les prélèvements futurs à la fin de la période de facturation Shopify en cours pour cet abonnement. Les commandes déjà importées restent dans votre espace Seallo."
+        - heading: "Remboursements"
+          body:
+            - "Les remboursements des frais d’application Shopify suivent les politiques et procédures de remboursement de Shopify. Contactez le support facturation Shopify pour contester un prélèvement sur votre facture Shopify. Pour des questions sur le service Seallo Connect lui-même, utilisez les coordonnées de ces pages ou le formulaire de droits."
+        - heading: "Essais"
+          body:
+            - "Les offres payantes incluent un essai gratuit de 7 jours lorsque Shopify le propose. Les boutiques de développement ne sont pas facturées."
+        - heading: "Aucun frais caché"
+          body:
+            - "Il n’y a pas de frais Seallo Connect supplémentaires au-delà du prix de l’offre affiché sur la page Tarifs et prélevé par Shopify. Les frais transporteur, Shopify ou autres tiers sont distincts."
+    privacy_rights:
+      title: "Vos droits"
+      summary: "Demandez l’accès, la correction, l’opposition, la suppression ou un opt-out marketing liés à Seallo Connect ou à l’opérateur de la plateforme."
+      unsubscribe_note: "Seallo Connect n’envoie pas de campagnes e-mail marketing depuis ces pages. Choisissez « Arrêter le marketing » pour enregistrer une préférence ou si vous avez reçu un message promotionnel sur l’application par un autre canal."
+      minimization: "Ne fournissez que ce qui est nécessaire pour identifier votre demande. N’envoyez pas de mots de passe ni de numéros de carte."
+      submit: "Envoyer la demande"
+      submitted: "Votre demande a été enregistrée. Nous vous recontacterons avec les coordonnées fournies."
+      fields:
+        type: "Type de demande"
+        name: "Votre nom"
+        contact: "E-mail ou téléphone"
+        contact_help: "Comment nous joindre pour cette demande."
+        shop_domain: "Domaine boutique Shopify (optionnel)"
+        details: "Détails (optionnel)"
+      types:
+        access: "Accéder à mes données"
+        rectify: "Corriger mes données"
+        object: "M’opposer au traitement"
+        delete: "Supprimer mes données"
+        unsubscribe: "Arrêter le marketing"
+      statuses:
+        open: "Ouverte"
+        in_progress: "En cours"
+        resolved: "Résolue"
+        rejected: "Refusée"
+      admin:
+        title: "Demandes de droits plateforme"
+        instructions: "Demandes depuis les pages publiques Seallo Connect. Marquez-les résolues après avoir répondu."
+        empty: "Aucune demande pour l’instant."
+        back: "Retour aux demandes"
+        resolve: "Marquer résolue"
+        resolved: "Demande marquée résolue."

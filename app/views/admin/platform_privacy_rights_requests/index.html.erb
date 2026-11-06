@@ -1,0 +1,24 @@
+<% content_for :title, "#{t("seallo_connect_pages.privacy_rights.admin.title")} — Admin" %>
+
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title"><%= t("seallo_connect_pages.privacy_rights.admin.title") %></h1>
+</div>
+<p class="admin-muted mb-4 max-w-3xl text-[14px] leading-6"><%= t("seallo_connect_pages.privacy_rights.admin.instructions") %></p>
+
+<section class="admin-card">
+  <% if @requests.empty? %>
+    <p class="admin-empty"><%= t("seallo_connect_pages.privacy_rights.admin.empty") %></p>
+  <% else %>
+    <div class="divide-y divide-[#ece4dc]">
+      <% @requests.each do |request| %>
+        <%= link_to admin_platform_privacy_rights_request_path(request), class: "flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4 hover:bg-[#faf6f2]" do %>
+          <span class="min-w-0">
+            <span class="block font-semibold"><%= request.requester_name %></span>
+            <span class="admin-muted block text-[13px]"><%= t("seallo_connect_pages.privacy_rights.types.#{request.request_type}") %> · <%= request.requester_contact %></span>
+          </span>
+          <span class="admin-badge"><%= t("seallo_connect_pages.privacy_rights.statuses.#{request.status}") %></span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</section>

@@ -1,0 +1,22 @@
+<% content_for :title, "#{t("seallo_connect_pages.privacy_rights.admin.title")} — Admin" %>
+
+<div class="admin-page-header">
+  <%= link_to admin_platform_privacy_rights_requests_path, class: "admin-back", "aria-label": t("seallo_connect_pages.privacy_rights.admin.back") do %><%= admin_icon(:back) %><% end %>
+  <h1 class="admin-page-header__title"><%= @request.requester_name %></h1>
+</div>
+
+<section class="admin-card space-y-3 px-5 py-4">
+  <p><span class="admin-muted"><%= t("seallo_connect_pages.privacy_rights.fields.type") %>:</span> <%= t("seallo_connect_pages.privacy_rights.types.#{@request.request_type}") %></p>
+  <p><span class="admin-muted"><%= t("seallo_connect_pages.privacy_rights.fields.contact") %>:</span> <%= @request.requester_contact %></p>
+  <% if @request.shop_domain.present? %>
+    <p><span class="admin-muted"><%= t("seallo_connect_pages.privacy_rights.fields.shop_domain") %>:</span> <%= @request.shop_domain %></p>
+  <% end %>
+  <% if @request.details.present? %>
+    <p class="whitespace-pre-wrap"><%= @request.details %></p>
+  <% end %>
+  <p class="admin-muted text-[13px]"><%= l(@request.created_at, format: :long) %> · <%= t("seallo_connect_pages.privacy_rights.statuses.#{@request.status}") %></p>
+
+  <% if @request.status != "resolved" %>
+    <%= button_to t("seallo_connect_pages.privacy_rights.admin.resolve"), resolve_admin_platform_privacy_rights_request_path(@request), class: "admin-btn mt-4" %>
+  <% end %>
+</section>

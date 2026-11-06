@@ -226,6 +226,7 @@ en:
     terms_of_service: "terms of service"
     cookie_title: "Cookies"
     cookie_body: "We use necessary cookies for your bag and site functionality. Audience measurement (Meta, TikTok) loads only if you accept."
+    cookie_body_platform: "We use a necessary cookie to remember your language. Optional measurement cookies are not used on these pages. Google Fonts may load from Google’s CDN."
     cookie_policy_link: "Cookie policy"
     cookie_ok: "Got it"
     cookie_accept: "Accept"

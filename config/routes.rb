@@ -72,6 +72,10 @@ Rails.application.routes.draw do
     get "/seallo-connect/pricing", to: "seallo_connect_pages#pricing", as: :seallo_connect_pricing
     get "/seallo-connect/privacy", to: "seallo_connect_pages#privacy", as: :seallo_connect_privacy
     get "/seallo-connect/terms", to: "seallo_connect_pages#terms", as: :seallo_connect_terms
+    get "/seallo-connect/cookies", to: "seallo_connect_pages#cookie_policy", as: :seallo_connect_cookies
+    get "/seallo-connect/refunds", to: "seallo_connect_pages#refunds", as: :seallo_connect_refunds
+    get "/seallo-connect/privacy-rights", to: "seallo_connect_pages#privacy_rights", as: :seallo_connect_privacy_rights
+    post "/seallo-connect/privacy-rights", to: "seallo_connect_pages#create_privacy_rights"
   end
   # Seller workspace URLs, as on seallo. Each batch moves a page here; the others still open their current admin page.
   get "/dashboard", to: "admin/dashboard#show", as: :seller_dashboard
@@ -175,6 +179,11 @@ Rails.application.routes.draw do
       member do
         post :approve
         post :reject
+      end
+    end
+    resources :platform_privacy_rights_requests, only: %i[index show] do
+      member do
+        post :resolve
       end
     end
     resources :tenants, only: %i[index new create edit update] do

@@ -46,13 +46,7 @@ main, .site-footer, .mobile-menu__panel, .cart-drawer__panel {
 &:dir(rtl) .flash { transform: translateX(50%); }
 
 &.has-cookie-notice {
-  padding-top: var(--cookie-notice-height, 8rem);
-}
-&.has-cookie-notice .site-header {
-  top: var(--cookie-notice-height, 8rem);
-}
-&.has-cookie-notice .collection-toolbar {
-  top: calc(var(--cookie-notice-height, 8rem) + 7rem);
+  padding-bottom: var(--cookie-notice-height, 8rem);
 }
 .cookie-consent {
   max-height: 30dvh;

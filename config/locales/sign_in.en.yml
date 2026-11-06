@@ -13,7 +13,7 @@ en:
     submit: "Sign in"
     approval_note: "Your account is available after approval. Use the password set for your workspace account."
     invalid: "Invalid email or password."
-    welcome: "Welcome back."
+    welcome: "You are signed in."
     signed_out: "Signed out."
     aside:
       chip: "Secure workspace"

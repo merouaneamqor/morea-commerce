@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
-    <title><%= content_for?(:title) ? yield(:title) : "Platform — #{Store.platform_name}" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : t("platform_admin.document_title", name: Store.platform_name) %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link rel="manifest" href="<%= admin_pwa_manifest_path %>">
     <meta name="theme-color" content="#2e4dd5">
@@ -48,8 +48,8 @@
             <%= admin_nav_link t("platform_admin.overview"), admin_platform_path, icon: :home, active: controller_name == "platform" %>
             <%= admin_nav_link t("platform_admin.access_requests"), admin_access_requests_path, icon: :staff, active: controller_name == "access_requests" %>
             <%= admin_nav_link t("platform_users.nav"), admin_platform_users_path, icon: :staff, active: controller_name == "platform_users" %>
-            <%= admin_nav_link "Superadmin MCP", admin_platform_agent_api_path, icon: :settings, active: controller_name == "platform_agent_api" %>
-            <%= admin_nav_link "Feature flags", superadmin_feature_flags_path, icon: :settings, active: false %>
+            <%= admin_nav_link t("platform_admin.agent_nav"), admin_platform_agent_api_path, icon: :settings, active: controller_name == "platform_agent_api" %>
+            <%= admin_nav_link t("platform_admin.features_nav"), superadmin_feature_flags_path, icon: :settings, active: false %>
             <%= admin_nav_link t("platform_admin.workspaces"), admin_platform_path(anchor: "workspaces"), icon: :store, active: false %>
             <%= admin_nav_link t("platform_admin.new_workspace"), new_admin_tenant_path, icon: :products, active: controller_name == "tenants" %>
           </nav>

@@ -13,7 +13,7 @@ fr:
     submit: "Se connecter"
     approval_note: "Votre compte est accessible après approbation. Utilisez le mot de passe défini pour votre compte dans cet espace."
     invalid: "E-mail ou mot de passe incorrect."
-    welcome: "Bienvenue."
+    welcome: "Vous êtes connecté."
     signed_out: "Vous êtes déconnecté."
     aside:
       chip: "Espace sécurisé"

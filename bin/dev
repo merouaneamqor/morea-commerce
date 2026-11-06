@@ -13,4 +13,9 @@ export PORT="${PORT:-3000}"
 export RUBY_DEBUG_OPEN="true"
 export RUBY_DEBUG_LAZY="true"
 
+# The project is bind-mounted, so a previous container's PID file survives.
+# Container PIDs restart from the same small numbers, and Rails then refuses
+# to boot because that PID is alive again.
+rm -f tmp/pids/server.pid
+
 exec foreman start -f Procfile.dev "$@"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_06_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_06_194500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -901,6 +901,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_190000) do
     t.index ["user_id"], name: "index_platform_oauth_tokens_on_user_id"
   end
 
+  create_table "platform_privacy_rights_requests", force: :cascade do |t|
+    t.string "request_type", null: false
+    t.string "status", default: "open", null: false
+    t.string "requester_name", null: false
+    t.string "requester_contact", null: false
+    t.text "details"
+    t.string "shop_domain"
+    t.datetime "resolved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_platform_privacy_rights_requests_on_created_at"
+    t.index ["status"], name: "index_platform_privacy_rights_requests_on_status"
+    t.check_constraint "request_type::text = ANY (ARRAY['access'::character varying, 'rectify'::character varying, 'object'::character varying, 'delete'::character varying, 'unsubscribe'::character varying]::text[])", name: "platform_privacy_rights_requests_type"
+    t.check_constraint "status::text = ANY (ARRAY['open'::character varying, 'in_progress'::character varying, 'resolved'::character varying, 'rejected'::character varying]::text[])", name: "platform_privacy_rights_requests_status"
+  end
+
   create_table "privacy_rights_requests", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.string "request_type", null: false
@@ -915,8 +931,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_190000) do
     t.index ["store_id", "created_at"], name: "index_privacy_rights_requests_on_store_id_and_created_at"
     t.index ["store_id", "status"], name: "index_privacy_rights_requests_on_store_id_and_status"
     t.index ["store_id"], name: "index_privacy_rights_requests_on_store_id"
-    t.check_constraint "request_type::text = ANY (ARRAY['access'::character varying, 'rectify'::character varying, 'object'::character varying, 'delete'::character varying, 'unsubscribe'::character varying]::text[])", name: "privacy_rights_requests_type"
-    t.check_constraint "status::text = ANY (ARRAY['open'::character varying, 'in_progress'::character varying, 'resolved'::character varying, 'rejected'::character varying]::text[])", name: "privacy_rights_requests_status"
+    t.check_constraint "request_type::text = ANY (ARRAY['access'::character varying::text, 'rectify'::character varying::text, 'object'::character varying::text, 'delete'::character varying::text, 'unsubscribe'::character varying::text])", name: "privacy_rights_requests_type"
+    t.check_constraint "status::text = ANY (ARRAY['open'::character varying::text, 'in_progress'::character varying::text, 'resolved'::character varying::text, 'rejected'::character varying::text])", name: "privacy_rights_requests_status"
   end
 
   create_table "product_translations", force: :cascade do |t|

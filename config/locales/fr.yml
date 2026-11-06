@@ -226,6 +226,7 @@ fr:
     terms_of_service: "conditions générales"
     cookie_title: "Cookies"
     cookie_body: "Nous utilisons des cookies nécessaires au panier et au fonctionnement du site. La mesure d’audience (Meta, TikTok) ne se charge que si vous acceptez."
+    cookie_body_platform: "Nous utilisons un cookie nécessaire pour mémoriser votre langue. Aucun cookie de mesure n’est chargé sur ces pages. Les polices Google Fonts peuvent être chargées depuis le CDN de Google."
     cookie_policy_link: "Politique de cookies"
     cookie_ok: "Compris"
     cookie_accept: "Accepter"

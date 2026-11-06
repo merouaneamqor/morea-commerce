@@ -6,9 +6,16 @@ en:
       pricing: "Pricing"
       privacy: "Privacy policy"
       terms: "Terms of service"
+      cookies: "Cookie policy"
+      refunds: "Refunds"
+      privacy_rights: "Your data rights"
       language: "Language"
       home: "Seallo home"
       updated: "Last updated: %{date}"
+    footer:
+      registration: "Registration: %{number}"
+      age_note: "Seallo Connect is intended for business users aged 18 or older."
+      pricing_note: "Plan prices are shown on the pricing page and billed by Shopify. There are no hidden app fees beyond your chosen plan."
     contact:
       heading: "Contact"
       with_email: "For support, privacy questions or data requests, email"
@@ -92,10 +99,14 @@ en:
           items:
             - "While the app is connected, orders are imported and kept in the merchant's workspace as its business records."
             - "When the app is uninstalled or disconnected, importing stops and connection credentials are removed. Shopify session data for the shop is deleted. Orders already imported stay in the merchant's workspace until the merchant deletes them or a Shopify privacy request applies."
+            - "Completed Seallo-imported orders (delivered, cancelled or returned) have buyer contact details redacted after 180 days under the platform retention job, while amounts, statuses and replay identity are kept."
             - "When Shopify sends a customer redaction or shop redaction request, we redact buyer contact details, notes and events on the affected orders once they are completed. Orders still being delivered are held, and flagged for the merchant to review, until they are completed, so that deliveries are not broken. Amounts, statuses and identifiers needed for accounting and to prevent re-importing are kept."
+        - heading: "Cookies"
+          body:
+            - "These public pages use a necessary cookie to remember your language choice. They do not load Meta or TikTok measurement pixels. Fonts may be loaded from Google Fonts. See the cookie policy for details and choices."
         - heading: "Privacy requests from buyers"
           body:
-            - "Buyers should contact the merchant they bought from. When Shopify forwards a customer data request, we prepare an export of the imported order data about that customer for the merchant to review and provide. Buyers and merchants can also write to us at the address below."
+            - "Buyers should contact the merchant they bought from. When Shopify forwards a customer data request, we prepare an export of the imported order data about that customer for the merchant to review and provide. Merchants and other requesters can also use the data-rights form linked from this site, or write to us at the address below."
         - heading: "Security"
           body:
             - "Requests from Shopify are verified with Shopify's signature, and server-to-server requests use a separate signed key with a short time window to prevent forgery and replay. Access to a workspace's data is limited to authorised members of that workspace."
@@ -132,3 +143,70 @@ en:
         - heading: "Changes"
           body:
             - "We may update these terms. The date at the top shows the latest version. Continued use after a change means you accept it."
+    cookie_policy:
+      title: "Cookie policy"
+      summary: "How Seallo Connect public pages use cookies and similar technologies."
+      sections:
+        - heading: "Necessary cookies"
+          body:
+            - "A language cookie remembers the FR, EN or AR choice you make on these pages so the next visit stays in that language. It is required for the site to work as you configured it."
+        - heading: "Measurement cookies"
+          body:
+            - "These Seallo Connect pages do not load Meta Pixel, TikTok Pixel or other audience-measurement scripts. If you later visit a merchant storefront on this platform, that storefront has its own cookie banner and may load measurement only after you accept."
+        - heading: "Fonts and third parties"
+          body:
+            - "Page fonts may be loaded from Google Fonts. That request goes to Google’s servers. See also our privacy policy and the third-party inventory in the product documentation."
+        - heading: "Your choices"
+          body:
+            - "Use Accept or Reject measurement on the banner. Necessary cookies still work if you reject. You can clear site cookies in your browser at any time."
+    refunds:
+      title: "Refunds and cancellations"
+      summary: "How billing, cancellations and refunds work for Seallo Connect plans."
+      sections:
+        - heading: "Who bills you"
+          body:
+            - "Seallo Connect plans are sold and billed by Shopify on your Shopify invoice. Charges appear in US dollars under Shopify’s billing terms."
+        - heading: "Cancelling"
+          body:
+            - "Change or cancel your plan from the Seallo Connect app in your Shopify admin. Cancelling stops future charges at the end of the current Shopify billing period for that subscription. Orders already imported stay in your Seallo workspace."
+        - heading: "Refunds"
+          body:
+            - "Refunds for Shopify app charges follow Shopify’s refund policies and processes. Contact Shopify billing support for charge disputes on your Shopify invoice. For questions about the Seallo Connect service itself, use the contact details on these pages or the data-rights form."
+        - heading: "Trials"
+          body:
+            - "Paid plans include a 7-day free trial where Shopify offers it. Development stores are not charged."
+        - heading: "No hidden fees"
+          body:
+            - "There are no additional Seallo Connect fees beyond the plan price shown on the pricing page and charged by Shopify. Carrier, Shopify or other third-party fees are separate."
+    privacy_rights:
+      title: "Your data rights"
+      summary: "Request access, correction, objection, deletion or a marketing opt-out related to Seallo Connect or the platform operator."
+      unsubscribe_note: "Seallo Connect does not send marketing email campaigns from these pages. Choose “Stop marketing” to record a preference or if you received a promotional message about the app by another channel."
+      minimization: "Provide only what we need to identify your request. Do not send passwords or payment card numbers."
+      submit: "Send request"
+      submitted: "Your request was recorded. We will follow up using the contact you provided."
+      fields:
+        type: "Request type"
+        name: "Your name"
+        contact: "Email or phone"
+        contact_help: "How we should reach you about this request."
+        shop_domain: "Shopify shop domain (optional)"
+        details: "Details (optional)"
+      types:
+        access: "Access my data"
+        rectify: "Correct my data"
+        object: "Object to processing"
+        delete: "Delete my data"
+        unsubscribe: "Stop marketing"
+      statuses:
+        open: "Open"
+        in_progress: "In progress"
+        resolved: "Resolved"
+        rejected: "Rejected"
+      admin:
+        title: "Platform data-rights requests"
+        instructions: "Requests from Seallo Connect public pages. Resolve them after you have answered the requester."
+        empty: "No requests yet."
+        back: "Back to requests"
+        resolve: "Mark resolved"
+        resolved: "Request marked resolved."

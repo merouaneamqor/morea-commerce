@@ -7,6 +7,7 @@
   </div>
   <div class="flex items-center gap-2">
     <%= link_to t("platform_admin.requests_count", count: @pending_requests_count), admin_access_requests_path, class: "admin-btn-secondary", data: { access_requests_count: @pending_requests_count } %>
+    <%= link_to t("seallo_connect_pages.privacy_rights.admin.title"), admin_platform_privacy_rights_requests_path, class: "admin-btn-secondary" %>
     <%= link_to t("platform_admin.new_workspace"), new_admin_tenant_path, class: "admin-btn" %>
   </div>
 </div>

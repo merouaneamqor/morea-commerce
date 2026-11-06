@@ -1,0 +1,57 @@
+<% content_for :title, "#{t("seallo_connect_pages.privacy_rights.title")} · Seallo Connect" %>
+<% content_for :head do %>
+  <meta name="description" content="<%= t("seallo_connect_pages.privacy_rights.summary") %>">
+  <%= stylesheet_link_tag "seallo_connect_pages", "data-turbo-track": "reload" %>
+<% end %>
+<div class="sc-doc" dir="<%= rtl? ? "rtl" : "ltr" %>">
+  <header class="sc-header">
+    <div class="sc-container sc-header-inner">
+      <a href="<%= seallo_connect_page_path %>" class="sc-brand"><%= image_tag "/brand/seallo-logo.png", alt: Store.platform_name, class: "sc-logo" %><span>Seallo Connect</span></a>
+      <nav class="sc-nav" aria-label="<%= t("seallo_connect_pages.nav.label") %>">
+        <%= link_to t("seallo_connect_pages.nav.overview"), seallo_connect_page_path %>
+        <%= link_to t("seallo_connect_pages.nav.privacy"), seallo_connect_privacy_path %>
+        <%= link_to t("seallo_connect_pages.nav.cookies"), seallo_connect_cookies_path %>
+        <%= link_to t("seallo_connect_pages.nav.privacy_rights"), seallo_connect_privacy_rights_path, "aria-current": "page" %>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="sc-container sc-main" tabindex="-1">
+    <h1><%= t("seallo_connect_pages.privacy_rights.title") %></h1>
+    <p class="sc-lead"><%= t("seallo_connect_pages.privacy_rights.summary") %></p>
+    <p><%= t("seallo_connect_pages.privacy_rights.unsubscribe_note") %></p>
+    <% if notice.present? %>
+      <p role="status"><%= notice %></p>
+    <% end %>
+
+    <%= form_with model: @privacy_rights_request, url: seallo_connect_privacy_rights_path, class: "sc-form" do |f| %>
+      <% if @privacy_rights_request.errors.any? %>
+        <div role="alert"><%= @privacy_rights_request.errors.full_messages.to_sentence %></div>
+      <% end %>
+      <div class="sc-field">
+        <%= f.label :request_type, t("seallo_connect_pages.privacy_rights.fields.type") %>
+        <%= f.select :request_type, PlatformPrivacyRightsRequest::TYPES.map { |type| [ t("seallo_connect_pages.privacy_rights.types.#{type}"), type ] } %>
+      </div>
+      <div class="sc-field">
+        <%= f.label :requester_name, t("seallo_connect_pages.privacy_rights.fields.name") %>
+        <%= f.text_field :requester_name, required: true, autocomplete: "name" %>
+      </div>
+      <div class="sc-field">
+        <%= f.label :requester_contact, t("seallo_connect_pages.privacy_rights.fields.contact") %>
+        <%= f.text_field :requester_contact, required: true, autocomplete: "email" %>
+        <p class="sc-help"><%= t("seallo_connect_pages.privacy_rights.fields.contact_help") %></p>
+      </div>
+      <div class="sc-field">
+        <%= f.label :shop_domain, t("seallo_connect_pages.privacy_rights.fields.shop_domain") %>
+        <%= f.text_field :shop_domain, autocomplete: "off", placeholder: "example.myshopify.com" %>
+      </div>
+      <div class="sc-field">
+        <%= f.label :details, t("seallo_connect_pages.privacy_rights.fields.details") %>
+        <%= f.text_area :details, rows: 4 %>
+      </div>
+      <p class="sc-help"><%= t("seallo_connect_pages.privacy_rights.minimization") %></p>
+      <%= f.button t("seallo_connect_pages.privacy_rights.submit"), type: "submit", class: "sc-submit" %>
+    <% end %>
+  </main>
+  <%= render "seallo_connect_pages/footer" %>
+</div>

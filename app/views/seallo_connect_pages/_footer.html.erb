@@ -1,0 +1,21 @@
+<footer class="sc-container sc-footer">
+  <div class="sc-footer__col">
+    <p>© <%= Date.current.year %> <%= legal_entity_name.presence || Store.platform_name %></p>
+    <% if legal_registration_number.present? %>
+      <p><%= t("seallo_connect_pages.footer.registration", number: legal_registration_number) %></p>
+    <% end %>
+    <% if legal_address.present? %>
+      <p><%= legal_address %></p>
+    <% end %>
+    <p><%= t("seallo_connect_pages.footer.age_note") %></p>
+    <p><%= t("seallo_connect_pages.footer.pricing_note") %></p>
+  </div>
+  <div class="sc-footer__col sc-footer__links">
+    <p><%= link_to t("seallo_connect_pages.nav.home"), platform_home_path(locale: I18n.locale) %></p>
+    <p><%= link_to t("seallo_connect_pages.nav.privacy"), seallo_connect_privacy_path %></p>
+    <p><%= link_to t("seallo_connect_pages.nav.terms"), seallo_connect_terms_path %></p>
+    <p><%= link_to t("seallo_connect_pages.nav.cookies"), seallo_connect_cookies_path %></p>
+    <p><%= link_to t("seallo_connect_pages.nav.refunds"), seallo_connect_refunds_path %></p>
+    <p><%= link_to t("seallo_connect_pages.nav.privacy_rights"), seallo_connect_privacy_rights_path %></p>
+  </div>
+</footer>

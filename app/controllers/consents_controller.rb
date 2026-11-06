@@ -17,7 +17,10 @@ class ConsentsController < ApplicationController
 
     respond_to do |format|
       format.json { head :no_content }
-      format.html { redirect_back fallback_location: localized_root_path, allow_other_host: false }
+      format.html {
+        fallback = current_store ? localized_root_path : platform_home_path(locale: I18n.locale)
+        redirect_back fallback_location: fallback, allow_other_host: false
+      }
     end
   end
 end

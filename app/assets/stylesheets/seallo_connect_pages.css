@@ -37,7 +37,26 @@
 .sc-main p { margin: 0.5rem 0; }
 .sc-main ul { margin: 0.5rem 0; padding-inline-start: 1.25rem; }
 .sc-main li { margin: 0.3rem 0; }
-.sc-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; border-top: 1px solid var(--sc-line); padding-top: 1rem; padding-bottom: 2rem; font-size: 0.85rem; color: var(--sc-muted); }
+.sc-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1.5rem; border-top: 1px solid var(--sc-line); padding-top: 1rem; padding-bottom: 2rem; font-size: 0.85rem; color: var(--sc-muted); }
+.sc-footer__col { display: grid; gap: 0.35rem; max-width: 28rem; }
+.sc-footer__links { text-align: end; }
+.sc-footer__links p { margin: 0; }
+.sc-form { display: grid; gap: 1rem; margin-top: 1.5rem; max-width: 28rem; }
+.sc-field { display: grid; gap: 0.35rem; }
+.sc-field input, .sc-field select, .sc-field textarea {
+  width: 100%; min-height: 2.75rem; padding: 0.55rem 0.75rem; border: 1px solid var(--sc-line);
+  border-radius: 0.35rem; background: transparent; color: var(--sc-fg); font: inherit;
+}
+.sc-field textarea { min-height: 7rem; resize: vertical; }
+.sc-help { margin: 0; font-size: 0.85rem; color: var(--sc-muted); }
+.sc-submit {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem;
+  padding: 0.55rem 1rem; border: 0; border-radius: 0.35rem; background: var(--sc-fg); color: var(--sc-bg);
+  font: inherit; font-weight: 600; cursor: pointer;
+}
+@media (max-width: 36rem) {
+  .sc-footer__links { text-align: start; }
+}
 
 /* Put navigation on its own row before translated labels become cramped. */
 @media (max-width: 60rem) {

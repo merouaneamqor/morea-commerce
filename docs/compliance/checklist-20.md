@@ -29,4 +29,4 @@ Engineering map for the legal / privacy / accessibility list. Templates are star
 
 - **Tenant storefront:** legal pages, consent, imprint, rights form, a11y basics
 - **Merchant admin:** legal settings, rights queue, pixel consent note
-- **Platform / Seallo:** existing privacy & terms; apex footer imprint pointer
+- **Platform / Seallo Connect:** privacy, terms, cookies, refunds, privacy-rights form, cookie banner on `bare` layout, skip link, footer imprint via `SEALLO_LEGAL_*` env, platform rights queue for superadmins

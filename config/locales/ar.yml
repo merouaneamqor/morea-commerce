@@ -226,6 +226,7 @@ ar:
     terms_of_service: "شروط الاستخدام"
     cookie_title: "ملفات تعريف الارتباط"
     cookie_body: "نستخدم ملفات ضرورية للسلة وعمل الموقع. قياس الزيارات (Meta، TikTok) يُحمَّل فقط إذا وافقتِ."
+    cookie_body_platform: "نستخدم ملفًا ضروريًا لتذكّر اللغة. لا تُحمَّل ملفات قياس على هذه الصفحات. قد تُحمَّل خطوط Google Fonts من شبكة Google."
     cookie_policy_link: "سياسة الكوكيز"
     cookie_ok: "حسنًا"
     cookie_accept: "قبول"

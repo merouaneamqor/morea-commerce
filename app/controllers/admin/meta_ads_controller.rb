@@ -1,18 +1,24 @@
 # frozen_string_literal: true
 
 module Admin
-  # Meta Ads for the current store: connect, choose ad accounts, map ads to products. Every record is reached
-  # through current_store. The Meta redirect lands on the platform apex (MetaOauthController), not here.
+  # Meta Ads for the current store: connect, choose ad accounts, follow campaigns and map products.
+  # Every record is reached through current_store. The Meta redirect lands on the platform apex
+  # (MetaOauthController), not here.
   class MetaAdsController < BaseController
+    include DateRangeSelection
+
     before_action :require_workspace!
     before_action :set_connection
 
     def show
       @configured = MetaAds::Oauth.configured?
       @accounts = @connection ? @connection.ad_accounts.where(store_id: current_store.id).order(:name, :meta_ad_account_id) : []
+      @date_range = selected_date_range(scope: "meta_ads", default: "last_30")
+      @overview = MetaAds::CampaignOverview.new(store: current_store, range: @date_range)
       @ads = linkable_ads
       @products = current_store.products.order(:name).select(:id, :name, :sku)
-      @links = MetaAds::ProductLink.where(store_id: current_store.id, object_type: "ad").index_by(&:meta_id)
+      @ad_links = MetaAds::ProductLink.where(store_id: current_store.id, object_type: "ad").index_by(&:meta_id)
+      @campaign_links = MetaAds::ProductLink.where(store_id: current_store.id, object_type: "campaign").index_by(&:meta_id)
     end
 
     def connect
@@ -43,24 +49,12 @@ module Admin
       redirect_to admin_meta_ads_path, alert: t("meta_ads.errors.#{error.code}"), status: :see_other
     end
 
-    # Manual ad to product links. An empty choice removes a link; a manual link replaces an automatic one.
+    # Manual campaign / ad to product links. An empty choice removes a link; a manual link replaces an automatic one.
     def product_links
-      ads = linkable_ads.index_by(&:meta_id)
-      links = params[:links]
-      chosen = links.respond_to?(:each_pair) ? links.each_pair.to_h { |meta_id, product_id| [ meta_id.to_s, product_id.to_s ] } : {}
-      products = current_store.products.where(id: chosen.values.compact_blank).index_by { |product| product.id.to_s }
-      chosen.each do |meta_id, product_id|
-        next unless ads.key?(meta_id)
-
-        link = MetaAds::ProductLink.find_by(store_id: current_store.id, object_type: "ad", meta_id: meta_id)
-        if product_id.blank?
-          link&.destroy!
-        elsif (product = products[product_id.to_s]) && (link.nil? || link.product_id != product.id || link.source != "manual")
-          link ||= MetaAds::ProductLink.new(store_id: current_store.id, object_type: "ad", meta_id: meta_id)
-          link.update!(product: product, source: "manual")
-        end
-      end
-      redirect_to admin_meta_ads_path, notice: t("meta_ads.links_saved"), status: :see_other
+      save_product_links(object_type: "ad", allowed: linkable_ads.index_by(&:meta_id), chosen: link_params(:links))
+      save_product_links(object_type: "campaign", allowed: linkable_campaigns.index_by(&:meta_id), chosen: link_params(:campaign_links))
+      redirect_to admin_meta_ads_path(**{ from: params[:from], to: params[:to], preset: params[:preset] }.compact_blank),
+        notice: t("meta_ads.links_saved"), status: :see_other
     end
 
     # Asks Meta to revoke the permissions, then removes the token. Synced spend history is kept.
@@ -75,6 +69,7 @@ module Admin
 
       @accounts = @connection ? @connection.ad_accounts.where(store_id: current_store.id).order(:name) : []
       @insight_counts = MetaAds::DailyInsight.where(store_id: current_store.id).group(:ad_account_id, :level).count
+      @campaign_count = MetaAds::Campaign.where(store_id: current_store.id).count
     end
 
     private
@@ -91,6 +86,32 @@ module Admin
     def linkable_ads
       ids = MetaAds::DailyInsight.where(store_id: current_store.id, level: "ad", date: 30.days.ago.to_date..).distinct.pluck(:ad_id)
       MetaAds::Ad.where(store_id: current_store.id, id: ids).order(:name).limit(200)
+    end
+
+    def linkable_campaigns
+      MetaAds::Campaign.where(store_id: current_store.id)
+        .where(ad_account_id: MetaAds::AdAccount.where(store_id: current_store.id, selected: true).select(:id))
+        .order(:name).limit(200)
+    end
+
+    def link_params(key)
+      raw = params[key]
+      raw.respond_to?(:each_pair) ? raw.each_pair.to_h { |meta_id, product_id| [ meta_id.to_s, product_id.to_s ] } : {}
+    end
+
+    def save_product_links(object_type:, allowed:, chosen:)
+      products = current_store.products.where(id: chosen.values.compact_blank).index_by { |product| product.id.to_s }
+      chosen.each do |meta_id, product_id|
+        next unless allowed.key?(meta_id)
+
+        link = MetaAds::ProductLink.find_by(store_id: current_store.id, object_type: object_type, meta_id: meta_id)
+        if product_id.blank?
+          link&.destroy!
+        elsif (product = products[product_id.to_s]) && (link.nil? || link.product_id != product.id || link.source != "manual")
+          link ||= MetaAds::ProductLink.new(store_id: current_store.id, object_type: object_type, meta_id: meta_id)
+          link.update!(product: product, source: "manual")
+        end
+      end
     end
 
     # Revoked or expired tokens and removed permissions send the merchant back through Meta Login.

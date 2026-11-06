@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_05_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_06_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -489,10 +489,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_090000) do
     t.jsonb "raw", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "daily_budget", precision: 18, scale: 4
+    t.decimal "lifetime_budget", precision: 18, scale: 4
+    t.decimal "budget_remaining", precision: 18, scale: 4
     t.index ["ad_account_id", "meta_id"], name: "index_meta_ads_ad_sets_on_ad_account_id_and_meta_id", unique: true
     t.index ["campaign_id"], name: "index_meta_ads_ad_sets_on_campaign_id"
     t.index ["id", "store_id"], name: "index_meta_ads_ad_sets_on_id_and_store_id", unique: true
     t.index ["store_id"], name: "index_meta_ads_ad_sets_on_store_id"
+    t.check_constraint "(daily_budget IS NULL OR daily_budget >= 0::numeric) AND (lifetime_budget IS NULL OR lifetime_budget >= 0::numeric) AND (budget_remaining IS NULL OR budget_remaining >= 0::numeric)", name: "meta_ads_ad_sets_budgets_non_negative"
   end
 
   create_table "meta_ads_ads", force: :cascade do |t|
@@ -528,9 +532,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_090000) do
     t.jsonb "raw", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "daily_budget", precision: 18, scale: 4
+    t.decimal "lifetime_budget", precision: 18, scale: 4
+    t.decimal "budget_remaining", precision: 18, scale: 4
+    t.decimal "spend_cap", precision: 18, scale: 4
     t.index ["ad_account_id", "meta_id"], name: "index_meta_ads_campaigns_on_ad_account_id_and_meta_id", unique: true
     t.index ["id", "store_id"], name: "index_meta_ads_campaigns_on_id_and_store_id", unique: true
     t.index ["store_id"], name: "index_meta_ads_campaigns_on_store_id"
+    t.check_constraint "(daily_budget IS NULL OR daily_budget >= 0::numeric) AND (lifetime_budget IS NULL OR lifetime_budget >= 0::numeric) AND (budget_remaining IS NULL OR budget_remaining >= 0::numeric) AND (spend_cap IS NULL OR spend_cap >= 0::numeric)", name: "meta_ads_campaigns_budgets_non_negative"
   end
 
   create_table "meta_ads_connections", force: :cascade do |t|

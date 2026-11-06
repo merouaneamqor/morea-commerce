@@ -11,6 +11,7 @@
   <dt>Token expires</dt><dd><%= @connection&.token_expires_at || "-" %></dd>
   <dt>Last verified</dt><dd><%= @connection&.last_verified_at || "-" %></dd>
   <dt>Last error</dt><dd><%= @connection&.last_error_code || "-" %></dd>
+  <dt>Campaigns cached</dt><dd><%= @campaign_count %></dd>
 </dl>
 <table class="mt-5 w-full text-left text-sm" data-meta-dev-accounts>
   <thead><tr><th>Account</th><th>Linked</th><th>Currency</th><th>Sync</th><th>Last attempt</th><th>Last synced</th><th>Next sync</th><th>Retries</th><th>Error</th><th>Rows (campaign / ad)</th></tr></thead>

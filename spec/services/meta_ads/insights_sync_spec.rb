@@ -50,11 +50,17 @@ RSpec.describe MetaAds::InsightsSync do
   it "backfills the last 30 days at campaign and ad level, with names, ids and daily breakdown" do
     expect(sync).to eq(3)
 
-    expect(requests.map { |request| request["level"] }).to eq(%w[campaign ad])
-    expect(requests.map { |request| request["path"] }.uniq).to eq([ "/#{MetaAds::Config.api_version}/act_1001/insights" ])
-    expect(requests).to all(include("time_increment" => "1"))
-    expect(JSON.parse(requests.first["time_range"])).to eq("since" => "2026-10-05", "until" => "2026-11-04")
-    fields = requests.last["fields"].split(",")
+    insight_requests = requests.select { |request| request["path"].end_with?("/insights") }
+    expect(insight_requests.map { |request| request["level"] }).to eq(%w[campaign ad])
+    expect(requests.map { |request| request["path"] }).to include(
+      "/#{MetaAds::Config.api_version}/act_1001/campaigns",
+      "/#{MetaAds::Config.api_version}/act_1001/adsets",
+      "/#{MetaAds::Config.api_version}/act_1001/ads",
+      "/#{MetaAds::Config.api_version}/act_1001/insights"
+    )
+    expect(insight_requests).to all(include("time_increment" => "1"))
+    expect(JSON.parse(insight_requests.first["time_range"])).to eq("since" => "2026-10-05", "until" => "2026-11-04")
+    fields = insight_requests.last["fields"].split(",")
     expect(fields).to include("campaign_id", "campaign_name", "adset_id", "adset_name", "ad_id", "ad_name", "spend", "impressions", "clicks", "actions")
 
     campaign = MetaAds::DailyInsight.find_by!(level: "campaign")
@@ -89,7 +95,8 @@ RSpec.describe MetaAds::InsightsSync do
   it "re-syncs yesterday and today only, updating the same rows instead of duplicating them" do
     sync
     expect { sync(at: now + 1.hour) }.not_to change(MetaAds::DailyInsight, :count)
-    expect(JSON.parse(requests.last(2).first["time_range"])).to eq("since" => "2026-11-03", "until" => "2026-11-04")
+    insight_requests = requests.select { |request| request["path"].end_with?("/insights") }
+    expect(JSON.parse(insight_requests[-2]["time_range"])).to eq("since" => "2026-11-03", "until" => "2026-11-04")
 
     campaign_rows.first[:spend] = "12.00"
     campaign_rows.first[:actions] = [ { action_type: "purchase", value: "4" } ]
@@ -101,7 +108,8 @@ RSpec.describe MetaAds::InsightsSync do
   it "follows the ad account's own timezone to decide what today is" do
     account.update!(timezone_name: "America/Los_Angeles")
     sync(at: Time.utc(2026, 11, 4, 3, 0, 0))
-    expect(JSON.parse(requests.first["time_range"])["until"]).to eq("2026-11-03")
+    insight = requests.find { |request| request["path"].end_with?("/insights") }
+    expect(JSON.parse(insight["time_range"])["until"]).to eq("2026-11-03")
   end
 
   it "leaves the conversion empty when no rate can be had and fills it in on the next sync" do

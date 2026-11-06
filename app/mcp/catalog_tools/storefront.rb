@@ -490,7 +490,7 @@ module CatalogTools
     end
 
     class DeletePage < MCP::Tool
-      description "Delete a content page by slug. Requires confirm: true. The privacy page cannot be deleted."
+      description "Delete a content page by slug. Requires confirm: true. Compliance pages (privacy, terms, cookies) cannot be deleted."
       input_schema(
         properties: { slug: { type: "string" }, confirm: { type: "boolean" } },
         required: %w[slug confirm]

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_06_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_06_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -777,7 +777,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_140000) do
     t.check_constraint "collected_cents IS NULL OR collected_cents >= 0", name: "orders_collected_cents_nonnegative"
     t.check_constraint "delivery_fee_cents IS NULL OR delivery_fee_cents >= 0", name: "orders_delivery_fee_cents_nonnegative"
     t.check_constraint "import_contact_issues <> '[]'::jsonb OR customer_id IS NOT NULL AND customer_name IS NOT NULL AND customer_phone IS NOT NULL AND customer_city IS NOT NULL AND customer_address IS NOT NULL", name: "orders_complete_contact_required"
-    t.check_constraint "import_contact_issues = '[]'::jsonb OR (status::text = ANY (ARRAY['new'::character varying, 'cancelled'::character varying]::text[]))", name: "orders_pending_contact_unshipped"
+    t.check_constraint "import_contact_issues = '[]'::jsonb OR (status::text = ANY (ARRAY['new'::character varying::text, 'cancelled'::character varying::text]))", name: "orders_pending_contact_unshipped"
     t.check_constraint "jsonb_typeof(import_contact_issues) = 'array'::text AND import_contact_issues <@ '[\"name\", \"phone\", \"city\", \"address\"]'::jsonb", name: "orders_import_contact_issues_valid"
     t.check_constraint "meta_ad_id IS NULL OR meta_ad_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_ad_id_numeric"
     t.check_constraint "meta_adset_id IS NULL AND meta_ad_id IS NULL OR meta_campaign_id IS NOT NULL", name: "orders_meta_ids_need_campaign"
@@ -899,6 +899,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_140000) do
     t.index ["refresh_digest"], name: "index_platform_oauth_tokens_on_refresh_digest", unique: true
     t.index ["token_digest"], name: "index_platform_oauth_tokens_on_token_digest", unique: true
     t.index ["user_id"], name: "index_platform_oauth_tokens_on_user_id"
+  end
+
+  create_table "privacy_rights_requests", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "request_type", null: false
+    t.string "status", default: "open", null: false
+    t.string "requester_name", null: false
+    t.string "requester_contact", null: false
+    t.text "details"
+    t.string "order_number"
+    t.datetime "resolved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id", "created_at"], name: "index_privacy_rights_requests_on_store_id_and_created_at"
+    t.index ["store_id", "status"], name: "index_privacy_rights_requests_on_store_id_and_status"
+    t.index ["store_id"], name: "index_privacy_rights_requests_on_store_id"
+    t.check_constraint "request_type::text = ANY (ARRAY['access'::character varying, 'rectify'::character varying, 'object'::character varying, 'delete'::character varying, 'unsubscribe'::character varying]::text[])", name: "privacy_rights_requests_type"
+    t.check_constraint "status::text = ANY (ARRAY['open'::character varying, 'in_progress'::character varying, 'resolved'::character varying, 'rejected'::character varying]::text[])", name: "privacy_rights_requests_status"
   end
 
   create_table "product_translations", force: :cascade do |t|
@@ -1188,11 +1206,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_140000) do
     t.boolean "storefront_theme_editor_enabled", default: false, null: false
     t.string "plan"
     t.datetime "trial_ends_at"
+    t.string "legal_registration_number"
+    t.string "legal_address"
+    t.integer "minimum_purchase_age", default: 16, null: false
     t.index ["api_token_digest"], name: "index_stores_on_api_token_digest", unique: true
     t.index ["billing_interval"], name: "index_stores_on_billing_interval"
     t.index ["billing_status"], name: "index_stores_on_billing_status"
     t.index ["slug"], name: "index_stores_on_slug", unique: true
     t.check_constraint "admin_theme::text = ANY (ARRAY['seallo'::character varying::text, 'seallo_dark'::character varying::text])", name: "stores_admin_theme"
+    t.check_constraint "minimum_purchase_age >= 13 AND minimum_purchase_age <= 21", name: "stores_minimum_purchase_age_range"
     t.check_constraint "plan IS NULL OR (plan::text = ANY (ARRAY['free'::character varying::text, 'starter'::character varying::text, 'intermediate'::character varying::text, 'professional'::character varying::text, 'business'::character varying::text]))", name: "stores_plan_known"
   end
 
@@ -1321,6 +1343,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_140000) do
   add_foreign_key "platform_api_tokens", "users", on_delete: :cascade
   add_foreign_key "platform_oauth_codes", "users", on_delete: :cascade
   add_foreign_key "platform_oauth_tokens", "users", on_delete: :cascade
+  add_foreign_key "privacy_rights_requests", "stores"
   add_foreign_key "product_translations", "products"
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "stores"

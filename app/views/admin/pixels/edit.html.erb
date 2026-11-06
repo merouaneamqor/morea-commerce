@@ -7,7 +7,7 @@
 
 <%= form_with model: @store, url: admin_pixels_path, method: :patch, id: "pixels-form", class: "admin-stack" do |f| %>
   <p class="admin-help">
-    Meta and TikTok pixels use cookies. Visitors see a short informational notice about cookies on the storefront.
+    Meta and TikTok pixels use cookies. They load on the storefront only after a visitor accepts measurement in the cookie banner. Reject keeps necessary cookies only.
   </p>
   <% if @store.errors.any? %>
     <div class="admin-banner admin-banner--critical">

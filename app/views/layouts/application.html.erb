@@ -31,6 +31,7 @@
   <body class="storefront-body min-h-screen min-h-dvh <%= "has-mobile-buy" if content_for?(:mobile_buy) %> <%= "is-rtl" if rtl? %> <%= "has-announcement" if current_store&.announcement.present? %> <%= "has-cookie-notice" if cookie_notice_pending? %>"
         data-controller="cart-drawer">
     <%= render "shared/pixel_bridge" %>
+    <a class="skip-link" href="#main-content"><%= t("data_protection.skip_to_content") %></a>
     <div class="site-header">
       <% if current_store&.announcement.present? %>
         <p class="announcement-bar"><%= current_store.announcement %></p>
@@ -82,7 +83,7 @@
       <div class="flash" data-controller="reveal"><%= alert %></div>
     <% end %>
 
-    <main>
+    <main id="main-content" tabindex="-1">
       <%= body %>
     </main>
 

@@ -2,8 +2,13 @@
 
 class ConsentsController < ApplicationController
   def tracking
-    cookies[DataProtectionHelper::COOKIE_NOTICE_COOKIE] = {
-      value: "1",
+    choice = params[:choice].to_s
+    unless [ DataProtectionHelper::GRANTED, DataProtectionHelper::DENIED ].include?(choice)
+      return head :unprocessable_entity
+    end
+
+    cookies[DataProtectionHelper::TRACKING_CONSENT_COOKIE] = {
+      value: choice,
       expires: 1.year.from_now,
       same_site: :lax,
       secure: !Rails.env.local?,

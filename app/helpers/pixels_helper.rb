@@ -2,7 +2,7 @@
 
 module PixelsHelper
   def pixels_enabled?
-    current_store&.pixels_configured?
+    current_store&.pixels_configured? && tracking_consent_granted?
   end
 
   def pixel_value(cents)

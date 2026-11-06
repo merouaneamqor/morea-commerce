@@ -17,8 +17,8 @@ module Platform
       confirmation_shifts customers delivery_accounts discounts home_sections menu_items meta_ads_ad_accounts
       meta_ads_ad_sets meta_ads_ads meta_ads_campaigns meta_ads_connections meta_ads_daily_insights
       meta_ads_product_links oauth_access_tokens order_confirmations order_imports orders pages products push_subscriptions
-      seallo_connection_codes store_connections store_expenses store_translations storefront_themes
-      woocommerce_connection_codes
+      privacy_rights_requests seallo_connection_codes store_connections store_expenses store_translations
+      storefront_themes woocommerce_connection_codes
     ].freeze
     KEPT_TABLES = %w[access_requests admin_sessions audit_events invoices payments users].freeze
 
@@ -30,6 +30,7 @@ module Platform
       shipping_cents free_shipping_threshold_cents sendit_allow_open sendit_allow_try low_stock_threshold
       meta_pixel_id tiktok_pixel_id sendit_public_key sendit_secret_key sendit_webhook_secret
       discord_orders_webhook_url legal_entity_name cndp_authorization privacy_rights_contact
+      legal_registration_number legal_address
       api_token_digest api_token_last_four agent_profile admin_theme
     ].freeze
 
@@ -151,6 +152,7 @@ module Platform
       ConfirmationShift.where(store_id: @store.id).delete_all
       PushSubscription.where(store_id: @store.id).delete_all
       StoreExpense.where(store_id: @store.id).delete_all
+      PrivacyRightsRequest.where(store_id: @store.id).delete_all
     end
 
     # Columns are written directly: the translated setters (tagline, cod_label, ...)

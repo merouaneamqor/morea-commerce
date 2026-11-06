@@ -75,14 +75,30 @@
           <%= f.text_field :privacy_rights_contact, class: "admin-input", placeholder: @store.email.presence || "privacy@example.com" %>
           <p class="admin-help">Access, rectification and opposition requests (email or postal address).</p>
         </div>
+        <div>
+          <%= f.label :legal_registration_number, "Registration / ICE / RC", class: "admin-label" %>
+          <%= f.text_field :legal_registration_number, class: "admin-input", placeholder: "ICE / RC / patente" %>
+        </div>
+        <div class="md:col-span-2">
+          <%= f.label :legal_address, "Registered address", class: "admin-label" %>
+          <%= f.text_field :legal_address, class: "admin-input" %>
+        </div>
+        <div>
+          <%= f.label :minimum_purchase_age, "Minimum purchase age", class: "admin-label" %>
+          <%= f.number_field :minimum_purchase_age, class: "admin-input", min: 13, max: 21 %>
+          <p class="admin-help">Shown at checkout and in the footer. Buyers must confirm they meet this age.</p>
+        </div>
       </div>
-      <% privacy_page = @store.pages.find_by(slug: "privacy") %>
-      <% if privacy_page %>
-        <p class="admin-help">
-          Privacy page:
-          <%= link_to "Edit in Online Store → Pages", edit_admin_page_path(privacy_page), class: "admin-link" %>
-        </p>
-      <% end %>
+      <p class="admin-help">
+        <%= link_to "Buyer data-rights requests", admin_privacy_rights_requests_path, class: "admin-link" %>
+        · Legal pages sync from these fields:
+        <% %w[privacy terms cookies].each do |slug| %>
+          <% page = @store.pages.find_by(slug: slug) %>
+          <% if page %>
+            <%= link_to slug.capitalize, edit_admin_page_path(page), class: "admin-link" %>
+          <% end %>
+        <% end %>
+      </p>
     </div>
   </section>
 

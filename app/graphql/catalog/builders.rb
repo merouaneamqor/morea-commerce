@@ -77,7 +77,7 @@ module Catalog
       if attrs[:slug].present?
         page = store.pages.find_by(slug: attrs[:slug])
         raise Error, "Page not found: #{attrs[:slug]}" unless page
-        raise Error, "The privacy page cannot become a landing page." if page.slug == "privacy"
+        raise Error, "Compliance pages cannot become landing pages." if DataProtection::Bootstrap::COMPLIANCE_PAGES.key?(page.slug)
       else
         page = store.pages.new(published: true)
       end

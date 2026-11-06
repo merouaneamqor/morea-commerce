@@ -1,19 +1,33 @@
 <div class="cookie-consent"
      role="dialog"
+     aria-modal="true"
      aria-labelledby="cookie-consent-title"
+     aria-describedby="cookie-consent-body"
      data-controller="tracking-consent"
      data-tracking-consent-url-value="<%= tracking_consent_path %>">
   <div class="cookie-consent__inner">
-    <p id="cookie-consent-title" class="cookie-consent__text">
-      <%= t("data_protection.cookie_body") %>
-      <% if (privacy_path = privacy_page_path_for_store) %>
-        <%= link_to t("data_protection.cookie_policy_link"), privacy_path, class: "cookie-consent__link" %>
-      <% end %>
-    </p>
-    <button type="button"
-            class="cookie-consent__button"
-            data-action="tracking-consent#accept">
-      <%= t("data_protection.cookie_ok") %>
-    </button>
+    <div class="cookie-consent__copy">
+      <p id="cookie-consent-title" class="cookie-consent__title"><%= t("data_protection.cookie_title") %></p>
+      <p id="cookie-consent-body" class="cookie-consent__text">
+        <%= t("data_protection.cookie_body") %>
+        <% if (cookies_path = cookies_page_path_for_store) %>
+          <%= link_to t("data_protection.cookie_policy_link"), cookies_path, class: "cookie-consent__link" %>
+        <% elsif (privacy_path = privacy_page_path_for_store) %>
+          <%= link_to t("data_protection.cookie_policy_link"), privacy_path, class: "cookie-consent__link" %>
+        <% end %>
+      </p>
+    </div>
+    <div class="cookie-consent__actions">
+      <button type="button"
+              class="cookie-consent__button cookie-consent__button--secondary"
+              data-action="tracking-consent#reject">
+        <%= t("data_protection.cookie_reject") %>
+      </button>
+      <button type="button"
+              class="cookie-consent__button"
+              data-action="tracking-consent#accept">
+        <%= t("data_protection.cookie_accept") %>
+      </button>
+    </div>
   </div>
 </div>

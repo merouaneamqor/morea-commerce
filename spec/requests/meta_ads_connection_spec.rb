@@ -174,16 +174,25 @@ RSpec.describe "Meta Ads connection", type: :request do
     expect(flash[:alert]).to eq(I18n.t("meta_ads.errors.config_missing"))
   end
 
-  it "has an arrow-only back link to the Integrations page, labelled for screen readers in every language" do
+  it "has an arrow-only back link to the dashboard, labelled for screen readers in every language" do
     sign_in
     { "fr" => "Retour", "en" => "Back", "ar" => "رجوع" }.each do |locale, label|
       get "/admin/meta-ads", params: { locale: locale }
       button = Nokogiri::HTML(response.body).at_css("a[data-back-button]")
-      expect(button["href"]).to eq("/integrations")
+      expect(button["href"]).to eq("/dashboard")
       expect(button.text.strip).to be_empty
       expect(button.at_css("svg")).to be_present
       expect(button["aria-label"]).to eq(label)
     end
+  end
+
+  it "opens from the seller Publicités menu alias and highlights that entry" do
+    sign_in
+    get "/publicites"
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include(I18n.t("meta_ads.connection"))
+    active = Nokogiri::HTML(response.body).css("aside nav ul a").find { |link| link["href"] == "/publicites" }
+    expect(active["class"]).to include("bg-[#f4e4de]", "font-semibold")
   end
 
   it "keeps the Connect buttons clickable when Meta is not configured, and explains what is missing" do

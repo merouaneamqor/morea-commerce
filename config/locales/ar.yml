@@ -320,7 +320,7 @@ ar:
       resolve: "تعيين كمحلول"
       resolved: "تم تعليم الطلب كمحلول."
   platform_home:
-    title: "Codify — منصة تجارة متعددة المتاجر"
+    title: "Seallo — منصة تجارة متعددة المتاجر"
     language: "اللغة"
     nav: { journey: "كيف تعمل", features: "المزايا", integrations: "التكاملات", faq: "الأسئلة", sign_in: "تسجيل الدخول", signup: "إنشاء حساب" }
     hero:

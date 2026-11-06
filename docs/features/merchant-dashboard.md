@@ -1,6 +1,6 @@
 # Merchant dashboard
 
-Authenticated merchant staff open `/admin` after sign-in. The dashboard supports a Codify boutique, an external-only workspace receiving orders from Shopify, WooCommerce or YouCan, and a boutique with connected stores. Platform-only administrators continue to `/admin/platform`.
+Authenticated merchant staff open `/admin` after sign-in. The dashboard supports a Seallo boutique, an external-only workspace receiving orders from Shopify, WooCommerce or YouCan, and a boutique with connected stores. Platform-only administrators continue to `/admin/platform`.
 
 ## What the numbers mean
 

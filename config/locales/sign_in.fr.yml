@@ -2,7 +2,7 @@ fr:
   sign_in:
     page_title: "Connexion — %{name}"
     heading: "Se connecter"
-    workspace_subtitle: "Connectez-vous à votre espace Codify"
+    workspace_subtitle: "Connectez-vous à votre espace Seallo"
     tenant_subtitle: "Accédez à l’administration de l’espace %{name}"
     back: "Retour à l’accueil"
     language: "Langue"

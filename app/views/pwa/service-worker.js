@@ -10,7 +10,7 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(fetch(event.request).catch(() => new Response(`<!doctype html>
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Seallo crm — Offline</title>
+<title>Seallo — Offline</title>
 <style>body{font:18px system-ui;margin:15vh auto;padding:24px;max-width:36rem;line-height:1.6}a{color:#2e4dd5}</style>
 <h1>Connection required</h1><p>Reconnect to use your workspace.</p>
 <p lang="fr">Connexion requise pour utiliser votre espace.</p>

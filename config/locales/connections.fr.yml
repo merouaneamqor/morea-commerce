@@ -26,6 +26,12 @@ fr:
     rotate_secret: "Remplacer le secret de signature"
     resume_help: "Après la reprise, vérifiez que le webhook est toujours actif sur votre plateforme ; il peut être nécessaire de le réactiver ou de le recréer."
     youcan_limit: "Les envois YouCan doivent inclure les détails du paiement, de l’adresse et des produits. Les événements incomplets sont refusés ; la récupération automatique des détails manquants n’est pas encore incluse."
+    youcan_oauth:
+      connected: "Boutique YouCan reliée."
+      denied: "La connexion YouCan a été annulée."
+      invalid: "Cette demande de connexion n’est plus valable. Recommencez depuis Intégrations."
+      failed: "YouCan n’a pas pu être relié. Réessayez."
+      unavailable: "La connexion YouCan n’est pas encore configurée."
     webhook_url: "URL de livraison"
     verification_help: "Configurez cette URL sur votre plateforme avec le même secret de signature. L’état change après réception d’une commande signée valide. Relancez les échecs depuis l’historique des webhooks de votre plateforme."
     scope_help: "Réception des nouvelles commandes non payées avec paiement à la livraison en MAD au Maroc, sans taxes, réductions ni frais supplémentaires. L’historique, les modifications, les annulations et la synchronisation du catalogue ou du stock ne sont pas encore inclus."
@@ -124,4 +130,4 @@ fr:
       awaiting: "En attente d’un envoi signé"
     instructions:
       woocommerce: "Dans WooCommerce → Réglages → Avancé → Webhooks, ajoutez un webhook actif Commande créée. Renseignez l’URL ci-dessous et le même secret que celui saisi ici."
-      youcan: "Dans votre application YouCan, abonnez-vous à order.created avec cette URL. Utilisez le secret client de l’application et l’UUID de votre boutique."
+      youcan: "L’approbation YouCan abonne cette adresse à order.created. YouCan signe chaque envoi avec le secret client de l’application."

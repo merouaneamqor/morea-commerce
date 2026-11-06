@@ -240,7 +240,7 @@ RSpec.describe "Seller integrations page", type: :request do
     get "/integrations"
     modals = document.css("[data-modal]").reject { |modal| modal["data-modal"] == "stores" }.to_h { |modal| [ modal["data-modal"], modal.at_css("a")["href"] ] }
     expect(modals).to eq("shopify" => "/admin/seallo/connect", "woocommerce" => "/admin/woocommerce/connect",
-      "youcan" => "/admin/store_connections/new?provider=youcan")
+      "youcan" => "/admin/youcan/connect")
     expect(document.css("[data-connect]").map { |button| button["data-connect"] }).to eq(%w[shopify woocommerce youcan])
   end
 

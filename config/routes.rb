@@ -145,6 +145,8 @@ Rails.application.routes.draw do
     post "seallo/connect", to: "seallo_connections#create"
     get "woocommerce/connect", to: "woocommerce_connections#show", as: :woocommerce_connect
     post "woocommerce/connect", to: "woocommerce_connections#create"
+    get "youcan/connect", to: "youcan_connections#show", as: :youcan_connect
+    get "youcan/callback", to: "youcan_connections#callback", as: :youcan_callback
     resources :shopify_privacy_requests, only: %i[index show] do
       member do
         get :export

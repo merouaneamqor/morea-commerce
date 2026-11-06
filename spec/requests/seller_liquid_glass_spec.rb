@@ -29,6 +29,9 @@ RSpec.describe "Seller Liquid Glass app shell", type: :request do
     expect(page.at_css(".lg-chrome")).to be_present
     expect(page.at_css("[data-admin-pwa].lg-panel")).to be_present
     expect(page.at_css("[data-seller-drawer].lg-scrim")).to be_present
+    expect(page.at_css("[data-seller-bottom-nav].lg-bottom-nav")).to be_present
+    expect(page.css("[data-seller-open]").size).to be >= 2
+    expect(page.at_css("[data-seller-bottom-nav] a[href='/commandes']")).to be_present
   end
 
   it "exposes the order alerts toggle when VAPID is configured" do

@@ -146,6 +146,8 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
       expect(document.at_css("[data-source]").text.squish).to eq("Manuel")
       expect(document.css(".admin-table-wrap").size).to eq(1)
       expect(document.at_css("table.admin-table--sticky")).to be_present
+      expect(document.at_css("[data-orders-mobile]")).to be_present
+      expect(document.at_css("[data-orders-mobile] .admin-mobile-list__item")).to be_present
     end
   end
 

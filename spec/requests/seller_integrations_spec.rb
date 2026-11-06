@@ -51,7 +51,7 @@ RSpec.describe "Seller integrations page", type: :request do
     expect(response.body).to include('document.querySelectorAll("[data-modal], [data-delivery-modal]").forEach(function (m) { document.body.appendChild(m); })')
 
     css = Rails.root.join("app/assets/stylesheets/liquid_glass.css").read
-    expect(css).to include("backdrop-filter: var(--lg-blur)", "@supports not", "prefers-reduced-transparency: reduce", ".lg-shell", ".lg-nav")
+    expect(css).to include("backdrop-filter: var(--lg-blur)", "@supports not", "prefers-reduced-transparency: reduce", ".lg-shell", ".lg-nav", ".lg-bottom-nav")
   end
 
   describe "TikTok Ads button" do

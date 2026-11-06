@@ -6,7 +6,13 @@ module SellerHelper
   SELLER_DICTIONARY = JSON.parse(Rails.root.join("config/seller_dictionary.json").read).freeze
 
   # Words that exist only in Morea (seallo has no such page): [English, Arabic].
-  SELLER_EXTRA = { "Comptabilité" => [ "Accounting", "المحاسبة" ] }.freeze
+  SELLER_EXTRA = {
+    "Comptabilité" => [ "Accounting", "المحاسبة" ],
+    "Accueil" => [ "Home", "الرئيسية" ],
+    "Plus" => [ "More", "المزيد" ],
+    "Menu" => [ "Menu", "القائمة" ],
+    "Stats" => [ "Stats", "إحصائيات" ]
+  }.freeze
 
   SELLER_ICONS = {
     home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
@@ -40,6 +46,20 @@ module SellerHelper
     [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
     [ "integrations", :plug, "Intégrations API", "/integrations" ]
+  ].freeze
+
+  # Thumb-reach destinations on phones. Short labels; full sidebar stays via "Plus".
+  SELLER_BOTTOM_NAV = [
+    [ "dashboard", :home, "Accueil", "/dashboard" ],
+    [ "orders", :orders, "Commandes", "/commandes" ],
+    [ "confirmation", :phone, "Confirmation", "/confirmation" ],
+    [ "products", :box, "Produits", "/produits" ]
+  ].freeze
+
+  SELLER_AGENT_BOTTOM_NAV = [
+    [ "orders", :orders, "Commandes", "/commandes" ],
+    [ "confirmation", :phone, "Confirmation", "/confirmation" ],
+    [ "stats", :chart, "Stats", "/mes-statistiques" ]
   ].freeze
 
   # Which menu entry a controller belongs to, so the pages not yet ported still highlight their entry.
@@ -97,6 +117,10 @@ module SellerHelper
   def seller_menu(user)
     agent = user&.confirmation_agent_view?
     SELLER_MENU.select { |key, *| agent ? %w[confirmation stats orders].include?(key) : key != "stats" }
+  end
+
+  def seller_bottom_nav(user)
+    user&.confirmation_agent_view? ? SELLER_AGENT_BOTTOM_NAV : SELLER_BOTTOM_NAV
   end
 
   def seller_active_key

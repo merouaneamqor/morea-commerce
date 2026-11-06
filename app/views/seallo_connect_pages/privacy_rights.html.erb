@@ -4,17 +4,7 @@
   <%= stylesheet_link_tag "seallo_connect_pages", "data-turbo-track": "reload" %>
 <% end %>
 <div class="sc-doc" dir="<%= rtl? ? "rtl" : "ltr" %>">
-  <header class="sc-header">
-    <div class="sc-container sc-header-inner">
-      <a href="<%= seallo_connect_page_path %>" class="sc-brand"><%= image_tag "/brand/seallo-logo.png", alt: Store.platform_name, class: "sc-logo" %><span>Seallo Connect</span></a>
-      <nav class="sc-nav" aria-label="<%= t("seallo_connect_pages.nav.label") %>">
-        <%= link_to t("seallo_connect_pages.nav.overview"), seallo_connect_page_path %>
-        <%= link_to t("seallo_connect_pages.nav.privacy"), seallo_connect_privacy_path %>
-        <%= link_to t("seallo_connect_pages.nav.cookies"), seallo_connect_cookies_path %>
-        <%= link_to t("seallo_connect_pages.nav.privacy_rights"), seallo_connect_privacy_rights_path, "aria-current": "page" %>
-      </nav>
-    </div>
-  </header>
+  <%= render "seallo_connect_pages/header", page: "privacy_rights" %>
 
   <main id="main-content" class="sc-container sc-main" tabindex="-1">
     <h1><%= t("seallo_connect_pages.privacy_rights.title") %></h1>

@@ -2267,12 +2267,12 @@
   }
 
   body.has-cookie-notice {
-    padding-top: 3.25rem;
+    padding-bottom: var(--cookie-notice-height, 8rem);
   }
 
   .cookie-consent {
-    @apply fixed inset-x-0 top-0 z-50 border-b border-line bg-paper/95 backdrop-blur-sm;
-    padding-top: max(0.5rem, env(safe-area-inset-top));
+    @apply fixed inset-x-0 bottom-0 z-50 border-t border-line bg-paper/95 backdrop-blur-sm;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   }
 
   .cookie-consent__inner {

@@ -1,0 +1,23 @@
+<% page_key = local_assigns.fetch(:page, nil) %>
+<header class="sc-header">
+  <div class="sc-container sc-header-inner">
+    <a href="<%= seallo_connect_page_path %>" class="sc-brand">
+      <%= image_tag "/brand/seallo-logo.png", alt: "", class: "sc-logo", aria: { hidden: true } %>
+      <span class="sc-brand__name">Seallo Connect</span>
+    </a>
+    <nav class="sc-nav" aria-label="<%= t("seallo_connect_pages.nav.label") %>">
+      <%= link_to t("seallo_connect_pages.nav.overview"), seallo_connect_page_path, "aria-current": (page_key == "overview" ? "page" : nil) %>
+      <%= link_to t("seallo_connect_pages.nav.pricing"), seallo_connect_pricing_path, "aria-current": (page_key == "pricing" ? "page" : nil) %>
+      <%= link_to t("seallo_connect_pages.nav.privacy"), seallo_connect_privacy_path, "aria-current": (page_key == "privacy" ? "page" : nil) %>
+      <%= link_to t("seallo_connect_pages.nav.terms"), seallo_connect_terms_path, "aria-current": (page_key == "terms" ? "page" : nil) %>
+      <%= link_to t("seallo_connect_pages.nav.cookies"), seallo_connect_cookies_path, "aria-current": (page_key == "cookie_policy" ? "page" : nil) %>
+      <%= link_to t("seallo_connect_pages.nav.refunds"), seallo_connect_refunds_path, "aria-current": (page_key == "refunds" ? "page" : nil) %>
+      <%= link_to t("seallo_connect_pages.nav.privacy_rights"), seallo_connect_privacy_rights_path, "aria-current": (page_key == "privacy_rights" ? "page" : nil) %>
+    </nav>
+    <div class="sc-languages" role="group" aria-label="<%= t("seallo_connect_pages.nav.language") %>">
+      <% Morea::Locales::AVAILABLE.each do |locale| %>
+        <%= link_to locale.to_s.upcase, url_for(locale: locale, only_path: true), lang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
+      <% end %>
+    </div>
+  </div>
+</header>

@@ -97,6 +97,14 @@
 .admin-body[data-admin-theme="seallo_dark"] .seallo-segment--at_risk strong { color: var(--s-danger); }
 .admin-body[data-admin-theme="seallo_dark"] .admin-table--sticky :is(th, td):nth-child(-n+2) { background-color: var(--s-card); }
 .admin-body[data-admin-theme="seallo_dark"] .admin-table--sticky tr:hover td:nth-child(-n+2) { background-color: var(--s-soft); }
+.admin-body[data-admin-theme="seallo_dark"] .lg-bottom-nav__item { color: var(--s-muted); }
+.admin-body[data-admin-theme="seallo_dark"] .lg-bottom-nav__item.is-active { background: rgb(168 67 46 / .22); color: #f0c2b4; }
+.admin-body[data-admin-theme="seallo_dark"] .lg-bottom-nav__badge { background: var(--s-rust); color: #fff; }
+.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list { border-color: var(--s-line); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__item { border-color: var(--s-line); color: var(--s-ink); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__item:active { background: var(--s-soft); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__meta { color: var(--s-muted); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__amount { color: var(--s-ink); }
 
 /* Legacy media controls and reporting tracks also contain compiled literal colors. */
 .admin-body[data-admin-theme="seallo_dark"] :is(.admin-thumb, .admin-media-item, .admin-media-choice__image) { background-color: var(--s-soft); border-color: var(--s-line); color: var(--s-muted); }
@@ -116,11 +124,11 @@
 .admin-body[data-admin-theme="seallo_dark"] [class~="border-gray-300"] { border-color: var(--s-ctl); }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .admin-body[data-admin-theme="seallo_dark"] :is(.lg-panel, .lg-nav, .lg-chrome) { background: var(--s-card); }
+  .admin-body[data-admin-theme="seallo_dark"] :is(.lg-panel, .lg-nav, .lg-chrome, .lg-bottom-nav__bar) { background: var(--s-card); }
   .admin-body[data-admin-theme="seallo_dark"] .lg-shell { background: #15110f; }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .admin-body[data-admin-theme="seallo_dark"] :is(.lg-panel, .lg-nav, .lg-chrome) {
+  .admin-body[data-admin-theme="seallo_dark"] :is(.lg-panel, .lg-nav, .lg-chrome, .lg-bottom-nav__bar) {
     background: var(--s-card);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

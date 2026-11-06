@@ -1,0 +1,23 @@
+<%# Phone-only primary destinations; Plus reuses the drawer open trigger. %>
+<nav class="lg-bottom-nav lg:hidden" data-seller-bottom-nav aria-label="<%= sl("Menu") %>">
+  <div class="lg-bottom-nav__bar lg-chrome">
+    <% active = local_assigns.fetch(:active, seller_active_key) %>
+    <% new_orders = local_assigns.fetch(:new_orders, 0) %>
+    <% seller_bottom_nav(current_admin_user).each do |key, icon, label, href| %>
+      <% on = key == active %>
+      <%= link_to href, class: "lg-bottom-nav__item #{'is-active' if on}", aria: { current: (on ? "page" : nil) } do %>
+        <span class="lg-bottom-nav__icon">
+          <%= seller_icon(icon, size: 22) %>
+          <% if key == "orders" && new_orders.positive? %>
+            <span class="lg-bottom-nav__badge"><%= new_orders > 99 ? "99+" : new_orders %></span>
+          <% end %>
+        </span>
+        <span class="lg-bottom-nav__label"><%= sl(label) %></span>
+      <% end %>
+    <% end %>
+    <button type="button" data-seller-open class="lg-bottom-nav__item" aria-expanded="false" aria-label="<%= sl("Plus") %>">
+      <span class="lg-bottom-nav__icon"><%= seller_icon(:menu, size: 22) %></span>
+      <span class="lg-bottom-nav__label"><%= sl("Plus") %></span>
+    </button>
+  </div>
+</nav>

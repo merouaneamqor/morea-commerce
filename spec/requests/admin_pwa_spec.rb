@@ -64,4 +64,3 @@ RSpec.describe "Admin PWA", type: :request do
     expect(document.at_css("meta[name=viewport]")["content"]).to include("user-scalable=no")
   end
 end
-

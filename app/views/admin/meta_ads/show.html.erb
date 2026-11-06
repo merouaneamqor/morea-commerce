@@ -1,4 +1,4 @@
-<%# Meta Ads: connect, choose ad accounts, map ads to products. Seller design, like the Integrations page. %>
+<%# Meta Ads: connect, choose ad accounts, follow campaigns, map products. Seller design. %>
 <% content_for :title, t("meta_ads.title") %>
 <% content_for :admin_page_class, "seller-page" %>
 <% content_for :seller_lang, "1" %>
@@ -7,6 +7,15 @@
 <% badge = { "active" => "bg-[#e3f3e8] text-[#2f7a4a]", "needs_reauthorization" => "bg-[#fbe7ea] text-[#b4344e]", "disconnected" => "bg-[#f1eee9] text-[#8a8380]" }.fetch(status) %>
 <% active = status == "active" %>
 <% missing_business = active && !@connection.granted_scopes.include?("business_management") %>
+<% money = ->(amount, currency) { amount.nil? ? "—" : number_to_currency(amount, unit: currency.to_s, format: "%n %u", precision: 2) } %>
+<% status_badge = ->(key) {
+  case key.to_s
+  when "ACTIVE" then "bg-[#e3f3e8] text-[#2f7a4a]"
+  when "PAUSED", "CAMPAIGN_PAUSED", "ADSET_PAUSED" then "bg-[#f1eee9] text-[#8a8380]"
+  when "DISAPPROVED", "WITH_ISSUES" then "bg-[#fbe7ea] text-[#b4344e]"
+  else "bg-[#fdf0d9] text-[#8a5a12]"
+  end
+} %>
 
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div class="flex items-start gap-3">
@@ -89,6 +98,122 @@
   <% end %>
 </section>
 
+<section data-meta-campaigns>
+  <div class="mb-2.5 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h2 class="text-sm font-semibold text-[#1f2430]"><%= t("meta_ads.campaigns_title") %></h2>
+      <p class="text-xs text-[#8a8380]"><%= t("meta_ads.campaigns_lead") %></p>
+    </div>
+    <%= form_with url: admin_meta_ads_path, method: :get, class: "flex flex-wrap items-end gap-2" do %>
+      <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_meta_ads_path, align: "end" %>
+      <%= hidden_field_tag :from, @date_range.from.iso8601, id: nil %>
+      <%= hidden_field_tag :to, @date_range.to.iso8601, id: nil %>
+      <%= hidden_field_tag :preset, @date_range_preset, id: nil if @date_range_preset %>
+    <% end %>
+  </div>
+
+  <% totals = @overview.totals %>
+  <div class="mb-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
+    <div class="rounded-2xl border border-[#e8e3df] bg-white p-3.5">
+      <p class="text-xs text-[#8a8380]"><%= t("meta_ads.metric_spend") %></p>
+      <p class="mt-1 text-base font-semibold text-[#1f2430]"><%= money.call(totals[:spend], totals[:currency]) %></p>
+    </div>
+    <div class="rounded-2xl border border-[#e8e3df] bg-white p-3.5">
+      <p class="text-xs text-[#8a8380]"><%= t("meta_ads.metric_roas") %></p>
+      <p class="mt-1 text-base font-semibold text-[#1f2430]"><%= totals[:roas] ? number_with_precision(totals[:roas], precision: 2) + "×" : "—" %></p>
+    </div>
+    <div class="rounded-2xl border border-[#e8e3df] bg-white p-3.5">
+      <p class="text-xs text-[#8a8380]"><%= t("meta_ads.metric_active") %></p>
+      <p class="mt-1 text-base font-semibold text-[#1f2430]"><%= totals[:active_campaigns] %> / <%= totals[:campaigns] %></p>
+    </div>
+    <div class="rounded-2xl border border-[#e8e3df] bg-white p-3.5">
+      <p class="text-xs text-[#8a8380]"><%= t("meta_ads.metric_conversions") %></p>
+      <p class="mt-1 text-base font-semibold text-[#1f2430]"><%= number_with_precision(totals[:conversions], precision: 0) %></p>
+    </div>
+  </div>
+
+  <% if @overview.rows.empty? %>
+    <p class="rounded-2xl border border-[#e8e3df] bg-white p-5 text-sm"><%= t("meta_ads.no_campaigns") %></p>
+  <% else %>
+    <%= form_with url: product_links_admin_meta_ads_path, method: :patch do %>
+      <%= hidden_field_tag :from, @date_range.from.iso8601 %>
+      <%= hidden_field_tag :to, @date_range.to.iso8601 %>
+      <%= hidden_field_tag :preset, @date_range_preset if @date_range_preset %>
+      <div class="overflow-x-auto rounded-2xl border border-[#e8e3df] bg-white">
+        <table class="min-w-full text-left text-sm" data-meta-campaign-table>
+          <thead class="border-b border-[#e8e3df] text-xs text-[#8a8380]">
+            <tr>
+              <th class="px-3.5 py-3 font-semibold"><%= t("meta_ads.col_campaign") %></th>
+              <th class="px-3.5 py-3 font-semibold"><%= t("meta_ads.col_status") %></th>
+              <th class="px-3.5 py-3 font-semibold"><%= t("meta_ads.col_budget") %></th>
+              <th class="px-3.5 py-3 font-semibold"><%= t("meta_ads.col_spend") %></th>
+              <th class="px-3.5 py-3 font-semibold"><%= t("meta_ads.col_roas") %></th>
+              <th class="px-3.5 py-3 font-semibold"><%= t("meta_ads.col_ads") %></th>
+              <th class="px-3.5 py-3 font-semibold"><%= t("meta_ads.col_product") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @overview.rows.each do |row| %>
+              <% campaign = row.campaign %>
+              <tr class="border-b border-[#f1eee9] last:border-0" data-meta-campaign="<%= campaign.meta_id %>" data-effective-status="<%= row.effective_status %>">
+                <td class="px-3.5 py-3 align-top">
+                  <p class="font-semibold text-[#1f2430]" dir="auto"><%= campaign.name.presence || campaign.meta_id %></p>
+                  <p class="text-xs text-[#8a8380]">
+                    <span dir="ltr"><%= campaign.meta_id %></span>
+                    · <%= row.ad_account.name.presence || row.ad_account.meta_ad_account_id %>
+                    <% if row.objective.present? %> · <%= row.objective.tr("_", " ").downcase %><% end %>
+                  </p>
+                </td>
+                <td class="px-3.5 py-3 align-top">
+                  <% key = row.effective_status.to_s.presence || "UNKNOWN" %>
+                  <span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= status_badge.call(key) %>">
+                    <%= t("meta_ads.delivery_status.#{key.downcase}", default: key.tr("_", " ").titleize) %>
+                  </span>
+                </td>
+                <td class="px-3.5 py-3 align-top text-[#1f2430]">
+                  <% if row.daily_budget.present? %>
+                    <p><%= t("meta_ads.budget_daily", amount: money.call(row.daily_budget, row.currency)) %></p>
+                  <% elsif row.lifetime_budget.present? %>
+                    <p><%= t("meta_ads.budget_lifetime", amount: money.call(row.lifetime_budget, row.currency)) %></p>
+                  <% else %>
+                    <p class="text-[#8a8380]">—</p>
+                  <% end %>
+                  <% if row.budget_level.present? %>
+                    <p class="text-xs text-[#8a8380]"><%= t("meta_ads.budget_level.#{row.budget_level}") %></p>
+                  <% end %>
+                  <% if row.budget_remaining.present? %>
+                    <p class="text-xs text-[#8a8380]"><%= t("meta_ads.budget_remaining", amount: money.call(row.budget_remaining, row.currency)) %></p>
+                  <% end %>
+                </td>
+                <td class="px-3.5 py-3 align-top">
+                  <p class="font-medium text-[#1f2430]"><%= money.call(row.spend_display || row.spend, row.spend_display ? row.display_currency : row.currency) %></p>
+                  <% if row.spend_display && row.currency != row.display_currency %>
+                    <p class="text-xs text-[#8a8380]"><%= money.call(row.spend, row.currency) %></p>
+                  <% end %>
+                </td>
+                <td class="px-3.5 py-3 align-top font-medium text-[#1f2430]">
+                  <%= row.roas ? number_with_precision(row.roas, precision: 2) + "×" : "—" %>
+                </td>
+                <td class="px-3.5 py-3 align-top text-[#1f2430]">
+                  <%= t("meta_ads.ads_running", active: row.active_ads, total: row.total_ads) %>
+                </td>
+                <td class="px-3.5 py-3 align-top">
+                  <% if row.link_source %><span class="mb-1 inline-block rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= t("meta_ads.link_source.#{row.link_source}") %></span><% end %>
+                  <%= select_tag "campaign_links[#{campaign.meta_id}]",
+                        options_for_select([ [ t("meta_ads.no_product"), "" ] ] + @products.map { |product| [ product.name, product.id ] }, row.product&.id),
+                        class: "h-10 min-w-44 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430]",
+                        "aria-label": campaign.name.presence || campaign.meta_id %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-3"><%= submit_tag t("meta_ads.save_campaign_links"), class: "h-11 cursor-pointer rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624]" %></div>
+    <% end %>
+  <% end %>
+</section>
+
 <% if @ads.any? %>
   <section>
     <h2 class="mb-2.5 text-sm font-semibold text-[#1f2430]"><%= t("meta_ads.products_title") %></h2>
@@ -96,11 +221,11 @@
       <p class="mb-2 text-xs text-[#8a8380]"><%= t("meta_ads.products_lead") %></p>
       <ul class="space-y-2" data-meta-product-links>
         <% @ads.each do |ad| %>
-          <% link = @links[ad.meta_id] %>
+          <% link = @ad_links[ad.meta_id] %>
           <li class="flex flex-wrap items-center gap-3 rounded-2xl border border-[#e8e3df] bg-white p-3.5">
             <div class="min-w-0 flex-1">
               <p class="truncate text-sm font-semibold text-[#1f2430]" dir="auto"><%= ad.name.presence || ad.meta_id %></p>
-              <p class="truncate text-xs text-[#8a8380]" dir="ltr"><%= ad.meta_id %></p>
+              <p class="truncate text-xs text-[#8a8380]" dir="ltr"><%= ad.meta_id %><% if ad.effective_status.present? %> · <%= ad.effective_status %><% end %></p>
             </div>
             <% if link %><span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= t("meta_ads.link_source.#{link.source}") %></span><% end %>
             <%= select_tag "links[#{ad.meta_id}]", options_for_select([ [ t("meta_ads.no_product"), "" ] ] + @products.map { |product| [ product.name, product.id ] }, link&.product_id),

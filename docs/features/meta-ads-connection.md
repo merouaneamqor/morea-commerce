@@ -31,9 +31,10 @@ Without the four required variables the Connect button is disabled and the page 
 4. The merchant is sent back to `<store>.<domain>/admin/meta-ads`. Cancelling or denying shows a clear message and stores nothing. `ads_read` is required; without `business_management` only the profile's own ad accounts are visible, which the page says.
 5. `GET /me/adaccounts?fields=id,name,currency,account_status,timezone_name` lists the accounts. Only status 1 (active) and 9 (grace period) can be linked; disabled, unsettled, under review or closed accounts are shown but not selectable. One Meta ad account is linked to one workspace at a time.
 
-## Spend sync (`MetaAdsSyncJob`, hourly)
+## Spend and structure sync (`MetaAdsSyncJob`, hourly)
 
 - First run: the last 30 days. After that: yesterday and today (Meta revises recent numbers). Days follow the ad account's own timezone.
+- Structure (before insights): `GET act_<id>/campaigns|adsets|ads` with status, objective and budgets (`daily_budget`, `lifetime_budget`, `budget_remaining`, `spend_cap`). Meta minor units are stored as major-unit decimals in the ad account currency. Deleted/archived objects are omitted from the pull; prior rows stay for history.
 - `GET act_<id>/insights?level=campaign|ad&time_increment=1`, with names and ids for campaign, ad set and ad, spend, impressions, reach, clicks, ctr, cpc, cpm, actions and action values.
 - Rows are upserted by (ad account, campaign, day) and (ad account, ad, day): a re-sync never duplicates. Campaign rows and ad rows are two views of the same spend; never add one to the other.
 - Purchases: one of `omni_purchase`, `purchase`, `offsite_conversion.fb_pixel_purchase` (first present), so one purchase is not counted three times. These are Meta-attributed figures, not seallo orders.
@@ -50,9 +51,13 @@ Without the four required variables the Connect button is disabled and the page 
 
 `POST /auth/meta/data-deletion` with Meta's `signed_request`: verified with HMAC-SHA256 and the app secret (bad or missing signatures get 400 and change nothing), then every connection of that Meta user, in every store, loses its token, user id and linked accounts. The answer is `{ "url": ".../auth/meta/data-deletion/<code>", "confirmation_code": "<code>" }`. The status page shows the code and `completed`. The Meta user id is kept only as a SHA-256 digest. Synced spend stays with the merchant's records.
 
+## Campaign follow-up
+
+The Meta Ads page lists synced campaigns for the selected date range: delivery status, campaign CBO budget or the sum of ad set budgets, range spend (store currency when FX is available), Meta ROAS, active vs total ads, and a product picker per campaign. Budgets are read-only; pause and budget edits stay in Ads Manager until an `ads_management` batch. Totals on the page use campaign-level insights only.
+
 ## Ads to products
 
-Ads are linked to products so a product's profit includes its ad spend: automatically when an ad, ad set or campaign name contains exactly one product's SKU or name (a name that fits two products, or half a word, is left alone), or by hand on the Meta Ads page (a manual link replaces an automatic one). `MetaAds::ProductSpend.call(store:, range:)` returns spend per product in the store's currency: each ad row goes to the product linked to its ad, else its ad set, else its campaign; spend with no link is reported as `unassigned`, and rows still without a conversion are counted, not added.
+Campaigns and ads are linked to products so a product's profit includes its ad spend: automatically when an ad, ad set or campaign name contains exactly one product's SKU or name (a name that fits two products, or half a word, is left alone), or by hand on the Meta Ads page (a manual link replaces an automatic one). `MetaAds::ProductSpend.call(store:, range:)` returns spend per product in the store's currency: each ad row goes to the product linked to its ad, else its ad set, else its campaign; spend with no link is reported as `unassigned`, and rows still without a conversion are counted, not added.
 
 ```
 product profit = sales - product cost - delivery fees - ProductSpend.by_product[product_id]

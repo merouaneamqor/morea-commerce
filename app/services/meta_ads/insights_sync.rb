@@ -39,6 +39,8 @@ module MetaAds
       since = @account.insights_backfilled_at ? today - 1 : today - BACKFILL_DAYS
       written = 0
       usage = 0
+      # Structure first so the follow-up UI has statuses/budgets even when a day has no spend yet.
+      usage = [ usage, StructureSync.new(ad_account: @account, client: client, now: @now).call ].max
       LEVELS.each_key do |level|
         response = client.collect("#{@account.meta_ad_account_id}/insights", insights_params(level, since, today))
         usage = [ usage, response.usage_pct ].max

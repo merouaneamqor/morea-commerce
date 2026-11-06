@@ -317,6 +317,25 @@ RSpec.describe "Meta Ads connection", type: :request do
       expect(MetaAds::ProductLink.where(meta_id: "333")).to be_empty
     end
 
+    it "shows synced campaigns with budgets and lets the merchant link a campaign to a product" do
+      account = store.meta_ads_ad_accounts.find_by!(meta_ad_account_id: "act_11")
+      campaign = MetaAds::Campaign.find_by!(store: store, meta_id: "111")
+      campaign.update!(effective_status: "ACTIVE", daily_budget: 50, budget_remaining: 20, last_seen_at: Time.current, objective: "OUTCOME_SALES")
+      MetaAds::DailyInsight.create!(store: store, ad_account: account, campaign: campaign, level: "campaign", date: Time.zone.today,
+        currency: "EUR", spend: 12, spend_display: 129.6, display_currency: "MAD", fx_rate: 10.8, fx_date: Time.zone.today,
+        impressions: 800, clicks: 30, conversions: 1, conversion_value: 40, synced_at: Time.current, meta_campaign_id: "111")
+
+      get "/admin/meta-ads"
+      page = Nokogiri::HTML(response.body)
+      section = page.at_css("[data-meta-campaigns]")
+      expect(section.text).to include("Promo", I18n.t("meta_ads.delivery_status.active"), I18n.t("meta_ads.budget_level.campaign"))
+      expect(section.at_css("[data-meta-campaign=111]")).to be_present
+      expect(section.at_css("select[name='campaign_links[111]']")).to be_present
+
+      patch "/admin/meta-ads/product_links", params: { campaign_links: { "111" => alpha.id.to_s } }
+      expect(MetaAds::ProductLink.find_by!(object_type: "campaign", meta_id: "111")).to have_attributes(product_id: alpha.id, source: "manual")
+    end
+
     it "ignores another store's product, an ad that is not listed, and tampered ids" do
       patch "/admin/meta-ads/product_links", params: { links: { "333" => foreign_product.id.to_s, "444" => alpha.id.to_s, "999" => alpha.id.to_s, "abc" => "x" } }
       expect(response).to redirect_to("/admin/meta-ads")

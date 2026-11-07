@@ -11,10 +11,10 @@ module ConfirmationsHelper
   end
 
   def confirmation_rate_label(rate)
-    rate ? number_to_percentage(rate * 100, precision: 0) : "—"
+    rate ? number_to_percentage(rate * 100, precision: 0) : I18n.t("admin_ui.blank")
   end
 
   def confirmations_per_hour_label(value)
-    value ? number_with_precision(value, precision: 1) : "—"
+    value ? number_with_precision(value, precision: 1) : I18n.t("admin_ui.blank")
   end
 end

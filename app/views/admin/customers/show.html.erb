@@ -1,4 +1,4 @@
-<% content_for :title, "#{@customer.name} — Admin" %>
+<% content_for :title, "#{@customer.name}, Admin" %>
 
 <div class="admin-page-header">
   <div class="flex items-center gap-2">
@@ -56,7 +56,7 @@
       </div>
       <div class="admin-card__section">
         <p class="admin-card__title mb-1">Location</p>
-        <p class="admin-muted"><%= @customer.city.presence || "—" %></p>
+        <p class="admin-muted"><%= @customer.city.presence || admin_blank %></p>
       </div>
     </section>
 

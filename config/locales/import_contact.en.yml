@@ -1,6 +1,7 @@
 en:
   import_contact:
     title: "Contact details need attention"
+    badge: "Review"
     help: "This Shopify order was imported. Confirmation and shipping are blocked until its contact details are corrected."
     check_fields: "Check: %{fields}"
     manager_help: "Ask a manager to complete the contact details on this order."

@@ -199,6 +199,9 @@
 }
 .admin-body [data-date-range-picker-target="panel"] [data-fields] { flex-wrap: wrap; }
 
+/* A multi-line subtitle stays in the header instead of sliding under the next row. */
+.admin-page-header { align-items: flex-start; }
+
 /* A wrapped toolbar cannot reliably anchor a tablet popover inside the viewport. */
 @media (min-width: 768px) and (max-width: 1023px) {
   .admin-body [data-date-range-picker-target="panel"] {

@@ -1,4 +1,4 @@
-<% content_for :title, "#{t('admin.team.title')} — Admin" %>
+<% content_for :title, "#{t('admin.team.title')}, Admin" %>
 <% members = @users.reject(&:super_admin?) %>
 <% totals = @summaries.values %>
 
@@ -28,7 +28,7 @@
         <div class="min-w-0">
           <div class="flex flex-wrap items-center gap-2">
             <strong class="truncate"><%= user.name.presence || user.email %></strong>
-            <% if user == current_user %><span class="admin-muted">· <%= t("admin.team.you") %></span><% end %>
+            <% if user == current_user %><span class="admin-muted">, <%= t("admin.team.you") %></span><% end %>
             <% if user.admin? %>
               <span class="seallo-chip seallo-chip--dark"><%= t("admin.team.owner") %></span>
             <% else %>
@@ -45,7 +45,7 @@
           <div><dt><%= t("admin.team.confirmed") %></dt><dd><%= figures.confirmed %></dd></div>
           <div><dt><%= t("admin.team.cancelled") %></dt><dd><%= figures.cancelled %></dd></div>
           <div><dt><%= t("admin.team.delivered") %></dt><dd><%= figures.delivered %></dd></div>
-          <div><dt><%= t("admin.team.rate") %></dt><dd><%= figures.delivery_rate ? "#{(figures.delivery_rate * 100).round} %" : "—" %></dd></div>
+          <div><dt><%= t("admin.team.rate") %></dt><dd><%= figures.delivery_rate ? "#{(figures.delivery_rate * 100).round} %" : admin_blank %></dd></div>
         </dl>
         <dl class="seallo-member__money">
           <div><dt><%= t("admin.team.earnings") %></dt><dd><%= money(summary.earned_total) %></dd></div>

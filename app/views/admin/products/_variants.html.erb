@@ -23,10 +23,10 @@
 
     <div class="space-y-4 px-4">
       <details class="admin-variant-options" <%= "open" if variants.empty? %>>
-      <summary>Edit options · sizes and colors</summary>
+      <summary>Edit options, sizes and colors</summary>
       <div class="space-y-4 pt-4">
       <div>
-        <p class="admin-label">Option 1 · Size</p>
+        <p class="admin-label">Option 1. Size</p>
         <div class="flex flex-wrap gap-2" data-variant-matrix-target="sizeList">
           <% size_options.each do |size| %>
             <label class="admin-check rounded-lg border border-[#ebebeb] px-3 py-2">
@@ -55,7 +55,7 @@
       </div>
 
       <div>
-        <p class="admin-label">Option 2 · Color</p>
+        <p class="admin-label">Option 2. Color</p>
         <div class="space-y-2" data-variant-matrix-target="colorList">
           <% variant_colors.each do |color| %>
             <div class="flex flex-wrap items-center gap-2" data-variant-matrix-color-row>

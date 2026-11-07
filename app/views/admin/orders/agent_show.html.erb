@@ -1,5 +1,5 @@
 <%# Read-only order for confirmation agents: contact, address and what was ordered. No costs, profit or staff actions. %>
-<% content_for :title, "##{@order.number} — Admin" %>
+<% content_for :title, "##{@order.number}, Admin" %>
 <% confirmation = @order.order_confirmation %>
 
 <div class="admin-page-header">
@@ -34,7 +34,7 @@
       <% if @order.customer_phone.present? && !@order.import_contact_issues.include?("phone") %>
         <p><%= link_to @order.customer_phone, "tel:#{@order.customer_phone.to_s.gsub(/[^\d+]/, '')}", class: "admin-link", dir: "ltr" %></p>
       <% else %>
-        <p class="admin-muted"><%= @order.customer_phone.presence || "—" %></p>
+        <p class="admin-muted"><%= @order.customer_phone.presence || admin_blank %></p>
       <% end %>
       <p class="admin-muted"><%= [ @order.customer_address, @order.customer_district, @order.customer_city ].compact_blank.join(", ") %></p>
       <% if @order.notes.present? %><p class="admin-muted"><%= @order.notes %></p><% end %>

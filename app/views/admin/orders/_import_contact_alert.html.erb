@@ -2,11 +2,11 @@
   <% fields = order.import_contact_issues.filter_map { |field| t("import_contact.fields.#{field}") if %w[name phone city address].include?(field) }.to_sentence %>
   <% if local_assigns[:compact] %>
     <p class="admin-badge admin-badge--warning mt-1 whitespace-normal" role="alert" data-import-contact-alert>
-      <span aria-hidden="true">‼</span> <%= t("import_contact.check_fields", fields: fields) %>
+      <%= t("import_contact.check_fields", fields: fields) %>
     </p>
   <% else %>
     <section class="admin-banner admin-banner--critical mb-4 min-w-0" role="alert" data-import-contact-alert>
-      <h2 class="font-semibold"><span aria-hidden="true">‼</span> <%= t("import_contact.title") %></h2>
+      <h2 class="font-semibold"><%= t("import_contact.title") %></h2>
       <p><%= t("import_contact.help") %></p>
       <p class="mt-1 font-medium"><%= t("import_contact.check_fields", fields: fields) %></p>
       <% if local_assigns[:allow_correction] && order.status == "new" %>

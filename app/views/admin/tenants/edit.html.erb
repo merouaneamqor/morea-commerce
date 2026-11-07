@@ -1,9 +1,9 @@
-<% content_for :title, "Billing — #{@store.name}" %>
+<% content_for :title, "Billing, #{@store.name}" %>
 
 <div class="admin-page-header">
   <div>
     <h1 class="admin-page-header__title">Billing</h1>
-    <p class="admin-page-header__meta"><%= @store.name %> · <%= @store.slug %>.<%= Store.base_domain %></p>
+    <p class="admin-page-header__meta"><%= @store.name %>, <%= @store.slug %>.<%= Store.base_domain %></p>
   </div>
   <%= link_to "Back", admin_platform_path, class: "admin-btn-secondary" %>
 </div>

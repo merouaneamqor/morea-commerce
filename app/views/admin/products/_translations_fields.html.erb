@@ -1,4 +1,4 @@
-<%# Shared translation fields for Product — nested under form builder `f` %>
+<%# Shared translation fields for Product, nested under form builder `f` %>
 <% @product.build_missing_translations! %>
 
 <%= f.fields_for :translations, @product.translations.sort_by { |t| Morea::Locales::AVAILABLE.map(&:to_s).index(t.locale) || 99 } do |tf| %>

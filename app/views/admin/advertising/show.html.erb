@@ -1,5 +1,5 @@
-<% content_for :title, "Advertising — #{Store.platform_name}" %>
-<% totals = @summary.totals; money = ->(cents) { number_to_currency(cents / 100.0, unit: 'MAD ', precision: 2) }; ratio = ->(metrics) { @summary.roas(metrics) ? "#{number_with_precision(@summary.roas(metrics), precision: 2)}×" : '—' } %>
+<% content_for :title, "Advertising, #{Store.platform_name}" %>
+<% totals = @summary.totals; money = ->(cents) { number_to_currency(cents / 100.0, unit: 'MAD ', precision: 2) }; ratio = ->(metrics) { @summary.roas(metrics) ? "#{number_with_precision(@summary.roas(metrics), precision: 2)}×" : admin_blank } %>
 <div class="admin-page-header">
   <div><h1 class="admin-page-header__title"><%= t("advertising.text_0") %></h1><p class="admin-page-header__meta"><%= t("advertising.text_1") %></p></div>
   <div class="flex flex-wrap gap-3"><%= link_to t("meta_ads.title"), admin_meta_ads_path, class: "admin-btn-secondary" %><a href="#add-account" class="admin-btn"><%= t("advertising.text_2") %></a></div>
@@ -25,7 +25,7 @@
       <% maximum = [@summary.daily.flat_map { |_, spend, revenue| [spend, revenue] }.max, 1].max %>
       <div class="p-4 space-y-3" role="img" aria-label="Daily spend and delivered revenue. Exact amounts follow each date.">
         <% @summary.daily.each do |date, spend, revenue| %>
-          <div><p class="admin-muted mb-1"><%= date %> · Spend <%= money.call(spend) %> · Revenue <%= money.call(revenue) %></p><div class="h-2 rounded bg-gray-100"><div class="h-2 rounded bg-gray-800" style="width: <%= spend.fdiv(maximum) * 100 %>%"></div></div><div class="mt-1 h-2 rounded bg-gray-100"><div class="h-2 rounded bg-gray-400" style="width: <%= revenue.fdiv(maximum) * 100 %>%"></div></div></div>
+          <div><p class="admin-muted mb-1"><%= date %>, Spend <%= money.call(spend) %>, Revenue <%= money.call(revenue) %></p><div class="h-2 rounded bg-gray-100"><div class="h-2 rounded bg-gray-800" style="width: <%= spend.fdiv(maximum) * 100 %>%"></div></div><div class="mt-1 h-2 rounded bg-gray-100"><div class="h-2 rounded bg-gray-400" style="width: <%= revenue.fdiv(maximum) * 100 %>%"></div></div></div>
         <% end %>
       </div>
     <% end %>
@@ -34,7 +34,7 @@
     <div class="admin-card__header"><h2 class="admin-card__title"><%= t("advertising.text_14") %></h2></div>
     <% if @summary.accounts.empty? %><p class="admin-empty"><%= t("advertising.text_15") %></p><% end %>
     <% @summary.accounts.each do |account| %>
-      <div class="p-4 border-b"><p class="font-medium"><%= account.name %></p><p class="admin-muted mt-1"><%= account.provider %> · <%= t("advertising.note_4") %> · <%= account.active? ? t("advertising.note_5") : t("advertising.note_6") %></p>
+      <div class="p-4 border-b"><p class="font-medium"><%= account.name %></p><p class="admin-muted mt-1"><%= account.provider %>, <%= t("advertising.note_4") %>, <%= account.active? ? t("advertising.note_5") : t("advertising.note_6") %></p>
         <%= button_to(account.active? ? t("advertising.note_7") : t("advertising.note_8"), account_admin_advertising_path(account), method: :patch, params: { active: !account.active? }, class: 'admin-btn-secondary mt-3') %>
       </div>
     <% end %>
@@ -45,7 +45,7 @@
   <% if @summary.rows.empty? %><p class="admin-empty"><%= t("advertising.note_10") %></p><% else %>
     <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th><%= t("advertising.text_17") %></th><th><%= t("advertising.text_18") %></th><th><%= t("advertising.text_19") %></th><th><%= t("advertising.text_20") %></th><th><%= t("advertising.text_10") %></th><th><%= t("advertising.text_21") %></th><th><%= t("advertising.text_22") %></th><th><%= t("advertising.text_23") %></th></tr></thead><tbody>
       <% @summary.rows.each do |row| %><% campaign = row[:campaign]; metrics = row[:metrics]; profit = @summary.profit(metrics); reported = metrics.values.any?(&:positive?) %>
-        <tr><td><span class="font-medium"><%= campaign.name %></span><p class="admin-muted"><%= campaign.advertising_account.name %></p></td><td><%= money.call(metrics[:spend_cents]) %></td><td><%= metrics[:confirmed_orders] %> / <%= metrics[:delivered_orders] %></td><td><%= metrics[:confirmed_orders].positive? ? money.call(metrics[:spend_cents].fdiv(metrics[:confirmed_orders])) : '—' %></td><td><%= ratio.call(metrics) %></td><td><%= money.call(profit) %></td><td><span class="admin-badge admin-badge--neutral"><%= !reported ? t("advertising.note_11") : (profit.positive? ? t("advertising.note_12") : (profit.negative? ? t("advertising.note_13") : t("advertising.note_14"))) %></span></td><td><%= button_to(campaign.active? ? t("advertising.note_15") : t("advertising.note_16"), campaign_admin_advertising_path(campaign), method: :patch, params: { active: !campaign.active? }, class: 'admin-btn-secondary') %></td></tr>
+        <tr><td><span class="font-medium"><%= campaign.name %></span><p class="admin-muted"><%= campaign.advertising_account.name %></p></td><td><%= money.call(metrics[:spend_cents]) %></td><td><%= metrics[:confirmed_orders] %> / <%= metrics[:delivered_orders] %></td><td><%= metrics[:confirmed_orders].positive? ? money.call(metrics[:spend_cents].fdiv(metrics[:confirmed_orders])) : admin_blank %></td><td><%= ratio.call(metrics) %></td><td><%= money.call(profit) %></td><td><span class="admin-badge admin-badge--neutral"><%= !reported ? t("advertising.note_11") : (profit.positive? ? t("advertising.note_12") : (profit.negative? ? t("advertising.note_13") : t("advertising.note_14"))) %></span></td><td><%= button_to(campaign.active? ? t("advertising.note_15") : t("advertising.note_16"), campaign_admin_advertising_path(campaign), method: :patch, params: { active: !campaign.active? }, class: 'admin-btn-secondary') %></td></tr>
       <% end %>
     </tbody></table></div>
   <% end %>
@@ -75,7 +75,7 @@
     <% if @report.advertising_campaign_id.present? %>
     <%= form_with url: performance_admin_advertising_path, scope: :performance, class: 'space-y-4' do |f| %>
       <%= f.hidden_field :advertising_campaign_id, value: @report.advertising_campaign_id %><%= f.hidden_field :date, value: @report.date %>
-      <p class="font-medium"><%= @report.advertising_campaign.name %> · <%= @report.date %></p>
+      <p class="font-medium"><%= @report.advertising_campaign.name %>, <%= @report.date %></p>
       <div class="grid gap-3 lg:grid-cols-3"><% { spend: t("advertising.text_36"), delivered_revenue: t("advertising.text_37"), fulfillment_cost: t("advertising.text_38"), confirmed_orders: t("advertising.text_11"), delivered_orders: t("advertising.text_39"), clicks: t("advertising.text_40"), impressions: t("advertising.text_41") }.each do |field, label| %><div><%= f.label field, label, class: 'admin-label' %><%= f.number_field field, min: 0, max: 9_000_000_000_000, step: (%i[spend delivered_revenue fulfillment_cost].include?(field) ? '0.01' : 1), value: (%i[spend delivered_revenue fulfillment_cost].include?(field) ? @report.public_send("#{field}_cents").to_i / 100.0 : @report.public_send(field)), required: true, class: 'admin-input' %></div><% end %></div><%= f.submit t("advertising.text_35"), class: 'admin-btn' %>
     <% end %>
     <% end %>

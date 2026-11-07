@@ -1,4 +1,4 @@
-<% content_for :title, "#{@order.number} — Admin" %>
+<% content_for :title, "#{@order.number}, Admin" %>
 
 <div class="admin-page-header">
   <div class="flex items-center gap-2">
@@ -9,9 +9,9 @@
         <% if @order.archived? %><%= admin_badge(:archived, label: "Archived", tone: "neutral") %><% end %>
       </h1>
       <p class="admin-page-header__meta">
-        <%= @order.created_at.strftime("%B %-d, %Y at %H:%M") %> · Cash on delivery
+        <%= @order.created_at.strftime("%B %-d, %Y at %H:%M") %>. Cash on delivery.
         <% if current_store.sendit_configured? %>
-          · Sendit is the source of truth for delivery
+          Sendit sets the delivery status.
         <% end %>
       </p>
     </div>
@@ -59,7 +59,7 @@
   <div class="admin-banner mb-4">
     <%= t("connections.source") %>:
     <%= link_to @order.store_connection.name, admin_store_connection_path(@order.store_connection), class: "admin-link" %>
-    · <%= @order.external_order_receipt.external_id %>
+    , <%= @order.external_order_receipt.external_id %>
     <p><%= t("connections.snapshot_help") %></p>
   </div>
 <% end %>
@@ -104,7 +104,7 @@
           <% if @order.discount_cents.to_i.positive? %>
             <div class="admin-summary-row">
               <span>Discount</span>
-              <span class="admin-muted"><%= @order.discount_code.presence || "—" %></span>
+              <span class="admin-muted"><%= @order.discount_code.presence || admin_blank %></span>
               <span class="tabular-nums">−<%= money(@order.discount_cents, @order.currency) %></span>
             </div>
           <% end %>
@@ -245,7 +245,7 @@
         <% if @order.customer_phone.present? && !@order.import_contact_issues.include?("phone") %>
           <p class="admin-link--blue"><%= link_to @order.customer_phone, "tel:#{@order.customer_phone}" %></p>
         <% else %>
-          <p class="admin-muted"><%= @order.customer_phone.presence || "—" %></p>
+          <p class="admin-muted"><%= @order.customer_phone.presence || admin_blank %></p>
         <% end %>
       </div>
       <div class="admin-card__section">

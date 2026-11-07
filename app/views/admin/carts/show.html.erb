@@ -1,4 +1,4 @@
-<% content_for :title, "Cart — Admin" %>
+<% content_for :title, "Cart, Admin" %>
 
 <div class="admin-page-header">
   <div class="flex items-center gap-2">
@@ -33,7 +33,7 @@
                 Removed product
               <% end %>
             </td>
-            <td class="admin-muted"><%= item.product_variant&.display_name.presence || "—" %></td>
+            <td class="admin-muted"><%= item.product_variant&.display_name.presence || admin_blank %></td>
             <td class="is-numeric"><%= item.quantity %></td>
             <td class="is-numeric"><%= money(item.unit_price_cents, current_store.currency) %></td>
             <td class="is-numeric"><%= money(item.line_total_cents, current_store.currency) %></td>

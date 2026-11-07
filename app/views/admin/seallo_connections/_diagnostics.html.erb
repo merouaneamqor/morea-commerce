@@ -1,4 +1,4 @@
-<% timestamp = ->(value) { value&.utc&.strftime("%Y-%m-%d %H:%M UTC") || "—" } %>
+<% timestamp = ->(value) { value&.utc&.strftime("%Y-%m-%d %H:%M UTC") || admin_blank } %>
 <% api_errors = {
   "config_missing" => "Seallo bridge configuration is missing. Platform staff must check the bridge configuration.",
   "credentials_missing" => "Shopify authorization is missing. Ask the merchant to reconnect through Seallo Connect.",
@@ -16,7 +16,7 @@
   <section class="panel">
     <h3>Expected Shopify plans</h3>
     <div class="panel_contents">
-      <p>Seallo Basic: 30 orders · Seallo Pro: 100 orders · Seallo Premium: unlimited. Shopify manages subscriptions and billing periods. These values are read only.</p>
+      <p>Seallo Basic: 30 orders, Seallo Pro: 100 orders, Seallo Premium: unlimited. Shopify manages subscriptions and billing periods. These values are read only.</p>
       <p>An active trial may have no billing period end. The verification cache still expires after 15 minutes. To reconnect a disconnected shop, the merchant must authorize it through Seallo Connect.</p>
     </div>
   </section>
@@ -78,7 +78,7 @@
       <% end %>
       <nav class="seallo-diagnostics__pagination" aria-label="Connections pagination">
         <% if @page > 1 %><%= link_to "Previous", superadmin_seallo_connections_path(q: @query, page: @page - 1) %><% end %>
-        <span>Page <%= @page %> · Up to 25 connections</span>
+        <span>Page <%= @page %>, Up to 25 connections</span>
         <% if @has_next_page %><%= link_to "Next", superadmin_seallo_connections_path(q: @query, page: @page + 1) %><% end %>
       </nav>
     </div>
@@ -98,7 +98,7 @@
               <tr>
                 <td><strong><%= authorization.store.name %></strong><br><%= authorization.store.slug %></td>
                 <td><%= authorization.shop_domain.presence || "Shop not recorded" %></td>
-                <td><%= authorization.expires_at&.future? ? "Pending" : "Expired — merchant must start a new connection" %><br>Created: <%= timestamp.call(authorization.created_at) %><br>Expires: <%= timestamp.call(authorization.expires_at) %></td>
+                <td><%= authorization.expires_at&.future? ? "Pending" : "Expired. The merchant must start a new connection." %><br>Created: <%= timestamp.call(authorization.created_at) %><br>Expires: <%= timestamp.call(authorization.expires_at) %></td>
                 <td><%= button_to "Check link", superadmin_seallo_connections_diagnose_link_path, method: :post, params: { authorization_id: authorization.id } %></td>
               </tr>
             <% end %>

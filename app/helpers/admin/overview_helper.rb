@@ -1,6 +1,6 @@
 module Admin::OverviewHelper
   def overview_money_values(values)
-    return "—" if values.empty?
+    return I18n.t("admin_ui.blank") if values.empty?
 
     safe_join(values.sort.map { |currency, cents| dashboard_money(cents, currency) }, tag.br)
   end

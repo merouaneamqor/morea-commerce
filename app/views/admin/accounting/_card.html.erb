@@ -5,7 +5,7 @@
 <% compact = local_assigns.fetch(:compact, false) %>
 <% pill = featured && tone == :flat ? "bg-[#1f2430]/80 text-white" : acc_pill_class(tone, good_when) %>
 <% if compact %>
-  <div class="flex h-[65px] min-w-0 flex-col justify-center rounded-xl border border-[#e8e3df] bg-white px-3.5" data-card="<%= key %>" data-size="compact" title="<%= [ local_assigns[:title], sub ].compact_blank.join(" · ") %>">
+  <div class="flex h-[65px] min-w-0 flex-col justify-center rounded-xl border border-[#e8e3df] bg-white px-3.5" data-card="<%= key %>" data-size="compact" title="<%= [ local_assigns[:title], sub ].compact_blank.join(", ") %>">
     <p class="flex items-center gap-1.5 text-xs font-medium text-[#5e5a58]"><span class="text-[#8a8380]"><%= seller_icon(icon, size: 14) %></span><%= label %></p>
     <div class="mt-1 flex items-center justify-between gap-2">
       <p class="flex min-w-0 items-baseline gap-x-1 text-[20px] leading-none font-bold whitespace-nowrap text-[#1f2430]" data-value><%= value %> <span class="text-xs font-semibold text-[#8a8380]"><%= unit %></span></p>

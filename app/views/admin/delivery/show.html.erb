@@ -1,4 +1,4 @@
-<% content_for :title, "#{t('delivery_dashboard.title')} — #{Store.platform_name}" %>
+<% content_for :title, "#{t('delivery_dashboard.title')}, #{Store.platform_name}" %>
 <div class="admin-page-header">
   <div><h1 class="admin-page-header__title"><%= t("delivery_dashboard.title") %></h1><p class="admin-page-header__meta"><%= t("delivery_dashboard.subtitle") %></p></div>
   <div class="flex flex-wrap gap-2"><%= link_to t("delivery_dashboard.issues_link"), admin_orders_path(attention: "delivery_issues"), class: "admin-btn-secondary" %><%= link_to t("delivery_dashboard.orders"), admin_orders_path, class: "admin-btn" %></div>
@@ -24,7 +24,7 @@
     <% @delivery.couriers.each do |courier| %>
       <div class="admin-card p-4">
         <div class="flex flex-wrap items-center justify-between gap-3"><h3 class="admin-card__title"><%= courier[:name] == "Manual" ? t("delivery_dashboard.manual") : courier[:name] %></h3><span class="admin-badge admin-badge--neutral"><%= courier[:name] == "Manual" ? t("delivery_dashboard.staff_managed") : (current_store.sendit_configured? ? t("delivery_dashboard.configured") : t("delivery_dashboard.not_configured")) %></span></div>
-        <div class="grid grid-cols-3 gap-3 mt-4"><div><p class="admin-muted"><%= t("delivery_dashboard.shipments") %></p><p class="font-semibold mt-1"><%= courier[:total] %></p></div><div><p class="admin-muted"><%= t("delivery_dashboard.delivered") %></p><p class="font-semibold mt-1"><%= courier[:rate] %>%</p></div><div><p class="admin-muted"><%= t("delivery_dashboard.average") %></p><p class="font-semibold mt-1"><%= courier[:average_days] ? t("delivery_dashboard.days", count: courier[:average_days]) : "—" %></p></div></div>
+        <div class="grid grid-cols-3 gap-3 mt-4"><div><p class="admin-muted"><%= t("delivery_dashboard.shipments") %></p><p class="font-semibold mt-1"><%= courier[:total] %></p></div><div><p class="admin-muted"><%= t("delivery_dashboard.delivered") %></p><p class="font-semibold mt-1"><%= courier[:rate] %>%</p></div><div><p class="admin-muted"><%= t("delivery_dashboard.average") %></p><p class="font-semibold mt-1"><%= courier[:average_days] ? t("delivery_dashboard.days", count: courier[:average_days]) : admin_blank %></p></div></div>
         <% if courier[:name] == "Sendit" %>
           <p class="admin-muted mt-3"><%= courier[:last_sync] ? t("delivery_dashboard.last_sync", time: l(courier[:last_sync], format: :short)) : t("delivery_dashboard.no_sync") %></p>
           <%= link_to t("delivery_dashboard.configure"), edit_admin_store_path, class: "admin-link mt-3 inline-block" %>
@@ -49,9 +49,9 @@
     <div class="admin-card__header"><h2 class="admin-card__title"><%= t("delivery_dashboard.breakdown") %></h2></div>
     <div class="p-4 space-y-4">
       <% Admin::DeliverySummary::GROUPS.each_key do |group| %>
-        <div><div class="flex justify-between gap-3"><span><%= t("delivery_dashboard.groups.#{group}") %></span><span><%= @delivery.counts.fetch(group) %> · <%= @delivery.percentage(group) %>%</span></div><meter class="w-full mt-2" min="0" max="100" value="<%= @delivery.percentage(group) %>" aria-label="<%= t("delivery_dashboard.groups.#{group}") %>"><%= @delivery.percentage(group) %>%</meter></div>
+        <div><div class="flex justify-between gap-3"><span><%= t("delivery_dashboard.groups.#{group}") %></span><span><%= @delivery.counts.fetch(group) %>, <%= @delivery.percentage(group) %>%</span></div><meter class="w-full mt-2" min="0" max="100" value="<%= @delivery.percentage(group) %>" aria-label="<%= t("delivery_dashboard.groups.#{group}") %>"><%= @delivery.percentage(group) %>%</meter></div>
       <% end %>
-      <p class="admin-muted"><%= t("delivery_dashboard.average") %>: <%= @delivery.average_days ? t("delivery_dashboard.days", count: @delivery.average_days) : "—" %>. <%= t("delivery_dashboard.duration_note") %></p>
+      <p class="admin-muted"><%= t("delivery_dashboard.average") %>: <%= @delivery.average_days ? t("delivery_dashboard.days", count: @delivery.average_days) : admin_blank %>. <%= t("delivery_dashboard.duration_note") %></p>
     </div>
   </section>
 </div>

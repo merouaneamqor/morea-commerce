@@ -1,4 +1,4 @@
-<% content_for :title, "#{t('admin.my_stats.title')} — Admin" %>
+<% content_for :title, "#{t('admin.my_stats.title')}, Admin" %>
 <% figures = @summary.figures %>
 <% name = current_user.name.presence || current_user.email %>
 <% pct = ->(part) { figures.confirmed.zero? ? 0 : (part * 100.0 / figures.confirmed).round } %>
@@ -68,7 +68,7 @@
     <div class="seallo-bars">
       <% @chart_days.each do |day| %>
         <% n = @by_day.fetch(day, 0) %>
-        <div class="seallo-bars__col" title="<%= day %> · <%= n %>">
+        <div class="seallo-bars__col" title="<%= day %>, <%= n %>">
           <span class="seallo-bars__bar" style="height: <%= n.zero? ? 3 : (n * 100.0 / max).round %>%"></span>
           <small><%= day.strftime(@chart_days.length > 7 ? "%d" : "%a") %></small>
         </div>

@@ -1,6 +1,7 @@
 fr:
   import_contact:
     title: "Coordonnées à vérifier"
+    badge: "Vérifier"
     help: "Cette commande Shopify a été importée. La confirmation et l’expédition sont bloquées jusqu’à la correction des coordonnées."
     check_fields: "À vérifier : %{fields}"
     manager_help: "Demandez à un responsable de compléter les coordonnées de cette commande."

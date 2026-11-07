@@ -1,4 +1,4 @@
-<% content_for :title, "#{t('admin.confirmations.home_title', name: current_user.name.presence || current_user.email)} — Admin" %>
+<% content_for :title, "#{t('admin.confirmations.home_title', name: current_user.name.presence || current_user.email)}, Admin" %>
 <% home = @home %>
 <div class="admin-page-header">
   <div>
@@ -27,7 +27,7 @@
   </div>
   <div class="admin-card p-4">
     <p class="admin-metric__label"><%= t("admin.confirmations.home_kpi.avg_time") %></p>
-    <p class="admin-metric__value mt-2"><%= home.average_handled_seconds ? shift_clock(home.average_handled_seconds) : "—" %></p>
+    <p class="admin-metric__value mt-2"><%= home.average_handled_seconds ? shift_clock(home.average_handled_seconds) : admin_blank %></p>
     <p class="admin-muted mt-2"><%= t("admin.confirmations.home_kpi.avg_time_hint") %></p>
   </div>
 </div>
@@ -57,7 +57,7 @@
         <li class="flex flex-wrap items-center justify-between gap-3 p-4">
           <div>
             <span class="admin-link">#<%= claim.order.number %></span>
-            <span class="admin-muted ms-2"><%= claim.order.customer_name %> · <%= claim.order.customer_city %></span>
+            <span class="admin-muted ms-2"><%= claim.order.customer_name %>, <%= claim.order.customer_city %></span>
           </div>
           <div class="text-end">
             <p class="admin-muted text-sm"><%= t("admin.confirmations.home_kpi.time_on_order") %></p>
@@ -92,7 +92,7 @@
             <tr>
               <td>#<%= attempt.order_confirmation.order.number %></td>
               <td><%= t("admin.confirmations.outcomes.#{attempt.outcome}") %></td>
-              <td class="is-numeric"><%= attempt.handled_seconds ? shift_clock(attempt.handled_seconds) : "—" %></td>
+              <td class="is-numeric"><%= attempt.handled_seconds ? shift_clock(attempt.handled_seconds) : admin_blank %></td>
               <td class="is-numeric"><%= Confirmations::AgentHome::POINTS.fetch(attempt.outcome, 0) %></td>
               <td><%= l(attempt.created_at, format: :short) %></td>
             </tr>

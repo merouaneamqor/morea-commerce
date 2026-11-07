@@ -2,7 +2,7 @@
 <% shopify = @connection.provider == "shopify" %>
 <div class="admin-page-header">
   <div><h1 class="admin-page-header__title"><%= @connection.name %></h1>
-    <p class="admin-page-header__meta"><%= t("connections.providers.#{@connection.provider}") %> · <%= @connection.external_domain %> · <%= connection_state(@connection) %></p></div>
+    <p class="admin-page-header__meta"><%= t("connections.providers.#{@connection.provider}") %>, <%= @connection.external_domain %>, <%= connection_state(@connection) %></p></div>
   <div class="flex flex-wrap gap-3">
     <% if shopify && @connection.shopify_oauth? && !@connection.active? %>
       <% if (apps_url = shopify_apps_url(@connection)) %>
@@ -52,7 +52,7 @@
     <tbody><% @receipts.each do |receipt| %><tr>
       <td><%= receipt.external_id %></td>
       <td><%= receipt.status == "accepted" ? t("connections.accepted") : t("connections.rejected", code: receipt.error_code) %></td>
-      <td><% if receipt.order %><%= link_to receipt.order.number, admin_order_path(receipt.order), class: "admin-link" %><% else %>—<% end %></td>
+      <td><% if receipt.order %><%= link_to receipt.order.number, admin_order_path(receipt.order), class: "admin-link" %><% else %><%= admin_blank %><% end %></td>
       <td><%= l(receipt.received_at.in_time_zone("Africa/Casablanca"), format: "%d/%m/%Y %H:%M") %></td>
     </tr><% end %></tbody>
   </table></div>

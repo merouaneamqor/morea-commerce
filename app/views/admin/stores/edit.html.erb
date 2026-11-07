@@ -1,4 +1,4 @@
-<% content_for :title, "Store settings — Admin" %>
+<% content_for :title, "Store settings, Admin" %>
 
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Settings</h1>
@@ -54,15 +54,15 @@
   </section>
 
   <section class="admin-card" id="data-protection">
-    <div class="admin-card__header"><h2 class="admin-card__title">Data protection (Morocco Law 09-08 / CNDP)</h2></div>
+    <div class="admin-card__header"><h2 class="admin-card__title">Data protection, Morocco Law 09-08, CNDP</h2></div>
     <div class="space-y-4 px-4 pb-4">
       <p class="admin-help">
         Moroccan law requires notifying the CNDP before processing personal data on your storefront, and a transfer request if data is hosted outside Morocco.
-        Enter your CNDP receipt or authorization number once you receive it — it appears on checkout and in your privacy page.
+        Enter your CNDP receipt or authorization number once you receive it. It appears on checkout and on your privacy page.
       </p>
       <div class="admin-field-grid">
         <div class="md:col-span-2">
-          <%= f.label :legal_entity_name, "Data controller (legal name)", class: "admin-label" %>
+          <%= f.label :legal_entity_name, "Data controller, legal name", class: "admin-label" %>
           <%= f.text_field :legal_entity_name, class: "admin-input", placeholder: @store.name %>
           <p class="admin-help">Shown in your privacy policy. Leave blank to use the store name.</p>
         </div>
@@ -91,7 +91,7 @@
       </div>
       <p class="admin-help">
         <%= link_to "Buyer data-rights requests", admin_privacy_rights_requests_path, class: "admin-link" %>
-        · Legal pages sync from these fields:
+        . Legal pages sync from these fields:
         <% %w[privacy terms cookies].each do |slug| %>
           <% page = @store.pages.find_by(slug: slug) %>
           <% if page %>

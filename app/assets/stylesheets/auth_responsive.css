@@ -28,6 +28,15 @@
   .seallo-flow textarea,
   .seallo-flow .fx-input { font-size: 16px; }
 }
+
+.sa-eyebrow,
+.sa-metric-label,
+.sa-live,
+.sa-partners p {
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: .75rem;
+}
 @media (max-width: 639px) {
   .seallo-flow [data-plan-grid] { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
   .seallo-flow [data-plan] { grid-column: auto; }

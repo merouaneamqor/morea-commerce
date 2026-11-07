@@ -16,8 +16,9 @@ module Admin
         return render :unavailable, status: :service_unavailable
       end
 
-      state = SecureRandom.hex(24)
+      state = pending_state || SecureRandom.hex(24)
       session[:youcan_oauth] = {
+        "state" => state,
         "digest" => Digest::SHA256.hexdigest(state),
         "expires_at" => STATE_TTL.from_now.iso8601
       }
@@ -33,9 +34,10 @@ module Admin
       end
       return redirect_to admin_store_connections_path, alert: t("connections.youcan_oauth.invalid") unless consume_state!
 
-      connection = Connections::YoucanOauth.connect!(store: current_store, code: params[:code].to_s)
+      connection = Connections::YoucanOauth.connect!(store: current_store, code: authorization_code)
       redirect_to admin_store_connection_path(connection), notice: t("connections.youcan_oauth.connected")
-    rescue Connections::YoucanOauth::Error
+    rescue Connections::YoucanOauth::Error => error
+      Rails.logger.warn("YouCan connection failed: #{error.code}")
       redirect_to admin_store_connections_path, alert: t("connections.youcan_oauth.failed")
     end
 
@@ -53,6 +55,26 @@ module Admin
       ActiveSupport::SecurityUtils.secure_compare(Digest::SHA256.hexdigest(given), digest)
     rescue ArgumentError
       false
+    end
+
+    def pending_state
+      pending = session[:youcan_oauth]
+      return unless pending.is_a?(Hash)
+
+      state = pending["state"].to_s
+      expires_at = Time.iso8601(pending["expires_at"].to_s)
+      state if state.match?(STATE_PATTERN) && expires_at.future?
+    rescue ArgumentError
+      nil
+    end
+
+    # Rack treats a raw "+" in the query as a space. YouCan's code can contain
+    # "+", so read it from the query string and keep that character.
+    def authorization_code
+      pair = request.query_string.to_s.split("&").find { |part| part.start_with?("code=") }
+      return params[:code].to_s unless pair
+
+      CGI.unescape(pair.delete_prefix("code=").gsub("+", "%2B"))
     end
 
     def remember_connection_request

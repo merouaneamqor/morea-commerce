@@ -94,4 +94,12 @@ RSpec.describe Connections::YoucanOauth do
       .to raise_error(described_class::Error) { |error| expect(error.code).to eq("invalid_code") }
     expect(requests).to be_empty
   end
+
+  it "sends an authorization code that contains base64 characters" do
+    responses << http_response(400, error: "invalid_grant")
+
+    expect { described_class.connect!(store: store, code: "abc+def/ghi=", transport: transport) }
+      .to raise_error(described_class::Error) { |error| expect(error.code).to eq("invalid_grant") }
+    expect(URI.decode_www_form(requests.first.last.body).to_h).to include("code" => "abc+def/ghi=")
+  end
 end

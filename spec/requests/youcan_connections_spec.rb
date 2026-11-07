@@ -52,6 +52,17 @@ RSpec.describe "YouCan store authorization", type: :request do
     expect(location).not_to include("read-orders", "synthetic-youcan-client-secret")
   end
 
+  it "keeps the same approval when the connection page is opened twice" do
+    sign_in
+    get "/admin/youcan/connect"
+    first = Rack::Utils.parse_query(URI(response.location).query).fetch("state")
+
+    get "/admin/youcan/connect"
+    second = Rack::Utils.parse_query(URI(response.location).query).fetch("state")
+
+    expect(second).to eq(first)
+  end
+
   it "explains that YouCan is not configured instead of sending the seller away" do
     allow(ENV).to receive(:[]).with("YOUCAN_CLIENT_SECRET").and_return("")
     sign_in
@@ -93,5 +104,17 @@ RSpec.describe "YouCan store authorization", type: :request do
     expect(response).to redirect_to(admin_store_connections_path)
     expect(flash[:alert]).to eq(I18n.t("connections.youcan_oauth.invalid"))
     expect(Connections::YoucanOauth).not_to have_received(:connect!)
+  end
+
+  it "keeps a plus sign in the authorization code" do
+    state = authorization_state
+    connection = store.store_connections.new(provider: "youcan", name: "Seallo", external_domain: "seallo.youcan.store",
+      external_store_id: "0ff0817b-4f5a-43e9-b42d-066363aa45e3", webhook_secret: "synthetic-youcan-client-secret")
+    connection.save!
+    allow(Connections::YoucanOauth).to receive(:connect!).and_return(connection)
+
+    get "/admin/youcan/callback?code=abc+def%2Fghi%3D&state=#{state}"
+
+    expect(Connections::YoucanOauth).to have_received(:connect!).with(store: store, code: "abc+def/ghi=")
   end
 end

@@ -15,7 +15,8 @@ module Connections
     SCOPES = %w[view-store-info edit-rest-hooks].freeze
     HOSTNAME = /\A[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?\z/
     STORE_ID = /\A[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\z/
-    CODE = /\A[A-Za-z0-9\-._~]{8,512}\z/
+    # YouCan returns a one-time code that can contain base64 characters.
+    CODE = /\A[A-Za-z0-9\-._~+\/=]{8,2048}\z/
     MAX_BODY_BYTES = 65_536
 
     class Error < StandardError
@@ -162,7 +163,7 @@ module Connections
       raise Error, "invalid_response" if body.bytesize > MAX_BODY_BYTES
       raise Error, "invalid_credentials" if [ 401, 403 ].include?(status)
       raise Error, "unavailable" if status >= 500 || status == 429
-      raise Error, "invalid_response" unless status.between?(200, 299)
+      raise Error, oauth_error(body) unless status.between?(200, 299)
 
       data = JSON.parse(body)
       raise Error, "invalid_response" unless data.is_a?(Hash)
@@ -172,6 +173,14 @@ module Connections
       raise Error, "invalid_response"
     rescue Timeout::Error, IOError, SystemCallError, SocketError, OpenSSL::SSL::SSLError, Net::HTTPBadResponse, Net::ProtocolError
       raise Error, "unavailable"
+    end
+
+    def oauth_error(body)
+      data = JSON.parse(body)
+      error = data.is_a?(Hash) ? data["error"].to_s : ""
+      error.match?(/\A[a-z0-9_]{1,40}\z/) ? error : "invalid_response"
+    rescue JSON::ParserError, EncodingError
+      "invalid_response"
     end
 
     def perform(uri, request)

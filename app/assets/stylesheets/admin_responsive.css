@@ -52,8 +52,9 @@
     block-size: 2.75rem;
   }
   .admin-body .admin-page-header {
-    margin-block-end: 1rem;
-    gap: .75rem;
+    margin-block-end: 0.5rem;
+    gap: 0.5rem;
+    align-items: center;
   }
   .admin-body .admin-tabs {
     scroll-padding-inline: 1rem;
@@ -378,13 +379,53 @@
 .admin-sync-status__attention { color: #a8432e; font-weight: 600; }
 
 @media (max-width: 767px) {
+  /* Dense seller screens: less shell chrome, tighter stacks, no header essays. */
+  .admin-body .lg-shell > .mx-auto { padding: 0.75rem; gap: 0.75rem; }
   .admin-body .admin-page.seller-page { gap: 0.65rem; }
+  .admin-body .admin-page-header { margin-block-end: 0.35rem; gap: 0.4rem; }
   .admin-body .admin-page-header--orders { margin-block-end: 0.35rem; gap: 0.4rem; }
   .admin-body .admin-page-header__title { font-size: 1.25rem; }
+  .admin-body .admin-page-header__meta,
+  .admin-body .admin-page-header .admin-muted {
+    display: none;
+  }
+  .admin-body .admin-page-header > .admin-btn,
+  .admin-body .admin-page-header__primary,
+  .admin-body .admin-page-header .admin-btn--compact,
   .admin-body .admin-btn--compact {
     min-block-size: 2.25rem;
     padding-inline: 0.75rem;
     font-size: 0.8125rem;
+    max-inline-size: none;
+    white-space: nowrap;
+  }
+  .admin-body .admin-page-header .admin-btn-secondary {
+    min-block-size: 2.25rem;
+    padding-inline: 0.7rem;
+    font-size: 0.8125rem;
+  }
+  .admin-body .admin-page-header > .flex,
+  .admin-body .admin-page-header__tools {
+    gap: 0.35rem;
+  }
+  .admin-body .admin-page > p.admin-banner:not([role]):not(.admin-banner--critical) {
+    display: none;
+  }
+  .admin-body .admin-page > [class~="mb-5"],
+  .admin-body .admin-page > [class~="mb-4"] {
+    margin-bottom: 0.65rem;
+  }
+  .admin-body .admin-card__header .admin-muted { display: none; }
+  .admin-body .admin-mobile-list__item,
+  .admin-body .admin-mobile-list__card {
+    padding: 0.7rem 0.85rem;
+  }
+  .admin-body .seller-page > header h1 {
+    font-size: 1.25rem;
+    line-height: 1.25;
+  }
+  .admin-body .seller-page > header > div > p {
+    display: none;
   }
   .admin-body .admin-sync-panel__summary { padding: 0.65rem 0.85rem; }
   .admin-body .admin-sync-panel__list { padding-inline: 0.85rem; }

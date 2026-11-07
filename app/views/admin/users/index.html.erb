@@ -3,11 +3,11 @@
 <% totals = @summaries.values %>
 
 <div class="admin-page-header">
-  <div>
+  <div class="min-w-0">
     <h1 class="admin-page-header__title"><%= t("admin.team.title") %></h1>
     <p class="admin-page-header__meta max-w-xl"><%= t("admin.team.subtitle") %></p>
   </div>
-  <%= link_to t("admin.team.add_member"), new_admin_user_path, class: "admin-btn" %>
+  <%= link_to t("admin.team.add_member"), new_admin_user_path, class: "admin-btn admin-page-header__primary" %>
 </div>
 
 <div class="seallo-stats mb-4">

@@ -1,11 +1,13 @@
 <% content_for :title, "#{t('admin.confirmations.title')}, Admin" %>
 <% content_for :admin_page_class, "admin-page--dashboard" %>
 <div class="admin-page-header">
-  <div>
-    <h1 class="admin-page-header__title"><%= t("admin.confirmations.title") %></h1>
-    <p class="admin-muted mt-2"><%= t("admin.confirmations.description") %></p>
+  <div class="admin-page-header__row min-w-0 flex-1">
+    <div class="min-w-0">
+      <h1 class="admin-page-header__title"><%= t("admin.confirmations.title") %></h1>
+      <p class="admin-page-header__meta"><%= t("admin.confirmations.description") %></p>
+    </div>
   </div>
-  <div class="flex flex-wrap gap-2">
+  <div class="admin-page-header__tools">
     <%= link_to t("admin.confirmations.performance"), dashboard_admin_confirmations_path, class: "admin-btn-secondary" %>
     <%= link_to t("admin.confirmations.orders"), admin_orders_path, class: "admin-btn-secondary" %>
   </div>

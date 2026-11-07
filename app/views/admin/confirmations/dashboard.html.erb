@@ -1,8 +1,8 @@
 <% content_for :title, "#{t('admin.confirmations.performance_title')}, Admin" %>
 <div class="admin-page-header">
-  <div>
+  <div class="min-w-0">
     <h1 class="admin-page-header__title"><%= t("admin.confirmations.performance_title") %></h1>
-    <p class="admin-muted mt-2"><%= t("admin.confirmations.performance_description") %></p>
+    <p class="admin-page-header__meta"><%= t("admin.confirmations.performance_description") %></p>
   </div>
   <%= link_to t("admin.confirmations.title"), admin_confirmations_path, class: "admin-btn-secondary" %>
 </div>

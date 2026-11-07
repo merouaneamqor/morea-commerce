@@ -1,7 +1,13 @@
 <% content_for :title, "#{t('delivery_dashboard.title')}, #{Store.platform_name}" %>
 <div class="admin-page-header">
-  <div><h1 class="admin-page-header__title"><%= t("delivery_dashboard.title") %></h1><p class="admin-page-header__meta"><%= t("delivery_dashboard.subtitle") %></p></div>
-  <div class="flex flex-wrap gap-2"><%= link_to t("delivery_dashboard.issues_link"), admin_orders_path(attention: "delivery_issues"), class: "admin-btn-secondary" %><%= link_to t("delivery_dashboard.orders"), admin_orders_path, class: "admin-btn" %></div>
+  <div class="min-w-0">
+    <h1 class="admin-page-header__title"><%= t("delivery_dashboard.title") %></h1>
+    <p class="admin-page-header__meta"><%= t("delivery_dashboard.subtitle") %></p>
+  </div>
+  <div class="admin-page-header__tools">
+    <%= link_to t("delivery_dashboard.issues_link"), admin_orders_path(attention: "delivery_issues"), class: "admin-btn-secondary" %>
+    <%= link_to t("delivery_dashboard.orders"), admin_orders_path, class: "admin-btn" %>
+  </div>
 </div>
 <section class="admin-card p-4 mb-5">
   <%= form_with url: admin_delivery_path, method: :get, class: "admin-filter-bar flex flex-wrap items-end gap-3" do |form| %>
@@ -10,7 +16,7 @@
     <div><%= form.label :q, t("delivery_dashboard.search"), class: "block admin-muted mb-1" %><%= form.search_field :q, value: @delivery.query, placeholder: t("delivery_dashboard.placeholder"), class: "admin-input" %></div>
     <%= form.submit t("delivery_dashboard.apply"), class: "admin-btn" %><%= link_to t("delivery_dashboard.reset"), admin_delivery_path, class: "admin-btn-plain" %>
   <% end %>
-  <p class="admin-muted mt-3"><%= t("delivery_dashboard.cohort") %></p>
+  <p class="admin-page-header__meta mt-3"><%= t("delivery_dashboard.cohort") %></p>
 </section>
 <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-5">
   <div class="admin-card p-4"><p class="admin-metric__label"><%= t("delivery_dashboard.total") %></p><p class="admin-metric__value mt-2"><%= number_with_delimiter(@delivery.total) %></p></div>

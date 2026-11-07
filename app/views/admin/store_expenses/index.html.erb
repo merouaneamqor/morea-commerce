@@ -2,7 +2,7 @@
 <div class="admin-page-header">
   <div>
     <h1 class="admin-page-header__title">Expenses</h1>
-    <p class="admin-muted mt-1">Operating costs not tied to one order. They are deducted from net profit for the dates they fall in.</p>
+    <p class="admin-page-header__meta">Operating costs not tied to one order. They are deducted from net profit for the dates they fall in.</p>
   </div>
   <nav class="flex gap-2" aria-label="Period">
     <% [30, 90].each do |days| %><%= link_to "#{days} days", admin_expenses_path(period: days), class: @period == days ? "admin-btn" : "admin-btn-secondary" %><% end %>

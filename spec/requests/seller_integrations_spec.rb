@@ -86,11 +86,11 @@ RSpec.describe "Seller integrations page", type: :request do
     expect(networks.map { |card| card["data-ad-network"] }).to eq(%w[meta tiktok])
     expect(networks.map { |card| card.at_css("span.font-semibold.block").text }).to eq([ "Meta Ads", "TikTok Ads" ])
     expect(networks.map { |card| card.at_css("img")["alt"] }).to eq([ "Meta Ads", "TikTok Ads" ])
-    expect(networks.first.text).to include("Connecter Meta Ads →")
-    expect(networks.last.text).to include("Connecter TikTok Ads →")
+    expect(networks.first.text).to include("Connecter Meta Ads")
+    expect(networks.last.text).to include("Connecter TikTok Ads")
     expect(networks.last.at_css("form[action='/admin/tiktok-ads/connect'] button")["disabled"]).to be_nil
     expect(sections.last.text).not_to include("Bientôt disponible")
-    expect(sections.first.at_css("[data-stores-open]").text).to include("Connecter une boutique →")
+    expect(sections.first.at_css("[data-stores-open]").text).to include("Connecter une boutique")
     expect(stores).to be_empty
   end
 

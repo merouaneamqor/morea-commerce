@@ -27,12 +27,17 @@ RSpec.describe "Confirmation queue contact alerts", type: :request do
       browser.get "/admin/confirmations", params: { locale: "en" }
       expect(browser.response).to have_http_status(:ok)
       document = Nokogiri::HTML(browser.response.body)
-      row = document.at_css("a[href='/admin/orders/#{order.id}']")&.ancestors("tr")&.first
-      expect(row).to be_present
-      expect(row.at_css("[data-import-contact-alert][role='alert']").text).to include("Phone number")
-      expect(row.at_css("form[action='/admin/confirmations/#{order.id}/call'] button[disabled]")).to be_present
-      expect(row.at_css("form[action='/admin/confirmations/#{order.id}/claim']")).to be_nil
-      expect(row.at_css("a[href^='tel:']")).to be_nil
+      # Phone cards come first in the DOM; the desktop table still carries the same controls.
+      containers = document.css("a[href='/admin/orders/#{order.id}']").filter_map { |link|
+        link.ancestors("tr, li.admin-mobile-list__card").first
+      }.uniq
+      expect(containers.size).to eq(2)
+      containers.each do |row|
+        expect(row.at_css("[data-import-contact-alert][role='alert']").text).to include("Phone number")
+        expect(row.at_css("form[action='/admin/confirmations/#{order.id}/call'] button[disabled]")).to be_present
+        expect(row.at_css("form[action='/admin/confirmations/#{order.id}/claim']")).to be_nil
+        expect(row.at_css("a[href^='tel:']")).to be_nil
+      end
       expect(document.css("[data-import-contact-form]")).to be_empty
       expect(browser.response.body).not_to match(/translation missing|translation_missing/i)
     end

@@ -143,3 +143,9 @@
   }
   .admin-body[data-admin-theme="seallo_dark"] .lg-shell { background: #15110f; }
 }
+
+.admin-body[data-admin-theme="seallo_dark"] .admin-sync-panel__title { color: var(--s-ink); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-sync-panel__list { border-top-color: var(--s-line); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-sync-panel__item { border-bottom-color: var(--s-line); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-sync-status { color: var(--s-muted); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-sync-status__attention { color: var(--s-rust); }

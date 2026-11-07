@@ -209,7 +209,9 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
       get "/admin/confirmations"
 
       expect(document.at_css("[data-clock-in-required]").text).to include(I18n.t("admin.confirmations.clock_in_required"))
-      expect(document.css("form[action$='/claim'] button[disabled], form[action$='/claim'] input[disabled]").size).to eq(1)
+      # Phone cards and the desktop table both render the shared claim control.
+      claim_controls = document.css("form[action$='/claim'] button[disabled], form[action$='/claim'] input[disabled]")
+      expect(claim_controls.size).to eq(2)
 
       post "/admin/confirmations/#{waiting.id}/claim"
 

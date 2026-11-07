@@ -13,7 +13,7 @@
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div>
     <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= sl("Clients") %></h1>
-    <p class="text-sm"><%= sl("Chaque numéro de téléphone est un client. La liste se remplit toute seule avec vos commandes.") %></p>
+    <p class="text-sm"><%= sl("Chaque numéro de téléphone est un client. Seallo le crée à partir du téléphone de la commande.") %></p>
   </div>
   <%= render "admin/shared/language_switcher" %>
 </header>
@@ -48,12 +48,12 @@
         <% label, badge = tags.fetch(stats.segment) %>
         <li class="cursor-pointer px-4 py-3.5" data-orders-for="<%= customer.phone %>">
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <p class="truncate font-semibold text-[#1f2430]" dir="auto"><%= customer.name.presence || "—" %></p>
+            <p class="truncate font-semibold text-[#1f2430]" dir="auto"><%= customer.name.presence || admin_blank %></p>
             <span class="rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap <%= badge %>"><%= sl(label) %></span>
           </div>
-          <p class="text-xs text-[#8a8380]"><span dir="ltr"><%= customer.phone %></span><% if customer.city.present? %><span dir="auto"> · <%= customer.city %></span><% end %></p>
+          <p class="text-xs text-[#8a8380]"><span dir="ltr"><%= customer.phone %></span><% if customer.city.present? %><span dir="auto">, <%= customer.city %></span><% end %></p>
           <p class="mt-1.5 flex justify-between text-xs">
-            <span><%= seller_number(customer.orders_count) %> <%= sl("commandes") %> · <%= seller_number(stats.delivered) %> <%= sl("livrées") %> · <%= seller_number(stats.returns) %> <%= sl("retours") %></span>
+            <span><%= seller_number(customer.orders_count) %> <%= sl("commandes") %>, <%= seller_number(stats.delivered) %> <%= sl("livrées") %>, <%= seller_number(stats.returns) %> <%= sl("retours") %></span>
             <b class="text-[#1f2430]"><%= seller_money(stats.delivered_cents, currency) %></b>
           </p>
         </li>
@@ -72,10 +72,10 @@
             <% label, badge = tags.fetch(stats.segment) %>
             <tr class="cursor-pointer border-b border-[#f6f2ef] last:border-0 hover:bg-[#fbf9f8]" title="<%= sl("Voir ses commandes") %>" data-orders-for="<%= customer.phone %>">
               <td class="px-4 py-3.5">
-                <p class="font-semibold text-[#1f2430]" dir="auto"><%= customer.name.presence || "—" %></p>
+                <p class="font-semibold text-[#1f2430]" dir="auto"><%= customer.name.presence || admin_blank %></p>
                 <p class="text-xs text-[#8a8380]" dir="ltr"><%= customer.phone %></p>
               </td>
-              <td class="px-4 py-3.5" dir="auto"><%= customer.city.presence || "—" %></td>
+              <td class="px-4 py-3.5" dir="auto"><%= customer.city.presence || admin_blank %></td>
               <td class="px-4 py-3.5 text-[#1f2430]">
                 <%= seller_number(customer.orders_count) %>
                 <% if stats.in_progress.positive? %><span class="ms-2 rounded-md bg-[#ebe9fb] px-1.5 py-0.5 text-[11px] font-semibold text-[#4b4fb0]"><%= seller_number(stats.in_progress) %> <%= sl("en cours") %></span><% end %>
@@ -83,7 +83,7 @@
               <td class="px-4 py-3.5 font-medium text-[#2f7a4a]"><%= seller_number(stats.delivered) %></td>
               <td class="px-4 py-3.5 font-medium <%= stats.returns.positive? ? "text-[#b4344e]" : "text-[#8a8380]" %>"><%= seller_number(stats.returns) %></td>
               <td class="px-4 py-3.5 font-semibold whitespace-nowrap text-[#1f2430]"><%= seller_money(stats.delivered_cents, currency) %></td>
-              <td class="px-4 py-3.5 whitespace-nowrap"><% if stats.last_order_at %><time datetime="<%= stats.last_order_at.to_date.iso8601 %>" data-short-date><%= stats.last_order_at.to_date.iso8601 %></time><% else %>—<% end %></td>
+              <td class="px-4 py-3.5 whitespace-nowrap"><% if stats.last_order_at %><time datetime="<%= stats.last_order_at.to_date.iso8601 %>" data-short-date><%= stats.last_order_at.to_date.iso8601 %></time><% else %><%= admin_blank %><% end %></td>
               <td class="px-4 py-3.5"><span class="rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap <%= badge %>"><%= sl(label) %></span></td>
             </tr>
           <% end %>

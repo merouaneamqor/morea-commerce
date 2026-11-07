@@ -1,9 +1,9 @@
-<% content_for :title, "New invoice — #{@store.name}" %>
+<% content_for :title, "New invoice, #{@store.name}" %>
 
 <div class="admin-page-header">
   <div>
     <h1 class="admin-page-header__title">New invoice</h1>
-    <p class="admin-page-header__meta"><%= @store.name %> · draft from current billing</p>
+    <p class="admin-page-header__meta"><%= @store.name %>, draft from current billing</p>
   </div>
   <%= link_to "Back", admin_tenant_invoices_path(@store), class: "admin-btn-secondary" %>
 </div>

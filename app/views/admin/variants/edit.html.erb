@@ -1,4 +1,4 @@
-<% content_for :title, "Edit #{@variant.display_name} — #{@product.name} — Admin" %>
+<% content_for :title, "Edit #{@variant.display_name}, #{@product.name}, Admin" %>
 
 <div class="admin-page-header">
   <div class="flex items-center gap-2">
@@ -43,7 +43,7 @@
               <button type="button" class="admin-variant-image" data-name="<%= @variant.display_name %>" data-action="media-picker#open" aria-label="Select variant images">
                 <span data-media-picker-preview><% if @variant.images.attached? %><%= image_tag MediaUrl.sized(media_url(@variant.ordered_images.first), width: 160), alt: "Main photo" %><% else %>+<% end %></span>
               </button>
-              <div><button type="button" class="admin-btn-secondary" data-name="<%= @variant.display_name %>" data-action="media-picker#open">Select existing</button><p class="admin-help" data-media-picker-status><%= pluralize(@variant.images.size, "image") %> · Save to apply changes</p></div>
+              <div><button type="button" class="admin-btn-secondary" data-name="<%= @variant.display_name %>" data-action="media-picker#open">Select existing</button><p class="admin-help" data-media-picker-status><%= pluralize(@variant.images.size, "image") %>, Save to apply changes</p></div>
             </div>
           </div>
           <label class="admin-dropzone" data-media-target="zone" data-action="dragover->media#zoneOver dragleave->media#zoneLeave drop->media#zoneDrop">

@@ -84,7 +84,7 @@ end %>
           <% else %>
             <%= text_field_tag "order[city]", @order.customer_city, class: "admin-input", required: true,
                   data: { checkout_city_target: "city", action: "input->checkout-city#update" } %>
-            <p class="admin-help">Sendit cities unavailable — type the city manually.</p>
+            <p class="admin-help">Sendit cities are unavailable. Type the city manually.</p>
           <% end %>
         </div>
         <div data-checkout-city-target="districtField" <%= "hidden" unless district_required %>>
@@ -111,7 +111,7 @@ end %>
   <section class="admin-card">
     <div class="admin-card__header">
       <h2 class="admin-card__title">Products</h2>
-      <span class="admin-muted tabular-nums" data-order-lines-target="total">—</span>
+      <span class="admin-muted tabular-nums" data-order-lines-target="total"><%= admin_blank %></span>
     </div>
     <div class="space-y-3 px-4 pb-4">
       <div class="relative" data-order-lines-target="picker">
@@ -202,7 +202,7 @@ end %>
         <div>
           <%= label_tag "order[agent_id]", "Assign to agent (optional)", class: "admin-label" %>
           <%= select_tag "order[agent_id]", options_from_collection_for_select(local_assigns.fetch(:assignable_agents, []), :id, ->(a) { a.name.presence || a.email }, params.dig(:order, :agent_id)),
-                include_blank: "Nobody — leave it in Available now", class: "admin-input" %>
+                include_blank: "Nobody, leave it in Available now", class: "admin-input" %>
           <p class="admin-help">Left empty, the order is unassigned and every agent sees it in "Available now".</p>
         </div>
       <% end %>

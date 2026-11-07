@@ -1,4 +1,4 @@
-<% content_for :title, "Customize — Online Store" %>
+<% content_for :title, "Customize, Online Store" %>
 
 <div class="admin-page-header">
   <div>
@@ -24,7 +24,7 @@
       <span class="admin-thumb !h-8 !w-8"><%= admin_icon(:menu, size: 14) %></span>
       <div class="min-w-0 flex-1">
         <p class="font-semibold">Announcement bar</p>
-        <p class="admin-muted truncate"><%= current_store.announcement.presence || "Hidden — no text set" %></p>
+        <p class="admin-muted truncate"><%= current_store.announcement.presence || "Hidden. No text is set." %></p>
       </div>
       <%= link_to "Edit", edit_admin_store_path(anchor: "announcement"), class: "admin-btn-secondary" %>
     </div>
@@ -42,12 +42,12 @@
           <span class="admin-badge admin-badge--neutral tabular-nums"><%= i + 1 %></span>
           <div class="min-w-0 flex-1">
             <%= link_to section.label, edit_admin_home_section_path(section), class: "admin-link" %>
-            <p class="admin-muted truncate"><%= section.preview_text || "—" %></p>
+            <p class="admin-muted truncate"><%= section.preview_text || admin_blank %></p>
           </div>
           <% unless section.visible %><%= admin_badge(:archived, label: "Hidden") %><% end %>
           <div class="flex items-center gap-1">
-            <%= button_to "↑", move_admin_home_section_path(section, direction: "up"), method: :patch, class: "admin-btn-secondary !w-8 !px-0", disabled: i.zero?, title: "Move up", "aria-label": "Move up" %>
-            <%= button_to "↓", move_admin_home_section_path(section, direction: "down"), method: :patch, class: "admin-btn-secondary !w-8 !px-0", disabled: i == @sections.size - 1, title: "Move down", "aria-label": "Move down" %>
+            <%= button_to "Up", move_admin_home_section_path(section, direction: "up"), method: :patch, class: "admin-btn-secondary", disabled: i.zero?, title: "Move up", "aria-label": "Move up" %>
+            <%= button_to "Down", move_admin_home_section_path(section, direction: "down"), method: :patch, class: "admin-btn-secondary", disabled: i == @sections.size - 1, title: "Move down", "aria-label": "Move down" %>
             <%= button_to (section.visible ? "Hide" : "Show"), toggle_admin_home_section_path(section), method: :patch, class: "admin-btn-secondary" %>
           </div>
         </li>

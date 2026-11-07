@@ -1,11 +1,11 @@
-<% content_for :title, "#{@invoice.number} — #{@store.name}" %>
+<% content_for :title, "#{@invoice.number}, #{@store.name}" %>
 
 <div class="admin-page-header">
   <div>
     <h1 class="admin-page-header__title"><%= @invoice.number %></h1>
     <p class="admin-page-header__meta">
-      <%= @store.name %> · <%= @invoice.status.humanize %>
-      <% if @invoice.overdue? %> · Overdue<% end %>
+      <%= @store.name %>, <%= @invoice.status.humanize %>
+      <% if @invoice.overdue? %>, Overdue<% end %>
     </p>
   </div>
   <div class="flex flex-wrap gap-2 justify-end">
@@ -55,15 +55,15 @@
       </div>
       <div>
         <p class="admin-label">Due</p>
-        <p><%= @invoice.due_on&.strftime("%b %-d, %Y") || "—" %></p>
+        <p><%= @invoice.due_on&.strftime("%b %-d, %Y") || admin_blank %></p>
       </div>
       <div>
         <p class="admin-label">Issued</p>
-        <p><%= @invoice.issued_at&.strftime("%b %-d, %Y %H:%M") || "—" %></p>
+        <p><%= @invoice.issued_at&.strftime("%b %-d, %Y %H:%M") || admin_blank %></p>
       </div>
       <div>
         <p class="admin-label">Paid</p>
-        <p><%= @invoice.paid_at&.strftime("%b %-d, %Y %H:%M") || "—" %></p>
+        <p><%= @invoice.paid_at&.strftime("%b %-d, %Y %H:%M") || admin_blank %></p>
       </div>
     </div>
     <% if @invoice.notes.present? %>

@@ -17,7 +17,7 @@
         <tr>
           <td class="font-medium"><%= request.store_name %></td>
           <td><%= request.email %></td>
-          <td><%= request.phone.presence || "—" %></td>
+          <td><%= request.phone.presence || admin_blank %></td>
           <td><%= request.locale.upcase %></td>
           <td><%= t(request.storefront_enabled? ? "onboarding.with_storefront" : "onboarding.external_only") %></td>
           <td><%= time_tag request.created_at, l(request.created_at.in_time_zone("Africa/Casablanca"), format: "%d/%m/%Y %H:%M") %></td>

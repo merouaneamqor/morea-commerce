@@ -1,4 +1,4 @@
-<% content_for :title, "Agent API — Admin" %>
+<% content_for :title, "Agent API, Admin" %>
 
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Agent API</h1>
@@ -42,8 +42,7 @@
     <div class="admin-card__header"><h2 class="admin-card__title">Connect an agent (MCP)</h2></div>
     <div class="space-y-4 px-4 pb-4">
       <p class="admin-help">
-        Paste this into the agent’s MCP settings. The agent receives the catalog guide when it connects
-        (<code>morea://catalog</code>). Replace the token if you are not looking at a freshly generated one.
+        Paste this into the agent MCP settings. The agent receives the catalog guide at <code>morea://catalog</code> when it connects. Replace the token if this is not a freshly generated one.
       </p>
       <pre class="admin-input overflow-x-auto whitespace-pre-wrap text-sm"><%= JSON.pretty_generate(
         mcpServers: {

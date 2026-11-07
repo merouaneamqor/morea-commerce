@@ -1,11 +1,11 @@
-<% content_for :title, "Media — Admin" %>
+<% content_for :title, "Media, Admin" %>
 
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Media</h1>
 </div>
 
 <div class="admin-stack">
-  <%# ——— Bulk upload ——— %>
+  <%# Bulk upload %>
   <section class="admin-card">
     <div class="admin-card__header">
       <h2 class="admin-card__title">Bulk upload</h2>
@@ -16,8 +16,8 @@
              data-action="dragover->bulk-upload#over dragleave->bulk-upload#leave drop->bulk-upload#drop">
         <span class="admin-btn-secondary pointer-events-none">Choose images</span>
         <span class="admin-help">
-          or drop a batch here. Files are matched to products by name — <code>essential-set-1.jpg</code>,
-          <code>essential-set_2.png</code> go to “essential-set”. Check the matches, then upload.
+          or drop a batch here. Files are matched to products by name. <code>essential-set-1.jpg</code>,
+          <code>essential-set_2.png</code> go to essential-set. Check the matches, then upload.
         </span>
         <input type="file" name="files[]" multiple accept="image/*" class="sr-only"
                data-bulk-upload-target="input" data-action="change->bulk-upload#pick">
@@ -39,7 +39,7 @@
     <% end %>
   </section>
 
-  <%# ——— Library + batch edits ——— %>
+  <%# Library and batch edits %>
   <%= form_with url: admin_media_edits_path, method: :post, data: { controller: "bulk-select" } do %>
     <section class="admin-card">
       <div class="admin-card__header flex-wrap gap-3">
@@ -62,7 +62,7 @@
 
       <% with_images = @products.select { |p| p.images.attached? } %>
       <% if with_images.empty? %>
-        <p class="admin-muted px-4 pb-4">No uploaded images yet — use bulk upload above.</p>
+        <p class="admin-muted px-4 pb-4">No uploaded images yet. Use bulk upload above.</p>
       <% end %>
 
       <% with_images.each do |product| %>
@@ -87,7 +87,7 @@
                   <span class="admin-media-item__bar flex-wrap">
                     <%= i.zero? ? "Main" : "##{i + 1}" %>
                     <% if !MediaUrl.cloudinary?(image.blob) %>
-                      <span class="admin-badge" title="Stored on local disk — re-upload to edit">Local</span>
+                      <span class="admin-badge" title="Stored on local disk. Re-upload to edit it.">Local</span>
                     <% end %>
                     <% edits.each do |edit| %>
                       <span class="admin-badge admin-badge--info"><%= MediaUrl::EDITS[edit] %></span>

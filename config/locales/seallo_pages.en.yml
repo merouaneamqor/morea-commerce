@@ -2,8 +2,8 @@ en:
   admin:
     team:
       title: "Team"
-      subtitle: "Add your confirmation agents: each has an account, sees only their own orders, and their pay is calculated automatically."
-      add_member: "+ Add member"
+      subtitle: "Add an account for each confirmation agent. The agent sees only their orders. Seallo calculates pay from delivered orders."
+      add_member: "Add a member"
       members: "Members"
       confirmed_month: "Confirmed this month"
       delivered_month: "Delivered this month"
@@ -93,4 +93,4 @@ en:
       at_risk_badge: "At risk"
       new_badge: "New"
       in_progress: "%{count} in progress"
-      subtitle: "Every phone number is a customer. The list fills itself from your orders."
+      subtitle: "Each phone number is one customer. Seallo creates the customer from the phone number on the order."

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
-    <title><%= content_for?(:title) ? yield(:title) : "#{Store.platform_name} — #{current_store&.name || "seallo"}" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : "#{Store.platform_name}, #{current_store&.name || "seallo"}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <meta name="theme-color" content="<%= current_store&.admin_theme == "seallo_dark" ? "#15110f" : "#a8432e" %>">
     <link rel="manifest" href="<%= admin_pwa_manifest_path %>">
@@ -37,8 +37,8 @@
       <% sidebar = capture do %>
         <nav class="lg-nav flex h-full flex-col overflow-y-auto rounded-2xl p-3">
           <div class="flex items-center justify-between px-3 pt-2 pb-5">
-            <%= link_to (agent ? "/confirmation" : "/dashboard"), class: "text-2xl font-extrabold tracking-tight text-[#a8432e]", dir: "ltr" do %>seallo<% end %>
-            <button type="button" data-seller-close class="text-[#8a8380] lg:hidden" aria-label="✕">✕</button>
+            <%= link_to (agent ? "/confirmation" : "/dashboard"), class: "text-2xl font-extrabold text-[#a8432e]", dir: "ltr" do %>seallo<% end %>
+            <button type="button" data-seller-close class="text-sm text-[#8a8380] lg:hidden" aria-label="<%= sl("Fermer") %>"><%= sl("Fermer") %></button>
           </div>
           <ul class="space-y-1">
             <% seller_menu(current_admin_user).each do |key, icon, label, href| %>
@@ -60,12 +60,12 @@
             <% if current_store && !agent %>
               <div class="lg-nav__store mb-2 rounded-xl px-3 py-2.5">
                 <p data-seller-store class="truncate text-sm font-semibold text-[#1f2430]"><%= current_store.name %></p>
-                <% if seller_plan_label(current_store) %><p class="text-xs text-[#8a8380]">Plan · <%= seller_plan_label(current_store) %></p><% end %>
+                <% if seller_plan_label(current_store) %><p class="text-xs text-[#8a8380]"><%= sl("Plan") %> <%= seller_plan_label(current_store) %></p><% end %>
               </div>
             <% end %>
             <%= render "admin/shared/order_alerts" %>
             <% if super_admin? %>
-              <%= link_to admin_platform_path, class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" do %><%= seller_icon(:plug) %> Platform<% end %>
+              <%= link_to admin_platform_path, class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" do %><%= seller_icon(:plug) %> <%= t("platform_admin.title") %><% end %>
             <% end %>
             <%= link_to "/settings/profile", class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" do %><%= seller_icon(:settings) %> <%= sl("Paramètres") %><% end %>
             <%= button_to admin_logout_path, method: :delete, class: "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" do %><%= seller_icon(:logout) %> <%= sl("Se déconnecter") %><% end %>
@@ -84,7 +84,7 @@
           <main class="min-w-0 flex-1 space-y-4">
             <div class="lg-chrome flex items-center justify-between rounded-2xl px-3 py-2.5 lg:hidden">
               <button type="button" data-seller-open aria-expanded="false" class="rounded-xl border border-[#e8e3df]/bg-white/70 p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>
-              <span class="text-xl font-extrabold tracking-tight text-[#a8432e]" dir="ltr">seallo</span>
+              <span class="text-xl font-extrabold text-[#a8432e]" dir="ltr">seallo</span>
               <span class="w-9"></span>
             </div>
             <%= render "admin/shared/pwa_install" %>
@@ -95,7 +95,7 @@
               </p>
             <% end %>
             <% if store_billing_past_due? %>
-              <p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]">Subscription payment is overdue. Your storefront stays online, but renew with the platform owner to clear billing.</p>
+              <p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= t("admin_ui.past_due") %></p>
             <% end %>
             <% if notice.present? %><p class="rounded-xl bg-[#e3f3e8] px-4 py-3 text-sm text-[#2f7a4a]"><%= notice %></p><% end %>
             <% if alert.present? %><p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= alert %></p><% end %>

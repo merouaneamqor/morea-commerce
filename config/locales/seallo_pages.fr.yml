@@ -2,8 +2,8 @@ fr:
   admin:
     team:
       title: "Équipe"
-      subtitle: "Ajoutez vos agents de confirmation : chacun a son compte, ne voit que ses commandes, et sa paie est calculée automatiquement."
-      add_member: "+ Ajouter un membre"
+      subtitle: "Ajoutez un compte pour chaque agent de confirmation. L'agent ne voit que ses commandes. Seallo calcule la paie à partir des commandes livrées."
+      add_member: "Ajouter un membre"
       members: "Membres"
       confirmed_month: "Confirmées ce mois"
       delivered_month: "Livrées ce mois"
@@ -93,4 +93,4 @@ fr:
       at_risk_badge: "À risque"
       new_badge: "Nouveau"
       in_progress: "%{count} en cours"
-      subtitle: "Chaque numéro de téléphone est un client. La liste se remplit toute seule avec vos commandes."
+      subtitle: "Chaque numéro de téléphone est un client. Seallo le crée à partir du téléphone de la commande."

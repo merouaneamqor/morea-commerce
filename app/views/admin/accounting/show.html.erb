@@ -123,7 +123,7 @@
            [ "inventory", :inventory, acc_amount(inventory[:cents]), t("accounting.side.inventory_sub", count: inventory[:products], out: inventory[:out_of_stock]) ]
          ] %>
       <% side.each do |key, tab, value, sub| %>
-        <%= link_to link_for.(tab: tab), class: "group flex items-center justify-between gap-3 rounded-xl border border-[#e8e3df] bg-white px-4 py-3 transition hover:border-[#d6cfca]", data: { side: key } do %>
+        <%= link_to link_for.(tab: tab), class: "flex items-center justify-between gap-3 rounded-xl border border-[#e8e3df] bg-white px-4 py-3 transition hover:border-[#d6cfca]", data: { side: key } do %>
           <div>
             <p class="font-semibold text-[#1f2430]"><%= t("accounting.side.#{key}") %></p>
             <p class="text-xs text-[#8a8380]"><%= t("accounting.side.#{key}_hint") %></p>
@@ -131,7 +131,7 @@
           </div>
           <div class="text-end">
             <p class="text-xl font-bold whitespace-nowrap text-[#1f2430]"><%= value %><% unless value == AccountingHelper::DASH %> <span class="text-sm font-semibold text-[#8a8380]"><%= cur %></span><% end %></p>
-            <p class="text-xs whitespace-nowrap text-[#8a8380]"><%= sub %> <span class="inline-block transition group-hover:translate-x-0.5 rtl:rotate-180">→</span></p>
+            <p class="text-xs whitespace-nowrap text-[#8a8380]"><%= sub %></p>
           </div>
         <% end %>
       <% end %>

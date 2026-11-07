@@ -3,9 +3,9 @@
 <% content_for :admin_page_class, "seller-page" %>
 <% content_for :seller_lang, "1" %>
 <% platforms = [
-     { key: "shopify", name: "Shopify", logo: "/images/partners/shopify.png", desc: "Commandes et produits en direct, dès leur création.", steps: t("seller_integrations.shopify_steps"), href: admin_seallo_connect_path },
-     { key: "woocommerce", name: "WooCommerce", logo: "/images/partners/woocommerce.png", desc: "Votre site WordPress : autorisation en un clic ou clés API.", steps: t("seller_integrations.woocommerce_steps"), href: admin_woocommerce_connect_path },
-     { key: "youcan", name: "YouCan", logo: "/images/partners/youcan.png", desc: "Votre boutique YouCan reliée en quelques secondes.", steps: t("seller_integrations.youcan_steps"), href: new_admin_store_connection_path(provider: "youcan") }
+     { key: "shopify", name: "Shopify", logo: "/images/partners/shopify.png", desc: "Seallo importe les commandes et les produits Shopify.", steps: t("seller_integrations.shopify_steps"), href: admin_seallo_connect_path },
+     { key: "woocommerce", name: "WooCommerce", logo: "/images/partners/woocommerce.png", desc: "Seallo se connecte au site WordPress par une autorisation ou par des clés API.", steps: t("seller_integrations.woocommerce_steps"), href: admin_woocommerce_connect_path },
+     { key: "youcan", name: "YouCan", logo: "/images/partners/youcan.png", desc: "Seallo reçoit les commandes YouCan par un webhook signé.", steps: t("seller_integrations.youcan_steps"), href: new_admin_store_connection_path(provider: "youcan") }
    ] %>
 <% linked_by_provider = @connections.select(&:active?).group_by(&:provider) %>
 <% locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>
@@ -36,7 +36,7 @@
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div>
     <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= sl("Intégrations API") %></h1>
-    <p class="max-w-2xl text-sm"><%= sl("Reliez vos outils à seallo : les commandes arrivent toutes seules, et le tableau de bord se remplit en temps réel.") %></p>
+    <p class="max-w-2xl text-sm"><%= sl("Reliez Shopify, Sendit et la publicité. Seallo importe les commandes et les affiche sur le tableau de bord.") %></p>
   </div>
   <%= render "admin/shared/language_switcher" %>
 </header>
@@ -53,7 +53,7 @@
         <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.stores_subtitle") %></span>
       </span>
     </span>
-    <span class="text-sm font-semibold text-[#a8432e]"><%= t("seller_integrations.connect_store") %> →</span>
+    <span class="text-sm font-semibold text-[#a8432e]"><%= t("seller_integrations.connect_store") %></span>
   </button>
 
   <% connected_stores = @connections.select(&:active?) %>
@@ -67,7 +67,7 @@
           <img src="<%= platform[:logo] %>" alt="<%= platform[:name] %>" class="size-11 shrink-0 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
           <div class="min-w-0 flex-1">
             <p class="truncate text-sm font-semibold text-[#1f2430]" dir="ltr"><%= connection.external_domain %></p>
-            <p class="truncate text-xs text-[#8a8380]"><%= platform[:name] %> · <%= sl("Dernière synchronisation") %> : <% if synced_at %><time datetime="<%= synced_at.iso8601 %>" data-when><%= synced_at.iso8601 %></time><% else %>—<% end %></p>
+            <p class="truncate text-xs text-[#8a8380]"><%= platform[:name] %>, <%= sl("Dernière synchronisation") %> <% if synced_at %><time datetime="<%= synced_at.iso8601 %>" data-when><%= synced_at.iso8601 %></time><% else %><%= admin_blank %><% end %></p>
           </div>
           <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
           <% if connection.provider == "shopify" && @shopify_configured %>
@@ -97,7 +97,7 @@
         <span class="text-xs text-[#8a8380]"><%= sl("Ajoutez vos comptes de livraison, leurs tarifs et leur ville de ramassage.") %></span>
       </span>
     </span>
-    <span class="text-sm font-semibold text-[#a8432e]"><%= sl("Gérer les sociétés de livraison") %> →</span>
+    <span class="text-sm font-semibold text-[#a8432e]"><%= sl("Gérer les sociétés de livraison") %></span>
   </button>
 
   <% if @delivery_accounts.any? %>
@@ -108,7 +108,7 @@
           <span data-logo="<%= account.provider %>"></span>
           <div class="min-w-0 flex-1">
             <p class="truncate text-sm font-semibold text-[#1f2430]" dir="auto"><%= account.name %> <span class="ms-1 text-xs font-medium text-[#8a8380]" dir="ltr"><%= account.code %></span></p>
-            <p class="truncate text-xs text-[#8a8380]"><%= info["name"] %><% if info["unavailable"] %> · <%= t("seller_integrations.provider_unavailable") %><% end %><% if account.pickup_city.present? %> · <%= account.pickup_city %><% end %></p>
+            <p class="truncate text-xs text-[#8a8380]"><%= info["name"] %><% if info["unavailable"] %>, <%= t("seller_integrations.provider_unavailable") %><% end %><% if account.pickup_city.present? %>, <%= account.pickup_city %><% end %></p>
           </div>
           <% if account.is_active? %>
             <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
@@ -141,9 +141,9 @@
       <span class="flex items-center gap-2" data-meta-card="<%= meta_state %>">
         <% if meta_state == "active" %>
           <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
-          <%= link_to "#{t("meta_ads.manage")} →", admin_meta_ads_path, class: "text-sm font-semibold text-[#a8432e]" %>
+          <%= link_to t("meta_ads.manage"), admin_meta_ads_path, class: "text-sm font-semibold text-[#a8432e]" %>
         <% else %>
-          <%= button_to "#{t(meta_state == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect")} →", connect_admin_meta_ads_path, method: :post,
+          <%= button_to t(meta_state == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect"), connect_admin_meta_ads_path, method: :post,
                 class: "text-sm font-semibold text-[#a8432e]" %>
         <% end %>
       </span>
@@ -156,7 +156,7 @@
           <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.tiktok_subtitle") %></span>
         </span>
       </span>
-      <%= button_to "#{t("tiktok_ads.connect")} →", admin_connect_tiktok_ads_path, method: :post, class: "text-sm font-semibold text-[#a8432e]" %>
+      <%= button_to t("tiktok_ads.connect"), admin_connect_tiktok_ads_path, method: :post, class: "text-sm font-semibold text-[#a8432e]" %>
     </div>
   </div>
 </section>
@@ -165,7 +165,7 @@
   <div class="lg-panel w-full max-w-md rounded-2xl p-6" role="dialog" aria-modal="true">
     <div class="mb-1 flex items-center justify-between">
       <h2 class="text-lg font-bold text-[#1f2430]"><%= t("seller_integrations.connect_store") %></h2>
-      <button type="button" data-close-modal class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="✕">✕</button>
+      <button type="button" data-close-modal class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="Fermer">Fermer</button>
     </div>
     <p class="mb-4 text-sm"><%= t("seller_integrations.stores_pick_text") %></p>
     <div class="space-y-2">
@@ -192,7 +192,7 @@
           <img src="<%= platform[:logo] %>" alt="" class="size-10 rounded-lg object-contain">
           <h2 class="text-lg font-bold text-[#1f2430]"><%= sl("Connecter") %> <%= platform[:name] %></h2>
         </div>
-        <button type="button" data-close-modal class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="✕">✕</button>
+        <button type="button" data-close-modal class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="Fermer">Fermer</button>
       </div>
       <p class="text-sm"><%= platform[:steps] %></p>
       <%= link_to t("seller_integrations.continue"), platform[:href], class: "mt-5 flex h-11 w-full items-center justify-center rounded-xl bg-[#a8432e] text-sm font-semibold text-white hover:bg-[#8e3624]" %>
@@ -271,15 +271,15 @@
       var countries = Object.keys(catalog.countries).filter(function (c) { return inRegion.some(function (e) { return e[1].countries.indexOf(c) >= 0; }); });
       var regions = [["all", S["Toutes les régions"]]].concat(Object.keys(catalog.regions).map(function (k) { return [k, catalog.regions[k]]; }));
       var html = '<h2 class="text-lg font-bold text-[#1f2430]">' + esc(S["Sélectionner le fournisseur de livraison"]) + '</h2><p class="mb-5 text-sm">' + esc(S["Choisissez votre société de livraison pour commencer."]) + "</p>" +
-        '<p class="mb-2 text-[11px] font-semibold tracking-wider text-[#8a8380] uppercase">' + esc(S["Choisissez une région"]) + '</p><div class="grid gap-2 sm:grid-cols-3">' +
+        '<p class="mb-2 text-sm font-medium text-[#8a8380]">' + esc(S["Choisissez une région"]) + '</p><div class="grid gap-2 sm:grid-cols-3">' +
         regions.map(function (r) {
           var n = r[0] === "all" ? all.length : all.filter(function (e) { return e[1].region === r[0]; }).length, on = state.region === r[0];
           return '<button type="button" data-region="' + r[0] + '" class="flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-start transition ' + (on ? "border-[#a8432e] bg-[#f4e4de]/40" : "border-[#e8e3df] hover:bg-[#f3f1ef]") + '"><span><span class="block text-sm font-semibold text-[#1f2430]">' + esc(r[1]) +
-            '</span><span class="text-xs text-[#8a8380]">' + n + " " + esc(S["fournisseurs"]) + "</span></span>" + (on ? '<span class="grid size-5 place-items-center rounded-full bg-[#a8432e] text-[11px] text-white">✓</span>' : "") + "</button>";
+            '</span><span class="text-xs text-[#8a8380]">' + n + " " + esc(S["fournisseurs"]) + "</span></span>" + "</button>";
         }).join("") + "</div>" +
-        '<p class="mt-5 mb-2 text-[11px] font-semibold tracking-wider text-[#8a8380] uppercase">' + esc(S["Pays pris en charge"]) + '</p><div class="flex flex-wrap gap-1.5">' +
-        '<button type="button" data-country="all" class="' + chip(state.country === "all") + '">🌍 ' + esc(S["Tous"]) + " " + count(inRegion.length, state.country === "all") + "</button>" +
-        countries.map(function (c) { return '<button type="button" data-country="' + c + '" class="' + chip(state.country === c) + '">' + (FLAGS[c] || c) + " " + esc(catalog.countries[c]) + " " + count(inRegion.filter(function (e) { return e[1].countries.indexOf(c) >= 0; }).length, state.country === c) + "</button>"; }).join("") + "</div>";
+        '<p class="mt-5 mb-2 text-sm font-medium text-[#8a8380]">' + esc(S["Pays pris en charge"]) + '</p><div class="flex flex-wrap gap-1.5">' +
+        '<button type="button" data-country="all" class="' + chip(state.country === "all") + '">' + esc(S["Tous"]) + " " + count(inRegion.length, state.country === "all") + "</button>" +
+        countries.map(function (c) { return '<button type="button" data-country="' + c + '" class="' + chip(state.country === c) + '">' + esc(catalog.countries[c]) + " " + count(inRegion.filter(function (e) { return e[1].countries.indexOf(c) >= 0; }).length, state.country === c) + "</button>"; }).join("") + "</div>";
       var cards = providerCards();
       html += '<div class="mt-5 flex items-center justify-between"><p class="text-sm font-semibold text-[#1f2430]">' + esc(S["Fournisseurs disponibles"]) + '</p><p class="text-xs text-[#8a8380]"><span data-result-count>' + cards.list.length + "</span> " + esc(S["résultats"]) + "</p></div>" +
         '<label class="mt-2 flex h-11 items-center gap-2 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm"><span class="text-[#8a8380]"><svg viewBox="0 0 24 24" class="size-[18px] fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round]" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>' +
@@ -353,7 +353,7 @@
       return html;
     };
     var senditDone = function () {
-      return '<div class="text-center"><span class="mx-auto grid size-12 place-items-center rounded-full bg-[#e3f3e8] text-xl text-[#2f7a4a]">✓</span><h2 class="mt-3 text-lg font-bold text-[#1f2430]">' + esc(SD.success_title) + '</h2><p class="mt-1 text-sm">' + esc(SD.success_text) + "</p></div>" +
+      return '<div class="text-center"><h2 class="mt-3 text-lg font-bold text-[#1f2430]">' + esc(SD.success_title) + '</h2><p class="mt-1 text-sm">' + esc(SD.success_text) + "</p></div>" +
         webhookBlock(state.done.webhook_url) + citiesLine({ cities_count: null }) +
         '<div class="mt-6 flex justify-end"><button type="button" data-done class="h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624]">' + esc(SD.done) + "</button></div>";
     };
@@ -362,8 +362,8 @@
       var step = state.provider ? 2 : 1, editing = !!state.account;
       var stepCls = function (n) { return "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold " + (step === n ? "bg-[#a8432e] text-white" : "text-[#8a8380]"); };
       root.innerHTML = '<div class="lg-panel flex max-h-[92dvh] w-full max-w-2xl flex-col rounded-2xl" role="dialog" aria-modal="true"><div class="flex items-center justify-between border-b border-[#f0ebe7] px-6 py-4"><div class="flex items-center gap-2">' +
-        (editing ? "" : '<span class="' + stepCls(1) + '">1 · ' + esc(S["Fournisseur"]) + '</span><span class="h-px w-6 bg-[#e8e3df]"></span>') + '<span class="' + stepCls(2) + '">' + (editing ? "" : "2 · ") + esc(S["Détails"]) + "</span></div>" +
-        '<button type="button" data-close class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="✕">✕</button></div><div class="overflow-y-auto px-6 py-5">' + (state.done ? senditDone() : step === 1 ? step1() : state.provider === "sendit" ? senditStep() : step2()) + "</div></div>";
+        (editing ? "" : '<span class="' + stepCls(1) + '">1. ' + esc(S["Fournisseur"]) + '</span><span class="h-px w-6 bg-[#e8e3df]"></span>') + '<span class="' + stepCls(2) + '">' + (editing ? "" : "2. ") + esc(S["Détails"]) + "</span></div>" +
+        '<button type="button" data-close class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="Fermer">Fermer</button></div><div class="overflow-y-auto px-6 py-5">' + (state.done ? senditDone() : step === 1 ? step1() : state.provider === "sendit" ? senditStep() : step2()) + "</div></div>";
     };
     var show = function () { render(); root.hidden = false; };
     var close = function () { if (state.done) return window.location.reload(); root.hidden = true; };

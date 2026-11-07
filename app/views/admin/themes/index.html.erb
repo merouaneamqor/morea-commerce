@@ -1,4 +1,4 @@
-<% content_for :title, "Themes — Online Store" %>
+<% content_for :title, "Themes, Online Store" %>
 
 <div class="admin-page-header">
   <div>
@@ -59,7 +59,7 @@
           </div>
         </div>
         <div class="flex flex-wrap items-center justify-between gap-3 p-4">
-          <div><h3 class="font-semibold"><%= preset[:name] %></h3><p class="admin-muted mt-1"><%= pluralize(preset[:snapshot].fetch("sections").size, "section", locale: :en) %> · FR / EN / AR</p></div>
+          <div><h3 class="font-semibold"><%= preset[:name] %></h3><p class="admin-muted mt-1"><%= pluralize(preset[:snapshot].fetch("sections").size, "section", locale: :en) %>, FR / EN / AR</p></div>
           <%= button_to "Install theme", install_admin_themes_path, params: { catalog_key: preset[:key] }, class: "admin-btn" %>
         </div>
       </article>

@@ -131,9 +131,9 @@
   "This store is already linked to another seallo account.",
   "هذا المتجر مربوط بحساب seallo آخر."
  ],
- "Chaque numéro de téléphone est un client. La liste se remplit toute seule avec vos commandes.": [
-  "Each phone number is a customer. The list fills itself from your orders.",
-  "كل رقم هاتف زبون. تمتلئ القائمة وحدها من طلباتك."
+ "Chaque numéro de téléphone est un client. Seallo le crée à partir du téléphone de la commande.": [
+  "Each phone number is one customer. Seallo creates the customer from the phone number on the order.",
+  "كل رقم هاتف زبون واحد. ينشئ Seallo الزبون من رقم الهاتف في الطلب."
  ],
  "Chiffre d'affaires": [
   "Revenue",
@@ -187,9 +187,9 @@
   "Orders",
   "الطلبات"
  ],
- "Commandes et produits en direct, dès leur création.": [
-  "Orders and products live, as soon as they are created.",
-  "الطلبات والمنتجات مباشرة فور إنشائها."
+ "Seallo importe les commandes et les produits Shopify.": [
+  "Seallo imports Shopify orders and products.",
+  "يستورد Seallo طلبات Shopify ومنتجاته."
  ],
  "Compte actif": [
   "Active account",
@@ -543,9 +543,9 @@
   "Refused",
   "مرفوضة"
  ],
- "Reliez vos outils à seallo : les commandes arrivent toutes seules, et le tableau de bord se remplit en temps réel.": [
-  "Connect your tools to seallo: orders arrive on their own and the dashboard fills in real time.",
-  "اربط أدواتك بـ seallo: تصل الطلبات وحدها وتمتلئ لوحة التحكم مباشرة."
+ "Reliez Shopify, Sendit et la publicité. Seallo importe les commandes et les affiche sur le tableau de bord.": [
+  "Connect Shopify, Sendit, and ads. Seallo imports the orders and shows the figures on the dashboard.",
+  "اربط Shopify وSendit والإعلانات. يستورد Seallo الطلبات ويعرض الأرقام في لوحة التحكم."
  ],
  "Reportée": [
   "Postponed",
@@ -715,13 +715,13 @@
   "Your orders will appear here once your store is connected.",
   "ستظهر طلباتك هنا بمجرّد ربط متجرك."
  ],
- "Votre boutique YouCan reliée en quelques secondes.": [
-  "Your YouCan store connected in seconds.",
-  "متجرك على YouCan مربوط في ثوانٍ."
+ "Seallo reçoit les commandes YouCan par un webhook signé.": [
+  "Seallo receives YouCan orders through a signed webhook.",
+  "يستقبل Seallo طلبات YouCan عبر webhook موقَّع."
  ],
- "Votre site WordPress : autorisation en un clic ou clés API.": [
-  "Your WordPress site: one-click approval or API keys.",
-  "موقعك على WordPress: موافقة بضغطة أو مفاتيح API."
+ "Seallo se connecte au site WordPress par une autorisation ou par des clés API.": [
+  "Seallo connects to the WordPress site with an approval or with API keys.",
+  "يتصل Seallo بموقع WordPress عبر تفويض أو مفاتيح API."
  ],
  "Votre société n'est pas dans la liste": [
   "Your company isn't listed",

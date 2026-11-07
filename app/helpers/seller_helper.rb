@@ -11,7 +11,15 @@ module SellerHelper
     "Accueil" => [ "Home", "الرئيسية" ],
     "Plus" => [ "More", "المزيد" ],
     "Menu" => [ "Menu", "القائمة" ],
-    "Stats" => [ "Stats", "إحصائيات" ]
+    "Stats" => [ "Statistics", "إحصائيات" ],
+    "Statistiques" => [ "Statistics", "إحصائيات" ],
+    "Fermer" => [ "Close", "إغلاق" ],
+    "en livraison" => [ "out for delivery", "قيد التوصيل" ],
+    "à confirmer" => [ "to confirm", "بانتظار التأكيد" ],
+    "des commandes" => [ "of orders", "من الطلبات" ],
+    "des colis" => [ "of parcels", "من الطرود" ],
+    "par rapport à la période précédente" => [ "compared with the previous period", "مقارنة بالفترة السابقة" ],
+    "commandes attendent une confirmation." => [ "orders are waiting for confirmation.", "طلبات بانتظار التأكيد." ]
   }.freeze
 
   SELLER_ICONS = {
@@ -59,7 +67,7 @@ module SellerHelper
   SELLER_AGENT_BOTTOM_NAV = [
     [ "orders", :orders, "Commandes", "/commandes" ],
     [ "confirmation", :phone, "Confirmation", "/confirmation" ],
-    [ "stats", :chart, "Stats", "/mes-statistiques" ]
+    [ "stats", :chart, "Statistiques", "/mes-statistiques" ]
   ].freeze
 
   # Which menu entry a controller belongs to, so the pages not yet ported still highlight their entry.

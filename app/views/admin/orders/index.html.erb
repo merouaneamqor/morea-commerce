@@ -1,4 +1,4 @@
-<% content_for :title, "Orders — Admin" %>
+<% content_for :title, "Orders, Admin" %>
 
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Orders</h1>
@@ -65,7 +65,7 @@
 
   <% if params[:q].present? %>
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#ebebeb] px-4 py-2 text-[13px]">
-      <span class="admin-muted">Results for “<%= params[:q] %>”</span>
+      <span class="admin-muted">Results for "<%= params[:q] %>"</span>
       <%= link_to "Clear search", admin_orders_path(status: @status.presence, connection_id: params[:connection_id].presence), class: "admin-btn-plain" %>
     </div>
   <% end %>
@@ -83,13 +83,13 @@
                 <span class="admin-mobile-list__title">
                   #<%= order.number %>
                   <% if order.contact_review_required? %>
-                    <span class="admin-mobile-list__alert" title="<%= t("import_contact.title") %>" aria-label="<%= t("import_contact.title") %>">‼</span>
+                    <span class="ms-1 rounded-full bg-[#fbe7ea] px-2 py-0.5 text-[11px] font-semibold text-[#b4344e]"><%= t("import_contact.badge") %></span>
                   <% end %>
                 </span>
-                <p class="admin-mobile-list__name" dir="auto"><%= order.customer_name.presence || "—" %></p>
+                <p class="admin-mobile-list__name" dir="auto"><%= order.customer_name.presence || admin_blank %></p>
                 <p class="admin-mobile-list__meta">
                   <% bits = [ order.customer_city.presence, order.customer_phone.presence ].compact %>
-                  <% if bits.any? %><span dir="auto"><%= bits.join(" · ") %></span><% else %>—<% end %>
+                  <% if bits.any? %><span dir="auto"><%= bits.join(", ") %></span><% else %><%= admin_blank %><% end %>
                 </p>
               </div>
               <%= admin_badge(order.status) %>
@@ -116,8 +116,8 @@
                   <span class="admin-muted ms-1 text-xs"><%= order.tag_list.first(2).join(", ") %></span>
                 <% end %>
               </td>
-              <td title="<%= order.customer_name %>"><%= order.customer_name.presence || "—" %></td>
-              <td class="admin-muted"><%= order.customer_phone.presence || "—" %></td>
+              <td title="<%= order.customer_name %>"><%= order.customer_name.presence || admin_blank %></td>
+              <td class="admin-muted"><%= order.customer_phone.presence || admin_blank %></td>
               <td class="admin-muted"><%= order.customer_city %></td>
               <td><%= admin_badge(order.status) %></td>
               <td class="is-numeric"><%= order.total_display %></td>
@@ -125,7 +125,7 @@
               <td class="admin-muted"><%= order.created_at.strftime("%b %-d, %H:%M") %></td>
               <% agent = order.order_confirmation&.assigned_user %>
               <td><%= agent ? tag.span(class: "seallo-agent") { tag.i((agent.name.presence || agent.email).first.upcase) + (agent.name.presence || agent.email) } : tag.span(t("admin.orders_groups.unassigned"), class: "admin-subdued") %></td>
-              <% unless agent_view? %><td><%= sendit_badge(order) || tag.span("—", class: "admin-subdued") %></td><% end %>
+              <% unless agent_view? %><td><%= sendit_badge(order) || tag.span(admin_blank, class: "admin-subdued") %></td><% end %>
             </tr>
           <% end %>
         </tbody>

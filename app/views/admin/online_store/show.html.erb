@@ -1,4 +1,4 @@
-<% content_for :title, "Online Store — Admin" %>
+<% content_for :title, "Online Store, Admin" %>
 
 <div class="admin-page-header">
   <div>
@@ -52,7 +52,7 @@
                 <%= count.positive? ? "Ready" : "Needs attention" %>
               </span>
             </div>
-            <p class="admin-muted mt-1"><span data-online-store-count="<%= key %>"><%= count %></span> <%= unit.pluralize(count) %> · <%= help %></p>
+            <p class="admin-muted mt-1"><span data-online-store-count="<%= key %>"><%= count %></span> <%= unit.pluralize(count) %>, <%= help %></p>
           </div>
           <%= link_to(count.positive? ? "Manage" : "Set up", path, class: "admin-btn-secondary") %>
         </div>
@@ -66,26 +66,26 @@
       <div class="space-y-3 p-4">
         <% if @store.storefront_theme_editor_enabled? %>
           <%= link_to admin_themes_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
-            <span>Install or publish a theme</span><span aria-hidden="true">→</span>
+            <span>Install or publish a theme</span>
           <% end %>
         <% end %>
         <%= link_to admin_home_sections_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
-          <span>Customize home page</span><span aria-hidden="true">→</span>
+          <span>Customize home page</span>
         <% end %>
         <%= link_to admin_products_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
-          <span>Manage products</span><span aria-hidden="true">→</span>
+          <span>Manage products</span>
         <% end %>
         <%= link_to admin_collections_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
-          <span>Manage collections</span><span aria-hidden="true">→</span>
+          <span>Manage collections</span>
         <% end %>
         <%= link_to admin_menu_items_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
-          <span>Edit navigation</span><span aria-hidden="true">→</span>
+          <span>Edit navigation</span>
         <% end %>
         <%= link_to admin_pages_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
-          <span>Manage pages</span><span aria-hidden="true">→</span>
+          <span>Manage pages</span>
         <% end %>
         <%= link_to edit_admin_store_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
-          <span>Store settings</span><span aria-hidden="true">→</span>
+          <span>Store settings</span>
         <% end %>
       </div>
     </section>

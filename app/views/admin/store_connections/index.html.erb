@@ -5,7 +5,7 @@
 <% platforms = [
      { key: "shopify", name: "Shopify", logo: "/images/partners/shopify.png", desc: "Seallo importe les commandes et les produits Shopify.", steps: t("seller_integrations.shopify_steps"), href: admin_seallo_connect_path },
      { key: "woocommerce", name: "WooCommerce", logo: "/images/partners/woocommerce.png", desc: "Seallo se connecte au site WordPress par une autorisation ou par des clés API.", steps: t("seller_integrations.woocommerce_steps"), href: admin_woocommerce_connect_path },
-     { key: "youcan", name: "YouCan", logo: "/images/partners/youcan.png", desc: "Seallo reçoit les commandes YouCan par un webhook signé.", steps: t("seller_integrations.youcan_steps"), href: new_admin_store_connection_path(provider: "youcan") }
+     { key: "youcan", name: "YouCan", logo: "/images/partners/youcan.png", desc: "Seallo reçoit les commandes YouCan par un webhook signé.", steps: t("seller_integrations.youcan_steps"), href: admin_youcan_connect_path }
    ] %>
 <% linked_by_provider = @connections.select(&:active?).group_by(&:provider) %>
 <% locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>

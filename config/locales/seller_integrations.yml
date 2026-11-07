@@ -3,7 +3,7 @@ fr:
   seller_integrations:
     shopify_steps: "Installez l’application seallo depuis Shopify, puis collez le code de connexion dans seallo."
     woocommerce_steps: "Installez le plugin seallo sur votre site WordPress, puis autorisez la connexion."
-    youcan_steps: "Ajoutez votre boutique YouCan et configurez le webhook signé pour recevoir les commandes."
+    youcan_steps: "Approuvez Seallo dans YouCan. Seallo enregistre la boutique et reçoit les nouvelles commandes."
     continue: "Continuer"
     details: "Détails"
     disconnected_note: "Déconnectée"
@@ -51,7 +51,7 @@ en:
   seller_integrations:
     shopify_steps: "Install the seallo app from Shopify, then paste the connection code into seallo."
     woocommerce_steps: "Install the seallo plugin on your WordPress site, then authorize the connection."
-    youcan_steps: "Add your YouCan store and set up the signed webhook to receive orders."
+    youcan_steps: "Approve Seallo in YouCan. Seallo stores the shop and receives new orders."
     continue: "Continue"
     details: "Details"
     disconnected_note: "Disconnected"
@@ -99,7 +99,7 @@ ar:
   seller_integrations:
     shopify_steps: "ثبّت تطبيق seallo من Shopify، ثم الصق رمز الاتصال في seallo."
     woocommerce_steps: "ثبّت إضافة seallo على موقع WordPress الخاص بك، ثم اسمح بالاتصال."
-    youcan_steps: "أضف متجر YouCan وأعدّ الـ webhook الموقَّع لاستقبال الطلبات."
+    youcan_steps: "وافق على Seallo في YouCan. يحفظ Seallo المتجر ويستقبل الطلبات الجديدة."
     continue: "متابعة"
     details: "التفاصيل"
     disconnected_note: "غير متصلة"

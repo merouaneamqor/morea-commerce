@@ -1,0 +1,6 @@
+<% content_for :title, t("connections.providers.youcan") %>
+<div class="admin-page-header"><h1 class="admin-page-header__title"><%= t("connections.providers.youcan") %></h1></div>
+<div class="admin-card p-5 max-w-2xl" role="alert">
+  <p><%= t("connections.youcan_oauth.unavailable") %></p>
+  <p class="mt-4"><%= link_to t("connections.back"), admin_store_connections_path, class: "admin-btn-secondary" %></p>
+</div>

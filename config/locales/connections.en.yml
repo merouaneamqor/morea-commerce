@@ -26,6 +26,12 @@ en:
     rotate_secret: "Replace signing secret"
     resume_help: "After resuming, check that your provider's webhook subscription is still active; it may need to be enabled or created again."
     youcan_limit: "YouCan deliveries must include full payment, shipping address and product details. Incomplete events are rejected; automatic retrieval of missing details is not included yet."
+    youcan_oauth:
+      connected: "YouCan store connected."
+      denied: "The YouCan connection was canceled."
+      invalid: "This connection request is no longer valid. Start again from Integrations."
+      failed: "YouCan could not be connected. Try again."
+      unavailable: "YouCan connection is not configured yet."
     webhook_url: "Delivery URL"
     verification_help: "Configure this delivery URL in your platform, using the matching signing secret. Status changes after a valid signed order delivery. Use your platform's delivery history to retry failed events."
     scope_help: "Receives new unpaid COD orders in MAD for delivery in Morocco, without tax, discounts or extra fees. Historical import, upstream changes, cancellations and catalog or stock sync are not included yet."
@@ -118,4 +124,4 @@ en:
       awaiting: "Awaiting signed delivery"
     instructions:
       woocommerce: "In WooCommerce → Settings → Advanced → Webhooks, add an active Order created webhook. Set the delivery URL below and the same secret you entered here."
-      youcan: "In your YouCan app, subscribe to order.created with this delivery URL. Use the app client secret and your store UUID."
+      youcan: "Approving YouCan subscribes this address to order.created. YouCan signs each delivery with the app client secret."

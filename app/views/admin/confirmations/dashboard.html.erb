@@ -41,7 +41,33 @@
   <% if @rows.empty? %>
     <p class="admin-empty"><%= t("admin.confirmations.no_agents") %></p>
   <% else %>
-    <div class="admin-table-wrap">
+    <ul class="admin-mobile-list md:hidden">
+      <% @rows.each do |row| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div class="min-w-0">
+              <p class="admin-mobile-list__name"><%= row.user.name.presence || row.user.email %></p>
+              <div class="admin-mobile-list__badges">
+                <span class="admin-badge admin-badge--neutral"><%= t("admin.confirmations.roles.#{row.user.confirmation_role}") %></span>
+                <span class="admin-badge <%= row.on_shift ? 'admin-badge--success' : 'admin-badge--neutral' %>"><%= t(row.on_shift ? "admin.confirmations.status.on_shift" : "admin.confirmations.status.off_shift") %></span>
+              </div>
+            </div>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= t("admin.confirmations.columns.hours") %>: <%= shift_hours(row.figures.worked_seconds) %>
+            · <%= t("admin.confirmations.columns.attempts") %>: <%= row.figures.attempts %>
+            · <%= t("admin.confirmations.outcomes.confirmed") %>: <%= row.figures.confirmed %>
+          </p>
+          <p class="admin-mobile-list__meta">
+            <%= t("admin.confirmations.columns.rate") %>: <%= confirmation_rate_label(row.figures.confirmation_rate) %>
+            · <%= t("admin.confirmations.columns.per_hour") %>: <%= confirmations_per_hour_label(row.figures.confirmations_per_hour) %>
+            · <%= t("admin.confirmations.columns.claims") %>: <%= row.figures.open_claims %>
+          </p>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden md:block">
       <table class="admin-table">
         <thead>
           <tr>

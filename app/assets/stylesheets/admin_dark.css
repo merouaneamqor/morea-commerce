@@ -101,10 +101,18 @@
 .admin-body[data-admin-theme="seallo_dark"] .lg-bottom-nav__item.is-active { background: rgb(168 67 46 / .22); color: #f0c2b4; }
 .admin-body[data-admin-theme="seallo_dark"] .lg-bottom-nav__badge { background: var(--s-rust); color: #fff; }
 .admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list { border-color: var(--s-line); }
-.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__item { border-color: var(--s-line); color: var(--s-ink); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__item,
+.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__card { border-color: var(--s-line); color: var(--s-ink); }
 .admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__item:active { background: var(--s-soft); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__title { color: #f0c2b4; }
+.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__name { color: var(--s-ink); }
 .admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__meta { color: var(--s-muted); }
 .admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__amount { color: var(--s-ink); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-list__form { border-color: var(--s-line); }
+.admin-body[data-admin-theme="seallo_dark"] .admin-mobile-actions {
+  background: rgb(28 27 25 / .94);
+  border-block-start-color: var(--s-line);
+}
 
 /* Legacy media controls and reporting tracks also contain compiled literal colors. */
 .admin-body[data-admin-theme="seallo_dark"] :is(.admin-thumb, .admin-media-item, .admin-media-choice__image) { background-color: var(--s-soft); border-color: var(--s-line); color: var(--s-muted); }

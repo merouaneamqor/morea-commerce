@@ -18,16 +18,18 @@
   </div>
 
   <div class="flex flex-wrap items-center gap-2">
-    <% @order.staff_transitions.reject { |s| s == "cancelled" }.each do |next_status| %>
-      <% confirm = (next_status == "returned" ? "Mark ##{@order.number} as returned and restore stock?" : nil) %>
-      <%= button_to "Mark as #{Order::STATUS_LABELS.fetch(next_status, next_status.humanize).downcase}",
-            transition_admin_order_path(@order),
-            method: :patch,
-            params: { to_status: next_status },
-            disabled: @order.contact_review_required?,
-            class: next_status == "returned" ? "admin-btn-secondary" : "admin-btn",
-            form: (confirm ? { data: { turbo_confirm: confirm } } : {}) %>
-    <% end %>
+    <div class="flex flex-wrap items-center gap-2 admin-page-header__actions--desktop">
+      <% @order.staff_transitions.reject { |s| s == "cancelled" }.each do |next_status| %>
+        <% confirm = (next_status == "returned" ? "Mark ##{@order.number} as returned and restore stock?" : nil) %>
+        <%= button_to "Mark as #{Order::STATUS_LABELS.fetch(next_status, next_status.humanize).downcase}",
+              transition_admin_order_path(@order),
+              method: :patch,
+              params: { to_status: next_status },
+              disabled: @order.contact_review_required?,
+              class: next_status == "returned" ? "admin-btn-secondary" : "admin-btn",
+              form: (confirm ? { data: { turbo_confirm: confirm } } : {}) %>
+      <% end %>
+    </div>
     <% if current_store.sendit_configured? && @order.sendit_code.present? && !@order.status.in?(%w[delivered cancelled returned]) %>
       <%= button_to "Refresh Sendit", sendit_admin_order_path(@order, op: "refresh"), class: "admin-btn-secondary" %>
     <% end %>
@@ -75,16 +77,18 @@
       </div>
       <ul>
         <% @order.order_items.each do |item| %>
-          <li class="flex items-center gap-3 border-b border-[#ebebeb] px-4 py-3 last:border-0">
+          <li class="admin-order-line-item flex items-center gap-3 border-b border-[#ebebeb] px-4 py-3 last:border-0">
             <%= admin_thumb(item.product && product_image_url(item.product)) %>
             <div class="min-w-0 flex-1">
-              <p class="truncate font-medium"><%= item.product_name %></p>
+              <p class="whitespace-normal break-words font-medium"><%= item.product_name %></p>
               <% if item.variant_name.present? %>
                 <p class="admin-badge admin-badge--neutral mt-1"><%= item.variant_name %></p>
               <% end %>
             </div>
-            <span class="admin-muted tabular-nums"><%= money(item.unit_price_cents, @order.currency) %> × <%= item.quantity %></span>
-            <span class="w-24 text-end tabular-nums"><%= money(item.total_cents, @order.currency) %></span>
+            <div class="admin-order-line-item__totals flex items-center gap-3 tabular-nums">
+              <span class="admin-muted"><%= money(item.unit_price_cents, @order.currency) %> × <%= item.quantity %></span>
+              <span class="w-24 text-end"><%= money(item.total_cents, @order.currency) %></span>
+            </div>
           </li>
         <% end %>
       </ul>
@@ -269,3 +273,19 @@
     <% end %>
   </div>
 </div>
+
+<% transitions = @order.staff_transitions.reject { |s| s == "cancelled" } %>
+<% if transitions.any? %>
+  <div class="admin-mobile-actions" data-order-mobile-actions>
+    <% transitions.each do |next_status| %>
+      <% confirm = (next_status == "returned" ? "Mark ##{@order.number} as returned and restore stock?" : nil) %>
+      <%= button_to "Mark as #{Order::STATUS_LABELS.fetch(next_status, next_status.humanize).downcase}",
+            transition_admin_order_path(@order),
+            method: :patch,
+            params: { to_status: next_status },
+            disabled: @order.contact_review_required?,
+            class: next_status == "returned" ? "admin-btn-secondary" : "admin-btn",
+            form: (confirm ? { data: { turbo_confirm: confirm } } : {}) %>
+    <% end %>
+  </div>
+<% end %>

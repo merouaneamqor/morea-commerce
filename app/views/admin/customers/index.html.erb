@@ -97,14 +97,14 @@
       <span class="text-[#8a8380]" dir="ltr"><%= first_row %>–<%= first_row + @customers.size - 1 %> / <%= @total %></span>
       <div class="flex gap-2">
         <% if @page > 1 %>
-          <%= link_to sl("Précédent"), page_path.(@page - 1), class: "rounded-lg border border-[#e8e3df] px-3 py-1.5 font-medium text-[#1f2430] hover:bg-[#f3f1ef]" %>
+          <%= link_to sl("Précédent"), page_path.(@page - 1), class: "inline-flex min-h-11 items-center rounded-lg border border-[#e8e3df] px-3 py-2.5 font-medium text-[#1f2430] hover:bg-[#f3f1ef]" %>
         <% else %>
-          <span class="rounded-lg border border-[#f0ebe7] px-3 py-1.5 text-[#c9c2be]"><%= sl("Précédent") %></span>
+          <span class="inline-flex min-h-11 items-center rounded-lg border border-[#f0ebe7] px-3 py-2.5 text-[#c9c2be]"><%= sl("Précédent") %></span>
         <% end %>
         <% if @page < @pages %>
-          <%= link_to sl("Suivant"), page_path.(@page + 1), class: "rounded-lg border border-[#e8e3df] px-3 py-1.5 font-medium text-[#1f2430] hover:bg-[#f3f1ef]" %>
+          <%= link_to sl("Suivant"), page_path.(@page + 1), class: "inline-flex min-h-11 items-center rounded-lg border border-[#e8e3df] px-3 py-2.5 font-medium text-[#1f2430] hover:bg-[#f3f1ef]" %>
         <% else %>
-          <span class="rounded-lg border border-[#f0ebe7] px-3 py-1.5 text-[#c9c2be]"><%= sl("Suivant") %></span>
+          <span class="inline-flex min-h-11 items-center rounded-lg border border-[#f0ebe7] px-3 py-2.5 text-[#c9c2be]"><%= sl("Suivant") %></span>
         <% end %>
       </div>
     </div>

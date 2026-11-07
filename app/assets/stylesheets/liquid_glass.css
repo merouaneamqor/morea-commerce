@@ -138,10 +138,10 @@
   background: transparent;
   color: var(--lg-muted);
   font: inherit;
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 650;
   letter-spacing: 0.01em;
-  line-height: 1.1;
+  line-height: 1.15;
   text-decoration: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;

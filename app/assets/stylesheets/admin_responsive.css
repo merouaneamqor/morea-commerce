@@ -37,8 +37,7 @@
   .admin-body :where(input.admin-input, select.admin-input, textarea.admin-input) {
     min-block-size: 2.75rem;
   }
-}
-@media (max-width: 639px) {
+  /* Large phones and small tablets still need thumb-sized controls. */
   .admin-body .admin-page-header__title { flex-wrap: wrap; }
   .admin-body :where(.admin-btn, .admin-btn-secondary, .admin-btn-critical) {
     min-block-size: 2.75rem;
@@ -48,6 +47,47 @@
     white-space: normal;
     text-align: center;
   }
+  .admin-body .admin-back {
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+  }
+  .admin-body .admin-page-header {
+    margin-block-end: 1rem;
+    gap: .75rem;
+  }
+  .admin-body .admin-tabs {
+    scroll-padding-inline: 1rem;
+    padding-inline-end: 1rem;
+    gap: .15rem;
+  }
+  .admin-body .admin-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-body .admin-filter-bar :where(.admin-input, select.admin-input) {
+    inline-size: 100%;
+    max-inline-size: 100%;
+  }
+  .admin-body .admin-order-line-item {
+    flex-wrap: wrap;
+  }
+  .admin-body .admin-order-line-item__totals {
+    inline-size: 100%;
+    justify-content: space-between;
+  }
+  .admin-body .admin-mobile-actions {
+    display: flex;
+  }
+  .admin-body .admin-page-header__actions--desktop {
+    display: none;
+  }
+  /* Leave room for the sticky order bar above the bottom nav. */
+  .admin-body:has(.admin-mobile-actions) .lg-shell[data-seller-shell] {
+    padding-bottom: calc(8.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 639px) {
   .admin-body .admin-table .admin-input { min-inline-size: 5rem; }
   .admin-body .admin-media-dialog__header { flex-wrap: wrap; }
   .admin-body .admin-media-dialog__tools { padding-inline: 1rem; }
@@ -83,10 +123,6 @@
     text-overflow: unset;
     border-inline-end: 0;
   }
-  .admin-body .admin-tabs {
-    scroll-padding-inline: 1rem;
-    padding-inline-end: 1rem;
-  }
 }
 
 /* Phone-native list rows (used instead of wide tables below md). */
@@ -95,7 +131,8 @@
   padding: 0;
   list-style: none;
 }
-.admin-mobile-list__item {
+.admin-mobile-list__item,
+.admin-mobile-list__card {
   display: block;
   padding: 0.9rem 1rem;
   border-bottom: 1px solid #ebebeb;
@@ -103,7 +140,8 @@
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
 }
-.admin-mobile-list__item:last-child { border-bottom: 0; }
+.admin-mobile-list__item:last-child,
+.admin-mobile-list__card:last-child { border-bottom: 0; }
 .admin-mobile-list__item:active { background: #f7f7f7; }
 .admin-mobile-list__top {
   display: flex;
@@ -151,14 +189,81 @@
   color: #303030;
   font-variant-numeric: tabular-nums;
 }
+.admin-mobile-list__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.55rem;
+}
+.admin-mobile-list__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.admin-mobile-list__actions > * {
+  flex: 1 1 calc(50% - 0.25rem);
+  min-inline-size: 7.5rem;
+}
+.admin-mobile-list__actions > :is(p, span) {
+  flex-basis: 100%;
+  text-align: start;
+}
+.admin-mobile-list__actions form {
+  display: contents;
+}
+.admin-mobile-list__form {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #ebebeb;
+}
+.admin-mobile-list__media {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.admin-mobile-list__media > :last-child { min-width: 0; }
 
-@media (max-width: 389px) {
+/* Sticky primary actions above the phone bottom nav. */
+.admin-mobile-actions {
+  display: none;
+  position: fixed;
+  inset-inline: 0;
+  bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  z-index: 44;
+  gap: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  background: rgb(255 255 255 / .94);
+  border-block-start: 1px solid #ebebeb;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.admin-mobile-actions > * {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+.admin-mobile-actions form { display: contents; }
+
+@media (min-width: 768px) {
+  .admin-mobile-actions { display: none !important; }
+  .admin-body .admin-page-header__actions--desktop { display: flex; }
+}
+
+@media (max-width: 639px) {
   .admin-body :where(.admin-dashboard-metrics, .seallo-stats, .seallo-kpis, .seallo-segments),
-  .admin-body .admin-page > .grid-cols-2 {
+  .admin-body .admin-page > .grid-cols-2,
+  .admin-body .seller-page > .grid-cols-2 {
     grid-template-columns: minmax(0, 1fr);
   }
   .admin-body .seallo-member__money { grid-template-columns: minmax(0, 1fr); }
   .admin-body .seallo-member__figures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 389px) {
+  .admin-body .admin-mobile-list__actions > * {
+    flex-basis: 100%;
+  }
 }
 
 /* Accounting cards show full amounts and translations without fixed-height clipping. */

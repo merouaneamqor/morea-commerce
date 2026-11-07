@@ -1,0 +1,20 @@
+<%# locals: order, confirmation, mine, needs_clock_in %>
+<% if order.contact_review_required? %>
+  <%= button_to t("admin.confirmations.start_call"), call_admin_confirmation_path(order), class: "admin-btn", disabled: true, title: t("import_contact.blocked") %>
+  <% if mine %><%= button_to t("admin.confirmations.release"), release_admin_confirmation_path(order), class: "admin-btn-secondary" %><% end %>
+<% elsif mine %>
+  <% if confirmation.call_started_at %>
+    <p role="timer" class="tabular-nums text-sm" data-controller="shift-timer" data-shift-timer-started-at-value="<%= confirmation.call_started_at.iso8601 %>"><%= shift_clock(Time.current - confirmation.call_started_at) %></p>
+    <%= button_to t("admin.confirmations.abandon_call"), abandon_call_admin_confirmation_path(order), class: "admin-btn-secondary" %>
+  <% else %>
+    <%= button_to t("admin.confirmations.start_call"), call_admin_confirmation_path(order), class: "admin-btn", disabled: needs_clock_in, data: { call_order_id: order.id } %>
+    <%= button_to t("admin.confirmations.release"), release_admin_confirmation_path(order), class: "admin-btn-secondary" %>
+  <% end %>
+<% elsif confirmation&.assigned_user_id %>
+  <span class="admin-muted text-sm"><%= t("admin.confirmations.claimed_elsewhere") %></span>
+<% elsif confirmation.nil? || confirmation.due? %>
+  <%= button_to t("admin.confirmations.claim"), claim_admin_confirmation_path(order), class: "admin-btn disabled:cursor-not-allowed disabled:opacity-50", disabled: needs_clock_in, title: (t("admin.confirmations.clock_in_required") if needs_clock_in) %>
+  <%= button_to t("admin.confirmations.start_call"), call_admin_confirmation_path(order), class: "admin-btn-secondary", disabled: needs_clock_in, data: { call_order_id: order.id } %>
+<% else %>
+  <span class="admin-muted text-sm"><%= t("admin.confirmations.not_due") %></span>
+<% end %>

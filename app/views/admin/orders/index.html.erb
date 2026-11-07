@@ -34,7 +34,7 @@
 <% end %>
 
 <div class="admin-card">
-  <%= form_with url: admin_orders_path, method: :get, class: "flex flex-wrap items-center gap-3 p-4" do %>
+  <%= form_with url: admin_orders_path, method: :get, class: "admin-filter-bar flex flex-wrap items-center gap-3 p-4" do %>
     <%= hidden_field_tag :status, @status %>
     <%= hidden_field_tag :q, params[:q] %>
     <%= hidden_field_tag :attention, params[:attention] if params[:attention] == "delivery_issues" %>

@@ -6,44 +6,75 @@
 </div>
 
 <div class="admin-card">
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Status</th>
-          <th>Inventory</th>
-          <th class="is-numeric">Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @products.each do |product| %>
-          <tr>
-            <td>
-              <%= link_to edit_admin_product_path(product), class: "flex items-center gap-3" do %>
+  <% if @products.empty? %>
+    <p class="admin-empty">Add your first product to start selling.</p>
+  <% else %>
+    <ul class="admin-mobile-list md:hidden">
+      <% @products.each do |product| %>
+        <li>
+          <%= link_to edit_admin_product_path(product), class: "admin-mobile-list__item" do %>
+            <div class="admin-mobile-list__top">
+              <div class="admin-mobile-list__media">
                 <%= admin_thumb(product_image_url(product)) %>
-                <span class="admin-link"><%= product.name %></span>
-              <% end %>
-            </td>
-            <td><%= admin_badge(product.status) %></td>
-            <td>
-              <% if product.track_inventory %>
-                <% qty = product.available_stock %>
-                <span class="<%= "text-[#8e0b21]" if qty <= 5 %>"><%= qty %> in stock</span>
-                <% if product.product_variants.size.positive? %>
-                  <span class="admin-muted">across <%= pluralize(product.product_variants.size, "variant", locale: :en) %></span>
-                <% end %>
-              <% else %>
-                <span class="admin-muted">Inventory not tracked</span>
-              <% end %>
-            </td>
-            <td class="is-numeric"><%= product.price_display %></td>
+                <div>
+                  <p class="admin-mobile-list__name" dir="auto"><%= product.name %></p>
+                  <p class="admin-mobile-list__meta">
+                    <% if product.track_inventory %>
+                      <% qty = product.available_stock %>
+                      <span class="<%= "text-[#8e0b21]" if qty <= 5 %>"><%= qty %> in stock</span>
+                      <% if product.product_variants.size.positive? %>
+                        <span> · across <%= pluralize(product.product_variants.size, "variant", locale: :en) %></span>
+                      <% end %>
+                    <% else %>
+                      Inventory not tracked
+                    <% end %>
+                  </p>
+                </div>
+              </div>
+              <%= admin_badge(product.status) %>
+            </div>
+            <p class="admin-mobile-list__amount" dir="ltr"><%= product.price_display %></p>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden md:block">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Status</th>
+            <th>Inventory</th>
+            <th class="is-numeric">Price</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <% if @products.empty? %>
-      <p class="admin-empty">Add your first product to start selling.</p>
-    <% end %>
-  </div>
+        </thead>
+        <tbody>
+          <% @products.each do |product| %>
+            <tr>
+              <td>
+                <%= link_to edit_admin_product_path(product), class: "flex items-center gap-3" do %>
+                  <%= admin_thumb(product_image_url(product)) %>
+                  <span class="admin-link"><%= product.name %></span>
+                <% end %>
+              </td>
+              <td><%= admin_badge(product.status) %></td>
+              <td>
+                <% if product.track_inventory %>
+                  <% qty = product.available_stock %>
+                  <span class="<%= "text-[#8e0b21]" if qty <= 5 %>"><%= qty %> in stock</span>
+                  <% if product.product_variants.size.positive? %>
+                    <span class="admin-muted">across <%= pluralize(product.product_variants.size, "variant", locale: :en) %></span>
+                  <% end %>
+                <% else %>
+                  <span class="admin-muted">Inventory not tracked</span>
+                <% end %>
+              </td>
+              <td class="is-numeric"><%= product.price_display %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </div>

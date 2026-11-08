@@ -6,16 +6,9 @@
 <% end %>
 <% rates = @sendit_city_rates || {} %>
 <div class="admin-card mt-4 min-w-0" id="sendit-settings" role="region" aria-labelledby="sendit-settings-title">
-  <div class="admin-card__header flex flex-wrap items-center justify-between gap-3">
-    <div class="min-w-0">
-      <h3 class="admin-card__title" id="sendit-settings-title"><%= t("sendit_settings.title") %></h3>
-      <p class="admin-help"><%= t("sendit_settings.description") %></p>
-    </div>
-    <% if sendit_account %>
-      <button type="button" class="admin-btn-secondary" data-delivery-edit="<%= sendit_account.id %>"><%= t("sendit_settings.manage_connection") %></button>
-    <% else %>
-      <button type="button" class="admin-btn-secondary" data-delivery-new="sendit"><%= t("sendit_settings.connect") %></button>
-    <% end %>
+  <div class="admin-card__header">
+    <h3 class="admin-card__title" id="sendit-settings-title"><%= t("sendit_settings.title") %></h3>
+    <p class="admin-help"><%= t("sendit_settings.description") %></p>
   </div>
   <div class="space-y-4 px-4 pb-4">
     <% if @store.errors.any? %>

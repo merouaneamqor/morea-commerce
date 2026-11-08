@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe "Sendit settings on the integrations page", type: :request do
+RSpec.describe "Sendit settings page", type: :request do
   let(:suffix) { SecureRandom.hex(5) }
   let(:password) { "Synthetic-settings-#{suffix}-password" }
   let(:store) { Store.create!(name: "Synthetic #{suffix}", slug: "sendit-settings-#{suffix}", currency: "MAD", storefront_enabled: false) }
@@ -27,7 +27,7 @@ RSpec.describe "Sendit settings on the integrations page", type: :request do
   it "offers the runtime controls in all three languages without exposing saved secrets" do
     store.update!(sendit_webhook_secret: "synthetic-webhook-secret", sendit_pickup_district_id: 42)
     %w[fr en ar].each do |locale|
-      get seller_integrations_path(locale: locale)
+      get admin_sendit_settings_path(locale: locale)
       expect(response).to have_http_status(:ok)
       expect(settings_form).to be_present
       %w[sendit_pickup_district_id sendit_allow_open sendit_allow_try sendit_webhook_secret shipping_dh free_shipping_threshold_dh].each do |field|
@@ -41,6 +41,16 @@ RSpec.describe "Sendit settings on the integrations page", type: :request do
     end
   end
 
+  it "keeps Sendit controls off the integrations page and links to the settings page" do
+    store.delivery_accounts.create!(name: "Synthetic Sendit", provider: "sendit",
+      credentials: { "api_key" => "synthetic-public", "api_secret" => "synthetic-secret" }, connected_at: Time.current)
+    get seller_integrations_path
+    expect(response).to have_http_status(:ok)
+    document = Nokogiri::HTML(response.body)
+    expect(document.at_css("#sendit-settings")).to be_nil
+    expect(document.at_css("a[href='#{admin_sendit_settings_path}']")).to be_present
+  end
+
   it "moves Sendit controls out of the general settings page" do
     get edit_admin_store_path
     expect(response).to have_http_status(:ok)
@@ -48,14 +58,14 @@ RSpec.describe "Sendit settings on the integrations page", type: :request do
     %w[sendit_public_key sendit_secret_key sendit_webhook_secret sendit_pickup_district_id sendit_allow_open sendit_allow_try shipping_dh free_shipping_threshold_dh].each do |field|
       expect(document.css("[name='store[#{field}]']")).to be_empty
     end
-    expect(document.at_css("a[href*='/integrations'][href$='#sendit-settings']")).to be_present
+    expect(document.at_css("a[href='#{admin_sendit_settings_path}']")).to be_present
   end
 
   it "saves pickup, parcel permissions, webhook secret and MAD amounts on the current workspace" do
     save_settings(sendit_pickup_district_id: "17", sendit_allow_open: "1", sendit_allow_try: "0",
       sendit_webhook_secret: "synthetic-replacement", shipping_dh: "35", free_shipping_threshold_dh: "450")
     expect(response).to have_http_status(:see_other)
-    expect(response).to redirect_to(seller_integrations_path(anchor: "sendit-settings"))
+    expect(response).to redirect_to(admin_sendit_settings_path)
     expect(store.reload).to have_attributes(sendit_pickup_district_id: 17, sendit_allow_open: true, sendit_allow_try: false,
       sendit_webhook_secret: "synthetic-replacement", shipping_cents: 3500, free_shipping_threshold_cents: 45_000)
   end
@@ -101,18 +111,18 @@ RSpec.describe "Sendit settings on the integrations page", type: :request do
     save_settings(shipping_dh: "99")
     expect(response).to redirect_to(home_admin_confirmations_path)
     expect(store.reload.shipping_cents).to eq(original)
-    get seller_integrations_path
+    get admin_sendit_settings_path
     expect(response).to redirect_to(home_admin_confirmations_path)
   end
 
-  it "renders connected integrations with a cold cache without contacting Sendit" do
+  it "renders connected settings with a cold cache without contacting Sendit" do
     store.delivery_accounts.create!(name: "Synthetic Sendit", provider: "sendit", credentials: { "api_key" => "synthetic-public", "api_secret" => "synthetic-secret" })
     allow(Rails.cache).to receive(:read).and_call_original
     allow(Rails.cache).to receive(:read).with(Sendit::Districts.cache_key(store)).and_return(nil)
     allow(Rails.cache).to receive(:read).with("#{Sendit::Districts.cache_key(store)}:pickup").and_return(nil)
     expect(Sendit::Client).not_to receive(:new)
     expect(Sendit::Client).not_to receive(:verify!)
-    get seller_integrations_path
+    get admin_sendit_settings_path
     expect(response).to have_http_status(:ok)
     expect(settings_form).to be_present
   end
@@ -121,7 +131,7 @@ RSpec.describe "Sendit settings on the integrations page", type: :request do
     store.update!(sendit_webhook_secret: "synthetic-legacy-secret")
     account = store.delivery_accounts.create!(name: "Managed Sendit", provider: "sendit",
       credentials: { "api_key" => "synthetic-public", "api_secret" => "synthetic-secret" }, webhook_token: "synthetic-token-#{suffix}")
-    get seller_integrations_path
+    get admin_sendit_settings_path
     expect(response).to have_http_status(:ok)
     expect(Nokogiri::HTML(response.body).at_css("#sendit-settings").text).to include(account.webhook_url)
     expect(settings_form.at_css("[name='store[sendit_webhook_secret]']")).to be_nil
@@ -134,7 +144,7 @@ RSpec.describe "Sendit settings on the integrations page", type: :request do
     allow(Rails.cache).to receive(:read).with(Sendit::Districts.cache_key(store)).and_return([ { id: 1, ville: "Synthetic city", name: "Synthetic district", price: "35" } ])
     allow(Rails.cache).to receive(:read).with("#{Sendit::Districts.cache_key(store)}:pickup").and_return([ { id: 17, name: "Synthetic pickup" } ])
     expect(Sendit::Client).not_to receive(:new)
-    get seller_integrations_path
+    get admin_sendit_settings_path
     expect(response).to have_http_status(:ok)
     expect(settings_form.at_css("option[value='17']").text).to include("Synthetic pickup")
     expect(response.body).to include("Synthetic city")

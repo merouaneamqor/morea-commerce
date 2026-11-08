@@ -1,0 +1,51 @@
+en:
+  carrier_settings:
+    title: "%{carrier} settings"
+    description: Manage parcel options and fees for %{carrier}. API keys stay on the Integrations page.
+    connection: Connection
+    back: Back to integrations
+    manage_connection: Manage connection
+    connect: "Connect %{carrier}"
+    connect_first: "Connect %{carrier} from Integrations first."
+    connect_to_refresh: "Connect %{carrier} to refresh cities"
+    refresh_queued: "%{carrier} city refresh requested"
+    refresh_cities: Refresh cities
+    webhook_url: Webhook URL
+    options: Delivery options
+    options_help: These options apply when creating parcels with %{carrier}.
+    saved: "%{carrier} settings saved"
+    save: Save settings
+fr:
+  carrier_settings:
+    title: "Paramètres %{carrier}"
+    description: Gérez les options des colis et les frais pour %{carrier}. Les clés API restent sur la page Intégrations.
+    connection: Connexion
+    back: Retour aux intégrations
+    manage_connection: Gérer la connexion
+    connect: "Connecter %{carrier}"
+    connect_first: "Connectez d'abord %{carrier} depuis Intégrations."
+    connect_to_refresh: "Connectez %{carrier} pour actualiser les villes"
+    refresh_queued: "Actualisation des villes %{carrier} demandée"
+    refresh_cities: Actualiser les villes
+    webhook_url: URL du webhook
+    options: Options de livraison
+    options_help: Ces options s'appliquent à la création des colis avec %{carrier}.
+    saved: "Paramètres %{carrier} enregistrés"
+    save: Enregistrer
+ar:
+  carrier_settings:
+    title: "إعدادات %{carrier}"
+    description: إدارة خيارات الطرود والرسوم لـ %{carrier}. تبقى مفاتيح API في صفحة التكاملات.
+    connection: الاتصال
+    back: العودة إلى التكاملات
+    manage_connection: إدارة الاتصال
+    connect: "ربط %{carrier}"
+    connect_first: "اربط %{carrier} أولاً من صفحة التكاملات."
+    connect_to_refresh: "اربط %{carrier} لتحديث المدن"
+    refresh_queued: "تم طلب تحديث مدن %{carrier}"
+    refresh_cities: تحديث المدن
+    webhook_url: رابط الإشعارات
+    options: خيارات التوصيل
+    options_help: تُطبَّق هذه الخيارات عند إنشاء الطرود عبر %{carrier}.
+    saved: "تم حفظ إعدادات %{carrier}"
+    save: حفظ الإعدادات

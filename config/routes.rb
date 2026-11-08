@@ -205,7 +205,13 @@ Rails.application.routes.draw do
       end
     end
     resource :store, only: %i[edit update]
-    resource :sendit_settings, only: %i[update destroy] do
+    resource :sendit_settings, only: %i[show update destroy] do
+      post :refresh_cities
+    end
+    resource :ozon_settings, only: %i[show update] do
+      post :refresh_cities
+    end
+    resource :ameex_settings, only: %i[show update] do
       post :refresh_cities
     end
     resources :store_connections, only: %i[index new create show update destroy]

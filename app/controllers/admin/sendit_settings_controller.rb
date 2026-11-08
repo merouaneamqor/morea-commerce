@@ -1,16 +1,23 @@
 # frozen_string_literal: true
 
 module Admin
-  # Runtime delivery options belong with the connection; API keys still go through
-  # DeliveryAccountsController's verified connection dialog.
+  # Dedicated Sendit settings page. API keys stay on the Integrations connection dialog.
   class SenditSettingsController < BaseController
+    include SenditSettingsLoading
+
     before_action :require_workspace!
+
+    def show
+      load_sendit_settings
+    end
 
     def update
       if current_store.update(settings_params)
         redirect_to settings_location, notice: t("sendit_settings.saved"), status: :see_other
       else
-        redirect_to settings_location, alert: current_store.errors.full_messages.to_sentence, status: :see_other
+        load_sendit_settings
+        flash.now[:alert] = current_store.errors.full_messages.to_sentence
+        render :show, status: :unprocessable_entity
       end
     end
 
@@ -55,7 +62,7 @@ module Admin
     end
 
     def settings_location
-      seller_integrations_path(anchor: "sendit-settings")
+      admin_sendit_settings_path
     end
 
     def require_workspace!

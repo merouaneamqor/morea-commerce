@@ -76,8 +76,16 @@ module SellerHelper
     "customers" => "clients", "delivery" => "delivery", "products" => "products", "variants" => "products",
     "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
     "seallo_connections" => "integrations", "woocommerce_connections" => "integrations",
+    "sendit_settings" => "integrations", "ozon_settings" => "integrations", "ameex_settings" => "integrations",
     "meta_ads" => "ads", "advertising" => "ads", "pixels" => "ads",
     "accounting" => "accounting"
+  }.freeze
+
+  # Dedicated settings page for API couriers. Credentials stay on Integrations.
+  CARRIER_SETTINGS_PATHS = {
+    "sendit" => :admin_sendit_settings_path,
+    "ozon" => :admin_ozon_settings_path,
+    "ameex" => :admin_ameex_settings_path
   }.freeze
 
   SELLER_STATUS_BADGES = {
@@ -133,6 +141,11 @@ module SellerHelper
 
   def seller_active_key
     SELLER_ACTIVE_BY_CONTROLLER[controller_name]
+  end
+
+  def carrier_settings_path_for(provider)
+    helper = CARRIER_SETTINGS_PATHS[provider.to_s]
+    helper && public_send(helper)
   end
 
   def seller_status_badge(status)

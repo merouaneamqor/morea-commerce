@@ -123,14 +123,17 @@
           <% else %>
             <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= sl("Non connectée") %></span>
           <% end %>
-          <button type="button" data-delivery-edit="<%= account.id %>" class="h-9 rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]"><%= sl("Modifier") %></button>
+          <% if (settings_path = carrier_settings_path_for(account.provider)) %>
+            <%= link_to t("seller_integrations.carrier_settings"), settings_path, class: "flex h-9 items-center rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]" %>
+          <% else %>
+            <button type="button" data-delivery-edit="<%= account.id %>" class="h-9 rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]"><%= sl("Modifier") %></button>
+          <% end %>
           <%= button_to sl("Supprimer"), seller_delivery_account_path(account.id), method: :delete, class: "h-9 rounded-lg px-3 text-xs font-semibold text-[#b4344e] hover:bg-[#fbe7ea]",
                 form: { onsubmit: "return confirm(#{t("seller_integrations.delete_account_confirm").to_json})" } %>
         </li>
       <% end %>
     </ul>
   <% end %>
-  <%= render "sendit_settings" %>
 </section>
 
 <section>
@@ -464,5 +467,14 @@
     document.querySelectorAll("[data-delivery-edit]").forEach(function (b) {
       b.addEventListener("click", function () { begin(accounts.filter(function (a) { return a.id === Number(b.dataset.deliveryEdit); })[0]); });
     });
+    // Deep links from a carrier settings page: open the connection dialog for that account or provider.
+    var params = new URLSearchParams(window.location.search);
+    var editId = Number(params.get("edit_account") || "");
+    if (editId) {
+      var editAccount = accounts.filter(function (a) { return a.id === editId; })[0];
+      if (editAccount) begin(editAccount);
+    } else if (params.get("connect")) {
+      begin(null, params.get("connect"));
+    }
   })();
 </script>

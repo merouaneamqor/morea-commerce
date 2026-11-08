@@ -144,6 +144,7 @@
           <%= link_to t("meta_ads.manage"), admin_meta_ads_path, class: "text-sm font-semibold text-[#a8432e]" %>
         <% else %>
           <%= button_to t(meta_state == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect"), connect_admin_meta_ads_path, method: :post,
+                form: { data: { turbo: false } },
                 class: "text-sm font-semibold text-[#a8432e]" %>
         <% end %>
       </span>
@@ -156,7 +157,9 @@
           <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.tiktok_subtitle") %></span>
         </span>
       </span>
-      <%= button_to t("tiktok_ads.connect"), admin_connect_tiktok_ads_path, method: :post, class: "text-sm font-semibold text-[#a8432e]" %>
+      <%= button_to t("tiktok_ads.connect"), admin_connect_tiktok_ads_path, method: :post,
+            form: { data: { turbo: false } },
+            class: "text-sm font-semibold text-[#a8432e]" %>
     </div>
   </div>
 </section>

@@ -75,6 +75,10 @@ class Store < ApplicationRecord
     where(id: DeliveryAccount.where(provider: "ozon", is_active: true).where.not(credentials_ciphertext: nil).select(:store_id))
   }
 
+  scope :with_ameex, -> {
+    where(id: DeliveryAccount.where(provider: "ameex", is_active: true).where.not(credentials_ciphertext: nil).select(:store_id))
+  }
+
   # Product name shown on the apex landing page and sign-in (not a tenant store name).
   def self.platform_name
     ENV.fetch("PLATFORM_NAME", "Seallo")
@@ -162,6 +166,7 @@ class Store < ApplicationRecord
   def reload(*)
     remove_instance_variable(:@sendit_delivery_account) if defined?(@sendit_delivery_account)
     remove_instance_variable(:@ozon_delivery_account) if defined?(@ozon_delivery_account)
+    remove_instance_variable(:@ameex_delivery_account) if defined?(@ameex_delivery_account)
     remove_instance_variable(:@default_shipping_account) if defined?(@default_shipping_account)
     super
   end
@@ -187,6 +192,25 @@ class Store < ApplicationRecord
 
   def ozon_configured?
     ozon_customer_id.present? && ozon_api_key.present?
+  end
+
+  def ameex_delivery_account
+    return @ameex_delivery_account if defined?(@ameex_delivery_account)
+
+    @ameex_delivery_account = delivery_accounts.where(provider: "ameex", is_active: true).where.not(credentials_ciphertext: nil).order(:id).first
+  end
+
+  # Ameex: api_key = C-Api-Id, api_secret = C-Api-Key.
+  def ameex_api_id
+    ameex_delivery_account&.credentials&.dig("api_key")
+  end
+
+  def ameex_api_key
+    ameex_delivery_account&.credentials&.dig("api_secret")
+  end
+
+  def ameex_configured?
+    ameex_api_id.present? && ameex_api_key.present?
   end
 
   # Courier the merchant chose for automatic parcel creation. Explicit default wins;

@@ -8,6 +8,7 @@ Rails.application.routes.draw do
 
   post "webhooks/sendit/:store_slug", to: "webhooks/sendit#create", as: :sendit_webhook
   post "webhooks/ozon/:store_slug", to: "webhooks/ozon#create", as: :ozon_webhook
+  post "webhooks/ameex/:store_slug", to: "webhooks/ameex#create", as: :ameex_webhook
   post "webhooks/seallo", to: "webhooks/seallo#create"
   post "webhooks/store_orders/:token", to: "webhooks/store_orders#create", as: :store_orders_webhook
   post "webhooks/shopify/uninstalled", to: "webhooks/shopify_lifecycle#uninstall", as: :shopify_uninstalled
@@ -251,6 +252,7 @@ Rails.application.routes.draw do
       collection do
         post :sendit_sync_all
         post :ozon_sync_all
+        post :ameex_sync_all
         post :shopify_sync_all
         get :product_search
         post :quick_product
@@ -258,6 +260,7 @@ Rails.application.routes.draw do
       member do
         post :sendit
         post :ozon
+        post :ameex
         patch :complete_import_contact
         get :sendit_label
         get :ozon_label

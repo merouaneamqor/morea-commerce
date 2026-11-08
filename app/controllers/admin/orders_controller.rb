@@ -6,7 +6,7 @@ module Admin
     before_action :agents_read_only!
     helper_method :agent_view?
     before_action :set_order, only: %i[
-      show edit update transition sendit sendit_label ozon ozon_label
+      show edit update transition sendit sendit_label ozon ozon_label ameex
       duplicate archive unarchive packing_slip comments tags collect refund complete_import_contact
     ]
 
@@ -289,6 +289,35 @@ end
 
       count = Ozon::Sync.enqueue_all(current_store.orders)
       redirect_to admin_orders_path, notice: "Syncing #{count} orders with Ozon Express in the background."
+    end
+
+    def ameex
+      return redirect_to(admin_order_path(@order), alert: "Ameex is not configured.") unless current_store.ameex_configured?
+
+      if params[:city_id].present?
+        city = Ameex::Cities.find(params[:city_id], store: current_store)
+        @order.update!(ameex_city_id: city&.dig(:id), ameex_city_name: city&.dig(:name))
+      end
+
+      sync = Ameex::Sync.new(@order)
+      case params[:op]
+      when "cancel" then sync.cancel!
+      when "refresh" then sync.refresh!
+      else sync.push!
+      end
+
+      if @order.reload.ameex_error.present?
+        redirect_to admin_order_path(@order), alert: "Ameex: #{@order.ameex_error}"
+      else
+        redirect_to admin_order_path(@order), notice: "Ameex: parcel #{@order.ameex_code} — #{@order.ameex_label}."
+      end
+    end
+
+    def ameex_sync_all
+      return redirect_to(admin_orders_path, alert: "Ameex is not configured.") unless current_store.ameex_configured?
+
+      count = Ameex::Sync.enqueue_all(current_store.orders)
+      redirect_to admin_orders_path, notice: "Syncing #{count} orders with Ameex in the background."
     end
 
     def shopify_sync_all

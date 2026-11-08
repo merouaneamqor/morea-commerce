@@ -14,6 +14,8 @@
           Sendit sets the delivery status.
         <% elsif current_store.ships_with?(:ozon) %>
           Ozon Express sets the delivery status.
+        <% elsif current_store.ships_with?(:ameex) %>
+          Ameex sets the delivery status.
         <% end %>
       </p>
     </div>
@@ -36,6 +38,8 @@
       <%= button_to "Refresh Sendit", sendit_admin_order_path(@order, op: "refresh"), class: "admin-btn-secondary" %>
     <% elsif current_store.ozon_configured? && @order.ozon_code.present? && !@order.status.in?(%w[delivered cancelled returned]) %>
       <%= button_to "Refresh Ozon", ozon_admin_order_path(@order, op: "refresh"), class: "admin-btn-secondary" %>
+    <% elsif current_store.ameex_configured? && @order.ameex_code.present? && !@order.status.in?(%w[delivered cancelled returned]) %>
+      <%= button_to "Refresh Ameex", ameex_admin_order_path(@order, op: "refresh"), class: "admin-btn-secondary" %>
     <% end %>
 
     <details class="relative">
@@ -268,6 +272,9 @@
     <% if current_store.ozon_configured? || @order.ozon_code.present? %>
       <%= render "ozon_card", order: @order %>
     <% end %>
+    <% if current_store.ameex_configured? || @order.ameex_code.present? %>
+      <%= render "ameex_card", order: @order %>
+    <% end %>
 
     <% if @order.staff_transitions.include?("cancelled") %>
       <section class="admin-card">
@@ -279,6 +286,8 @@
                " The Sendit parcel will be deleted after cancel."
              elsif current_store.ozon_configured? && @order.ozon_code.present?
                " The Ozon parcel will be marked cancelled after cancel."
+             elsif current_store.ameex_configured? && @order.ameex_code.present?
+               " The Ameex parcel will be marked cancelled after cancel."
              else
                ""
              end %>

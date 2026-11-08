@@ -4,7 +4,7 @@
 class DeliveryAccount < ApplicationRecord
   ACCOUNT_TYPES = %w[normal premium].freeze
   # Providers whose connector can create parcels automatically.
-  SHIPPABLE = %w[sendit ozon].freeze
+  SHIPPABLE = %w[sendit ozon ameex].freeze
 
   belongs_to :store
 
@@ -50,14 +50,18 @@ class DeliveryAccount < ApplicationRecord
     provider == "ozon"
   end
 
+  def ameex?
+    provider == "ameex"
+  end
+
   # URL the merchant pastes in the courier's webhook UI; the token authenticates inbound calls.
   def webhook_url
     return if webhook_token.blank?
 
-    path = if sendit?
-      "webhooks/sendit/#{store.slug}"
-    elsif ozon?
-      "webhooks/ozon/#{store.slug}"
+    path = case provider
+    when "sendit" then "webhooks/sendit/#{store.slug}"
+    when "ozon" then "webhooks/ozon/#{store.slug}"
+    when "ameex" then "webhooks/ameex/#{store.slug}"
     end
     return unless path
 
@@ -90,7 +94,7 @@ class DeliveryAccount < ApplicationRecord
   def default_must_be_shippable
     return if SHIPPABLE.include?(provider) && credentials? && is_active?
 
-    errors.add(:ships_by_default, "only an active connected Sendit or Ozon Express account can ship by default")
+    errors.add(:ships_by_default, "only an active connected Sendit, Ozon Express or Ameex account can ship by default")
   end
 
   def clear_other_defaults

@@ -32,6 +32,20 @@ ozon_cities_refresh:
   active_job: true
   description: "Refresh the Ozon Express city list weekly"
 <% end %>
+<% unless ENV["AMEEX_EXTERNAL_CRON"].present? %>
+ameex_poll:
+  cron: "<%= ENV.fetch("AMEEX_POLL_CRON", "*/15 * * * *") %>"
+  class: "AmeexPollJob"
+  queue: default
+  active_job: true
+  description: "Refresh Ameex parcels still in transit"
+ameex_cities_refresh:
+  cron: "<%= ENV.fetch("AMEEX_CITIES_CRON", "30 3 * * 1") %>"
+  class: "AmeexCitiesRefreshJob"
+  queue: default
+  active_job: true
+  description: "Refresh the Ameex city list weekly"
+<% end %>
 <% unless ENV["SHOPIFY_EXTERNAL_CRON"].present? %>
 shopify_orders_sync:
   cron: "<%= ENV.fetch("SHOPIFY_SYNC_CRON", "*/10 * * * *") %>"

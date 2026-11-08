@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_08_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_08_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -774,10 +774,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_08_130000) do
     t.string "ozon_message"
     t.text "ozon_error"
     t.datetime "ozon_synced_at"
+    t.string "ameex_code"
+    t.string "ameex_status"
+    t.integer "ameex_city_id"
+    t.string "ameex_city_name"
+    t.decimal "ameex_fee", precision: 10, scale: 2
+    t.string "ameex_message"
+    t.text "ameex_error"
+    t.datetime "ameex_synced_at"
     t.index ["archived_at"], name: "index_orders_on_archived_at"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["customer_phone"], name: "index_orders_on_customer_phone"
     t.index ["status"], name: "index_orders_on_status"
+    t.index ["store_id", "ameex_code"], name: "index_orders_on_store_id_and_ameex_code", unique: true, where: "(ameex_code IS NOT NULL)"
     t.index ["store_id", "meta_ad_id", "created_at"], name: "index_orders_on_meta_ad", where: "(meta_ad_id IS NOT NULL)"
     t.index ["store_id", "meta_adset_id", "created_at"], name: "index_orders_on_meta_adset", where: "(meta_adset_id IS NOT NULL)"
     t.index ["store_id", "meta_campaign_id", "created_at"], name: "index_orders_on_meta_campaign", where: "(meta_campaign_id IS NOT NULL)"

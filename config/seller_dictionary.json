@@ -475,9 +475,9 @@
   "Default shipping company updated.",
   "تم تحديث شركة الشحن الافتراضية."
 ],
- "Seules Sendit et Ozon Express connectées peuvent être la société par défaut.": [
-  "Only a connected Sendit or Ozon Express account can be the default.",
-  "يمكن فقط لحساب Sendit أو Ozon Express المتصل أن يكون الشركة الافتراضية."
+ "Seules Sendit, Ozon Express et Ameex connectées peuvent être la société par défaut.": [
+  "Only a connected Sendit, Ozon Express or Ameex account can be the default.",
+  "يمكن فقط لحساب Sendit أو Ozon Express أو Ameex المتصل أن يكون الشركة الافتراضية."
 ],
  "Ouvrir colis": [
   "Open parcel",

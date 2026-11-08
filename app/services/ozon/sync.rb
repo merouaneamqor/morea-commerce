@@ -113,7 +113,7 @@ module Ozon
     end
 
     def self.pending_orders(scope = Order.all)
-      to_push = scope.where(status: %w[confirmed preparing awaiting_pickup address_issue], ozon_code: nil, sendit_code: nil)
+      to_push = scope.where(status: %w[confirmed preparing awaiting_pickup address_issue], ozon_code: nil, sendit_code: nil, ameex_code: nil)
       in_progress = scope.where.not(ozon_code: nil)
                         .where("ozon_status IS NULL OR ozon_status NOT IN (?)", FINAL)
                         .where.not(status: %w[delivered cancelled returned])
@@ -149,7 +149,7 @@ module Ozon
 
     def push!
       return fail!(I18n.t("import_contact.blocked")) if order.reload.contact_review_required?
-      return order if order.ozon_code.present? || order.sendit_code.present?
+      return order if [ order.ozon_code, order.sendit_code, order.ameex_code ].any?(&:present?)
       return order if order.status.in?(%w[cancelled returned delivered])
 
       city = resolve_city!

@@ -81,7 +81,7 @@ class ApplicationController < ActionController::Base
     request.path == "/" || request.path == "/sitemap.xml" || request.path.match?(%r{\A/(?:fr|en|ar)(?:/|\z)}) || request.path == "/consent/tracking"
   end
 
-  # Apex (ollazen.com / www) hosts the SaaS platform, not a storefront.
+  # Apex (seallo.ma / www) hosts the SaaS platform, not a storefront.
   def apex_request_allowed?
     path = request.path
     path == "/" ||

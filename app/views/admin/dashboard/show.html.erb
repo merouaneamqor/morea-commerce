@@ -24,6 +24,8 @@
   ]
 %>
 
+<%= render "admin/dashboard/onboarding" %>
+
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div>
     <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= sl("Bonjour") %><%= first_name.present? ? "#{(rtl? ? "، " : ", ")}#{first_name}" : "" %></h1>

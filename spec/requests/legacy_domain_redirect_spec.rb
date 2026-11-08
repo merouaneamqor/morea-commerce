@@ -10,7 +10,7 @@ RSpec.describe "Legacy domain redirect", type: :request do
     yield
   ensure
     previous.each { |key, value| value.nil? ? ENV.delete(key) : ENV[key] = value }
-    ( %w[APP_BASE_DOMAIN LEGACY_BASE_DOMAIN] - previous.keys ).each { |key| ENV.delete(key) }
+    (%w[APP_BASE_DOMAIN LEGACY_BASE_DOMAIN] - previous.keys).each { |key| ENV.delete(key) }
   end
 
   it "redirects the apex host to the canonical domain" do

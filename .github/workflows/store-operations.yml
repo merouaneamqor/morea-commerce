@@ -15,14 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Check Render health
-        run: curl --fail --silent --show-error --retry 4 --retry-delay 15 --retry-all-errors --max-time 60 https://ollazen.com/up
+        run: curl --fail --silent --show-error --retry 4 --retry-delay 15 --retry-all-errors --max-time 60 https://seallo.ma/up
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Generate authenticated catalog, inventory and order report
         env:
           MOREA_API_TOKEN: ${{ secrets.MOREA_API_TOKEN }}
-          MOREA_GRAPHQL_URL: ${{ vars.MOREA_GRAPHQL_URL || 'https://morea.ollazen.com/graphql' }}
+          MOREA_GRAPHQL_URL: ${{ vars.MOREA_GRAPHQL_URL || 'https://morea.seallo.ma/graphql' }}
         run: python script/store_report.py
       - uses: actions/upload-artifact@v4
         with:

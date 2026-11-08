@@ -1071,9 +1071,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_08_140000) do
     t.datetime "consumed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "shop_domain"
     t.index ["digest"], name: "index_seallo_connection_codes_on_digest", unique: true
     t.index ["store_id"], name: "index_seallo_connection_codes_on_store_id"
     t.index ["user_id"], name: "index_seallo_connection_codes_on_user_id"
+    t.check_constraint "shop_domain IS NULL OR char_length(shop_domain::text) <= 253", name: "seallo_connection_code_shop_domain_length"
   end
 
   create_table "shopify_privacy_requests", force: :cascade do |t|

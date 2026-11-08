@@ -71,19 +71,20 @@ en:
             - "Prices are in US dollars and billed monthly by Shopify, and charges appear on your Shopify invoice. Choose, change or cancel your plan from the app in your Shopify admin. Development stores are not charged. Shopify's pricing page always shows the current price."
     privacy:
       title: "Privacy policy"
-      summary: "How Seallo Connect handles store and order data on behalf of merchants."
+      summary: "How Seallo handles Shopify order data and Meta Ads data for merchants."
       sections:
         - heading: "Who this applies to"
           body:
             - "Seallo Connect is a Shopify app that connects a merchant's Shopify store to the merchant's workspace in Seallo. The merchant decides how its orders are handled. Seallo processes order data on the merchant's behalf to provide the service."
-        - heading: "Data we access"
+            - "This policy also covers the optional Meta Ads connection described below."
+        - heading: "Shopify data we access"
           body:
             - "With the read_orders permission, for each eligible cash-on-delivery order, we read:"
           items:
             - "Buyer contact details from the order: shipping name, phone number and delivery address (street, city, country)."
             - "Order details: order number, date, currency, amounts, items, quantities, payment and fulfilment status."
             - "Shop identity: the store's myshopify.com domain, and the app's installation and subscription status."
-        - heading: "Data we do not access"
+        - heading: "Shopify data we do not access"
           body:
             - "We do not read buyer email addresses, payment card details, customer accounts or marketing data. The app does not request customer-directory or product permissions, and does not write to your Shopify store."
         - heading: "How we use it"
@@ -101,6 +102,11 @@ en:
             - "When the app is uninstalled or disconnected, importing stops and connection credentials are removed. Shopify session data for the shop is deleted. Orders already imported stay in the merchant's workspace until the merchant deletes them or a Shopify privacy request applies."
             - "Completed Seallo-imported orders (delivered, cancelled or returned) have buyer contact details redacted after 180 days under the platform retention job, while amounts, statuses and replay identity are kept."
             - "When Shopify sends a customer redaction or shop redaction request, we redact buyer contact details, notes and events on the affected orders once they are completed. Orders still being delivered are held, and flagged for the merchant to review, until they are completed, so that deliveries are not broken. Amounts, statuses and identifiers needed for accounting and to prevent re-importing are kept."
+        - heading: "Meta Ads"
+          body:
+            - "When you authorize Meta Ads, Seallo lists the ad accounts you can connect. Seallo reads the account name, currency, time zone and status. For accounts you link, Seallo reads campaign, ad set and ad names and details, daily spend, and results reported by Meta, such as impressions, clicks and attributed purchases."
+            - "Seallo uses these data in your workspace to report advertising costs and include them in product profitability. The connection is read-only for ads. Seallo stores the Meta access token encrypted so it can sync your linked accounts."
+            - "To stop syncing, open Meta Ads in your Seallo workspace and select Disconnect. Seallo removes the access token, unlinks the accounts and asks Meta to revoke the permissions. You can also request deletion through Meta. When Meta sends the request, Seallo removes the access token and Meta user ID from the affected connections and stops syncing. Seallo keeps a hashed identifier to record the deletion. Spend already synced stays in the merchant's workspace as part of its business records."
         - heading: "Cookies"
           body:
             - "These public pages use a necessary cookie to remember your language choice. They do not load Meta or TikTok measurement pixels. Fonts may be loaded from Google Fonts. See the cookie policy for details and choices."

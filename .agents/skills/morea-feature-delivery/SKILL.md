@@ -19,6 +19,8 @@ Assign independent agents disjoint paths and migration timestamps. One integrato
 
 Prefer existing Rails services, Hotwire forms and admin components. Add the model/service invariants first, then tenant-scoped controller/API and usable interface. Include validation/error/empty states, bounded listing and relevant localization/accessibility behavior. Do not add implementation details to customer-facing copy.
 
+Any change that alters merchant setup or first use must update onboarding in the same slice. Extend or rewrite `Seller::Onboarding`, the dashboard checklist/tour, fr/en/ar onboarding copy and `docs/features/merchant-onboarding.md` so the first-run path matches the shipped flow. New connections, carriers, storefront setup, order intake or confirmation entry points are incomplete until onboarding steps, CTAs and specs reflect them.
+
 Add migrations without rewriting historical migrations. Use unique indexes and foreign keys for durable identity rules, and transactions for related order/stock/audit changes. Explain rollback or data-backfill limits. Keep schema generation under the integrator's control after all migrations are present.
 
 ## Verify proportionately

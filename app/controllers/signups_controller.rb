@@ -22,6 +22,7 @@ class SignupsController < ApplicationController
       session[:user_id] = user.id
       session[:session_version] = user.session_version
       session[:admin_mode] = "store"
+      request.session_options[:expire_after] = SESSION_TTL
       store = user.store
       paid_trial = store.plan_selected? && !store.free_plan?
       redirect_to paid_trial ? payment_path(locale: I18n.locale) : admin_root_path
@@ -51,6 +52,7 @@ class SignupsController < ApplicationController
       session[:user_id] = user.id
       session[:session_version] = user.session_version
       session[:admin_mode] = "store"
+      request.session_options[:expire_after] = SESSION_TTL
       redirect_to admin_root_path, notice: t("registration.verified")
     else
       @token = params[:token].to_s

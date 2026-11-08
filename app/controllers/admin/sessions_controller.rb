@@ -12,12 +12,14 @@ module Admin
 
       if sign_in_allowed?(user) && user.authenticate(params[:password])
         return_to = session[:return_to]
+        remember = params[:remember] == "1"
         reset_session
         session[:user_id] = user.id
         session[:session_version] = user.session_version
         session[:admin_mode] = user.super_admin? ? "platform" : "store"
+        session[:remember_admin] = true if remember
         session[:return_to] = return_to if return_to.present?
-        request.session_options[:expire_after] = 30.days if params[:remember] == "1"
+        request.session_options[:expire_after] = remember ? REMEMBER_TTL : SESSION_TTL
         redirect_to after_login_path_for(user), notice: t("sign_in.welcome")
       else
         flash.now[:alert] = t("sign_in.invalid")

@@ -1,10 +1,13 @@
 class ApplicationController < ActionController::Base
   LOCALE_COOKIE = :morea_locale
+  # Default signed-in lifetime. "Remember me" stretches this on every cookie rewrite.
+  SESSION_TTL = 30.days
+  REMEMBER_TTL = 90.days
 
   allow_browser versions: :modern
   stale_when_importmap_changes
 
-  before_action :configure_session_domain
+  before_action :configure_session_cookie
   before_action :set_current_store
   before_action :set_locale
 
@@ -26,7 +29,9 @@ class ApplicationController < ActionController::Base
 
   # Share the session across store subdomains for super admins. Leave the cookie
   # host-only on localhost — browsers reject Domain=.lvh.me there and CSRF breaks.
-  def configure_session_domain
+  # Re-apply expire_after on every request so flash/session writes keep Max-Age
+  # instead of collapsing back to a browser-session cookie.
+  def configure_session_cookie
     base = Store.base_domain
     host = request.host
     if host == base || host == "www.#{base}" || host.end_with?(".#{base}")
@@ -34,6 +39,7 @@ class ApplicationController < ActionController::Base
     else
       request.session_options[:domain] = nil
     end
+    request.session_options[:expire_after] = session[:remember_admin] ? REMEMBER_TTL : SESSION_TTL
   end
 
   def set_current_store

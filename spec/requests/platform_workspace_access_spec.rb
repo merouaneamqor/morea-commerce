@@ -5,7 +5,7 @@ RSpec.describe "Platform workspace access", type: :request do
   let(:password) { "synthetic-workspace-password-123" }
   let!(:owner) { User.create!(email: "platform-#{SecureRandom.hex(5)}@example.test", password: password, super_admin: true, admin: true) }
   let!(:first) { Store.create!(slug: "first-#{SecureRandom.hex(5)}", name: "First synthetic workspace", currency: "MAD") }
-  let!(:second) { Store.create!(slug: "second-#{SecureRandom.hex(5)}", name: "Second synthetic workspace", currency: "MAD", storefront_enabled: false, subscription_required: true, billing_status: "trial") }
+  let!(:second) { Store.create!(slug: "second-#{SecureRandom.hex(5)}", name: "Second synthetic workspace", currency: "MAD", storefront_enabled: false, subscription_required: true, billing_status: "trial", trial_ends_at: 14.days.from_now) }
   let!(:first_admin) { first.users.create!(email: "first-admin-#{SecureRandom.hex(4)}@example.test", password: password, admin: true, name: "First workspace admin") }
   let!(:second_admin) { second.users.create!(email: "second-admin-#{SecureRandom.hex(4)}@example.test", password: password, admin: true, name: "Second workspace admin") }
 

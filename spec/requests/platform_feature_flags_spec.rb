@@ -56,7 +56,8 @@ RSpec.describe "Platform feature flags", type: :request do
     host! Store.base_domain
     get "/superadmin/feature_flags"
 
-    expect(response).to redirect_to(admin_login_path)
+    expect(response).to redirect_to(admin_root_path)
+    expect(response.body).not_to include("Feature flags")
   end
 
   it "enables and disables the theme editor for only the selected workspace" do

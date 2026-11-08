@@ -110,7 +110,7 @@ RSpec.describe "Platform home page gates", type: :request do
 
     patch "/superadmin/feature_flags/update_home", params: { flag: "home_maintenance", enabled: "1" }
 
-    expect(response).to redirect_to(admin_login_path)
+    expect(response).to redirect_to(admin_root_path)
     expect(PlatformSetting.current).not_to be_home_maintenance
   end
 end

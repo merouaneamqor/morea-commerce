@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- Morea monogram M — favicon / labels / watermark -->
-  <rect width="64" height="64" fill="#f7f5f2"/>
-  <path fill="#1a1716" d="M14 50 V16.2 L28.6 43 L43.2 16.2 V50 h3 V13 H40.8 L28.6 38.4 L16.4 13 H11 V50 Z"/>
+  <rect width="64" height="64" rx="14" fill="#a8432e"/>
+  <path fill="#ffffff" d="M12 14h40c3.3 0 6 2.7 6 6v24c0 3.3-2.7 6-6 6H30l-12 8v-8h-6c-3.3 0-6-2.7-6-6V20c0-3.3 2.7-6 6-6z"/>
+  <text x="32" y="39" text-anchor="middle" font-family="ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif" font-size="26" font-weight="800" fill="#a8432e">S.</text>
 </svg>

@@ -14,12 +14,8 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Luxurious+Roman&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
     <%= yield :head %>
 
-    <% if current_store %>
-      <link rel="icon" href="/icon.svg" type="image/svg+xml">
-      <link rel="apple-touch-icon" href="/icon.svg">
-    <% else %>
-      <%= render "shared/platform_icons" %>
-    <% end %>
+    <%= render "shared/platform_icons" %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" sizes="any">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "storefront_responsive", "data-turbo-track": "reload" %>

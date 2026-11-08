@@ -11,7 +11,8 @@
     <h1><%= copy[:title] %></h1>
     <p class="sc-lead"><%= copy[:summary] %></p>
     <% if page_key != "overview" %>
-      <p class="sc-updated"><%= t("seallo_connect_pages.nav.updated", date: "2026-11-06") %></p>
+      <% updated_on = page_key == "privacy" ? "2026-11-08" : "2026-11-06" %>
+      <p class="sc-updated"><%= t("seallo_connect_pages.nav.updated", date: updated_on) %></p>
     <% end %>
     <% copy[:sections].each do |section| %>
       <section>

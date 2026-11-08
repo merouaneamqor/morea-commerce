@@ -19,7 +19,7 @@ They are versioned repository instructions that agents can load in this checkout
 1. Read the existing implementation and relevant skill. Choose a user-visible outcome and document its actor/store boundary, failure behavior and acceptance scenarios.
 2. Use the [Cashod evidence PR](https://github.com/merouaneamqor/morea-commerce/pull/90) as reference, distinguishing observed reads from unverified writes and UI behavior. Preserve Morea's working capabilities.
 3. Give agents disjoint file ownership. The integrator owns shared routes, schema, navigation, CI and final commits. Child agents report contracts and tests without switching branches or committing shared work.
-4. Implement service/model, database constraints, authorized entry point and usable admin UI. Keep side effects idempotent and public storefront routes intact.
+4. Implement service/model, database constraints, authorized entry point and usable admin UI. Keep side effects idempotent and public storefront routes intact. If the change alters merchant setup or first use, update `Seller::Onboarding`, checklist/tour copy and `docs/features/merchant-onboarding.md` in the same slice.
 5. Migrate and verify against disposable test PostgreSQL/Redis. Run relevant smoke scripts and required CI checks; use disconnected providers and synthetic data.
 6. Open a PR describing resulting behavior, evidence, checks and remaining limits. Link the parent epic and implementation issue. Code review, merge and production rollout are separate milestones.
 

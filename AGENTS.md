@@ -31,6 +31,8 @@ The user has requested sub-agent implementation work. Delegate independent tasks
 
 Build bounded features through service/model, authorized controller/API, usable admin UI and relevant verification. Follow `docs/implementation-workflow.md`. Existing smoke scripts require an isolated `RAILS_ENV=test` database; inspect each script before running it. Report checks actually run and distinguish code written, runtime verified and deployed behavior. A PR is reviewable work; merging may trigger production deployment through the existing Render integration.
 
+Any change that alters how a merchant starts, connects, configures or first uses the product must update the onboarding process in the same PR: `Seller::Onboarding` steps and completion rules, dashboard checklist/tour copy (`dashboard.setup` / `dashboard.onboarding`), sidebar `data-onboarding-nav` targets when destinations move, and the onboarding specs/docs in `docs/features/merchant-onboarding.md`. Do not ship a new setup path, integration, carrier or first-run surface while leaving the checklist pointing at the old flow.
+
 ### "Publish" means open a PR
 
 When the user says "publish", create a pull request for the current work: use a feature branch (never commit to `main`), commit only your own changes, push, and open the PR with `gh pr create` against `main`. Do not merge it; merging is the user's call because it can deploy to production. Give the PR link and say which checks were and were not run.

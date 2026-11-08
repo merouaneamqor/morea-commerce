@@ -11,6 +11,8 @@ Use for host routing, staff access, storefront, cart, checkout or store-scoped A
 
 `Store.find_by_host` selects subdomain tenants; `Current.store` supplies controller context. The apex hosts platform administration, not a new storefront. Preserve current host behavior, existing customer URLs and the localized `/:locale` public routes. Each tenant keeps its homepage, collections, products, pages, cart, COD checkout and order tracking. Operational tables belong in admin; public commerce retains its existing merchandising design.
 
+When a change alters storefront enablement, connected-store setup, delivery configuration or another first-run path, update `Seller::Onboarding` and the dashboard checklist/tour in the same PR so onboarding matches the new flow.
+
 `ApplicationController` selects FR/EN/AR and provides `rtl?`; public locale selection and admin URL generation differ. Check French, English and Arabic flows when a change touches shared layouts or public navigation. Preserve variant availability, images and purchase interactions; existing verification includes `script/luxury_merchandising_smoke.rb` and `script/variant_picker_smoke.mjs`.
 
 ## Authorize every entry point

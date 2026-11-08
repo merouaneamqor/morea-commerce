@@ -44,5 +44,9 @@ module Morea
     config.i18n.default_locale = :fr
     config.i18n.available_locales = %i[fr en ar]
     config.i18n.fallbacks = true
+
+    # Retired ollazen.com hosts permanently redirect onto APP_BASE_DOMAIN (seallo.ma).
+    require_relative "../lib/legacy_domain_redirect"
+    config.middleware.insert_before ActionDispatch::HostAuthorization, LegacyDomainRedirect
   end
 end

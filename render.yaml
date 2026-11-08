@@ -14,9 +14,13 @@ services:
       - key: RAILS_ENV
         value: production
       - key: APP_HOST
-        value: ollazen.com
+        value: seallo.ma
       - key: APP_BASE_DOMAIN
+        value: seallo.ma
+      - key: LEGACY_BASE_DOMAIN
         value: ollazen.com
+      - key: ADDITIONAL_BASE_DOMAINS
+        value: seallo.ma
       - key: RAILS_MASTER_KEY
         sync: false
       - key: SHOPIFY_CLIENT_ID
@@ -28,7 +32,7 @@ services:
       - key: SEALLO_BRIDGE_SECRET
         sync: false
       - key: SEALLO_APP_URL
-        sync: false
+        value: https://connect.seallo.ma
       - key: DISCORD_ORDERS_WEBHOOK_URL
         sync: false
       - key: PLATFORM_DISCORD_WEBHOOK_URL

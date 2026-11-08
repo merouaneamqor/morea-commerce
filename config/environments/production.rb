@@ -81,7 +81,12 @@ Rails.application.configure do
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   config.hosts << /.*\.onrender\.com/
-  if (base = ENV["APP_BASE_DOMAIN"].presence)
+  base_domains = [
+    ENV["APP_BASE_DOMAIN"].presence,
+    ENV.fetch("LEGACY_BASE_DOMAIN", "ollazen.com").presence,
+    *ENV.fetch("ADDITIONAL_BASE_DOMAINS", "seallo.ma").split(",").map(&:strip)
+  ].compact.map(&:downcase).uniq
+  base_domains.each do |base|
     config.hosts << base
     config.hosts << "www.#{base}"
     config.hosts << /.*\.#{Regexp.escape(base)}/

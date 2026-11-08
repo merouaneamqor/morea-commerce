@@ -41,7 +41,9 @@ RSpec.describe "Ozon Express settings page", type: :request do
   it "links from integrations to the dedicated settings page" do
     get seller_integrations_path
     expect(response).to have_http_status(:ok)
-    expect(Nokogiri::HTML(response.body).at_css("a[href='#{admin_ozon_settings_path}']")).to be_present
+    card = Nokogiri::HTML(response.body).at_css("[data-carrier=ozon]")
+    expect(card.text).to include("Connectée")
+    expect(card.at_css("a[href='#{admin_ozon_settings_path}']")).to be_present
   end
 
   it "saves parcel options on the authorized workspace account" do

@@ -200,8 +200,11 @@ RSpec.describe "Meta Ads connection", type: :request do
     sign_in
     [ "/integrations", "/admin/meta-ads" ].each do |path|
       get path
-      button = Nokogiri::HTML(response.body).at_css("form[action='/admin/meta-ads/connect'] button")
+      form = Nokogiri::HTML(response.body).at_css("form[action='/admin/meta-ads/connect']")
+      button = form.at_css("button")
       expect(button["disabled"]).to be_nil, "#{path} button must not be disabled"
+      # Full-page submit so the browser follows the Facebook OAuth redirect (Turbo would swallow it).
+      expect(form["data-turbo"]).to eq("false"), "#{path} connect form must disable Turbo"
     end
     post "/admin/meta-ads/connect"
     expect(flash[:alert]).to include("META_LOGIN_CONFIG_ID")

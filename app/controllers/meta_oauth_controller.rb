@@ -2,7 +2,7 @@
 
 # Browser side of Meta Login on the platform apex: the one redirect URI registered with Meta
 # (META_REDIRECT_URI = https://<apex>/auth/meta/callback) and the public deletion status page.
-# After the code is exchanged, the merchant is sent back to their own workspace to choose ad accounts.
+# After the code is exchanged, the merchant stays on the apex seller admin to choose ad accounts.
 class MetaOauthController < ApplicationController
   layout "bare"
   before_action :require_platform_host!
@@ -48,8 +48,9 @@ class MetaOauthController < ApplicationController
 
   def back_to(store, flash_options)
     flash_options.each { |type, message| flash[type] = message }
-    scheme = Rails.env.local? ? "http" : "https"
-    port = ENV["APP_PORT"].presence
-    redirect_to "#{scheme}://#{store.slug}.#{Store.base_domain}#{":#{port}" if port}/admin/meta-ads", allow_other_host: true, status: :see_other
+    # Seller admin lives on the apex host; pin the workspace for super-admins who entered a store.
+    session[:admin_mode] = "store"
+    session[:admin_store_id] = store.id
+    redirect_to admin_meta_ads_path, status: :see_other
   end
 end

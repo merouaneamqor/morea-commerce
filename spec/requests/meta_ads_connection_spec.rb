@@ -62,7 +62,7 @@ RSpec.describe "Meta Ads connection", type: :request do
   def connect!
     sign_in
     meta_callback(code: "synthetic-code", state: start_authorization)
-    host! tenant_host
+    host! Store.base_domain
   end
 
   it "requires a signed-in store operator and a current store" do
@@ -75,8 +75,7 @@ RSpec.describe "Meta Ads connection", type: :request do
 
   it "connects through the apex callback, lists accounts and never renders the token" do
     connect!
-    expect(URI(response.location).host).to eq(tenant_host)
-    expect(URI(response.location).path).to eq("/admin/meta-ads")
+    expect(response).to redirect_to("/admin/meta-ads")
     connection = store.reload.meta_ads_connection
     expect(connection).to have_attributes(status: "active", granted_scopes: %w[ads_read business_management], meta_user_id: "42")
     expect(store.meta_ads_ad_accounts.pluck(:meta_ad_account_id)).to match_array(%w[act_11 act_22 act_33])
@@ -141,8 +140,8 @@ RSpec.describe "Meta Ads connection", type: :request do
     sign_in
     state = start_authorization
     meta_callback(error: "access_denied", error_reason: "user_denied", state: state)
-    expect(URI(response.location).host).to eq(tenant_host)
-    host! tenant_host
+    expect(response).to redirect_to("/admin/meta-ads")
+    host! Store.base_domain
     follow_redirect!
     expect(response.body).to include(I18n.t("meta_ads.errors.authorization_denied"))
     expect(store.reload.meta_ads_connection).to have_attributes(status: "disconnected", access_token: nil)
@@ -154,7 +153,7 @@ RSpec.describe "Meta Ads connection", type: :request do
     state = start_authorization
     granted.replace(%w[public_profile])
     meta_callback(code: "synthetic-code", state: state)
-    host! tenant_host
+    host! Store.base_domain
     follow_redirect!
     expect(response.body).to include(I18n.t("meta_ads.errors.missing_scopes"))
     expect(store.reload.meta_ads_connection.status).to eq("disconnected")
@@ -290,7 +289,7 @@ RSpec.describe "Meta Ads connection", type: :request do
       expect(card.text).to include(I18n.t("meta_ads.connect"))
 
       meta_callback(code: "synthetic-code", state: start_authorization)
-      host! tenant_host
+      host! Store.base_domain
       get "/integrations"
       card = Nokogiri::HTML(response.body).at_css("[data-meta-card=active]")
       expect(card.text).to include("Connectée", I18n.t("meta_ads.manage"))

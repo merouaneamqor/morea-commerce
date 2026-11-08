@@ -2,8 +2,8 @@
 
 module Admin
   # Meta Ads for the current store: connect, choose ad accounts, follow campaigns and map products.
-  # Every record is reached through current_store. The Meta redirect lands on the platform apex
-  # (MetaOauthController), not here.
+  # Every record is reached through current_store. OAuth callback and the seller UI stay on the
+  # platform apex (MetaOauthController + /admin/meta-ads or /publicites).
   class MetaAdsController < BaseController
     include DateRangeSelection
 

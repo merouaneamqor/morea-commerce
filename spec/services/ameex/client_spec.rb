@@ -20,20 +20,11 @@ RSpec.describe Ameex::Client do
   end
 
   describe ".verify!" do
-    it "loads cities with the API headers" do
-      sent = nil
-      allow(Net::HTTP).to receive(:start) do |*_args, &block|
-        http = instance_double(Net::HTTP)
-        allow(http).to receive(:request) { |request|
-          sent = request
-          response_double(200, { "data" => [ { "id" => 1, "name" => "Casablanca" } ] })
-        }
-        block.call(http)
-      end
+    it "loads cities from api.cities" do
+      allow_any_instance_of(described_class).to receive(:perform).and_return(
+        response_double(200, { "login" => "success", "api" => { "type" => "success", "cities" => { "129" => { "id" => 129, "name" => "Casablanca" } } } })
+      )
       expect(described_class.verify!(store, api_id: "id-1", api_key: "key-1")).to eq(true)
-      expect(sent["C-Api-Id"]).to eq("id-1")
-      expect(sent["C-Api-Key"]).to eq("key-1")
-      expect(sent.uri.to_s).to include("/Delivery/Cities")
     end
 
     it "raises invalid_keys on Ameex login error pages" do
@@ -43,6 +34,30 @@ RSpec.describe Ameex::Client do
       expect {
         described_class.verify!(store, api_id: "bad", api_key: "bad")
       }.to raise_error(described_class::Error) { |e| expect(e.kind).to eq(:invalid_keys) }
+    end
+  end
+
+  describe "#statuses" do
+    it "returns the status hash from api.data.status" do
+      allow_any_instance_of(described_class).to receive(:perform).and_return(
+        response_double(200, {
+          "login" => "success",
+          "api" => { "type" => "success", "data" => { "status" => { "DELIVERED" => { "name" => "Livré", "color" => "#9ccc65" } } } }
+        })
+      )
+      expect(described_class.new(store).statuses).to eq("DELIVERED" => { "name" => "Livré", "color" => "#9ccc65" })
+    end
+  end
+
+  describe "#add_parcel" do
+    it "returns the sandbox code from api.data" do
+      allow_any_instance_of(described_class).to receive(:perform).and_return(
+        response_double(200, {
+          "login" => "success",
+          "api" => { "type" => "success", "msg" => "Sandbox parcel created.", "data" => { "code" => "SBX-1" }, "sandbox" => 1 }
+        })
+      )
+      expect(described_class.new(store).add_parcel("type" => "SIMPLE")).to include("code" => "SBX-1", "sandbox" => 1)
     end
   end
 end

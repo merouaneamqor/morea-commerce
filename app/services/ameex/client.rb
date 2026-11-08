@@ -7,6 +7,7 @@ require "uri"
 module Ameex
   # Thin wrapper over https://api.ameex.app/customer
   # Headers: C-Api-Id + C-Api-Key. DeliveryAccount: api_key = Id, api_secret = Key.
+  # Successful answers look like { "login" => "success", "api" => { "type" => "success", ... } }.
   class Client
     class Error < StandardError
       attr_reader :status, :body, :kind, :detail
@@ -39,28 +40,47 @@ module Ameex
       ENV.fetch("AMEEX_API_URL", "https://api.ameex.app/customer").chomp("/")
     end
 
+    # { "1" => { "id" => 1, "name" => "Marrakech" }, ... }
     def cities
-      request(:get, "Delivery/Cities")
+      json = request(:get, "Delivery/Cities")
+      json.dig("api", "cities") || {}
     end
 
+    # { "DELIVERED" => { "name" => "Livré", "color" => "...", "type" => "fixed" }, ... }
     def statuses
-      request(:get, "Delivery/Parcels/Statuts")
+      json = request(:get, "Delivery/Parcels/Statuts")
+      json.dig("api", "data", "status") || {}
     end
 
+    # { "code" => "SBX-…", "sandbox" => 1 }
     def add_parcel(attrs)
-      request(:post, "Delivery/Parcels/Action/Type/Add", attrs)
+      json = request(:post, "Delivery/Parcels/Action/Type/Add", attrs)
+      data = json.dig("api", "data")
+      data = {} unless data.is_a?(Hash)
+      data.merge("msg" => json.dig("api", "msg"), "sandbox" => json.dig("api", "sandbox")).compact
     end
 
+    # Latest tracking event as a hash with statut / statut_name / comment.
     def tracking(code)
-      request(:get, "Delivery/Parcels/Tracking/ParcelCode/#{CGI.escape(code.to_s)}")
+      json = request(:get, "Delivery/Parcels/Tracking/ParcelCode/#{CGI.escape(code.to_s)}")
+      events = json.dig("api", "tracking")
+      event = Array(events).last
+      event.is_a?(Hash) ? event : {}
     end
 
     def mass_tracking(codes)
-      request(:post, "Delivery/Parcels/MassTracking", { codes: Array(codes).first(100).join(",") })
+      json = request(:post, "Delivery/Parcels/MassTracking", { codes: Array(codes).first(100).join(",") })
+      json.dig("api", "tracking") || {}
     end
 
     def mass_info(codes)
-      request(:post, "Delivery/Parcels/MassInfo", { codes: Array(codes).first(100).join(",") })
+      json = request(:post, "Delivery/Parcels/MassInfo", { codes: Array(codes).first(100).join(",") })
+      json.dig("api", "parcels") || {}
+    end
+
+    def parcel_info(code)
+      row = mass_info([ code ])[code.to_s]
+      row.is_a?(Hash) ? row : {}
     end
 
     private
@@ -110,10 +130,18 @@ module Ameex
         raise Error.new("Ameex refused these credentials", status: status, body: json, kind: :invalid_keys, detail: "HTTP #{status} · login error")
       end
 
-      ok = status.between?(200, 299) && json["success"] != false && json["error"].blank? && json["ERROR"].blank?
+      api = json["api"]
+      if json["login"].to_s == "success" && api.is_a?(Hash)
+        return json if api["type"].to_s == "success" || api["type"].blank?
+
+        message = api["msg"].presence || "Ameex API error"
+        raise Error.new(message.to_s, status: status, body: json, kind: :rejected, detail: "HTTP #{status} · #{message}")
+      end
+
+      ok = status.between?(200, 299) && json["success"] != false
       return json if ok
 
-      message = json["message"].presence || json["MESSAGE"].presence || json["error"].presence || json["ERROR"].presence || "HTTP #{status}"
+      message = json["message"].presence || json["error"].presence || "HTTP #{status}"
       raise Error.new(message.to_s, status: status, body: json,
         kind: failure_kind(response, parsed, json), detail: failure_detail(response, json))
     end
@@ -141,7 +169,7 @@ module Ameex
     def failure_detail(response, json)
       parts = [ "HTTP #{response.code}" ]
       parts << "Cloudflare" if response["server"].to_s.casecmp?("cloudflare")
-      msg = json["message"] || json["MESSAGE"] || json["error"] || json["ERROR"]
+      msg = json.dig("api", "msg") || json["message"] || json["error"]
       parts << msg.to_s.squish.first(120) if msg.present?
       parts.join(" · ")
     end

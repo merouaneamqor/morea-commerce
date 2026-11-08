@@ -12,6 +12,7 @@ class AmeexCitiesRefreshJob < ApplicationJob
 
   def refresh(store)
     count = Ameex::Cities.refresh!(store: store)
+    Ameex::Sync.refresh_labels!(store)
     store.delivery_accounts.where(provider: "ameex", is_active: true).update_all(cities_count: count, cities_synced_at: Time.current)
     Rails.logger.info("[AmeexCitiesRefreshJob] store=#{store.slug} cities=#{count}")
   rescue Ameex::Client::Error => e

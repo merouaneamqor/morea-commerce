@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 module Ameex
-  # Destination cities from GET /Delivery/Cities, cached per store for a day.
+  # Destination cities from GET /Delivery/Cities → api.cities ({ "129" => { "id" => 129, "name" => "Casablanca" } }).
   class Cities
     def self.cache_key(store)
-      "ameex:cities:v1:store:#{store.id}"
+      "ameex:cities:v2:store:#{store.id}"
     end
 
     def self.all(store:, client: nil)
@@ -37,16 +37,16 @@ module Ameex
     end
 
     def self.parse(raw)
-      rows = raw["data"] || raw["cities"] || raw["CITIES"] || raw
-      rows = rows.values if rows.is_a?(Hash) && !rows.key?("id") && !rows.key?("ID")
+      rows = raw
+      rows = rows.values if rows.is_a?(Hash)
       Array(rows).filter_map do |row|
         next unless row.is_a?(Hash)
 
-        id = (row["id"] || row["ID"] || row["city_id"] || row["cityId"]).to_i
-        name = (row["name"] || row["NAME"] || row["city"] || row["ville"] || row["label"]).to_s
+        id = (row["id"] || row["ID"]).to_i
+        name = (row["name"] || row["NAME"]).to_s
         next if id.zero? || name.blank?
 
-        { id: id, name: name, ref: (row["ref"] || row["REF"] || row["code"]).to_s }
+        { id: id, name: name }
       end.sort_by { |c| c[:name] }
     end
     private_class_method :parse

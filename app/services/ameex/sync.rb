@@ -2,60 +2,142 @@
 
 module Ameex
   # Keeps an Order and its Ameex parcel in step.
+  # Status catalog: GET /Delivery/Parcels/Statuts → api.data.status
   class Sync
     LABELS = {
-      "NEW_PARCEL" => "Nouveau colis",
-      "WAITING_PICKUP" => "Attente de ramassage",
+      "NEW_PARCEL" => "Nouveau Colis",
+      "DRAFT" => "Brouillon",
+      "WAITING_PICKUP" => "Attente De Ramassage",
       "PICKED_UP" => "Ramassé",
+      "SENT" => "Expédié",
+      "TRAVELLING" => "En Voyage",
+      "IN_SHIPMENT" => "En cours d'expédition",
+      "RECEIVED" => "Reçu",
+      "DISTRIBUTION" => "Mise en distribution",
+      "DISPOSITION" => "Mis à disposition",
       "IN_PROGRESS" => "En cours",
+      "CONFIRMED_BY_LIVREUR" => "Confirmé Par Livreur",
       "DELIVERED" => "Livré",
       "RETURNED" => "Retourné",
-      "REFUSED" => "Refusé",
+      "PREPAR_RETURN" => "PRÉPARATION RETOUR",
       "REFUSE" => "Refusé",
+      "REFUNDED" => "Remboursé",
       "CANCELED" => "Annulé",
-      "CANCELLED" => "Annulé",
+      "CANCELED_TEAM" => "Annulé ( Suivi )",
       "POSTPONED" => "Reporté",
+      "POSTPONED_TEAM" => "Reporté ( Suivi )",
+      "SCHEDULED" => "Programmé",
+      "NO_ANSWER" => "Pas de réponse",
+      "NO_ANSWER_SMS" => "Pas de réponse + SMS",
+      "NO_ANSWER_TEAM" => "Pas de réponse ( Suivi )",
       "UNREACHABLE" => "Injoignable",
-      "NOANSWER" => "Pas de réponse",
-      "OUT_OF_AREA" => "Hors-zone"
+      "UNREACHABLE_TEAM" => "Injoignable ( Suivi )",
+      "VOICEMAIL" => "Boîte vocale",
+      "VOICEMAIL_TEAM" => "Boîte vocale ( Suivi )",
+      "OUT_OF_AREA" => "Hors-zone",
+      "WRONG_NUMBER" => "Numéro Incorrect",
+      "DOESNT_ORDER" => "Client n'a pas commandé",
+      "RELAUNCH" => "Relancer",
+      "RELAUNCH_NEW" => "Relancer vers un nouveau client",
+      "RELAUNCH_TEAM" => "Relancer ( Suivi )",
+      "RESEND_NEW_CITY" => "Renvoyez vers nouvelle ville"
     }.freeze
 
     ORDER_STATUS = {
       "NEW_PARCEL" => "confirmed",
+      "DRAFT" => "confirmed",
       "WAITING_PICKUP" => "awaiting_pickup",
       "PICKED_UP" => "picked_up",
+      "SENT" => "in_transit",
+      "TRAVELLING" => "in_transit",
+      "IN_SHIPMENT" => "in_transit",
+      "RECEIVED" => "in_transit",
+      "DISTRIBUTION" => "out_for_delivery",
+      "DISPOSITION" => "out_for_delivery",
       "IN_PROGRESS" => "out_for_delivery",
+      "CONFIRMED_BY_LIVREUR" => "out_for_delivery",
+      "RELAUNCH" => "out_for_delivery",
+      "RELAUNCH_NEW" => "out_for_delivery",
+      "RELAUNCH_TEAM" => "out_for_delivery",
+      "RESEND_NEW_CITY" => "address_issue",
       "DELIVERED" => "delivered",
       "RETURNED" => "returned",
-      "REFUSED" => "returned",
+      "PREPAR_RETURN" => "returned",
       "REFUSE" => "returned",
+      "REFUNDED" => "returned",
+      "DOESNT_ORDER" => "returned",
       "CANCELED" => "cancelled",
-      "CANCELLED" => "cancelled",
+      "CANCELED_TEAM" => "cancelled",
       "POSTPONED" => "postponed",
+      "POSTPONED_TEAM" => "postponed",
+      "SCHEDULED" => "postponed",
+      "NO_ANSWER" => "unreachable",
+      "NO_ANSWER_SMS" => "unreachable",
+      "NO_ANSWER_TEAM" => "unreachable",
       "UNREACHABLE" => "unreachable",
-      "NOANSWER" => "unreachable",
-      "OUT_OF_AREA" => "address_issue"
+      "UNREACHABLE_TEAM" => "unreachable",
+      "VOICEMAIL" => "unreachable",
+      "VOICEMAIL_TEAM" => "unreachable",
+      "OUT_OF_AREA" => "address_issue",
+      "WRONG_NUMBER" => "address_issue"
     }.freeze
 
-    FINAL = %w[DELIVERED RETURNED REFUSED REFUSE CANCELED CANCELLED].freeze
-    ALERT_STATUSES = %w[UNREACHABLE POSTPONED REFUSED REFUSE OUT_OF_AREA NOANSWER].freeze
+    FINAL = %w[DELIVERED RETURNED REFUSE REFUNDED CANCELED CANCELED_TEAM DOESNT_ORDER].freeze
+    ALERT_STATUSES = %w[UNREACHABLE UNREACHABLE_TEAM POSTPONED POSTPONED_TEAM REFUSE OUT_OF_AREA NO_ANSWER NO_ANSWER_SMS WRONG_NUMBER DOESNT_ORDER].freeze
 
     def self.normalize_status(status)
       key = status.to_s.upcase.tr("-", "_")
-      key == "CANCELLED" ? "CANCELED" : key
+      case key
+      when "CANCELLED" then "CANCELED"
+      when "NOANSWER" then "NO_ANSWER"
+      when "REFUSED" then "REFUSE"
+      else key
+      end
     end
 
-    def self.label(status)
+    def self.label(status, store: nil)
       key = normalize_status(status)
-      LABELS.fetch(key, status.to_s.humanize)
+      labels = store ? labels_for(store) : LABELS
+      labels.fetch(key, status.to_s.humanize)
     end
+
+    def self.labels_for(store)
+      return LABELS unless Client.configured?(store)
+
+      Rails.cache.fetch("ameex:status_labels:v2:store:#{store.id}", expires_in: 1.day) do
+        remote = parse_status_catalog(Client.new(store).statuses)
+        next LABELS if remote.blank?
+
+        LABELS.merge(remote)
+      end
+    rescue StandardError => e
+      Rails.logger.warn("[Ameex] status labels unavailable: #{e.message}")
+      LABELS
+    end
+
+    def self.refresh_labels!(store)
+      Rails.cache.delete("ameex:status_labels:v2:store:#{store.id}")
+      labels_for(store)
+    end
+
+    def self.parse_status_catalog(raw)
+      rows = raw.is_a?(Hash) ? raw : {}
+      rows.each_with_object({}) do |(code, meta), map|
+        key = normalize_status(code)
+        name = meta.is_a?(Hash) ? (meta["name"] || meta["NAME"]).to_s : meta.to_s
+        next if key.blank? || name.blank?
+
+        map[key] = name
+      end
+    end
+    private_class_method :parse_status_catalog
 
     def self.pending_orders(scope = Order.all)
       to_push = scope.where(status: %w[confirmed preparing awaiting_pickup address_issue], ameex_code: nil, sendit_code: nil, ozon_code: nil)
       in_progress = scope.where.not(ameex_code: nil)
                         .where("ameex_status IS NULL OR ameex_status NOT IN (?)", FINAL)
                         .where.not(status: %w[delivered cancelled returned])
-      returning = scope.where.not(ameex_code: nil).where(ameex_status: %w[RETURNED REFUSED REFUSE CANCELED CANCELLED])
+      returning = scope.where.not(ameex_code: nil).where(ameex_status: %w[RETURNED REFUSE REFUNDED CANCELED CANCELED_TEAM PREPAR_RETURN])
                        .where.not(status: "cancelled")
       [ to_push, in_progress.or(returning) ]
     end
@@ -92,7 +174,7 @@ module Ameex
 
       city = resolve_city!
       data = @client.add_parcel(parcel_payload(city))
-      code = extract_code(data)
+      code = data["code"].presence || data["CODE"]
       raise Client::Error.new("Ameex returned no parcel code", kind: :unexpected, detail: data.keys.join(",")) if code.blank?
 
       order.update!(
@@ -101,7 +183,7 @@ module Ameex
         ameex_city_id: city[:id],
         ameex_city_name: city[:name]
       )
-      apply_status!(extract_status(data) || "NEW_PARCEL", message: data["comment"] || data["COMMENT"])
+      apply_status!("NEW_PARCEL", message: data["msg"])
       order
     rescue Client::Error => e
       fail!(e.message)
@@ -111,11 +193,18 @@ module Ameex
       return order if order.ameex_code.blank? && order.status.in?(%w[cancelled returned delivered])
       return push! if order.ameex_code.blank?
 
-      data = @client.tracking(order.ameex_code)
-      status = extract_status(data)
+      info = @client.parcel_info(order.ameex_code)
+      status = info["statut"].presence || info["STATUT"]
+      if status.blank?
+        tracking = @client.tracking(order.ameex_code)
+        status = tracking["statut"].presence || tracking["STATUT"]
+        message = tracking["comment"].presence || tracking["statut_name"]
+      else
+        message = info["statut_name"].presence || info["comment"]
+      end
       raise Client::Error.new("Ameex returned no status for #{order.ameex_code}", kind: :unexpected) if status.blank?
 
-      apply_status!(status, message: data["COMMENT"] || data["comment"] || data["STATUT_NAME"] || data["statut_name"])
+      apply_status!(status, message: message)
       order
     rescue Client::Error => e
       fail!(e.message)
@@ -131,7 +220,7 @@ module Ameex
 
     def cancellable?
       status = self.class.normalize_status(order.ameex_status)
-      status.blank? || %w[NEW_PARCEL WAITING_PICKUP].include?(status)
+      status.blank? || %w[NEW_PARCEL DRAFT WAITING_PICKUP].include?(status)
     end
 
     def apply_status!(status, message: nil, fee: nil)
@@ -147,7 +236,7 @@ module Ameex
       order.freeze_fees!
 
       target = ORDER_STATUS.fetch(status, :unknown)
-      reason = message.presence || self.class.label(status)
+      reason = message.presence || self.class.label(status, store: order.store)
       if target == :unknown
         Rails.logger.warn("[Ameex] Unknown status #{status.inspect} for #{order.number}")
       elsif target == "cancelled"
@@ -169,25 +258,11 @@ module Ameex
 
     private
 
-    def extract_code(data)
-      return if data.blank?
-
-      data["CODE"].presence || data["code"].presence || data["parcel_code"].presence || data["ParcelCode"].presence ||
-        data.dig("data", "CODE") || data.dig("data", "code") || data.dig("data", "parcel_code")
-    end
-
-    def extract_status(data)
-      return if data.blank?
-
-      data["STATUT"].presence || data["statut"].presence || data["status"].presence || data["STATUS"].presence ||
-        data.dig("data", "STATUT") || data.dig("data", "status")
-    end
-
     def alert_if_notable(previous)
       return if order.ameex_status == previous
       return unless ALERT_STATUSES.include?(order.ameex_status)
 
-      DiscordNotifier.notify_delivery_update(order, self.class.label(order.ameex_status))
+      DiscordNotifier.notify_delivery_update(order, self.class.label(order.ameex_status, store: order.store))
     rescue StandardError => e
       Rails.logger.warn("[Ameex] alert failed for #{order.number}: #{e.message}")
     end

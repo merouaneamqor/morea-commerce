@@ -303,7 +303,7 @@ end
   end
 
   def ameex_label
-    Ameex::Sync.label(ameex_status) if ameex_status.present?
+    Ameex::Sync.label(ameex_status, store: store) if ameex_status.present?
   end
 
   def self.cancel_rate

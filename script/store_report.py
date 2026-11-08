@@ -43,7 +43,7 @@ def main():
     token = os.environ.get("MOREA_API_TOKEN", "")
     if not token:
         raise RuntimeError("Configure the MOREA_API_TOKEN GitHub Actions secret")
-    data = report(os.environ.get("MOREA_GRAPHQL_URL", "https://morea.ollazen.com/graphql"), token)
+    data = report(os.environ.get("MOREA_GRAPHQL_URL", "https://morea.seallo.ma/graphql"), token)
     output = Path("reports")
     output.mkdir(exist_ok=True)
     (output / "store-report.json").write_text(json.dumps(data, indent=2) + "\n")

@@ -6,10 +6,21 @@ RSpec.describe "Default shipping courier", type: :model do
   let(:store) { Store.create!(name: "Default #{SecureRandom.hex(4)}", slug: "def-#{SecureRandom.hex(4)}", currency: "MAD") }
 
   def connect(provider, name: provider.titleize, default: false)
-    account = store.delivery_accounts.new(provider: provider, name: name, is_active: true, ships_by_default: default)
+    account = store.delivery_accounts.new(provider: provider, name: name, is_active: true, ships_by_default: default, connected_at: Time.current)
     account.credentials = { "api_key" => "#{provider}-id", "api_secret" => "#{provider}-secret" }
     account.save!
     account
+  end
+
+  it "shows API couriers as connected only after verified keys are stored" do
+    bare = store.delivery_accounts.create!(provider: "ameex", name: "Ameex bare", is_active: true)
+    expect(bare.connected?).to be(false)
+
+    linked = connect("ameex")
+    expect(linked.connected?).to be(true)
+
+    manual = store.delivery_accounts.create!(provider: "cathedis", name: "Cathedis", is_active: true)
+    expect(manual.connected?).to be(true)
   end
 
   it "uses the explicitly marked default when several connectors exist" do

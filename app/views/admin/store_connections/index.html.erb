@@ -118,7 +118,7 @@
                   class: "h-9 rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]",
                   title: sl("Société par défaut pour l'envoi automatique des colis.") %>
           <% end %>
-          <% if account.is_active? %>
+          <% if account.connected? %>
             <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
           <% else %>
             <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= sl("Non connectée") %></span>

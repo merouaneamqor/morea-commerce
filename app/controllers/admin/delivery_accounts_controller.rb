@@ -2,27 +2,24 @@
 
 module Admin
   # Delivery company accounts added from the Integrations API page (seallo's two-step "provider, details" dialog).
-  # Sendit is a real integration: its keys are checked against Sendit's login before anything is saved.
+  # Sendit / Ozon / Ameex: keys are checked live against the courier API before anything is saved or shown as connected.
   class DeliveryAccountsController < BaseController
     before_action :require_workspace!
     before_action :set_account, only: %i[update destroy make_default]
 
     def create
       account = current_store.delivery_accounts.new(provider: submitted[:provider].to_s)
-      return connect_sendit(account) if account.sendit?
-      return connect_ozon(account) if account.ozon?
-      return connect_ameex(account) if account.ameex?
+      return connect_api_courier(account) if DeliveryAccount::SHIPPABLE.include?(account.provider)
 
       account.assign_attributes(account_params)
       account.credentials = credentials_from(submitted, {})
+      # Manual carriers only: no live key check yet. API couriers never reach this path.
       account.connected_at = Time.current if account.credentials? && account.provider != "other"
       save(account, helpers.sl("Société ajoutée."))
     end
 
     def update
-      return connect_sendit(@account) if @account.sendit?
-      return connect_ozon(@account) if @account.ozon?
-      return connect_ameex(@account) if @account.ameex?
+      return connect_api_courier(@account) if DeliveryAccount::SHIPPABLE.include?(@account.provider)
 
       @account.assign_attributes(account_params)
       # Keys left empty keep the saved ones.
@@ -75,8 +72,17 @@ module Admin
       end
     end
 
-    # Sendit: check the keys with Sendit's login, store them encrypted (the secret key is never rendered back),
-    # give the account its webhook token, and fetch the city list. Answers JSON for the dialog.
+    def connect_api_courier(account)
+      case account.provider
+      when "sendit" then connect_sendit(account)
+      when "ozon" then connect_ozon(account)
+      when "ameex" then connect_ameex(account)
+      else
+        render_courier_error(helpers.sl("Cette société de livraison n'a pas encore de connecteur API."))
+      end
+    end
+
+    # Check keys with the courier API first. Only on success: encrypt, mark connected, return webhook URL.
     def connect_sendit(account)
       keys = credentials_from(submitted, account.persisted? ? account.credentials : {})
       return render_sendit_error(t("seller_integrations.sendit.errors.missing_keys")) unless keys["api_key"].present? && keys["api_secret"].present?

@@ -37,6 +37,24 @@ RSpec.describe "Ameex connection from the Integrations API page", type: :request
       expect(json["webhook_url"]).to match(%r{/webhooks/ameex/#{store.slug}\?token=})
       expect(store.reload.ameex_configured?).to be(true)
       expect(store.ships_with?(:ameex)).to be(true)
+      expect(account.connected?).to be(true)
+    end
+
+    it "rejects missing keys without saving" do
+      connect_ameex(api_secret: "")
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(json["ok"]).to eq(false)
+      expect(store.delivery_accounts).to be_empty
+    end
+
+    it "does not mark connected when Ameex refuses the keys" do
+      allow(Ameex::Client).to receive(:verify!).and_raise(
+        Ameex::Client::Error.new("bad keys", status: 401, kind: :invalid_keys, detail: "HTTP 401 · login error")
+      )
+      expect { connect_ameex(api_secret: "bad") }.not_to change(DeliveryAccount, :count)
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(json).to include("ok" => false, "code" => "invalid_keys")
+      expect(store.reload.ameex_configured?).to be(false)
     end
   end
 end

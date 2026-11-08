@@ -27,6 +27,13 @@ class DeliveryAccount < ApplicationRecord
     SHIPPABLE.include?(provider) && credentials? && is_active?
   end
 
+  # Green "Connectée" badge: API couriers only after keys were verified and saved.
+  def connected?
+    return shippable? && connected_at.present? if SHIPPABLE.include?(provider)
+
+    is_active?
+  end
+
   def credentials
     return {} if credentials_ciphertext.blank?
 

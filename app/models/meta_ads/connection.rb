@@ -44,26 +44,26 @@ module MetaAds
       status == "needs_reauthorization" || (active? && token_expired?)
     end
 
-    # Asks Meta to remove the permissions the merchant granted, then drops the token. Meta being unreachable or
-    # the token already invalid must not keep the merchant connected, so the local disconnect always happens.
+    # Drops the local token first, then asks Meta to revoke permissions with the saved token.
+    # Local disconnect must not wait on Meta: a slow or hung Graph call used to leave the merchant stuck connected.
     # Returns true when Meta confirmed the revocation.
     def revoke_and_disconnect!(transport: nil)
-      revoked = false
-      if active? && access_token.present?
-        begin
-          revoked = MetaAds::Client.new(connection: self, transport: transport).delete("me/permissions").data.first.to_h["success"] == true
-        rescue MetaAds::Client::Error
-          revoked = false
-        end
-      end
+      token = active? ? access_token : nil
       disconnect!
-      revoked
+      return false if token.blank?
+
+      begin
+        MetaAds::Client.new(token: token, transport: transport).delete("me/permissions").data.first.to_h["success"] == true
+      rescue MetaAds::Client::Error
+        false
+      end
     end
 
     # Tokens are removed; synced history stays until a merchant explicitly deletes it.
     def disconnect!
       with_lock do
-        update!(status: "disconnected", access_token: nil, token_expires_at: nil, oauth_state_digest: nil, oauth_state_expires_at: nil)
+        update!(status: "disconnected", access_token: nil, token_expires_at: nil, meta_user_id: nil, granted_scopes: [],
+          last_error_code: nil, oauth_state_digest: nil, oauth_state_expires_at: nil)
         ad_accounts.update_all(selected: false, sync_status: "pending", next_sync_at: nil)
       end
     end

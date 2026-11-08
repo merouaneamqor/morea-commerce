@@ -53,10 +53,21 @@ RSpec.describe "MetaAds models" do
 
     it "removes the token and unselects accounts on disconnect without deleting history" do
       account = ad_account(store, connection)
+      connection.update!(meta_user_id: "42", granted_scopes: %w[ads_read], last_error_code: "invalid_token")
       connection.disconnect!
 
-      expect(connection.reload).to have_attributes(status: "disconnected", access_token: nil)
+      expect(connection.reload).to have_attributes(
+        status: "disconnected", access_token: nil, meta_user_id: nil, granted_scopes: [], last_error_code: nil
+      )
       expect(account.reload.selected).to be(false)
+    end
+
+    it "disconnects locally before asking Meta to revoke, so a hung Graph call cannot keep the merchant connected" do
+      token = connection.access_token
+      hung = ->(_uri, _request) { raise Timeout::Error }
+      expect(connection.revoke_and_disconnect!(transport: hung)).to be(false)
+      expect(connection.reload).to have_attributes(status: "disconnected", access_token: nil)
+      expect(token).to be_present
     end
   end
 

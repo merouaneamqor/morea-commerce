@@ -50,9 +50,20 @@ RSpec.describe "Meta Ads authorization services" do
       expect(query).to include("client_id" => "synthetic-app-id", "config_id" => "synthetic-config-id", "response_type" => "code",
         "redirect_uri" => "http://lvh.me/auth/meta/callback", "override_default_response_type" => "true")
       expect(query).not_to have_key("scope")
+      expect(query).not_to have_key("auth_type")
       expect(query["state"].length).to be > 64
       expect(store.reload.meta_ads_connection).to have_attributes(status: "disconnected", access_token: nil)
       expect(store.meta_ads_connection.oauth_state_digest).to be_present
+    end
+
+    it "asks Meta to re-prompt permissions when reconnecting after a prior grant" do
+      MetaAds::Connection.create!(store: store, status: "disconnected", last_verified_at: 1.day.ago)
+      _, query = start
+      expect(query["auth_type"]).to eq("rerequest")
+
+      store.meta_ads_connection.update!(status: "needs_reauthorization", last_verified_at: nil)
+      _, query = start
+      expect(query["auth_type"]).to eq("rerequest")
     end
 
     it "does not start without the Meta settings" do

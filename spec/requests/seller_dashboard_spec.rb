@@ -113,6 +113,48 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     end
   end
 
+  it "shows the first-run onboarding checklist with actions for a new workspace" do
+    sign_in(owner)
+    get "/dashboard", params: { locale: "en" }
+    panel = document.at_css("[data-controller='onboarding-tour']")
+    expect(panel).to be_present
+    expect(panel.text).to include("Your next steps", "Connect an existing store", "Add a delivery company", "Receive your first order")
+    expect(panel.at_css("a[href='/integrations']")).to be_present
+    expect(panel.at_css("a[href='/livraison']")).to be_present
+    expect(document.css("[data-onboarding-nav='integrations']")).not_to be_empty
+    expect(response.body).not_to match(/translation missing/i)
+  end
+
+  it "hides onboarding after the workspace completes setup" do
+    store.update!(storefront_enabled: true)
+    store.products.create!(name: "Item", slug: "item-#{suffix}", status: "active", price_cents: 1500)
+    store.store_connections.create!(
+      provider: "woocommerce", name: "Woo #{suffix}", external_domain: "woo-#{suffix}.example.test",
+      token: "tok-#{SecureRandom.hex(12)}", webhook_secret: "synthetic-secret-#{SecureRandom.hex(8)}"
+    )
+    store.delivery_accounts.create!(provider: "other", name: "Courier", is_active: true)
+    customer = store.customers.create!(name: "Buyer", phone: "0612345678", email: "buyer-#{suffix}@example.test")
+    store.orders.create!(
+      customer: customer, number: "READY-#{suffix}", status: "confirmed", currency: "MAD",
+      customer_name: "Buyer", customer_phone: "0612345678", customer_city: "Fès",
+      customer_address: "Rue 1", total_cents: 2500, subtotal_cents: 2500
+    )
+    sign_in(owner)
+    get "/dashboard", params: { locale: "en" }
+    expect(document.at_css("[data-controller='onboarding-tour']")).to be_nil
+  end
+
+  it "keeps onboarding scoped to the signed-in workspace" do
+    other = Store.create!(name: "Other #{suffix}", slug: "other-onboard-#{suffix}", currency: "MAD", storefront_enabled: false)
+    other.delivery_accounts.create!(provider: "other", name: "Foreign courier", is_active: true)
+    sign_in(owner)
+    get "/dashboard", params: { locale: "en" }
+    panel = document.at_css("[data-controller='onboarding-tour']")
+    expect(panel["data-onboarding-tour-store-id-value"]).to eq(store.id.to_s)
+    expect(panel.text).to include("Add a delivery company")
+    expect(panel.at_css("a[href='/livraison']")).to be_present
+  end
+
   it "sends the seallo page URLs that are not ported yet to their current page, keeping the query string" do
     host! Store.base_domain
     { "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations", "/livraison" => "/admin/delivery",

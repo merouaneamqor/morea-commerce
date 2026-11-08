@@ -47,7 +47,7 @@
                 <% if href.nil? %>
                   <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#a49d99]" title="<%= sl("Bientôt disponible") %>"><%= seller_icon(icon) %> <%= sl(label) %></span>
                 <% else %>
-                  <%= link_to href, class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm #{on ? nav_on : nav_off}" do %>
+                  <%= link_to href, class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm #{on ? nav_on : nav_off}", data: { onboarding_nav: key } do %>
                     <%= seller_icon(icon) %> <%= sl(label) %>
                     <% if key == "orders" && new_orders.positive? %><span class="ms-auto rounded-full px-2 py-0.5 text-[11px] font-semibold <%= on ? badge_on : badge_off %>"><%= new_orders %></span><% end %>
                     <% if key == "products" && missing_costs.positive? %><span class="ms-auto rounded-full bg-[#fbe7ea] px-2 py-0.5 text-[11px] font-semibold text-[#b4344e]" title="<%= sl("produits sans coût") %>"><%= missing_costs %></span><% end %>

@@ -48,7 +48,23 @@ RSpec.describe "Sendit settings page", type: :request do
     expect(response).to have_http_status(:ok)
     document = Nokogiri::HTML(response.body)
     expect(document.at_css("#sendit-settings")).to be_nil
-    expect(document.at_css("a[href='#{admin_sendit_settings_path}']")).to be_present
+    card = document.at_css("[data-carrier=sendit]")
+    expect(card).to be_present
+    expect(card.text).to include("Connectée")
+    expect(card.at_css("a[href='#{admin_sendit_settings_path}']")).to be_present
+  end
+
+  it "still links to Sendit settings when only legacy store credentials exist" do
+    store.update!(sendit_public_key: "legacy-public", sendit_secret_key: "legacy-secret", sendit_pickup_district_id: 17)
+    get seller_integrations_path
+    expect(response).to have_http_status(:ok)
+    card = Nokogiri::HTML(response.body).at_css("[data-carrier=sendit]")
+    expect(card.text).to include("Connectée")
+    expect(card.at_css("a[href='#{admin_sendit_settings_path}']")).to be_present
+
+    get admin_sendit_settings_path
+    expect(response).to have_http_status(:ok)
+    expect(settings_form.at_css("[name='store[sendit_pickup_district_id]'] option[selected]")["value"]).to eq("17")
   end
 
   it "moves Sendit controls out of the general settings page" do

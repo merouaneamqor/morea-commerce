@@ -33,7 +33,7 @@
         <div class="grid grid-cols-3 gap-3 mt-4"><div><p class="admin-muted"><%= t("delivery_dashboard.shipments") %></p><p class="font-semibold mt-1"><%= courier[:total] %></p></div><div><p class="admin-muted"><%= t("delivery_dashboard.delivered") %></p><p class="font-semibold mt-1"><%= courier[:rate] %>%</p></div><div><p class="admin-muted"><%= t("delivery_dashboard.average") %></p><p class="font-semibold mt-1"><%= courier[:average_days] ? t("delivery_dashboard.days", count: courier[:average_days]) : admin_blank %></p></div></div>
         <% if courier[:name] == "Sendit" %>
           <p class="admin-muted mt-3"><%= courier[:last_sync] ? t("delivery_dashboard.last_sync", time: l(courier[:last_sync], format: :short)) : t("delivery_dashboard.no_sync") %></p>
-          <%= link_to t("delivery_dashboard.configure"), edit_admin_store_path, class: "admin-link mt-3 inline-block" %>
+          <%= link_to t("delivery_dashboard.configure"), admin_sendit_settings_path, class: "admin-link mt-3 inline-block" %>
         <% else %><p class="admin-muted mt-3"><%= t("delivery_dashboard.manual_note") %></p><% end %>
       </div>
     <% end %>

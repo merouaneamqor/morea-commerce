@@ -92,6 +92,10 @@ RSpec.describe "Seller integrations page", type: :request do
     expect(sections.last.text).not_to include("Bientôt disponible")
     expect(sections.first.at_css("[data-stores-open]").text).to include("Connecter une boutique")
     expect(stores).to be_empty
+    carriers = sections[1].css("[data-carrier-settings] [data-carrier]")
+    expect(carriers.map { |card| card["data-carrier"] }).to eq(%w[sendit ozon ameex])
+    expect(carriers.map { |card| card.at_css("a")["href"] }).to eq(%w[/admin/sendit_settings /admin/ozon_settings /admin/ameex_settings])
+    expect(carriers.map { |card| card.text }).to all(include("Non connectée", "Paramètres"))
   end
 
   describe "delivery companies dialog" do

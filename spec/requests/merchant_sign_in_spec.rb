@@ -94,6 +94,57 @@ RSpec.describe "Merchant sign in", type: :request do
     expect(response.body).not_to include(store.name)
   end
 
+  def session_cookie_header
+    Array(response.headers["Set-Cookie"]).join("\n")
+  end
+
+  def morea_session_cookie
+    session_cookie_header.split("\n").find { |line| line.match?(/\A_morea_session=/i) }.to_s
+  end
+
+  def cookie_expires_at(header)
+    match = header.match(/expires=([^;]+)/i)
+    Time.httpdate(match[1]) if match
+  end
+
+  it "writes a durable session cookie so closing the browser or admin app stays signed in" do
+    before = Time.now.utc
+    login
+    expect(response).to redirect_to(admin_root_path)
+    cookie = morea_session_cookie
+    expect(cookie).to be_present
+    expires = cookie_expires_at(cookie)
+    expect(expires).to be_between(before + 29.days, before + 31.days)
+
+    follow_redirect!
+    expect(response).to have_http_status(:ok)
+    renewed = morea_session_cookie
+    if renewed.present?
+      renewed_expires = cookie_expires_at(renewed)
+      expect(renewed_expires).to be_between(Time.now.utc + 29.days, Time.now.utc + 31.days)
+    end
+
+    get "/dashboard"
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include(store.name)
+  end
+
+  it "keeps the longer remember-me lifetime across later session cookie rewrites" do
+    before = Time.now.utc
+    login(remember: "1")
+    expect(response).to redirect_to(admin_root_path)
+    expires = cookie_expires_at(morea_session_cookie)
+    expect(expires).to be_between(before + 89.days, before + 91.days)
+
+    follow_redirect!
+    expect(response).to have_http_status(:ok)
+    renewed = morea_session_cookie
+    if renewed.present?
+      renewed_expires = cookie_expires_at(renewed)
+      expect(renewed_expires).to be_between(Time.now.utc + 89.days, Time.now.utc + 91.days)
+    end
+  end
+
   it "returns the same generic error for a wrong password and an unknown account" do
     login(password: "incorrect-synthetic-password")
     expect(response).to have_http_status(:unprocessable_entity)

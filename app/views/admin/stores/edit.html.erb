@@ -105,7 +105,11 @@
   <section class="admin-card" id="integrations">
     <div class="admin-card__header"><h2 class="admin-card__title">Integrations</h2></div>
     <div class="space-y-4 px-4 pb-4">
-      <p class="admin-help"><%= link_to t("sendit_settings.settings_link"), seller_integrations_path(anchor: "sendit-settings"), class: "admin-link" %></p>
+      <ul class="space-y-2 text-sm">
+        <li><%= link_to t("carrier_settings.title", carrier: "Sendit"), admin_sendit_settings_path, class: "admin-link" %></li>
+        <li><%= link_to t("carrier_settings.title", carrier: "Ozon Express"), admin_ozon_settings_path, class: "admin-link" %></li>
+        <li><%= link_to t("carrier_settings.title", carrier: "Ameex"), admin_ameex_settings_path, class: "admin-link" %></li>
+      </ul>
       <p class="admin-help">Leave the field blank to keep the saved value.</p>
       <div class="admin-field-grid">
         <div class="md:col-span-2">

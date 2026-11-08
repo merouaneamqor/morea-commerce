@@ -7,7 +7,7 @@ en:
     refresh_queued: Sendit city refresh requested
     title: Sendit settings
     description: Manage pickup, parcel options and shipping fees for this workspace.
-    settings_link: Manage Sendit and shipping settings in Integrations
+    settings_link: Manage Sendit and shipping settings
     manage_connection: Manage connection
     connect: Connect Sendit
     existing_connection: Existing Sendit connection
@@ -41,7 +41,7 @@ fr:
     refresh_queued: Actualisation des villes Sendit demandée
     title: Paramètres Sendit
     description: Gérez le ramassage, les options des colis et les frais de livraison de cet espace.
-    settings_link: Gérer Sendit et les frais de livraison dans les intégrations
+    settings_link: Gérer Sendit et les frais de livraison
     manage_connection: Gérer la connexion
     connect: Connecter Sendit
     existing_connection: Connexion Sendit existante
@@ -75,7 +75,7 @@ ar:
     refresh_queued: تم طلب تحديث مدن Sendit
     title: إعدادات Sendit
     description: إدارة الاستلام وخيارات الطرود ورسوم التوصيل لمساحة العمل هذه.
-    settings_link: إدارة Sendit وإعدادات التوصيل في صفحة التكاملات
+    settings_link: إدارة Sendit وإعدادات التوصيل
     manage_connection: إدارة الاتصال
     connect: ربط Sendit
     existing_connection: اتصال Sendit الحالي

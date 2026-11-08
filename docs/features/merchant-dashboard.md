@@ -32,7 +32,7 @@ Confirmation work remains independent of the chart period. Orders open the exist
 
 ## Getting started and channel health
 
-External-only merchants can open setup for Shopify, WooCommerce and YouCan directly from the dashboard. No local catalog or published boutique is required to receive supported signed orders. Boutique merchants receive catalog and storefront actions appropriate to their setup. Disabled boutiques stay unpublished; viewing the dashboard does not enable shopping routes or modify a connection.
+New workspaces show a first-run checklist on the dashboard until source, carrier and first-order steps are complete. See [merchant-onboarding.md](merchant-onboarding.md). External-only merchants can open setup for Shopify, WooCommerce and YouCan from that checklist or Integrations. No local catalog or published boutique is required to receive supported signed orders. Boutique merchants receive catalog and storefront actions appropriate to their setup. Disabled boutiques stay unpublished; viewing the dashboard does not enable shopping routes or modify a connection.
 
 Connection configuration alone is not evidence that orders can be received. A source remains configured until the existing signed intake has verified a delivery. The dashboard distinguishes awaiting delivery, verified, disconnected and sources requiring attention. It shows current rejected receipts and links to the existing setup/receipt history. Rejections count current failed receipt records, not every HTTP retry or unauthenticated request. Provider setup stays manual, and the existing [connected-store limits](connected-store-contracts.md) apply, including YouCan payload completeness.
 

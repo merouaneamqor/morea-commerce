@@ -3,6 +3,8 @@
 # A merchant's account at a delivery company. API keys are stored encrypted and are never rendered back.
 class DeliveryAccount < ApplicationRecord
   ACCOUNT_TYPES = %w[normal premium].freeze
+  # Providers whose connector can create parcels automatically.
+  SHIPPABLE = %w[sendit ozon].freeze
 
   belongs_to :store
 
@@ -14,10 +16,16 @@ class DeliveryAccount < ApplicationRecord
   validates :contact_phone, length: { maximum: 30 }
   validates :pickup_city, length: { maximum: 120 }
   validates :delivery_fee, :return_fee, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 9999 }, allow_nil: true
+  validate :default_must_be_shippable, if: :ships_by_default?
 
   before_validation :assign_code, on: :create
+  before_save :clear_other_defaults, if: -> { ships_by_default? && will_save_change_to_ships_by_default? }
 
   def provider_info = Carriers.provider(provider)
+
+  def shippable?
+    SHIPPABLE.include?(provider) && credentials? && is_active?
+  end
 
   def credentials
     return {} if credentials_ciphertext.blank?
@@ -38,11 +46,22 @@ class DeliveryAccount < ApplicationRecord
     provider == "sendit"
   end
 
-  # URL the merchant pastes in Sendit (Intégration API > Intégration Webhooks); the token authenticates Sendit's calls.
+  def ozon?
+    provider == "ozon"
+  end
+
+  # URL the merchant pastes in the courier's webhook UI; the token authenticates inbound calls.
   def webhook_url
     return if webhook_token.blank?
 
-    "#{Store.platform_origin}/webhooks/sendit/#{store.slug}?token=#{webhook_token}"
+    path = if sendit?
+      "webhooks/sendit/#{store.slug}"
+    elsif ozon?
+      "webhooks/ozon/#{store.slug}"
+    end
+    return unless path
+
+    "#{Store.platform_origin}/#{path}?token=#{webhook_token}"
   end
 
   def generate_webhook_token
@@ -66,6 +85,18 @@ class DeliveryAccount < ApplicationRecord
     number = 1
     number += 1 while taken.include?("#{prefix}#{number}")
     self.code = "#{prefix}#{number}"
+  end
+
+  def default_must_be_shippable
+    return if SHIPPABLE.include?(provider) && credentials? && is_active?
+
+    errors.add(:ships_by_default, "only an active connected Sendit or Ozon Express account can ship by default")
+  end
+
+  def clear_other_defaults
+    return unless store
+
+    store.delivery_accounts.where.not(id: id).where(ships_by_default: true).update_all(ships_by_default: false, updated_at: Time.current)
   end
 
   def encryptor

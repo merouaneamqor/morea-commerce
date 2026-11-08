@@ -35,7 +35,8 @@ RSpec.describe "Sendit connection from the Integrations API page", type: :reques
       expect(account.connected_at).to be_present
       expect(account.credentials).to eq("api_key" => "pub-123", "api_secret" => "sec-456")
       expect(account.credentials_ciphertext).not_to include("sec-456")
-      expect(json).to eq("ok" => true, "webhook_url" => account.webhook_url)
+      expect(json).to eq("ok" => true, "webhook_url" => account.webhook_url, "ships_by_default" => true)
+      expect(account.ships_by_default?).to be(true)
       expect(json["webhook_url"]).to match(%r{\Ahttps?://[^/]+/webhooks/sendit/#{store.slug}\?token=[\w-]{30,}\z})
     end
 

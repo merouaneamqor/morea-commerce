@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   ActiveAdmin.routes(self)
 
   post "webhooks/sendit/:store_slug", to: "webhooks/sendit#create", as: :sendit_webhook
+  post "webhooks/ozon/:store_slug", to: "webhooks/ozon#create", as: :ozon_webhook
   post "webhooks/seallo", to: "webhooks/seallo#create"
   post "webhooks/store_orders/:token", to: "webhooks/store_orders#create", as: :store_orders_webhook
   post "webhooks/shopify/uninstalled", to: "webhooks/shopify_lifecycle#uninstall", as: :shopify_uninstalled
@@ -86,6 +87,7 @@ Rails.application.routes.draw do
   get "/comptabilite/export", to: "admin/accounting#export", as: :seller_accounting_export, defaults: { format: "csv" }
   post "/livraison/societes", to: "admin/delivery_accounts#create", as: :seller_delivery_accounts
   patch "/livraison/societes/:id", to: "admin/delivery_accounts#update", as: :seller_delivery_account
+  post "/livraison/societes/:id/default", to: "admin/delivery_accounts#make_default", as: :seller_delivery_account_default
   delete "/livraison/societes/:id", to: "admin/delivery_accounts#destroy"
   {
     "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations", "/mes-statistiques" => "/admin/my_stats",
@@ -248,14 +250,17 @@ Rails.application.routes.draw do
     resources :orders, only: %i[index show new create edit update] do
       collection do
         post :sendit_sync_all
+        post :ozon_sync_all
         post :shopify_sync_all
         get :product_search
         post :quick_product
       end
       member do
         post :sendit
+        post :ozon
         patch :complete_import_contact
         get :sendit_label
+        get :ozon_label
         patch :transition
         post :duplicate
         post :archive

@@ -141,7 +141,7 @@
               <td class="admin-muted"><%= order.created_at.strftime("%b %-d, %H:%M") %></td>
               <% agent = order.order_confirmation&.assigned_user %>
               <td><%= agent ? tag.span(class: "seallo-agent") { tag.i((agent.name.presence || agent.email).first.upcase) + (agent.name.presence || agent.email) } : tag.span(t("admin.orders_groups.unassigned"), class: "admin-subdued") %></td>
-              <% unless agent_view? %><td><%= sendit_badge(order) || tag.span("—", class: "admin-subdued") %></td><% end %>
+              <% unless agent_view? %><td><%= courier_badge(order) || tag.span("—", class: "admin-subdued") %></td><% end %>
             </tr>
           <% end %>
         </tbody>

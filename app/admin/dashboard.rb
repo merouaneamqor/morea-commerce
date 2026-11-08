@@ -77,7 +77,7 @@ ActiveAdmin.register_page "Dashboard", namespace: :superadmin do
             column("Manage") do |store|
               div class: "platform-overview__actions" do
                 text_node link_to("Billing", admin_tenant_invoices_path(store))
-                text_node helpers.button_to("Open admin", enter_admin_tenant_path(store), method: :post)
+                text_node link_to("Open admin", admin_platform_path(anchor: "workspaces"))
               end
             end
           end

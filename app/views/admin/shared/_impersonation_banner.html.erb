@@ -1,0 +1,4 @@
+<div class="admin-impersonation" role="status">
+  <p><%= t("platform_admin.impersonate.banner", name: current_admin_user.name.presence || current_admin_user.email, workspace: current_store&.name) %></p>
+  <%= button_to t("platform_admin.impersonate.stop"), admin_impersonation_path, method: :delete, class: "admin-btn" %>
+</div>

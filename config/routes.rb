@@ -191,6 +191,7 @@ Rails.application.routes.draw do
         post :resolve
       end
     end
+    resource :impersonation, only: :destroy
     resources :tenants, only: %i[index new create edit update] do
       member do
         post :enter

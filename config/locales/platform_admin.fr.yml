@@ -31,6 +31,19 @@ fr:
     status: "Statut"
     period_ends: "Fin de période"
     sign_out: "Déconnexion"
+    impersonate:
+      title: "Ouvrir %{name} en tant que"
+      description: "Choisissez un membre de cet espace. Vous utiliserez son compte jusqu’au retour à la plateforme."
+      close: "Fermer"
+      empty: "Cet espace n’a aucun membre actif à ouvrir."
+      invalid: "Choisissez un membre actif de cet espace."
+      banner: "Vous utilisez le compte de %{name} dans %{workspace}."
+      stop: "Revenir à la plateforme"
+      stopped: "Vous êtes de retour sur la plateforme."
+      roles:
+        admin: "Administrateur de l’espace"
+        agent: "Agent de confirmation"
+        supervisor: "Superviseur"
     request_description: "Marchands demandant l’accès à Seallo pour gérer les commandes de Shopify, WooCommerce ou YouCan, avec une boutique Seallo facultative. L’espace est créé uniquement après approbation."
     request_statuses:
       pending: "En attente"

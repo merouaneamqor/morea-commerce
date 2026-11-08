@@ -1,0 +1,8 @@
+<% content_for :title, t("platform_home.gate.coming_soon.title") %>
+<% content_for :head do %>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light">
+  <%= render "shared/platform_icons" %>
+  <%= stylesheet_link_tag "platform_home", "data-turbo-track": "reload" %>
+<% end %>
+<%= render "platform_home/gate", mode: :coming_soon %>

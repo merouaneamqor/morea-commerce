@@ -1,0 +1,24 @@
+<% mode = local_assigns.fetch(:mode).to_s %>
+<div class="platform-landing platform-gate" dir="<%= rtl? ? "rtl" : "ltr" %>" data-home-gate="<%= mode %>">
+  <header class="platform-header">
+    <div class="platform-container platform-header-inner">
+      <span class="platform-brand" dir="ltr">seallo</span>
+      <div class="platform-header-actions">
+        <div class="platform-languages" dir="ltr" role="group" aria-label="<%= t("platform_home.language") %>">
+          <% Morea::Locales::AVAILABLE.each do |locale| %>
+            <%= link_to locale.to_s.upcase, platform_home_path(locale: locale), lang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
+          <% end %>
+        </div>
+        <%= link_to t("platform_home.gate.sign_in"), admin_login_path(locale: I18n.locale), class: "platform-button platform-header-button" %>
+      </div>
+    </div>
+  </header>
+  <main id="main-content" class="platform-gate-main" tabindex="-1">
+    <section class="platform-gate-card" aria-labelledby="platform-gate-title">
+      <p class="platform-eyebrow"><span aria-hidden="true"></span><%= t("platform_home.gate.#{mode}.eyebrow") %></p>
+      <h1 id="platform-gate-title"><%= t("platform_home.gate.#{mode}.heading") %></h1>
+      <p class="platform-lead"><%= t("platform_home.gate.#{mode}.body") %></p>
+      <p class="platform-gate-note"><%= t("platform_home.gate.#{mode}.note") %></p>
+    </section>
+  </main>
+</div>

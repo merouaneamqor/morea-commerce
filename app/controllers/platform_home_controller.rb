@@ -16,4 +16,3 @@ class PlatformHomeController < ApplicationController
     end
   end
 end
-

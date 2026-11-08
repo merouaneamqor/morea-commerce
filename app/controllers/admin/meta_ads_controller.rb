@@ -79,7 +79,7 @@ module Admin
     end
 
     def set_connection
-      @connection = current_store.meta_ads_connection
+      @connection = current_store&.meta_ads_connection
     end
 
     # Ads with spend in the last 30 days, for the product mapping screen.

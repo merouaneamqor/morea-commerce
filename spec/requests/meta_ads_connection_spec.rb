@@ -194,6 +194,15 @@ RSpec.describe "Meta Ads connection", type: :request do
     expect(active["class"]).to include("lg-nav__active", "font-semibold")
   end
 
+  it "serves Publicités on the platform apex for a signed-in merchant" do
+    sign_in
+    host! Store.base_domain
+    get "/publicites"
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include(I18n.t("meta_ads.connection"))
+    expect(response.body).not_to include(I18n.t("store.missing_title"))
+  end
+
   it "keeps the Connect buttons clickable when Meta is not configured, and explains what is missing" do
     stub_meta_env("META_LOGIN_CONFIG_ID" => nil)
     sign_in
@@ -254,30 +263,38 @@ RSpec.describe "Meta Ads connection", type: :request do
     get "/integrations"
     notice = Nokogiri::HTML(response.body).at_css("[data-meta-notice=expires_soon]")
     expect(notice).to be_present
-    expect(notice.at_css("form[action='/admin/meta-ads/connect'] button, form[action='/admin/meta-ads/connect'] input[type=submit]")).to be_present
+    notice_form = notice.at_css("form[action='/admin/meta-ads/connect']")
+    expect(notice_form.at_css("button, input[type=submit]")).to be_present
+    expect(notice_form["data-turbo"]).to eq("false")
     get "/dashboard"
     expect(Nokogiri::HTML(response.body).at_css("[data-meta-notice=expires_soon]")).to be_present
   end
 
-  it "disconnects: revokes the permissions at Meta, deletes the token and keeps the synced data" do
+  it "disconnects: drops the local token first, revokes at Meta, and keeps the synced data" do
     connect!
     patch "/admin/meta-ads/accounts", params: { ad_account_ids: %w[act_11] }
+    get "/admin/meta-ads"
+    form = Nokogiri::HTML(response.body).at_css("form[action='/admin/meta-ads/connection']")
+    expect(form["data-turbo-confirm"]).to eq(I18n.t("meta_ads.disconnect_confirm"))
+
     delete "/admin/meta-ads/connection"
     expect(response).to redirect_to("/admin/meta-ads")
     expect(calls).to include([ "DELETE", "/#{MetaAds::Config.api_version}/me/permissions" ])
     expect(flash[:notice]).to eq(I18n.t("meta_ads.disconnected_revoked"))
-    expect(store.reload.meta_ads_connection).to have_attributes(status: "disconnected", access_token: nil, access_token_ciphertext: nil)
+    expect(store.reload.meta_ads_connection).to have_attributes(
+      status: "disconnected", access_token: nil, access_token_ciphertext: nil, meta_user_id: nil, granted_scopes: []
+    )
     expect(store.meta_ads_ad_accounts.count).to eq(3)
     expect(store.meta_ads_ad_accounts.selected.count).to eq(0)
   end
 
-  it "still disconnects when Meta cannot be reached" do
+  it "still disconnects locally when Meta cannot be reached" do
     connect!
     down = ->(_uri, _request) { meta_reply({}, status: 503) }
     allow(MetaAds::Client).to receive(:new).and_wrap_original { |original, **options| original.call(**options, transport: down) }
     delete "/admin/meta-ads/connection"
     expect(flash[:notice]).to eq(I18n.t("meta_ads.disconnected_notice"))
-    expect(store.reload.meta_ads_connection).to have_attributes(status: "disconnected", access_token: nil)
+    expect(store.reload.meta_ads_connection).to have_attributes(status: "disconnected", access_token: nil, meta_user_id: nil)
   end
 
   describe "Integrations page" do

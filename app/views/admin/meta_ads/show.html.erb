@@ -57,8 +57,9 @@
         <%= button_to t("meta_ads.refresh"), refresh_admin_meta_ads_path, method: :post, class: "h-11 rounded-xl border border-[#e8e3df] px-4 text-sm font-semibold text-[#1f2430] hover:bg-[#f3f1ef]" %>
       <% end %>
       <% if status != "disconnected" %>
-        <%= button_to t("meta_ads.disconnect"), connection_admin_meta_ads_path, method: :delete, class: "h-11 rounded-xl px-4 text-sm font-semibold text-[#b4344e] hover:bg-[#fbe7ea]",
-              form: { onsubmit: "return confirm(#{t("meta_ads.disconnect_confirm").to_json})" } %>
+        <%= button_to t("meta_ads.disconnect"), connection_admin_meta_ads_path, method: :delete,
+              class: "h-11 rounded-xl px-4 text-sm font-semibold text-[#b4344e] hover:bg-[#fbe7ea]",
+              form: { data: { turbo_confirm: t("meta_ads.disconnect_confirm") } } %>
       <% end %>
     </div>
   </div>

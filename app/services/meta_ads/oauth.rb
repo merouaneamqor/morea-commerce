@@ -39,9 +39,11 @@ module MetaAds
       end
       session[:meta_ads_oauth] = { "nonce" => nonce, "store_id" => store.id, "user_id" => user_id }
       state = verifier.generate({ "n" => nonce, "s" => store.id, "u" => user_id }, expires_in: LIFETIME, purpose: PURPOSE)
-      query = URI.encode_www_form(client_id: Config.app_id, redirect_uri: Config.redirect_uri, state: state,
-        config_id: Config.login_config_id, response_type: "code", override_default_response_type: "true")
-      "https://www.facebook.com/#{Config.api_version}/dialog/oauth?#{query}"
+      # rerequest forces Meta to show the permission dialog again after a prior connect, disconnect or lost grant.
+      params = { client_id: Config.app_id, redirect_uri: Config.redirect_uri, state: state,
+        config_id: Config.login_config_id, response_type: "code", override_default_response_type: "true" }
+      params[:auth_type] = "rerequest" if connection.last_verified_at.present? || connection.status == "needs_reauthorization"
+      "https://www.facebook.com/#{Config.api_version}/dialog/oauth?#{URI.encode_www_form(params)}"
     end
 
     # Validates the state of a callback and returns a Pending. Does not call Meta and does not consume the

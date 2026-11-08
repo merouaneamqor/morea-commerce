@@ -1,0 +1,22 @@
+<% staff = impersonatable_staff(store) %>
+<div id="impersonate-<%= store.id %>" class="admin-impersonate" popover="auto" role="dialog" aria-labelledby="impersonate-title-<%= store.id %>">
+  <div class="admin-impersonate__header">
+    <h2 id="impersonate-title-<%= store.id %>"><%= t("platform_admin.impersonate.title", name: store.name) %></h2>
+    <button type="button" class="admin-impersonate__close" popovertarget="impersonate-<%= store.id %>" popovertargetaction="hide" aria-label="<%= t("platform_admin.impersonate.close") %>">×</button>
+  </div>
+  <p class="admin-impersonate__lead"><%= t("platform_admin.impersonate.description") %></p>
+  <% if staff.empty? %>
+    <p class="admin-impersonate__empty"><%= t("platform_admin.impersonate.empty") %></p>
+  <% else %>
+    <ul class="admin-impersonate__list">
+      <% staff.each do |user| %>
+        <li>
+          <%= button_to enter_admin_tenant_path(store), method: :post, params: { user_id: user.id }, class: "admin-impersonate__person", form: { class: "admin-impersonate__form" }, data: { impersonate_user: user.id } do %>
+            <span class="admin-impersonate__name"><%= user.name.presence || user.email %></span>
+            <span class="admin-impersonate__meta"><%= user.email %> · <%= workspace_member_role(user) %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

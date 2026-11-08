@@ -82,15 +82,21 @@ module Admin
       redirect_to edit_admin_tenant_path(@store), alert: t("platform_admin.reset.denied.#{e.reason}"), status: :see_other
     end
 
-    # Apex sessions can operate any workspace without requiring its public host.
+    # Open the workspace as one of its members. The platform account stays in the
+    # session so the super admin can return without knowing that member's password.
     def enter
+      user = @store.users.find_by(id: params[:user_id])
+      unless user&.impersonatable_by_super_admin?
+        return redirect_to admin_platform_path(anchor: "workspaces"), alert: t("platform_admin.impersonate.invalid")
+      end
+
+      session[:impersonator_id] = current_user.id
+      session[:impersonator_session_version] = current_user.session_version
+      session[:user_id] = user.id
+      session[:session_version] = user.session_version
       session[:admin_mode] = "store"
       session[:admin_store_id] = @store.id
-      if Store.apex_host?(request.host) || current_store&.id == @store.id
-        redirect_to admin_root_path
-      else
-        redirect_to "#{@store.origin}/admin", allow_other_host: true
-      end
+      redirect_to(user.confirmation_agent? ? home_admin_confirmations_path : admin_root_path)
     end
 
     private

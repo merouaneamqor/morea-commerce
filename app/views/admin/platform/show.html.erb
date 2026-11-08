@@ -5,7 +5,7 @@
     <h1 class="admin-page-header__title"><%= t("platform_admin.title") %></h1>
     <p class="admin-page-header__meta"><%= t("platform_admin.overview_description") %></p>
   </div>
-  <div class="flex items-center gap-2">
+  <div class="platform-toolbar">
     <%= link_to t("platform_admin.requests_count", count: @pending_requests_count), admin_access_requests_path, class: "admin-btn-secondary", data: { access_requests_count: @pending_requests_count } %>
     <%= link_to t("seallo_connect_pages.privacy_rights.admin.title"), admin_platform_privacy_rights_requests_path, class: "admin-btn-secondary" %>
     <%= link_to t("platform_admin.new_workspace"), new_admin_tenant_path, class: "admin-btn" %>
@@ -44,54 +44,69 @@
     <h2 class="admin-card__title"><%= t("platform_admin.workspaces") %></h2>
     <%= link_to t("platform_admin.new_workspace"), new_admin_tenant_path, class: "admin-btn-plain" %>
   </div>
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th><%= t("platform_admin.workspace") %></th>
-          <th><%= t("platform_admin.storefront") %></th>
-          <th><%= t("platform_admin.slug") %></th>
-          <th><%= t("platform_admin.billing") %></th>
-          <th><%= t("platform_admin.amount") %></th>
-          <th><%= t("platform_admin.status") %></th>
-          <th><%= t("platform_admin.period_ends") %></th>
-          <th><%= t("platform_admin.staff") %></th>
-          <th><%= t("platform_admin.orders") %></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @stores.each do |store| %>
+  <% if @stores.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.no_workspaces") %></p>
+  <% else %>
+    <ul class="admin-mobile-list lg:hidden">
+      <% @stores.each do |store| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= store.name %></p>
+              <p class="admin-mobile-list__meta"><%= store.slug %></p>
+            </div>
+            <span class="admin-mobile-list__amount"><%= money(store.billing_amount_cents, "MAD") %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= t(store.storefront_enabled? ? "platform_admin.storefront_enabled" : "platform_admin.storefront_disabled") %>
+            · <%= store.billing_status.humanize %>
+            · <%= t("platform_admin.staff") %> <%= store.users.size %>
+            · <%= t("platform_admin.orders") %> <%= store.orders.count %>
+          </p>
+          <%= render "admin/platform/workspace_actions", store: store %>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
+      <table class="admin-table">
+        <thead>
           <tr>
-            <td class="font-semibold"><%= store.name %></td>
-            <td><%= t(store.storefront_enabled? ? "platform_admin.storefront_enabled" : "platform_admin.storefront_disabled") %></td>
-            <td class="admin-muted tabular-nums"><%= store.slug %></td>
-            <td><%= store.billing_interval.humanize %></td>
-            <td class="tabular-nums"><%= money(store.billing_amount_cents, "MAD") %></td>
-            <td><%= store.billing_status.humanize %></td>
-            <td class="admin-muted">
-              <%= store.billing_period_ends_on&.strftime("%b %-d, %Y") || t("platform_admin.no_date") %>
-            </td>
-            <td class="tabular-nums"><%= store.users.size %></td>
-            <td class="tabular-nums"><%= store.orders.count %></td>
-            <td>
-              <div class="flex flex-col items-end gap-1">
-                <%= link_to t("platform_admin.billing"), edit_admin_tenant_path(store), class: "admin-btn-plain" %>
-                <%= link_to admin_tenant_invoices_path(store), class: "admin-btn-plain" do %>
-                  <%= t("platform_admin.invoices") %><% if store.invoices.overdue.any? %> (<%= store.invoices.overdue.count %>)<% end %>
-                <% end %>
-                <%= button_to t("platform_admin.open_admin"), enter_admin_tenant_path(store), method: :post, class: "admin-btn-plain" %>
-                <% if store.storefront_enabled? %>
-                  <%= link_to t("platform_admin.view_storefront"), store.origin, class: "admin-btn-plain", target: "_blank", rel: "noopener" %>
-                <% end %>
-              </div>
-            </td>
+            <th><%= t("platform_admin.workspace") %></th>
+            <th><%= t("platform_admin.storefront") %></th>
+            <th><%= t("platform_admin.slug") %></th>
+            <th><%= t("platform_admin.billing") %></th>
+            <th><%= t("platform_admin.amount") %></th>
+            <th><%= t("platform_admin.status") %></th>
+            <th><%= t("platform_admin.period_ends") %></th>
+            <th><%= t("platform_admin.staff") %></th>
+            <th><%= t("platform_admin.orders") %></th>
+            <th></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <% if @stores.empty? %>
-      <p class="admin-empty"><%= t("platform_admin.no_workspaces") %></p>
+        </thead>
+        <tbody>
+          <% @stores.each do |store| %>
+            <tr>
+              <td class="font-semibold"><%= store.name %></td>
+              <td><%= t(store.storefront_enabled? ? "platform_admin.storefront_enabled" : "platform_admin.storefront_disabled") %></td>
+              <td class="admin-muted tabular-nums"><%= store.slug %></td>
+              <td><%= store.billing_interval.humanize %></td>
+              <td class="tabular-nums"><%= money(store.billing_amount_cents, "MAD") %></td>
+              <td><%= store.billing_status.humanize %></td>
+              <td class="admin-muted">
+                <%= store.billing_period_ends_on&.strftime("%b %-d, %Y") || t("platform_admin.no_date") %>
+              </td>
+              <td class="tabular-nums"><%= store.users.size %></td>
+              <td class="tabular-nums"><%= store.orders.count %></td>
+              <td><%= render "admin/platform/workspace_actions", store: store %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% @stores.each do |store| %>
+      <%= render "admin/platform/impersonate_popover", store: store %>
     <% end %>
-  </div>
+  <% end %>
 </section>

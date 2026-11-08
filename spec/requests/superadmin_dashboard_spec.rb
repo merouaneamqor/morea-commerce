@@ -123,7 +123,7 @@ RSpec.describe "Superadmin dashboard", type: :request do
     newest.each { |workspace| expect(panel.text).to include(workspace.name) }
     expect(panel.text).not_to include(store.name, other_store.name)
     expect(panel.at_css("a[href='#{edit_admin_tenant_path(newest.first)}']")).to be_present
-    form = panel.at_css("form[action='#{enter_admin_tenant_path(newest.first)}']")
-    expect(form["method"]).to eq("post")
+    expect(panel.at_css("a[href='#{admin_platform_path(anchor: "workspaces")}']")).to be_present
+    expect(panel.at_css("form[action='#{enter_admin_tenant_path(newest.first)}']")).to be_nil
   end
 end

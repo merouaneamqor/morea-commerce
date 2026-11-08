@@ -376,6 +376,20 @@ en:
       tagline: "Multi-store commerce platform"
       admin: "Admin sign in"
       imprint: "The Seallo Connect privacy and terms pages name the platform operator and the contracts. Each merchant store publishes its own legal entity, registration, and privacy page."
+    gate:
+      sign_in: "Sign in"
+      maintenance:
+        title: "Under maintenance — Seallo"
+        eyebrow: "Under maintenance"
+        heading: "We'll be back shortly."
+        body: "Seallo is briefly unavailable while we finish an update. Your stores, orders, and accounts are safe."
+        note: "If you already have a workspace, you can still sign in."
+      coming_soon:
+        title: "Coming soon — Seallo"
+        eyebrow: "Coming soon"
+        heading: "Seallo opens soon."
+        body: "One place to confirm cash-on-delivery orders, count the profit, and ship. We are putting the last pieces in place."
+        note: "Already have a workspace? Sign in to your admin."
   signup:
     title: "Request access — %{name}"
     heading: "Request access"

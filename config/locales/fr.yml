@@ -376,6 +376,20 @@ fr:
       tagline: "Plateforme e-commerce multi-boutiques"
       admin: "Connexion administration"
       imprint: "Les pages confidentialité et conditions de Seallo Connect indiquent l'opérateur de la plateforme et les contrats. Chaque boutique publie son entité légale, son immatriculation et sa page de confidentialité."
+    gate:
+      sign_in: "Se connecter"
+      maintenance:
+        title: "En maintenance — Seallo"
+        eyebrow: "En maintenance"
+        heading: "Nous revenons très bientôt."
+        body: "Seallo est momentanément indisponible le temps d'une mise à jour. Vos boutiques, commandes et comptes sont en sécurité."
+        note: "Si vous avez déjà un espace, vous pouvez toujours vous connecter."
+      coming_soon:
+        title: "Bientôt disponible — Seallo"
+        eyebrow: "Bientôt disponible"
+        heading: "Seallo ouvre bientôt."
+        body: "Un seul endroit pour confirmer les commandes en paiement à la livraison, compter le bénéfice et expédier. Nous posons les derniers éléments."
+        note: "Vous avez déjà un espace ? Connectez-vous à votre administration."
   signup:
     title: "Demander un accès — %{name}"
     heading: "Demander un accès"

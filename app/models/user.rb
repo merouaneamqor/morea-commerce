@@ -50,6 +50,11 @@ class User < ApplicationRecord
     active? && (admin? || super_admin? || confirmation_agent?)
   end
 
+  # A super admin may open a workspace only as one of its own active members.
+  def impersonatable_by_super_admin?
+    can_sign_in? && !super_admin?
+  end
+
   def confirmation_agent?
     confirmation_role == "agent"
   end

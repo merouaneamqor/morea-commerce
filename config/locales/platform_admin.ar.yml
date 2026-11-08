@@ -31,6 +31,19 @@ ar:
     status: "الحالة"
     period_ends: "نهاية الفترة"
     sign_out: "تسجيل الخروج"
+    impersonate:
+      title: "فتح %{name} بصفة"
+      description: "اختر عضوًا في مساحة العمل. ستستخدم حسابه إلى أن تعود إلى المنصة."
+      close: "إغلاق"
+      empty: "لا يوجد عضو نشط لفتح مساحة العمل هذه."
+      invalid: "اختر عضوًا نشطًا في مساحة العمل."
+      banner: "أنت تستخدم حساب %{name} في %{workspace}."
+      stop: "العودة إلى المنصة"
+      stopped: "عدت إلى المنصة."
+      roles:
+        admin: "مدير مساحة العمل"
+        agent: "موظف التأكيد"
+        supervisor: "مشرف"
     request_description: "تجار يطلبون الانضمام إلى Seallo لإدارة طلبات Shopify أو WooCommerce أو YouCan، مع إمكانية تفعيل متجر Seallo اختياريًا. لا تُنشأ مساحة العمل إلا بعد الموافقة."
     request_statuses:
       pending: "قيد الانتظار"

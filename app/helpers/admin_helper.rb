@@ -69,6 +69,17 @@ module AdminHelper
     lucide_icon(ICONS.fetch(name), size: size)
   end
 
+  def workspace_member_role(user)
+    return t("platform_admin.impersonate.roles.agent") if user.confirmation_agent?
+    return t("platform_admin.impersonate.roles.admin") if user.admin?
+
+    t("platform_admin.impersonate.roles.supervisor")
+  end
+
+  def impersonatable_staff(store)
+    store.users.select(&:impersonatable_by_super_admin?).sort_by { |user| [ user.name.to_s.downcase, user.email ] }
+  end
+
   def admin_badge(status, label: nil, tone: nil)
     tone ||= BADGE_TONES.fetch(status.to_s, "neutral")
     label ||= Order::STATUS_LABELS[status.to_s] || status.to_s.humanize

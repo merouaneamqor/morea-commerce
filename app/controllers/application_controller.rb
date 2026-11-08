@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
   before_action :set_current_store
   before_action :set_locale
 
-  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?, :store_billing_past_due?
+  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?, :impersonating?, :store_billing_past_due?
 
   def authenticate_super_admin!
     return if current_admin_user&.super_admin?
@@ -160,6 +160,7 @@ class ApplicationController < ActionController::Base
   def current_admin_user
     return @current_admin_user if defined?(@current_admin_user)
     return @current_admin_user = nil unless session[:user_id]
+    return @current_admin_user = nil if session[:impersonator_id].present? && !impersonator_still_valid?
 
     user = current_store&.users&.active&.find_by(id: session[:user_id]) ||
       User.super_admins.active.find_by(id: session[:user_id])
@@ -168,6 +169,15 @@ class ApplicationController < ActionController::Base
 
   def super_admin?
     current_admin_user&.super_admin?
+  end
+
+  def impersonating?
+    session[:impersonator_id].present? && current_admin_user.present?
+  end
+
+  def impersonator_still_valid?
+    impersonator = User.super_admins.active.find_by(id: session[:impersonator_id])
+    impersonator && session[:impersonator_session_version].to_i == impersonator.session_version
   end
 
   def store_billing_past_due?

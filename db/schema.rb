@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_08_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_08_233000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -935,6 +935,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_08_140000) do
     t.index ["status"], name: "index_platform_privacy_rights_requests_on_status"
     t.check_constraint "request_type::text = ANY (ARRAY['access'::character varying, 'rectify'::character varying, 'object'::character varying, 'delete'::character varying, 'unsubscribe'::character varying]::text[])", name: "platform_privacy_rights_requests_type"
     t.check_constraint "status::text = ANY (ARRAY['open'::character varying, 'in_progress'::character varying, 'resolved'::character varying, 'rejected'::character varying]::text[])", name: "platform_privacy_rights_requests_status"
+  end
+
+  create_table "platform_settings", force: :cascade do |t|
+    t.boolean "singleton", default: true, null: false
+    t.boolean "home_maintenance", default: false, null: false
+    t.boolean "home_coming_soon", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["singleton"], name: "index_platform_settings_on_singleton", unique: true
   end
 
   create_table "privacy_rights_requests", force: :cascade do |t|

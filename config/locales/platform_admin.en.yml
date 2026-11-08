@@ -31,6 +31,19 @@ en:
     status: "Status"
     period_ends: "Period ends"
     sign_out: "Sign out"
+    impersonate:
+      title: "Open %{name} as"
+      description: "Choose a member of this workspace. You will use their account until you return to the platform."
+      close: "Close"
+      empty: "This workspace has no active member to open."
+      invalid: "Choose an active member of this workspace."
+      banner: "You are using %{name}'s account in %{workspace}."
+      stop: "Return to platform"
+      stopped: "You are back on the platform."
+      roles:
+        admin: "Workspace administrator"
+        agent: "Confirmation agent"
+        supervisor: "Supervisor"
     request_description: "Merchants requesting access to Seallo to manage orders from Shopify, WooCommerce or YouCan, with an optional Seallo storefront. A workspace is created only after approval."
     request_statuses:
       pending: "Pending"

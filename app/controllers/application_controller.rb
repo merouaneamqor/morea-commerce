@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   before_action :set_current_store
   before_action :set_locale
 
-  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?, :store_billing_past_due?
+  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :admin_entry_path, :super_admin?, :store_billing_past_due?
 
   def authenticate_super_admin!
     return if current_admin_user&.super_admin?
@@ -163,13 +163,24 @@ class ApplicationController < ActionController::Base
   end
 
   # Store staff for this host, or a platform super admin (any host).
+  # On the apex marketing home, Current.store is unset, so staff are resolved from
+  # the session directly so the navbar can show signed-in actions.
   def current_admin_user
     return @current_admin_user if defined?(@current_admin_user)
     return @current_admin_user = nil unless session[:user_id]
 
-    user = current_store&.users&.active&.find_by(id: session[:user_id]) ||
-      User.super_admins.active.find_by(id: session[:user_id])
+    user = resolve_session_admin_user
     @current_admin_user = user if user && session[:session_version].to_i == user.session_version
+  end
+
+  # Destination after landing-page "Dashboard" / post-login entry.
+  # Plain admin paths (no public locale query) so the navbar matches post-login redirects.
+  def admin_entry_path(user = current_admin_user)
+    return admin_login_path(locale: I18n.locale) unless user
+    return "/admin/platform" if user.super_admin?
+    return "/admin/confirmations/home" if user.confirmation_agent?
+
+    "/admin"
   end
 
   def super_admin?
@@ -178,6 +189,20 @@ class ApplicationController < ActionController::Base
 
   def store_billing_past_due?
     current_store&.billing_past_due?
+  end
+
+  def resolve_session_admin_user
+    if current_store
+      return current_store.users.active.find_by(id: session[:user_id]) ||
+        User.super_admins.active.find_by(id: session[:user_id])
+    end
+
+    return unless Store.apex_host?(request.host)
+
+    user = User.active.find_by(id: session[:user_id])
+    return unless user&.can_sign_in?
+    return user if user.super_admin?
+    user if user.store_id.present? && (user.admin? || user.confirmation_agent?)
   end
 
   def normalize_locale(locale)

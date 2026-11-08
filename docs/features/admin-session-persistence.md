@@ -8,6 +8,8 @@ Default lifetime is 30 days (`ApplicationController::SESSION_TTL`). Checking **R
 
 Password reset still bumps `session_version` and ends other live sessions. Logout clears the session. Tenant host scoping and apex workspace rules are unchanged.
 
+The apex home navbar reads the same session: guests see Sign in / Sign up; signed-in staff see a Dashboard (or confirmation/platform) entry via `admin_entry_path`.
+
 ## Verification
 
 ```sh

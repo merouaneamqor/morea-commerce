@@ -64,9 +64,7 @@ module Admin
         return return_to
       end
 
-      return admin_platform_path if user&.super_admin?
-
-      user&.confirmation_agent? ? home_admin_confirmations_path : admin_root_path
+      admin_entry_path(user)
     end
   end
 end

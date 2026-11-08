@@ -71,6 +71,14 @@ class Store < ApplicationRecord
     legacy.or(where(id: DeliveryAccount.where(provider: "sendit", is_active: true).where.not(credentials_ciphertext: nil).select(:store_id)))
   }
 
+  scope :with_ozon, -> {
+    where(id: DeliveryAccount.where(provider: "ozon", is_active: true).where.not(credentials_ciphertext: nil).select(:store_id))
+  }
+
+  scope :with_ameex, -> {
+    where(id: DeliveryAccount.where(provider: "ameex", is_active: true).where.not(credentials_ciphertext: nil).select(:store_id))
+  }
+
   # Product name shown on the apex landing page and sign-in (not a tenant store name).
   def self.platform_name
     ENV.fetch("PLATFORM_NAME", "Seallo")
@@ -157,11 +165,69 @@ class Store < ApplicationRecord
 
   def reload(*)
     remove_instance_variable(:@sendit_delivery_account) if defined?(@sendit_delivery_account)
+    remove_instance_variable(:@ozon_delivery_account) if defined?(@ozon_delivery_account)
+    remove_instance_variable(:@ameex_delivery_account) if defined?(@ameex_delivery_account)
+    remove_instance_variable(:@default_shipping_account) if defined?(@default_shipping_account)
     super
   end
 
   def sendit_configured?
     sendit_public_key.present? && sendit_secret_key.present?
+  end
+
+  def ozon_delivery_account
+    return @ozon_delivery_account if defined?(@ozon_delivery_account)
+
+    @ozon_delivery_account = delivery_accounts.where(provider: "ozon", is_active: true).where.not(credentials_ciphertext: nil).order(:id).first
+  end
+
+  # Ozon Express: api_key = customer id, api_secret = API key (path credentials).
+  def ozon_customer_id
+    ozon_delivery_account&.credentials&.dig("api_key")
+  end
+
+  def ozon_api_key
+    ozon_delivery_account&.credentials&.dig("api_secret")
+  end
+
+  def ozon_configured?
+    ozon_customer_id.present? && ozon_api_key.present?
+  end
+
+  def ameex_delivery_account
+    return @ameex_delivery_account if defined?(@ameex_delivery_account)
+
+    @ameex_delivery_account = delivery_accounts.where(provider: "ameex", is_active: true).where.not(credentials_ciphertext: nil).order(:id).first
+  end
+
+  # Ameex: api_key = C-Api-Id, api_secret = C-Api-Key.
+  def ameex_api_id
+    ameex_delivery_account&.credentials&.dig("api_key")
+  end
+
+  def ameex_api_key
+    ameex_delivery_account&.credentials&.dig("api_secret")
+  end
+
+  def ameex_configured?
+    ameex_api_id.present? && ameex_api_key.present?
+  end
+
+  # Courier the merchant chose for automatic parcel creation. Explicit default wins;
+  # if only one shippable account exists, that one is used until they pick otherwise.
+  def default_shipping_account
+    return @default_shipping_account if defined?(@default_shipping_account)
+
+    shippable = delivery_accounts.select(&:shippable?)
+    @default_shipping_account = shippable.find(&:ships_by_default?) || (shippable.first if shippable.one?)
+  end
+
+  def default_shipping_provider
+    default_shipping_account&.provider
+  end
+
+  def ships_with?(provider)
+    default_shipping_provider == provider.to_s
   end
 
   def origin

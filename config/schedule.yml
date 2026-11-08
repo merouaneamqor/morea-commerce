@@ -1,7 +1,7 @@
 # sidekiq-cron jobs, loaded automatically when Sidekiq boots.
 # Each integration can use an external cron independently of the other.
 # Set its *_EXTERNAL_CRON flag only when that integration has an external runner.
-<% if ENV["SENDIT_EXTERNAL_CRON"].present? && ENV["SHOPIFY_EXTERNAL_CRON"].present? && ENV["SEALLO_RETENTION_EXTERNAL_CRON"].present? && ENV["META_ADS_EXTERNAL_CRON"].present? %>
+<% if ENV["SENDIT_EXTERNAL_CRON"].present? && ENV["OZON_EXTERNAL_CRON"].present? && ENV["AMEEX_EXTERNAL_CRON"].present? && ENV["SHOPIFY_EXTERNAL_CRON"].present? && ENV["SEALLO_RETENTION_EXTERNAL_CRON"].present? && ENV["META_ADS_EXTERNAL_CRON"].present? %>
 {}
 <% end %>
 <% unless ENV["SENDIT_EXTERNAL_CRON"].present? %>
@@ -17,6 +17,34 @@ sendit_cities_refresh:
   queue: default
   active_job: true
   description: "Refresh the Sendit city list of every workspace with Sendit, weekly"
+<% end %>
+<% unless ENV["OZON_EXTERNAL_CRON"].present? %>
+ozon_poll:
+  cron: "<%= ENV.fetch("OZON_POLL_CRON", "*/15 * * * *") %>"
+  class: "OzonPollJob"
+  queue: default
+  active_job: true
+  description: "Refresh Ozon Express parcels still in transit"
+ozon_cities_refresh:
+  cron: "<%= ENV.fetch("OZON_CITIES_CRON", "15 3 * * 1") %>"
+  class: "OzonCitiesRefreshJob"
+  queue: default
+  active_job: true
+  description: "Refresh the Ozon Express city list weekly"
+<% end %>
+<% unless ENV["AMEEX_EXTERNAL_CRON"].present? %>
+ameex_poll:
+  cron: "<%= ENV.fetch("AMEEX_POLL_CRON", "*/15 * * * *") %>"
+  class: "AmeexPollJob"
+  queue: default
+  active_job: true
+  description: "Refresh Ameex parcels still in transit"
+ameex_cities_refresh:
+  cron: "<%= ENV.fetch("AMEEX_CITIES_CRON", "30 3 * * 1") %>"
+  class: "AmeexCitiesRefreshJob"
+  queue: default
+  active_job: true
+  description: "Refresh the Ameex city list weekly"
 <% end %>
 <% unless ENV["SHOPIFY_EXTERNAL_CRON"].present? %>
 shopify_orders_sync:

@@ -8,7 +8,15 @@ class SenditPollJob < ApplicationJob
   def perform
     total = 0
     Store.with_sendit.find_each do |store|
-      count = Sendit::Sync.enqueue_all(store.orders)
+      count = if store.ships_with?(:sendit)
+        Sendit::Sync.enqueue_all(store.orders)
+      else
+        # Default courier is elsewhere — only refresh parcels already on Sendit.
+        Sendit::Sync.reapply_stored!(store.orders)
+        _, to_refresh = Sendit::Sync.pending_orders(store.orders)
+        to_refresh.find_each { |o| SenditSyncJob.perform_later(o.id, "refresh") }
+        to_refresh.count
+      end
       total += count
       Rails.logger.info("[SenditPollJob] store=#{store.slug} queued #{count} orders")
     end

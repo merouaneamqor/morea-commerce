@@ -459,10 +459,30 @@
   "New",
   "جديد"
  ],
+ "Par défaut": [
+  "Default",
+  "افتراضي"
+],
+ "Définir par défaut": [
+  "Set as default",
+  "تعيين كافتراضي"
+],
+ "Société par défaut pour l'envoi automatique des colis.": [
+  "Default company for automatic parcel shipping.",
+  "الشركة الافتراضية لإرسال الطرود تلقائيًا."
+],
+ "Société par défaut pour l'envoi des colis mise à jour.": [
+  "Default shipping company updated.",
+  "تم تحديث شركة الشحن الافتراضية."
+],
+ "Seules Sendit, Ozon Express et Ameex connectées peuvent être la société par défaut.": [
+  "Only a connected Sendit, Ozon Express or Ameex account can be the default.",
+  "يمكن فقط لحساب Sendit أو Ozon Express أو Ameex المتصل أن يكون الشركة الافتراضية."
+],
  "Ouvrir colis": [
   "Open parcel",
   "فتح الطرد"
- ],
+],
  "Ouvrir le colis": [
   "Open the parcel",
   "فتح الطرد"

@@ -51,6 +51,7 @@ class MetaOauthController < ApplicationController
     # Seller admin lives on the apex host; pin the workspace for super-admins who entered a store.
     session[:admin_mode] = "store"
     session[:admin_store_id] = store.id
-    redirect_to admin_meta_ads_path, status: :see_other
+    # Admin paths are locale-cookie based; omit ?locale= from the apex ApplicationController defaults.
+    redirect_to admin_meta_ads_path(locale: nil), status: :see_other
   end
 end

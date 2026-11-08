@@ -19,8 +19,8 @@
   accounts_json = @delivery_accounts.map do |a|
     { id: a.id, provider: a.provider, name: a.name, contact_name: a.contact_name, contact_phone: a.contact_phone, account_type: a.account_type, pickup_city: a.pickup_city,
       allow_open: a.allow_open, delivery_fee: a.delivery_fee&.to_f, return_fee: a.return_fee&.to_f, is_active: a.is_active, has_credentials: a.credentials?,
-      public_key: (a.credentials["api_key"] if a.sendit?), secret_hint: (a.secret_hint if a.sendit?), webhook_url: a.webhook_url,
-      cities_count: a.cities_count, cities_synced: a.cities_synced_at.present? }
+      public_key: (a.credentials["api_key"] if a.sendit? || a.ozon? || a.ameex?), secret_hint: (a.secret_hint if a.sendit? || a.ozon? || a.ameex?), webhook_url: a.webhook_url,
+      cities_count: a.cities_count, cities_synced: a.cities_synced_at.present?, ships_by_default: a.ships_by_default?, shippable: a.shippable? }
   end
   modal_strings = [
     "Choisissez une région", "Toutes les régions", "fournisseurs", "Pays pris en charge", "Tous", "Fournisseurs disponibles", "résultats", "Rechercher un fournisseur…",
@@ -29,7 +29,8 @@
     "Téléphone du contact", "Ville de ramassage", "Type de compte", "Normal", "Premium", "Frais par colis livré", "Frais par colis retourné", "Connexion API",
     "Clés fournies par", "dans votre espace client. Elles sont gardées chiffrées ; l'envoi automatique des colis sera activé dès que le connecteur sera disponible.",
     "Clé enregistrée (laisser vide pour garder)", "Clé publique / identifiant", "Clé secrète / token", "Ouvrir le colis", "Le client peut ouvrir le colis avant de payer.",
-    "Compte actif", "Retour", "Enregistrer", "Ajouter la société"
+    "Compte actif", "Retour", "Enregistrer", "Ajouter la société",
+    "Par défaut", "Définir par défaut", "Société par défaut pour l'envoi automatique des colis."
   ].index_with { |text| sl(text) }
 %>
 
@@ -110,7 +111,14 @@
             <p class="truncate text-sm font-semibold text-[#1f2430]" dir="auto"><%= account.name %> <span class="ms-1 text-xs font-medium text-[#8a8380]" dir="ltr"><%= account.code %></span></p>
             <p class="truncate text-xs text-[#8a8380]"><%= info["name"] %><% if info["unavailable"] %>, <%= t("seller_integrations.provider_unavailable") %><% end %><% if account.pickup_city.present? %>, <%= account.pickup_city %><% end %></p>
           </div>
-          <% if account.is_active? %>
+          <% if account.ships_by_default? %>
+            <span class="rounded-full bg-[#fff1e8] px-2.5 py-1 text-xs font-semibold text-[#a8432e]"><%= sl("Par défaut") %></span>
+          <% elsif account.shippable? %>
+            <%= button_to sl("Définir par défaut"), seller_delivery_account_default_path(account.id), method: :post,
+                  class: "h-9 rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]",
+                  title: sl("Société par défaut pour l'envoi automatique des colis.") %>
+          <% end %>
+          <% if account.connected? %>
             <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
           <% else %>
             <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= sl("Non connectée") %></span>
@@ -207,7 +215,11 @@
      data-catalog="<%= catalog.to_json %>" data-accounts="<%= accounts_json.to_json %>" data-strings="<%= modal_strings.to_json %>"
      data-currency="<%= currency %>" data-action="<%= seller_delivery_accounts_path %>" data-edit-path="/livraison/societes/"
      data-sendit="<%= t("seller_integrations.sendit").except(:errors).merge(browser_error: t("seller_integrations.sendit.errors.browser"), server_error: t("seller_integrations.sendit.errors.server_error", status: "%{status}"), detail_label: t("seller_integrations.sendit.errors.detail_label")).to_json %>"
-     data-sendit-url="https://app.sendit.ma/edit-profile?tab=tabAPI"></div>
+     data-sendit-url="https://app.sendit.ma/edit-profile?tab=tabAPI"
+     data-ozon="<%= t("seller_integrations.ozon").except(:errors).merge(browser_error: t("seller_integrations.ozon.errors.browser"), server_error: t("seller_integrations.ozon.errors.server_error", status: "%{status}"), detail_label: t("seller_integrations.ozon.errors.detail_label")).to_json %>"
+     data-ozon-url="https://ozonexpress.ma"
+     data-ameex="<%= t("seller_integrations.ameex").except(:errors).merge(browser_error: t("seller_integrations.ameex.errors.browser"), server_error: t("seller_integrations.ameex.errors.server_error", status: "%{status}"), detail_label: t("seller_integrations.ameex.errors.detail_label")).to_json %>"
+     data-ameex-url="https://ameex.app"></div>
 
 <script>
   (function () {
@@ -325,48 +337,59 @@
       return html;
     };
 
-    /* ---- Sendit: real connection (keys checked against Sendit's login, webhook URL shown afterwards) ---- */
+    /* ---- Sendit / Ozon: real connection (keys checked against the courier API, webhook URL shown afterwards) ---- */
     var SD = JSON.parse(root.dataset.sendit), SENDIT_URL = root.dataset.senditUrl;
+    var OD = JSON.parse(root.dataset.ozon), OZON_URL = root.dataset.ozonUrl;
+    var AD = JSON.parse(root.dataset.ameex), AMEEX_URL = root.dataset.ameexUrl;
     var eyeIcon = '<svg viewBox="0 0 24 24" class="size-[18px] fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
-    var webhookBlock = function (url) {
-      return '<div class="mt-4 rounded-xl border border-[#f0ebe7] p-3.5"><p class="text-sm font-semibold text-[#1f2430]">' + esc(SD.webhook_title) + '</p><p class="mt-0.5 text-xs text-[#8a8380]">' + esc(SD.webhook_help) + "</p>" +
+    var courierCopy = function () { return state.provider === "ozon" ? OD : state.provider === "ameex" ? AD : SD; };
+    var webhookBlock = function (url, copy) {
+      copy = copy || courierCopy();
+      return '<div class="mt-4 rounded-xl border border-[#f0ebe7] p-3.5"><p class="text-sm font-semibold text-[#1f2430]">' + esc(copy.webhook_title) + '</p><p class="mt-0.5 text-xs text-[#8a8380]">' + esc(copy.webhook_help) + "</p>" +
         '<div class="mt-3 flex gap-2"><input readonly value="' + esc(url) + '" dir="ltr" data-webhook-url class="' + field + ' text-xs" onfocus="this.select()">' +
-        '<button type="button" data-copy-webhook class="h-11 shrink-0 rounded-xl border border-[#e8e3df] px-4 text-sm font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]">' + esc(SD.copy) + "</button></div></div>";
+        '<button type="button" data-copy-webhook class="h-11 shrink-0 rounded-xl border border-[#e8e3df] px-4 text-sm font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]">' + esc(copy.copy) + "</button></div></div>";
     };
-    var citiesLine = function (a) {
+    var citiesLine = function (a, copy) {
       if (!a) return "";
-      var text = a.cities_count ? SD.cities.replace("%{count}", a.cities_count) : SD.cities_pending;
+      copy = copy || courierCopy();
+      var text = a.cities_count ? copy.cities.replace("%{count}", a.cities_count) : copy.cities_pending;
       return '<p class="mt-3 text-xs text-[#8a8380]">' + esc(text) + "</p>";
     };
-    var senditStep = function () {
-      var a = state.account, p = catalog.providers.sendit, label = "mb-1 block text-xs font-semibold text-[#8a8380]";
+    var courierStep = function (provider) {
+      var copy = provider === "ozon" ? OD : provider === "ameex" ? AD : SD;
+      var helpUrl = provider === "ozon" ? OZON_URL : provider === "ameex" ? AMEEX_URL : SENDIT_URL;
+      var a = state.account, p = catalog.providers[provider], label = "mb-1 block text-xs font-semibold text-[#8a8380]";
       var token = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
-      var html = '<form method="post" action="' + esc(a ? root.dataset.editPath + a.id : root.dataset.action) + '" data-sendit-form>' +
-        '<input type="hidden" name="authenticity_token" value="' + esc(token) + '">' + (a ? '<input type="hidden" name="_method" value="patch">' : '<input type="hidden" name="delivery_account[provider]" value="sendit">') +
+      var html = '<form method="post" action="' + esc(a ? root.dataset.editPath + a.id : root.dataset.action) + '" data-courier-form data-courier-provider="' + esc(provider) + '">' +
+        '<input type="hidden" name="authenticity_token" value="' + esc(token) + '">' + (a ? '<input type="hidden" name="_method" value="patch">' : '<input type="hidden" name="delivery_account[provider]" value="' + esc(provider) + '">') +
         '<div class="mb-5 flex items-center gap-3 rounded-xl bg-[#f3f1ef] p-3">' + logo(p) + '<div><p class="font-semibold text-[#1f2430]">' + esc(p.name) + '</p><p class="text-xs text-[#8a8380]">' + esc(p.desc) + "</p></div></div>" +
-        '<p data-sendit-error hidden role="alert" class="mb-4 rounded-xl bg-[#fbe7ea] px-3.5 py-2.5 text-sm text-[#b4344e]"></p>' +
-        '<div class="grid gap-3"><label class="block"><span class="' + label + '">' + esc(SD.name_label) + '</span><input name="delivery_account[name]" value="' + (a ? esc(a.name) : "") + '" required dir="auto" class="' + field + '" placeholder="' + esc(SD.name_placeholder) + '"></label>' +
-        '<label class="block"><span class="' + label + '">' + esc(SD.public_key) + '</span><input name="delivery_account[api_key]" value="' + (a ? esc(a.public_key) : "") + '" required dir="ltr" autocomplete="off" spellcheck="false" class="' + field + '"></label>' +
-        '<label class="block"><span class="' + label + '">' + esc(SD.secret_key) + '</span><span class="relative block"><input name="delivery_account[api_secret]" type="password" ' + (a && a.has_credentials ? "" : "required ") + 'dir="ltr" autocomplete="new-password" spellcheck="false" class="' + field + ' pe-11" placeholder="' + esc(a && a.has_credentials ? (a.secret_hint || SD.secret_saved) : "") + '">' +
-        '<button type="button" data-eye aria-label="' + esc(SD.toggle_secret) + '" class="absolute inset-y-0 end-0 flex items-center px-3 text-[#8a8380] hover:text-[#1f2430]" tabindex="-1">' + eyeIcon + "</button></span></label></div>" +
-        '<p class="mt-3 text-xs text-[#8a8380]">' + esc(SD.help) + ' <a href="' + esc(SENDIT_URL) + '" target="_blank" rel="noopener" class="font-semibold text-[#a8432e] hover:underline">' + esc(SD.help_link) + " ↗</a></p>" +
-        (a && a.webhook_url ? webhookBlock(a.webhook_url) + citiesLine(a) : "") +
+        '<p data-courier-error hidden role="alert" class="mb-4 rounded-xl bg-[#fbe7ea] px-3.5 py-2.5 text-sm text-[#b4344e]"></p>' +
+        '<div class="grid gap-3"><label class="block"><span class="' + label + '">' + esc(copy.name_label) + '</span><input name="delivery_account[name]" value="' + (a ? esc(a.name) : "") + '" required dir="auto" class="' + field + '" placeholder="' + esc(copy.name_placeholder) + '"></label>' +
+        '<label class="block"><span class="' + label + '">' + esc(copy.public_key) + '</span><input name="delivery_account[api_key]" value="' + (a ? esc(a.public_key) : "") + '" required dir="ltr" autocomplete="off" spellcheck="false" class="' + field + '"></label>' +
+        '<label class="block"><span class="' + label + '">' + esc(copy.secret_key) + '</span><span class="relative block"><input name="delivery_account[api_secret]" type="password" ' + (a && a.has_credentials ? "" : "required ") + 'dir="ltr" autocomplete="new-password" spellcheck="false" class="' + field + ' pe-11" placeholder="' + esc(a && a.has_credentials ? (a.secret_hint || copy.secret_saved) : "") + '">' +
+        '<button type="button" data-eye aria-label="' + esc(copy.toggle_secret) + '" class="absolute inset-y-0 end-0 flex items-center px-3 text-[#8a8380] hover:text-[#1f2430]" tabindex="-1">' + eyeIcon + "</button></span></label>" +
+        (provider === "ameex" && copy.webhook_secret ? '<label class="block"><span class="' + label + '">' + esc(copy.webhook_secret) + '</span><input name="delivery_account[webhook_secret]" type="password" dir="ltr" autocomplete="new-password" class="' + field + '" placeholder="' + esc(copy.webhook_secret_hint || "") + '"></label>' : "") +
+        "</div>" +
+        '<p class="mt-3 text-xs text-[#8a8380]">' + esc(copy.help) + ' <a href="' + esc(helpUrl) + '" target="_blank" rel="noopener" class="font-semibold text-[#a8432e] hover:underline">' + esc(copy.help_link) + " ↗</a></p>" +
+        (a && a.webhook_url ? webhookBlock(a.webhook_url, copy) + citiesLine(a, copy) : "") +
         '<div class="mt-6 flex items-center justify-between">' + (a ? "<span></span>" : '<button type="button" data-back class="text-sm font-semibold text-[#8a8380] hover:text-[#1f2430]">← ' + esc(S["Retour"]) + "</button>") +
-        '<button type="submit" class="h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624] disabled:opacity-60">' + esc(SD.connect) + "</button></div></form>";
+        '<button type="submit" class="h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624] disabled:opacity-60">' + esc(copy.connect) + "</button></div></form>";
       return html;
     };
-    var senditDone = function () {
-      return '<div class="text-center"><h2 class="mt-3 text-lg font-bold text-[#1f2430]">' + esc(SD.success_title) + '</h2><p class="mt-1 text-sm">' + esc(SD.success_text) + "</p></div>" +
-        webhookBlock(state.done.webhook_url) + citiesLine({ cities_count: null }) +
-        '<div class="mt-6 flex justify-end"><button type="button" data-done class="h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624]">' + esc(SD.done) + "</button></div>";
+    var courierDone = function () {
+      var copy = courierCopy();
+      return '<div class="text-center"><h2 class="mt-3 text-lg font-bold text-[#1f2430]">' + esc(copy.success_title) + '</h2><p class="mt-1 text-sm">' + esc(copy.success_text) + "</p></div>" +
+        webhookBlock(state.done.webhook_url, copy) + citiesLine({ cities_count: null }, copy) +
+        '<div class="mt-6 flex justify-end"><button type="button" data-done class="h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624]">' + esc(copy.done) + "</button></div>";
     };
 
     var render = function () {
       var step = state.provider ? 2 : 1, editing = !!state.account;
       var stepCls = function (n) { return "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold " + (step === n ? "bg-[#a8432e] text-white" : "text-[#8a8380]"); };
+      var body = state.done ? courierDone() : step === 1 ? step1() : (state.provider === "sendit" || state.provider === "ozon" || state.provider === "ameex") ? courierStep(state.provider) : step2();
       root.innerHTML = '<div class="lg-panel flex max-h-[92dvh] w-full max-w-2xl flex-col rounded-2xl" role="dialog" aria-modal="true"><div class="flex items-center justify-between border-b border-[#f0ebe7] px-6 py-4"><div class="flex items-center gap-2">' +
         (editing ? "" : '<span class="' + stepCls(1) + '">1. ' + esc(S["Fournisseur"]) + '</span><span class="h-px w-6 bg-[#e8e3df]"></span>') + '<span class="' + stepCls(2) + '">' + (editing ? "" : "2. ") + esc(S["Détails"]) + "</span></div>" +
-        '<button type="button" data-close class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="Fermer">Fermer</button></div><div class="overflow-y-auto px-6 py-5">' + (state.done ? senditDone() : step === 1 ? step1() : state.provider === "sendit" ? senditStep() : step2()) + "</div></div>";
+        '<button type="button" data-close class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="Fermer">Fermer</button></div><div class="overflow-y-auto px-6 py-5">' + body + "</div></div>";
     };
     var show = function () { render(); root.hidden = false; };
     var close = function () { if (state.done) return window.location.reload(); root.hidden = true; };
@@ -383,8 +406,8 @@
       if (eye) { var secret = eye.parentNode.querySelector("input"); secret.type = secret.type === "password" ? "text" : "password"; return; }
       var copyBtn = t.closest("[data-copy-webhook]");
       if (copyBtn) {
-        var url = root.querySelector("[data-webhook-url]").value;
-        var copied = function () { copyBtn.textContent = SD.copied; setTimeout(function () { copyBtn.textContent = SD.copy; }, 1500); };
+        var url = root.querySelector("[data-webhook-url]").value, copy = courierCopy();
+        var copied = function () { copyBtn.textContent = copy.copied; setTimeout(function () { copyBtn.textContent = copy.copy; }, 1500); };
         if (navigator.clipboard) navigator.clipboard.writeText(url).then(copied); else { var input = root.querySelector("[data-webhook-url]"); input.select(); document.execCommand("copy"); copied(); }
         return;
       }
@@ -396,15 +419,16 @@
       }
     });
     root.addEventListener("submit", function (e) {
-      var form = e.target.closest("[data-sendit-form]");
+      var form = e.target.closest("[data-courier-form]");
       if (!form) return;
       e.preventDefault();
-      var button = form.querySelector("[type=submit]"), box = form.querySelector("[data-sendit-error]"), label = button.textContent;
-      box.hidden = true; button.disabled = true; button.textContent = SD.connecting;
+      var copy = form.dataset.courierProvider === "ozon" ? OD : form.dataset.courierProvider === "ameex" ? AD : SD;
+      var button = form.querySelector("[type=submit]"), box = form.querySelector("[data-courier-error]"), label = button.textContent;
+      box.hidden = true; button.disabled = true; button.textContent = copy.connecting;
       var token = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
       var fail = function (message, detail) {
         box.textContent = message;
-        if (detail) { var line = document.createElement("span"); line.className = "mt-1.5 block text-xs opacity-80"; line.textContent = SD.detail_label + " : " + detail; box.appendChild(line); }
+        if (detail) { var line = document.createElement("span"); line.className = "mt-1.5 block text-xs opacity-80"; line.textContent = copy.detail_label + " : " + detail; box.appendChild(line); }
         box.hidden = false; button.disabled = false; button.textContent = label;
       };
       fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json", "X-CSRF-Token": token }, credentials: "same-origin" })
@@ -418,9 +442,9 @@
         .then(function (r) {
           if (r.ok) { state.done = { webhook_url: r.json.webhook_url }; return render(); }
           if (r.json && r.json.error) return fail(r.json.error, r.json.detail);
-          fail(SD.server_error.replace("%{status}", r.status), null);
+          fail(copy.server_error.replace("%{status}", r.status), null);
         })
-        .catch(function () { fail(SD.browser_error, null); });
+        .catch(function () { fail(copy.browser_error, null); });
     });
     root.addEventListener("input", function (e) {
       if (!e.target.matches("[data-search]")) return;

@@ -100,7 +100,8 @@ RSpec.describe "Seller integrations page", type: :request do
     end
 
     def add_account(**fields)
-      post "/livraison/societes", params: { delivery_account: { provider: "ozon", name: "Ozon (WALKFIT)", account_type: "normal", allow_open: "true", is_active: "true" }.merge(fields) }
+      # Cathedis stays a manual (non-verified) connector; Sendit, Ozon and Ameex verify keys over the network.
+      post "/livraison/societes", params: { delivery_account: { provider: "cathedis", name: "Cathedis (WALKFIT)", account_type: "normal", allow_open: "true", is_active: "true" }.merge(fields) }
     end
 
     it "opens in place from the delivery card instead of leading to the Delivery page" do
@@ -157,7 +158,7 @@ RSpec.describe "Seller integrations page", type: :request do
       add_account(api_key: "pub-123", api_secret: "secret-456", pickup_city: "Casablanca", delivery_fee: "25", return_fee: "12.5")
       expect(response).to redirect_to(%r{/integrations})
       account = store.delivery_accounts.sole
-      expect(account).to have_attributes(provider: "ozon", name: "Ozon (WALKFIT)", code: "OZO1", pickup_city: "Casablanca", is_active: true)
+      expect(account).to have_attributes(provider: "cathedis", name: "Cathedis (WALKFIT)", code: "CAT1", pickup_city: "Casablanca", is_active: true)
       expect(account.delivery_fee).to eq(25)
       expect(account.credentials).to eq("api_key" => "pub-123", "api_secret" => "secret-456")
       expect(account.credentials_ciphertext).not_to include("secret-456")
@@ -166,20 +167,22 @@ RSpec.describe "Seller integrations page", type: :request do
       follow_redirect!
       expect(response).to have_http_status(:ok)
       row = document.at_css("[data-account='#{account.id}']")
-      expect(row.text).to include("Ozon (WALKFIT)", "OZO1", "Connectée")
+      expect(row.text).to include("Cathedis (WALKFIT)", "CAT1", "Connectée")
       expect(response.body).not_to include("secret-456", "pub-123")
     end
 
     it "numbers the codes per company and supports several accounts at one company" do
-      add_account(name: "Ozon 1")
-      add_account(name: "Ozon 2")
-      add_account(provider: "cathedis", name: "Cathedis")
-      expect(store.delivery_accounts.order(:id).pluck(:code)).to eq(%w[OZO1 OZO2 CAT1])
+      add_account(name: "Cathedis 1")
+      add_account(name: "Cathedis 2")
+      add_account(provider: "digylog", name: "Digylog")
+      expect(store.delivery_accounts.order(:id).pluck(:code)).to eq(%w[CAT1 CAT2 DIG1])
     end
 
     it "does not feed Sendit's keys from other companies" do
-      add_account(api_key: "ozon-pub", api_secret: "ozon-secret")
+      add_account(api_key: "cath-pub", api_secret: "cath-secret")
       expect(store.reload.sendit_configured?).to be(false)
+      expect(store.reload.ozon_configured?).to be(false)
+      expect(store.reload.ameex_configured?).to be(false)
     end
 
     it "adds another company without API keys in manual mode" do

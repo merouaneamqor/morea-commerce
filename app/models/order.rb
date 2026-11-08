@@ -76,6 +76,8 @@ class Order < ApplicationRecord
   validate :valid_import_contact_review
   validates :number, uniqueness: { scope: :store_id }
   validates :sendit_code, uniqueness: { scope: :store_id }, allow_nil: true
+  validates :ozon_code, uniqueness: { scope: :store_id }, allow_nil: true
+  validates :ameex_code, uniqueness: { scope: :store_id }, allow_nil: true
   validates :status, inclusion: { in: STATUSES }
   validates :total_cents, numericality: { greater_than_or_equal_to: 0 }
 
@@ -118,14 +120,17 @@ class Order < ApplicationRecord
     self.tags = list.map { |t| t.to_s.strip.downcase }.compact_blank.uniq.join(", ").presence
   end
 
-  # Full commercial edit while unshipped and any Sendit parcel can still be changed
+  # Full commercial edit while unshipped and any courier parcel can still be changed
   def editable?
     return false if external_order_receipt.present?
 
     return false unless EDITABLE_STATUSES.include?(status)
-    return true if sendit_code.blank?
+    return true if sendit_code.blank? && ozon_code.blank? && ameex_code.blank?
+    return Sendit::Sync.new(self).cancellable? if sendit_code.present?
+    return Ozon::Sync.new(self).cancellable? if ozon_code.present?
+    return Ameex::Sync.new(self).cancellable? if ameex_code.present?
 
-    Sendit::Sync.new(self).cancellable?
+    true
   end
 
   def edit_lock_reason
@@ -134,9 +139,19 @@ class Order < ApplicationRecord
     return "Cancelled orders cannot be edited." if status == "cancelled"
     return "Returned orders cannot be edited." if status == "returned"
     return "Delivered orders cannot be edited." if status == "delivered"
-    return "Fix the address, then Save — or wait for Sendit." if status == "address_issue" && sendit_code.present? && !Sendit::Sync.new(self).cancellable?
+    if status == "address_issue" && sendit_code.present? && !Sendit::Sync.new(self).cancellable?
+      return "Fix the address, then Save — or wait for Sendit."
+    end
+    if status == "address_issue" && ozon_code.present? && !Ozon::Sync.new(self).cancellable?
+      return "Fix the address, then Save — or wait for Ozon Express."
+    end
+    if status == "address_issue" && ameex_code.present? && !Ameex::Sync.new(self).cancellable?
+      return "Fix the address, then Save — or wait for Ameex."
+    end
     return "This parcel is already with the courier." if RESERVED_STATUSES.include?(status) && !EDITABLE_STATUSES.include?(status)
     return "This Sendit parcel has already left the warehouse." if sendit_code.present?
+    return "This Ozon Express parcel has already left the warehouse." if ozon_code.present?
+    return "This Ameex parcel has already left the warehouse." if ameex_code.present?
 
     "This order cannot be edited."
   end
@@ -198,16 +213,24 @@ end
     TRANSITIONS.fetch(status, []).include?(new_status.to_s)
   end
 
-  # Buttons staff may click. With Sendit on, delivery states are not listed.
+  # Buttons staff may click. With a default courier API on, delivery states are not listed.
   def staff_transitions
     allowed = TRANSITIONS.fetch(status, [])
-    return allowed unless store.sendit_configured?
+    return allowed unless store.default_shipping_provider.present?
 
     allowed.reject { |s| SENDIT_OWNED_STATUSES.include?(s) }
   end
 
   def sendit_owns_status?(new_status)
-    store.sendit_configured? && SENDIT_OWNED_STATUSES.include?(new_status.to_s)
+    store.ships_with?(:sendit) && SENDIT_OWNED_STATUSES.include?(new_status.to_s)
+  end
+
+  def ozon_owns_status?(new_status)
+    store.ships_with?(:ozon) && SENDIT_OWNED_STATUSES.include?(new_status.to_s)
+  end
+
+  def ameex_owns_status?(new_status)
+    store.ships_with?(:ameex) && SENDIT_OWNED_STATUSES.include?(new_status.to_s)
   end
 
   def transition_to!(new_status, reason: nil, user: nil, source: :staff, sync_delivery: true)
@@ -217,6 +240,12 @@ end
     with_lock do
       if source == :staff && sendit_owns_status?(new_status)
         raise ArgumentError, "“#{STATUS_LABELS.fetch(new_status, new_status.humanize)}” is set by Sendit only. Use Refresh Sendit."
+      end
+      if source == :staff && ozon_owns_status?(new_status)
+        raise ArgumentError, "“#{STATUS_LABELS.fetch(new_status, new_status.humanize)}” is set by Ozon Express only. Use Refresh Ozon."
+      end
+      if source == :staff && ameex_owns_status?(new_status)
+        raise ArgumentError, "“#{STATUS_LABELS.fetch(new_status, new_status.humanize)}” is set by Ameex only. Use Refresh Ameex."
       end
       raise ArgumentError, "Invalid transition #{status} → #{new_status}" unless can_transition_to?(new_status)
 
@@ -269,6 +298,14 @@ end
     Sendit::Sync.label(sendit_status) if sendit_status.present?
   end
 
+  def ozon_label
+    Ozon::Sync.label(ozon_status) if ozon_status.present?
+  end
+
+  def ameex_label
+    Ameex::Sync.label(ameex_status, store: store) if ameex_status.present?
+  end
+
   def self.cancel_rate
     total = count
     return 0 if total.zero?
@@ -285,6 +322,8 @@ end
   # accounts with different fees, or none): accounting then counts 0 and warns, it never guesses.
   def carrier_fee_cents(kind)
     return (sendit_fee * 100).round(0, half: :up).to_i if sendit_fee.present?
+    return (ozon_fee * 100).round(0, half: :up).to_i if ozon_fee.present?
+    return (ameex_fee * 100).round(0, half: :up).to_i if ameex_fee.present?
 
     column = kind == :return ? :return_fee : :delivery_fee
     fees = store.delivery_accounts.where(is_active: true).where.not(column => nil).pluck(column).uniq
@@ -340,7 +379,7 @@ end
     end
 
     OrderStatusJob.perform_later(id)
-    enqueue_sendit_sync(new_status) if sync_delivery
+    enqueue_courier_sync(new_status) if sync_delivery
     self
   end
 
@@ -363,15 +402,57 @@ end
     end
   end
 
-  def enqueue_sendit_sync(new_status)
-    return unless store.sendit_configured?
-
-    if new_status == "confirmed" && sendit_code.blank?
-      SenditSyncJob.perform_later(id, "push")
-    elsif new_status == "cancelled" && sendit_code.present? && Sendit::Sync.normalize_status(sendit_status) != "CANCELED"
-      # Local cancel first; delete the Sendit parcel right after
-      Sendit::Sync.new(self).cancel!
+  def enqueue_courier_sync(new_status)
+    case store.default_shipping_provider
+    when "sendit" then enqueue_sendit_push(new_status)
+    when "ozon" then enqueue_ozon_push(new_status)
+    when "ameex" then enqueue_ameex_push(new_status)
     end
+    return unless new_status == "cancelled"
+
+    # Cancel an already-created parcel even if that courier is no longer the default.
+    enqueue_sendit_cancel
+    enqueue_ozon_cancel
+    enqueue_ameex_cancel
+  end
+
+  def enqueue_sendit_push(new_status)
+    return unless store.ships_with?(:sendit)
+    return unless new_status == "confirmed" && sendit_code.blank?
+
+    SenditSyncJob.perform_later(id, "push")
+  end
+
+  def enqueue_ozon_push(new_status)
+    return unless store.ships_with?(:ozon)
+    return unless new_status == "confirmed" && ozon_code.blank?
+
+    OzonSyncJob.perform_later(id, "push")
+  end
+
+  def enqueue_ameex_push(new_status)
+    return unless store.ships_with?(:ameex)
+    return unless new_status == "confirmed" && ameex_code.blank?
+
+    AmeexSyncJob.perform_later(id, "push")
+  end
+
+  def enqueue_sendit_cancel
+    return if sendit_code.blank? || Sendit::Sync.normalize_status(sendit_status) == "CANCELED"
+
+    Sendit::Sync.new(self).cancel!
+  end
+
+  def enqueue_ozon_cancel
+    return if ozon_code.blank? || Ozon::Sync.normalize_status(ozon_status) == "CANCELED"
+
+    Ozon::Sync.new(self).cancel!
+  end
+
+  def enqueue_ameex_cancel
+    return if ameex_code.blank? || Ameex::Sync.normalize_status(ameex_status) == "CANCELED"
+
+    Ameex::Sync.new(self).cancel!
   end
 
   def assign_number

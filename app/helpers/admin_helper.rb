@@ -103,6 +103,66 @@ module AdminHelper
     admin_badge(status, label: order.sendit_label, tone: SENDIT_TONES.fetch(status, "neutral"))
   end
 
+  OZON_TONES = {
+    "NEW_PARCEL" => "neutral",
+    "WAITING_PICKUP" => "warning",
+    "PRE_PICKED_UP" => "warning",
+    "PICKED_UP" => "info",
+    "SENT" => "info",
+    "ONV" => "info",
+    "RECEIVED" => "info",
+    "DISTRIBUTION" => "info",
+    "IN_PROGRESS" => "info",
+    "DELIVERED" => "success",
+    "RETURNED" => "critical",
+    "REFUSE" => "critical",
+    "DECLINED" => "critical",
+    "CANCELED" => "neutral",
+    "CANCELED_TEAM" => "neutral",
+    "POSTPONED" => "warning",
+    "UNREACHABLE" => "warning",
+    "NOANSWER" => "warning",
+    "OUT_OF_AREA" => "warning",
+    "SANS_ADRE" => "warning",
+    "EN" => "critical"
+  }.freeze
+
+  def ozon_badge(order)
+    return admin_badge(:error, label: "Sync error", tone: "critical") if order.ozon_error.present? && order.ozon_code.blank?
+    return if order.ozon_status.blank?
+
+    status = Ozon::Sync.normalize_status(order.ozon_status)
+    admin_badge(status, label: order.ozon_label, tone: OZON_TONES.fetch(status, "neutral"))
+  end
+
+  AMEEX_TONES = {
+    "NEW_PARCEL" => "neutral",
+    "WAITING_PICKUP" => "warning",
+    "PICKED_UP" => "info",
+    "IN_PROGRESS" => "info",
+    "DELIVERED" => "success",
+    "RETURNED" => "critical",
+    "REFUSED" => "critical",
+    "REFUSE" => "critical",
+    "CANCELED" => "neutral",
+    "POSTPONED" => "warning",
+    "UNREACHABLE" => "warning",
+    "NOANSWER" => "warning",
+    "OUT_OF_AREA" => "warning"
+  }.freeze
+
+  def ameex_badge(order)
+    return admin_badge(:error, label: "Sync error", tone: "critical") if order.ameex_error.present? && order.ameex_code.blank?
+    return if order.ameex_status.blank?
+
+    status = Ameex::Sync.normalize_status(order.ameex_status)
+    admin_badge(status, label: order.ameex_label, tone: AMEEX_TONES.fetch(status, "neutral"))
+  end
+
+  def courier_badge(order)
+    sendit_badge(order) || ozon_badge(order) || ameex_badge(order)
+  end
+
   # Sendit districts grouped by city for a <select>, the order's likely city first
   def sendit_district_options(order)
     districts = Sendit::Districts.all(store: order.store)
@@ -111,6 +171,28 @@ module AdminHelper
     groups.unshift([ "Suggested for “#{order.customer_city}”", likely.map { |d| [ d[:name], d[:id] ] } ]) if likely.any?
     grouped_options_for_select(groups, order.sendit_district_id)
   rescue Sendit::Client::Error
+    ""
+  end
+
+  def ozon_city_options(order)
+    cities = Ozon::Cities.all(store: order.store)
+    likely = Ozon::Cities.candidates(city: order.customer_city, cities: cities)
+    grouped = []
+    grouped << [ "Suggested for “#{order.customer_city}”", likely.map { |c| [ c[:name], c[:id] ] } ] if likely.any?
+    grouped << [ "All cities", cities.map { |c| [ c[:name], c[:id] ] } ]
+    grouped_options_for_select(grouped, order.ozon_city_id)
+  rescue Ozon::Client::Error
+    ""
+  end
+
+  def ameex_city_options(order)
+    cities = Ameex::Cities.all(store: order.store)
+    likely = Ameex::Cities.candidates(city: order.customer_city, cities: cities)
+    grouped = []
+    grouped << [ "Suggested for “#{order.customer_city}”", likely.map { |c| [ c[:name], c[:id] ] } ] if likely.any?
+    grouped << [ "All cities", cities.map { |c| [ c[:name], c[:id] ] } ]
+    grouped_options_for_select(grouped, order.ameex_city_id)
+  rescue Ameex::Client::Error
     ""
   end
 

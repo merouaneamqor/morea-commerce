@@ -26,8 +26,8 @@ RSpec.describe Confirmations::Performance do
       callback_at: (outcome == "callback" ? now + 1.hour : nil))
   end
 
-  def shift(agent, started_at:, ended_at: nil, workspace: store)
-    ConfirmationShift.create!(store: workspace, user: agent, started_at: started_at, ended_at: ended_at)
+  def shift(agent, started_at:, ended_at: nil, last_seen_at: nil, workspace: store)
+    ConfirmationShift.create!(store: workspace, user: agent, started_at: started_at, ended_at: ended_at, last_seen_at: last_seen_at)
   end
 
   it "lists only active store admins, with their confirmation role" do
@@ -63,9 +63,9 @@ RSpec.describe Confirmations::Performance do
     expect(performance.rows.map { |row| row.user.id }).not_to include(foreign_agent.id)
   end
 
-  it "clips shifts to the range and runs open shifts until now" do
+  it "clips closed sessions to the range and counts an open page until now" do
     shift(ana, started_at: now.beginning_of_day - 2.hours, ended_at: now.beginning_of_day + 1.hour)
-    shift(ben, started_at: now - 30.minutes)
+    shift(ben, started_at: now - 30.minutes, last_seen_at: now)
 
     rows = performance.rows
 
@@ -73,6 +73,16 @@ RSpec.describe Confirmations::Performance do
     expect(rows.find { |row| row.user == ben }.figures.worked_seconds).to eq(30.minutes.to_i)
     expect(rows.find { |row| row.user == ben }.on_shift).to be(true)
     expect(performance.agents_on_shift).to eq(1)
+  end
+
+  it "stops the stat when the pages are no longer open" do
+    shift(ana, started_at: now - 20.minutes, last_seen_at: now - 10.minutes)
+
+    row = performance.rows.find { |candidate| candidate.user == ana }
+
+    expect(row.figures.worked_seconds).to eq(10.minutes.to_i)
+    expect(row.on_shift).to be(false)
+    expect(performance.agents_on_shift).to eq(0)
   end
 
   it "derives confirmations per worked hour" do

@@ -2,7 +2,9 @@
 
 Managers create an ordinary order under Orders and create a staff account under Team. Choose Confirmation agent for a non-admin worker; supervisors need explicit Admin access. An invalid supervisor/access combination is rejected instead of creating an account that cannot sign in.
 
-The agent signs in, opens the confirmation queue and clocks in before handling orders. Start call claims the order and starts a server-side timer, then opens My claims. Choose the result and use Finish call and save to record the result and measured duration. Close call without a result stops the timer without confirming the order. These controls record work; they do not dial a telephone automatically.
+The agent signs in and opens the confirmation queue. The next order is the first thing on the page: call the customer, then tap the result. Start call claims the order and starts a server-side timer. Save and open the next order records the result and measured duration. Close call without a result stops the timer without confirming the order. These controls record work; they do not dial a telephone automatically.
+
+While a confirmation page is open the agent is on the platform and can see orders. Closing the page, or leaving it hidden, ends that presence. The time is a stat for the manager. Pay stays the fee per delivered order and does not use this time.
 
 Confirmation changes the order state and reserves local stock through the existing transition service. It records the responsible agent, result and call duration together. It does not dispatch a parcel. Own statistics and the manager's confirmation performance report read the stored attempt. Revenue and pay metrics may use delivery rather than confirmation and need not increase at this point.
 

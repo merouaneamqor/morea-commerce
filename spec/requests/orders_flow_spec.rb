@@ -204,31 +204,28 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
       expect(waiting.reload.status).to eq("new")
     end
 
-    it "needs a shift to claim: disabled buttons and a message, and the server refuses too" do
+    it "shows the next order and lets the agent claim it without clocking in" do
       sign_in(agent)
       get "/admin/confirmations"
 
-      expect(document.at_css("[data-clock-in-required]").text).to include(I18n.t("admin.confirmations.clock_in_required"))
-      # Phone cards and the desktop table both render the shared claim control.
-      claim_controls = document.css("form[action$='/claim'] button[disabled], form[action$='/claim'] input[disabled]")
-      expect(claim_controls.size).to eq(2)
+      expect(document.at_css("[data-agent-desk]")).to be_present
+      expect(document.at_css("[data-clock-in-required]")).to be_nil
+      expect(document.text).to include(I18n.t("admin.confirmations.step_call"))
+      expect(document.text).to include(I18n.t("admin.confirmations.presence_not_pay"))
 
       post "/admin/confirmations/#{waiting.id}/claim"
 
-      expect(flash[:alert]).to eq(I18n.t("admin.confirmations.clock_in_required"))
-      expect(waiting.reload.order_confirmation&.assigned_user_id).to be_nil
+      expect(waiting.reload.order_confirmation.assigned_user).to eq(agent)
     end
 
-    it "refuses an outcome from an agent who clocked out, even when they hold the order" do
+    it "records an outcome without a clock-in" do
       sign_in(agent)
-      post "/admin/confirmations/clock_in"
       post "/admin/confirmations/#{waiting.id}/claim"
-      post "/admin/confirmations/clock_out"
 
       post "/admin/confirmations/#{waiting.id}/outcome", params: { outcome: "confirmed" }
 
-      expect(flash[:alert]).to eq(I18n.t("admin.confirmations.clock_in_required"))
-      expect(waiting.reload.status).to eq("new")
+      expect(flash[:alert]).to be_nil
+      expect(waiting.reload.status).to eq("confirmed")
     end
   end
 
@@ -245,9 +242,7 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
     get "/admin/confirmations", params: { filter: "available" }
     expect(document.text).to include("##{order.number}", "Survêtement Été")
 
-    # Clock in, claim, confirm.
-    post "/admin/confirmations/clock_in"
-    expect(ConfirmationShift.open.where(store: store, user: agent).count).to eq(1)
+    # Claim and confirm. Pay stays on the delivered order, not on time spent.
     post "/admin/confirmations/#{order.id}/claim"
     expect(order.reload.order_confirmation.assigned_user).to eq(agent)
     post "/admin/confirmations/#{order.id}/outcome", params: { outcome: "confirmed", notes: "Customer agreed" }

@@ -1,0 +1,160 @@
+<% focus = @focus %>
+<% focus_confirmation = focus && @confirmations[focus.id] %>
+<% call_open = focus_confirmation&.call_started_at.present? %>
+<% mine = focus_confirmation&.assigned_user_id == current_user.id %>
+<% rest = @orders.reject { |order| order.id == focus&.id } %>
+
+<div data-agent-desk>
+  <p class="confirm-presence" role="status">
+    <span class="admin-badge <%= @agent_present ? "admin-badge--success" : "admin-badge--neutral" %>">
+      <%= t(@agent_present ? "admin.confirmations.presence_here_label" : "admin.confirmations.presence_away_label") %>
+    </span>
+    <span><%= t(@agent_present ? "admin.confirmations.presence_here" : "admin.confirmations.presence_away") %></span>
+    <span class="admin-muted"><%= t("admin.confirmations.presence_not_pay") %></span>
+  </p>
+
+  <ol class="confirm-steps" aria-label="<%= t("admin.confirmations.agent_lead") %>">
+    <li class="<%= call_open ? "" : "is-current" %>"><%= t("admin.confirmations.step_call_short") %></li>
+    <li class="<%= call_open ? "is-current" : "" %>"><%= t("admin.confirmations.step_result_short") %></li>
+  </ol>
+
+  <section class="confirm-next" aria-labelledby="next-order-title">
+    <% if focus.nil? %>
+      <p class="confirm-step"><%= t("admin.confirmations.step_clear") %></p>
+      <h2 id="next-order-title" class="admin-card__title mt-2"><%= t("admin.confirmations.step_clear_help") %></h2>
+    <% else %>
+      <% since = confirmation_waiting_since(focus, focus_confirmation) %>
+      <% long = confirmation_waiting_long?(since) %>
+      <p class="confirm-step"><%= t(call_open ? "admin.confirmations.step_result" : "admin.confirmations.step_call") %></p>
+      <div class="mt-3 flex flex-wrap items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h2 id="next-order-title" class="text-xl font-semibold text-[#1f2430]">
+            <%= link_to "##{focus.number}", admin_order_path(focus), class: "admin-link" %>
+            <span dir="auto"><%= focus.customer_name %></span>
+          </h2>
+          <p class="mt-1 text-sm" dir="auto"><%= focus.customer_city %></p>
+          <% if focus.customer_phone.present? && !focus.import_contact_issues.include?("phone") %>
+            <p class="mt-2">
+              <%= link_to focus.customer_phone, "tel:#{focus.customer_phone.gsub(/[^\d+]/, "")}", class: "confirm-phone", dir: "ltr" %>
+            </p>
+          <% end %>
+        </div>
+        <span class="admin-badge <%= long ? "admin-badge--attention" : "admin-badge--neutral" %>">
+          <%= t(long ? "admin.confirmations.waiting_long" : "admin.confirmations.waiting", time: time_ago_in_words(since)) %>
+        </span>
+      </div>
+
+      <%= render "admin/orders/import_contact_alert", order: focus %>
+
+      <% items = focus.order_items.to_a %>
+      <% if items.any? %>
+        <ul class="mt-3 space-y-1 text-sm">
+          <% items.each do |item| %>
+            <li><%= item.quantity %> × <%= item.product_name %><% if item.variant_name.present? %> <span class="admin-muted">(<%= item.variant_name %>)</span><% end %></li>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <% if focus.contact_review_required? %>
+          <p class="admin-muted text-sm"><%= t("import_contact.blocked") %></p>
+          <% if mine %><%= button_to t("admin.confirmations.release"), release_admin_confirmation_path(focus), class: "admin-btn-secondary" %><% end %>
+        <% elsif call_open %>
+          <p role="timer" class="tabular-nums text-sm" data-controller="shift-timer" data-shift-timer-started-at-value="<%= focus_confirmation.call_started_at.iso8601 %>"><%= shift_clock(Time.current - focus_confirmation.call_started_at) %></p>
+          <%= button_to t("admin.confirmations.abandon_call"), abandon_call_admin_confirmation_path(focus), class: "admin-btn-secondary" %>
+        <% elsif mine || focus_confirmation.nil? || focus_confirmation.due? %>
+          <%= button_to t("admin.confirmations.call_customer", name: focus.customer_name), call_admin_confirmation_path(focus), class: "confirm-call" %>
+          <% if mine %>
+            <%= button_to t("admin.confirmations.release"), release_admin_confirmation_path(focus), class: "admin-btn-secondary" %>
+          <% end %>
+        <% else %>
+          <span class="admin-muted text-sm"><%= t("admin.confirmations.not_due") %></span>
+        <% end %>
+      </div>
+
+      <% if call_open %>
+        <%= form_with url: finish_call_admin_confirmation_path(focus), class: "mt-4 grid gap-3" do |form| %>
+          <fieldset>
+            <legend class="admin-label"><%= t("admin.confirmations.result_prompt") %></legend>
+            <div class="confirm-choices">
+              <% ConfirmationAttempt::RESULTS.each do |value| %>
+                <label class="confirm-choice <%= "confirm-choice--#{value}" %>">
+                  <%= form.radio_button :outcome, value, required: true %>
+                  <span><%= t("admin.confirmations.outcomes.#{value}") %></span>
+                </label>
+              <% end %>
+            </div>
+          </fieldset>
+          <div>
+            <%= form.label :callback_at, t("admin.confirmations.callback_time"), class: "admin-label" %>
+            <%= form.datetime_local_field :callback_at, class: "admin-input" %>
+            <p class="admin-help"><%= t("admin.confirmations.callback_only") %> <%= t("admin.confirmations.timezone", zone: Time.zone.name) %></p>
+          </div>
+          <div>
+            <%= form.label :notes, t("admin.confirmations.notes"), class: "admin-label" %>
+            <%= form.text_area :notes, maxlength: 2000, rows: 2, class: "admin-input" %>
+            <p class="admin-help"><%= t("admin.confirmations.cancel_needs_note") %></p>
+          </div>
+          <p class="admin-muted text-sm"><%= t("admin.confirmations.dispatch_note") %></p>
+          <%= form.submit t("admin.confirmations.save_next"), class: "confirm-call" %>
+        <% end %>
+      <% elsif focus && !focus.contact_review_required? %>
+        <p class="admin-help"><%= t("admin.confirmations.then_result") %></p>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section class="admin-card mt-4 overflow-hidden" aria-labelledby="other-orders-title">
+    <div class="admin-card__header flex items-center justify-between p-4">
+      <h2 id="other-orders-title" class="admin-card__title"><%= t("admin.confirmations.also_waiting") %></h2>
+    </div>
+    <nav class="admin-tabs px-4" aria-label="<%= t("admin.confirmations.filters") %>">
+      <% @filters.each do |filter| %>
+        <%= link_to t("admin.confirmations.#{filter}"), admin_confirmations_path(filter: filter), class: "admin-tab #{'is-active' if @filter == filter}", "aria-current": (@filter == filter ? "page" : nil) %>
+      <% end %>
+    </nav>
+    <% if rest.empty? %>
+      <p class="admin-empty"><%= t(focus ? "admin.confirmations.only_order" : "admin.confirmations.empty") %></p>
+    <% else %>
+      <ul class="divide-y divide-[#ebebeb]">
+        <% rest.each do |order| %>
+          <% confirmation = @confirmations[order.id] %>
+          <% order_mine = confirmation&.assigned_user_id == current_user.id %>
+          <% since = confirmation_waiting_since(order, confirmation) %>
+          <li class="flex flex-wrap items-center justify-between gap-3 p-4" aria-label="<%= t("admin.confirmations.order_label", number: order.number) %>">
+            <div class="min-w-0">
+              <p class="font-semibold"><%= link_to "##{order.number}", admin_order_path(order), class: "admin-link" %> <span dir="auto"><%= order.customer_name %></span></p>
+              <p class="admin-muted text-sm" dir="auto"><%= order.customer_city %></p>
+              <% order.order_items.first(2).each do |item| %>
+                <p class="text-sm"><%= item.quantity %> × <%= item.product_name %><% if item.variant_name.present? %> <span class="admin-muted">(<%= item.variant_name %>)</span><% end %></p>
+              <% end %>
+              <p class="mt-1"><span class="admin-badge <%= confirmation_waiting_long?(since) ? "admin-badge--attention" : "admin-badge--neutral" %>"><%= t("admin.confirmations.waiting", time: time_ago_in_words(since)) %></span></p>
+            </div>
+            <div>
+              <% if order.contact_review_required? %>
+                <%= render "admin/orders/import_contact_alert", order: order, compact: true %>
+              <% elsif confirmation&.assigned_user_id && !order_mine %>
+                <span class="admin-muted text-sm"><%= t("admin.confirmations.claimed_elsewhere") %></span>
+              <% elsif confirmation.nil? || confirmation.due? || order_mine %>
+                <%= button_to t("admin.confirmations.call_customer", name: order.customer_name), call_admin_confirmation_path(order), class: "admin-btn" %>
+              <% else %>
+                <span class="admin-muted text-sm"><%= t("admin.confirmations.not_due") %></span>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+    <nav class="flex flex-wrap items-center justify-between gap-4 border-t border-[#ebebeb] p-4" aria-label="<%= t("admin.confirmations.pagination") %>">
+      <span class="admin-muted text-sm"><%= t("admin.confirmations.page", number: @page) %></span>
+      <div class="flex items-center gap-2">
+        <% if @page > 1 %>
+          <%= link_to t("admin.confirmations.previous"), admin_confirmations_path(filter: @filter, page: @page - 1), class: "admin-btn-secondary" %>
+        <% end %>
+        <% if @has_next %>
+          <%= link_to t("admin.confirmations.next"), admin_confirmations_path(filter: @filter, page: @page + 1), class: "admin-btn-secondary" %>
+        <% end %>
+      </div>
+    </nav>
+  </section>
+</div>

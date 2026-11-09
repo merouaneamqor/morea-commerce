@@ -119,7 +119,6 @@ RSpec.describe "Shopify imported orders needing contact review", type: :request 
     expect(order.reload).to be_contact_review_required
     expect(order.customer_phone).to be_nil
 
-    session.post "/admin/confirmations/clock_in"
     session.post "/admin/confirmations/#{order.id}/call", as: :json
     expect(session.response).to have_http_status(:unprocessable_content)
     expect(order.reload.order_confirmation&.call_started_at).to be_nil

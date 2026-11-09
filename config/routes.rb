@@ -242,8 +242,7 @@ Rails.application.routes.draw do
       collection do
         get :home
         get :dashboard
-        post :clock_in
-        post :clock_out
+        post :presence
       end
       member do
         post :claim

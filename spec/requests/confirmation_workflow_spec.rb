@@ -52,13 +52,9 @@ RSpec.describe "Manager to confirmation-agent workflow", type: :request do
     login(worker, agent)
     worker.get "/admin/confirmations"
     expect(worker.response).to have_http_status(:ok)
-    expect(document(worker).at_css("[data-clock-in-required]")).to be_present
-    expect(document(worker).at_css("form[action='/admin/confirmations/clock_in']")).to be_present
-
-    worker.post "/admin/confirmations/clock_in"
-    expect(worker.response).to have_http_status(:redirect)
-    expect(ConfirmationShift.open.where(store: store, user: agent).count).to eq(1)
-    worker.get "/admin/confirmations"
+    expect(document(worker).at_css("[data-agent-desk]")).to be_present
+    expect(document(worker).text).to include(I18n.t("admin.confirmations.step_call"))
+    expect(document(worker).at_css("form[action='/admin/confirmations/clock_in']")).to be_nil
     call_path = "/admin/confirmations/#{order.id}/call"
     expect(document(worker).at_css("form[action='#{call_path}'] button:not([disabled])")).to be_present
 
@@ -114,7 +110,6 @@ RSpec.describe "Manager to confirmation-agent workflow", type: :request do
     agent = create_agent(manager)
     worker = browser
     login(worker, agent)
-    worker.post "/admin/confirmations/clock_in"
     worker.post "/admin/confirmations/#{order.id}/call", as: :json
     expect(worker.response).to have_http_status(:ok)
 

@@ -5,10 +5,23 @@
     <h1 class="admin-page-header__title"><%= t("admin.confirmations.home_title", name: current_user.name.presence || current_user.email) %></h1>
     <p class="admin-muted mt-2"><%= t("admin.confirmations.home_description") %></p>
   </div>
-  <%= link_to t("admin.confirmations.open_queue"), admin_confirmations_path, class: "admin-btn" %>
+  <%= link_to t("admin.confirmations.open_queue"), admin_confirmations_path, class: "confirm-call" %>
 </div>
 
-<%= render "shift_card", open_shift: @open_shift, period: "today" %>
+<% if current_user.confirmation_agent_view? %>
+  <section class="confirm-next mb-5" aria-labelledby="agent-job-title">
+    <p class="confirm-step"><%= t("admin.confirmations.agent_lead") %></p>
+    <h2 id="agent-job-title" class="admin-card__title mt-2"><%= t("admin.confirmations.home_next") %></h2>
+    <p class="admin-muted mt-2"><%= t("admin.confirmations.agent_lead_help") %></p>
+    <p class="confirm-presence mt-4" role="status">
+      <span class="admin-badge <%= @agent_present ? "admin-badge--success" : "admin-badge--neutral" %>">
+        <%= t(@agent_present ? "admin.confirmations.presence_here_label" : "admin.confirmations.presence_away_label") %>
+      </span>
+      <span><%= t("admin.confirmations.pages_open_today", time: shift_hours(@presence_seconds)) %></span>
+      <span class="admin-muted"><%= t("admin.confirmations.presence_not_pay") %></span>
+    </p>
+  </section>
+<% end %>
 
 <div class="grid grid-cols-2 gap-3 md:grid-cols-4 mb-5">
   <div class="admin-card p-4">

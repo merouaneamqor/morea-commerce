@@ -19,7 +19,6 @@ module Confirmations
 
     def claim(order_id)
       with_order(order_id) do |order, confirmation|
-        require_shift!
         require_open!(order)
         take!(order, confirmation)
       end
@@ -37,7 +36,6 @@ module Confirmations
     # "Appeler": claim + start the call clock. Reopening your own open call keeps the original start.
     def open_call(order_id)
       with_order(order_id) do |order, confirmation|
-        require_shift!
         require_open!(order)
         take!(order, confirmation)
         confirmation.update!(call_started_at: confirmation.call_started_at || Time.current)
@@ -76,7 +74,6 @@ module Confirmations
       callback = parse_callback(callback_at, outcome)
 
       with_order(order_id) do |order, confirmation|
-        require_shift!
         require_open!(order)
         require_owner!(confirmation)
         raise Error, "Open the call before finishing it." if panel && confirmation.call_started_at.nil?
@@ -189,15 +186,6 @@ module Confirmations
       return if @store && @user&.can_work_desk_for?(@store.id)
 
       raise Error, "Store administration access required."
-    end
-
-    # Agents must be clocked in to claim or handle orders (looking needs no shift). Checked
-    # here so a crafted request cannot skip the disabled buttons.
-    def require_shift!
-      return unless @user.confirmation_agent_view?
-      return if ConfirmationShift.open.exists?(store: @store, user: @user)
-
-      raise Error, I18n.t("admin.confirmations.clock_in_required")
     end
 
     def require_open!(order)

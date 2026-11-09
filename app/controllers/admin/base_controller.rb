@@ -6,6 +6,7 @@ module Admin
     layout "admin"
     before_action :require_admin!
     before_action :confine_confirmation_agents!
+    before_action :note_agent_on_platform
     before_action :sync_store_billing_past_due!
     before_action :require_subscription_access!
 
@@ -58,6 +59,18 @@ end
 
     def store_billing_past_due?
       current_store&.billing_past_due?
+    end
+
+    # A confirmation agent who has a platform page open can see orders. Closing
+    # the page ends the session. The interval is a stat and is not used for pay.
+    def note_agent_on_platform
+      return unless current_user&.confirmation_agent_view? && current_store
+      return if controller_path == "admin/confirmations" && action_name == "presence" && params[:away] == "1"
+
+      Confirmations::Presence.new(store: current_store, user: current_user).ping!
+      @agent_present = true
+    rescue Confirmations::Presence::Error
+      @agent_present = false
     end
   end
 end

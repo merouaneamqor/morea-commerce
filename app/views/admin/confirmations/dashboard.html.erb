@@ -7,7 +7,7 @@
   <%= link_to t("admin.confirmations.title"), admin_confirmations_path, class: "admin-btn-secondary" %>
 </div>
 
-<%= render "shift_card", open_shift: @open_shift, period: @period %>
+<p class="admin-muted mb-5"><%= t("admin.confirmations.presence_stat") %></p>
 
 <nav class="admin-tabs mb-5" aria-label="<%= t('admin.confirmations.period') %>">
   <% Admin::ConfirmationsController::PERIODS.each do |period| %>
@@ -17,12 +17,12 @@
 
 <div class="grid grid-cols-2 gap-3 md:grid-cols-4 mb-5">
   <div class="admin-card p-4">
-    <p class="admin-metric__label"><%= t("admin.confirmations.kpi.on_shift_now") %></p>
+    <p class="admin-metric__label"><%= t("admin.confirmations.kpi.on_platform_now") %></p>
     <p class="admin-metric__value mt-2"><%= number_with_delimiter(@performance.agents_on_shift) %></p>
     <p class="admin-muted mt-2"><%= t("admin.confirmations.kpi.of_agents", count: @rows.size) %></p>
   </div>
   <div class="admin-card p-4">
-    <p class="admin-metric__label"><%= t("admin.confirmations.kpi.hours_worked") %></p>
+    <p class="admin-metric__label"><%= t("admin.confirmations.kpi.pages_open") %></p>
     <p class="admin-metric__value mt-2"><%= shift_hours(@totals.worked_seconds) %></p>
   </div>
   <div class="admin-card p-4">
@@ -49,12 +49,12 @@
               <p class="admin-mobile-list__name"><%= row.user.name.presence || row.user.email %></p>
               <div class="admin-mobile-list__badges">
                 <span class="admin-badge admin-badge--neutral"><%= t("admin.confirmations.roles.#{row.user.confirmation_role}") %></span>
-                <span class="admin-badge <%= row.on_shift ? 'admin-badge--success' : 'admin-badge--neutral' %>"><%= t(row.on_shift ? "admin.confirmations.status.on_shift" : "admin.confirmations.status.off_shift") %></span>
+                <span class="admin-badge <%= row.on_shift ? 'admin-badge--success' : 'admin-badge--neutral' %>"><%= t(row.on_shift ? "admin.confirmations.status.on_platform" : "admin.confirmations.status.away") %></span>
               </div>
             </div>
           </div>
           <p class="admin-mobile-list__meta">
-            <%= t("admin.confirmations.columns.hours") %>: <%= shift_hours(row.figures.worked_seconds) %>
+            <%= t("admin.confirmations.columns.pages_open") %>: <%= shift_hours(row.figures.worked_seconds) %>
             · <%= t("admin.confirmations.columns.attempts") %>: <%= row.figures.attempts %>
             · <%= t("admin.confirmations.outcomes.confirmed") %>: <%= row.figures.confirmed %>
           </p>
@@ -74,7 +74,7 @@
             <th><%= t("admin.confirmations.columns.agent") %></th>
             <th><%= t("admin.confirmations.columns.role") %></th>
             <th><%= t("admin.confirmations.columns.status") %></th>
-            <th class="is-numeric"><%= t("admin.confirmations.columns.hours") %></th>
+            <th class="is-numeric"><%= t("admin.confirmations.columns.pages_open") %></th>
             <th class="is-numeric"><%= t("admin.confirmations.columns.attempts") %></th>
             <th class="is-numeric"><%= t("admin.confirmations.outcomes.confirmed") %></th>
             <th class="is-numeric"><%= t("admin.confirmations.outcomes.cancelled") %></th>
@@ -90,7 +90,7 @@
             <tr>
               <td><%= row.user.name.presence || row.user.email %></td>
               <td><span class="admin-badge admin-badge--neutral"><%= t("admin.confirmations.roles.#{row.user.confirmation_role}") %></span></td>
-              <td><span class="admin-badge <%= row.on_shift ? 'admin-badge--success' : 'admin-badge--neutral' %>"><%= t(row.on_shift ? "admin.confirmations.status.on_shift" : "admin.confirmations.status.off_shift") %></span></td>
+              <td><span class="admin-badge <%= row.on_shift ? 'admin-badge--success' : 'admin-badge--neutral' %>"><%= t(row.on_shift ? "admin.confirmations.status.on_platform" : "admin.confirmations.status.away") %></span></td>
               <td class="is-numeric"><%= shift_hours(row.figures.worked_seconds) %></td>
               <td class="is-numeric"><%= row.figures.attempts %></td>
               <td class="is-numeric"><%= row.figures.confirmed %></td>

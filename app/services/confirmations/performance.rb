@@ -78,7 +78,8 @@ module Confirmations
     end
 
     def open_user_ids
-      @open_user_ids ||= ConfirmationShift.open.where(store: @store).pluck(:user_id)
+      @open_user_ids ||= ConfirmationShift.open.where(store: @store)
+        .where("last_seen_at >= ?", @now - ConfirmationShift::PRESENCE_GRACE).pluck(:user_id)
     end
   end
 end

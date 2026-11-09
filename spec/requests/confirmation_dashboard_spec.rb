@@ -26,7 +26,7 @@ RSpec.describe "Confirmation dashboard", type: :request do
 
   it "shows roles, hours and confirmation results for the store" do
     sign_in
-    ConfirmationShift.create!(store: store, user: staff, started_at: 90.minutes.ago)
+    ConfirmationShift.create!(store: store, user: staff, started_at: 90.minutes.ago, last_seen_at: Time.current)
     customer = store.customers.create!(name: "Buyer", phone: "0612345678", city: "Casablanca")
     order = store.orders.create!(customer: customer, customer_name: "Buyer", customer_phone: "0612345678",
       customer_city: "Casablanca", customer_address: "Address", total_cents: 101, subtotal_cents: 101, currency: "MAD", status: "new")
@@ -36,9 +36,9 @@ RSpec.describe "Confirmation dashboard", type: :request do
     get "/admin/confirmations/dashboard", params: { period: "today" }
 
     expect(response).to have_http_status(:ok)
-    expect(document.text).to include("Ana", I18n.t("admin.confirmations.roles.supervisor"), I18n.t("admin.confirmations.status.on_shift"), I18n.t("admin.confirmations.performance_title"))
-    expect(document.css("[role=timer]").size).to eq(1)
-    expect(document.css("form[action^='/admin/confirmations/clock_out']").size).to eq(1)
+    expect(document.text).to include("Ana", I18n.t("admin.confirmations.roles.supervisor"), I18n.t("admin.confirmations.status.on_platform"), I18n.t("admin.confirmations.performance_title"))
+    expect(document.text).to include(I18n.t("admin.confirmations.presence_stat"))
+    expect(document.css("form[action*='clock']")).to be_empty
   end
 
   it "keeps another workspace's attempts out of the dashboard" do
@@ -56,19 +56,13 @@ RSpec.describe "Confirmation dashboard", type: :request do
     expect(document.text).not_to include("Outsider")
   end
 
-  it "clocks in and out, refusing a repeated clock-in" do
+  it "does not clock a store admin in from the confirmation pages" do
     sign_in
 
-    post "/admin/confirmations/clock_in", params: { period: "week" }
-    expect(response).to redirect_to("/admin/confirmations/dashboard?period=week")
-    expect(ConfirmationShift.open.where(store: store, user: staff).count).to eq(1)
+    get "/admin/confirmations/dashboard"
 
-    post "/admin/confirmations/clock_in"
-    expect(flash[:alert]).to eq("You are already on shift.")
-    expect(ConfirmationShift.open.where(store: store, user: staff).count).to eq(1)
-
-    post "/admin/confirmations/clock_out"
-    expect(ConfirmationShift.open.where(store: store, user: staff).count).to eq(0)
+    expect(ConfirmationShift.where(store: store, user: staff).count).to eq(0)
+    expect(document.css("form[action*='clock']")).to be_empty
   end
 
   it "shows the products of each order in my claims" do
@@ -162,7 +156,6 @@ RSpec.describe "Confirmation dashboard", type: :request do
 
     it "claims an order from the queue" do
       sign_in(agent)
-      ConfirmationShift.create!(store: store, user: agent, started_at: 5.minutes.ago)
       order = new_order
 
       post "/admin/confirmations/#{order.id}/claim"

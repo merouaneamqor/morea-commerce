@@ -7,8 +7,6 @@ module Admin
     helper_method :agent_view?
 
     def index
-      @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
-      @needs_clock_in = agent_view? && @open_shift.nil?
       @page = params[:page].to_i.clamp(1, 100_000)
       @filters = agent_view? ? FILTERS - %w[all] : FILTERS
       @filter = @filters.include?(params[:filter]) ? params[:filter] : "available"
@@ -28,16 +26,19 @@ module Admin
         .offset((@page - 1) * 50).limit(51).to_a
       @has_next = @orders.length > 50
       @orders = @orders.first(50)
-      @confirmations = OrderConfirmation.where(store: current_store, order_id: @orders.map(&:id)).includes(:assigned_user)
+      @focus = agent_focus if agent_view?
+      counted_ids = @orders.map(&:id)
+      counted_ids << @focus.id if @focus
+      @confirmations = OrderConfirmation.where(store: current_store, order_id: counted_ids).includes(:assigned_user)
         .index_by(&:order_id)
       @attempt_counts = ConfirmationAttempt.joins(:order_confirmation)
-        .where(store: current_store, order_confirmations: { order_id: @orders.map(&:id) })
+        .where(store: current_store, order_confirmations: { order_id: counted_ids })
         .group("order_confirmations.order_id").count
     end
 
     def home
       @home = Confirmations::AgentHome.new(store: current_store, user: current_user, range: period_range("today"))
-      @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
+      @presence_seconds = Confirmations::Presence.new(store: current_store, user: current_user).seconds_within(period_range("today")) if agent_view?
     end
 
     def dashboard
@@ -46,21 +47,16 @@ module Admin
         only: (current_user if agent_view?))
       @rows = @performance.rows
       @totals = @performance.totals
-      @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
     end
 
-    def clock_in
-      Confirmations::Shifts.new(store: current_store, user: current_user).clock_in
-      redirect_to dashboard_admin_confirmations_path(period: period_param), notice: t("admin.confirmations.clocked_in")
-    rescue Confirmations::Shifts::Error => e
-      redirect_to dashboard_admin_confirmations_path(period: period_param), alert: e.message
-    end
-
-    def clock_out
-      Confirmations::Shifts.new(store: current_store, user: current_user).clock_out
-      redirect_to dashboard_admin_confirmations_path(period: period_param), notice: t("admin.confirmations.clocked_out")
-    rescue Confirmations::Shifts::Error => e
-      redirect_to dashboard_admin_confirmations_path(period: period_param), alert: e.message
+    def presence
+      if agent_view?
+        tracker = Confirmations::Presence.new(store: current_store, user: current_user)
+        params[:away] == "1" ? tracker.leave! : tracker.ping!
+      end
+      head :no_content
+    rescue Confirmations::Presence::Error
+      head :no_content
     end
 
     def claim
@@ -167,6 +163,20 @@ module Admin
 
     def desk
       Confirmations::Desk.new(store: current_store, user: current_user)
+    end
+
+    # The order the agent should handle next: an open call, then a claim, then the oldest order waiting.
+    def agent_focus
+      scope = current_store.orders.active.where(status: "new", sendit_code: [ nil, "" ]).includes(:order_items)
+        .joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")
+      held = scope.where(order_confirmations: { assigned_user_id: current_user.id })
+        .order(Arel.sql("(order_confirmations.call_started_at IS NULL), order_confirmations.claimed_at ASC")).first
+      return held if held
+
+      scope.where("order_confirmations.assigned_user_id IS NULL")
+        .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition <> 'wrong_number'")
+        .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
+        .order(Arel.sql("(orders.import_contact_issues = '[]'::jsonb) DESC, order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC")).first
     end
   end
 end

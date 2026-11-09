@@ -654,3 +654,105 @@ button.admin-btn-plain {
   to { opacity: 1; transform: translateY(0); }
 }
 [dir="rtl"] .onboarding-tour__actions { justify-content: flex-start; }
+
+.confirm-presence {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+.confirm-steps {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+.confirm-steps li {
+  flex: 1;
+  border-radius: 999px;
+  background: #f3f1ef;
+  color: #6f6967;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.55rem 0.85rem;
+  text-align: center;
+}
+.confirm-steps li.is-current {
+  background: #f4e4de;
+  color: #a8432e;
+}
+.confirm-next {
+  border: 1px solid #ebe4de;
+  border-radius: 1rem;
+  background: #fff;
+  padding: 1.25rem;
+}
+.confirm-step {
+  color: #a8432e;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.confirm-phone {
+  color: #1f2430;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+}
+.confirm-phone:hover { text-decoration: underline; }
+.confirm-call {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: #a8432e;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  padding: 0.65rem 1.1rem;
+}
+.confirm-call:hover { background: #8e3624; }
+.confirm-choices {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (min-width: 720px) {
+  .confirm-choices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.confirm-choice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  border: 1px solid #e3ddd8;
+  border-radius: 0.75rem;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 650;
+  text-align: center;
+  padding: 0.75rem;
+}
+.confirm-choice input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.confirm-choice:has(:checked) {
+  background: #303030;
+  border-color: #303030;
+  color: #fff;
+}
+.confirm-choice--confirmed:has(:checked) { background: #0c5132; border-color: #0c5132; }
+.confirm-choice--cancelled:has(:checked),
+.confirm-choice--wrong_number:has(:checked) { background: #8e0b21; border-color: #8e0b21; }
+.confirm-choice:focus-within { outline: 2px solid #a8432e; outline-offset: 2px; }

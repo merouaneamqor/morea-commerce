@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_08_233000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_09_013000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -273,6 +273,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_08_233000) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "last_seen_at"
     t.index ["store_id", "started_at"], name: "index_confirmation_shifts_on_store_id_and_started_at"
     t.index ["store_id"], name: "index_confirmation_shifts_on_store_id"
     t.index ["user_id"], name: "index_confirmation_shifts_on_user_id"
@@ -1080,11 +1081,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_08_233000) do
     t.datetime "consumed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "shop_domain"
     t.index ["digest"], name: "index_seallo_connection_codes_on_digest", unique: true
     t.index ["store_id"], name: "index_seallo_connection_codes_on_store_id"
     t.index ["user_id"], name: "index_seallo_connection_codes_on_user_id"
-    t.check_constraint "shop_domain IS NULL OR char_length(shop_domain::text) <= 253", name: "seallo_connection_code_shop_domain_length"
   end
 
   create_table "shopify_privacy_requests", force: :cascade do |t|

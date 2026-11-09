@@ -74,6 +74,9 @@
       <% end %>
 
       <div class="lg-shell text-[#5e5a58]" data-seller-shell>
+        <% if agent && current_store %>
+          <div hidden data-controller="desk-presence" data-desk-presence-url-value="<%= presence_admin_confirmations_path %>"></div>
+        <% end %>
         <div class="mx-auto flex max-w-[1400px] gap-5 p-4 lg:p-5">
           <aside class="sticky top-5 hidden h-[calc(100dvh-2.5rem)] w-56 shrink-0 lg:block"><%= sidebar %></aside>
 

@@ -3,8 +3,8 @@
 <div class="admin-page-header">
   <div class="admin-page-header__row min-w-0 flex-1">
     <div class="min-w-0">
-      <h1 class="admin-page-header__title"><%= t("admin.confirmations.title") %></h1>
-      <p class="admin-page-header__meta"><%= t("admin.confirmations.description") %></p>
+      <h1 class="admin-page-header__title"><%= t(agent_view? ? "admin.confirmations.agent_lead" : "admin.confirmations.title") %></h1>
+      <p class="admin-page-header__meta"><%= t(agent_view? ? "admin.confirmations.agent_lead_help" : "admin.confirmations.description") %></p>
     </div>
   </div>
   <div class="admin-page-header__tools">
@@ -13,12 +13,9 @@
   </div>
 </div>
 
-<% if @needs_clock_in %>
-  <div class="admin-banner mb-4 flex bg-[#fcf0dc] text-[#9a6412] flex-wrap items-center justify-between gap-3" role="status" data-clock-in-required>
-    <span><%= t("admin.confirmations.clock_in_required") %></span>
-    <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path, class: "admin-btn" %>
-  </div>
-<% end %>
+<% if agent_view? %>
+  <%= render "agent_desk" %>
+<% else %>
 
 <div class="admin-card overflow-hidden">
   <nav class="admin-tabs px-4" aria-label="<%= t('admin.confirmations.filters') %>">
@@ -79,12 +76,12 @@
           <% end %>
 
           <div class="admin-mobile-list__actions">
-            <%= render "queue_actions", order: order, confirmation: confirmation, mine: mine, needs_clock_in: @needs_clock_in %>
+            <%= render "queue_actions", order: order, confirmation: confirmation, mine: mine %>
           </div>
 
           <% if mine && !order.contact_review_required? %>
             <div class="admin-mobile-list__form">
-              <%= render "queue_outcome", order: order, confirmation: confirmation, needs_clock_in: @needs_clock_in, id_suffix: "m" %>
+              <%= render "queue_outcome", order: order, confirmation: confirmation, id_suffix: "m" %>
             </div>
           <% end %>
         </li>
@@ -148,14 +145,14 @@
               </td>
               <td class="is-numeric">
                 <div class="flex flex-col items-end gap-2">
-                  <%= render "queue_actions", order: order, confirmation: confirmation, mine: mine, needs_clock_in: @needs_clock_in %>
+                  <%= render "queue_actions", order: order, confirmation: confirmation, mine: mine %>
                 </div>
               </td>
             </tr>
             <% if mine && !order.contact_review_required? %>
               <tr class="bg-[#fafafa]">
                 <td colspan="6">
-                  <%= render "queue_outcome", order: order, confirmation: confirmation, needs_clock_in: @needs_clock_in, id_suffix: "d" %>
+                  <%= render "queue_outcome", order: order, confirmation: confirmation, id_suffix: "d" %>
                 </td>
               </tr>
             <% end %>
@@ -177,3 +174,4 @@
     </div>
   </nav>
 </div>
+<% end %>

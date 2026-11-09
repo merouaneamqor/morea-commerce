@@ -1,4 +1,4 @@
-<%# locals: order, confirmation, needs_clock_in, id_suffix: (optional, avoids duplicate ids when mobile + desktop both render) %>
+<%# locals: order, confirmation, id_suffix: (optional, avoids duplicate ids when mobile + desktop both render) %>
 <% call_open = confirmation.call_started_at.present? %>
 <% suffix = local_assigns.fetch(:id_suffix, nil) %>
 <% field_key = suffix.present? ? "#{order.id}_#{suffix}" : order.id %>
@@ -18,5 +18,5 @@
     <%= form.text_area :notes, id: "notes_#{field_key}", maxlength: 2000, rows: 2, class: "admin-input" %>
   </div>
   <p class="admin-muted text-sm"><%= t("admin.confirmations.dispatch_note") %></p>
-  <%= form.submit t(call_open ? "admin.confirmations.finish_call" : "admin.confirmations.save"), class: "admin-btn justify-self-start disabled:cursor-not-allowed disabled:opacity-50", disabled: needs_clock_in %>
+  <%= form.submit t(call_open ? "admin.confirmations.finish_call" : "admin.confirmations.save"), class: "admin-btn justify-self-start" %>
 <% end %>

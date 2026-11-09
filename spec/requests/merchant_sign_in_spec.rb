@@ -87,6 +87,8 @@ RSpec.describe "Merchant sign in", type: :request do
     expect(response).to redirect_to(admin_root_path)
     delete "/admin/logout"
     expect(response).to redirect_to(admin_login_path)
+    host_only = Array(response.headers["Set-Cookie"]).find { |line| line.start_with?("_morea_session=") && !line.match?(/;\s*domain=/i) }
+    expect(host_only).to match(/max-age=0/i)
     get "/admin"
     expect(response).to redirect_to(admin_login_path)
     get "/admin/login"
@@ -99,7 +101,7 @@ RSpec.describe "Merchant sign in", type: :request do
   end
 
   def morea_session_cookie
-    session_cookie_header.split("\n").find { |line| line.match?(/\A_morea_session=/i) }.to_s
+    session_cookie_header.split("\n").find { |line| line.match?(/\A_morea_session=/i) && line.match?(/domain=/i) && !line.match?(/max-age=0/i) }.to_s
   end
 
   def cookie_expires_at(header)

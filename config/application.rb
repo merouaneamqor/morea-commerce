@@ -47,7 +47,10 @@ module Morea
 
     # Retired ollazen.com hosts permanently redirect onto APP_BASE_DOMAIN (seallo.ma).
     require_relative "../lib/legacy_domain_redirect"
+    require_relative "../lib/expire_host_only_session_cookie"
     # Put the redirect first even when Rails omits host authorization, as in test.
     config.middleware.insert_before 0, LegacyDomainRedirect
+    # Outside the session store so the host-only expiry is written after the domain cookie.
+    config.middleware.insert_before ActionDispatch::Session::CookieStore, ExpireHostOnlySessionCookie
   end
 end

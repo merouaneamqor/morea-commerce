@@ -77,7 +77,7 @@ class ApplicationController < ActionController::Base
   end
 
   # Seller workspace pages (as on seallo) are served on the shared admin host as well as on tenant hosts.
-  SELLER_PATHS = %w[/dashboard /commandes /confirmation /mes-statistiques /clients /livraison /produits /publicites /equipe /integrations /comptabilite /settings].freeze
+  SELLER_PATHS = %w[/dashboard /commandes /confirmation /mes-statistiques /clients /livraison /produits /themes /publicites /equipe /integrations /comptabilite /settings].freeze
 
   def seller_path?
     SELLER_PATHS.any? { |path| request.path == path || request.path.start_with?("#{path}/") }

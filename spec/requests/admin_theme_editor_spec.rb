@@ -38,6 +38,17 @@ RSpec.describe "Admin theme editor", type: :request do
     expect(response).to redirect_to(admin_login_path)
   end
 
+  it "opens the latest draft from the sidebar theme editor link" do
+    sign_in
+    theme
+
+    get "/dashboard", params: { locale: "fr" }
+    expect(response.body).to include("Éditeur de thème")
+
+    get "/themes"
+    expect(response).to redirect_to(edit_admin_theme_path(theme))
+  end
+
   it "renders the draft editor with section, preview, add, and save hooks" do
     sign_in
 

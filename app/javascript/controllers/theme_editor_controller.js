@@ -86,28 +86,71 @@ export default class extends Controller {
   renderTree() {
     this.sectionListTarget.replaceChildren()
     this.snapshot.sections.forEach((section, index) => {
+      const hidden = section.visible === false
       const item = document.createElement("li")
-      item.className = `flex items-center gap-2 p-2 ${index === this.selectedIndex ? "bg-blue-50" : "bg-white"}`
+      item.className = `te-section${index === this.selectedIndex ? " is-selected" : ""}${hidden ? " is-hidden" : ""}`
       item.draggable = !this.readOnlyValue
       item.dataset.index = index
       item.addEventListener("dragstart", () => { this.dragIndex = index })
       item.addEventListener("dragover", event => event.preventDefault())
       item.addEventListener("drop", event => this.dropSection(event, index))
+
       const handle = document.createElement("span")
-      handle.className = "cursor-grab select-none text-stone-400"
-      handle.textContent = "⋮⋮"
+      handle.className = "te-grip"
       handle.setAttribute("aria-hidden", "true")
+      handle.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14"><circle cx="5" cy="3" r="1"/><circle cx="9" cy="3" r="1"/><circle cx="5" cy="7" r="1"/><circle cx="9" cy="7" r="1"/><circle cx="5" cy="11" r="1"/><circle cx="9" cy="11" r="1"/></svg>`
+
       const button = document.createElement("button")
       button.type = "button"
-      button.className = "min-w-0 flex-1 rounded px-2 py-2 text-left text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+      button.className = "te-section__name"
       button.textContent = this.labelFor(section.kind)
-      button.addEventListener("click", () => { this.selectedIndex = index; this.render() })
-      const state = document.createElement("span")
-      state.className = "text-xs text-stone-500"
-      state.textContent = section.visible === false ? "Hidden" : ""
-      item.append(handle, button, state)
+      button.addEventListener("click", () => this.selectSection(index))
+
+      const eye = document.createElement("button")
+      eye.type = "button"
+      eye.className = "te-section__eye"
+      eye.disabled = this.readOnlyValue
+      eye.setAttribute("aria-pressed", hidden ? "false" : "true")
+      eye.setAttribute("aria-label", hidden ? `Show ${button.textContent}` : `Hide ${button.textContent}`)
+      eye.innerHTML = hidden
+        ? `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2.8 14 13.2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M6.2 6.4A2.2 2.2 0 0 0 9.7 9.8M3.2 5.6C2.2 6.5 1.5 7.6 1.5 8s2.4 4.2 6.5 4.2c1.1 0 2.1-.2 3-.6M6.4 3.9c.5-.1 1-.2 1.6-.2 4.1 0 6.5 4.3 6.5 4.3s-.6 1-1.7 2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+        : `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 8S3.9 3.8 8 3.8 14.5 8 14.5 8 12.1 12.2 8 12.2 1.5 8 1.5 8Z" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>`
+      eye.addEventListener("click", event => {
+        event.stopPropagation()
+        this.toggleVisible(index)
+      })
+
+      item.append(handle, button, eye)
       this.sectionListTarget.append(item)
     })
+  }
+
+  selectSection(index) {
+    this.selectedIndex = index
+    this.render()
+    if (window.matchMedia("(max-width: 1080px)").matches) this.setPane("settings")
+  }
+
+  showPane(event) {
+    this.setPane(event.currentTarget.dataset.themeEditorPane)
+  }
+
+  setPane(name) {
+    if (!name) return
+    this.element.dataset.editorPane = name
+    this.element.querySelectorAll("[data-theme-editor-pane]").forEach(button => {
+      button.setAttribute("aria-pressed", button.dataset.themeEditorPane === name ? "true" : "false")
+    })
+  }
+
+  toggleVisible(index) {
+    if (this.readOnlyValue || !this.snapshot.sections[index]) return
+    this.selectedIndex = index
+    this.remember()
+    const section = this.snapshot.sections[index]
+    section.visible = section.visible === false
+    this.markUnsaved()
+    this.render()
   }
 
   queuePreviewRefresh(immediate = false) {
@@ -141,7 +184,7 @@ export default class extends Controller {
       this.highlightPreviewSelection()
     } catch (_error) {
       if (requestId !== this.previewRequestId) return
-      this.previewTarget.replaceChildren(this.textElement("p", "Storefront preview could not be loaded.", "px-6 py-16 text-center text-stone-500"))
+      this.previewTarget.replaceChildren(this.textElement("p", "Storefront preview could not be loaded.", "te-empty"))
     }
   }
 
@@ -171,6 +214,7 @@ export default class extends Controller {
     this.selectedIndex = index
     this.render({ refreshPreview: false })
     this.highlightPreviewSelection({ focus: true })
+    if (window.matchMedia("(max-width: 1080px)").matches) this.setPane("settings")
   }
 
   focusAdjacentPreviewSection(block, delta) {
@@ -184,8 +228,7 @@ export default class extends Controller {
   highlightPreviewSelection({ focus = false } = {}) {
     this.previewTarget.querySelectorAll("[data-section-index]").forEach(block => {
       const selected = Number(block.dataset.sectionIndex) === this.selectedIndex
-      block.classList.toggle("ring-2", selected)
-      block.classList.toggle("ring-blue-500", selected)
+      block.classList.toggle("is-selected", selected)
       block.setAttribute("aria-pressed", selected ? "true" : "false")
       if (selected && focus) block.focus({ preventScroll: false })
     })
@@ -203,23 +246,25 @@ export default class extends Controller {
     const section = this.snapshot.sections[this.selectedIndex]
     if (!section) {
       this.settingsTitleTarget.textContent = "Section settings"
-      this.settingsFormTarget.append(this.textElement("p", "Select or add a section to edit its settings.", "text-sm text-stone-500"))
+      this.settingsFormTarget.append(this.textElement("p", "Select a section to edit it.", "te-hint"))
       return
     }
     this.settingsTitleTarget.textContent = this.labelFor(section.kind)
-    this.settingsFormTarget.append(this.checkboxField("Visible", "visible", section.visible !== false))
     section.translations ||= {}
     section.translations[this.locale] ||= {}
-    ;(COPY_FIELDS[section.kind] || []).forEach(field => this.settingsFormTarget.append(this.textField(this.humanize(field), `translations.${this.locale}.${field}`, section.translations[this.locale][field] || "", field === "body")))
+    const copyFields = COPY_FIELDS[section.kind] || []
+    if (copyFields.length) this.settingsFormTarget.append(this.groupLabel("Content"))
+    copyFields.forEach(field => this.settingsFormTarget.append(this.textField(this.humanize(field), `translations.${this.locale}.${field}`, section.translations[this.locale][field] || "", field === "body")))
     section.settings ||= {}
-    ;(SETTING_FIELDS[section.kind] || []).forEach(field => this.settingsFormTarget.append(this.settingField(field, section.settings[field] || "")))
+    const settingFields = SETTING_FIELDS[section.kind] || []
+    if (settingFields.length) this.settingsFormTarget.append(this.groupLabel("Settings"))
+    settingFields.forEach(field => this.settingsFormTarget.append(this.settingField(field, section.settings[field] || "")))
 
     if (!this.readOnlyValue) {
       const remove = document.createElement("button")
       remove.type = "button"
-      remove.className = "admin-btn-critical mt-2"
+      remove.className = "te-remove"
       remove.textContent = "Remove section"
-      remove.dataset.action = "theme-editor#removeSection"
       remove.addEventListener("click", () => this.removeSection())
       this.settingsFormTarget.append(remove)
     }
@@ -235,15 +280,12 @@ export default class extends Controller {
       const item = document.createElement("li")
       const button = document.createElement("button")
       button.type = "button"
-      button.className = "flex w-full flex-col gap-1 rounded-md border border-[#dedede] bg-white px-3 py-3 text-left hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
       button.disabled = this.readOnlyValue || atLimit
       button.dataset.kind = entry.kind
       button.addEventListener("click", () => this.addSection(entry.kind))
-      const title = document.createElement("span")
-      title.className = "text-sm font-semibold"
+      const title = document.createElement("strong")
       title.textContent = entry.label || this.labelFor(entry.kind)
       const description = document.createElement("span")
-      description.className = "text-sm text-stone-500"
       description.textContent = entry.description || ""
       button.append(title, description)
       item.append(button)
@@ -270,53 +312,64 @@ export default class extends Controller {
     if (field === "image_url") return this.imageField(value)
     if (field === "image_position") return this.selectField("Image position", "settings.image_position", value || "left", [["left", "Left"], ["right", "Right"]])
     if (field === "limit") return this.selectField("Products to show", "settings.limit", String(value || "4"), ["2", "3", "4", "6", "8", "12"].map(count => [count, count]))
+    if (field === "collection_id") return this.textField("Collection", "settings.collection_id", value)
+    if (field === "link") return this.textField("Button link", "settings.link", value)
     return this.textField(this.humanize(field), `settings.${field}`, value)
   }
 
   imageField(value) {
     const wrapper = document.createElement("div")
-    wrapper.className = "block"
-    const label = document.createElement("span")
-    label.className = "mb-1 block text-sm font-medium"
-    label.textContent = "Image"
-    wrapper.append(label)
+    wrapper.className = "te-image"
     const src = this.safeImage(value)
+    const frame = document.createElement("div")
+    frame.className = "te-image__frame"
     if (src) {
       const preview = document.createElement("img")
-      preview.className = "mb-2 aspect-[16/10] w-full rounded-md object-cover"
       preview.alt = ""
       preview.src = src
-      const remove = document.createElement("button")
-      remove.type = "button"
-      remove.className = "admin-btn-secondary mb-2 w-full"
-      remove.textContent = "Remove image"
-      remove.disabled = this.readOnlyValue
-      remove.addEventListener("click", () => this.setImage(""))
-      wrapper.append(preview, remove)
+      frame.append(preview)
+    } else {
+      frame.append(this.textElement("p", "No image yet", "te-image__placeholder"))
     }
-    const picker = document.createElement("label")
-    picker.className = "admin-btn-secondary flex w-full cursor-pointer items-center justify-center"
-    const caption = document.createElement("span")
-    caption.textContent = src ? "Replace image" : "Upload image"
+
+    const row = document.createElement("div")
+    row.className = "te-image__row"
+    const upload = document.createElement("button")
+    upload.type = "button"
+    upload.className = "te-btn"
+    upload.textContent = src ? "Replace" : "Upload image"
+    upload.disabled = this.readOnlyValue
     const input = document.createElement("input")
     input.type = "file"
     input.accept = "image/jpeg,image/png,image/gif,image/webp"
-    input.className = "sr-only"
+    input.hidden = true
     input.disabled = this.readOnlyValue
+    const status = document.createElement("p")
+    status.className = "te-error"
+    upload.addEventListener("click", () => input.click())
     input.addEventListener("change", () => {
       const file = input.files?.[0]
-      if (file) this.uploadImage(file, caption)
+      if (file) this.uploadImage(file, upload, status)
     })
-    picker.append(caption, input)
-    const status = document.createElement("p")
-    status.className = "mt-1 text-sm text-red-700"
-    wrapper.append(picker, status)
+    row.append(upload)
+    if (src && !this.readOnlyValue) {
+      const remove = document.createElement("button")
+      remove.type = "button"
+      remove.className = "te-btn-quiet"
+      remove.textContent = "Remove"
+      remove.addEventListener("click", () => this.setImage(""))
+      row.append(remove)
+    }
+    wrapper.append(frame, row, this.textElement("p", "JPEG, PNG, GIF, or WebP. 8 MB max.", "te-hint"), status, input)
     return wrapper
   }
 
-  async uploadImage(file, caption) {
+  async uploadImage(file, caption, status) {
     if (this.readOnlyValue || !this.imageUrlValue) return
+    const previous = caption.textContent
     caption.textContent = "Uploading…"
+    caption.disabled = true
+    if (status) status.textContent = ""
     const body = new FormData()
     body.append("image", file)
     try {
@@ -330,8 +383,8 @@ export default class extends Controller {
       if (!response.ok || !result.url) throw new Error(result.error || "Upload failed")
       this.setImage(result.url)
     } catch (error) {
-      caption.textContent = "Upload image"
-      const status = caption.parentElement?.nextElementSibling
+      caption.textContent = previous
+      caption.disabled = false
       if (status) status.textContent = error.message
     }
   }
@@ -348,12 +401,10 @@ export default class extends Controller {
 
   selectField(labelText, path, value, options) {
     const wrapper = document.createElement("label")
-    wrapper.className = "block"
+    wrapper.className = "te-field"
     const label = document.createElement("span")
-    label.className = "mb-1 block text-sm font-medium"
     label.textContent = labelText
     const select = document.createElement("select")
-    select.className = "admin-input w-full"
     select.dataset.path = path
     options.forEach(([optionValue, optionLabel]) => {
       const option = document.createElement("option")
@@ -376,11 +427,12 @@ export default class extends Controller {
   }
 
   textField(labelText, path, value, multiline = false) {
-    const wrapper = document.createElement("label"); wrapper.className = "block"
-    const label = document.createElement("span"); label.className = "mb-1 block text-sm font-medium"; label.textContent = labelText
+    const wrapper = document.createElement("label")
+    wrapper.className = "te-field"
+    const label = document.createElement("span")
+    label.textContent = labelText
     const input = document.createElement(multiline ? "textarea" : "input")
     if (!multiline) input.type = "text"
-    input.className = "admin-input w-full"
     if (multiline) input.rows = 4
     input.value = value
     input.dataset.path = path
@@ -388,11 +440,10 @@ export default class extends Controller {
     return wrapper
   }
 
-  checkboxField(labelText, path, checked) {
-    const label = document.createElement("label"); label.className = "flex items-center gap-2 text-sm font-medium"
-    const input = document.createElement("input"); input.type = "checkbox"; input.checked = checked; input.dataset.path = path
-    const text = document.createElement("span"); text.textContent = labelText
-    label.append(input, text)
+  groupLabel(text) {
+    const label = document.createElement("p")
+    label.className = "te-group"
+    label.textContent = text
     return label
   }
 
@@ -424,7 +475,7 @@ export default class extends Controller {
   openPicker() {
     if (this.readOnlyValue || !this.hasSectionPickerTarget) return
     if (this.snapshot.sections.length >= this.maxSectionsValue) {
-      this.saveStatusTarget.textContent = `· A theme can have at most ${this.maxSectionsValue} sections.`
+      this.saveStatusTarget.textContent = `A theme can have at most ${this.maxSectionsValue} sections.`
       return
     }
     this.renderPicker()
@@ -449,7 +500,7 @@ export default class extends Controller {
     const kind = typeof kindOrEvent === "string" ? kindOrEvent : kindOrEvent?.currentTarget?.dataset?.kind
     if (!kind || !this.kinds().some(entry => entry.kind === kind)) return
     if (this.snapshot.sections.length >= this.maxSectionsValue) {
-      this.saveStatusTarget.textContent = `· A theme can have at most ${this.maxSectionsValue} sections.`
+      this.saveStatusTarget.textContent = `A theme can have at most ${this.maxSectionsValue} sections.`
       this.closePicker()
       return
     }
@@ -461,6 +512,7 @@ export default class extends Controller {
     this.markUnsaved()
     this.closePicker()
     this.render()
+    if (window.matchMedia("(max-width: 1080px)").matches) this.setPane("settings")
   }
 
   blankSection(kind) {
@@ -509,20 +561,23 @@ export default class extends Controller {
     this.renderSettings()
     this.queuePreviewRefresh(true)
   }
-  setDesktop() { this.previewFrameTarget.style.maxWidth = "none"; this.setDeviceButtons(true) }
-  setMobile() { this.previewFrameTarget.style.maxWidth = "390px"; this.setDeviceButtons(false) }
-  setDeviceButtons(desktop) { this.desktopButtonTarget.setAttribute("aria-pressed", desktop); this.mobileButtonTarget.setAttribute("aria-pressed", !desktop); this.desktopButtonTarget.classList.toggle("bg-stone-200", desktop); this.mobileButtonTarget.classList.toggle("bg-stone-200", !desktop) }
+  setDesktop() { this.previewFrameTarget.classList.remove("is-mobile"); this.setDeviceButtons(true) }
+  setMobile() { this.previewFrameTarget.classList.add("is-mobile"); this.setDeviceButtons(false) }
+  setDeviceButtons(desktop) {
+    this.desktopButtonTarget.setAttribute("aria-pressed", String(desktop))
+    this.mobileButtonTarget.setAttribute("aria-pressed", String(!desktop))
+  }
 
   async save() {
     if (this.readOnlyValue) return
     this.saveButtonTarget.disabled = true
-    this.saveStatusTarget.textContent = "· Saving…"
+    this.saveStatusTarget.textContent = "Saving…"
     try {
       const response = await fetch(this.saveUrlValue, { method: "PATCH", headers: { "Accept": "application/json", "Content-Type": "application/json", "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content || "" }, body: JSON.stringify({ snapshot: this.snapshot }) })
       const result = await response.json()
       if (!response.ok || !result.saved) throw new Error(result.error || "Save failed")
-      this.saveStatusTarget.textContent = "· Saved"
-    } catch (error) { this.saveStatusTarget.textContent = `· ${error.message}` }
+      this.saveStatusTarget.textContent = "Saved"
+    } catch (error) { this.saveStatusTarget.textContent = error.message }
     finally { this.saveButtonTarget.disabled = false }
   }
 
@@ -534,7 +589,7 @@ export default class extends Controller {
     if (key === "y" || (key === "z" && event.shiftKey)) { event.preventDefault(); this.redo() }
   }
 
-  markUnsaved() { this.saveStatusTarget.textContent = "· Unsaved changes" }
+  markUnsaved() { this.saveStatusTarget.textContent = "Unsaved changes" }
   updateHistoryButtons() { this.undoButtonTarget.disabled = this.readOnlyValue || !this.undoStack.length; this.redoButtonTarget.disabled = this.readOnlyValue || !this.redoStack.length }
   labelFor(kind) {
     const entry = this.kinds().find(item => item.kind === kind)

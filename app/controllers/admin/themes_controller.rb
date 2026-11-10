@@ -2,9 +2,16 @@
 
 module Admin
   class ThemesController < BaseController
+    layout ->(controller) { controller.action_name == "edit" ? "theme_editor" : "admin" }
+
     before_action :require_store_context!
-    before_action :require_theme_editor_feature!, except: :index
+    before_action :require_theme_editor_feature!, except: %i[index open]
     before_action :set_theme, only: %i[show edit update publish preview preview_frame duplicate upload_image]
+
+    def open
+      theme = current_store.storefront_themes.draft.order(updated_at: :desc).first if current_store.storefront_theme_editor_enabled?
+      redirect_to(theme ? edit_admin_theme_path(theme) : admin_themes_path)
+    end
 
     def index
       @theme_editor_enabled = current_store.storefront_theme_editor_enabled?

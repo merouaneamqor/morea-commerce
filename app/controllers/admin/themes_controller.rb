@@ -3,10 +3,13 @@
 module Admin
   class ThemesController < BaseController
     before_action :require_store_context!
-    before_action :require_theme_editor_feature!
+    before_action :require_theme_editor_feature!, except: :index
     before_action :set_theme, only: %i[show edit update publish preview preview_frame duplicate]
 
     def index
+      @theme_editor_enabled = current_store.storefront_theme_editor_enabled?
+      return unless @theme_editor_enabled
+
       @themes = current_store.storefront_themes.order(created_at: :desc)
       @catalog = StorefrontThemes::Catalog.all
     end

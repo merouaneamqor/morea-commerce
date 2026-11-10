@@ -20,6 +20,13 @@ module Admin
       redirect_to admin_themes_path, alert: error.record.errors.full_messages.to_sentence
     end
 
+    def create_from_live
+      theme = StorefrontThemes::CreateFromLive.call(store: current_store)
+      redirect_to edit_admin_theme_path(theme), notice: "#{theme.name} was created from the live home page."
+    rescue ActiveRecord::RecordInvalid => error
+      redirect_to admin_themes_path, alert: error.record.errors.full_messages.to_sentence
+    end
+
     def show; end
 
     def edit; end

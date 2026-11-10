@@ -15,7 +15,10 @@
       <h2 id="installed-themes-heading" class="admin-card__title">Installed themes</h2>
       <p class="admin-muted mt-1">Publishing replaces the current home page sections. Products, collections, pages, menus and store settings stay unchanged.</p>
     </div>
-    <span class="admin-muted"><%= pluralize(@themes.size, "theme", locale: :en) %></span>
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="admin-muted"><%= pluralize(@themes.size, "theme", locale: :en) %></span>
+      <%= button_to t("storefront_themes.create_from_live"), create_from_live_admin_themes_path, method: :post, class: "admin-btn-secondary", form: { data: { turbo: false } } %>
+    </div>
   </div>
 
   <% if @themes.any? %>

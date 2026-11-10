@@ -93,6 +93,47 @@ RSpec.describe "Storefront theme lifecycle" do
     end
   end
 
+  describe StorefrontThemes::CreateFromLive do
+    it "snapshots live home sections into a draft without changing the live page" do
+      live = store.home_sections.create!(kind: "image_with_text", position: 0, visible: true,
+        settings: { "image_url" => "https://cdn.example.test/live.jpg", "link" => "collections", "image_position" => "right" })
+      live.translations.create!(locale: "en", heading: "Live heading", body: "Live body", button_label: "Shop")
+      live.translations.create!(locale: "fr", heading: "Titre live", body: "Texte live", button_label: "Acheter")
+      live.translations.create!(locale: "ar", heading: "عنوان مباشر", body: "نص مباشر", button_label: "تسوق")
+
+      theme = described_class.call(store: store)
+
+      expect(theme).to be_draft
+      expect(theme.catalog_key).to eq("from_live")
+      expect(theme.name).to eq("Current home page")
+      expect(store.home_sections.reload).to contain_exactly(live)
+
+      section = theme.snapshot.fetch("sections").sole
+      expect(section).to include(
+        "kind" => "image_with_text",
+        "visible" => true,
+        "settings" => hash_including(
+          "image_url" => "https://cdn.example.test/live.jpg",
+          "link" => "collections",
+          "image_position" => "right"
+        )
+      )
+      expect(section.dig("translations", "en", "heading")).to eq("Live heading")
+      expect(section.dig("translations", "fr", "body")).to eq("Texte live")
+      expect(section.dig("translations", "ar", "button_label")).to eq("تسوق")
+    end
+
+    it "falls back to online store defaults when no live sections exist" do
+      expect(store.home_sections).to be_empty
+
+      theme = described_class.call(store: store)
+
+      expect(theme.snapshot.fetch("sections")).not_to be_empty
+      expect(theme.snapshot.fetch("sections").map { |section| section.fetch("kind") }).to include("hero")
+      expect(store.home_sections.reload).to be_empty
+    end
+  end
+
   describe StorefrontThemes::Duplicate do
     it "copies a published theme into a new editable draft with a unique name" do
       source = StorefrontThemes::Install.call(store: store, catalog_key: "minimal")

@@ -79,6 +79,29 @@ RSpec.describe "Admin storefront themes", type: :request do
     expect(store.home_sections.ordered.pluck(:kind)).to eq(%w[hero featured_collection rich_text])
   end
 
+  it "creates a draft theme from the live home page" do
+    section = store.home_sections.create!(kind: "image_with_text", position: 0, visible: true,
+      settings: { "link" => "page:about", "image_position" => "left" })
+    section.translations.create!(locale: "en", heading: "Live home copy", body: "Keep this body", button_label: "Open")
+    section.translations.create!(locale: "fr", heading: "Accueil live", body: "Conserver ce texte")
+    sign_in
+
+    expect {
+      post "/admin/themes/create_from_live"
+    }.to change(store.storefront_themes, :count).by(1)
+
+    theme = store.storefront_themes.order(:created_at).last
+    expect(response).to redirect_to(edit_admin_theme_path(theme))
+    expect(theme).to be_draft
+    expect(theme.catalog_key).to eq("from_live")
+    expect(theme.snapshot.dig("sections", 0, "kind")).to eq("image_with_text")
+    expect(theme.snapshot.dig("sections", 0, "settings", "link")).to eq("page:about")
+    expect(theme.snapshot.dig("sections", 0, "translations", "en", "heading")).to eq("Live home copy")
+    expect(theme.snapshot.dig("sections", 0, "translations", "en", "body")).to eq("Keep this body")
+    expect(theme.snapshot.dig("sections", 0, "translations", "fr", "heading")).to eq("Accueil live")
+    expect(store.home_sections.reload).to contain_exactly(section)
+  end
+
   it "duplicates a published theme into an editable draft" do
     theme = StorefrontThemes::Install.call(store: store, catalog_key: "minimal")
     StorefrontThemes::Publish.call(store: store, theme: theme)

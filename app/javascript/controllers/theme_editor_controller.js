@@ -35,6 +35,7 @@ export default class extends Controller {
   ]
   static values = {
     saveUrl: String,
+    imageUrl: String,
     previewUrl: String,
     readOnly: Boolean,
     maxSections: { type: Number, default: 50 },
@@ -211,7 +212,7 @@ export default class extends Controller {
     section.translations[this.locale] ||= {}
     ;(COPY_FIELDS[section.kind] || []).forEach(field => this.settingsFormTarget.append(this.textField(this.humanize(field), `translations.${this.locale}.${field}`, section.translations[this.locale][field] || "", field === "body")))
     section.settings ||= {}
-    ;(SETTING_FIELDS[section.kind] || []).forEach(field => this.settingsFormTarget.append(this.textField(this.humanize(field), `settings.${field}`, section.settings[field] || "")))
+    ;(SETTING_FIELDS[section.kind] || []).forEach(field => this.settingsFormTarget.append(this.settingField(field, section.settings[field] || "")))
 
     if (!this.readOnlyValue) {
       const remove = document.createElement("button")
@@ -263,6 +264,114 @@ export default class extends Controller {
       this.addButtonTarget.disabled = this.readOnlyValue || count >= this.maxSectionsValue
       this.addButtonTarget.title = count >= this.maxSectionsValue ? `A theme can have at most ${this.maxSectionsValue} sections.` : "Add a section"
     }
+  }
+
+  settingField(field, value) {
+    if (field === "image_url") return this.imageField(value)
+    if (field === "image_position") return this.selectField("Image position", "settings.image_position", value || "left", [["left", "Left"], ["right", "Right"]])
+    if (field === "limit") return this.selectField("Products to show", "settings.limit", String(value || "4"), ["2", "3", "4", "6", "8", "12"].map(count => [count, count]))
+    return this.textField(this.humanize(field), `settings.${field}`, value)
+  }
+
+  imageField(value) {
+    const wrapper = document.createElement("div")
+    wrapper.className = "block"
+    const label = document.createElement("span")
+    label.className = "mb-1 block text-sm font-medium"
+    label.textContent = "Image"
+    wrapper.append(label)
+    const src = this.safeImage(value)
+    if (src) {
+      const preview = document.createElement("img")
+      preview.className = "mb-2 aspect-[16/10] w-full rounded-md object-cover"
+      preview.alt = ""
+      preview.src = src
+      const remove = document.createElement("button")
+      remove.type = "button"
+      remove.className = "admin-btn-secondary mb-2 w-full"
+      remove.textContent = "Remove image"
+      remove.disabled = this.readOnlyValue
+      remove.addEventListener("click", () => this.setImage(""))
+      wrapper.append(preview, remove)
+    }
+    const picker = document.createElement("label")
+    picker.className = "admin-btn-secondary flex w-full cursor-pointer items-center justify-center"
+    const caption = document.createElement("span")
+    caption.textContent = src ? "Replace image" : "Upload image"
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = "image/jpeg,image/png,image/gif,image/webp"
+    input.className = "sr-only"
+    input.disabled = this.readOnlyValue
+    input.addEventListener("change", () => {
+      const file = input.files?.[0]
+      if (file) this.uploadImage(file, caption)
+    })
+    picker.append(caption, input)
+    const status = document.createElement("p")
+    status.className = "mt-1 text-sm text-red-700"
+    wrapper.append(picker, status)
+    return wrapper
+  }
+
+  async uploadImage(file, caption) {
+    if (this.readOnlyValue || !this.imageUrlValue) return
+    caption.textContent = "Uploading…"
+    const body = new FormData()
+    body.append("image", file)
+    try {
+      const response = await fetch(this.imageUrlValue, {
+        method: "POST",
+        headers: { Accept: "application/json", "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content || "" },
+        body
+      })
+      const result = await response.json()
+      if (!response.ok || !result.url) throw new Error(result.error || "Upload failed")
+      this.setImage(result.url)
+    } catch (error) {
+      caption.textContent = "Upload image"
+      const status = caption.parentElement?.nextElementSibling
+      if (status) status.textContent = error.message
+    }
+  }
+
+  setImage(url) {
+    if (this.readOnlyValue || this.selectedIndex < 0) return
+    this.remember()
+    const section = this.snapshot.sections[this.selectedIndex]
+    section.settings ||= {}
+    section.settings.image_url = url
+    this.markUnsaved()
+    this.render()
+  }
+
+  selectField(labelText, path, value, options) {
+    const wrapper = document.createElement("label")
+    wrapper.className = "block"
+    const label = document.createElement("span")
+    label.className = "mb-1 block text-sm font-medium"
+    label.textContent = labelText
+    const select = document.createElement("select")
+    select.className = "admin-input w-full"
+    select.dataset.path = path
+    options.forEach(([optionValue, optionLabel]) => {
+      const option = document.createElement("option")
+      option.value = optionValue
+      option.textContent = optionLabel
+      option.selected = optionValue === String(value)
+      select.append(option)
+    })
+    wrapper.append(label, select)
+    return wrapper
+  }
+
+  safeImage(url) {
+    if (!url) return ""
+    try {
+      const parsed = new URL(url, window.location.origin)
+      if (parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.href
+    } catch { /* ignore unreadable values */ }
+    return ""
   }
 
   textField(labelText, path, value, multiline = false) {

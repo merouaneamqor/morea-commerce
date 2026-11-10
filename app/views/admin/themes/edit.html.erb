@@ -5,6 +5,7 @@
      data-controller="theme-editor"
      data-theme-editor
      data-theme-editor-save-url-value="<%= admin_theme_path(@theme) %>"
+     data-theme-editor-image-url-value="<%= image_admin_theme_path(@theme) %>"
      data-theme-editor-preview-url-value="<%= preview_frame_admin_theme_path(@theme) %>"
      data-theme-editor-read-only-value="<%= @theme.published? %>"
      data-theme-editor-max-sections-value="<%= StorefrontThemes::UpdateSnapshot::MAX_SECTIONS %>"

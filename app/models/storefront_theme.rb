@@ -4,6 +4,7 @@ class StorefrontTheme < ApplicationRecord
   STATUSES = %w[draft published].freeze
 
   belongs_to :store
+  has_many_attached :images
 
   validates :name, :catalog_key, presence: true
   validates :status, inclusion: { in: STATUSES }

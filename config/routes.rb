@@ -331,6 +331,7 @@ Rails.application.routes.draw do
         match :preview_frame, via: %i[get post]
         post :duplicate
         post :publish
+        post :image, action: :upload_image
       end
     end
     resources :pages, except: %i[show] do

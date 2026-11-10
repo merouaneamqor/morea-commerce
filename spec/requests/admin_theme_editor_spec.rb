@@ -240,6 +240,46 @@ RSpec.describe "Admin theme editor", type: :request do
     end
   end
 
+  def uploaded_png
+    tempfile = Tempfile.new([ "pixel", ".png" ])
+    tempfile.binmode
+    tempfile.write(Base64.decode64("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="))
+    tempfile.rewind
+    Rack::Test::UploadedFile.new(tempfile.path, "image/png")
+  end
+
+  it "uploads a section image and returns its address" do
+    sign_in
+
+    post "/admin/themes/#{theme.id}/image", params: { image: uploaded_png }
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body["url"]).to be_present
+    expect(theme.reload.images).to be_attached
+  end
+
+  it "rejects a file that is not an image" do
+    sign_in
+    tempfile = Tempfile.new([ "notes", ".txt" ])
+    tempfile.write("not an image")
+    tempfile.rewind
+
+    post "/admin/themes/#{theme.id}/image", params: { image: Rack::Test::UploadedFile.new(tempfile.path, "text/plain") }
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(theme.reload.images).not_to be_attached
+  end
+
+  it "does not accept an upload for a published theme" do
+    theme.update!(status: "published")
+    sign_in
+
+    post "/admin/themes/#{theme.id}/image", params: { image: uploaded_png }
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(theme.reload.images).not_to be_attached
+  end
+
   it "returns not found for another workspace's theme on read and update" do
     foreign_store = Store.create!(
       slug: "foreign-theme-editor-#{SecureRandom.hex(5)}",

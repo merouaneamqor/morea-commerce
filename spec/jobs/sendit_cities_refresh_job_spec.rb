@@ -43,5 +43,45 @@ RSpec.describe SenditCitiesRefreshJob do
       expect(Rails.cache).to receive(:delete).with("#{described_class.cache_key(store)}:pickup")
       expect(described_class.refresh!(store: store, client: client)).to eq(districts: 2, pickup_cities: 1)
     end
+
+    it "falls back to using districts grouped by city when pickup_cities returns empty" do
+      client = instance_double(Sendit::Client)
+      allow(client).to receive(:districts).and_return(
+        "data" => [
+          { "id" => 1, "ville" => "Casablanca", "name" => "Casablanca - Centre", "price" => "25" },
+          { "id" => 2, "ville" => "Casablanca", "name" => "Casablanca - Ain Sebaa", "price" => "25" },
+          { "id" => 3, "ville" => "Rabat", "name" => "Rabat", "price" => "30" }
+        ],
+        "last_page" => 1
+      )
+      allow(client).to receive(:pickup_cities).and_return([])
+      allow(Rails.cache).to receive(:delete)
+
+      result = described_class.refresh!(store: store, client: client)
+
+      expect(result[:districts]).to eq(3)
+      expect(result[:pickup_cities]).to eq(2) # Casablanca and Rabat
+
+      # Verify the pickup cities are correctly cached
+      pickup = described_class.pickup_cities(store: store, client: client)
+      expect(pickup.size).to eq(2)
+      expect(pickup.map { |p| p[:name] }.sort).to eq([ "Casablanca", "Rabat" ])
+    end
+
+    it "handles pickup_cities API errors gracefully" do
+      client = instance_double(Sendit::Client)
+      allow(client).to receive(:districts).and_return(
+        "data" => [ { "id" => 1, "ville" => "Fès", "name" => "Fès", "price" => "35" } ],
+        "last_page" => 1
+      )
+      allow(client).to receive(:pickup_cities).and_raise(Sendit::Client::Error.new("API error"))
+      allow(Rails.cache).to receive(:delete)
+
+      expect { described_class.refresh!(store: store, client: client) }.not_to raise_error
+      result = described_class.refresh!(store: store, client: client)
+
+      expect(result[:districts]).to eq(1)
+      expect(result[:pickup_cities]).to eq(0)
+    end
   end
 end

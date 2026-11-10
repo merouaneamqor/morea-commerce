@@ -39,8 +39,28 @@ module Sendit
 
       client ||= Client.new(store)
       Rails.cache.fetch("#{cache_key(store)}:pickup", expires_in: 1.day) do
-        client.pickup_cities.map { |d| { id: d["id"].to_i, name: d["name"].to_s } }.sort_by { |d| d[:name] }
+        pickup_list = client.pickup_cities
+
+        # If the pickup cities endpoint returns empty or fails, fall back to using all districts
+        # grouped by city (ville) as pickup options
+        if pickup_list.empty?
+          Rails.logger.info("[Sendit::Districts] pickup_cities endpoint returned empty, using districts fallback for store #{store.slug}")
+          all_districts = all(store: store, client: client)
+          pickup_list = all_districts.group_by { |d| d[:ville] }.map do |ville, districts|
+            # Use the first district of each city as the pickup option
+            first = districts.first
+            { "id" => first[:id], "name" => ville }
+          end
+        end
+
+        pickup_list.map { |d| { id: d["id"].to_i, name: d["name"].to_s } }
+          .select { |d| d[:id].positive? && d[:name].present? }
+          .uniq { |d| d[:id] }
+          .sort_by { |d| d[:name] }
       end
+    rescue StandardError => e
+      Rails.logger.error("[Sendit::Districts] pickup_cities failed for store #{store.slug}: #{e.message}")
+      []
     end
 
     # Drops the cached lists and fetches them again from Sendit (used right after connecting and by the weekly refresh).
@@ -50,7 +70,12 @@ module Sendit
       Rails.cache.delete(cache_key(store))
       Rails.cache.delete("#{cache_key(store)}:pickup")
       client ||= Client.new(store)
-      { districts: all(store: store, client: client).size, pickup_cities: pickup_cities(store: store, client: client).size }
+      districts_count = all(store: store, client: client).size
+      pickup_count = pickup_cities(store: store, client: client).size
+
+      Rails.logger.info("[Sendit::Districts] refresh! for store #{store.slug}: districts=#{districts_count} pickup_cities=#{pickup_count}")
+
+      { districts: districts_count, pickup_cities: pickup_count }
     end
 
     def self.find(id, store:)

@@ -5,6 +5,11 @@
     <button type="button" class="admin-impersonate__close" popovertarget="impersonate-<%= store.id %>" popovertargetaction="hide" aria-label="<%= t("platform_admin.impersonate.close") %>">×</button>
   </div>
   <p class="admin-impersonate__lead"><%= t("platform_admin.impersonate.description") %></p>
+  
+  <%= button_to enter_admin_tenant_path(store), method: :post, class: "admin-btn mb-3", form: { class: "admin-impersonate__form" }, data: { direct_access: true } do %>
+    <%= t("platform_admin.impersonate.direct_access") %>
+  <% end %>
+  
   <% if staff.empty? %>
     <p class="admin-impersonate__empty"><%= t("platform_admin.impersonate.empty") %></p>
   <% else %>

@@ -84,19 +84,28 @@ module Admin
 
     # Open the workspace as one of its members. The platform account stays in the
     # session so the super admin can return without knowing that member's password.
+    # Super admins can also enter a store directly without impersonating a user.
     def enter
-      user = @store.users.find_by(id: params[:user_id])
-      unless user&.impersonatable_by_super_admin?
-        return redirect_to admin_platform_path(anchor: "workspaces"), alert: t("platform_admin.impersonate.invalid")
-      end
+      if params[:user_id].present?
+        # Impersonate a specific user
+        user = @store.users.find_by(id: params[:user_id])
+        unless user&.impersonatable_by_super_admin?
+          return redirect_to admin_platform_path(anchor: "workspaces"), alert: t("platform_admin.impersonate.invalid")
+        end
 
-      session[:impersonator_id] = current_user.id
-      session[:impersonator_session_version] = current_user.session_version
-      session[:user_id] = user.id
-      session[:session_version] = user.session_version
-      session[:admin_mode] = "store"
-      session[:admin_store_id] = @store.id
-      redirect_to(user.confirmation_agent? ? home_admin_confirmations_path : admin_root_path)
+        session[:impersonator_id] = current_user.id
+        session[:impersonator_session_version] = current_user.session_version
+        session[:user_id] = user.id
+        session[:session_version] = user.session_version
+        session[:admin_mode] = "store"
+        session[:admin_store_id] = @store.id
+        redirect_to(user.confirmation_agent? ? home_admin_confirmations_path : admin_root_path)
+      else
+        # Direct access as super admin (no impersonation)
+        session[:admin_mode] = "store"
+        session[:admin_store_id] = @store.id
+        redirect_to admin_root_path
+      end
     end
 
     private

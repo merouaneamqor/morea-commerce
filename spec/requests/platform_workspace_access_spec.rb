@@ -137,4 +137,35 @@ RSpec.describe "Platform workspace access", type: :request do
     expect(response.body).to include(first.name)
     expect(response.body).not_to include(I18n.t("platform_admin.impersonate.stop", locale: :fr))
   end
+
+  it "allows super admin to enter a workspace directly without impersonating" do
+    sign_in(owner)
+
+    post enter_admin_tenant_path(first)
+
+    expect(response).to redirect_to(admin_root_path)
+    follow_redirect!
+    expect(response).to have_http_status(:ok)
+    expect(workspace_name).to include(first.name)
+    expect(response.body).not_to include(I18n.t("platform_admin.impersonate.stop", locale: :fr))
+    expect(session[:admin_mode]).to eq("store")
+    expect(session[:admin_store_id]).to eq(first.id)
+    expect(session[:impersonator_id]).to be_nil
+    expect(session[:user_id]).to eq(owner.id)
+  end
+
+  it "allows super admin to enter a workspace with no users" do
+    empty_store = Store.create!(slug: "empty-#{SecureRandom.hex(5)}", name: "Empty workspace", currency: "MAD")
+    sign_in(owner)
+
+    post enter_admin_tenant_path(empty_store)
+
+    expect(response).to redirect_to(admin_root_path)
+    follow_redirect!
+    expect(response).to have_http_status(:ok)
+    expect(workspace_name).to include(empty_store.name)
+    expect(session[:admin_mode]).to eq("store")
+    expect(session[:admin_store_id]).to eq(empty_store.id)
+    expect(session[:impersonator_id]).to be_nil
+  end
 end

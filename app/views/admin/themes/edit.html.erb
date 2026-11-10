@@ -8,6 +8,8 @@
      data-theme-editor-read-only-value="<%= @theme.published? %>"
      data-theme-editor-max-sections-value="<%= StorefrontThemes::UpdateSnapshot::MAX_SECTIONS %>"
      data-theme-editor-section-kinds-value="<%= section_kinds.to_json %>"
+     data-theme-editor-remove-confirm-value="<%= t('storefront_themes.remove_confirm') %>"
+     data-theme-editor-empty-editor-value="<%= t('storefront_themes.empty_editor') %>"
      <%= "data-theme-editor-read-only" if @theme.published? %>>
   <div class="flex min-w-0 items-center gap-3">
     <%= link_to "← Themes", admin_theme_path(@theme), class: "admin-link--blue shrink-0" %>
@@ -53,7 +55,7 @@
         <% end %>
       </div>
       <ol class="divide-y divide-[#ebebeb]" data-theme-editor-sections data-theme-editor-target="sectionList"></ol>
-      <p class="admin-empty" data-theme-editor-target="emptyState" hidden>No sections yet. Add one to start building this home page draft.</p>
+      <p class="admin-empty" data-theme-editor-target="emptyState" hidden><%= t("storefront_themes.empty_editor") %></p>
     </aside>
 
     <main class="min-w-0 rounded-lg border border-[#dedede] bg-[#e8e8e8] p-3 sm:p-6" aria-label="Storefront preview">

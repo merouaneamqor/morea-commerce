@@ -40,6 +40,8 @@ module Admin
 
       StorefrontThemes::Publish.call(store: current_store, theme: @theme)
       redirect_to admin_theme_path(@theme), notice: "#{@theme.name} is now published."
+    rescue StorefrontThemes::Publish::EmptyHome => error
+      redirect_to admin_theme_path(@theme), alert: error.message
     rescue ActiveRecord::RecordInvalid, KeyError => error
       redirect_to admin_theme_path(@theme), alert: "The theme could not be published: #{error.message}"
     end

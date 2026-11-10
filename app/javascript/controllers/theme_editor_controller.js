@@ -37,7 +37,9 @@ export default class extends Controller {
     saveUrl: String,
     readOnly: Boolean,
     maxSections: { type: Number, default: 50 },
-    sectionKinds: { type: Array, default: [] }
+    sectionKinds: { type: Array, default: [] },
+    removeConfirm: { type: String, default: "Remove this section from the theme draft?" },
+    emptyEditor: { type: String, default: "No sections yet. Add one to start building this home page draft." }
   }
 
   connect() {
@@ -118,7 +120,7 @@ export default class extends Controller {
       this.previewTarget.append(block)
     })
     if (!this.previewTarget.children.length) {
-      this.previewTarget.append(this.textElement("p", "No visible sections yet. Add a section to start composing this home page.", "px-6 py-16 text-center text-stone-500"))
+      this.previewTarget.append(this.textElement("p", this.emptyEditorValue, "px-6 py-16 text-center text-stone-500"))
     }
   }
 
@@ -189,6 +191,7 @@ export default class extends Controller {
     }
     if (this.hasEmptyStateTarget) {
       this.emptyStateTarget.hidden = count > 0
+      this.emptyStateTarget.textContent = this.emptyEditorValue
     }
     if (this.hasAddButtonTarget) {
       this.addButtonTarget.disabled = this.readOnlyValue || count >= this.maxSectionsValue
@@ -295,7 +298,7 @@ export default class extends Controller {
     if (this.readOnlyValue || this.selectedIndex < 0) return
     const section = this.snapshot.sections[this.selectedIndex]
     if (!section) return
-    if (!window.confirm(`Remove “${this.labelFor(section.kind)}” from this theme draft?`)) return
+    if (!window.confirm(this.removeConfirmValue)) return
 
     this.remember()
     this.snapshot.sections.splice(this.selectedIndex, 1)

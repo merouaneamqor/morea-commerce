@@ -79,6 +79,27 @@ RSpec.describe "Admin storefront themes", type: :request do
     expect(store.home_sections.ordered.pluck(:kind)).to eq(%w[hero featured_collection rich_text])
   end
 
+  it "blocks publishing an empty draft and keeps the live home page" do
+    existing = live_section
+    theme = StorefrontThemes::Install.call(store: store, catalog_key: "minimal")
+    theme.update!(snapshot: { "sections" => [] })
+    sign_in
+
+    get "/admin/themes/#{theme.id}"
+    expect(response).to have_http_status(:ok)
+    document = Nokogiri::HTML(response.body)
+    expect(document.at_css("[data-theme-empty-draft]")).to be_present
+    expect(document.at_css("[data-theme-publish-blocked]")).to be_present
+    expect(document.at_css("form[action='#{publish_admin_theme_path(theme)}']")).to be_nil
+
+    post "/admin/themes/#{theme.id}/publish", params: { confirm: "1" }
+
+    expect(response).to redirect_to(admin_theme_path(theme))
+    expect(flash[:alert]).to eq(I18n.t("storefront_themes.publish.empty"))
+    expect(theme.reload).to be_draft
+    expect(store.home_sections.reload).to contain_exactly(existing)
+  end
+
   it "does not expose or publish another workspace's theme" do
     foreign = Store.create!(slug: "foreign-admin-theme-#{SecureRandom.hex(5)}", name: "Foreign workspace",
       currency: "MAD", storefront_enabled: true)

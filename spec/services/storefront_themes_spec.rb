@@ -78,5 +78,18 @@ RSpec.describe "Storefront theme lifecycle" do
       expect(store.home_sections.reload).to contain_exactly(own_section)
       expect(foreign_theme.reload).to be_draft
     end
+
+    it "rejects an empty snapshot so live home sections are not wiped" do
+      own_section = create_live_section
+      theme = StorefrontThemes::Install.call(store: store, catalog_key: "minimal")
+      theme.update!(snapshot: { "sections" => [] })
+
+      expect {
+        described_class.call(store: store, theme: theme)
+      }.to raise_error(StorefrontThemes::Publish::EmptyHome)
+
+      expect(theme.reload).to be_draft
+      expect(store.home_sections.reload).to contain_exactly(own_section)
+    end
   end
 end

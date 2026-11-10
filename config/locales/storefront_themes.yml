@@ -1,0 +1,24 @@
+en:
+  storefront_themes:
+    remove_confirm: "Remove this section from the theme draft?"
+    empty_draft: "This draft has no sections. Add at least one before publishing."
+    empty_editor: "No sections yet. Add one to start building this home page draft."
+    publish:
+      empty: "A theme needs at least one section before it can replace the home page."
+      confirm_replace: "I understand that my current home page sections will be replaced."
+fr:
+  storefront_themes:
+    remove_confirm: "Retirer cette section du brouillon de thème ?"
+    empty_draft: "Ce brouillon n’a aucune section. Ajoutez-en au moins une avant de publier."
+    empty_editor: "Aucune section pour l’instant. Ajoutez-en une pour composer ce brouillon d’accueil."
+    publish:
+      empty: "Un thème doit contenir au moins une section avant de remplacer la page d’accueil."
+      confirm_replace: "Je comprends que les sections actuelles de la page d’accueil seront remplacées."
+ar:
+  storefront_themes:
+    remove_confirm: "إزالة هذا القسم من مسودة السمة؟"
+    empty_draft: "هذه المسودة بلا أقسام. أضف قسمًا واحدًا على الأقل قبل النشر."
+    empty_editor: "لا أقسام بعد. أضف قسمًا لبدء بناء مسودة الصفحة الرئيسية."
+    publish:
+      empty: "يجب أن تحتوي السمة على قسم واحد على الأقل قبل استبدال الصفحة الرئيسية."
+      confirm_replace: "أفهم أن أقسام الصفحة الرئيسية الحالية ستُستبدل."

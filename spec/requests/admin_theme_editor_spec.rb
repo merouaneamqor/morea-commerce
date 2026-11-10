@@ -102,6 +102,29 @@ RSpec.describe "Admin theme editor", type: :request do
     expect(theme.snapshot.dig("sections", -1, "translations", "en", "heading")).to eq("Added in the theme editor")
   end
 
+  it "allows saving an emptied draft without publishing it" do
+    sign_in
+    snapshot = editable_snapshot
+    snapshot["sections"] = []
+
+    patch "/admin/themes/#{theme.id}", params: { snapshot: snapshot }, as: :json
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to include("saved" => true)
+    expect(theme.reload.snapshot.fetch("sections")).to eq([])
+  end
+
+  it "exposes remove-confirm and empty-editor copy on the draft editor" do
+    sign_in
+
+    get "/admin/themes/#{theme.id}/edit"
+
+    expect(response).to have_http_status(:ok)
+    editor = Nokogiri::HTML(response.body).at_css("[data-theme-editor]")
+    expect(editor["data-theme-editor-remove-confirm-value"]).to eq(I18n.t("storefront_themes.remove_confirm"))
+    expect(editor["data-theme-editor-empty-editor-value"]).to eq(I18n.t("storefront_themes.empty_editor"))
+  end
+
   it "rejects a save that exceeds the section limit without mutating the draft" do
     original = theme.snapshot.deep_dup
     sign_in

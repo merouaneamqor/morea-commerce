@@ -1,10 +1,12 @@
 <% content_for :title, "#{@theme.name}, Themes" %>
+<% section_count = @theme.snapshot.fetch("sections", []).size %>
+<% empty_draft = section_count.zero? %>
 
 <div class="admin-page-header">
   <div>
     <div class="mb-2"><%= link_to "← Themes", admin_themes_path, class: "admin-link--blue" %></div>
     <h1 class="admin-page-header__title"><%= @theme.name %></h1>
-    <p class="admin-page-header__meta">Installed theme, <%= pluralize(@theme.snapshot.fetch("sections", []).size, "section", locale: :en) %></p>
+    <p class="admin-page-header__meta">Installed theme, <%= pluralize(section_count, "section", locale: :en) %></p>
   </div>
   <span class="admin-badge <%= @theme.published? ? 'admin-badge--success' : 'admin-badge--neutral' %>"><%= @theme.published? ? "Published" : "Draft" %></span>
 </div>
@@ -12,14 +14,18 @@
 <div class="admin-layout">
   <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">Home page structure</h2><div class="flex gap-2"><%= link_to "Edit theme", edit_admin_theme_path(@theme), class: "admin-btn" %><%= link_to "Preview", preview_admin_theme_path(@theme), class: "admin-btn-secondary" %></div></div>
-    <ol class="divide-y divide-[#ebebeb]">
-      <% @theme.snapshot.fetch("sections", []).each_with_index do |section, index| %>
-        <li class="flex items-center gap-3 p-4">
-          <span class="admin-badge admin-badge--neutral"><%= index + 1 %></span>
-          <div class="min-w-0"><p class="font-semibold"><%= section.fetch("kind").humanize %></p><p class="admin-muted mt-1 truncate"><%= section.dig("translations", "en", "heading").presence || section.dig("translations", "fr", "heading").presence || "Content section" %></p></div>
-        </li>
-      <% end %>
-    </ol>
+    <% if empty_draft %>
+      <p class="admin-empty" data-theme-empty-draft><%= t("storefront_themes.empty_draft") %></p>
+    <% else %>
+      <ol class="divide-y divide-[#ebebeb]">
+        <% @theme.snapshot.fetch("sections", []).each_with_index do |section, index| %>
+          <li class="flex items-center gap-3 p-4">
+            <span class="admin-badge admin-badge--neutral"><%= index + 1 %></span>
+            <div class="min-w-0"><p class="font-semibold"><%= SectionBlock::KINDS.fetch(section.fetch("kind"), section.fetch("kind").humanize) %></p><p class="admin-muted mt-1 truncate"><%= section.dig("translations", "en", "heading").presence || section.dig("translations", "fr", "heading").presence || "Content section" %></p></div>
+          </li>
+        <% end %>
+      </ol>
+    <% end %>
   </section>
 
   <aside class="admin-card self-start">
@@ -28,10 +34,13 @@
       <% if @theme.published? %>
         <p class="admin-muted">This theme currently supplies the live home page sections.</p>
         <%= link_to "Customize sections", admin_home_sections_path, class: "admin-btn-secondary" %>
+      <% elsif empty_draft %>
+        <p class="admin-muted" data-theme-publish-blocked><%= t("storefront_themes.empty_draft") %></p>
+        <%= link_to "Add sections", edit_admin_theme_path(@theme), class: "admin-btn" %>
       <% else %>
         <p class="admin-muted">Publishing replaces the current home page sections with this theme's sections. Edits to those sections are not kept.</p>
         <%= form_with url: publish_admin_theme_path(@theme), method: :post, class: "space-y-3" do |form| %>
-          <label class="flex items-start gap-2"><%= check_box_tag :confirm, "1", false, required: true, class: "mt-1" %><span>I understand that my current home page sections will be replaced.</span></label>
+          <label class="flex items-start gap-2"><%= check_box_tag :confirm, "1", false, required: true, class: "mt-1" %><span><%= t("storefront_themes.publish.confirm_replace") %></span></label>
           <%= form.submit "Publish theme", class: "admin-btn", data: { turbo_confirm: "Replace the current home page sections and publish #{@theme.name}?" } %>
         <% end %>
       <% end %>

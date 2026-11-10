@@ -29,7 +29,7 @@ ActiveAdmin.register_page "Feature Flags", namespace: :superadmin do
     end
 
     panel "Storefront theme editor" do
-      para "Enable theme installation, preview, editing and publishing for selected workspaces. The flag is disabled by default."
+      para "Enable theme installation, preview, editing and publishing for selected workspaces. New stores default to enabled; published storefronts were backfilled on. Disable a workspace here to hide draft install/publish while keeping the Themes tab visible."
 
       table_for Store.order(:name) do
         column("Workspace") do |store|

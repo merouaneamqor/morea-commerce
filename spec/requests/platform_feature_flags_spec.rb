@@ -15,7 +15,8 @@ RSpec.describe "Platform feature flags", type: :request do
       slug: "feature-flags-#{SecureRandom.hex(5)}",
       name: "Feature flag workspace",
       currency: "MAD",
-      storefront_enabled: true
+      storefront_enabled: true,
+      storefront_theme_editor_enabled: false
     )
   end
   let!(:other_store) do
@@ -23,7 +24,8 @@ RSpec.describe "Platform feature flags", type: :request do
       slug: "other-feature-flags-#{SecureRandom.hex(5)}",
       name: "Other feature flag workspace",
       currency: "MAD",
-      storefront_enabled: true
+      storefront_enabled: true,
+      storefront_theme_editor_enabled: false
     )
   end
   let!(:merchant) do
@@ -76,17 +78,24 @@ RSpec.describe "Platform feature flags", type: :request do
     expect(other_store.reload).not_to be_storefront_theme_editor_enabled
   end
 
-  it "gates the merchant themes index until the workspace flag is enabled" do
+  it "keeps Themes discoverable when disabled and unlocks the library when enabled" do
+    store.update!(storefront_theme_editor_enabled: false)
     sign_in(merchant, host: "#{store.slug}.#{Store.base_domain}")
 
     get "/admin/themes"
+    expect(response).to have_http_status(:ok)
+    expect(Nokogiri::HTML(response.body).at_css("[data-theme-editor-gated]")).to be_present
 
+    post "/admin/themes/install", params: { catalog_key: "minimal" }
     expect(response).to redirect_to(admin_online_store_path)
     expect(flash[:alert]).to eq("The theme editor is not enabled for this workspace.")
+    expect(store.storefront_themes).to be_empty
 
     store.update!(storefront_theme_editor_enabled: true)
     get "/admin/themes"
-
     expect(response).to have_http_status(:ok)
+    document = Nokogiri::HTML(response.body)
+    expect(document.at_css("[data-theme-editor-gated]")).to be_nil
+    expect(document.at_css("[data-catalog-theme='minimal']")).to be_present
   end
 end

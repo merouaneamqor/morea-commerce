@@ -63,7 +63,7 @@ module Sendit
     def delete_delivery(code) = request(:delete, "deliveries/#{code}")
     def labels(codes, thermal: true) = unwrap(request(:post, "deliveries/getlabels", { codesToPrint: Array(codes).join(","), printFormat: thermal ? 1 : 0 }))
     def districts(page: 1, query: nil) = request(:get, "districts", nil, { page: page, querystring: query }.compact)
-    
+
     def pickup_cities
       response = request(:get, "districts/pickup-cities")
       data = response["data"] || response

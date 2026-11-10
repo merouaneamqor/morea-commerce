@@ -56,16 +56,16 @@ RSpec.describe SenditCitiesRefreshJob do
       )
       allow(client).to receive(:pickup_cities).and_return([])
       allow(Rails.cache).to receive(:delete)
-      
+
       result = described_class.refresh!(store: store, client: client)
-      
+
       expect(result[:districts]).to eq(3)
       expect(result[:pickup_cities]).to eq(2) # Casablanca and Rabat
-      
+
       # Verify the pickup cities are correctly cached
       pickup = described_class.pickup_cities(store: store, client: client)
       expect(pickup.size).to eq(2)
-      expect(pickup.map { |p| p[:name] }.sort).to eq(["Casablanca", "Rabat"])
+      expect(pickup.map { |p| p[:name] }.sort).to eq([ "Casablanca", "Rabat" ])
     end
 
     it "handles pickup_cities API errors gracefully" do
@@ -76,10 +76,10 @@ RSpec.describe SenditCitiesRefreshJob do
       )
       allow(client).to receive(:pickup_cities).and_raise(Sendit::Client::Error.new("API error"))
       allow(Rails.cache).to receive(:delete)
-      
+
       expect { described_class.refresh!(store: store, client: client) }.not_to raise_error
       result = described_class.refresh!(store: store, client: client)
-      
+
       expect(result[:districts]).to eq(1)
       expect(result[:pickup_cities]).to eq(0)
     end

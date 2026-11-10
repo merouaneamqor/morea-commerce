@@ -40,7 +40,7 @@ module Sendit
       client ||= Client.new(store)
       Rails.cache.fetch("#{cache_key(store)}:pickup", expires_in: 1.day) do
         pickup_list = client.pickup_cities
-        
+
         # If the pickup cities endpoint returns empty or fails, fall back to using all districts
         # grouped by city (ville) as pickup options
         if pickup_list.empty?
@@ -52,7 +52,7 @@ module Sendit
             { "id" => first[:id], "name" => ville }
           end
         end
-        
+
         pickup_list.map { |d| { id: d["id"].to_i, name: d["name"].to_s } }
           .select { |d| d[:id].positive? && d[:name].present? }
           .uniq { |d| d[:id] }
@@ -72,9 +72,9 @@ module Sendit
       client ||= Client.new(store)
       districts_count = all(store: store, client: client).size
       pickup_count = pickup_cities(store: store, client: client).size
-      
+
       Rails.logger.info("[Sendit::Districts] refresh! for store #{store.slug}: districts=#{districts_count} pickup_cities=#{pickup_count}")
-      
+
       { districts: districts_count, pickup_cities: pickup_count }
     end
 

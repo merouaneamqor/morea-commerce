@@ -81,9 +81,9 @@ module Seller
         done: done,
         title_key: done ? "dashboard.setup.present_storefront" : "dashboard.setup.add_products",
         help_key: "dashboard.setup.storefront_help",
-        path: done ? "/admin/home_sections" : "/admin/products/new",
+        path: done ? "/admin/online_store" : "/admin/products/new",
         cta_key: done ? "dashboard.customize" : "dashboard.add_product",
-        tour_target: "products"
+        tour_target: done ? "online_store" : "products"
       )
     end
 

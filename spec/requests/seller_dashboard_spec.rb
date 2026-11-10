@@ -40,6 +40,18 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     expect(document.css("section.grid > div").first(2).map { |tile| tile.at_css("p").text.squish }).to eq([ "Commandes", "Taux de livraison" ])
   end
 
+  it "adds Boutique en ligne to the sidebar when the storefront is enabled" do
+    store.update!(storefront_enabled: true)
+    sign_in(owner)
+    get "/dashboard", params: { locale: "fr" }
+    expect(menu_links).to eq(%w[/dashboard /commandes /confirmation /clients /livraison /produits /admin/online_store /publicites /comptabilite /equipe /integrations])
+    expect(document.at_css(%(aside nav a[data-onboarding-nav="online_store"]))).to be_present
+    expect(document.at_css(%(aside nav a[data-onboarding-nav="online_store"])).text.squish).to eq("Boutique en ligne")
+
+    get "/dashboard", params: { locale: "en" }
+    expect(document.at_css(%(aside nav a[data-onboarding-nav="online_store"])).text.squish).to eq("Online store")
+  end
+
   it "no longer shows the financial cards: they moved to Comptabilité" do
     sign_in(owner)
     customer = store.customers.create!(name: "Client", phone: "0612345678", email: "c-#{suffix}@example.test")

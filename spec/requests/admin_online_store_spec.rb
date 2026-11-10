@@ -65,8 +65,11 @@ RSpec.describe "Admin online store builder", type: :request do
     hrefs = document.css("a[href]").map { |link| link["href"] }
     expect(hrefs).to include(admin_products_path, admin_home_sections_path, admin_themes_path, admin_pages_path,
       admin_menu_items_path, edit_admin_store_path)
-    expect(document.at_css(%([data-online-store-tab="themes"]))).to be_present
+    themes_tab = document.at_css(%([data-online-store-tab="themes"]))
+    expect(themes_tab).to be_present
+    expect(themes_tab.text.squish).to eq("Themes")
     expect(document.at_css(%([data-online-store-cta="themes"]))).to be_present
+    expect(document.at_css(%([data-online-store-cta="themes"])).text.squish).to eq("Themes, draft editor and publish")
     expect(resource_count("products")).to eq(2)
     expect(resource_count("collections")).to eq(1)
     expect(resource_count("pages")).to eq(1)

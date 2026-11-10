@@ -34,7 +34,19 @@ RSpec.describe Seller::Onboarding do
     store.update!(storefront_enabled: true)
     expect(onboarding.steps.map(&:key)).to eq(%w[source products carrier first_order])
     expect(onboarding.steps.find { |step| step.key == "source" }.done).to eq(true)
-    expect(onboarding.steps.find { |step| step.key == "products" }.done).to eq(false)
+    products = onboarding.steps.find { |step| step.key == "products" }
+    expect(products.done).to eq(false)
+    expect(products.path).to eq("/admin/products/new")
+    expect(products.tour_target).to eq("products")
+  end
+
+  it "points the completed storefront step at Online Store so Themes is discoverable" do
+    store.update!(storefront_enabled: true)
+    store.products.create!(name: "Item", slug: "item-#{suffix}", status: "active", price_cents: 1000)
+    products = onboarding.steps.find { |step| step.key == "products" }
+    expect(products.done).to eq(true)
+    expect(products.path).to eq("/admin/online_store")
+    expect(products.tour_target).to eq("online_store")
   end
 
   it "marks source done after a store connection exists" do

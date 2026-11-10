@@ -65,10 +65,10 @@
       <div class="admin-card__header"><h2 class="admin-card__title">Build your store</h2></div>
       <div class="space-y-3 p-4">
         <%= link_to admin_themes_path, class: "admin-btn-secondary flex w-full items-center justify-between", data: { online_store_cta: "themes" } do %>
-          <span>Themes, draft editor and publish</span>
+          <span><%= sl("Thèmes, brouillon et publication") %></span>
         <% end %>
         <%= link_to admin_home_sections_path, class: "admin-btn-secondary flex w-full items-center justify-between", data: { online_store_cta: "customize" } do %>
-          <span>Customize live home page</span>
+          <span><%= sl("Personnaliser la page d'accueil en direct") %></span>
         <% end %>
         <%= link_to admin_products_path, class: "admin-btn-secondary flex w-full items-center justify-between" do %>
           <span>Manage products</span>

@@ -19,7 +19,16 @@ module SellerHelper
     "des commandes" => [ "of orders", "من الطلبات" ],
     "des colis" => [ "of parcels", "من الطرود" ],
     "par rapport à la période précédente" => [ "compared with the previous period", "مقارنة بالفترة السابقة" ],
-    "commandes attendent une confirmation." => [ "orders are waiting for confirmation.", "طلبات بانتظار التأكيد." ]
+    "commandes attendent une confirmation." => [ "orders are waiting for confirmation.", "طلبات بانتظار التأكيد." ],
+    "Aperçu" => [ "Overview", "نظرة عامة" ],
+    "Personnaliser" => [ "Customize", "تخصيص" ],
+    "Thèmes" => [ "Themes", "السمات" ],
+    "Pages" => [ "Pages", "الصفحات" ],
+    "Navigation" => [ "Navigation", "التنقل" ],
+    "Voir la boutique" => [ "View store", "عرض المتجر" ],
+    "Publier la boutique" => [ "Publish storefront", "نشر الواجهة" ],
+    "Thèmes, brouillon et publication" => [ "Themes, draft editor and publish", "السمات، المسودة والنشر" ],
+    "Personnaliser la page d'accueil en direct" => [ "Customize live home page", "تخصيص الصفحة الرئيسية المباشرة" ]
   }.freeze
 
   SELLER_ICONS = {
@@ -28,6 +37,7 @@ module SellerHelper
     phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
     truck: '<path d="M3 6h11v10H3z"/><path d="M14 9h4l3 3v4h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
     box: '<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/>',
+    storefront: '<path d="M4 10h16v10H4z"/><path d="m3 10 2-5h14l2 5"/><path d="M9 20v-6h6v6"/>',
     target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
     profit: '<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
     calculator: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M16 14v4M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M8 18h.01M12 18h.01"/>',
@@ -50,6 +60,7 @@ module SellerHelper
     [ "clients", :clients, "Clients", "/clients" ],
     [ "delivery", :truck, "Livraison", "/livraison" ],
     [ "products", :box, "Produits", "/produits" ],
+    [ "online_store", :storefront, "Boutique en ligne", "/admin/online_store" ],
     [ "ads", :target, "Publicités", "/publicites" ],
     [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
@@ -74,9 +85,12 @@ module SellerHelper
   SELLER_ACTIVE_BY_CONTROLLER = {
     "dashboard" => "dashboard", "orders" => "orders", "confirmations" => "confirmation", "my_stats" => "stats",
     "customers" => "clients", "delivery" => "delivery", "products" => "products", "variants" => "products",
-    "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
-    "seallo_connections" => "integrations", "woocommerce_connections" => "integrations",
-    "sendit_settings" => "integrations", "ozon_settings" => "integrations", "ameex_settings" => "integrations",
+    "inventory" => "products", "online_store" => "online_store", "home_sections" => "online_store",
+    "themes" => "online_store", "pages" => "online_store", "page_sections" => "online_store",
+    "menu_items" => "online_store", "users" => "team", "agent_api" => "integrations",
+    "store_connections" => "integrations", "seallo_connections" => "integrations",
+    "woocommerce_connections" => "integrations", "sendit_settings" => "integrations",
+    "ozon_settings" => "integrations", "ameex_settings" => "integrations",
     "meta_ads" => "ads", "advertising" => "ads", "pixels" => "ads",
     "accounting" => "accounting"
   }.freeze
@@ -132,7 +146,14 @@ module SellerHelper
 
   def seller_menu(user)
     agent = user&.confirmation_agent_view?
-    SELLER_MENU.select { |key, *| agent ? %w[confirmation stats orders].include?(key) : key != "stats" }
+    storefront = current_store&.storefront_enabled?
+    SELLER_MENU.select do |key, *|
+      next %w[confirmation stats orders].include?(key) if agent
+      next false if key == "stats"
+      next false if key == "online_store" && !storefront
+
+      true
+    end
   end
 
   def seller_bottom_nav(user)

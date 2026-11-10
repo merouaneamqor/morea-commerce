@@ -35,6 +35,7 @@ export default class extends Controller {
   ]
   static values = {
     saveUrl: String,
+    previewUrl: String,
     readOnly: Boolean,
     maxSections: { type: Number, default: 50 },
     sectionKinds: { type: Array, default: [] },
@@ -50,12 +51,17 @@ export default class extends Controller {
     this.undoStack = []
     this.redoStack = []
     this.dragIndex = null
+    this.previewTimer = null
+    this.previewRequestId = 0
     this.render()
     this.keyHandler = this.handleKeydown.bind(this)
     window.addEventListener("keydown", this.keyHandler)
   }
 
-  disconnect() { window.removeEventListener("keydown", this.keyHandler) }
+  disconnect() {
+    window.removeEventListener("keydown", this.keyHandler)
+    if (this.previewTimer) window.clearTimeout(this.previewTimer)
+  }
 
   cloneSnapshot() { return JSON.parse(JSON.stringify(this.snapshot)) }
 
@@ -63,13 +69,13 @@ export default class extends Controller {
     return this.sectionKindsValue.length ? this.sectionKindsValue : FALLBACK_KINDS
   }
 
-  render() {
+  render({ refreshPreview = true } = {}) {
     this.renderTree()
-    this.renderPreview()
     this.renderSettings()
     this.renderPicker()
     this.updateChrome()
     this.updateHistoryButtons()
+    if (refreshPreview) this.queuePreviewRefresh()
   }
 
   renderTree() {
@@ -99,29 +105,52 @@ export default class extends Controller {
     })
   }
 
-  renderPreview() {
-    this.previewTarget.replaceChildren()
-    this.previewTarget.dir = this.locale === "ar" ? "rtl" : "ltr"
-    this.snapshot.sections.filter(section => section.visible !== false).forEach((section) => {
-      const copy = section.translations?.[this.locale] || {}
-      const block = document.createElement("section")
-      block.className = section.kind === "hero" ? "border-b bg-[#eee5dc] px-6 py-16 text-center" : "border-b px-6 py-9"
-      block.tabIndex = 0
-      block.addEventListener("click", () => { this.selectedIndex = this.snapshot.sections.indexOf(section); this.render() })
-      if (copy.subheading) block.append(this.textElement("p", copy.subheading, "mb-2 text-xs uppercase tracking-[.2em] text-stone-500"))
-      if (copy.heading) block.append(this.textElement("h2", copy.heading, "text-2xl font-semibold"))
-      if (copy.body) block.append(this.textElement("p", copy.body, "mx-auto mt-3 max-w-2xl whitespace-pre-line text-stone-600"))
-      if (["featured_collection", "collection_list"].includes(section.kind)) {
-        const grid = document.createElement("div"); grid.className = "mt-6 grid grid-cols-3 gap-3"
-        for (let i = 0; i < 3; i++) { const card = document.createElement("span"); card.className = "h-24 bg-stone-100"; grid.append(card) }
-        block.append(grid)
-      }
-      if (copy.button_label) block.append(this.textElement("span", copy.button_label, "mt-5 inline-block bg-stone-900 px-4 py-2 text-sm text-white"))
-      this.previewTarget.append(block)
-    })
-    if (!this.previewTarget.children.length) {
-      this.previewTarget.append(this.textElement("p", this.emptyEditorValue, "px-6 py-16 text-center text-stone-500"))
+  queuePreviewRefresh(immediate = false) {
+    if (!this.hasPreviewUrlValue || !this.previewUrlValue) return
+    if (this.previewTimer) window.clearTimeout(this.previewTimer)
+    if (immediate) {
+      this.refreshPreview()
+      return
     }
+    this.previewTimer = window.setTimeout(() => this.refreshPreview(), 250)
+  }
+
+  async refreshPreview() {
+    if (!this.hasPreviewUrlValue || !this.previewUrlValue) return
+    const requestId = ++this.previewRequestId
+    try {
+      const response = await fetch(this.previewUrlValue, {
+        method: "POST",
+        headers: {
+          "Accept": "text/html",
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content || ""
+        },
+        body: JSON.stringify({ locale: this.locale, snapshot: this.snapshot })
+      })
+      if (!response.ok) throw new Error("Preview failed")
+      const html = await response.text()
+      if (requestId !== this.previewRequestId) return
+      this.previewTarget.innerHTML = html
+      this.bindPreviewSelection()
+    } catch (_error) {
+      if (requestId !== this.previewRequestId) return
+      this.previewTarget.replaceChildren(this.textElement("p", "Storefront preview could not be loaded.", "px-6 py-16 text-center text-stone-500"))
+    }
+  }
+
+  bindPreviewSelection() {
+    this.previewTarget.querySelectorAll("[data-preview-index]").forEach(block => {
+      block.addEventListener("click", () => {
+        const index = Number(block.dataset.previewIndex)
+        if (Number.isNaN(index)) return
+        const visibleSections = this.snapshot.sections.filter(section => section.visible !== false)
+        const section = visibleSections[index]
+        if (!section) return
+        this.selectedIndex = this.snapshot.sections.indexOf(section)
+        this.render({ refreshPreview: false })
+      })
+    })
   }
 
   textElement(tag, value, classes) {
@@ -229,7 +258,9 @@ export default class extends Controller {
     parts.slice(0, -1).forEach(key => { target[key] ||= {}; target = target[key] })
     target[parts.at(-1)] = event.target.type === "checkbox" ? event.target.checked : event.target.value
     this.markUnsaved()
-    this.renderTree(); this.renderPreview(); this.updateHistoryButtons()
+    this.renderTree()
+    this.updateHistoryButtons()
+    this.queuePreviewRefresh()
   }
 
   dropSection(event, targetIndex) {
@@ -326,7 +357,11 @@ export default class extends Controller {
     this.selectedIndex = this.snapshot.sections.length ? Math.min(Math.max(this.selectedIndex, 0), this.snapshot.sections.length - 1) : -1
     this.markUnsaved(); this.render()
   }
-  changeLocale() { this.locale = this.localeTarget.value; this.renderPreview(); this.renderSettings() }
+  changeLocale() {
+    this.locale = this.localeTarget.value
+    this.renderSettings()
+    this.queuePreviewRefresh(true)
+  }
   setDesktop() { this.previewFrameTarget.style.maxWidth = "none"; this.setDeviceButtons(true) }
   setMobile() { this.previewFrameTarget.style.maxWidth = "390px"; this.setDeviceButtons(false) }
   setDeviceButtons(desktop) { this.desktopButtonTarget.setAttribute("aria-pressed", desktop); this.mobileButtonTarget.setAttribute("aria-pressed", !desktop); this.desktopButtonTarget.classList.toggle("bg-stone-200", desktop); this.mobileButtonTarget.classList.toggle("bg-stone-200", !desktop) }

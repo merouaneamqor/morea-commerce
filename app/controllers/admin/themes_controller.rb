@@ -4,7 +4,7 @@ module Admin
   class ThemesController < BaseController
     before_action :require_store_context!
     before_action :require_theme_editor_feature!
-    before_action :set_theme, only: %i[show edit update publish preview]
+    before_action :set_theme, only: %i[show edit update publish preview preview_frame]
 
     def index
       @themes = current_store.storefront_themes.order(created_at: :desc)
@@ -46,9 +46,38 @@ module Admin
       redirect_to admin_theme_path(@theme), alert: "The theme could not be published: #{error.message}"
     end
 
-    def preview; end
+    def preview
+      load_preview_sections!
+    end
+
+    def preview_frame
+      load_preview_sections!
+      render :preview_frame, formats: [ :html ], layout: false
+    end
+
+    def default_url_options
+      return { locale: (@preview_locale || I18n.locale) } if action_name.in?(%w[preview preview_frame])
+
+      {}
+    end
 
     private
+
+    def load_preview_sections!
+      @preview_locale = normalize_locale(params[:locale].presence || I18n.locale)
+      I18n.locale = @preview_locale
+      snapshot = preview_snapshot_param || @theme.snapshot
+      @sections = StorefrontThemes::PreviewSections.call(store: current_store, snapshot: snapshot)
+    end
+
+    def preview_snapshot_param
+      return unless params.key?(:snapshot)
+
+      snapshot = params[:snapshot]
+      snapshot = snapshot.to_unsafe_h if snapshot.respond_to?(:to_unsafe_h)
+      snapshot
+    end
+
 
     def require_store_context!
       return if current_store

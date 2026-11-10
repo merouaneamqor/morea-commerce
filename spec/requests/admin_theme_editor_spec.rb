@@ -53,11 +53,42 @@ RSpec.describe "Admin theme editor", type: :request do
     expect(document.at_css("[data-theme-editor-add]")).to be_present
     expect(document.at_css("#theme-section-picker-title")).to be_present
     expect(editor["data-theme-editor-max-sections-value"]).to eq(StorefrontThemes::UpdateSnapshot::MAX_SECTIONS.to_s)
+    expect(editor["data-theme-editor-preview-url-value"]).to eq(preview_frame_admin_theme_path(theme))
 
     kinds = JSON.parse(editor["data-theme-editor-section-kinds-value"])
     expect(kinds.map { |entry| entry.fetch("kind") }).to eq(SectionBlock::KINDS.keys)
     expect(kinds.map { |entry| entry.fetch("label") }).to eq(SectionBlock::KINDS.values)
     expect(kinds.map { |entry| entry.fetch("description") }).to eq(SectionBlock::DESCRIPTIONS.values_at(*SectionBlock::KINDS.keys))
+  end
+
+  it "renders a storefront partial preview frame for a draft snapshot and locale" do
+    sign_in
+    snapshot = editable_snapshot
+    snapshot.dig("sections", 0, "translations", "ar")["heading"] = "معاينة البطل"
+
+    post "/admin/themes/#{theme.id}/preview_frame",
+      params: { locale: "ar", snapshot: snapshot },
+      as: :json
+
+    expect(response).to have_http_status(:ok)
+    document = Nokogiri::HTML(response.body)
+    expect(document.at_css("[data-theme-preview-sections][dir='rtl'][lang='ar']")).to be_present
+    expect(document.at_css("[data-preview-section='hero']")).to be_present
+    expect(response.body).to include("معاينة البطل")
+    expect(response.body).to include("campaign-hero")
+  end
+
+  it "renders the standalone preview page with real section markup" do
+    sign_in
+
+    get "/admin/themes/#{theme.id}/preview", params: { locale: "en" }
+
+    expect(response).to have_http_status(:ok)
+    document = Nokogiri::HTML(response.body)
+    expect(document.at_css("[data-theme-preview='#{theme.id}']")).to be_present
+    expect(document.at_css("[data-preview-section='hero']")).to be_present
+    expect(response.body).to include("campaign-hero")
+    expect(response.body).to include("Simply essential")
   end
 
   it "updates section order and translated text in one snapshot save" do

@@ -5,6 +5,7 @@
      data-controller="theme-editor"
      data-theme-editor
      data-theme-editor-save-url-value="<%= admin_theme_path(@theme) %>"
+     data-theme-editor-preview-url-value="<%= preview_frame_admin_theme_path(@theme) %>"
      data-theme-editor-read-only-value="<%= @theme.published? %>"
      data-theme-editor-max-sections-value="<%= StorefrontThemes::UpdateSnapshot::MAX_SECTIONS %>"
      data-theme-editor-section-kinds-value="<%= section_kinds.to_json %>"
@@ -61,7 +62,9 @@
     <main class="min-w-0 rounded-lg border border-[#dedede] bg-[#e8e8e8] p-3 sm:p-6" aria-label="Storefront preview">
       <div class="mx-auto overflow-hidden rounded-md bg-white shadow-sm transition-[max-width]" data-theme-editor-target="previewFrame">
         <div class="flex items-center justify-between border-b px-5 py-4"><strong class="tracking-widest"><%= current_store.name %></strong><span class="text-xs uppercase tracking-wider">Catalog &nbsp; About &nbsp; Cart</span></div>
-        <div data-theme-editor-preview data-theme-editor-target="preview"></div>
+        <div data-theme-editor-preview data-theme-editor-target="preview" aria-live="polite">
+          <p class="px-6 py-16 text-center text-stone-500">Loading storefront preview…</p>
+        </div>
       </div>
     </main>
 

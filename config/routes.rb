@@ -325,6 +325,7 @@ Rails.application.routes.draw do
       collection { post :install }
       member do
         get :preview
+        match :preview_frame, via: %i[get post]
         post :publish
       end
     end

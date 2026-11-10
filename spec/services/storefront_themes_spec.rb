@@ -92,4 +92,49 @@ RSpec.describe "Storefront theme lifecycle" do
       expect(store.home_sections.reload).to contain_exactly(own_section)
     end
   end
+
+  describe StorefrontThemes::PreviewSections do
+    it "builds visible unsaved home sections from a snapshot for storefront partials" do
+      collection = store.collections.create!(name: "Preview collection", slug: "preview-collection", published: true, position: 0)
+      snapshot = {
+        "sections" => [
+          {
+            "kind" => "hero",
+            "visible" => true,
+            "settings" => { "link" => "collections" },
+            "translations" => {
+              "en" => { "heading" => "Preview hero", "button_label" => "Shop" },
+              "fr" => { "heading" => "Héros aperçu", "button_label" => "Acheter" }
+            }
+          },
+          {
+            "kind" => "featured_collection",
+            "visible" => false,
+            "settings" => { "collection_id" => collection.id.to_s, "limit" => "4" },
+            "translations" => { "en" => { "heading" => "Hidden" } }
+          },
+          {
+            "kind" => "rich_text",
+            "visible" => true,
+            "settings" => {},
+            "translations" => { "en" => { "body" => "Story body" } }
+          }
+        ]
+      }
+
+      sections = described_class.call(store: store, snapshot: snapshot)
+
+      expect(sections.map(&:kind)).to eq(%w[hero rich_text])
+      expect(sections).to all(be_new_record)
+      expect(sections.first.store).to eq(store)
+      I18n.with_locale(:en) do
+        expect(sections.first.heading).to eq("Preview hero")
+        expect(sections.last.body).to eq("Story body")
+      end
+      I18n.with_locale(:fr) do
+        expect(sections.first.heading).to eq("Héros aperçu")
+      end
+      expect(store.home_sections.count).to eq(0)
+    end
+  end
 end

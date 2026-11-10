@@ -27,7 +27,12 @@ module Admin
       redirect_to admin_themes_path, alert: error.record.errors.full_messages.to_sentence
     end
 
-    def show; end
+    def show
+      @draft_sections = Array(@theme.snapshot&.dig("sections"))
+      @live_sections = current_store.home_sections.ordered.to_a
+      @draft_kinds = @draft_sections.map { |section| section["kind"] }.compact
+      @live_kinds = @live_sections.map(&:kind)
+    end
 
     def edit; end
 

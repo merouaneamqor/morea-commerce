@@ -66,6 +66,24 @@ RSpec.describe "Admin storefront themes", type: :request do
     expect(store.home_sections.reload).to contain_exactly(existing)
   end
 
+  it "shows a publish preflight comparing live home and draft sections" do
+    live_section(heading: "Keep live")
+    theme = StorefrontThemes::Install.call(store: store, catalog_key: "minimal")
+    sign_in
+
+    get "/admin/themes/#{theme.id}"
+
+    expect(response).to have_http_status(:ok)
+    document = Nokogiri::HTML(response.body)
+    expect(document.at_css("[data-theme-publish-preflight]")).to be_present
+    expect(document.at_css("[data-theme-publish-live]").text).to include("1 section")
+    expect(document.at_css("[data-theme-publish-live]").text).to include("Rich text")
+    expect(document.at_css("[data-theme-publish-draft]").text).to include("3 sections")
+    expect(document.at_css("[data-theme-publish-draft]").text).to include("Image banner")
+    expect(document.at_css("[data-theme-publish-draft]").text).to include("Featured collection")
+    expect(document.at_css("form[action='#{publish_admin_theme_path(theme)}']")).to be_present
+  end
+
   it "publishes after confirmation" do
     existing = live_section
     theme = StorefrontThemes::Install.call(store: store, catalog_key: "minimal")

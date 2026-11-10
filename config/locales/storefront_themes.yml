@@ -7,6 +7,12 @@ en:
     publish:
       empty: "A theme needs at least one section before it can replace the home page."
       confirm_replace: "I understand that my current home page sections will be replaced."
+      preflight_title: "Live home will be replaced"
+      preflight_body: "Publishing deletes the current home page sections and recreates them from this draft. Products, collections, pages, menus and store settings stay unchanged."
+      live_label: "Live home now"
+      draft_label: "This draft"
+      none: "No sections"
+      turbo_confirm: "Replace the current home page sections and publish %{name}?"
 fr:
   storefront_themes:
     remove_confirm: "Retirer cette section du brouillon de thème ?"
@@ -16,6 +22,12 @@ fr:
     publish:
       empty: "Un thème doit contenir au moins une section avant de remplacer la page d’accueil."
       confirm_replace: "Je comprends que les sections actuelles de la page d’accueil seront remplacées."
+      preflight_title: "L’accueil en ligne sera remplacé"
+      preflight_body: "La publication supprime les sections actuelles de la page d’accueil et les recrée à partir de ce brouillon. Produits, collections, pages, menus et réglages du magasin restent inchangés."
+      live_label: "Accueil actuel"
+      draft_label: "Ce brouillon"
+      none: "Aucune section"
+      turbo_confirm: "Remplacer les sections de la page d’accueil et publier %{name} ?"
 ar:
   storefront_themes:
     remove_confirm: "إزالة هذا القسم من مسودة السمة؟"
@@ -25,3 +37,9 @@ ar:
     publish:
       empty: "يجب أن تحتوي السمة على قسم واحد على الأقل قبل استبدال الصفحة الرئيسية."
       confirm_replace: "أفهم أن أقسام الصفحة الرئيسية الحالية ستُستبدل."
+      preflight_title: "سيتم استبدال الصفحة الرئيسية الحالية"
+      preflight_body: "يؤدي النشر إلى حذف أقسام الصفحة الرئيسية الحالية وإعادة إنشائها من هذه المسودة. تبقى المنتجات والمجموعات والصفحات والقوائم وإعدادات المتجر دون تغيير."
+      live_label: "الصفحة الرئيسية الحالية"
+      draft_label: "هذه المسودة"
+      none: "لا أقسام"
+      turbo_confirm: "استبدال أقسام الصفحة الرئيسية الحالية ونشر %{name}؟"

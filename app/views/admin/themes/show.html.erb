@@ -1,6 +1,7 @@
 <% content_for :title, "#{@theme.name}, Themes" %>
-<% section_count = @theme.snapshot.fetch("sections", []).size %>
+<% section_count = @draft_sections.size %>
 <% empty_draft = section_count.zero? %>
+<% live_count = @live_sections.size %>
 
 <div class="admin-page-header">
   <div>
@@ -25,7 +26,7 @@
       <p class="admin-empty" data-theme-empty-draft><%= t("storefront_themes.empty_draft") %></p>
     <% else %>
       <ol class="divide-y divide-[#ebebeb]">
-        <% @theme.snapshot.fetch("sections", []).each_with_index do |section, index| %>
+        <% @draft_sections.each_with_index do |section, index| %>
           <li class="flex items-center gap-3 p-4">
             <span class="admin-badge admin-badge--neutral"><%= index + 1 %></span>
             <div class="min-w-0"><p class="font-semibold"><%= SectionBlock::KINDS.fetch(section.fetch("kind"), section.fetch("kind").humanize) %></p><p class="admin-muted mt-1 truncate"><%= section.dig("translations", "en", "heading").presence || section.dig("translations", "fr", "heading").presence || "Content section" %></p></div>
@@ -48,10 +49,25 @@
         <p class="admin-muted" data-theme-publish-blocked><%= t("storefront_themes.empty_draft") %></p>
         <%= link_to "Add sections", edit_admin_theme_path(@theme), class: "admin-btn" %>
       <% else %>
-        <p class="admin-muted">Publishing replaces the current home page sections with this theme's sections. Edits to those sections are not kept.</p>
-        <%= form_with url: publish_admin_theme_path(@theme), method: :post, class: "space-y-3" do |form| %>
+        <div class="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950" data-theme-publish-preflight>
+          <p class="font-semibold"><%= t("storefront_themes.publish.preflight_title") %></p>
+          <p class="mt-2"><%= t("storefront_themes.publish.preflight_body") %></p>
+          <dl class="mt-3 grid grid-cols-2 gap-3">
+            <div data-theme-publish-live>
+              <dt class="admin-muted"><%= t("storefront_themes.publish.live_label") %></dt>
+              <dd class="font-semibold"><%= pluralize(live_count, "section", locale: :en) %></dd>
+              <dd class="admin-muted mt-1"><%= live_count.zero? ? t("storefront_themes.publish.none") : @live_kinds.map { |kind| SectionBlock::KINDS.fetch(kind, kind.humanize) }.join(", ") %></dd>
+            </div>
+            <div data-theme-publish-draft>
+              <dt class="admin-muted"><%= t("storefront_themes.publish.draft_label") %></dt>
+              <dd class="font-semibold"><%= pluralize(section_count, "section", locale: :en) %></dd>
+              <dd class="admin-muted mt-1"><%= @draft_kinds.map { |kind| SectionBlock::KINDS.fetch(kind, kind.to_s.humanize) }.join(", ") %></dd>
+            </div>
+          </dl>
+        </div>
+        <%= form_with url: publish_admin_theme_path(@theme), method: :post, class: "space-y-3", data: { theme_publish_form: true } do |form| %>
           <label class="flex items-start gap-2"><%= check_box_tag :confirm, "1", false, required: true, class: "mt-1" %><span><%= t("storefront_themes.publish.confirm_replace") %></span></label>
-          <%= form.submit "Publish theme", class: "admin-btn", data: { turbo_confirm: "Replace the current home page sections and publish #{@theme.name}?" } %>
+          <%= form.submit "Publish theme", class: "admin-btn", data: { turbo_confirm: t("storefront_themes.publish.turbo_confirm", name: @theme.name) } %>
         <% end %>
       <% end %>
     </div>

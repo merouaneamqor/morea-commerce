@@ -63,7 +63,15 @@ module Sendit
     def delete_delivery(code) = request(:delete, "deliveries/#{code}")
     def labels(codes, thermal: true) = unwrap(request(:post, "deliveries/getlabels", { codesToPrint: Array(codes).join(","), printFormat: thermal ? 1 : 0 }))
     def districts(page: 1, query: nil) = request(:get, "districts", nil, { page: page, querystring: query }.compact)
-    def pickup_cities = Array(request(:get, "districts/pickup-cities")["data"])
+    
+    def pickup_cities
+      response = request(:get, "districts/pickup-cities")
+      data = response["data"] || response
+      Array(data).map { |city| city.is_a?(Hash) ? city : nil }.compact
+    rescue Error => e
+      Rails.logger.warn("[Sendit] pickup_cities failed: #{e.message}")
+      []
+    end
     # Official delivery status codes → French labels (GET /all-status-deliveries)
     def all_status_deliveries
       data = request(:get, "all-status-deliveries")["data"]

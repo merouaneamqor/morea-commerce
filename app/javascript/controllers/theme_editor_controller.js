@@ -18,15 +18,33 @@ const SETTING_FIELDS = {
   rich_text: ["image_url", "link"]
 }
 
+const FALLBACK_KINDS = [
+  { kind: "hero", label: "Image banner", description: "Full-width banner with image and a call to action." },
+  { kind: "ticker", label: "Scrolling text", description: "Scrolling lines of short announcement text." },
+  { kind: "featured_collection", label: "Featured collection", description: "Product grid from one collection." },
+  { kind: "collection_list", label: "Collection list", description: "Grid of published collections." },
+  { kind: "image_with_text", label: "Image with text", description: "Image beside heading, body, and optional button." },
+  { kind: "rich_text", label: "Rich text", description: "Centered text block with optional image and link." }
+]
+
 export default class extends Controller {
-  static targets = ["payload", "sectionList", "preview", "previewFrame", "settingsForm", "settingsTitle", "locale", "saveStatus", "saveButton", "undoButton", "redoButton", "desktopButton", "mobileButton"]
-  static values = { saveUrl: String, readOnly: Boolean }
+  static targets = [
+    "payload", "sectionList", "preview", "previewFrame", "settingsForm", "settingsTitle", "locale",
+    "saveStatus", "saveButton", "undoButton", "redoButton", "desktopButton", "mobileButton",
+    "sectionPicker", "sectionPickerList", "emptyState", "addButton", "sectionCount"
+  ]
+  static values = {
+    saveUrl: String,
+    readOnly: Boolean,
+    maxSections: { type: Number, default: 50 },
+    sectionKinds: { type: Array, default: [] }
+  }
 
   connect() {
     this.snapshot = JSON.parse(this.payloadTarget.textContent)
     this.snapshot.sections ||= []
     this.locale = this.localeTarget.value
-    this.selectedIndex = 0
+    this.selectedIndex = this.snapshot.sections.length ? 0 : -1
     this.undoStack = []
     this.redoStack = []
     this.dragIndex = null
@@ -39,10 +57,16 @@ export default class extends Controller {
 
   cloneSnapshot() { return JSON.parse(JSON.stringify(this.snapshot)) }
 
+  kinds() {
+    return this.sectionKindsValue.length ? this.sectionKindsValue : FALLBACK_KINDS
+  }
+
   render() {
     this.renderTree()
     this.renderPreview()
     this.renderSettings()
+    this.renderPicker()
+    this.updateChrome()
     this.updateHistoryButtons()
   }
 
@@ -76,7 +100,7 @@ export default class extends Controller {
   renderPreview() {
     this.previewTarget.replaceChildren()
     this.previewTarget.dir = this.locale === "ar" ? "rtl" : "ltr"
-    this.snapshot.sections.filter(section => section.visible !== false).forEach((section, index) => {
+    this.snapshot.sections.filter(section => section.visible !== false).forEach((section) => {
       const copy = section.translations?.[this.locale] || {}
       const block = document.createElement("section")
       block.className = section.kind === "hero" ? "border-b bg-[#eee5dc] px-6 py-16 text-center" : "border-b px-6 py-9"
@@ -91,9 +115,11 @@ export default class extends Controller {
         block.append(grid)
       }
       if (copy.button_label) block.append(this.textElement("span", copy.button_label, "mt-5 inline-block bg-stone-900 px-4 py-2 text-sm text-white"))
-      block.dataset.previewIndex = index
       this.previewTarget.append(block)
     })
+    if (!this.previewTarget.children.length) {
+      this.previewTarget.append(this.textElement("p", "No visible sections yet. Add a section to start composing this home page.", "px-6 py-16 text-center text-stone-500"))
+    }
   }
 
   textElement(tag, value, classes) {
@@ -106,7 +132,11 @@ export default class extends Controller {
   renderSettings() {
     this.settingsFormTarget.replaceChildren()
     const section = this.snapshot.sections[this.selectedIndex]
-    if (!section) { this.settingsTitleTarget.textContent = "Section settings"; return }
+    if (!section) {
+      this.settingsTitleTarget.textContent = "Section settings"
+      this.settingsFormTarget.append(this.textElement("p", "Select or add a section to edit its settings.", "text-sm text-stone-500"))
+      return
+    }
     this.settingsTitleTarget.textContent = this.labelFor(section.kind)
     this.settingsFormTarget.append(this.checkboxField("Visible", "visible", section.visible !== false))
     section.translations ||= {}
@@ -114,7 +144,56 @@ export default class extends Controller {
     ;(COPY_FIELDS[section.kind] || []).forEach(field => this.settingsFormTarget.append(this.textField(this.humanize(field), `translations.${this.locale}.${field}`, section.translations[this.locale][field] || "", field === "body")))
     section.settings ||= {}
     ;(SETTING_FIELDS[section.kind] || []).forEach(field => this.settingsFormTarget.append(this.textField(this.humanize(field), `settings.${field}`, section.settings[field] || "")))
+
+    if (!this.readOnlyValue) {
+      const remove = document.createElement("button")
+      remove.type = "button"
+      remove.className = "admin-btn-critical mt-2"
+      remove.textContent = "Remove section"
+      remove.dataset.action = "theme-editor#removeSection"
+      remove.addEventListener("click", () => this.removeSection())
+      this.settingsFormTarget.append(remove)
+    }
+
     Array.from(this.settingsFormTarget.elements).forEach(element => { element.disabled = this.readOnlyValue })
+  }
+
+  renderPicker() {
+    if (!this.hasSectionPickerListTarget) return
+    this.sectionPickerListTarget.replaceChildren()
+    const atLimit = this.snapshot.sections.length >= this.maxSectionsValue
+    this.kinds().forEach(entry => {
+      const item = document.createElement("li")
+      const button = document.createElement("button")
+      button.type = "button"
+      button.className = "flex w-full flex-col gap-1 rounded-md border border-[#dedede] bg-white px-3 py-3 text-left hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+      button.disabled = this.readOnlyValue || atLimit
+      button.dataset.kind = entry.kind
+      button.addEventListener("click", () => this.addSection(entry.kind))
+      const title = document.createElement("span")
+      title.className = "text-sm font-semibold"
+      title.textContent = entry.label || this.labelFor(entry.kind)
+      const description = document.createElement("span")
+      description.className = "text-sm text-stone-500"
+      description.textContent = entry.description || ""
+      button.append(title, description)
+      item.append(button)
+      this.sectionPickerListTarget.append(item)
+    })
+  }
+
+  updateChrome() {
+    const count = this.snapshot.sections.length
+    if (this.hasSectionCountTarget) {
+      this.sectionCountTarget.textContent = count === 1 ? "1 section" : `${count} sections`
+    }
+    if (this.hasEmptyStateTarget) {
+      this.emptyStateTarget.hidden = count > 0
+    }
+    if (this.hasAddButtonTarget) {
+      this.addButtonTarget.disabled = this.readOnlyValue || count >= this.maxSectionsValue
+      this.addButtonTarget.title = count >= this.maxSectionsValue ? `A theme can have at most ${this.maxSectionsValue} sections.` : "Add a section"
+    }
   }
 
   textField(labelText, path, value, multiline = false) {
@@ -161,9 +240,89 @@ export default class extends Controller {
     this.markUnsaved(); this.render()
   }
 
+  openPicker() {
+    if (this.readOnlyValue || !this.hasSectionPickerTarget) return
+    if (this.snapshot.sections.length >= this.maxSectionsValue) {
+      this.saveStatusTarget.textContent = `· A theme can have at most ${this.maxSectionsValue} sections.`
+      return
+    }
+    this.renderPicker()
+    if (typeof this.sectionPickerTarget.showModal === "function") {
+      this.sectionPickerTarget.showModal()
+    } else {
+      this.sectionPickerTarget.setAttribute("open", "")
+    }
+  }
+
+  closePicker() {
+    if (!this.hasSectionPickerTarget) return
+    if (typeof this.sectionPickerTarget.close === "function") {
+      this.sectionPickerTarget.close()
+    } else {
+      this.sectionPickerTarget.removeAttribute("open")
+    }
+  }
+
+  addSection(kindOrEvent) {
+    if (this.readOnlyValue) return
+    const kind = typeof kindOrEvent === "string" ? kindOrEvent : kindOrEvent?.currentTarget?.dataset?.kind
+    if (!kind || !this.kinds().some(entry => entry.kind === kind)) return
+    if (this.snapshot.sections.length >= this.maxSectionsValue) {
+      this.saveStatusTarget.textContent = `· A theme can have at most ${this.maxSectionsValue} sections.`
+      this.closePicker()
+      return
+    }
+
+    this.remember()
+    const insertAt = this.selectedIndex >= 0 ? this.selectedIndex + 1 : this.snapshot.sections.length
+    this.snapshot.sections.splice(insertAt, 0, this.blankSection(kind))
+    this.selectedIndex = insertAt
+    this.markUnsaved()
+    this.closePicker()
+    this.render()
+  }
+
+  blankSection(kind) {
+    return {
+      kind,
+      visible: true,
+      settings: {},
+      translations: { fr: {}, en: {}, ar: {} }
+    }
+  }
+
+  removeSection() {
+    if (this.readOnlyValue || this.selectedIndex < 0) return
+    const section = this.snapshot.sections[this.selectedIndex]
+    if (!section) return
+    if (!window.confirm(`Remove “${this.labelFor(section.kind)}” from this theme draft?`)) return
+
+    this.remember()
+    this.snapshot.sections.splice(this.selectedIndex, 1)
+    if (!this.snapshot.sections.length) {
+      this.selectedIndex = -1
+    } else {
+      this.selectedIndex = Math.min(this.selectedIndex, this.snapshot.sections.length - 1)
+    }
+    this.markUnsaved()
+    this.render()
+  }
+
   remember() { this.undoStack.push(this.cloneSnapshot()); if (this.undoStack.length > 50) this.undoStack.shift(); this.redoStack = [] }
-  undo() { if (!this.undoStack.length || this.readOnlyValue) return; this.redoStack.push(this.cloneSnapshot()); this.snapshot = this.undoStack.pop(); this.selectedIndex = Math.min(this.selectedIndex, this.snapshot.sections.length - 1); this.markUnsaved(); this.render() }
-  redo() { if (!this.redoStack.length || this.readOnlyValue) return; this.undoStack.push(this.cloneSnapshot()); this.snapshot = this.redoStack.pop(); this.markUnsaved(); this.render() }
+  undo() {
+    if (!this.undoStack.length || this.readOnlyValue) return
+    this.redoStack.push(this.cloneSnapshot())
+    this.snapshot = this.undoStack.pop()
+    this.selectedIndex = this.snapshot.sections.length ? Math.min(Math.max(this.selectedIndex, 0), this.snapshot.sections.length - 1) : -1
+    this.markUnsaved(); this.render()
+  }
+  redo() {
+    if (!this.redoStack.length || this.readOnlyValue) return
+    this.undoStack.push(this.cloneSnapshot())
+    this.snapshot = this.redoStack.pop()
+    this.selectedIndex = this.snapshot.sections.length ? Math.min(Math.max(this.selectedIndex, 0), this.snapshot.sections.length - 1) : -1
+    this.markUnsaved(); this.render()
+  }
   changeLocale() { this.locale = this.localeTarget.value; this.renderPreview(); this.renderSettings() }
   setDesktop() { this.previewFrameTarget.style.maxWidth = "none"; this.setDeviceButtons(true) }
   setMobile() { this.previewFrameTarget.style.maxWidth = "390px"; this.setDeviceButtons(false) }
@@ -192,6 +351,9 @@ export default class extends Controller {
 
   markUnsaved() { this.saveStatusTarget.textContent = "· Unsaved changes" }
   updateHistoryButtons() { this.undoButtonTarget.disabled = this.readOnlyValue || !this.undoStack.length; this.redoButtonTarget.disabled = this.readOnlyValue || !this.redoStack.length }
-  labelFor(kind) { return ({ hero: "Image banner", ticker: "Scrolling text", featured_collection: "Featured collection", collection_list: "Collection list", image_with_text: "Image with text", rich_text: "Rich text" })[kind] || this.humanize(kind) }
+  labelFor(kind) {
+    const entry = this.kinds().find(item => item.kind === kind)
+    return entry?.label || ({ hero: "Image banner", ticker: "Scrolling text", featured_collection: "Featured collection", collection_list: "Collection list", image_with_text: "Image with text", rich_text: "Rich text" })[kind] || this.humanize(kind)
+  }
   humanize(value) { return String(value || "").replaceAll("_", " ").replace(/^./, character => character.toUpperCase()) }
 }

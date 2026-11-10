@@ -38,17 +38,26 @@ RSpec.describe "Admin theme editor", type: :request do
     expect(response).to redirect_to(admin_login_path)
   end
 
-  it "renders the draft editor with section, preview, and save hooks" do
+  it "renders the draft editor with section, preview, add, and save hooks" do
     sign_in
 
     get "/admin/themes/#{theme.id}/edit"
 
     expect(response).to have_http_status(:ok)
     document = Nokogiri::HTML(response.body)
-    expect(document.at_css("[data-theme-editor]")).to be_present
+    editor = document.at_css("[data-theme-editor]")
+    expect(editor).to be_present
     expect(document.at_css("[data-theme-editor-sections]")).to be_present
     expect(document.at_css("[data-theme-editor-preview]")).to be_present
     expect(document.at_css("[data-theme-editor-save]")).to be_present
+    expect(document.at_css("[data-theme-editor-add]")).to be_present
+    expect(document.at_css("#theme-section-picker-title")).to be_present
+    expect(editor["data-theme-editor-max-sections-value"]).to eq(StorefrontThemes::UpdateSnapshot::MAX_SECTIONS.to_s)
+
+    kinds = JSON.parse(editor["data-theme-editor-section-kinds-value"])
+    expect(kinds.map { |entry| entry.fetch("kind") }).to eq(SectionBlock::KINDS.keys)
+    expect(kinds.map { |entry| entry.fetch("label") }).to eq(SectionBlock::KINDS.values)
+    expect(kinds.map { |entry| entry.fetch("description") }).to eq(SectionBlock::DESCRIPTIONS.values_at(*SectionBlock::KINDS.keys))
   end
 
   it "updates section order and translated text in one snapshot save" do
@@ -65,6 +74,53 @@ RSpec.describe "Admin theme editor", type: :request do
     saved = theme.reload.snapshot
     expect(saved.dig("sections", 0, "kind")).to eq("rich_text")
     expect(saved.dig("sections", 0, "translations", "en", "body")).to eq("A carefully edited theme story.")
+  end
+
+  it "saves a draft after adding and removing section kinds" do
+    sign_in
+    snapshot = editable_snapshot
+    snapshot.fetch("sections") << {
+      "kind" => "image_with_text",
+      "visible" => true,
+      "settings" => { "image_position" => "left" },
+      "translations" => {
+        "en" => { "heading" => "Added in the theme editor", "body" => "New section copy." },
+        "fr" => { "heading" => "Ajouté dans l'éditeur", "body" => "Nouveau texte." },
+        "ar" => { "heading" => "أضيف في المحرر", "body" => "نص جديد." }
+      }
+    }
+    snapshot.fetch("sections").reject! { |section| section.fetch("kind") == "featured_collection" }
+
+    patch "/admin/themes/#{theme.id}", params: { snapshot: snapshot }, as: :json
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to include("saved" => true)
+    kinds = theme.reload.snapshot.fetch("sections").map { |section| section.fetch("kind") }
+    expect(kinds).to include("image_with_text")
+    expect(kinds).not_to include("featured_collection")
+    expect(kinds.length).to eq(3)
+    expect(theme.snapshot.dig("sections", -1, "translations", "en", "heading")).to eq("Added in the theme editor")
+  end
+
+  it "rejects a save that exceeds the section limit without mutating the draft" do
+    original = theme.snapshot.deep_dup
+    sign_in
+    oversized = original.deep_dup
+    blank = {
+      "kind" => "rich_text",
+      "visible" => true,
+      "settings" => {},
+      "translations" => { "en" => {}, "fr" => {}, "ar" => {} }
+    }
+    needed = StorefrontThemes::UpdateSnapshot::MAX_SECTIONS - oversized.fetch("sections").length + 1
+    needed.times { oversized.fetch("sections") << blank.deep_dup }
+
+    patch "/admin/themes/#{theme.id}", params: { snapshot: oversized }, as: :json
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.parsed_body["saved"]).to be(false)
+    expect(response.parsed_body["error"]).to match(/more than #{StorefrontThemes::UpdateSnapshot::MAX_SECTIONS}/)
+    expect(theme.reload.snapshot).to eq(original)
   end
 
   it "does not allow a published theme to be edited or updated" do

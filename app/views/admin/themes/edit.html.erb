@@ -1,6 +1,14 @@
 <% content_for :title, "Customize #{@theme.name}, Themes" %>
+<% section_kinds = SectionBlock::KINDS.map { |kind, label| { kind: kind, label: label, description: SectionBlock::DESCRIPTIONS.fetch(kind) } } %>
 
-<div class="mb-4 flex flex-wrap items-center justify-between gap-3" data-controller="theme-editor" data-theme-editor data-theme-editor-save-url-value="<%= admin_theme_path(@theme) %>" data-theme-editor-read-only-value="<%= @theme.published? %>" <%= "data-theme-editor-read-only" if @theme.published? %>>
+<div class="mb-4 flex flex-wrap items-center justify-between gap-3"
+     data-controller="theme-editor"
+     data-theme-editor
+     data-theme-editor-save-url-value="<%= admin_theme_path(@theme) %>"
+     data-theme-editor-read-only-value="<%= @theme.published? %>"
+     data-theme-editor-max-sections-value="<%= StorefrontThemes::UpdateSnapshot::MAX_SECTIONS %>"
+     data-theme-editor-section-kinds-value="<%= section_kinds.to_json %>"
+     <%= "data-theme-editor-read-only" if @theme.published? %>>
   <div class="flex min-w-0 items-center gap-3">
     <%= link_to "← Themes", admin_theme_path(@theme), class: "admin-link--blue shrink-0" %>
     <div class="min-w-0">
@@ -29,8 +37,23 @@
 
   <div class="grid w-full gap-4 lg:grid-cols-[16rem_minmax(0,1fr)_19rem]">
     <aside class="admin-card self-start overflow-hidden" aria-label="Home page sections">
-      <div class="admin-card__header"><h2 class="admin-card__title">Sections</h2><span class="admin-muted">Drag to reorder</span></div>
+      <div class="admin-card__header">
+        <div>
+          <h2 class="admin-card__title">Sections</h2>
+          <span class="admin-muted" data-theme-editor-target="sectionCount"><%= pluralize(@theme.snapshot.fetch("sections", []).size, "section", locale: :en) %></span>
+        </div>
+        <% unless @theme.published? %>
+          <button type="button"
+                  class="admin-btn-secondary"
+                  data-theme-editor-add
+                  data-theme-editor-target="addButton"
+                  data-action="theme-editor#openPicker">
+            Add section
+          </button>
+        <% end %>
+      </div>
       <ol class="divide-y divide-[#ebebeb]" data-theme-editor-sections data-theme-editor-target="sectionList"></ol>
+      <p class="admin-empty" data-theme-editor-target="emptyState" hidden>No sections yet. Add one to start building this home page draft.</p>
     </aside>
 
     <main class="min-w-0 rounded-lg border border-[#dedede] bg-[#e8e8e8] p-3 sm:p-6" aria-label="Storefront preview">
@@ -45,6 +68,17 @@
       <form class="space-y-4 p-4" data-theme-editor-target="settingsForm" data-action="input->theme-editor#updateField change->theme-editor#updateField"></form>
     </aside>
   </div>
+
+  <dialog class="admin-media-dialog max-w-lg rounded-lg p-0" data-theme-editor-target="sectionPicker" aria-labelledby="theme-section-picker-title">
+    <div class="admin-media-dialog__header">
+      <h2 id="theme-section-picker-title" class="text-base font-semibold">Add section</h2>
+      <button type="button" class="admin-media-close" data-action="theme-editor#closePicker" aria-label="Close section picker">×</button>
+    </div>
+    <div class="admin-media-dialog__body p-4">
+      <p class="admin-muted mb-3">Choose a section type. Labels match Online Store → Customize.</p>
+      <ul class="space-y-2" data-theme-editor-target="sectionPickerList" role="listbox" aria-label="Section types"></ul>
+    </div>
+  </dialog>
 
   <script type="application/json" data-theme-editor-target="payload"><%= raw(json_escape(@theme.snapshot.to_json)) %></script>
 </div>

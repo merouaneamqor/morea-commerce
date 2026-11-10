@@ -78,6 +78,26 @@ RSpec.describe "Admin theme editor", type: :request do
     expect(response.body).to include("campaign-hero")
   end
 
+  it "marks preview sections with stable snapshot indexes for click-to-select" do
+    sign_in
+    snapshot = editable_snapshot
+    snapshot.fetch("sections").first["visible"] = false
+
+    post "/admin/themes/#{theme.id}/preview_frame",
+      params: { locale: "en", snapshot: snapshot, selected_index: 1 },
+      as: :json
+
+    expect(response).to have_http_status(:ok)
+    document = Nokogiri::HTML(response.body)
+    blocks = document.css("[data-section-index]")
+    expect(blocks.map { |node| node["data-section-index"] }).to eq(%w[1 2])
+    expect(blocks.first["role"]).to eq("button")
+    expect(blocks.first["tabindex"]).to eq("0")
+    expect(blocks.first["aria-pressed"]).to eq("true")
+    expect(blocks.first["data-preview-section"]).to eq("featured_collection")
+    expect(blocks.last["aria-pressed"]).to eq("false")
+  end
+
   it "renders the standalone preview page with real section markup" do
     sign_in
 

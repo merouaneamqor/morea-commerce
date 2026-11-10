@@ -68,6 +68,7 @@ module Admin
       I18n.locale = @preview_locale
       snapshot = preview_snapshot_param || @theme.snapshot
       @sections = StorefrontThemes::PreviewSections.call(store: current_store, snapshot: snapshot)
+      @selected_index = params[:selected_index].presence&.to_i
     end
 
     def preview_snapshot_param

@@ -75,7 +75,11 @@ export default class extends Controller {
     this.renderPicker()
     this.updateChrome()
     this.updateHistoryButtons()
-    if (refreshPreview) this.queuePreviewRefresh()
+    if (refreshPreview) {
+      this.queuePreviewRefresh()
+    } else {
+      this.highlightPreviewSelection()
+    }
   }
 
   renderTree() {
@@ -126,13 +130,14 @@ export default class extends Controller {
           "Content-Type": "application/json",
           "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content || ""
         },
-        body: JSON.stringify({ locale: this.locale, snapshot: this.snapshot })
+        body: JSON.stringify({ locale: this.locale, snapshot: this.snapshot, selected_index: this.selectedIndex })
       })
       if (!response.ok) throw new Error("Preview failed")
       const html = await response.text()
       if (requestId !== this.previewRequestId) return
       this.previewTarget.innerHTML = html
       this.bindPreviewSelection()
+      this.highlightPreviewSelection()
     } catch (_error) {
       if (requestId !== this.previewRequestId) return
       this.previewTarget.replaceChildren(this.textElement("p", "Storefront preview could not be loaded.", "px-6 py-16 text-center text-stone-500"))
@@ -140,16 +145,48 @@ export default class extends Controller {
   }
 
   bindPreviewSelection() {
-    this.previewTarget.querySelectorAll("[data-preview-index]").forEach(block => {
-      block.addEventListener("click", () => {
-        const index = Number(block.dataset.previewIndex)
-        if (Number.isNaN(index)) return
-        const visibleSections = this.snapshot.sections.filter(section => section.visible !== false)
-        const section = visibleSections[index]
-        if (!section) return
-        this.selectedIndex = this.snapshot.sections.indexOf(section)
-        this.render({ refreshPreview: false })
+    this.previewTarget.querySelectorAll("[data-section-index]").forEach(block => {
+      block.addEventListener("click", event => {
+        event.preventDefault()
+        this.selectPreviewSection(block)
       })
+      block.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault()
+          this.selectPreviewSection(block)
+          return
+        }
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault()
+          this.focusAdjacentPreviewSection(block, event.key === "ArrowDown" ? 1 : -1)
+        }
+      })
+    })
+  }
+
+  selectPreviewSection(block) {
+    const index = Number(block.dataset.sectionIndex)
+    if (Number.isNaN(index) || !this.snapshot.sections[index]) return
+    this.selectedIndex = index
+    this.render({ refreshPreview: false })
+    this.highlightPreviewSelection({ focus: true })
+  }
+
+  focusAdjacentPreviewSection(block, delta) {
+    const blocks = Array.from(this.previewTarget.querySelectorAll("[data-section-index]"))
+    const current = blocks.indexOf(block)
+    if (current < 0) return
+    const next = blocks[current + delta]
+    if (next) next.focus()
+  }
+
+  highlightPreviewSelection({ focus = false } = {}) {
+    this.previewTarget.querySelectorAll("[data-section-index]").forEach(block => {
+      const selected = Number(block.dataset.sectionIndex) === this.selectedIndex
+      block.classList.toggle("ring-2", selected)
+      block.classList.toggle("ring-blue-500", selected)
+      block.setAttribute("aria-pressed", selected ? "true" : "false")
+      if (selected && focus) block.focus({ preventScroll: false })
     })
   }
 

@@ -84,6 +84,7 @@ Rails.application.routes.draw do
   get "/clients", to: "admin/customers#index", as: :seller_customers
   get "/integrations", to: "admin/store_connections#index", as: :seller_integrations
   get "/publicites", to: "admin/meta_ads#show", as: :seller_ads
+  get "/themes", to: "admin/themes#open", as: :seller_theme_editor
   get "/comptabilite", to: "admin/accounting#show", as: :seller_accounting
   get "/comptabilite/export", to: "admin/accounting#export", as: :seller_accounting_export, defaults: { format: "csv" }
   post "/livraison/societes", to: "admin/delivery_accounts#create", as: :seller_delivery_accounts
@@ -331,6 +332,7 @@ Rails.application.routes.draw do
         match :preview_frame, via: %i[get post]
         post :duplicate
         post :publish
+        post :image, action: :upload_image
       end
     end
     resources :pages, except: %i[show] do

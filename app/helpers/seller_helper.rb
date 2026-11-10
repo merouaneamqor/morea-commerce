@@ -19,7 +19,8 @@ module SellerHelper
     "des commandes" => [ "of orders", "من الطلبات" ],
     "des colis" => [ "of parcels", "من الطرود" ],
     "par rapport à la période précédente" => [ "compared with the previous period", "مقارنة بالفترة السابقة" ],
-    "commandes attendent une confirmation." => [ "orders are waiting for confirmation.", "طلبات بانتظار التأكيد." ]
+    "commandes attendent une confirmation." => [ "orders are waiting for confirmation.", "طلبات بانتظار التأكيد." ],
+    "Éditeur de thème" => [ "Theme editor", "محرر القالب" ]
   }.freeze
 
   SELLER_ICONS = {
@@ -38,7 +39,8 @@ module SellerHelper
     settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
     logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
-    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>'
+    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+    theme: '<rect x="3" y="3" width="7" height="18" rx="1"/><rect x="12" y="3" width="9" height="8" rx="1"/><rect x="12" y="13" width="9" height="8" rx="1"/>'
   }.freeze
 
   # [key, icon, label, link]; no link means "coming soon".
@@ -50,6 +52,7 @@ module SellerHelper
     [ "clients", :clients, "Clients", "/clients" ],
     [ "delivery", :truck, "Livraison", "/livraison" ],
     [ "products", :box, "Produits", "/produits" ],
+    [ "themes", :theme, "Éditeur de thème", "/themes" ],
     [ "ads", :target, "Publicités", "/publicites" ],
     [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
@@ -78,7 +81,8 @@ module SellerHelper
     "seallo_connections" => "integrations", "woocommerce_connections" => "integrations",
     "sendit_settings" => "integrations", "ozon_settings" => "integrations", "ameex_settings" => "integrations",
     "meta_ads" => "ads", "advertising" => "ads", "pixels" => "ads",
-    "accounting" => "accounting"
+    "accounting" => "accounting",
+    "themes" => "themes", "online_store" => "themes", "home_sections" => "themes"
   }.freeze
 
   # Dedicated settings page for API couriers. Credentials stay on Integrations.

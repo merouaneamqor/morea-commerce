@@ -12,7 +12,7 @@
   <% else %>
     <% sections.each_with_index do |section, visible_index| %>
       <% snapshot_index = section.position %>
-      <div class="theme-editor-preview-section outline-none transition ring-inset <%= "ring-2 ring-blue-500" if selected_index.present? && selected_index.to_i == snapshot_index.to_i %>"
+      <div class="theme-editor-preview-section outline-none <%= "is-selected" if selected_index.present? && selected_index.to_i == snapshot_index.to_i %>"
            data-preview-section="<%= section.kind %>"
            data-preview-index="<%= visible_index %>"
            data-section-index="<%= snapshot_index %>"

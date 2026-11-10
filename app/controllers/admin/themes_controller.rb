@@ -2,9 +2,16 @@
 
 module Admin
   class ThemesController < BaseController
+    layout ->(controller) { controller.action_name == "edit" ? "theme_editor" : "admin" }
+
     before_action :require_store_context!
-    before_action :require_theme_editor_feature!, except: :index
-    before_action :set_theme, only: %i[show edit update publish preview preview_frame duplicate]
+    before_action :require_theme_editor_feature!, except: %i[index open]
+    before_action :set_theme, only: %i[show edit update publish preview preview_frame duplicate upload_image]
+
+    def open
+      theme = current_store.storefront_themes.draft.order(updated_at: :desc).first if current_store.storefront_theme_editor_enabled?
+      redirect_to(theme ? edit_admin_theme_path(theme) : admin_themes_path)
+    end
 
     def index
       @theme_editor_enabled = current_store.storefront_theme_editor_enabled?
@@ -38,6 +45,24 @@ module Admin
     end
 
     def edit; end
+
+    def upload_image
+      if @theme.published?
+        return render json: { error: "Only draft themes can be edited." }, status: :unprocessable_content
+      end
+
+      file = params[:image]
+      unless file.respond_to?(:content_type) && file.content_type.to_s.in?(%w[image/jpeg image/png image/gif image/webp])
+        return render json: { error: "Choose a JPEG, PNG, GIF, or WebP image." }, status: :unprocessable_content
+      end
+      if file.size > 8.megabytes
+        return render json: { error: "Image must be 8 MB or smaller." }, status: :unprocessable_content
+      end
+
+      @theme.images.attach(file)
+      attachment = @theme.images.attachments.includes(:blob).order(:id).last
+      render json: { url: MediaUrl.for(attachment, store: current_store) }
+    end
 
     def update
       snapshot = params.require(:snapshot)

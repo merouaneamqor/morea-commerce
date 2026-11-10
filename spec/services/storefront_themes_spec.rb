@@ -93,6 +93,45 @@ RSpec.describe "Storefront theme lifecycle" do
     end
   end
 
+  describe StorefrontThemes::Duplicate do
+    it "copies a published theme into a new editable draft with a unique name" do
+      source = StorefrontThemes::Install.call(store: store, catalog_key: "minimal")
+      StorefrontThemes::Publish.call(store: store, theme: source)
+      original_snapshot = source.reload.snapshot.deep_dup
+
+      copy = described_class.call(store: store, theme: source)
+
+      expect(copy).to be_persisted
+      expect(copy).to be_draft
+      expect(copy.name).to eq("Minimal (copy)")
+      expect(copy.catalog_key).to eq("minimal")
+      expect(copy.snapshot).to eq(original_snapshot)
+      expect(source.reload).to be_published
+      expect(source.snapshot).to eq(original_snapshot)
+    end
+
+    it "increments copy names when duplicates already exist" do
+      source = StorefrontThemes::Install.call(store: store, catalog_key: "atelier")
+      first = described_class.call(store: store, theme: source)
+      second = described_class.call(store: store, theme: source)
+
+      expect(first.name).to eq("Atelier (copy)")
+      expect(second.name).to eq("Atelier (copy 2)")
+    end
+
+    it "rejects a theme belonging to another workspace" do
+      foreign = Store.create!(slug: "foreign-dup-#{SecureRandom.hex(5)}", name: "Foreign dup",
+        currency: "MAD", storefront_enabled: true)
+      foreign_theme = StorefrontThemes::Install.call(store: foreign, catalog_key: "minimal")
+
+      expect {
+        described_class.call(store: store, theme: foreign_theme)
+      }.to raise_error(StorefrontThemes::Duplicate::StoreMismatch)
+
+      expect(store.storefront_themes).to be_empty
+    end
+  end
+
   describe StorefrontThemes::PreviewSections do
     it "builds visible unsaved home sections from a snapshot for storefront partials" do
       collection = store.collections.create!(name: "Preview collection", slug: "preview-collection", published: true, position: 0)

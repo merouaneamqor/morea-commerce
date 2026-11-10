@@ -326,6 +326,7 @@ Rails.application.routes.draw do
       member do
         get :preview
         match :preview_frame, via: %i[get post]
+        post :duplicate
         post :publish
       end
     end

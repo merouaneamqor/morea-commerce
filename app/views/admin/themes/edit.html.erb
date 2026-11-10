@@ -35,7 +35,11 @@
   </div>
 
   <% if @theme.published? %>
-    <div class="w-full rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900" role="status">Published themes are read-only. Install or duplicate a draft theme to make changes.</div>
+    <div class="w-full rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900" role="status">
+      Published themes are read-only.
+      <%= button_to "Duplicate as draft", duplicate_admin_theme_path(@theme), method: :post, class: "admin-link--blue inline underline", form: { class: "inline", data: { turbo: false } } %>
+      to edit a copy without changing the live home page.
+    </div>
   <% end %>
 
   <div class="grid w-full gap-4 lg:grid-cols-[16rem_minmax(0,1fr)_19rem]">

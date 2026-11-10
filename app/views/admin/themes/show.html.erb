@@ -13,7 +13,14 @@
 
 <div class="admin-layout">
   <section class="admin-card">
-    <div class="admin-card__header"><h2 class="admin-card__title">Home page structure</h2><div class="flex gap-2"><%= link_to "Edit theme", edit_admin_theme_path(@theme), class: "admin-btn" %><%= link_to "Preview", preview_admin_theme_path(@theme), class: "admin-btn-secondary" %></div></div>
+    <div class="admin-card__header">
+      <h2 class="admin-card__title">Home page structure</h2>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to "Edit theme", edit_admin_theme_path(@theme), class: "admin-btn" %>
+        <%= link_to "Preview", preview_admin_theme_path(@theme), class: "admin-btn-secondary" %>
+        <%= button_to "Duplicate", duplicate_admin_theme_path(@theme), method: :post, class: "admin-btn-secondary", form: { data: { turbo: false } } %>
+      </div>
+    </div>
     <% if empty_draft %>
       <p class="admin-empty" data-theme-empty-draft><%= t("storefront_themes.empty_draft") %></p>
     <% else %>
@@ -32,8 +39,11 @@
     <div class="admin-card__header"><h2 class="admin-card__title"><%= @theme.published? ? "Current theme" : "Publish theme" %></h2></div>
     <div class="space-y-4 p-4">
       <% if @theme.published? %>
-        <p class="admin-muted">This theme currently supplies the live home page sections.</p>
-        <%= link_to "Customize sections", admin_home_sections_path, class: "admin-btn-secondary" %>
+        <p class="admin-muted">This theme currently supplies the live home page sections. Duplicate it to edit a draft without changing the live home page.</p>
+        <div class="flex flex-wrap gap-2">
+          <%= button_to "Duplicate as draft", duplicate_admin_theme_path(@theme), method: :post, class: "admin-btn", form: { data: { turbo: false } } %>
+          <%= link_to "Customize sections", admin_home_sections_path, class: "admin-btn-secondary" %>
+        </div>
       <% elsif empty_draft %>
         <p class="admin-muted" data-theme-publish-blocked><%= t("storefront_themes.empty_draft") %></p>
         <%= link_to "Add sections", edit_admin_theme_path(@theme), class: "admin-btn" %>

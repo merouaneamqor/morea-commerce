@@ -79,6 +79,24 @@ RSpec.describe "Admin storefront themes", type: :request do
     expect(store.home_sections.ordered.pluck(:kind)).to eq(%w[hero featured_collection rich_text])
   end
 
+  it "duplicates a published theme into an editable draft" do
+    theme = StorefrontThemes::Install.call(store: store, catalog_key: "minimal")
+    StorefrontThemes::Publish.call(store: store, theme: theme)
+    expect(theme.reload).to be_published
+    sign_in
+
+    expect {
+      post "/admin/themes/#{theme.id}/duplicate"
+    }.to change(store.storefront_themes, :count).by(1)
+
+    copy = store.storefront_themes.order(:created_at).last
+    expect(response).to redirect_to(edit_admin_theme_path(copy))
+    expect(copy).to be_draft
+    expect(copy.name).to eq("Minimal (copy)")
+    expect(copy.snapshot).to eq(theme.reload.snapshot)
+    expect(theme).to be_published
+  end
+
   it "blocks publishing an empty draft and keeps the live home page" do
     existing = live_section
     theme = StorefrontThemes::Install.call(store: store, catalog_key: "minimal")

@@ -4,7 +4,7 @@ module Admin
   class ThemesController < BaseController
     before_action :require_store_context!
     before_action :require_theme_editor_feature!
-    before_action :set_theme, only: %i[show edit update publish preview preview_frame]
+    before_action :set_theme, only: %i[show edit update publish preview preview_frame duplicate]
 
     def index
       @themes = current_store.storefront_themes.order(created_at: :desc)
@@ -31,6 +31,15 @@ module Admin
       render json: { saved: true, updated_at: @theme.reload.updated_at.iso8601 }
     rescue ActionController::ParameterMissing, ArgumentError, ActiveRecord::RecordInvalid => error
       render json: { saved: false, error: error.message }, status: :unprocessable_content
+    end
+
+    def duplicate
+      copy = StorefrontThemes::Duplicate.call(store: current_store, theme: @theme)
+      redirect_to edit_admin_theme_path(copy), notice: "#{copy.name} was created as a draft."
+    rescue StorefrontThemes::Duplicate::StoreMismatch
+      redirect_to admin_themes_path, alert: "That theme is not available."
+    rescue ActiveRecord::RecordInvalid => error
+      redirect_to admin_theme_path(@theme), alert: error.record.errors.full_messages.to_sentence
     end
 
     def publish

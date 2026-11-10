@@ -15,7 +15,10 @@
       <h2 id="installed-themes-heading" class="admin-card__title">Installed themes</h2>
       <p class="admin-muted mt-1">Publishing replaces the current home page sections. Products, collections, pages, menus and store settings stay unchanged.</p>
     </div>
-    <span class="admin-muted"><%= pluralize(@themes.size, "theme", locale: :en) %></span>
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="admin-muted"><%= pluralize(@themes.size, "theme", locale: :en) %></span>
+      <%= button_to t("storefront_themes.create_from_live"), create_from_live_admin_themes_path, method: :post, class: "admin-btn-secondary", form: { data: { turbo: false } } %>
+    </div>
   </div>
 
   <% if @themes.any? %>
@@ -33,9 +36,10 @@
             <div><h3 class="font-semibold"><%= theme.name %></h3><p class="admin-muted mt-1"><%= theme.snapshot.fetch("sections", []).size %> home page sections</p></div>
             <span class="admin-badge <%= theme.published? ? 'admin-badge--success' : 'admin-badge--neutral' %>"><%= theme.published? ? "Published" : "Draft" %></span>
           </div>
-          <div class="mt-4 flex gap-2">
+          <div class="mt-4 flex flex-wrap gap-2">
             <%= link_to "Manage", admin_theme_path(theme), class: "admin-btn-secondary" %>
             <%= link_to "Preview", preview_admin_theme_path(theme), class: "admin-btn-secondary" %>
+            <%= button_to "Duplicate", duplicate_admin_theme_path(theme), method: :post, class: "admin-btn-secondary", form: { data: { turbo: false } } %>
           </div>
         </article>
       <% end %>

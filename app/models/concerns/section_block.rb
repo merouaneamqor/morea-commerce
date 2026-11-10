@@ -13,6 +13,15 @@ module SectionBlock
     "rich_text" => "Rich text"
   }.freeze
 
+  DESCRIPTIONS = {
+    "hero" => "Full-width banner with image and a call to action.",
+    "ticker" => "Scrolling lines of short announcement text.",
+    "featured_collection" => "Product grid from one collection.",
+    "collection_list" => "Grid of published collections.",
+    "image_with_text" => "Image beside heading, body, and optional button.",
+    "rich_text" => "Centered text block with optional image and link."
+  }.freeze
+
   TEXT_FIELDS = {
     "hero" => %i[subheading heading button_label],
     "ticker" => %i[body],

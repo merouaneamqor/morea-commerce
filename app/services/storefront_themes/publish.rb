@@ -3,6 +3,7 @@
 module StorefrontThemes
   class Publish
     class StoreMismatch < ArgumentError; end
+    class EmptyHome < ArgumentError; end
 
     def self.call(store:, theme:)
       new(store: store, theme: theme).call
@@ -23,7 +24,9 @@ module StorefrontThemes
         @theme.lock!
         raise StoreMismatch, "Theme does not belong to workspace" unless @theme.store_id == @store.id
 
-        sections = @theme.snapshot.fetch("sections")
+        sections = Array(@theme.snapshot&.dig("sections"))
+        raise EmptyHome, I18n.t("storefront_themes.publish.empty") if sections.empty?
+
         replacements = sections.each_with_index.map { |section, position| build_section(section, position) }
 
         @store.home_sections.destroy_all

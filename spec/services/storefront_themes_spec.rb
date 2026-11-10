@@ -78,5 +78,143 @@ RSpec.describe "Storefront theme lifecycle" do
       expect(store.home_sections.reload).to contain_exactly(own_section)
       expect(foreign_theme.reload).to be_draft
     end
+
+    it "rejects an empty snapshot so live home sections are not wiped" do
+      own_section = create_live_section
+      theme = StorefrontThemes::Install.call(store: store, catalog_key: "minimal")
+      theme.update!(snapshot: { "sections" => [] })
+
+      expect {
+        described_class.call(store: store, theme: theme)
+      }.to raise_error(StorefrontThemes::Publish::EmptyHome)
+
+      expect(theme.reload).to be_draft
+      expect(store.home_sections.reload).to contain_exactly(own_section)
+    end
+  end
+
+  describe StorefrontThemes::CreateFromLive do
+    it "snapshots live home sections into a draft without changing the live page" do
+      live = store.home_sections.create!(kind: "image_with_text", position: 0, visible: true,
+        settings: { "image_url" => "https://cdn.example.test/live.jpg", "link" => "collections", "image_position" => "right" })
+      live.translations.create!(locale: "en", heading: "Live heading", body: "Live body", button_label: "Shop")
+      live.translations.create!(locale: "fr", heading: "Titre live", body: "Texte live", button_label: "Acheter")
+      live.translations.create!(locale: "ar", heading: "عنوان مباشر", body: "نص مباشر", button_label: "تسوق")
+
+      theme = described_class.call(store: store)
+
+      expect(theme).to be_draft
+      expect(theme.catalog_key).to eq("from_live")
+      expect(theme.name).to eq("Current home page")
+      expect(store.home_sections.reload).to contain_exactly(live)
+
+      section = theme.snapshot.fetch("sections").sole
+      expect(section).to include(
+        "kind" => "image_with_text",
+        "visible" => true,
+        "settings" => hash_including(
+          "image_url" => "https://cdn.example.test/live.jpg",
+          "link" => "collections",
+          "image_position" => "right"
+        )
+      )
+      expect(section.dig("translations", "en", "heading")).to eq("Live heading")
+      expect(section.dig("translations", "fr", "body")).to eq("Texte live")
+      expect(section.dig("translations", "ar", "button_label")).to eq("تسوق")
+    end
+
+    it "falls back to online store defaults when no live sections exist" do
+      expect(store.home_sections).to be_empty
+
+      theme = described_class.call(store: store)
+
+      expect(theme.snapshot.fetch("sections")).not_to be_empty
+      expect(theme.snapshot.fetch("sections").map { |section| section.fetch("kind") }).to include("hero")
+      expect(store.home_sections.reload).to be_empty
+    end
+  end
+
+  describe StorefrontThemes::Duplicate do
+    it "copies a published theme into a new editable draft with a unique name" do
+      source = StorefrontThemes::Install.call(store: store, catalog_key: "minimal")
+      StorefrontThemes::Publish.call(store: store, theme: source)
+      original_snapshot = source.reload.snapshot.deep_dup
+
+      copy = described_class.call(store: store, theme: source)
+
+      expect(copy).to be_persisted
+      expect(copy).to be_draft
+      expect(copy.name).to eq("Minimal (copy)")
+      expect(copy.catalog_key).to eq("minimal")
+      expect(copy.snapshot).to eq(original_snapshot)
+      expect(source.reload).to be_published
+      expect(source.snapshot).to eq(original_snapshot)
+    end
+
+    it "increments copy names when duplicates already exist" do
+      source = StorefrontThemes::Install.call(store: store, catalog_key: "atelier")
+      first = described_class.call(store: store, theme: source)
+      second = described_class.call(store: store, theme: source)
+
+      expect(first.name).to eq("Atelier (copy)")
+      expect(second.name).to eq("Atelier (copy 2)")
+    end
+
+    it "rejects a theme belonging to another workspace" do
+      foreign = Store.create!(slug: "foreign-dup-#{SecureRandom.hex(5)}", name: "Foreign dup",
+        currency: "MAD", storefront_enabled: true)
+      foreign_theme = StorefrontThemes::Install.call(store: foreign, catalog_key: "minimal")
+
+      expect {
+        described_class.call(store: store, theme: foreign_theme)
+      }.to raise_error(StorefrontThemes::Duplicate::StoreMismatch)
+
+      expect(store.storefront_themes).to be_empty
+    end
+  end
+
+  describe StorefrontThemes::PreviewSections do
+    it "builds visible unsaved home sections from a snapshot for storefront partials" do
+      collection = store.collections.create!(name: "Preview collection", slug: "preview-collection", published: true, position: 0)
+      snapshot = {
+        "sections" => [
+          {
+            "kind" => "hero",
+            "visible" => true,
+            "settings" => { "link" => "collections" },
+            "translations" => {
+              "en" => { "heading" => "Preview hero", "button_label" => "Shop" },
+              "fr" => { "heading" => "Héros aperçu", "button_label" => "Acheter" }
+            }
+          },
+          {
+            "kind" => "featured_collection",
+            "visible" => false,
+            "settings" => { "collection_id" => collection.id.to_s, "limit" => "4" },
+            "translations" => { "en" => { "heading" => "Hidden" } }
+          },
+          {
+            "kind" => "rich_text",
+            "visible" => true,
+            "settings" => {},
+            "translations" => { "en" => { "body" => "Story body" } }
+          }
+        ]
+      }
+
+      sections = described_class.call(store: store, snapshot: snapshot)
+
+      expect(sections.map(&:kind)).to eq(%w[hero rich_text])
+      expect(sections).to all(be_new_record)
+      expect(sections.first.store).to eq(store)
+      I18n.with_locale(:en) do
+        expect(sections.first.heading).to eq("Preview hero")
+        expect(sections.last.body).to eq("Story body")
+      end
+      I18n.with_locale(:fr) do
+        expect(sections.first.heading).to eq("Héros aperçu")
+      end
+      expect(store.home_sections.count).to eq(0)
+    end
   end
 end

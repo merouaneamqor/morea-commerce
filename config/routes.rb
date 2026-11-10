@@ -322,9 +322,14 @@ Rails.application.routes.draw do
       end
     end
     resources :themes, only: %i[index show edit update] do
-      collection { post :install }
+      collection do
+        post :install
+        post :create_from_live
+      end
       member do
         get :preview
+        match :preview_frame, via: %i[get post]
+        post :duplicate
         post :publish
       end
     end

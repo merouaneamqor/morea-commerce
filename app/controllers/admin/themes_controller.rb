@@ -4,7 +4,7 @@ module Admin
   class ThemesController < BaseController
     before_action :require_store_context!
     before_action :require_theme_editor_feature!
-    before_action :set_theme, only: %i[show edit update publish preview]
+    before_action :set_theme, only: %i[show edit update publish preview preview_frame duplicate]
 
     def index
       @themes = current_store.storefront_themes.order(created_at: :desc)
@@ -20,7 +20,19 @@ module Admin
       redirect_to admin_themes_path, alert: error.record.errors.full_messages.to_sentence
     end
 
-    def show; end
+    def create_from_live
+      theme = StorefrontThemes::CreateFromLive.call(store: current_store)
+      redirect_to edit_admin_theme_path(theme), notice: "#{theme.name} was created from the live home page."
+    rescue ActiveRecord::RecordInvalid => error
+      redirect_to admin_themes_path, alert: error.record.errors.full_messages.to_sentence
+    end
+
+    def show
+      @draft_sections = Array(@theme.snapshot&.dig("sections"))
+      @live_sections = current_store.home_sections.ordered.to_a
+      @draft_kinds = @draft_sections.map { |section| section["kind"] }.compact
+      @live_kinds = @live_sections.map(&:kind)
+    end
 
     def edit; end
 
@@ -33,6 +45,15 @@ module Admin
       render json: { saved: false, error: error.message }, status: :unprocessable_content
     end
 
+    def duplicate
+      copy = StorefrontThemes::Duplicate.call(store: current_store, theme: @theme)
+      redirect_to edit_admin_theme_path(copy), notice: "#{copy.name} was created as a draft."
+    rescue StorefrontThemes::Duplicate::StoreMismatch
+      redirect_to admin_themes_path, alert: "That theme is not available."
+    rescue ActiveRecord::RecordInvalid => error
+      redirect_to admin_theme_path(@theme), alert: error.record.errors.full_messages.to_sentence
+    end
+
     def publish
       unless ActiveModel::Type::Boolean.new.cast(params[:confirm])
         return redirect_to admin_theme_path(@theme), alert: "Confirm that you want to replace the current home page sections."
@@ -40,13 +61,45 @@ module Admin
 
       StorefrontThemes::Publish.call(store: current_store, theme: @theme)
       redirect_to admin_theme_path(@theme), notice: "#{@theme.name} is now published."
+    rescue StorefrontThemes::Publish::EmptyHome => error
+      redirect_to admin_theme_path(@theme), alert: error.message
     rescue ActiveRecord::RecordInvalid, KeyError => error
       redirect_to admin_theme_path(@theme), alert: "The theme could not be published: #{error.message}"
     end
 
-    def preview; end
+    def preview
+      load_preview_sections!
+    end
+
+    def preview_frame
+      load_preview_sections!
+      render :preview_frame, formats: [ :html ], layout: false
+    end
+
+    def default_url_options
+      return { locale: (@preview_locale || I18n.locale) } if action_name.in?(%w[preview preview_frame])
+
+      {}
+    end
 
     private
+
+    def load_preview_sections!
+      @preview_locale = normalize_locale(params[:locale].presence || I18n.locale)
+      I18n.locale = @preview_locale
+      snapshot = preview_snapshot_param || @theme.snapshot
+      @sections = StorefrontThemes::PreviewSections.call(store: current_store, snapshot: snapshot)
+      @selected_index = params[:selected_index].presence&.to_i
+    end
+
+    def preview_snapshot_param
+      return unless params.key?(:snapshot)
+
+      snapshot = params[:snapshot]
+      snapshot = snapshot.to_unsafe_h if snapshot.respond_to?(:to_unsafe_h)
+      snapshot
+    end
+
 
     def require_store_context!
       return if current_store

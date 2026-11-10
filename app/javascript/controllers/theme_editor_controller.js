@@ -325,7 +325,8 @@ export default class extends Controller {
         headers: { Accept: "application/json", "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content || "" },
         body
       })
-      const result = await response.json()
+      const result = await response.json().catch(() => null)
+      if (!result) throw new Error("The image could not be uploaded. Refresh the page and try again.")
       if (!response.ok || !result.url) throw new Error(result.error || "Upload failed")
       this.setImage(result.url)
     } catch (error) {

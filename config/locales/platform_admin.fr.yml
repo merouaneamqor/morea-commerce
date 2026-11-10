@@ -34,6 +34,7 @@ fr:
     impersonate:
       title: "Ouvrir %{name} en tant que"
       description: "Choisissez un membre de cet espace. Vous utiliserez son compte jusqu’au retour à la plateforme."
+      direct_access: "Entrer en tant que super admin"
       close: "Fermer"
       empty: "Cet espace n’a aucun membre actif à ouvrir."
       invalid: "Choisissez un membre actif de cet espace."

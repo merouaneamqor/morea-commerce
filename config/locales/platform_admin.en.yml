@@ -34,6 +34,7 @@ en:
     impersonate:
       title: "Open %{name} as"
       description: "Choose a member of this workspace. You will use their account until you return to the platform."
+      direct_access: "Enter as super admin"
       close: "Close"
       empty: "This workspace has no active member to open."
       invalid: "Choose an active member of this workspace."

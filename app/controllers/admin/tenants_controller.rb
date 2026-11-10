@@ -86,7 +86,7 @@ module Admin
     # session so the super admin can return without knowing that member's password.
     # Super admins can also enter a store directly without impersonating a user.
     def enter
-      if params[:user_id].present?
+      if params.key?(:user_id)
         # Impersonate a specific user
         user = @store.users.find_by(id: params[:user_id])
         unless user&.impersonatable_by_super_admin?

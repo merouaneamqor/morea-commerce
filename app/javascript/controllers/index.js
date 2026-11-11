@@ -1,4 +1,5 @@
-// Import and register all your controllers from the importmap via controllers/**/*_controller
+// Register controllers when their markup is on the page, so the storefront
+// does not download every admin controller before the first paint.
 import { application } from "controllers/application"
-import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
-eagerLoadControllersFrom("controllers", application)
+import { lazyLoadControllersFrom } from "@hotwired/stimulus-loading"
+lazyLoadControllersFrom("controllers", application)

@@ -1,7 +1,7 @@
 <% products = section.products.to_a %>
 <% if products.any? %>
   <section class="home-section">
-    <header class="home-section__head" data-controller="reveal">
+    <header class="home-section__head" <% unless local_assigns[:lcp] %>data-controller="reveal"<% end %>>
       <div>
         <p class="landing-eyebrow"><%= section.subheading.presence || section.collection&.name || t("shop.selected") %></p>
         <h2 class="home-section__title"><%= section.heading %></h2>
@@ -12,9 +12,11 @@
       <%= link_to (section.collection ? t("merchandising.discover_collection") : t("home.view_all")), (section.collection ? collection_path(section.collection) : collections_path), class: "maison-cta" %>
     </header>
 
-    <div class="home-products" data-controller="reveal" data-reveal-delay-value="120">
+    <div class="home-products" <% unless local_assigns[:lcp] %>data-controller="reveal" data-reveal-delay-value="120"<% end %>>
       <% products.each_with_index do |product, i| %>
-        <%= render "products/card", product: product, index: i, sizes: "(max-width: 768px) 50vw, 25vw" %>
+        <%= render "products/card", product: product, index: i, sizes: "(max-width: 768px) 50vw, 25vw",
+              loading: (local_assigns[:lcp] && i.zero? ? "eager" : nil),
+              fetchpriority: (local_assigns[:lcp] && i.zero? ? "high" : nil) %>
       <% end %>
     </div>
   </section>

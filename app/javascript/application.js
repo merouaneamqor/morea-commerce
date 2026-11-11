@@ -2,4 +2,7 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 
-import "admin_pwa"
+const path = window.location.pathname
+if (document.querySelector("[data-seller-shell], [data-admin-pwa]") || path.startsWith("/admin") || path.startsWith("/superadmin")) {
+  import("admin_pwa")
+}

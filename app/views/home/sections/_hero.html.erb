@@ -14,7 +14,7 @@
   </div>
   <div class="campaign-hero__veil"></div>
 
-  <div class="campaign-hero__content" data-controller="reveal">
+  <div class="campaign-hero__content" <% unless local_assigns[:lcp] %>data-controller="reveal"<% end %>>
     <% if section.subheading.present? %>
       <p class="landing-eyebrow landing-eyebrow--light"><%= section.subheading %></p>
     <% end %>

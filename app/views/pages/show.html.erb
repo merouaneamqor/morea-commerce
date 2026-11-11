@@ -4,23 +4,21 @@
 <% if @page.landing? && @sections.any? %>
   <% if @sections.first&.kind == "hero" %>
     <% content_for :hero_nav, "1" %>
-    <% if @sections.first.image_src.present? %>
-      <% content_for :head do %>
-        <%= preload_hero_image(@sections.first.image_src) %>
-      <% end %>
-    <% end %>
+  <% end %>
+  <% if (lcp_preload = page_lcp_preload(@sections.first)) %>
+    <% content_for :lcp, lcp_preload %>
   <% end %>
 
   <% @sections.each_with_index do |section, index| %>
-    <%= render "home/sections/#{section.kind}", section: section, first: index.zero? %>
+    <%= render "home/sections/#{section.kind}", section: section, first: index.zero?, lcp: index.zero? %>
   <% end %>
 <% else %>
   <article class="store-page">
-    <header class="store-page__head" data-controller="reveal">
+    <header class="store-page__head">
       <p class="landing-eyebrow justify-center"><%= current_store.name %></p>
       <h1 class="store-page__title"><%= @page.title %></h1>
     </header>
-    <div class="store-page__body" data-controller="reveal" data-reveal-delay-value="120">
+    <div class="store-page__body">
       <%= Morea::Markdown.render(@page.body) %>
     </div>
   </article>

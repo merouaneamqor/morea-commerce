@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 const COPY_FIELDS = {
-  hero: ["subheading", "heading", "button_label"],
+  hero: ["subheading", "heading", "body", "button_label"],
   ticker: ["body"],
   featured_collection: ["subheading", "heading"],
   collection_list: ["subheading", "heading"],
@@ -19,7 +19,7 @@ const SETTING_FIELDS = {
 }
 
 const FALLBACK_KINDS = [
-  { kind: "hero", label: "Image banner", description: "Full-width banner with image and a call to action." },
+  { kind: "hero", label: "Image banner", description: "Full-bleed banner with brand, headline, supporting line, and a primary call to action." },
   { kind: "ticker", label: "Scrolling text", description: "Scrolling lines of short announcement text." },
   { kind: "featured_collection", label: "Featured collection", description: "Product grid from one collection." },
   { kind: "collection_list", label: "Collection list", description: "Grid of published collections." },

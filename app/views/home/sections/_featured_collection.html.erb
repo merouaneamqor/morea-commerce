@@ -1,22 +1,24 @@
 <% products = section.products.to_a %>
 <% if products.any? %>
-  <section class="home-section">
-    <header class="home-section__head" <% unless local_assigns[:lcp] %>data-controller="reveal"<% end %>>
+  <section class="home-section home-section--featured">
+    <header class="home-section__head" <% unless local_assigns[:lcp] %>data-controller="reveal" data-reveal-stagger-value="true"<% end %>>
       <div>
-        <p class="landing-eyebrow"><%= section.subheading.presence || section.collection&.name || t("shop.selected") %></p>
-        <h2 class="home-section__title"><%= section.heading %></h2>
+        <p class="landing-eyebrow" data-reveal-item><%= section.subheading.presence || section.collection&.name || t("shop.selected") %></p>
+        <h2 class="home-section__title" data-reveal-item><%= section.heading %></h2>
         <% if section.collection&.description.present? %>
-          <div class="home-section__intro"><%= simple_format section.collection.description %></div>
+          <div class="home-section__intro" data-reveal-item><%= simple_format section.collection.description %></div>
         <% end %>
       </div>
-      <%= link_to (section.collection ? t("merchandising.discover_collection") : t("home.view_all")), (section.collection ? collection_path(section.collection) : collections_path), class: "maison-cta" %>
+      <%= link_to (section.collection ? t("merchandising.discover_collection") : t("home.view_all")), (section.collection ? collection_path(section.collection) : collections_path), class: "maison-cta", data: { reveal_item: true } %>
     </header>
 
-    <div class="home-products" <% unless local_assigns[:lcp] %>data-controller="reveal" data-reveal-delay-value="120"<% end %>>
+    <div class="home-products" <% unless local_assigns[:lcp] %>data-controller="reveal" data-reveal-delay-value="140" data-reveal-stagger-value="true"<% end %>>
       <% products.each_with_index do |product, i| %>
-        <%= render "products/card", product: product, index: i, sizes: "(max-width: 768px) 50vw, 25vw",
-              loading: (local_assigns[:lcp] && i.zero? ? "eager" : nil),
-              fetchpriority: (local_assigns[:lcp] && i.zero? ? "high" : nil) %>
+        <div data-reveal-item>
+          <%= render "products/card", product: product, index: i, sizes: "(max-width: 768px) 50vw, 25vw",
+                loading: (local_assigns[:lcp] && i.zero? ? "eager" : nil),
+                fetchpriority: (local_assigns[:lcp] && i.zero? ? "high" : nil) %>
+        </div>
       <% end %>
     </div>
   </section>

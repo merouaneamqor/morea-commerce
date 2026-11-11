@@ -14,7 +14,7 @@ module SectionBlock
   }.freeze
 
   DESCRIPTIONS = {
-    "hero" => "Full-width banner with image and a call to action.",
+    "hero" => "Full-bleed banner with brand, headline, supporting line, and a primary call to action.",
     "ticker" => "Scrolling lines of short announcement text.",
     "featured_collection" => "Product grid from one collection.",
     "collection_list" => "Grid of published collections.",
@@ -23,7 +23,7 @@ module SectionBlock
   }.freeze
 
   TEXT_FIELDS = {
-    "hero" => %i[subheading heading button_label],
+    "hero" => %i[subheading heading body button_label],
     "ticker" => %i[body],
     "featured_collection" => %i[subheading heading],
     "collection_list" => %i[subheading heading],

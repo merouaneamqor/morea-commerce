@@ -1,5 +1,7 @@
-<section class="campaign-hero">
-  <div class="campaign-hero__media">
+<% brand = current_store&.name.presence %>
+<% primary_path = section.button_label.present? ? store_link_path(section.link) : nil %>
+<section class="campaign-hero<%= " campaign-hero--empty" if section.image_src.blank? %>">
+  <div class="campaign-hero__media" aria-hidden="<%= section.image_src.blank? %>">
     <% if section.image_src.present? %>
       <%= object_image_tag section.image_src,
             alt: section.heading.to_s,
@@ -9,23 +11,39 @@
             fetchpriority: (first ? "high" : nil),
             css_class: "h-full w-full object-cover" %>
     <% else %>
-      <div class="h-full w-full bg-stone-deep"></div>
+      <div class="campaign-hero__atmosphere" aria-hidden="true"></div>
     <% end %>
   </div>
   <div class="campaign-hero__veil"></div>
+  <% if brand.present? %>
+    <p class="campaign-hero__watermark" aria-hidden="true"><%= brand %></p>
+  <% end %>
 
-  <div class="campaign-hero__content" <% unless local_assigns[:lcp] %>data-controller="reveal"<% end %>>
-    <% if section.subheading.present? %>
-      <p class="landing-eyebrow landing-eyebrow--light"><%= section.subheading %></p>
+  <div class="campaign-hero__content" <% unless local_assigns[:lcp] %>data-controller="reveal" data-reveal-stagger-value="true"<% end %>>
+    <% if brand.present? %>
+      <p class="campaign-hero__brand" data-reveal-item><%= brand %></p>
     <% end %>
-    <%= content_tag (first ? :h1 : :h2), section.heading, class: "campaign-hero__title" %>
-    <div class="campaign-hero__actions">
-      <% if section.button_label.present? && store_link_path(section.link) %>
-        <%= link_to store_link_path(section.link), class: "campaign-btn" do %>
+    <% if section.subheading.present? %>
+      <p class="landing-eyebrow landing-eyebrow--light" data-reveal-item><%= section.subheading %></p>
+    <% end %>
+    <%= content_tag (first ? :h1 : :h2), section.heading, class: "campaign-hero__title", data: { reveal_item: true } %>
+    <% if section.body.present? %>
+      <p class="campaign-hero__support" data-reveal-item><%= section.body %></p>
+    <% end %>
+    <div class="campaign-hero__actions" data-reveal-item>
+      <% if primary_path %>
+        <%= link_to primary_path, class: "campaign-btn" do %>
           <span><%= section.button_label %></span>
         <% end %>
+      <% else %>
+        <%= link_to collections_path, class: "campaign-btn" do %>
+          <span><%= t("home.view_all") %></span>
+        <% end %>
       <% end %>
-      <%= link_to t("home.view_all"), collections_path, class: "maison-cta maison-cta-light" %>
     </div>
+  </div>
+
+  <div class="campaign-hero__scroll" aria-hidden="true">
+    <span class="campaign-hero__scroll-line"></span>
   </div>
 </section>

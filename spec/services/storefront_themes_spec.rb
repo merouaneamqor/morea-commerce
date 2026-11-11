@@ -23,6 +23,11 @@ RSpec.describe "Storefront theme lifecycle" do
       expect(theme).to be_draft
       expect(theme.catalog_key).to eq("atelier")
       expect(theme.snapshot.fetch("sections")).not_to be_empty
+      expect(theme.snapshot.fetch("sections").map { |section| section.fetch("kind") }).to eq(
+        %w[hero ticker featured_collection image_with_text collection_list rich_text]
+      )
+      expect(theme.snapshot.dig("sections", 0, "translations", "en", "heading")).to eq("Pieces cut for movement")
+      expect(theme.snapshot.dig("sections", 0, "translations", "en", "body")).to include("Clean lines")
       expect(store.home_sections.reload).to contain_exactly(live_section)
       expect(live_section.reload.translations.find_by!(locale: "en").heading).to eq("Existing home page")
     end
@@ -49,15 +54,16 @@ RSpec.describe "Storefront theme lifecycle" do
 
       expect(result).to eq(replacement)
       expect(HomeSection.exists?(old_section.id)).to be(false)
-      expect(store.home_sections.ordered.pluck(:kind)).to eq(%w[hero featured_collection rich_text])
+      expect(store.home_sections.ordered.pluck(:kind)).to eq(%w[hero ticker featured_collection rich_text])
 
       hero = store.home_sections.ordered.first
       expect(hero.position).to eq(0)
       expect(hero.settings).to include("link" => "collections")
       expect(hero.translations.order(:locale).pluck(:locale)).to contain_exactly("ar", "en", "fr")
-      expect(hero.translations.find_by!(locale: "en").heading).to eq("Simply essential")
-      expect(hero.translations.find_by!(locale: "fr").heading).to eq("L'essentiel, simplement")
-      expect(hero.translations.find_by!(locale: "ar").heading).to eq("البساطة في الأساس")
+      expect(hero.translations.find_by!(locale: "en").heading).to eq("The essentials, held")
+      expect(hero.translations.find_by!(locale: "fr").heading).to eq("L'essentiel, tenu")
+      expect(hero.translations.find_by!(locale: "ar").heading).to eq("الأساسيات، بوضوح")
+      expect(hero.translations.find_by!(locale: "en").body).to eq("Few pieces, each useful and clear.")
 
       expect(replacement.reload).to be_published
       expect(replacement.published_at).to be_present

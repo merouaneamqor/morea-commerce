@@ -101,12 +101,13 @@ RSpec.describe "Admin theme editor", type: :request do
     expect(response).to have_http_status(:ok)
     document = Nokogiri::HTML(response.body)
     blocks = document.css("[data-section-index]")
-    expect(blocks.map { |node| node["data-section-index"] }).to eq(%w[1 2])
+    expect(blocks.map { |node| node["data-section-index"] }).to eq(%w[1 2 3])
     expect(blocks.first["role"]).to eq("button")
     expect(blocks.first["tabindex"]).to eq("0")
     expect(blocks.first["aria-pressed"]).to eq("true")
-    expect(blocks.first["data-preview-section"]).to eq("featured_collection")
+    expect(blocks.first["data-preview-section"]).to eq("ticker")
     expect(blocks.last["aria-pressed"]).to eq("false")
+    expect(blocks.last["data-preview-section"]).to eq("rich_text")
   end
 
   it "renders the standalone preview page with real section markup" do
@@ -119,7 +120,7 @@ RSpec.describe "Admin theme editor", type: :request do
     expect(document.at_css("[data-theme-preview='#{theme.id}']")).to be_present
     expect(document.at_css("[data-preview-section='hero']")).to be_present
     expect(response.body).to include("campaign-hero")
-    expect(response.body).to include("Simply essential")
+    expect(response.body).to include("The essentials, held")
   end
 
   it "updates section order and translated text in one snapshot save" do
@@ -160,7 +161,7 @@ RSpec.describe "Admin theme editor", type: :request do
     kinds = theme.reload.snapshot.fetch("sections").map { |section| section.fetch("kind") }
     expect(kinds).to include("image_with_text")
     expect(kinds).not_to include("featured_collection")
-    expect(kinds.length).to eq(3)
+    expect(kinds.length).to eq(4)
     expect(theme.snapshot.dig("sections", -1, "translations", "en", "heading")).to eq("Added in the theme editor")
   end
 

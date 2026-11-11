@@ -78,8 +78,9 @@ RSpec.describe "Admin storefront themes", type: :request do
     expect(document.at_css("[data-theme-publish-preflight]")).to be_present
     expect(document.at_css("[data-theme-publish-live]").text).to include("1 section")
     expect(document.at_css("[data-theme-publish-live]").text).to include("Rich text")
-    expect(document.at_css("[data-theme-publish-draft]").text).to include("3 sections")
+    expect(document.at_css("[data-theme-publish-draft]").text).to include("4 sections")
     expect(document.at_css("[data-theme-publish-draft]").text).to include("Image banner")
+    expect(document.at_css("[data-theme-publish-draft]").text).to include("Scrolling text")
     expect(document.at_css("[data-theme-publish-draft]").text).to include("Featured collection")
     expect(document.at_css("form[action='#{publish_admin_theme_path(theme)}']")).to be_present
   end
@@ -94,7 +95,7 @@ RSpec.describe "Admin storefront themes", type: :request do
     expect(response).to redirect_to(admin_theme_path(theme))
     expect(theme.reload).to be_published
     expect(HomeSection.exists?(existing.id)).to be(false)
-    expect(store.home_sections.ordered.pluck(:kind)).to eq(%w[hero featured_collection rich_text])
+    expect(store.home_sections.ordered.pluck(:kind)).to eq(%w[hero ticker featured_collection rich_text])
   end
 
   it "creates a draft theme from the live home page" do

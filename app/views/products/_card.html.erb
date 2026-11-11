@@ -2,7 +2,10 @@
 <% alt_url = product_alt_image_url(product) %>
 <%= link_to product_path(product), class: "home-card" do %>
   <div class="home-card__media object-frame aspect-[3/4]">
-    <%= product_image_tag product, sizes: local_assigns.fetch(:sizes, "(max-width: 768px) 50vw, 25vw") %>
+    <%= product_image_tag product,
+          sizes: local_assigns.fetch(:sizes, "(max-width: 768px) 50vw, 25vw"),
+          loading: local_assigns[:loading].presence || "lazy",
+          fetchpriority: local_assigns[:fetchpriority] %>
     <% if alt_url && alt_url != product_image_url(product) %>
       <%= image_tag cdn_image_url(alt_url, width: 640), alt: "", class: "home-card__alt", loading: "lazy", decoding: "async" %>
     <% end %>

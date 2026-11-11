@@ -41,7 +41,7 @@ class Page < ApplicationRecord
   end
 
   def sections_for_display
-    page_sections.visible.ordered.includes(:translations)
+    page_sections.visible.ordered.includes(:translations, image_attachment: :blob)
   end
 
   private

@@ -1,5 +1,5 @@
 <% content_for :title, "#{@section.label}, Online Store" %>
-<% field_labels = { heading: ["Heading", :field], subheading: ["Small text above the heading", :field], body: [(@section.kind == "ticker" ? "Items, one per line" : "Text"), :area], button_label: ["Button label", :field] } %>
+<% field_labels = { heading: ["Heading", :field], subheading: ["Small text above the heading", :field], body: [(@section.kind == "ticker" ? "Items, one per line" : (@section.kind == "hero" ? "Supporting line under the heading" : "Text")), :area], button_label: ["Button label", :field] } %>
 
 <div class="admin-page-header">
   <div class="flex items-center gap-2">

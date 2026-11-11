@@ -354,6 +354,11 @@
 
 .te-preview .campaign-hero { min-height: 28rem; }
 .te-frame.is-mobile .campaign-hero { min-height: 36rem; }
+.te-preview .campaign-hero__scroll { display: none; }
+.te-preview .campaign-hero__watermark {
+  top: 12%;
+  font-size: clamp(2rem, 8vw, 4.5rem);
+}
 
 .theme-editor-preview-section { cursor: pointer; }
 .theme-editor-preview-section.is-selected,

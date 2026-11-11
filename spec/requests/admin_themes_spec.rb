@@ -94,7 +94,7 @@ RSpec.describe "Admin storefront themes", type: :request do
     expect(response).to redirect_to(admin_theme_path(theme))
     expect(theme.reload).to be_published
     expect(HomeSection.exists?(existing.id)).to be(false)
-    expect(store.home_sections.ordered.pluck(:kind)).to eq(%w[hero featured_collection rich_text])
+    expect(store.home_sections.ordered.pluck(:kind)).to eq(%w[hero ticker featured_collection rich_text])
   end
 
   it "creates a draft theme from the live home page" do

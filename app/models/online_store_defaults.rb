@@ -26,6 +26,7 @@ class OnlineStoreDefaults
       section("hero", { image_url: store.campaign_image, link: featured_link }) do |loc, st|
         { subheading: [ st&.campaign_title.presence || t(loc, "store.default_campaign_title"), st&.campaign_season.presence || "SS / 26" ].join(" · "),
           heading: st&.tagline.presence || t(loc, "store.tagline_fallback"),
+          body: t(loc, "home.hero_support"),
           button_label: st&.campaign_cta.presence || t(loc, "store.default_campaign_cta") }
       end,
       section("ticker") do |loc, st|

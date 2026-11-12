@@ -168,6 +168,35 @@ RSpec.describe "Call center page", type: :request do
     end
   end
 
+  describe "the unreachable orders" do
+    before do
+      order(disposition: "no_answer", number: "NA1", name: "Karim", phone: "0655555551")
+      order(disposition: "no_answer", number: "NA2", name: "Salma", phone: "0655555552", assigned: omar)           # held by another agent: not hers
+      sign_in(agent)
+    end
+
+    it "have their own tab, with the call button, listing only orders whose last call got no answer" do
+      get "/admin/confirmations/center", params: { tab: "unreachable" }
+
+      expect(numbers).to eq([ "NA1" ])
+      expect(count("unreachable")).to eq(1)
+      expect(document.at_css("[data-tab=unreachable]").text).to include("Injoignables")
+    end
+
+    it "show their call count in yellow, with the word Injoignable, in every list; other orders stay grey" do
+      get "/admin/confirmations/center", params: { tab: "pending" }
+
+      yellow = document.at_css("[data-order-row=NA1] [data-calls]")
+      expect(yellow["data-unreachable"]).to eq("yes")
+      expect(yellow.at_css("span")["class"]).to include("bg-[#fbe08a]")
+      expect(yellow.text).to include("Injoignable")
+      grey = document.at_css("[data-order-row=Q1] [data-calls]")
+      expect(grey["data-unreachable"]).to eq("no")
+      expect(grey.at_css("span")["class"]).to include("bg-[#efeff3]")
+      expect(grey.text).not_to include("Injoignable")
+    end
+  end
+
   describe "an owner" do
     before { sign_in(owner) }
 

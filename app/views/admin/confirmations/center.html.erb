@@ -109,7 +109,7 @@
         <% end %>
       <% end %>
     </nav>
-    <% if %w[pending planned blocked].include?(center.tab) %>
+    <% if %w[pending unreachable planned blocked].include?(center.tab) %>
       <p class="mt-2 text-[11px] text-[#8e8e93]"><%= t("call_center.queue.live") %></p>
     <% end %>
 
@@ -135,7 +135,7 @@
             <% confirmation = order.order_confirmation %>
             <% whatsapp = center.whatsapp_events[order.id] %>
             <% source = order.store_connection&.name || t("call_center.filters.manual") %>
-            <% acting = %w[pending planned].include?(center.tab) %>
+            <% acting = %w[pending unreachable planned].include?(center.tab) %>
             <tr class="align-middle hover:bg-[#fafafc]" data-order-row="<%= order.number %>">
               <td class="px-3 py-2.5 whitespace-nowrap">
                 <%= link_to "##{order.number}", admin_order_path(order), class: "font-semibold text-[#1c1c1e] hover:text-[#1d1d1f]" %>
@@ -153,7 +153,8 @@
               </td>
               <td class="px-3 py-2.5 text-end font-semibold whitespace-nowrap text-[#1c1c1e] tabular-nums" data-amount="<%= order.total_cents %>"><%= order.total_display %></td>
               <td class="px-3 py-2.5 text-[#3a3a3c]"><%= order.customer_city %></td>
-              <td class="px-3 py-2.5 text-center" data-calls="<%= center.attempt_counts[order.id].to_i %>"><span class="inline-flex min-w-6 justify-center rounded-full bg-[#efeff3] px-1.5 text-[12px] font-semibold text-[#1c1c1e]"><%= center.attempt_counts[order.id].to_i %></span></td>
+              <% unreachable = confirmation&.disposition == "no_answer" %>
+              <td class="px-3 py-2.5 text-center" data-calls="<%= center.attempt_counts[order.id].to_i %>" data-unreachable="<%= unreachable ? "yes" : "no" %>"><span class="inline-flex min-w-6 justify-center rounded-full px-1.5 text-[12px] font-semibold <%= unreachable ? "bg-[#fbe08a] text-[#7a5200]" : "bg-[#efeff3] text-[#1c1c1e]" %>" title="<%= t("call_center.unreachable_hint") if unreachable %>"><%= center.attempt_counts[order.id].to_i %></span><% if unreachable %><p class="mt-0.5 text-[10px] font-semibold text-[#9a6b00]"><%= t("call_center.unreachable") %></p><% end %></td>
               <td class="px-3 py-2.5 whitespace-nowrap" data-whatsapp="<%= whatsapp ? "sent" : "none" %>">
                 <% if whatsapp %>
                   <span class="rounded-full bg-[#e8f6ee] px-2 py-0.5 text-[11px] font-semibold text-[#237a49]" title="<%= whatsapp.user&.name %>"><%= t("call_center.whatsapp_sent", time: l(whatsapp.created_at.in_time_zone(DateRange::ZONE), format: "%d/%m %H:%M")) %></span>

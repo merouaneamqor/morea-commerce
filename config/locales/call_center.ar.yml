@@ -51,6 +51,7 @@ ar:
       empty: "لا طلبات في هذا التبويب."
     tabs:
       pending: "في الانتظار"
+      unreachable: "لا يجيبون"
       rescheduled: "مُعاد جدولتها"
       failed: "فاشلة"
       planned: "مجدولة"
@@ -72,6 +73,8 @@ ar:
     whatsapp_sent: "أُرسل %{time}"
     whatsapp_none: "لم يُرسل"
     call: "اتصال"
+    unreachable: "لا يجيب"
+    unreachable_hint: "آخر مكالمة بدون رد"
     block: "حظر"
     block_reason: "سبب الحظر"
     block_submit: "حظر هذا الرقم"

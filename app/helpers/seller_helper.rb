@@ -11,6 +11,8 @@ module SellerHelper
     "Paliers de chiffre d'affaires" => [ "Revenue milestones", "مراحل رقم المعاملات" ],
     "Livré depuis le début" => [ "Delivered since the start", "المسلَّم منذ البداية" ],
     "Débutant" => [ "Beginner", "مبتدئ" ],
+    "Masquer les paliers" => [ "Hide the milestones", "إخفاء المراحل" ],
+    "Afficher les paliers" => [ "Show the milestones", "إظهار المراحل" ],
     "Prochain palier" => [ "Next tier", "المرحلة التالية" ],
     "Palier maximal atteint" => [ "Top tier reached", "تم بلوغ أعلى مرحلة" ],
     "avant" => [ "to", "قبل" ],

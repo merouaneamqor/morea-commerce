@@ -9,7 +9,15 @@ module Admin
 
       @date_range = selected_date_range(scope: "dashboard", default: "last_7", **legacy_period)
       @stats = Seller::DashboardStats.new(store: current_store, range: @date_range).to_h
-      @milestones = Seller::RevenueMilestones.new(store: current_store)
+      @milestones = Seller::RevenueMilestones.new(store: current_store) if current_user.show_milestones
+    end
+
+    # Switch the milestones bar on or off for the signed-in person (?show=1 or 0).
+    def milestones
+      return head(:not_found) unless current_store
+
+      current_user.update!(show_milestones: params[:show] == "1")
+      redirect_back_or_to seller_dashboard_path, status: :see_other
     end
 
     private

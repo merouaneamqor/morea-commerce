@@ -31,6 +31,60 @@ RSpec.describe "Dashboard milestones", type: :request do
     expect(text).to include("275 790", "Doyen", "31 %")
   end
 
+  it "shows the runner (no pulsing dot) at the end of the fill, and a trophy only once the last tier is reached" do
+    get "/dashboard", params: { locale: "fr" }
+    expect(document.at_css("[data-milestones] [data-runner]")).to be_present
+    expect(document.at_css("[data-milestones] [data-trophy]")).to be_nil
+    expect(document.at_css("[data-runner]")["style"]).to include("left: 21.83%")   # (100 + 31) / 6 of the track
+    expect(response.body).not_to include("ms-dot")
+
+    6.times do |i|
+      store.orders.create!(customer: customer, number: "MAX#{i}", status: "delivered", currency: "MAD", customer_name: "C", customer_phone: "0612345678",
+        customer_city: "Fès", customer_address: "x", subtotal_cents: 1_000_000_000, total_cents: 1_000_000_000, delivered_at: 1.day.ago, created_at: 1.day.ago)
+    end
+    get "/dashboard", params: { locale: "fr" }
+    expect(document.at_css("[data-milestones] [data-trophy]")).to be_present
+    expect(document.at_css("[data-milestones] [data-runner]")).to be_nil
+  end
+
+  describe "the on/off switch" do
+    it "hides the bar for the person who switched it off, offers to show it again, and remembers" do
+      get "/dashboard", params: { locale: "fr" }
+      expect(document.at_css("[data-milestones]")).to be_present
+      expect(document.at_css("[data-hide-milestones]")).to be_present
+
+      patch "/dashboard/paliers", params: { show: 0 }
+      expect(response).to have_http_status(:see_other)
+      expect(owner.reload.show_milestones).to be(false)
+
+      get "/dashboard", params: { locale: "fr" }
+      expect(document.at_css("[data-milestones]")).to be_nil
+      expect(document.at_css("[data-show-milestones]")).to be_present
+      expect(response.body).not_to include("data-milestone-revenue")   # the figures are not even computed for the page
+
+      patch "/dashboard/paliers", params: { show: 1 }
+      get "/dashboard", params: { locale: "fr" }
+      expect(document.at_css("[data-milestones]")).to be_present
+      expect(owner.reload.show_milestones).to be(true)
+    end
+
+    it "is a personal choice: a colleague keeps the bar" do
+      colleague = store.users.create!(name: "Colleague", email: "col-#{SecureRandom.hex(4)}@example.test", password: password, admin: true)
+      patch "/dashboard/paliers", params: { show: 0 }
+      expect(colleague.reload.show_milestones).to be(true)
+
+      post "/admin/login", params: { email: colleague.email, password: password }
+      get "/dashboard", params: { locale: "fr" }
+      expect(document.at_css("[data-milestones]")).to be_present
+    end
+
+    it "needs a signed-in person" do
+      delete "/admin/logout"
+      patch "/dashboard/paliers", params: { show: 0 }
+      expect(response).to redirect_to(%r{/admin/login})
+    end
+  end
+
   it "renders in English and Arabic without a missing translation" do
     %w[en ar].each do |locale|
       get "/dashboard", params: { locale: locale }

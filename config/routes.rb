@@ -75,6 +75,7 @@ Rails.application.routes.draw do
   end
   # Seller workspace URLs, as on seallo. Each batch moves a page here; the others still open their current admin page.
   get "/dashboard", to: "admin/dashboard#show", as: :seller_dashboard
+  patch "/dashboard/paliers", to: "admin/dashboard#milestones", as: :seller_dashboard_milestones
   get "/clients", to: "admin/customers#index", as: :seller_customers
   get "/integrations", to: "admin/store_connections#index", as: :seller_integrations
   get "/comptabilite", to: "admin/accounting#show", as: :seller_accounting

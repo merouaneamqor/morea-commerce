@@ -6,35 +6,35 @@
 <% current_key = preset || range.preset_key %>
 <div class="relative" data-controller="date-range-picker" data-date-range-picker-config-value="<%= date_range_config(range: range, url: url, extra: extra).to_json %>" data-date-range-picker="<%= range.from.iso8601 %>/<%= range.to.iso8601 %>">
   <button type="button" data-action="date-range-picker#toggle" data-date-range-picker-target="button" aria-haspopup="dialog" aria-expanded="false" aria-label="<%= t("date_range.choose") %>"
-          class="flex cursor-pointer items-center font-semibold whitespace-nowrap transition <%= local_assigns[:size] == "compact" ? "h-8 gap-1.5 rounded-lg px-2.5 text-[13px]" : "h-11 gap-2 rounded-xl px-3 text-sm" %> <%= theme == "dark" ? "bg-white/10 text-white hover:bg-white/15" : "border border-[#e8e3df] bg-white text-[#1f2430] hover:border-[#d6cfca]" %>">
+          class="flex cursor-pointer items-center font-semibold whitespace-nowrap transition <%= local_assigns[:size] == "compact" ? "h-8 gap-1.5 rounded-lg px-2.5 text-[13px]" : "h-11 gap-2 rounded-xl px-3 text-sm" %> <%= theme == "dark" ? "bg-white/10 text-white hover:bg-white/15" : "border border-[#e7e9ee] bg-white text-[#10162a] hover:border-[#d5d9e1]" %>">
     <svg viewBox="0 0 24 24" class="size-4 shrink-0 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
     <span data-date-range-label><%= date_range_label(range, current_key) %></span>
     <svg viewBox="0 0 24 24" class="size-3.5 shrink-0 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round] opacity-60" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
   </button>
 
   <div hidden data-date-range-picker-target="panel" role="dialog" aria-label="<%= t("date_range.choose") %>" dir="<%= rtl? ? "rtl" : "ltr" %>"
-       class="fixed inset-x-3 bottom-3 z-50 max-h-[88dvh] overflow-y-auto rounded-2xl border border-[#e8e3df] bg-white p-3 text-[#1f2430] shadow-[0_30px_80px_-24px_rgba(31,36,48,0.45)] md:absolute md:inset-x-auto md:bottom-auto md:mt-2 md:max-h-none md:w-[46rem] md:overflow-visible md:p-0 <%= align == "start" ? "md:start-0" : "md:end-0" %>">
+       class="fixed inset-x-3 bottom-3 z-50 max-h-[88dvh] overflow-y-auto rounded-2xl border border-[#e7e9ee] bg-white p-3 text-[#10162a] shadow-[0_30px_80px_-24px_rgba(16,22,42,0.45)] md:absolute md:inset-x-auto md:bottom-auto md:mt-2 md:max-h-none md:w-[46rem] md:overflow-visible md:p-0 <%= align == "start" ? "md:start-0" : "md:end-0" %>">
     <div class="flex flex-col md:flex-row">
-      <ul class="flex flex-wrap gap-1 border-b border-[#f0ebe7] pb-3 md:w-52 md:shrink-0 md:flex-col md:flex-nowrap md:border-b-0 md:border-e md:p-3" data-presets>
+      <ul class="flex flex-wrap gap-1 border-b border-[#eef0f4] pb-3 md:w-52 md:shrink-0 md:flex-col md:flex-nowrap md:border-b-0 md:border-e md:p-3" data-presets>
         <% date_range_presets(range.today).each do |key, label, found| %>
           <li><%= link_to label, date_range_link(url, found, key, extra), data: { preset: key, from: found.from.iso8601, to: found.to.iso8601 }, "aria-current": (current_key == key ? "true" : nil),
-                    class: "block rounded-lg px-3 py-1.5 text-sm transition md:py-2 #{current_key == key ? "bg-[#f4e4de] font-semibold text-[#a8432e]" : "text-[#1f2430] hover:bg-[#f3f1ef]"}" %></li>
+                    class: "block rounded-lg px-3 py-1.5 text-sm transition md:py-2 #{current_key == key ? "bg-[#eeebfd] font-semibold text-[#5b46d6]" : "text-[#10162a] hover:bg-[#e9ecf1]"}" %></li>
         <% end %>
         <li><button type="button" data-action="date-range-picker#showCustom" data-date-range-picker-target="customToggle" aria-current="<%= current_key ? "false" : "true" %>"
-                    class="block w-full rounded-lg px-3 py-1.5 text-start text-sm transition md:py-2 <%= current_key ? "text-[#1f2430] hover:bg-[#f3f1ef]" : "bg-[#f4e4de] font-semibold text-[#a8432e]" %>"><%= t("date_range.custom") %></button></li>
+                    class="block w-full rounded-lg px-3 py-1.5 text-start text-sm transition md:py-2 <%= current_key ? "text-[#10162a] hover:bg-[#e9ecf1]" : "bg-[#eeebfd] font-semibold text-[#5b46d6]" %>"><%= t("date_range.custom") %></button></li>
       </ul>
 
       <div class="hidden pt-3 md:block md:flex-1 md:p-4" data-date-range-picker-target="calendar">
         <div class="mb-3 flex items-baseline justify-between gap-4 text-xs" data-fields>
-          <div><span class="text-[#8a8380]"><%= t("date_range.start") %></span> <b class="ms-1 text-sm text-[#a8432e]" data-date-range-picker-target="startField"></b></div>
-          <div><span class="text-[#8a8380]"><%= t("date_range.end") %></span> <b class="ms-1 text-sm" data-date-range-picker-target="endField"></b></div>
+          <div><span class="text-[#6b7280]"><%= t("date_range.start") %></span> <b class="ms-1 text-sm text-[#5b46d6]" data-date-range-picker-target="startField"></b></div>
+          <div><span class="text-[#6b7280]"><%= t("date_range.end") %></span> <b class="ms-1 text-sm" data-date-range-picker-target="endField"></b></div>
         </div>
         <div class="flex gap-6" data-date-range-picker-target="months"></div>
-        <div class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[#f0ebe7] pt-3">
-          <p class="text-xs text-[#8a8380]" data-date-range-picker-target="count" aria-live="polite"></p>
+        <div class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-[#eef0f4] pt-3">
+          <p class="text-xs text-[#6b7280]" data-date-range-picker-target="count" aria-live="polite"></p>
           <div class="flex gap-2">
-            <button type="button" data-action="date-range-picker#cancel" class="h-9 rounded-lg border border-[#e8e3df] px-4 text-sm font-semibold hover:bg-[#f3f1ef]"><%= t("date_range.cancel") %></button>
-            <button type="button" data-action="date-range-picker#apply" data-date-range-picker-target="apply" class="h-9 rounded-lg bg-[#a8432e] px-4 text-sm font-semibold text-white hover:bg-[#8e3624] disabled:cursor-not-allowed disabled:opacity-50"><%= t("date_range.apply") %></button>
+            <button type="button" data-action="date-range-picker#cancel" class="h-9 rounded-lg border border-[#e7e9ee] px-4 text-sm font-semibold hover:bg-[#e9ecf1]"><%= t("date_range.cancel") %></button>
+            <button type="button" data-action="date-range-picker#apply" data-date-range-picker-target="apply" class="h-9 rounded-lg bg-[#5b46d6] px-4 text-sm font-semibold text-white hover:bg-[#4a37c2] disabled:cursor-not-allowed disabled:opacity-50"><%= t("date_range.apply") %></button>
           </div>
         </div>
       </div>

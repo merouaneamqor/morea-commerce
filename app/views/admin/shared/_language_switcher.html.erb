@@ -1,9 +1,9 @@
 <% small = local_assigns[:size] == "sm" # 32px high, 13px text, for compact headers %>
-<nav aria-label="Language / Langue / اللغة" class="flex items-center rounded-full border border-[#e8e3df] bg-white p-0.5 <%= "h-8" if small %>" dir="ltr" data-admin-language-switcher>
+<nav aria-label="Language / Langue / اللغة" class="flex items-center rounded-full border border-[#e7e9ee] bg-white p-0.5 <%= "h-8" if small %>" dir="ltr" data-admin-language-switcher>
   <% Morea::Locales::AVAILABLE.each do |locale| %>
     <%= link_to Morea::Locales.code_for(locale),
           admin_language_switch_path(locale),
-          class: "rounded-full font-semibold uppercase transition #{small ? "flex h-7 items-center px-2.5 text-[13px]" : "px-2 py-0.5 text-xs"} #{locale == current_locale.to_sym ? 'bg-[#1f2430] text-white' : 'text-[#8a8380] hover:text-[#1f2430]'}",
+          class: "rounded-full font-semibold uppercase transition #{small ? "flex h-7 items-center px-2.5 text-[13px]" : "px-2 py-0.5 text-xs"} #{locale == current_locale.to_sym ? 'bg-[#10162a] text-white' : 'text-[#6b7280] hover:text-[#10162a]'}",
           lang: locale,
           hreflang: locale,
           aria: { label: Morea::Locales.label_for(locale), current: ("true" if locale == current_locale.to_sym) } %>

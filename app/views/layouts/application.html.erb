@@ -3,7 +3,7 @@
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "#{current_store&.name || "Morea"} — #{current_store&.tagline || t("store.tagline_fallback")}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <meta name="theme-color" content="<%= content_for?(:hero_nav) ? "#1a1716" : "#f7f5f2" %>">
+    <meta name="theme-color" content="<%= content_for?(:hero_nav) ? "#10162a" : "#f6f7fa" %>">
     <meta name="description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : (current_store&.tagline || t("store.tagline_fallback")) %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

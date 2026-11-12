@@ -283,11 +283,11 @@ RSpec.describe "Date range picker", type: :request do
       expect(css).to match(/\[role="dialog"\][^{]*\{[^}]*backdrop-filter: none/m)
     end
 
-    it "aligns the call center picker to the start of its filter bar, so the panel does not leave the screen" do
+    it "opens the call center picker, now in the dark header on the right, towards the left so the panel stays on screen" do
       get "/admin/confirmations/center"
       panel = document.at_css("[data-date-range-picker-target=panel]")
-      expect(panel["class"]).to include("md:start-0")
-      expect(panel["class"]).not_to include("md:end-0")
+      expect(panel["class"]).to include("md:end-0")
+      expect(panel["class"]).not_to include("md:start-0")
     end
   end
 

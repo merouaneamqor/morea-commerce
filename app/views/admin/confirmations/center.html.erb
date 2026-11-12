@@ -28,6 +28,7 @@
       <% unless agent_view? %>
         <%= link_to new_admin_order_path, data: { turbo_frame: "order-modal" }, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" do %>+ <%= t("call_center.create_order") %><% end %>
       <% end %>
+      <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: center_admin_confirmations_path, theme: "dark", size: "compact", extra: keep.slice("product", "source", "whatsapp", "missed", "q", "sort").merge("tab" => center.tab) %>
       <span class="inline-flex h-8 items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold"><%= current_user.name.presence || current_user.email %></span>
       <% if @open_shift %>
         <%= button_to t("admin.confirmations.clock_out"), clock_out_admin_confirmations_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#ececf0]" %>
@@ -67,7 +68,6 @@
   <%# Filters: one row %>
   <%= form_with url: center_admin_confirmations_path, method: :get, class: "flex flex-wrap items-center gap-2 rounded-2xl border border-[#e0e0e5] bg-white p-3", data: { cc_filters: true } do %>
     <%= hidden_field_tag :tab, center.tab %>
-    <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: center_admin_confirmations_path, theme: "light", size: "compact", align: "start", extra: keep.slice("product", "source", "whatsapp", "missed", "q", "sort").merge("tab" => center.tab) %>
     <%= hidden_field_tag :from, @date_range.from.iso8601 %><%= hidden_field_tag :to, @date_range.to.iso8601 %>
     <%= select_tag :product, options_for_select(center.products, params[:product]), include_blank: t("call_center.filters.all_products"), class: field, "aria-label": t("call_center.filters.product") %>
     <%= select_tag :sort, options_for_select([ [ t("call_center.filters.sort_recent"), "recent" ], [ t("call_center.filters.sort_oldest"), "oldest" ] ], params[:sort]), class: field %>

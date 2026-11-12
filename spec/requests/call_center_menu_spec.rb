@@ -55,4 +55,15 @@ RSpec.describe "Call center menu", type: :request do
     expect(page.at_css("turbo-frame#order-modal")).to be_present
     expect(page.at_css("a[href='/admin/orders/new'][data-turbo-frame='order-modal']")).to be_present
   end
+
+  it "puts the date picker in the dark header, before the agent's name, and not in the filters row" do
+    sign_in(agent)
+    get "/admin/confirmations/center"
+
+    page = Nokogiri::HTML(response.body)
+    header = page.at_css("[data-cc-header]")
+    expect(header.at_css("[data-controller~='date-range-picker']")).to be_present
+    expect(page.at_css("[data-cc-filters] [data-controller~='date-range-picker']")).to be_nil
+    expect(header.at_css("[data-controller~='date-range-picker']").xpath("following::span[contains(@class,'rounded-full')]").map(&:text).join).to include("Saida")
+  end
 end

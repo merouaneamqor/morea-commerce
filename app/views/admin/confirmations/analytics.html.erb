@@ -1,28 +1,31 @@
 <%# Call center, Analyses: the figures of the orders created in the range and of the calls made in it. Printing only:
-    every number comes from @analytics (Confirmations::Analytics). Design: small tiles, one blue for the data, one orange for a second
-    series, grey for what is not the point, red only for "waiting too long"; ranked bars instead of rings; a tooltip on every mark. %>
+    every number comes from @analytics (Confirmations::Analytics). Design: the dashboard's own language: a gold first tile, small
+    coloured symbol chips (only the symbol is coloured), black bars on light tracks, rings like the distribution card, black for the
+    data, gold for a second line, grey for what is not the point, red only for "waiting too long"; a tooltip on every mark. %>
 <% content_for :title, "#{sl("Analyses")} — Admin" %>
 <% content_for :admin_page_class, "admin-page--dashboard" %>
 <% a = @analytics %>
 <% agent = a.agent %>
 <% days = a.daily %>
 <% provisional_from = days.index { |day| day[:provisional] } %>
-<% card = "rounded-2xl border border-[#e0e0e5] bg-white p-4" %>
-<% title = "text-[13px] font-semibold text-[#1c1c1e]" %>
-<% sub = "mt-0.5 text-[11.5px] leading-snug text-[#6e6e73]" %>
+<% card = "rounded-2xl border border-[#e0e0e5] bg-white p-5" %>
+<% title = "text-sm font-semibold text-[#1c1c1e]" %>
+<% sub = "mt-0.5 text-xs leading-snug text-[#6e6e73]" %>
+<% chip = "grid size-8 shrink-0 place-items-center rounded-xl" %>
 <% extra = agent && !agent_view? ? { "agent_id" => agent.id } : {} %>
 <% total_calls = a.call_results[:total] %>
-<% blue = "#2a78d6" %>
-<% orange = "#eb6834" %>
-<% grey = "#c7cad1" %>
+<% ink = "#1c1c1e" %>
+<% gold = "#d9a21b" %>
+<% grey = "#d5d7dd" %>
+<% tones = { ink: "bg-[#ececf0] text-[#1c1c1e]", blue: "bg-[#e6f0fd] text-[#2f6fed]", green: "bg-[#e3f3e8] text-[#2f9d5c]", amber: "bg-[#fdf0d9] text-[#d28a12]", red: "bg-[#fbe7ea] text-[#d6455d]" } %>
 
 <div class="space-y-3" data-call-analytics data-controller="chart-tip" data-action="mouseover->chart-tip#show mouseout->chart-tip#hide focusin->chart-tip#show focusout->chart-tip#hide scroll@window->chart-tip#hide">
-  <header class="flex min-h-[64px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-2.5 text-white" data-analytics-header>
+  <header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white" data-analytics-header>
     <div class="flex items-center gap-3">
-      <span class="grid size-9 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:chart, size: 18) %></span>
+      <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:chart, size: 20) %></span>
       <div>
-        <h1 class="text-lg leading-tight font-bold"><%= sl("Analyses") %></h1>
-        <p class="text-[12.5px] leading-tight text-white/65"><%= sl("Centre d'appels") %> · <%= agent ? (agent.name.presence || agent.email) : current_store.name %></p>
+        <h1 class="text-xl leading-tight font-bold"><%= sl("Analyses") %></h1>
+        <p class="text-[13px] leading-tight text-white/65"><%= sl("Centre d'appels") %> · <%= agent ? (agent.name.presence || agent.email) : current_store.name %></p>
       </div>
     </div>
     <div class="flex flex-wrap items-center gap-2">
@@ -35,38 +38,42 @@
   <% unless agent_view? %>
     <nav class="mx-auto flex w-fit flex-wrap items-center gap-1 rounded-full border border-[#e0e0e5] bg-white p-1 text-[13px] font-semibold" aria-label="<%= sl("Analyses") %>" data-analytics-tabs>
       <%= link_to sl("Vue d'ensemble"), analytics_admin_confirmations_path, "data-tab": "overview", "aria-current": (agent ? nil : "page"),
-            class: "inline-flex h-8 items-center gap-1.5 rounded-full px-4 #{agent ? "text-[#3a3a3c] hover:bg-[#f4f5f8]" : "bg-[#2a78d6] text-white"}" %>
+            class: "inline-flex h-8 items-center gap-1.5 rounded-full px-4 #{agent ? "text-[#3a3a3c] hover:bg-[#f4f5f8]" : "bg-[#1c1c1e] text-white"}" %>
       <%= link_to sl("Comparer les agents"), dashboard_admin_confirmations_path, "data-tab": "compare", class: "inline-flex h-8 items-center gap-1.5 rounded-full px-4 text-[#3a3a3c] hover:bg-[#f4f5f8]" %>
       <%= form_with url: analytics_admin_confirmations_path, method: :get, class: "inline-flex", data: { controller: "auto-submit" } do %>
         <%= hidden_field_tag :from, @date_range.from.iso8601 %><%= hidden_field_tag :to, @date_range.to.iso8601 %>
         <%= select_tag :agent_id, options_for_select(a.agents.map { |person| [ person.name.presence || person.email, person.id ] }, agent&.id), include_blank: sl("Agent"), "data-tab": "agent", "aria-current": (agent ? "page" : nil),
-              class: "h-8 cursor-pointer rounded-full border-0 px-4 text-[13px] font-semibold focus:outline-none #{agent ? "bg-[#2a78d6] text-white" : "bg-transparent text-[#3a3a3c] hover:bg-[#f4f5f8]"}", data: { action: "auto-submit#submit" } %>
+              class: "h-8 cursor-pointer rounded-full border-0 px-4 text-[13px] font-semibold focus:outline-none #{agent ? "bg-[#1c1c1e] text-white" : "bg-transparent text-[#3a3a3c] hover:bg-[#f4f5f8]"}", data: { action: "auto-submit#submit" } %>
       <% end %>
     </nav>
   <% end %>
 
-  <%# Five small tiles: the number first, a short trend beside it %>
+  <%# Five tiles drawn like the dashboard's: the gold one first, the others white with a coloured symbol %>
   <% kpis = [
-       [ "delivered_per_100", sl("Livrées pour 100 commandes"), a.delivered_per_100, "#{analytics_integer(a.delivered)} #{sl("livrées sur")} #{analytics_integer(a.assigned)}", days.map { |d| d[:delivered_per_100] } ],
-       [ "confirmation_rate", sl("Taux de confirmation"), a.confirmation_rate, "#{analytics_integer(a.confirmed)} #{sl("confirmées sur")} #{analytics_integer(a.assigned)}", days.map { |d| d[:confirmation_rate] } ],
-       [ "delivery_rate", sl("Livrées sur confirmées"), a.delivery_rate, "#{analytics_integer(a.delivered)} #{sl("livrées sur")} #{analytics_integer(a.confirmed)}", days.map { |d| d[:delivery_rate] } ],
-       [ "median_first_call", sl("Premier appel (médiane)"), nil, sl("après la commande"), nil ],
-       [ "waiting", sl("En attente d'appel"), nil, sl("commandes sans appel"), nil ]
+       [ "delivered_per_100", sl("Livrées pour 100 commandes"), :box, nil, a.delivered_per_100, "#{analytics_integer(a.delivered)} #{sl("livrées sur")} #{analytics_integer(a.assigned)} #{sl("assignées")}", days.map { |d| d[:delivered_per_100] } ],
+       [ "confirmation_rate", sl("Taux de confirmation"), :check, tones[:green], a.confirmation_rate, "#{analytics_integer(a.confirmed)} #{sl("confirmées sur")} #{analytics_integer(a.assigned)}", days.map { |d| d[:confirmation_rate] } ],
+       [ "delivery_rate", sl("Livrées sur confirmées"), :truck, tones[:blue], a.delivery_rate, "#{analytics_integer(a.delivered)} #{sl("livrées sur")} #{analytics_integer(a.confirmed)}", days.map { |d| d[:delivery_rate] } ],
+       [ "median_first_call", sl("Premier appel (médiane)"), :clock, tones[:amber], nil, sl("après la commande"), nil ],
+       [ "waiting", sl("En attente d'appel"), :orders, tones[:red], nil, sl("commandes sans aucun appel"), nil ]
      ] %>
-  <section class="grid grid-cols-2 gap-2 lg:grid-cols-5" data-kpis="analytics">
-    <% kpis.each do |key, label, value, hint, series| %>
+  <section class="grid grid-cols-2 gap-2.5 lg:grid-cols-5" data-kpis="analytics">
+    <% kpis.each do |key, label, icon, tone, value, hint, series| %>
+      <% featured = tone.nil? %>
       <% shown = case key
                  when "median_first_call" then analytics_duration(a.median_first_call_seconds)
                  when "waiting" then analytics_integer(a.queue[:total])
                  else analytics_percent(value)
                  end %>
-      <div class="flex min-h-[78px] flex-col justify-between rounded-xl border border-[#e0e0e5] bg-white px-3 py-2.5" data-kpi="<%= key %>">
-        <p class="truncate text-[11.5px] font-medium text-[#6e6e73]" title="<%= label %>"><%= label %></p>
+      <div class="flex min-h-[104px] min-w-0 flex-col justify-between rounded-xl px-3.5 py-3 <%= featured ? "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e] shadow-[0_14px_30px_-20px_rgba(190,120,20,0.8)]" : "border border-[#e0e0e5] bg-white" %>" data-kpi="<%= key %>">
+        <p class="flex min-w-0 items-center gap-1.5 text-xs font-medium <%= featured ? "" : "text-[#3a3a3c]" %>" title="<%= label %>">
+          <span class="<%= featured ? "grid size-6 shrink-0 place-items-center rounded-lg bg-[#1c1c1e] text-white" : "grid size-6 shrink-0 place-items-center rounded-lg #{tone}" %>"><%= seller_icon(icon, size: 13) %></span>
+          <span class="truncate"><%= label %></span>
+        </p>
         <div class="flex items-end justify-between gap-2">
-          <p class="text-[22px] leading-none font-bold whitespace-nowrap text-[#1c1c1e] tabular-nums" data-value><%= shown %></p>
-          <% if series %><span class="w-14 shrink-0 sm:w-16"><%= analytics_sparkline(series, dashed_from: provisional_from, size: "h-6 w-full") %></span><% end %>
+          <p class="text-[24px] leading-none font-bold whitespace-nowrap text-[#1c1c1e] tabular-nums" data-value><%= shown %></p>
+          <% if series %><span class="w-14 shrink-0 sm:w-16"><%= analytics_sparkline(series, dashed_from: provisional_from, color: featured ? "#3a2a0e" : ink, size: "h-6 w-full") %></span><% end %>
         </div>
-        <p class="truncate text-[10.5px] text-[#8e8e93]" title="<%= hint %>"><%= hint %></p>
+        <p class="truncate text-[11px] <%= featured ? "text-[#6d4f17]" : "text-[#6e6e73]" %>" title="<%= hint %>"><%= hint %></p>
       </div>
     <% end %>
   </section>
@@ -75,14 +82,14 @@
   <% slots = a.answer_slots %>
   <% old_waiting = a.queue[:buckets].find { |bucket| bucket[:key] == :gt24h }[:count] %>
   <% if slots[:best] || old_waiting.positive? %>
-    <section class="grid grid-cols-1 gap-2 lg:grid-cols-2" data-insights aria-label="<%= sl("Sur quoi agir") %>">
+    <section class="grid grid-cols-1 gap-2.5 lg:grid-cols-2" data-insights aria-label="<%= sl("Sur quoi agir") %>">
       <% if slots[:best] %>
-        <p class="flex items-start gap-2 rounded-xl border border-[#d8e6f6] bg-[#f4f8fd] px-3 py-2 text-[12.5px] text-[#1c1c1e]" data-insight="answer"><span class="mt-0.5 text-[#2a78d6]"><%= seller_icon(:clock, size: 14) %></span>
-          <span><%= sl("Les clients répondent le plus") %> <b><%= analytics_slot_label(slots[:best]) %></b> (<%= analytics_percent(slots[:best][:rate]) %>)<% if slots[:worst] && slots[:worst] != slots[:best] %> <%= sl("et le moins") %> <b><%= analytics_slot_label(slots[:worst]) %></b> (<%= analytics_percent(slots[:worst][:rate]) %>). <%= sl("Planifiez les rappels sur les meilleurs créneaux.") %><% end %></span></p>
+        <p class="flex items-start gap-2.5 rounded-2xl border border-[#e0e0e5] bg-white px-4 py-3 text-[13px] text-[#1c1c1e]" data-insight="answer"><span class="<%= chip %> <%= tones[:amber] %>"><%= seller_icon(:clock, size: 15) %></span>
+          <span class="pt-1"><%= sl("Les clients répondent le plus") %> <b><%= analytics_slot_label(slots[:best]) %></b> (<%= analytics_percent(slots[:best][:rate]) %>)<% if slots[:worst] && slots[:worst] != slots[:best] %> <%= sl("et le moins") %> <b><%= analytics_slot_label(slots[:worst]) %></b> (<%= analytics_percent(slots[:worst][:rate]) %>). <%= sl("Planifiez les rappels sur les meilleurs créneaux.") %><% end %></span></p>
       <% end %>
       <% if old_waiting.positive? %>
-        <p class="flex items-start gap-2 rounded-xl border border-[#f5d7d7] bg-[#fdf4f4] px-3 py-2 text-[12.5px] text-[#1c1c1e]" data-insight="waiting"><span class="mt-0.5 text-[#e34948]"><%= seller_icon(:alert, size: 14) %></span>
-          <span><b><%= analytics_integer(old_waiting) %></b> <%= sl("commandes attendent un appel depuis plus d'un jour.") %> <%= sl("Appelez-les en premier.") %></span></p>
+        <p class="flex items-start gap-2.5 rounded-2xl border border-[#e0e0e5] bg-white px-4 py-3 text-[13px] text-[#1c1c1e]" data-insight="waiting"><span class="<%= chip %> <%= tones[:red] %>"><%= seller_icon(:alert, size: 15) %></span>
+          <span class="pt-1"><b><%= analytics_integer(old_waiting) %></b> <%= sl("commandes attendent un appel depuis plus d'un jour.") %> <%= sl("Appelez-les en premier.") %></span></p>
       <% end %>
     </section>
   <% end %>
@@ -90,18 +97,19 @@
   <%# 1. Funnel and orders per day %>
   <section class="grid grid-cols-1 gap-3 lg:grid-cols-2">
     <div class="<%= card %>" data-funnel>
-      <h2 class="<%= title %>"><%= sl("Où les commandes se perdent") %></h2>
-      <p class="<%= sub %>"><b class="text-[#1c1c1e]"><%= analytics_integer(a.delivered) %></b> <%= sl("livrées sur") %> <b class="text-[#1c1c1e]"><%= analytics_integer(a.assigned) %></b> <%= sl("commandes reçues") %>. <%= sl("Le pourcentage est la part qui passe à l'étape suivante.") %></p>
+      <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:ink] %>"><%= seller_icon(:target, size: 16) %></span>
+        <div><h2 class="<%= title %>"><%= sl("Où les commandes se perdent") %></h2>
+          <p class="<%= sub %>"><b class="text-[#1c1c1e]"><%= analytics_integer(a.delivered) %></b> <%= sl("livrées sur") %> <b class="text-[#1c1c1e]"><%= analytics_integer(a.assigned) %></b> <%= sl("commandes reçues") %>. <%= sl("Le pourcentage est la part qui passe à l'étape suivante.") %></p></div></div>
       <% labels = { assigned: sl("Reçues"), reached: sl("Jointes par téléphone"), confirmed: sl("Confirmées"), shipped: sl("Expédiées"), delivered: sl("Livrées") } %>
       <% top = [ a.assigned, 1 ].max %>
-      <ol class="mt-3 space-y-0.5">
+      <ol class="mt-4 space-y-1">
         <% a.funnel.each do |key, count, step_rate| %>
           <% if key != :assigned %>
-            <li class="grid grid-cols-[9rem_1fr_auto] gap-2.5 text-[11px] text-[#6e6e73]" aria-hidden="true"><span></span><span class="ps-1" data-step="<%= key %>">↓ <%= analytics_percent(step_rate) %></span><span class="w-9"></span></li>
+            <li class="grid grid-cols-[9rem_1fr_auto] gap-2.5 text-[11px] text-[#8e8e93]" aria-hidden="true"><span></span><span class="ps-1" data-step="<%= key %>">↓ <%= analytics_percent(step_rate) %></span><span class="w-9"></span></li>
           <% end %>
-          <li class="grid grid-cols-[9rem_1fr_auto] items-center gap-2.5 text-[12.5px]" data-stage="<%= key %>" data-count="<%= count %>" data-tip="<%= labels[key] %> : <%= analytics_integer(count) %>">
+          <li class="grid grid-cols-[9rem_1fr_auto] items-center gap-2.5 text-[13px]" data-stage="<%= key %>" data-count="<%= count %>" data-tip="<%= labels[key] %> : <%= analytics_integer(count) %>">
             <span class="truncate text-[#3a3a3c]"><%= labels[key] %></span>
-            <span class="block h-5"><span class="block h-full rounded-e-[4px] bg-[#2a78d6]" style="width: <%= count.zero? ? 0 : [ count * 100.0 / top, 1.5 ].max.round(1) %>%"></span></span>
+            <span class="block h-2.5 overflow-hidden rounded-full bg-[#efeff3]"><span data-grow class="block h-full rounded-full <%= key == :delivered ? "bg-[#3aa76d]" : "bg-[#1c1c1e]" %>" style="width: <%= count.zero? ? 0 : [ count * 100.0 / top, 1.5 ].max.round(1) %>%"></span></span>
             <span class="w-9 text-end font-semibold text-[#1c1c1e] tabular-nums"><%= analytics_integer(count) %></span>
           </li>
         <% end %>
@@ -110,19 +118,20 @@
 
     <div class="<%= card %>" data-daily-orders>
       <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
-        <div><h2 class="<%= title %>"><%= sl("Commandes par jour") %></h2><p class="<%= sub %>"><%= sl("Chaque barre est un jour : la partie bleue est confirmée.") %></p></div>
-        <p class="flex items-center gap-3 text-[11px] whitespace-nowrap text-[#3a3a3c]"><span class="flex items-center gap-1.5"><i class="size-2 rounded-[2px]" style="background: <%= blue %>"></i><%= sl("Confirmées") %></span><span class="flex items-center gap-1.5"><i class="size-2 rounded-[2px]" style="background: <%= grey %>"></i><%= sl("Non confirmées") %></span></p>
+        <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:blue] %>"><%= seller_icon(:orders, size: 16) %></span>
+          <div><h2 class="<%= title %>"><%= sl("Commandes par jour") %></h2><p class="<%= sub %>"><%= sl("Chaque barre est un jour : la partie noire est confirmée.") %></p></div></div>
+        <p class="flex items-center gap-3 text-[11px] whitespace-nowrap text-[#3a3a3c]"><span class="flex items-center gap-1.5"><i class="size-2 rounded-full" style="background: <%= ink %>"></i><%= sl("Confirmées") %></span><span class="flex items-center gap-1.5"><i class="size-2 rounded-full" style="background: <%= grey %>"></i><%= sl("Non confirmées") %></span></p>
       </div>
       <% tallest = [ days.map { |d| d[:created] }.max.to_i, 1 ].max %>
-      <div class="mt-3 flex gap-2">
+      <div class="mt-4 flex gap-2">
         <div class="flex h-32 w-6 shrink-0 flex-col justify-between text-end text-[10px] text-[#8e8e93] tabular-nums" aria-hidden="true"><span><%= tallest %></span><span>0</span></div>
         <div class="relative min-w-0 flex-1">
           <div class="pointer-events-none absolute inset-x-0 top-0 border-t border-[#ececf0]"></div>
           <div class="flex h-32 items-end justify-between gap-[2px] border-b border-[#d9dce2]" role="img" aria-label="<%= sl("Commandes par jour") %>">
             <% days.each do |day| %>
               <div class="flex h-full min-w-0 max-w-6 flex-1 flex-col justify-end gap-[2px]" tabindex="0" data-tip="<%= l(day[:date], format: "%d/%m") %> : <%= day[:created] %> <%= sl("commandes") %>, <%= day[:confirmed] %> <%= sl("confirmées") %>" data-day="<%= day[:date].iso8601 %>" data-created="<%= day[:created] %>" data-confirmed="<%= day[:confirmed] %>">
-                <% if day[:unconfirmed].positive? %><span class="block w-full rounded-t-[4px]" style="height: <%= (day[:unconfirmed] * 100.0 / tallest).round(1) %>%; background: <%= grey %>"></span><% end %>
-                <% if day[:confirmed].positive? %><span class="block w-full <%= day[:unconfirmed].zero? ? "rounded-t-[4px]" : "" %>" style="height: <%= (day[:confirmed] * 100.0 / tallest).round(1) %>%; background: <%= blue %>"></span><% end %>
+                <% if day[:unconfirmed].positive? %><span data-rise class="block w-full rounded-t-[4px]" style="height: <%= (day[:unconfirmed] * 100.0 / tallest).round(1) %>%; background: <%= grey %>"></span><% end %>
+                <% if day[:confirmed].positive? %><span data-rise class="block w-full <%= day[:unconfirmed].zero? ? "rounded-t-[4px]" : "" %>" style="height: <%= (day[:confirmed] * 100.0 / tallest).round(1) %>%; background: <%= ink %>"></span><% end %>
               </div>
             <% end %>
           </div>
@@ -136,15 +145,16 @@
   <section class="grid grid-cols-1 gap-3 lg:grid-cols-2">
     <div class="<%= card %>" data-rates-chart>
       <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
-        <div><h2 class="<%= title %>"><%= sl("Confirmation et livraison, jour par jour") %></h2><p class="<%= sub %>"><%= sl("Zone grise : jours récents, des colis sont encore en route.") %></p></div>
-        <p class="flex items-center gap-3 text-[11px] whitespace-nowrap text-[#3a3a3c]"><span class="flex items-center gap-1.5"><i class="h-0.5 w-3.5 rounded" style="background: <%= blue %>"></i><%= sl("Taux de confirmation") %></span><span class="flex items-center gap-1.5"><i class="h-0.5 w-3.5 rounded" style="background: <%= orange %>"></i><%= sl("Livrées sur confirmées") %></span></p>
+        <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:green] %>"><%= seller_icon(:chart, size: 16) %></span>
+          <div><h2 class="<%= title %>"><%= sl("Confirmation et livraison, jour par jour") %></h2><p class="<%= sub %>"><%= sl("Zone grise : jours récents, des colis sont encore en route.") %></p></div></div>
+        <p class="flex items-center gap-3 text-[11px] whitespace-nowrap text-[#3a3a3c]"><span class="flex items-center gap-1.5"><i class="h-0.5 w-3.5 rounded" style="background: <%= ink %>"></i><%= sl("Taux de confirmation") %></span><span class="flex items-center gap-1.5"><i class="h-0.5 w-3.5 rounded" style="background: <%= gold %>"></i><%= sl("Livrées sur confirmées") %></span></p>
       </div>
-      <div class="mt-3 flex gap-2">
+      <div class="mt-4 flex gap-2">
         <div class="flex h-32 w-8 shrink-0 flex-col justify-between text-end text-[10px] text-[#8e8e93] tabular-nums" aria-hidden="true"><span>100 %</span><span>50 %</span><span>0 %</span></div>
         <div class="relative min-w-0 flex-1">
-          <%= analytics_line_chart([ { values: days.map { |d| d[:confirmation_rate] }, color: blue, area: true }, { values: days.map { |d| d[:delivery_rate] }, color: orange } ], max: 100, shade_from: provisional_from, count: days.size) %>
+          <%= analytics_line_chart([ { values: days.map { |d| d[:confirmation_rate] }, color: ink, area: true }, { values: days.map { |d| d[:delivery_rate] }, color: gold } ], max: 100, shade_from: provisional_from, count: days.size) %>
           <div class="absolute inset-x-0 top-0 flex h-32" aria-hidden="true">
-            <% days.each do |day| %><span class="h-full flex-1 hover:bg-[#2a78d6]/5" data-tip="<%= l(day[:date], format: "%d/%m") %> : <%= sl("confirmation") %> <%= analytics_percent(day[:confirmation_rate]) %> · <%= sl("livraison") %> <%= analytics_percent(day[:delivery_rate]) %><%= " (#{sl("provisoire")})" if day[:provisional] %>"></span><% end %>
+            <% days.each do |day| %><span class="h-full flex-1 hover:bg-[#1c1c1e]/5" data-tip="<%= l(day[:date], format: "%d/%m") %> : <%= sl("confirmation") %> <%= analytics_percent(day[:confirmation_rate]) %> · <%= sl("livraison") %> <%= analytics_percent(day[:delivery_rate]) %><%= " (#{sl("provisoire")})" if day[:provisional] %>"></span><% end %>
           </div>
           <p class="mt-1 flex justify-between text-[10.5px] text-[#8e8e93]"><span><%= l(days.first[:date], format: "%d/%m") %></span><span><%= l(days.last[:date], format: "%d/%m") %></span></p>
         </div>
@@ -152,9 +162,9 @@
     </div>
 
     <div class="<%= card %>" data-heatmap>
-      <h2 class="<%= title %>"><%= sl("Quand les clients répondent") %></h2>
-      <p class="<%= sub %>"><%= sl("Part des appels décrochés, par jour et par heure (heure de la boutique). Plus c'est foncé, plus ils répondent.") %></p>
-      <div class="mt-3 overflow-x-auto">
+      <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:amber] %>"><%= seller_icon(:phone, size: 16) %></span>
+        <div><h2 class="<%= title %>"><%= sl("Quand les clients répondent") %></h2><p class="<%= sub %>"><%= sl("Part des appels décrochés, par jour et par heure (heure de la boutique). Plus c'est foncé, plus ils répondent.") %></p></div></div>
+      <div class="mt-4 overflow-x-auto">
         <div class="grid min-w-[24rem] gap-[2px]" style="grid-template-columns: 1.75rem repeat(24, minmax(0, 1fr))">
           <span></span>
           <% 24.times do |hour| %><span class="text-center text-[9px] text-[#8e8e93]"><%= hour if (hour % 3).zero? %></span><% end %>
@@ -166,7 +176,7 @@
           <% end %>
         </div>
       </div>
-      <p class="mt-2 flex items-center justify-end gap-1.5 text-[10.5px] text-[#6e6e73]">0 %<span class="flex gap-0.5"><i class="size-2.5 rounded-[2px]" style="background: rgba(42,120,214,0.12)"></i><i class="size-2.5 rounded-[2px]" style="background: rgba(42,120,214,0.4)"></i><i class="size-2.5 rounded-[2px]" style="background: rgba(42,120,214,0.7)"></i><i class="size-2.5 rounded-[2px]" style="background: rgba(42,120,214,1)"></i></span>100 %</p>
+      <p class="mt-2 flex items-center justify-end gap-1.5 text-[10.5px] text-[#6e6e73]">0 %<span class="flex gap-0.5"><i class="size-2.5 rounded-[2px]" style="background: rgba(28,28,30,0.1)"></i><i class="size-2.5 rounded-[2px]" style="background: rgba(28,28,30,0.35)"></i><i class="size-2.5 rounded-[2px]" style="background: rgba(28,28,30,0.65)"></i><i class="size-2.5 rounded-[2px]" style="background: rgba(28,28,30,1)"></i></span>100 %</p>
     </div>
   </section>
 
@@ -179,16 +189,17 @@
   <% queue = a.queue %>
   <section class="grid grid-cols-1 gap-3 lg:grid-cols-2">
     <div class="<%= card %>" data-first-call>
-      <h2 class="<%= title %>"><%= sl("Plus on appelle vite, plus on confirme") %></h2>
-      <p class="<%= sub %>"><%= sl("Taux de confirmation selon le temps d'attente avant le premier appel.") %> <%= sl("Médiane") %> : <b class="text-[#1c1c1e]" data-median><%= analytics_duration(a.median_first_call_seconds) %></b>.</p>
-      <div class="mt-3 flex gap-2">
+      <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:amber] %>"><%= seller_icon(:clock, size: 16) %></span>
+        <div><h2 class="<%= title %>"><%= sl("Plus on appelle vite, plus on confirme") %></h2>
+          <p class="<%= sub %>"><%= sl("Taux de confirmation selon le temps d'attente avant le premier appel.") %> <%= sl("Médiane") %> : <b class="text-[#1c1c1e]" data-median><%= analytics_duration(a.median_first_call_seconds) %></b>.</p></div></div>
+      <div class="mt-4 flex gap-2">
         <div class="flex h-28 w-8 shrink-0 flex-col justify-between text-end text-[10px] text-[#8e8e93] tabular-nums" aria-hidden="true"><span>100 %</span><span>0 %</span></div>
         <div class="min-w-0 flex-1">
           <div class="grid h-28 grid-cols-5 items-end gap-3 border-b border-[#d9dce2]">
             <% speed.each do |bucket| %>
               <div class="flex h-full flex-col items-center justify-end gap-1" data-speed="<%= bucket[:key] %>" data-orders="<%= bucket[:orders] %>" data-tip="<%= speed_labels[bucket[:key]] %> : <%= bucket[:orders] %> <%= sl("commandes") %>, <%= analytics_percent(bucket[:rate]) %> <%= sl("confirmées") %>" tabindex="0">
-                <span class="text-[11.5px] font-semibold text-[#1c1c1e]"><%= bucket[:rate] ? "#{bucket[:rate].round} %" : "—" %></span>
-                <span class="block w-full max-w-6 rounded-t-[4px]" style="height: <%= bucket[:rate] ? [ bucket[:rate] * 0.8, 1.5 ].max.round(1) : 0 %>%; background: <%= bucket == best_bucket ? blue : "#8fb7e8" %>"></span>
+                <span class="text-xs font-semibold text-[#1c1c1e]"><%= bucket[:rate] ? "#{bucket[:rate].round} %" : "—" %></span>
+                <span data-rise class="block w-full max-w-6 rounded-t-[4px]" style="height: <%= bucket[:rate] ? [ bucket[:rate] * 0.8, 1.5 ].max.round(1) : 0 %>%; background: <%= bucket == best_bucket ? ink : "#b9bcc5" %>"></span>
               </div>
             <% end %>
           </div>
@@ -196,53 +207,78 @@
         </div>
       </div>
       <% if best_bucket && worst_bucket && best_bucket != worst_bucket %>
-        <p class="mt-2.5 text-[12px] text-[#3a3a3c]"><%= sl("Appelées en") %> « <%= speed_labels[best_bucket[:key]] %> » : <b><%= analytics_percent(best_bucket[:rate]) %></b> <%= sl("confirmées") %>, <%= sl("contre") %> <b><%= analytics_percent(worst_bucket[:rate]) %></b> <%= sl("en") %> « <%= speed_labels[worst_bucket[:key]] %> ».</p>
+        <p class="mt-3 text-[12.5px] text-[#3a3a3c]"><%= sl("Appelées en") %> « <%= speed_labels[best_bucket[:key]] %> » : <b><%= analytics_percent(best_bucket[:rate]) %></b> <%= sl("confirmées") %>, <%= sl("contre") %> <b><%= analytics_percent(worst_bucket[:rate]) %></b> <%= sl("en") %> « <%= speed_labels[worst_bucket[:key]] %> ».</p>
       <% end %>
     </div>
 
     <div class="<%= card %>" data-queue-state>
-      <h2 class="<%= title %>"><%= sl("File d'attente : depuis combien de temps ?") %></h2>
-      <p class="<%= sub %>"><b class="text-[#1c1c1e]" data-waiting><%= analytics_integer(queue[:total]) %></b> <%= sl("commandes attendent un premier appel") %><% if queue[:oldest_seconds] %> · <%= sl("la plus ancienne") %> <b class="text-[#1c1c1e]" data-oldest><%= analytics_duration(queue[:oldest_seconds]) %></b><% end %>.</p>
-      <div class="mt-3">
+      <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:red] %>"><%= seller_icon(:alert, size: 16) %></span>
+        <div><h2 class="<%= title %>"><%= sl("File d'attente : depuis combien de temps ?") %></h2>
+          <p class="<%= sub %>"><b class="text-[#1c1c1e]" data-waiting><%= analytics_integer(queue[:total]) %></b> <%= sl("commandes attendent un premier appel") %><% if queue[:oldest_seconds] %> · <%= sl("la plus ancienne") %> <b class="text-[#1c1c1e]" data-oldest><%= analytics_duration(queue[:oldest_seconds]) %></b><% end %>.</p></div></div>
+      <div class="mt-4">
         <%= render "analytics_bars", data: "data-queue-bucket", top: [ queue[:total], 1 ].max, rows: queue[:buckets].map { |bucket|
               { label: queue_labels[bucket[:key]], count: bucket[:count], percent: (queue[:total].zero? ? nil : bucket[:count] * 100.0 / queue[:total]), key: bucket[:key], danger: bucket[:key] == :gt24h } } %>
       </div>
     </div>
   </section>
 
-  <%# 4. Which call confirmed, results of the calls, why the customers cancel: ranked bars, not rings %>
+  <%# 4. Which call confirmed, results of the calls (rings like the dashboard's), why the customers cancel (ranked bars) %>
   <% at_call = a.confirmed_at_call %>
+  <% call_colors = %w[#1c1c1e #4a4a50 #7a7a82 #a9a9b0 #d0d0d5] %>
   <% result_labels = { "confirmed" => sl("Confirmée"), "no_answer" => sl("Sans réponse"), "cancelled" => sl("Annulée"), "callback" => sl("Rappel programmé"), "wrong_number" => sl("Faux numéro"), "abandoned" => sl("Appel abandonné") } %>
+  <% result_colors = { "confirmed" => "#3aa76d", "no_answer" => "#e0a52c", "cancelled" => "#8e8e93", "callback" => "#3b82c4", "wrong_number" => "#d6455d", "abandoned" => "#d5d7dd" } %>
   <% reasons = a.cancel_reasons %>
   <section class="grid grid-cols-1 gap-3 lg:grid-cols-3">
     <div class="<%= card %>" data-confirmed-at-call>
-      <h2 class="<%= title %>"><%= sl("Confirmées à quel appel ?") %></h2>
-      <p class="<%= sub %>"><b class="text-[#1c1c1e]" data-first-call-share><%= at_call[:buckets].first[:percent] ? "#{at_call[:buckets].first[:percent].round} %" : "—" %></b> <%= sl("sont confirmées dès le 1er appel.") %> <%= sl("Seules les commandes avec un appel enregistré sont comptées.") %></p>
-      <div class="mt-3">
-        <%= render "analytics_bars", data: "data-call-position", top: [ at_call[:buckets].map { |bucket| bucket[:count] }.max.to_i, 1 ].max,
-              rows: at_call[:buckets].map { |bucket| { label: (bucket[:position] == 5 ? sl("Appel 5 ou plus") : "#{sl("Appel")} #{bucket[:position]}"), count: bucket[:count], percent: bucket[:percent], key: bucket[:position] } } %>
+      <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:green] %>"><%= seller_icon(:check, size: 16) %></span>
+        <div><h2 class="<%= title %>"><%= sl("Confirmées à quel appel ?") %></h2>
+          <p class="<%= sub %>"><b class="text-[#1c1c1e]" data-first-call-share><%= at_call[:buckets].first[:percent] ? "#{at_call[:buckets].first[:percent].round} %" : "—" %></b> <%= sl("sont confirmées dès le 1er appel.") %> <%= sl("Seules les commandes avec un appel enregistré sont comptées.") %></p></div></div>
+      <div class="mt-4 flex flex-col items-center gap-4">
+        <div class="relative shrink-0">
+          <%= analytics_donut(at_call[:buckets].each_with_index.map { |bucket, i| { count: bucket[:count], color: call_colors[i] } }) %>
+          <div class="absolute inset-0 grid place-content-center text-center"><span class="text-xl leading-none font-bold text-[#1c1c1e] tabular-nums"><%= at_call[:total] %></span><span class="mt-1 text-[11px] text-[#6e6e73]"><%= sl("confirmées") %></span></div>
+        </div>
+        <ul class="w-full space-y-2">
+          <% at_call[:buckets].each_with_index do |bucket, i| %>
+            <li class="flex items-center justify-between gap-2 text-[13px]" data-call-position="<%= bucket[:position] %>" data-count="<%= bucket[:count] %>" data-tip="<%= bucket[:position] == 5 ? sl("Appel 5 ou plus") : "#{sl("Appel")} #{bucket[:position]}" %> : <%= bucket[:count] %>">
+              <span class="flex items-center gap-2 text-[#3a3a3c]"><i class="size-2.5 rounded-full" style="background: <%= call_colors[i] %>"></i><%= bucket[:position] == 5 ? sl("Appel 5 ou plus") : "#{sl("Appel")} #{bucket[:position]}" %></span>
+              <span class="tabular-nums"><b class="font-semibold text-[#1c1c1e]"><%= analytics_integer(bucket[:count]) %></b> <span class="ms-2 text-xs text-[#8e8e93]"><%= bucket[:percent] ? "#{bucket[:percent].round} %" : "—" %></span></span>
+            </li>
+          <% end %>
+        </ul>
       </div>
     </div>
 
     <div class="<%= card %>" data-call-results>
-      <h2 class="<%= title %>"><%= sl("Résultat des appels") %></h2>
-      <p class="<%= sub %>"><b class="text-[#1c1c1e]" data-total-calls><%= analytics_integer(total_calls) %></b> <%= sl("appels passés sur la période.") %></p>
-      <div class="mt-3">
-        <%= render "analytics_bars", data: "data-outcome", top: [ a.call_results[:outcomes].map { |row| row[:count] }.max.to_i, 1 ].max,
-              rows: a.call_results[:outcomes].map { |row| { label: result_labels[row[:outcome]], count: row[:count], percent: row[:percent], key: row[:outcome] } } %>
+      <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:blue] %>"><%= seller_icon(:calculator, size: 16) %></span>
+        <div><h2 class="<%= title %>"><%= sl("Résultat des appels") %></h2>
+          <p class="<%= sub %>"><%= sl("Ce qui s'est passé lors des appels passés sur la période.") %></p></div></div>
+      <div class="mt-4 flex flex-col items-center gap-4">
+        <div class="relative shrink-0">
+          <%= analytics_donut(a.call_results[:outcomes].map { |row| { count: row[:count], color: result_colors[row[:outcome]] } }) %>
+          <div class="absolute inset-0 grid place-content-center text-center"><span class="text-xl leading-none font-bold text-[#1c1c1e] tabular-nums" data-total-calls><%= analytics_integer(total_calls) %></span><span class="mt-1 text-[11px] text-[#6e6e73]"><%= sl("appels") %></span></div>
+        </div>
+        <ul class="w-full space-y-2">
+          <% a.call_results[:outcomes].each do |row| %>
+            <li class="flex items-center justify-between gap-2 text-[13px]" data-outcome="<%= row[:outcome] %>" data-count="<%= row[:count] %>" data-tip="<%= result_labels[row[:outcome]] %> : <%= row[:count] %>">
+              <span class="flex items-center gap-2 text-[#3a3a3c]"><i class="size-2.5 rounded-full" style="background: <%= result_colors[row[:outcome]] %>"></i><%= result_labels[row[:outcome]] %></span>
+              <span class="tabular-nums"><b class="font-semibold text-[#1c1c1e]"><%= analytics_integer(row[:count]) %></b> <span class="ms-2 text-xs text-[#8e8e93]"><%= row[:percent] ? "#{row[:percent].round} %" : "—" %></span></span>
+            </li>
+          <% end %>
+        </ul>
       </div>
     </div>
 
     <div class="<%= card %>" data-cancel-reasons>
-      <h2 class="<%= title %>"><%= sl("Pourquoi les clients annulent") %></h2>
-      <p class="<%= sub %>"><%= sl("Motifs écrits par les agents sur les commandes annulées.") %></p>
+      <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:red] %>"><%= seller_icon(:ban, size: 16) %></span>
+        <div><h2 class="<%= title %>"><%= sl("Pourquoi les clients annulent") %></h2><p class="<%= sub %>"><%= sl("Motifs écrits par les agents sur les commandes annulées.") %></p></div></div>
       <% if reasons[:total].zero? %>
-        <p class="mt-6 mb-2 text-center text-[13px] text-[#6e6e73]"><%= sl("Aucune commande annulée sur cette période.") %></p>
+        <p class="mt-8 mb-4 text-center text-sm text-[#6e6e73]"><%= sl("Aucune commande annulée sur cette période.") %></p>
       <% else %>
         <% if reasons[:blank_percent].to_f >= 50 %>
-          <p class="mt-2.5 rounded-lg border border-[#f3e3bf] bg-[#fffaf0] px-2.5 py-1.5 text-[11.5px] text-[#8a5a12]" data-no-reason-warning><b><%= sl("Sans motif") %> : <%= reasons[:blank_percent].round %> % <%= sl("des annulations") %></b>. <%= sl("Demandez aux agents d'écrire le motif quand ils annulent.") %></p>
+          <p class="mt-3 rounded-xl border border-[#f3e3bf] bg-[#fffaf0] px-3 py-2 text-xs text-[#8a5a12]" data-no-reason-warning><b><%= sl("Sans motif") %> : <%= reasons[:blank_percent].round %> % <%= sl("des annulations") %></b>. <%= sl("Demandez aux agents d'écrire le motif quand ils annulent.") %></p>
         <% end %>
-        <div class="mt-3">
+        <div class="mt-4">
           <%= render "analytics_bars", data: "data-reason", top: [ reasons[:rows].map { |row| row[:count] }.max.to_i, 1 ].max,
                 rows: reasons[:rows].map { |row| { label: (row[:reason] == :others ? sl("Autres motifs") : (row[:reason].presence ? row[:reason].capitalize : sl("Sans motif"))), count: row[:count], percent: row[:percent], key: row[:reason] } } %>
         </div>
@@ -255,15 +291,16 @@
   <% hourly_max = [ hourly[:new_orders].max, hourly[:calls].max, 1 ].max %>
   <section class="<%= card %>" data-hourly>
     <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
-      <div><h2 class="<%= title %>"><%= sl("Charge et appels par heure") %></h2><p class="<%= sub %>"><%= sl("Nouvelles commandes et appels passés, par heure de la journée (heure de la boutique).") %></p></div>
-      <p class="flex items-center gap-3 text-[11px] whitespace-nowrap text-[#3a3a3c]"><span class="flex items-center gap-1.5"><i class="h-0.5 w-3.5 rounded" style="background: <%= blue %>"></i><%= sl("Nouvelles commandes") %></span><span class="flex items-center gap-1.5"><i class="h-0.5 w-3.5 rounded" style="background: <%= orange %>"></i><%= sl("Appels") %></span></p>
+      <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:ink] %>"><%= seller_icon(:chart, size: 16) %></span>
+        <div><h2 class="<%= title %>"><%= sl("Charge et appels par heure") %></h2><p class="<%= sub %>"><%= sl("Nouvelles commandes et appels passés, par heure de la journée (heure de la boutique).") %></p></div></div>
+      <p class="flex items-center gap-3 text-[11px] whitespace-nowrap text-[#3a3a3c]"><span class="flex items-center gap-1.5"><i class="h-0.5 w-3.5 rounded" style="background: <%= ink %>"></i><%= sl("Nouvelles commandes") %></span><span class="flex items-center gap-1.5"><i class="h-0.5 w-3.5 rounded" style="background: <%= gold %>"></i><%= sl("Appels") %></span></p>
     </div>
-    <div class="mt-3 flex gap-2">
+    <div class="mt-4 flex gap-2">
       <div class="flex h-28 w-6 shrink-0 flex-col justify-between text-end text-[10px] text-[#8e8e93] tabular-nums" aria-hidden="true"><span><%= hourly_max %></span><span>0</span></div>
       <div class="relative min-w-0 flex-1">
-        <%= analytics_line_chart([ { values: hourly[:new_orders], color: blue, area: true }, { values: hourly[:calls], color: orange } ], max: hourly_max, count: 24, height: "h-28") %>
+        <%= analytics_line_chart([ { values: hourly[:new_orders], color: ink, area: true }, { values: hourly[:calls], color: gold } ], max: hourly_max, count: 24, height: "h-28") %>
         <div class="absolute inset-x-0 top-0 flex h-28" aria-hidden="true">
-          <% 24.times do |hour| %><span class="h-full flex-1 hover:bg-[#2a78d6]/5" data-tip="<%= hour %> h : <%= hourly[:new_orders][hour] %> <%= sl("nouvelles commandes") %>, <%= hourly[:calls][hour] %> <%= sl("appels") %>"></span><% end %>
+          <% 24.times do |hour| %><span class="h-full flex-1 hover:bg-[#1c1c1e]/5" data-tip="<%= hour %> h : <%= hourly[:new_orders][hour] %> <%= sl("nouvelles commandes") %>, <%= hourly[:calls][hour] %> <%= sl("appels") %>"></span><% end %>
         </div>
         <p class="mt-1 flex justify-between text-[10.5px] text-[#8e8e93]"><% [ 0, 3, 6, 9, 12, 15, 18, 21 ].each do |hour| %><span><%= hour %> h</span><% end %></p>
       </div>
@@ -272,8 +309,8 @@
 
   <%# The same numbers as a table, for reading them one by one %>
   <details class="<%= card %> !py-3" data-table-view>
-    <summary class="cursor-pointer text-[12.5px] font-semibold text-[#1c1c1e]"><%= sl("Voir les chiffres jour par jour (tableau)") %></summary>
-    <div class="mt-3 max-h-72 overflow-auto rounded-lg border border-[#ececf0]">
+    <summary class="cursor-pointer text-[13px] font-semibold text-[#1c1c1e]"><%= sl("Voir les chiffres jour par jour (tableau)") %></summary>
+    <div class="mt-3 max-h-72 overflow-auto rounded-xl border border-[#ececf0]">
       <table class="w-full text-[12px]">
         <thead class="sticky top-0 bg-[#f7f8fa] text-[#6e6e73]"><tr><% [ "Jour", "Commandes", "Confirmées", "Livrées", "Taux de confirmation", "Livrées sur confirmées" ].each_with_index do |heading, i| %><th class="px-3 py-2 <%= i.zero? ? "text-start" : "text-end" %> font-medium"><%= sl(heading) %></th><% end %></tr></thead>
         <tbody class="divide-y divide-[#f1f1f4]">

@@ -23,7 +23,7 @@ module ConfirmationsAnalyticsHelper
 
   # Two lines of a small chart in a 100 x 30 box; values may be nil (the line is simply not drawn there). The last
   # `dashed_from..` points are provisional and drawn dashed.
-  def analytics_sparkline(values, dashed_from: nil, color: "#2a78d6", size: "h-7 w-full")
+  def analytics_sparkline(values, dashed_from: nil, color: "#1c1c1e", size: "h-7 w-full")
     points = analytics_points(values, max: values.compact.max.to_f, height: 28, top: 1)
     solid, dashed = analytics_split(points, dashed_from)
     tag.svg(viewBox: "0 0 100 30", preserveAspectRatio: "none", class: size, role: "img", "aria-hidden": "true") do
@@ -50,11 +50,28 @@ module ConfirmationsAnalyticsHelper
     tag.svg(viewBox: "0 0 100 40", preserveAspectRatio: "none", class: "#{height} w-full", role: "img") { safe_join([ shade, *grid, *lines ].compact) }
   end
 
-  # Colour of a heat-map cell: one blue, darker when more calls were answered; light grey when there was no call.
+  # A ring like the dashboard's distribution: segments [{ count:, color: }], each drawn through the .donut-seg animation.
+  def analytics_donut(segments, size: "size-32")
+    total = segments.sum { |segment| segment[:count] }.to_f
+    offset = 0.0
+    shown = segments.select { |segment| segment[:count].positive? }
+    rings = shown.map do |segment|
+      share = segment[:count] / total * 100
+      length = shown.size > 1 ? [ share - 0.6, 0.2 ].max : share
+      circle = tag.circle(class: "donut-seg", cx: 21, cy: 21, r: 15.9155, fill: "none", stroke: segment[:color], "stroke-width": 5.5, style: "--len: #{length.round(3)}; stroke-dashoffset: -#{offset.round(3)}", "data-count": segment[:count])
+      offset += share
+      circle
+    end
+    tag.svg(viewBox: "0 0 42 42", class: "#{size} -rotate-90", role: "img") do
+      safe_join([ tag.circle(cx: 21, cy: 21, r: 15.9155, fill: "none", stroke: "#efeff3", "stroke-width": 5.5), *rings ])
+    end
+  end
+
+  # Colour of a heat-map cell: the platform's ink, darker when more calls were answered; light grey when there was no call.
   def analytics_heat_style(cell)
     return "background: #f3f4f7" if cell[:rate].nil?
 
-    "background: rgba(42, 120, 214, #{(0.12 + 0.88 * cell[:rate] / 100.0).round(2)})"
+    "background: rgba(28, 28, 30, #{(0.1 + 0.9 * cell[:rate] / 100.0).round(2)})"
   end
 
   FULL_WEEKDAYS = %w[lundi mardi mercredi jeudi vendredi samedi dimanche].freeze

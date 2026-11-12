@@ -56,7 +56,7 @@ docker compose exec web env \
 
 Then open http://atelier.lvh.me:3010 (local). In production, add `{slug}.ollazen.com` as a Custom Domain on the Render `morea` service (or add `*.ollazen.com` + root if on a plan that supports wildcards).
 
-`APP_BASE_DOMAIN=ollazen.com` in production. Email delivery requires `MAIL_FROM` and the `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and optional `SMTP_DOMAIN` / `SMTP_AUTHENTICATION` environment settings, plus the existing Sidekiq worker. Verification and recovery links use the configured platform domain, never the incoming request host. `SUBSCRIPTION_SUPPORT_EMAIL` enables the subscription-page contact action. Historical access requests remain reviewable by platform admins; public signup no longer enters that queue.
+`APP_BASE_DOMAIN=seallo.ma` in production. Email delivery requires `MAIL_FROM` and the `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and optional `SMTP_DOMAIN` / `SMTP_AUTHENTICATION` environment settings on `morea-web`, plus the Sidekiq process started by `bin/render-start.sh`. With Resend, use `SMTP_ADDRESS=smtp.resend.com`, `SMTP_USERNAME=resend`, and `SMTP_PASSWORD=<api key>`. Verification and recovery links use the configured platform domain, never the incoming request host. `SUBSCRIPTION_SUPPORT_EMAIL` enables the subscription-page contact action. Historical access requests remain reviewable by platform admins; public signup no longer enters that queue.
 
 ### Workspace access and language
 

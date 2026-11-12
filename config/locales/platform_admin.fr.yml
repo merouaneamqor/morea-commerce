@@ -199,6 +199,12 @@ fr:
         one: "%{count} job mort vidé."
         other: "%{count} jobs morts vidés."
       cleared_one: "Job mort retiré."
+      mail_title: "E-mail sortant"
+      mail_ready: "SMTP est configuré. Les e-mails partent de %{from} via %{address}."
+      mail_missing: "L'e-mail sortant n'est pas configuré. Manquant : %{keys}."
+      mail_help: "Sur le service Render morea-web, définissez MAIL_FROM, SMTP_ADDRESS, SMTP_PORT, SMTP_USERNAME et SMTP_PASSWORD. Pour Resend : smtp.resend.com, utilisateur resend, mot de passe = clé API."
+      mail_from: "Expéditeur"
+      mail_host: "Hôte SMTP"
       columns:
         job: "Job"
         queue: "File"

@@ -200,6 +200,12 @@ en:
         one: "Cleared %{count} dead job."
         other: "Cleared %{count} dead jobs."
       cleared_one: "Removed the dead job."
+      mail_title: "Outbound email"
+      mail_ready: "SMTP is configured. Mail sends from %{from} via %{address}."
+      mail_missing: "Outbound email is not configured. Missing: %{keys}."
+      mail_help: "On the morea-web Render service, set MAIL_FROM, SMTP_ADDRESS, SMTP_PORT, SMTP_USERNAME, and SMTP_PASSWORD. Resend SMTP uses smtp.resend.com, user resend, and your API key as the password."
+      mail_from: "From"
+      mail_host: "SMTP host"
       columns:
         job: "Job"
         queue: "Queue"

@@ -33,6 +33,32 @@
   </div>
 <% end %>
 
+<section class="admin-card mb-4" data-platform-mail-status data-mail-configured="<%= @mail_status.configured %>">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("platform_admin.operations.mail_title") %></h2>
+  </div>
+  <div class="px-4 pb-4 space-y-2">
+    <% if @mail_status.configured %>
+      <p data-mail-state="ready"><%= t("platform_admin.operations.mail_ready", from: @mail_status.from, address: @mail_status.address) %></p>
+    <% else %>
+      <div class="admin-banner admin-banner--critical mb-2" data-mail-state="missing">
+        <%= t("platform_admin.operations.mail_missing", keys: @mail_status.missing.join(", ")) %>
+      </div>
+      <p class="admin-help"><%= t("platform_admin.operations.mail_help") %></p>
+    <% end %>
+    <dl class="admin-field-grid space-y-2 text-sm">
+      <div>
+        <dt class="admin-label"><%= t("platform_admin.operations.mail_from") %></dt>
+        <dd dir="ltr"><%= @mail_status.from %></dd>
+      </div>
+      <div>
+        <dt class="admin-label"><%= t("platform_admin.operations.mail_host") %></dt>
+        <dd dir="ltr"><%= @mail_status.address.presence || admin_blank %> · <%= @mail_status.port %></dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
 <section class="admin-card mb-4" data-platform-operations-dead>
   <div class="admin-card__header">
     <h2 class="admin-card__title"><%= t("platform_admin.operations.failed_jobs") %></h2>

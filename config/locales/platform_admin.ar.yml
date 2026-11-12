@@ -199,6 +199,12 @@ ar:
         one: "تم مسح مهمة ميتة واحدة."
         other: "تم مسح %{count} مهام ميتة."
       cleared_one: "تمت إزالة المهمة الميتة."
+      mail_title: "البريد الصادر"
+      mail_ready: "SMTP مضبوط. تُرسل الرسائل من %{from} عبر %{address}."
+      mail_missing: "البريد الصادر غير مضبوط. ناقص: %{keys}."
+      mail_help: "على خدمة morea-web في Render عيّن MAIL_FROM وSMTP_ADDRESS وSMTP_PORT وSMTP_USERNAME وSMTP_PASSWORD. لـ Resend: smtp.resend.com والمستخدم resend وكلمة المرور مفتاح API."
+      mail_from: "المرسل"
+      mail_host: "مضيف SMTP"
       columns:
         job: "المهمة"
         queue: "الطابور"

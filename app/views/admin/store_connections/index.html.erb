@@ -85,7 +85,7 @@
   <% end %>
 </section>
 
-<section>
+<section id="delivery">
   <h2 class="mb-2.5 text-sm font-semibold text-[#1c1c1e]"><%= sl("Sociétés de livraison") %></h2>
   <button type="button" data-delivery-new class="group flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e0e0e5] bg-white p-4 text-start transition hover:border-[#d2d2d7]">
     <span class="flex items-center gap-3">
@@ -432,6 +432,8 @@
     });
 
     var begin = function (account) { state = { provider: account ? account.provider : null, account: account, region: "all", country: "all", q: "" }; show(); };
+    // Opened from the new-order window ("connect a delivery company"): go straight to choosing the company.
+    if (window.location.hash === "#delivery") begin(null);
     document.querySelectorAll("[data-delivery-new]").forEach(function (b) { b.addEventListener("click", function () { begin(null); }); });
     document.querySelectorAll("[data-delivery-edit]").forEach(function (b) {
       b.addEventListener("click", function () { begin(accounts.filter(function (a) { return a.id === Number(b.dataset.deliveryEdit); })[0]); });

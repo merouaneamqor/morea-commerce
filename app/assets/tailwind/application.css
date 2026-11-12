@@ -3627,3 +3627,14 @@ main {
 /* New-order window v2: plain sections with hairlines instead of cards, on the glass panel */
 [data-order-modal] [data-section] { background: transparent; border-color: rgba(28, 28, 30, 0.1); }
 [data-order-modal] .admin-help { color: #6e6e73; font-size: 12px; margin-top: 0.25rem; }
+
+/* New-order window: smaller on screen and a slim scrollbar that sits inside the rounded corners */
+[data-seller-shell] [data-order-modal-panel][role="dialog"] {
+  width: min(38rem, 100%); max-height: calc(100dvh - 3rem); zoom: 0.9;
+  overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(28, 28, 30, 0.28) transparent; scrollbar-gutter: stable;
+}
+[data-order-modal-panel]::-webkit-scrollbar { width: 6px; }
+[data-order-modal-panel]::-webkit-scrollbar-track { background: transparent; margin-block: 1rem; }
+[data-order-modal-panel]::-webkit-scrollbar-thumb { background: rgba(28, 28, 30, 0.28); border-radius: 999px; }
+[data-order-modal-panel]::-webkit-scrollbar-thumb:hover { background: rgba(28, 28, 30, 0.45); }
+[data-order-modal] [data-section] { padding-block: 0.75rem; }

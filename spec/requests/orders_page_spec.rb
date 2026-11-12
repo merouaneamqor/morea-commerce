@@ -174,7 +174,8 @@ RSpec.describe "Orders page", type: :request do
       expect(cards.map { |card| card["class"][/h-\[\d+px\]/] }.uniq).to eq([ "h-[110px]" ])                        # same size as the dashboard cards
       expect(cards.select { |card| card["class"].include?("from-[#f7d9a4]") }.map { |card| card["data-card"] }).to eq([ "total" ])   # the gold card
       expect(document.at_css("[data-overview]").to_html).not_to include("border-s-[3px]")                         # no coloured left edge any more
-      expect(cards.reject { |card| card["data-card"] == "total" }.map { |card| card.at_css("p span")["class"] }.uniq).to eq([ "shrink-0 text-[#6e6e73]" ])   # grey icon
+      chips = cards.reject { |card| card["data-card"] == "total" }.map { |card| card.at_css("p span")["class"] }
+      expect(chips).to all(include("grid size-6 shrink-0 place-items-center rounded-lg bg-[#"))   # only the symbol is coloured
     end
 
     it "filters by payment, company, source, product, missed calls and search" do
@@ -347,20 +348,43 @@ RSpec.describe "Orders page", type: :request do
       expect(document.at_css("turbo-frame#order-modal")).to be_present
     end
 
-    it "answers the frame with a glass dialog (no page layout): states, customer, items, totals, store and source" do
+    it "answers the frame with the glass window: customer, product, delivery, fees and summary, in French" do
       get "/admin/orders/new", headers: { "Turbo-Frame" => "order-modal" }
 
       expect(response).to have_http_status(:ok)
       expect(response.body).not_to include("data-seller-shell")                       # the frame answer carries no layout
       dialog = document.at_css("turbo-frame#order-modal [data-order-modal-panel][role=dialog]")
       expect(dialog).to be_present
-      expect(dialog.at_css("#order-modal-title").text.squish).to eq(I18n.t("orders_page.new_order"))
-      expect(dialog.at_css("[data-new-order-states]").text.squish).to include("Confirmation:", "Shipping:", "Payment:")
-      expect(dialog.css("[data-section]").map { |section| section["data-section"] }).to eq(%w[customer items payment])
-      expect(dialog.css("[data-order-totals] dd").map { |cell| cell["data-order-lines-target"] }).to eq(%w[subtotal shippingText discountText grandTotal toCollect])
-      expect(dialog.at_css("[data-store-source]").text.squish).to include("Walkfit", "Manual")
-      expect(dialog.at_css("[data-action='order-modal#close']")).to be_present        # the close button
-      expect(dialog.at_css("form select[name='order[agent_id]']")).to be_present       # same form and fields as the full page
+      expect(dialog.at_css("#order-modal-title").text.squish).to include(I18n.t("orders_modal.title"))
+      expect(dialog.text).to include(I18n.t("orders_modal.subtitle"), I18n.t("orders_modal.customer"), I18n.t("orders_modal.product"), I18n.t("orders_modal.delivery"), I18n.t("orders_modal.fees"))
+      expect(dialog.css("[data-section]").map { |section| section["data-section"] }).to eq(%w[customer delivery summary items fees])
+      expect(dialog.css("input[name='order[name]'], input[name='order[phone]'], input[name='order[second_phone]'], input[name='order[address]']").map { |input| input["name"] })
+        .to eq(%w[order[name] order[phone] order[second_phone] order[address]])
+      expect(dialog.css("input[name='order[name]'][required], input[name='order[phone]'][required]").size).to eq(2)           # the two required stars
+      expect(dialog.at_css("[data-order-composer-target=variant]")["disabled"]).to be_present                                 # enabled once a product with variants is picked
+      expect(dialog.at_css("[data-order-composer-target=price]")["readonly"]).to be_present
+      expect(dialog.at_css("[data-order-composer-target=addButton]")["disabled"]).to be_present                               # nothing picked yet
+      expect(dialog.at_css("[data-unlisted]")).to be_present                                                                  # "Produit non listé ? Ajouter manuellement"
+      expect(dialog.at_css("input[name='order[scheduled_for]'][type=datetime-local]")).to be_present
+      expect(dialog.at_css("textarea[name='order[notes]']")).to be_present
+      expect(dialog.at_css("input[name='order[shipping_excluded]'][type=checkbox]")).to be_present                           # the "Exclus" switch
+      expect(dialog.at_css("input[name='order[advance_dh]']")).to be_present
+      expect(dialog.at_css("select[name='order[agent_id]']")).to be_present
+      expect(dialog.css("[data-order-totals] dd").map { |cell| cell["data-order-composer-target"] }).to eq(%w[subtotal shippingText grandTotal advanceText toCollect])
+      expect(dialog.at_css("[data-action='order-modal#close']")).to be_present
+      expect(dialog.at_css("form")["data-controller"]).to eq("order-composer checkout-city delivery-company")
+    end
+
+    it "offers a delivery company only when the store is connected to one, never one that is not connected" do
+      get "/admin/orders/new", headers: { "Turbo-Frame" => "order-modal" }
+      expect(document.at_css("select[name='order[delivery_provider]']")).to be_nil
+      expect(document.at_css("[data-no-company] a")["href"]).to end_with("/integrations#delivery")
+
+      store.delivery_accounts.create!(provider: "ozon", name: "Ozon not connected")
+      store.delivery_accounts.create!(provider: "sendit", name: "Sendit", connected_at: Time.current)
+      get "/admin/orders/new", headers: { "Turbo-Frame" => "order-modal" }
+      options = document.css("select[name='order[delivery_provider]'] option").map { |option| [ option.text.squish, option["value"] ] }
+      expect(options).to eq([ [ I18n.t("orders_modal.company_placeholder"), "" ], [ "Sendit", "sendit" ] ])
     end
 
     it "stays a normal page when it is not opened in a frame" do

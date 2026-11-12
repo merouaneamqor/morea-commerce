@@ -11,7 +11,7 @@
 <% body = capture do %>
   <div class="flex items-center justify-between gap-2">
     <p class="flex min-w-0 items-center gap-1.5 text-xs font-medium <%= featured ? "" : "text-[#3a3a3c]" %>" title="<%= label %>">
-      <span class="<%= featured ? "grid size-5 shrink-0 place-items-center rounded-md bg-[#1c1c1e] text-white" : "shrink-0 text-[#6e6e73]" %>"><%= seller_icon(icon, size: featured ? 12 : 14) %></span>
+      <span class="<%= featured ? "grid size-5 shrink-0 place-items-center rounded-md bg-[#1c1c1e] text-white" : "grid size-6 shrink-0 place-items-center rounded-lg #{local_assigns.fetch(:tone, "bg-[#efeff3] text-[#6e6e73]")}" %>"><%= seller_icon(icon, size: featured ? 12 : 14) %></span>
       <span class="truncate"><%= label %></span>
     </p>
     <% if pill_text.present? %><span class="rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap <%= pill_class %>" data-change="<%= pill_tone %>"><%= pill_text %></span><% end %>

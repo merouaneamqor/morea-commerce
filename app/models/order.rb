@@ -293,6 +293,9 @@ end
     update_columns(values) if values.any?
   end
 
+  # What the customer still pays at delivery: the total minus the advance already paid.
+  def to_collect_cents = [ total_cents - advance_cents.to_i, 0 ].max
+
   def total_display
     "#{(total_cents / 100.0).to_i.to_fs(:delimited)} #{currency}"
   end

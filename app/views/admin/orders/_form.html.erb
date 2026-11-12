@@ -53,54 +53,7 @@ end %>
           <%= label_tag "order[phone]", "Phone", class: "admin-label" %>
           <%= telephone_field_tag "order[phone]", @order.customer_phone, class: "admin-input", required: true %>
         </div>
-        <div data-checkout-city-target="cityField">
-          <%= label_tag "order[city]", "City", class: "admin-label" %>
-          <% if cities.any? %>
-            <div class="admin-combobox" data-checkout-city-target="combobox">
-              <%= text_field_tag "order[city]", @order.customer_city,
-                    required: true,
-                    autocomplete: "shipping address-level2",
-                    class: "admin-input",
-                    role: "combobox",
-                    aria: { autocomplete: "list", expanded: false, controls: "admin-order-city-list" },
-                    placeholder: "Start typing a city…",
-                    data: {
-                      checkout_city_target: "city",
-                      action: [
-                        "input->checkout-city#onCityInput",
-                        "change->checkout-city#onCityChange",
-                        "animationstart->checkout-city#onAutofillAnimation",
-                        "focus->checkout-city#openCities",
-                        "keydown->checkout-city#onCityKeydown",
-                        "blur->checkout-city#onCityBlur"
-                      ].join(" ")
-                    } %>
-              <ul id="admin-order-city-list"
-                  class="admin-combobox__list"
-                  role="listbox"
-                  hidden
-                  data-checkout-city-target="cityList"></ul>
-            </div>
-            <p class="admin-help">Same Sendit cities as the storefront checkout.</p>
-          <% else %>
-            <%= text_field_tag "order[city]", @order.customer_city, class: "admin-input", required: true,
-                  data: { checkout_city_target: "city", action: "input->checkout-city#update" } %>
-            <p class="admin-help">Sendit cities unavailable — type the city manually.</p>
-          <% end %>
-        </div>
-        <div data-checkout-city-target="districtField" <%= "hidden" unless district_required %>>
-          <%= label_tag "order[district]", "District / quartier", class: "admin-label" %>
-          <%= select_tag "order[district]",
-                options_for_select(district_options, @order.customer_district),
-                include_blank: "Choose district",
-                required: district_required,
-                disabled: !district_required,
-                class: "admin-input",
-                data: { checkout_city_target: "district", action: "checkout-city#update" } %>
-          <p class="admin-help" data-checkout-city-target="districtHelp" <%= "hidden" unless district_required %>>
-            Required for cities with multiple Sendit neighbourhoods.
-          </p>
-        </div>
+        <%= render "city_fields", order: @order, cities: cities, districts_by_city: districts_by_city, district_required: district_required, district_options: district_options %>
       </div>
       <div>
         <%= label_tag "order[address]", "Address", class: "admin-label" %>

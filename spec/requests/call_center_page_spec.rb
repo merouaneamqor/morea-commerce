@@ -120,12 +120,24 @@ RSpec.describe "Call center page", type: :request do
     it "disables Appeler, WhatsApp and Bloquer until she clocks in, then enables them" do
       get "/admin/confirmations/center"
       expect(document.at_css("[data-clock-in-required]")).to be_present
-      expect(document.css("button[data-call][disabled], input[data-call][disabled]").size).to eq(3)
+      expect(document.css("span[data-call].cursor-not-allowed").size).to eq(3)                    # a plain, greyed label: nothing to open yet
+      expect(document.css("a[data-call]")).to be_empty
 
       ConfirmationShift.create!(store: store, user: agent, started_at: 1.hour.ago)
       get "/admin/confirmations/center"
       expect(document.at_css("[data-clock-in-required]")).to be_nil
-      expect(document.css("button[data-call]:not([disabled])").size).to eq(3)
+      expect(document.css("a[data-call][data-turbo-frame=order-modal]").size).to eq(3)
+    end
+
+    it "puts the green Appeler button first (on the left) in the actions of each order" do
+      ConfirmationShift.create!(store: store, user: agent, started_at: 1.hour.ago)
+      get "/admin/confirmations/center"
+
+      cell = document.at_css("[data-order-row=Q1] td:last-child > div")
+      first = cell.element_children.first
+      expect(first["data-call"]).to be_present
+      expect(first["class"]).to include("bg-[#2f9d5c]")
+      expect(first.text).to include("Appeler")
     end
 
     it "keeps her out of the manager-only actions and the order-creation button" do
@@ -164,6 +176,51 @@ RSpec.describe "Call center page", type: :request do
       expect(numbers.first).to eq("Q1")
       get "/admin/confirmations/center", params: { tab: "pending", sort: "recent" }
       expect(numbers.last).to eq("Q1")
+    end
+  end
+
+  describe "the unreachable orders" do
+    before do
+      order(disposition: "no_answer", number: "NA1", name: "Karim", phone: "0655555551")
+      order(disposition: "no_answer", number: "NA2", name: "Salma", phone: "0655555552", assigned: omar)           # held by another agent: not hers
+      sign_in(agent)
+    end
+
+    it "have their own tab, with the call button, listing only orders whose last call got no answer" do
+      get "/admin/confirmations/center", params: { tab: "unreachable" }
+
+      expect(numbers).to eq([ "NA1" ])
+      expect(count("unreachable")).to eq(1)
+      expect(document.at_css("[data-tab=unreachable]").text).to include("Injoignables")
+    end
+
+    it "show their call count in yellow, with the word Injoignable, in every list; other orders stay grey" do
+      get "/admin/confirmations/center", params: { tab: "pending" }
+
+      yellow = document.at_css("[data-order-row=NA1] [data-calls]")
+      expect(yellow["data-unreachable"]).to eq("yes")
+      expect(yellow.at_css("span")["class"]).to include("bg-[#fbe08a]")
+      expect(yellow.text).to include("Injoignable")
+      grey = document.at_css("[data-order-row=Q1] [data-calls]")
+      expect(grey["data-unreachable"]).to eq("no")
+      expect(grey.at_css("span")["class"]).to include("bg-[#efeff3]")
+      expect(grey.text).not_to include("Injoignable")
+    end
+  end
+
+  describe "the open tab" do
+    before { sign_in(agent) }
+
+    it "takes its own colour instead of black: waiting is yellow, unreachable orange, failed red, confirmed green" do
+      { "pending" => "bg-[#f5c242]", "unreachable" => "bg-[#f2994a]", "failed" => "bg-[#e5484d]", "confirmed" => "bg-[#3aa76d]" }.each do |tab, colour|
+        get "/admin/confirmations/center", params: { tab: tab }
+
+        classes = document.at_css("[data-tab=#{tab}]")["class"]
+        expect(classes).to include(colour), tab
+        expect(classes).not_to include("bg-[#1c1c1e]"), tab
+        expect(document.at_css("[data-tab=#{tab}]")["aria-current"]).to eq("page")
+        expect(document.css("[data-tab]:not([aria-current])").map { |other| other["class"] }.join).not_to include(colour)
+      end
     end
   end
 

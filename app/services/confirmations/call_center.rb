@@ -3,12 +3,13 @@ module Confirmations
   # from one set of scopes so the numbers cannot disagree. Printing only; no figure is computed in the view.
   #
   # An agent sees her own orders and the unassigned ones, a manager sees the whole store.
-  # - Queue tabs (En attente, Planifiée, Bloqués) are the live queue: they ignore the date range.
+  # - Queue tabs (En attente, Injoignables, Planifiée, Bloqués) are the live queue: they ignore the date range.
+  #   Injoignables are the new orders whose last call got no answer (they are also still in En attente until the third try cancels them).
   # - The other tabs are the orders confirmed (or cancelled) in the date range: the confirmation time for
   #   confirmed orders, the cancelling call (or, for managers, the cancelling time) for cancelled ones. For an
   #   agent only the orders she confirmed or cancelled herself.
   class CallCenter
-    TABS = %w[pending rescheduled failed planned confirmed delivered returns cancelled paid blocked].freeze
+    TABS = %w[pending unreachable rescheduled failed planned confirmed delivered returns cancelled paid blocked].freeze
     CONFIRMED_STATUSES = %w[confirmed preparing awaiting_pickup picked_up in_transit out_for_delivery].freeze
     FAILED_STATUSES = %w[unreachable address_issue].freeze
     PER_PAGE = 25
@@ -100,6 +101,8 @@ module Confirmations
         with_confirmation.where(status: "new", sendit_code: [ nil, "" ])
           .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition IN ('pending', 'no_answer')")
           .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
+      when "unreachable"
+        with_confirmation.where(status: "new", sendit_code: [ nil, "" ]).where(order_confirmations: { disposition: "no_answer" })
       when "planned"
         with_confirmation.where(status: "new").where(order_confirmations: { disposition: "callback" })
       when "blocked"

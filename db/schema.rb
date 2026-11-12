@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_040000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_050000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -787,6 +787,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_040000) do
     t.integer "delivery_fee_cents"
     t.integer "return_fee_cents"
     t.string "second_phone", limit: 30
+    t.string "delivery_provider", limit: 30
+    t.datetime "scheduled_for"
+    t.integer "advance_cents", default: 0, null: false
     t.index ["archived_at"], name: "index_orders_on_archived_at"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["customer_phone"], name: "index_orders_on_customer_phone"
@@ -797,6 +800,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_040000) do
     t.index ["store_id", "number"], name: "index_orders_on_store_id_and_number", unique: true
     t.index ["store_id", "sendit_code"], name: "index_orders_on_store_id_and_sendit_code", unique: true, where: "(sendit_code IS NOT NULL)"
     t.index ["store_id"], name: "index_orders_on_store_id"
+    t.check_constraint "advance_cents >= 0", name: "orders_advance_cents_nonnegative"
     t.check_constraint "collected_cents IS NULL OR collected_cents >= 0", name: "orders_collected_cents_nonnegative"
     t.check_constraint "delivery_fee_cents IS NULL OR delivery_fee_cents >= 0", name: "orders_delivery_fee_cents_nonnegative"
     t.check_constraint "meta_ad_id IS NULL OR meta_ad_id::text ~ '^[0-9]{5,25}$'::text", name: "orders_meta_ad_id_numeric"

@@ -1,0 +1,156 @@
+<%# The call window: customer, products, a call timer and the result buttons. Opens in the order-modal frame from "Appeler".
+    The call is claimed and timed by the server (POST call); the result and the edits are saved together (POST finish_call). %>
+<% content_for :title, "#{t("call_panel.title")} — Admin" %>
+<% order = @order %>
+<% currency = order.currency.presence || current_store.currency %>
+<% input = "admin-input !rounded-xl" %>
+<% label = "admin-label" %>
+<% heading = "flex items-center gap-1.5 text-[13px] font-semibold text-[#1c1c1e]" %>
+<% result = "inline-flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-full px-4 text-[13px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-40" %>
+<% id = order.id %>
+
+<turbo-frame id="order-modal">
+  <div data-order-modal data-controller="order-modal" data-action="click->order-modal#backdrop">
+    <div data-order-modal-panel data-call-panel role="dialog" aria-modal="true" aria-labelledby="call-panel-title"
+         data-controller="call-panel"
+         data-call-panel-call-url-value="<%= call_admin_confirmation_path(id) %>"
+         data-call-panel-abandon-url-value="<%= abandon_call_admin_confirmation_path(id) %>"
+         data-call-panel-finish-url-value="<%= finish_call_admin_confirmation_path(id) %>"
+         data-call-panel-touch-url-value="<%= touch_call_admin_confirmation_path(id) %>"
+         data-call-panel-panel-url-template-value="<%= panel_admin_confirmation_path("__ID__") %>"
+         data-call-panel-currency-value="<%= currency %>"
+         data-call-panel-shipping-cents-value="<%= order.shipping_cents.to_i %>"
+         data-call-panel-discount-cents-value="<%= order.discount_cents.to_i %>"
+         data-call-panel-cancel-needs-reason-value="<%= t("call_panel.cancel_needs_reason") %>"
+         data-call-panel-callback-needs-time-value="<%= t("call_panel.callback_needs_time") %>"
+         data-call-panel-saved-value="<%= t("call_panel.saved") %>">
+      <header class="flex items-start justify-between gap-3 px-6 pt-5">
+        <div>
+          <h2 id="call-panel-title" class="flex items-center gap-2 text-2xl font-bold text-[#1c1c1e]"><%= seller_icon(:phone, size: 22) %><%= t("call_panel.title") %> <span class="text-[#6e6e73]" dir="ltr">#<%= order.number %></span></h2>
+          <p class="mt-1 text-sm text-[#6e6e73]"><%= t("call_panel.subtitle") %></p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-2 rounded-full bg-[#1c1c1e] px-3.5 py-1.5 text-sm font-semibold text-white tabular-nums" aria-live="off" title="<%= t("call_panel.timer") %>">
+            <span class="size-2 rounded-full bg-[#2f9d5c]" data-call-panel-target="dot"></span><span data-call-panel-target="timer" dir="ltr">00:00</span>
+          </span>
+          <button type="button" data-action="order-modal#close" aria-label="<%= t("call_panel.close") %>" title="<%= t("call_panel.close") %>"
+                  class="grid size-8 shrink-0 cursor-pointer place-items-center rounded-full bg-[#e5484d] text-white shadow-[0_8px_18px_-8px_rgba(229,72,77,0.9)] hover:bg-[#cf3a3f]">
+            <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:2.4] [stroke-linecap:round]" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="px-6 pt-3 pb-5">
+        <p class="mb-3 hidden rounded-xl border border-[#e5484d] bg-[#fdecec] px-3 py-2 text-[13px] font-semibold text-[#b4232a]" role="alert" data-call-panel-target="error"></p>
+
+        <form data-call-panel-target="form" data-action="input->call-panel#edited change->call-panel#edited submit->call-panel#prevent" class="space-y-3">
+          <div class="grid items-start gap-x-6 gap-y-3 lg:grid-cols-2">
+            <section class="space-y-2" data-section="customer">
+              <h3 class="<%= heading %>"><%= seller_icon(:clients, size: 14) %><%= t("call_panel.customer") %></h3>
+              <div class="grid gap-x-3 gap-y-2 sm:grid-cols-2">
+                <div>
+                  <%= label_tag "order[name]", t("call_panel.name"), class: label %>
+                  <%= text_field_tag "order[name]", order.customer_name, class: input, required: true, data: { edit: true } %>
+                </div>
+                <div>
+                  <%= label_tag "order[phone]", t("call_panel.phone"), class: label %>
+                  <div class="flex items-center gap-1.5">
+                    <%= telephone_field_tag "order[phone]", order.customer_phone, class: input, required: true, dir: "ltr", data: { edit: true } %>
+                    <a href="tel:<%= order.customer_phone.to_s.gsub(/[^\d+]/, "") %>" class="grid size-9 shrink-0 place-items-center rounded-full bg-[#e3f3e8] text-[#2f9d5c] hover:bg-[#d2ecdb]" title="<%= t("call_panel.dial") %>" aria-label="<%= t("call_panel.dial") %>" data-call-panel-target="dial"><%= seller_icon(:phone, size: 16) %></a>
+                    <button type="button" class="grid size-9 shrink-0 cursor-pointer place-items-center rounded-full bg-[#ececf0] text-[#1c1c1e] hover:bg-[#dedee4]" data-controller="copy" data-copy-text-value="<%= order.customer_phone %>" data-action="copy#copy" title="<%= t("call_center.copy") %>" aria-label="<%= t("call_center.copy") %>">
+                      <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8]" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <%= label_tag "order[second_phone]", t("call_panel.second_phone"), class: label %>
+                  <%= telephone_field_tag "order[second_phone]", order.second_phone, class: input, dir: "ltr", data: { edit: true } %>
+                </div>
+                <div>
+                  <%= label_tag "order[city]", t("call_panel.city"), class: label %>
+                  <%= text_field_tag "order[city]", order.customer_city, class: input, required: true, data: { edit: true } %>
+                </div>
+              </div>
+              <% if order.customer_district.present? %><%= hidden_field_tag "order[district]", order.customer_district %><% end %>
+              <div>
+                <%= label_tag "order[address]", t("call_panel.address"), class: label %>
+                <%= text_field_tag "order[address]", order.customer_address, class: input, required: true, data: { edit: true } %>
+              </div>
+              <div>
+                <%= label_tag :call_notes, t("call_panel.notes"), class: label %>
+                <%= text_area_tag :call_notes, nil, rows: 2, maxlength: 2000, class: input, placeholder: t("call_panel.notes_placeholder"), data: { call_panel_target: "notes" } %>
+              </div>
+            </section>
+
+            <section class="space-y-2" data-section="items">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="<%= heading %>"><%= seller_icon(:box, size: 14) %><%= t("call_panel.products") %></h3>
+              </div>
+              <ul class="divide-y divide-[#1c1c1e]/10 rounded-xl border border-[#1c1c1e]/10 bg-white/50" data-call-panel-target="lines">
+                <% order.order_items.each_with_index do |item, i| %>
+                  <% variants = @variants[item.product_id].to_a %>
+                  <li class="space-y-1.5 px-3 py-2.5" data-line data-unit-cents="<%= item.unit_price_cents %>">
+                    <input type="hidden" name="order[lines][<%= i %>][product_id]" value="<%= item.product_id %>">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="min-w-0 truncate text-[13px] font-semibold text-[#1c1c1e]" dir="auto"><%= item.product_name %></p>
+                      <button type="button" class="admin-btn-plain admin-btn-plain--critical" data-action="call-panel#removeLine"><%= t("call_panel.remove") %></button>
+                    </div>
+                    <div class="grid grid-cols-[1fr_5rem_auto] items-end gap-2">
+                      <div>
+                        <span class="admin-label"><%= t("call_panel.variant") %></span>
+                        <% if variants.any? %>
+                          <select name="order[lines][<%= i %>][product_variant_id]" class="<%= input %>" data-edit data-action="call-panel#recalc">
+                            <% variants.each do |variant| %>
+                              <option value="<%= variant.id %>" data-price-cents="<%= variant.price_cents || item.product&.price_cents %>" <%= "selected" if variant.id == item.product_variant_id %>><%= variant.name %></option>
+                            <% end %>
+                          </select>
+                        <% else %>
+                          <input type="text" value="<%= item.variant_name.presence || "—" %>" readonly tabindex="-1" class="<%= input %> !bg-[#ececf0] !text-[#6e6e73]">
+                        <% end %>
+                      </div>
+                      <div>
+                        <span class="admin-label"><%= t("call_panel.quantity") %></span>
+                        <input type="number" name="order[lines][<%= i %>][quantity]" value="<%= item.quantity %>" min="1" class="<%= input %> text-center" data-qty data-edit data-action="call-panel#recalc">
+                      </div>
+                      <p class="pb-2 text-end text-[13px] font-semibold tabular-nums" data-line-total dir="ltr"><%= money(item.total_cents, currency) %></p>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+              <dl class="ms-auto w-full max-w-xs space-y-1.5 text-[13px]">
+                <div class="flex justify-between"><dt class="text-[#6e6e73]"><%= t("call_panel.subtotal") %></dt><dd class="tabular-nums" data-call-panel-target="subtotal" dir="ltr"><%= money(order.subtotal_cents, currency) %></dd></div>
+                <div class="flex justify-between"><dt class="text-[#6e6e73]"><%= t("call_panel.shipping") %></dt><dd class="tabular-nums" dir="ltr"><%= money(order.shipping_cents, currency) %></dd></div>
+                <div class="flex justify-between border-t border-dashed border-[#1c1c1e]/15 pt-2 text-sm font-bold"><dt><%= t("call_panel.total") %></dt><dd class="tabular-nums text-[#2f7a4a]" data-call-panel-target="total" dir="ltr"><%= money(order.total_cents, currency) %></dd></div>
+              </dl>
+            </section>
+          </div>
+
+          <section class="border-t border-[#1c1c1e]/10 pt-3" data-section="result">
+            <h3 class="<%= heading %> mb-2"><%= t("call_panel.result") %></h3>
+            <div class="hidden items-center gap-2 pb-2" data-call-panel-target="callbackRow">
+              <label class="admin-label !mb-0" for="call_callback_at"><%= t("call_panel.callback_at") %></label>
+              <%= datetime_local_field_tag :call_callback_at, nil, class: "#{input} !w-auto", data: { call_panel_target: "callbackAt" } %>
+              <button type="button" class="<%= result %> bg-[#e6f0fd] text-[#2f6fed] hover:bg-[#d5e4fd]" data-action="call-panel#finish" data-call-panel-outcome-param="callback" data-call-panel-target="result"><%= t("call_panel.save_callback") %></button>
+            </div>
+            <div class="flex flex-wrap items-center gap-2" data-call-panel-target="buttons">
+              <button type="button" class="<%= result %> bg-[#2f9d5c] text-white hover:bg-[#278650]" data-action="call-panel#finish" data-call-panel-outcome-param="confirmed" data-call-panel-target="result"><%= seller_icon(:check, size: 15) %><%= t("call_panel.confirm") %></button>
+              <button type="button" class="<%= result %> bg-[#e5484d] text-white hover:bg-[#cf3a3f]" data-action="call-panel#finish" data-call-panel-outcome-param="cancelled" data-call-panel-target="result"><%= seller_icon(:cancel, size: 15) %><%= t("call_panel.cancel") %></button>
+              <button type="button" class="<%= result %> bg-[#fdf0d9] text-[#b4730f] hover:bg-[#fbe5bd]" data-action="call-panel#finish" data-call-panel-outcome-param="no_answer" data-call-panel-target="result"><%= seller_icon(:alert, size: 15) %><%= t("call_panel.no_answer") %></button>
+              <button type="button" class="<%= result %> bg-[#e6f0fd] text-[#2f6fed] hover:bg-[#d5e4fd]" data-action="call-panel#askCallback" data-call-panel-target="result"><%= seller_icon(:clock, size: 15) %><%= t("call_panel.callback") %></button>
+              <button type="button" class="<%= result %> bg-[#ececf0] text-[#1c1c1e] hover:bg-[#dedee4]" data-action="call-panel#finish" data-call-panel-outcome-param="wrong_number" data-call-panel-target="result"><%= seller_icon(:ban, size: 15) %><%= t("call_panel.wrong_number") %></button>
+              <button type="button" class="admin-btn-secondary ms-auto" data-action="order-modal#close"><%= t("call_panel.hang_up") %></button>
+            </div>
+          </section>
+        </form>
+
+        <div class="hidden space-y-3 py-6 text-center" data-call-panel-target="done">
+          <p class="text-lg font-bold text-[#2f7a4a]" data-call-panel-target="doneText"></p>
+          <div class="flex flex-wrap items-center justify-center gap-2">
+            <button type="button" class="<%= result %> bg-[#1c1c1e] text-white hover:bg-[#3a3a3c]" data-action="call-panel#next" data-call-panel-target="nextButton"><%= seller_icon(:phone, size: 15) %><%= t("call_panel.next") %></button>
+            <button type="button" class="admin-btn-secondary" data-action="call-panel#closeAndRefresh"><%= t("call_panel.close") %></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</turbo-frame>

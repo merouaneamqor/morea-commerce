@@ -44,6 +44,10 @@ export default class extends Controller {
       return
     }
 
+    this.renderResults(items, q)
+  }
+
+  renderResults(items, q) {
     this.resultsTarget.innerHTML = ""
     items.forEach((item) => {
       const btn = document.createElement("button")
@@ -117,13 +121,13 @@ export default class extends Controller {
     if (this.hasPickerTarget && !this.pickerTarget.contains(event.target)) this.resultsTarget.hidden = true
   }
 
-  add(item) {
+  add(item, quantity = 1) {
     const existing = this.listTarget.querySelector(
       `[data-order-line][data-product-id="${item.product_id}"][data-variant-id="${item.product_variant_id || ""}"]`
     )
     if (existing) {
       const qty = existing.querySelector("[data-qty]")
-      qty.value = String(parseInt(qty.value, 10) + 1)
+      qty.value = String(parseInt(qty.value, 10) + quantity)
       this.recalc()
       this.clearSearch()
       return
@@ -136,7 +140,7 @@ export default class extends Controller {
       .replaceAll("__LABEL__", this.escape(item.label))
       .replaceAll("__PRICE__", String(item.price_cents))
       .replaceAll("__PRICE_DISPLAY__", this.escape(item.price_display))
-      .replaceAll("__QTY__", "1")
+      .replaceAll("__QTY__", String(quantity))
 
     this.listTarget.insertAdjacentHTML("beforeend", html)
     this.index += 1

@@ -240,12 +240,27 @@
       <div class="admin-card__section">
         <p class="admin-card__title mb-1">Contact information</p>
         <p class="admin-link--blue"><%= link_to @order.customer_phone, "tel:#{@order.customer_phone}" %></p>
+        <% if @order.second_phone.present? %><p class="admin-link--blue" data-second-phone><%= link_to @order.second_phone, "tel:#{@order.second_phone}" %> <span class="admin-muted text-xs">(2)</span></p><% end %>
       </div>
       <div class="admin-card__section">
         <p class="admin-card__title mb-1">Shipping address</p>
         <p class="admin-muted"><%= @order.customer_name %><br><%= @order.customer_address %><br><% if @order.customer_district.present? %><%= @order.customer_district %><br><% end %><%= @order.customer_city %></p>
       </div>
     </section>
+
+    <% if @order.delivery_provider.present? || @order.scheduled_for.present? || @order.advance_cents.to_i.positive? %>
+      <section class="admin-card" data-delivery-details>
+        <div class="admin-card__header"><h2 class="admin-card__title">Delivery details</h2></div>
+        <dl class="admin-dl px-4 pb-4 space-y-1 text-[13px]">
+          <% if @order.delivery_provider.present? %><div class="flex justify-between"><dt class="admin-muted">Delivery company</dt><dd data-provider><%= Carriers.provider(@order.delivery_provider)["name"] %></dd></div><% end %>
+          <% if @order.scheduled_for.present? %><div class="flex justify-between"><dt class="admin-muted">Scheduled for</dt><dd data-scheduled><%= l(@order.scheduled_for.in_time_zone(DateRange::ZONE), format: "%d/%m/%Y %H:%M") %></dd></div><% end %>
+          <% if @order.advance_cents.to_i.positive? %>
+            <div class="flex justify-between"><dt class="admin-muted">Advance paid</dt><dd class="tabular-nums" data-advance><%= money(@order.advance_cents, @order.currency) %></dd></div>
+            <div class="flex justify-between font-semibold"><dt>To collect</dt><dd class="tabular-nums" data-to-collect><%= money(@order.to_collect_cents, @order.currency) %></dd></div>
+          <% end %>
+        </dl>
+      </section>
+    <% end %>
 
     <%= render "sendit_card", order: @order %>
 

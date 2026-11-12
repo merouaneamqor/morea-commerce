@@ -14,6 +14,12 @@ module SellerHelper
     "Distribution des commandes" => [ "Order distribution", "توزيع الطلبات" ],
     "Commandes de la période" => [ "Orders of the period", "طلبات الفترة" ],
     "Confirmation" => [ "Confirmation", "التأكيد" ],
+    "Centre d'appels" => [ "Call center", "مركز الاتصال" ],
+    "File d'attente" => [ "Queue", "قائمة الانتظار" ],
+    "Analyses" => [ "Analytics", "التحليلات" ],
+    "Attributions" => [ "Assignments", "التعيينات" ],
+    "Règles d'attribution" => [ "Assignment rules", "قواعد التعيين" ],
+    "Facturation" => [ "Billing", "الفوترة" ],
     "Expédition" => [ "Shipping", "الشحن" ],
     "Programmées" => [ "Scheduled", "مجدولة" ],
     "Faux numéros" => [ "Wrong numbers", "أرقام خاطئة" ],
@@ -90,7 +96,7 @@ module SellerHelper
   SELLER_MENU = [
     [ "dashboard", :home, "Tableau de bord", "/dashboard" ],
     [ "orders", :orders, "Commandes", "/commandes" ],
-    [ "confirmation", :phone, "Confirmation", "/confirmation" ],
+    [ "confirmation", :phone, "Centre d'appels", "/confirmation" ],
     [ "stats", :chart, "Mes statistiques", "/mes-statistiques" ],
     [ "clients", :clients, "Clients", "/clients" ],
     [ "delivery", :truck, "Livraison", "/livraison" ],
@@ -150,6 +156,30 @@ module SellerHelper
   # Whole currency units (no decimals), kept left-to-right inside Arabic text.
   def seller_money(cents, currency)
     "⁦#{number_with_delimiter(cents.to_i.fdiv(100).round, delimiter: " ")} #{currency}⁩"
+  end
+
+  # The pages under "Centre d'appels" in the menu: [key, icon, label, link]; no link means "coming soon".
+  SELLER_CALL_CENTER_MENU = [
+    [ "queue", :phone, "File d'attente", "/confirmation" ],
+    [ "analytics", :chart, "Analyses", "/admin/confirmations/dashboard" ],
+    [ "assignments", :team, "Attributions", "/admin/confirmations?filter=all" ],
+    [ "rules", :settings, "Règles d'attribution", nil ],
+    [ "billing", :wallet, "Facturation", nil ]
+  ].freeze
+
+  # An agent sees the queue and their own analytics only; assignments, rules and billing are the owner's.
+  def seller_call_center_menu(user)
+    user&.confirmation_agent_view? ? SELLER_CALL_CENTER_MENU.first(2) : SELLER_CALL_CENTER_MENU
+  end
+
+  def seller_call_center_active
+    return unless controller_name == "confirmations"
+
+    case action_name
+    when "dashboard" then "analytics"
+    when "index" then params[:filter] == "all" ? "assignments" : "queue"
+    else "queue"
+    end
   end
 
   def seller_menu(user)

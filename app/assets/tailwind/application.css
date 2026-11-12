@@ -3623,3 +3623,67 @@ main {
 @media (prefers-reduced-transparency: reduce) {
   [data-seller-shell] [data-order-modal-panel][role="dialog"] { background-color: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
+
+/* New-order window v2: plain sections with hairlines instead of cards, on the glass panel */
+[data-order-modal] [data-section] { background: transparent; border-color: rgba(28, 28, 30, 0.1); }
+[data-order-modal] .admin-help { color: #6e6e73; font-size: 12px; margin-top: 0.25rem; }
+
+/* New-order window: smaller on screen and a slim scrollbar that sits inside the rounded corners */
+[data-seller-shell] [data-order-modal-panel][role="dialog"] {
+  width: min(38rem, 100%); max-height: calc(100dvh - 3rem); zoom: 0.9;
+  overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(28, 28, 30, 0.28) transparent; scrollbar-gutter: stable;
+}
+[data-order-modal-panel]::-webkit-scrollbar { width: 6px; }
+[data-order-modal-panel]::-webkit-scrollbar-track { background: transparent; margin-block: 1rem; }
+[data-order-modal-panel]::-webkit-scrollbar-thumb { background: rgba(28, 28, 30, 0.28); border-radius: 999px; }
+[data-order-modal-panel]::-webkit-scrollbar-thumb:hover { background: rgba(28, 28, 30, 0.45); }
+[data-order-modal] [data-section] { padding-block: 0.75rem; }
+
+/* Orders: no visible scrollbar on the list or in the new-order window (they still scroll with wheel, trackpad and touch) */
+[data-orders-table-wrap], [data-order-modal-panel] { scrollbar-width: none; -ms-overflow-style: none; }
+[data-orders-table-wrap]::-webkit-scrollbar, [data-order-modal-panel]::-webkit-scrollbar { display: none; width: 0; height: 0; }
+[data-seller-shell] [data-order-modal-panel][role="dialog"] { scrollbar-width: none; scrollbar-gutter: auto; }
+
+/* New-order window: wide two-column layout so everything fits inside the frame without scrolling */
+[data-seller-shell] [data-order-modal-panel][role="dialog"] { width: min(62rem, 100%); max-height: calc(100dvh - 1.5rem); zoom: 0.85; }
+[data-order-modal-panel] header { padding: 1rem 1.5rem 0; }
+[data-order-modal-panel] header + div { padding: 0.75rem 1.5rem 1rem; }
+[data-order-modal] .admin-help { display: none; }
+@media (max-width: 1023px) { [data-seller-shell] [data-order-modal-panel][role="dialog"] { width: min(38rem, 100%); zoom: 0.9; } }
+/* Short screens: scale the window down so it always fits (the content is about 920px tall at full size) */
+@media (min-width: 1024px) and (max-height: 860px) { [data-seller-shell] [data-order-modal-panel][role="dialog"] { zoom: 0.78; } }
+@media (min-width: 1024px) and (max-height: 760px) { [data-seller-shell] [data-order-modal-panel][role="dialog"] { zoom: 0.72; } }
+/* max-height is measured inside the zoom, so divide the free height by the zoom factor */
+[data-seller-shell] [data-order-modal-panel][role="dialog"] { max-height: calc((100dvh - 1.5rem) / 0.85); }
+@media (min-width: 1024px) and (max-height: 860px) { [data-seller-shell] [data-order-modal-panel][role="dialog"] { max-height: calc((100dvh - 1.5rem) / 0.78); } }
+@media (min-width: 1024px) and (max-height: 760px) { [data-seller-shell] [data-order-modal-panel][role="dialog"] { max-height: calc((100dvh - 1.5rem) / 0.72); } }
+@media (max-width: 1023px) { [data-seller-shell] [data-order-modal-panel][role="dialog"] { max-height: calc((100dvh - 1.5rem) / 0.9); } }
+
+/* Orders list: every column visible without scrolling sideways. Cells wrap instead of forcing a wide table. */
+[data-orders-table-wrap] { overflow-x: visible; }
+[data-orders-table] { table-layout: auto; width: 100%; font-size: 12px; }
+[data-orders-table] th, [data-orders-table] td { padding-inline: 0.5rem; white-space: normal !important; overflow-wrap: anywhere; }
+[data-orders-table] th { font-size: 10px; letter-spacing: 0.04em; }
+[data-orders-table] td:first-child, [data-orders-table] td[data-amount], [data-orders-table] td:nth-child(2) { white-space: nowrap !important; }
+[data-orders-table] [data-product] { max-width: 10rem; }
+[data-orders-table] [data-order-actions] > div { flex-wrap: wrap; }
+@media (max-width: 1199px) { [data-orders-table-wrap] { overflow-x: auto; } }
+[data-orders-table] th, [data-orders-table] td { overflow-wrap: normal; word-break: normal; }
+[data-orders-table] th { white-space: nowrap !important; padding-inline: 0.4rem; }
+[data-orders-table] td { padding-inline: 0.4rem; }
+[data-orders-table] [data-source], [data-orders-table] [data-delivery] { white-space: nowrap !important; }
+
+/* Orders list: smaller writing and a thin line between every column so each piece of information is separated */
+[data-orders-table] { font-size: 11px; }
+[data-orders-table] th { font-size: 9px; }
+[data-orders-table] td p[class*="text-[11px]"] { font-size: 10px; }
+[data-orders-table] tbody td { border-bottom: 1px solid #eef0f4; }
+[data-orders-table] tbody tr:last-child td { border-bottom: 0; }
+[data-orders-table] th { border-bottom: 1px solid #e3e5ea; }
+
+/* Menu "Centre d'appels": the group's pages are hidden when the menu is reduced to its icons */
+@media (min-width: 1024px) {
+  html[data-sidebar="collapsed"] [data-seller-shell] aside [data-subnav] { display: none; }
+  html[data-sidebar="collapsed"] [data-seller-shell] aside summary { justify-content: center; padding-inline: 0; }
+}
+[data-call-center-nav] > summary::-webkit-details-marker { display: none; }

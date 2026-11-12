@@ -164,7 +164,9 @@ module Confirmations
         raise Error, "Open the call before finishing it." if panel && confirmation.call_started_at.nil?
 
         measured = panel ? call_seconds(confirmation) : nil
-        apply_changes!(order, changes) if changes
+        # Edits made during the call are kept only when the order goes on (confirmed, or a callback to finish later); a cancelled
+        # order, a wrong number or no answer must never be blocked by the order form rules.
+        apply_changes!(order, changes) if changes && %w[confirmed callback].include?(outcome)
         # The order lock serializes this count, so the third unanswered call always cancels.
         auto_cancel = outcome == "no_answer" && no_answer_count(confirmation) + 1 >= NO_ANSWER_LIMIT
         # Time held since the claim started; read before the claim is cleared below.

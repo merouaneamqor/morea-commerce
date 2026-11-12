@@ -53,7 +53,8 @@ export default class extends Controller {
     window.clearInterval(this.touchHandle)
   }
 
-  edited() { this.dirty = true }
+  // Only the order fields count as an edit (typing a reason in the notes is not one).
+  edited(event) { if (event.target.matches("[data-edit]")) this.dirty = true }
 
   prevent(event) { event.preventDefault() }
 
@@ -107,8 +108,8 @@ export default class extends Controller {
     body.append("outcome", outcome)
     body.append("notes", notes)
     if (outcome === "callback") body.append("callback_at", this.callbackAtTarget.value)
-    // The edits travel only when something was changed and the result is one that needs the order to be right.
-    if (this.dirty && !["wrong_number", "no_answer"].includes(outcome)) {
+    // The edits travel only when an order field was changed and the order goes on (confirmed or callback); never with a cancellation.
+    if (this.dirty && ["confirmed", "callback"].includes(outcome)) {
       new FormData(this.formTarget).forEach((value, key) => { if (key.startsWith("order[")) body.append(key, value) })
     }
 

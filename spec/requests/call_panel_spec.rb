@@ -131,6 +131,22 @@ RSpec.describe "Call panel", type: :request do
     expect(edit.body).to include("1 × Tracksuit → 3 × Tracksuit", "address: Rue 1 → Rue 2", "total: 230.0 → 630.0 MAD")
   end
 
+  it "cancels with a reason even when the order form would refuse the edits sent with it (they are ignored for a cancellation)" do
+    clock_in(agent)
+    sign_in(agent)
+    post "/admin/confirmations/#{order.id}/call"
+
+    post "/admin/confirmations/#{order.id}/finish_call", params: {
+      outcome: "cancelled", notes: "par client",
+      order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: {} }       # no product: the editor would refuse a total of 0
+    }
+
+    expect(response).to have_http_status(:ok), response.body
+    expect(order.reload.status).to eq("cancelled")
+    expect(order.order_events.where(kind: "edited")).to be_empty
+    expect(confirmation.confirmation_attempts.last).to have_attributes(outcome: "cancelled", notes: "par client")
+  end
+
   it "refuses edits that bring the total to 0 and keeps the order and the attempt untouched" do
     clock_in(agent)
     sign_in(agent)

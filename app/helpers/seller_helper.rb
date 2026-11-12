@@ -117,12 +117,12 @@ module SellerHelper
   }.freeze
 
   SELLER_STATUS_BADGES = {
-    "new" => [ "Nouvelle", "bg-[#ebe9fb] text-[#4b4b50]" ],
-    "confirmed" => [ "Confirmée", "bg-[#e4ecfb] text-[#4b4b50]" ],
-    "postponed" => [ "Reportée", "bg-[#efeff3] text-[#6e6e73]" ],
-    "unreachable" => [ "Injoignable", "bg-[#efeff3] text-[#6e6e73]" ],
+    "new" => [ "Nouvelle", "bg-[#fdf0d9] text-[#8a5a12]" ],
+    "confirmed" => [ "Confirmée", "bg-[#e3f3e8] text-[#2f7a4a]" ],
+    "postponed" => [ "Reportée", "bg-[#e1edfb] text-[#2b5f9e]" ],
+    "unreachable" => [ "Injoignable", "bg-[#fdeadb] text-[#b4560f]" ],
     "cancelled" => [ "Annulée", "bg-[#fbe7ea] text-[#b4344e]" ],
-    "shipped" => [ "En cours", "bg-[#fcf0dc] text-[#9a6412]" ],
+    "shipped" => [ "En cours", "bg-[#eee8fb] text-[#5b3fb0]" ],
     "delivered" => [ "Livrée", "bg-[#e3f3e8] text-[#2f7a4a]" ],
     "returned" => [ "Retournée", "bg-[#fbe7ea] text-[#b4344e]" ]
   }.freeze

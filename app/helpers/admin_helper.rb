@@ -25,7 +25,7 @@ module AdminHelper
 
   BADGE_TONES = {
     "new" => "attention",
-    "confirmed" => "info",
+    "confirmed" => "success",
     "preparing" => "warning",
     "awaiting_pickup" => "attention",
     "picked_up" => "info",
@@ -36,7 +36,7 @@ module AdminHelper
     "address_issue" => "warning",
     "shipped" => "info",
     "delivered" => "success",
-    "cancelled" => "neutral",
+    "cancelled" => "critical",
     "returned" => "critical",
     "active" => "success",
     "draft" => "info",

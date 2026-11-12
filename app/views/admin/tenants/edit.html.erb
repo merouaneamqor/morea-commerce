@@ -5,7 +5,7 @@
     <h1 class="admin-page-header__title">Billing</h1>
     <p class="admin-page-header__meta"><%= @store.name %>, <%= @store.slug %>.<%= Store.base_domain %></p>
   </div>
-  <%= link_to "Back", admin_platform_path, class: "admin-btn-secondary" %>
+  <%= link_to "Back", admin_tenant_path(@store), class: "admin-btn-secondary" %>
 </div>
 
 <%= form_with model: @store, url: admin_tenant_path(@store), method: :patch, class: "admin-stack" do |f| %>

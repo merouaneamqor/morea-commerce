@@ -16,7 +16,7 @@
   <div class="grid grid-cols-2 divide-[#ebebeb] sm:grid-cols-3 lg:grid-cols-5 lg:divide-x [&>*]:border-[#ebebeb] max-lg:[&>*]:border-b">
     <div class="p-4">
       <p class="admin-metric__label"><%= t("platform_admin.workspaces") %></p>
-      <p class="admin-metric__value"><%= @store_count %></p>
+      <p class="admin-metric__value"><%= @summary.stores_count %></p>
     </div>
     <div class="p-4">
       <p class="admin-metric__label"><%= t("platform_admin.orders") %></p>
@@ -24,7 +24,7 @@
     </div>
     <div class="p-4">
       <p class="admin-metric__label"><%= t("platform_admin.orders_today") %></p>
-      <p class="admin-metric__value"><%= @orders_today %></p>
+      <p class="admin-metric__value"><%= @summary.orders_today_count %></p>
     </div>
     <div class="p-4">
       <p class="admin-metric__label"><%= t("platform_admin.order_value") %></p>
@@ -37,7 +37,27 @@
       <p class="admin-metric__value"><%= @staff_count %></p>
     </div>
   </div>
+  <div class="grid grid-cols-2 divide-[#ebebeb] border-t border-[#ebebeb] sm:grid-cols-4 lg:divide-x [&>*]:border-[#ebebeb] max-sm:[&>*]:border-b">
+    <div class="p-4" id="platform-paid">
+      <p class="admin-metric__label"><%= t("platform_admin.billing_page.paid_this_month") %></p>
+      <p class="admin-metric__value"><%= dashboard_money(@summary.paid_this_month_cents, "MAD") %></p>
+    </div>
+    <div class="p-4" id="platform-outstanding">
+      <p class="admin-metric__label"><%= t("platform_admin.billing_page.outstanding") %></p>
+      <p class="admin-metric__value"><%= dashboard_money(@summary.outstanding_cents, "MAD") %></p>
+    </div>
+    <div class="p-4" id="platform-overdue">
+      <p class="admin-metric__label"><%= t("platform_admin.billing_page.overdue", count: @summary.overdue_count) %></p>
+      <p class="admin-metric__value"><%= dashboard_money(@summary.overdue_cents, "MAD") %></p>
+    </div>
+    <div class="p-4">
+      <p class="admin-metric__label"><%= t("platform_admin.storefront") %></p>
+      <p class="admin-metric__value"><%= @summary.storefronts_count %></p>
+    </div>
+  </div>
 </div>
+
+<%= render "admin/platform/action_queue", action_queue: @action_queue %>
 
 <section class="admin-card" id="workspaces">
   <div class="admin-card__header">
@@ -52,7 +72,7 @@
         <li class="admin-mobile-list__card">
           <div class="admin-mobile-list__top">
             <div>
-              <p class="admin-mobile-list__name"><%= store.name %></p>
+              <p class="admin-mobile-list__name"><%= link_to store.name, admin_tenant_path(store) %></p>
               <p class="admin-mobile-list__meta"><%= store.slug %></p>
             </div>
             <span class="admin-mobile-list__amount"><%= money(store.billing_amount_cents, "MAD") %></span>
@@ -87,7 +107,7 @@
         <tbody>
           <% @stores.each do |store| %>
             <tr>
-              <td class="font-semibold"><%= store.name %></td>
+              <td class="font-semibold"><%= link_to store.name, admin_tenant_path(store) %></td>
               <td><%= t(store.storefront_enabled? ? "platform_admin.storefront_enabled" : "platform_admin.storefront_disabled") %></td>
               <td class="admin-muted tabular-nums"><%= store.slug %></td>
               <td><%= store.billing_interval.humanize %></td>

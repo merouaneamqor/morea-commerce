@@ -17,6 +17,6 @@
   <p class="admin-muted text-[13px]"><%= l(@request.created_at, format: :long) %>, <%= t("seallo_connect_pages.privacy_rights.statuses.#{@request.status}") %></p>
 
   <% if @request.status != "resolved" %>
-    <%= button_to t("seallo_connect_pages.privacy_rights.admin.resolve"), resolve_admin_platform_privacy_rights_request_path(@request), class: "admin-btn mt-4" %>
+    <%= button_to t("seallo_connect_pages.privacy_rights.admin.resolve"), resolve_admin_platform_privacy_rights_request_path(@request), class: "admin-btn mt-4", form: { data: { turbo_confirm: t("platform_admin.privacy_resolve_confirm") } } %>
   <% end %>
 </section>

@@ -1,0 +1,194 @@
+<% content_for :title, t("platform_admin.workspace_detail.document_title", name: @store.name) %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= @store.name %></h1>
+    <p class="admin-page-header__meta"><%= @store.slug %>.<%= Store.base_domain %></p>
+  </div>
+  <div class="platform-toolbar">
+    <%= button_to t("platform_admin.open_admin"), enter_admin_tenant_path(@store), method: :post, class: "admin-btn" %>
+    <%= link_to t("platform_admin.back"), admin_platform_path, class: "admin-btn-secondary" %>
+  </div>
+</div>
+
+<section class="admin-card mb-4">
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= t("platform_admin.workspace_detail.identity") %></h2></div>
+  <dl class="admin-field-grid space-y-3 px-4 pb-4">
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.fields.business") %></dt>
+      <dd><%= @store.name %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.slug") %></dt>
+      <dd class="tabular-nums"><%= @store.slug %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.workspace_detail.host") %></dt>
+      <dd dir="ltr"><%= @store.slug %>.<%= Store.base_domain %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.workspace_detail.origin") %></dt>
+      <dd dir="ltr"><%= link_to @store.origin, @store.origin, target: "_blank", rel: "noopener", class: "underline" %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.fields.email") %></dt>
+      <dd><%= @store.email.presence || t("platform_admin.no_date") %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.fields.phone") %></dt>
+      <dd><%= @store.phone.presence || t("platform_admin.no_date") %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.storefront") %></dt>
+      <dd><%= t(@store.storefront_enabled? ? "platform_admin.storefront_enabled" : "platform_admin.storefront_disabled") %></dd>
+    </div>
+  </dl>
+</section>
+
+<section class="admin-card mb-4">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("platform_admin.workspace_detail.plan_billing") %></h2>
+    <div class="platform-toolbar">
+      <%= link_to t("platform_admin.workspace_detail.edit_billing"), edit_admin_tenant_path(@store), class: "admin-btn-plain" %>
+      <%= link_to t("platform_admin.invoices"), admin_tenant_invoices_path(@store), class: "admin-btn-plain" %>
+    </div>
+  </div>
+  <dl class="admin-field-grid space-y-3 px-4 pb-4">
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.workspace_detail.plan") %></dt>
+      <dd><%= @store.plan.presence&.capitalize || t("platform_admin.no_date") %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.status") %></dt>
+      <dd><%= @store.billing_status.humanize %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.workspace_detail.interval") %></dt>
+      <dd><%= @store.billing_interval.humanize %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.amount") %></dt>
+      <dd class="tabular-nums"><%= money(@store.billing_amount_cents, "MAD") %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("platform_admin.period_ends") %></dt>
+      <dd class="admin-muted"><%= @store.billing_period_ends_on&.strftime("%b %-d, %Y") || t("platform_admin.no_date") %></dd>
+    </div>
+  </dl>
+</section>
+
+<section class="admin-card mb-4">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("platform_admin.staff") %></h2>
+    <button type="button" class="admin-btn-plain" popovertarget="impersonate-<%= @store.id %>" aria-haspopup="dialog">
+      <%= t("platform_admin.open_admin") %>
+    </button>
+  </div>
+  <% staff = @store.users.sort_by { |user| [ user.name.to_s.downcase, user.email ] } %>
+  <% if staff.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.workspace_detail.no_staff") %></p>
+  <% else %>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("platform_admin.fields.business") %></th>
+            <th><%= t("platform_admin.fields.email") %></th>
+            <th><%= t("platform_admin.status") %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% staff.each do |user| %>
+            <tr>
+              <td>
+                <p class="font-semibold"><%= user.name.presence || user.email %></p>
+                <p class="admin-muted text-sm"><%= workspace_member_role(user) %></p>
+              </td>
+              <td class="admin-muted"><%= user.email %></td>
+              <td><%= user.status.humanize %></td>
+              <td>
+                <% if user.impersonatable_by_super_admin? %>
+                  <%= button_to t("platform_admin.open_admin"), enter_admin_tenant_path(@store), method: :post, params: { user_id: user.id }, class: "admin-btn-plain" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>
+
+<%= render "admin/platform/impersonate_popover", store: @store %>
+
+<section class="admin-card mb-4">
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= t("platform_admin.storefront") %></h2></div>
+  <div class="space-y-3 px-4 pb-4">
+    <p><%= t(@store.storefront_enabled? ? "platform_admin.storefront_enabled" : "platform_admin.storefront_disabled") %></p>
+    <% if @store.storefront_enabled? %>
+      <%= link_to t("platform_admin.view_storefront"), @store.origin, class: "admin-btn-secondary", target: "_blank", rel: "noopener" %>
+    <% end %>
+  </div>
+</section>
+
+<section class="admin-card mb-4">
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= t("platform_admin.workspace_detail.connections") %></h2></div>
+  <div class="space-y-4 px-4 pb-4">
+    <% connections = @store.store_connections.order(:provider, :external_domain) %>
+    <% if connections.any? %>
+      <ul class="space-y-2">
+        <% connections.each do |connection| %>
+          <li class="admin-muted">
+            <span class="font-semibold text-[#1f2430]"><%= connection.provider.humanize %></span>
+            · <span dir="ltr"><%= connection.external_domain %></span>
+            · <%= connection.connection_state.humanize %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="admin-help"><%= t("platform_admin.workspace_detail.no_connections") %></p>
+    <% end %>
+
+    <dl class="admin-field-grid space-y-3">
+      <div>
+        <dt class="admin-label"><%= t("platform_admin.workspace_detail.meta_ads") %></dt>
+        <dd>
+          <% meta = @store.meta_ads_connection %>
+          <%= meta ? meta.status.humanize : t("platform_admin.workspace_detail.not_configured") %>
+        </dd>
+      </div>
+      <div>
+        <dt class="admin-label"><%= t("platform_admin.workspace_detail.sendit") %></dt>
+        <dd>
+          <%= t(@store.sendit_configured? ? "platform_admin.workspace_detail.configured" : "platform_admin.workspace_detail.not_configured") %>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section class="admin-card mb-4">
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= t("platform_admin.workspace_detail.shortcuts") %></h2></div>
+  <div class="space-y-3 px-4 pb-4">
+    <p class="admin-help"><%= t("platform_admin.workspace_detail.shortcuts_help") %></p>
+    <ul class="admin-help list-disc ps-5">
+      <li><%= t("platform_admin.orders") %>: /commandes</li>
+      <li><%= t("platform_admin.workspace_detail.confirmations") %>: /confirmation</li>
+      <li><%= t("platform_admin.workspace_detail.customers") %>: /clients</li>
+      <li><%= t("platform_admin.workspace_detail.catalog") %>: /produits</li>
+      <li><%= t("platform_admin.workspace_detail.shipping") %>: /livraison</li>
+      <li><%= t("platform_admin.workspace_detail.ads") %>: /publicites</li>
+      <li><%= t("platform_admin.workspace_detail.accounting") %>: /comptabilite</li>
+    </ul>
+    <%= button_to t("platform_admin.open_admin"), enter_admin_tenant_path(@store), method: :post, class: "admin-btn" %>
+  </div>
+</section>
+
+<section class="admin-card">
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= t("platform_admin.workspace_detail.configuration") %></h2></div>
+  <div class="space-y-3 px-4 pb-4">
+    <p class="admin-help"><%= t("platform_admin.workspace_detail.configuration_help") %></p>
+    <%= link_to t("platform_admin.workspace_detail.edit_billing"), edit_admin_tenant_path(@store), class: "admin-btn-secondary" %>
+  </div>
+</section>

@@ -32,6 +32,11 @@ ActiveAdmin.register_page "Seallo Connections", namespace: :superadmin do
   end
 
   content title: "Seallo connections" do
+    para do
+      text_node "For Shopify, WooCommerce, YouCan, Meta Ads and Sendit together, open "
+      text_node link_to("Integration diagnostics", admin_platform_integrations_path)
+      text_node "."
+    end
     render partial: "admin/seallo_connections/diagnostics"
   end
 

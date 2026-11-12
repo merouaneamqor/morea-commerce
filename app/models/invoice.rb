@@ -10,6 +10,7 @@ class Invoice < ApplicationRecord
   validates :billing_interval, inclusion: { in: Store::BILLING_INTERVALS }
   validates :amount_cents, numericality: { greater_than_or_equal_to: 0 }
   validates :period_starts_on, :period_ends_on, presence: true
+  validates :payment_reference, length: { maximum: 120 }, allow_blank: true
   validate :period_end_after_start
 
   before_validation :assign_number, on: :create
@@ -41,11 +42,13 @@ class Invoice < ApplicationRecord
     self
   end
 
-  def mark_paid!
+  def mark_paid!(payment_reference: nil)
     raise ActiveRecord::RecordInvalid, self unless status == "issued"
 
     transaction do
-      update!(status: "paid", paid_at: Time.current)
+      attrs = { status: "paid", paid_at: Time.current }
+      attrs[:payment_reference] = payment_reference.to_s.strip.presence unless payment_reference.nil?
+      update!(attrs)
       ends = [ store.billing_period_ends_on, period_ends_on ].compact.max
       store.update!(billing_status: "active", billing_period_ends_on: ends)
     end

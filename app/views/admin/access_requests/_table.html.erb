@@ -28,12 +28,13 @@
           <td class="text-right">
             <% if request.pending? %>
               <div class="flex justify-end gap-2">
-                <%= button_to t("platform_admin.review_request"), approve_admin_access_request_path(request), method: :post, class: "admin-btn" %>
+                <%= button_to t("platform_admin.review_request"), approve_admin_access_request_path(request), method: :post, class: "admin-btn",
+                      title: t("platform_admin.approve_flow_help") %>
                 <%= button_to t("platform_admin.reject"), reject_admin_access_request_path(request), method: :post, class: "admin-btn-secondary",
                       form: { data: { turbo_confirm: t("platform_admin.reject_confirmation") } } %>
               </div>
             <% elsif request.store %>
-              <%= request.store.name %>
+              <%= link_to request.store.name, admin_tenant_path(request.store), class: "admin-link" %>
             <% end %>
           </td>
         </tr>

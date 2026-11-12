@@ -1,0 +1,41 @@
+<%#
+  Expects local: action_queue (Platform::ActionQueue).
+  Each item.path is [route_helper_name, *args] for send("#{name}_path", *args).
+%>
+<section class="admin-card mb-4" id="action-queue">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("platform_admin.queue.title") %></h2>
+  </div>
+
+  <% if action_queue.items.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.queue.empty") %></p>
+  <% else %>
+    <%
+      sections = [
+        [ "overdue", action_queue.overdue_invoices, "overdue_invoice" ],
+        [ "access", action_queue.pending_access_requests, "access_request" ],
+        [ "integrations", action_queue.integration_failures, "integration_failure" ],
+        [ "privacy", action_queue.privacy_requests, "privacy_request" ]
+      ]
+    %>
+    <% sections.each do |key, _records, kind| %>
+      <% items = action_queue.items.select { |item| item.kind == kind } %>
+      <% next if items.empty? %>
+      <div class="px-4 py-3 border-b border-[#ebebeb] last:border-b-0" data-queue-section="<%= key %>">
+        <h3 class="text-sm font-semibold mb-2"><%= t("platform_admin.queue.#{key}") %></h3>
+        <ul class="admin-stack gap-2">
+          <% items.each do |item| %>
+            <% helper_name, *args = item.path %>
+            <li class="flex flex-wrap items-center justify-between gap-2" data-queue-kind="<%= item.kind %>" data-queue-tone="<%= item.tone %>">
+              <div class="min-w-0">
+                <%= link_to item.title, public_send("#{helper_name}_path", *args), class: "font-semibold" %>
+                <p class="admin-muted text-sm"><%= item.detail %></p>
+              </div>
+              <%= admin_badge(item.tone, label: item.tone.to_s.humanize, tone: item.tone) %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  <% end %>
+</section>

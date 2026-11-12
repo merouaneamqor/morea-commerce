@@ -1,0 +1,71 @@
+<% content_for :title, "#{@event.action}, #{t("platform_admin.audit.title")}" %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= @event.action %></h1>
+    <p class="admin-page-header__meta">
+      <%= @event.created_at.strftime("%b %-d, %Y %H:%M") %>
+      · <%= @event.source %>
+    </p>
+  </div>
+  <div>
+    <%= link_to t("platform_admin.back"), admin_platform_audit_events_path, class: "admin-btn-secondary" %>
+  </div>
+</div>
+
+<section class="admin-card">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("platform_admin.audit.detail") %></h2>
+  </div>
+  <div class="space-y-4 px-4 pb-4">
+    <div class="admin-field-grid">
+      <div>
+        <p class="admin-label"><%= t("platform_admin.audit.action") %></p>
+        <p><%= @event.action %></p>
+      </div>
+      <div>
+        <p class="admin-label"><%= t("platform_admin.audit.actor") %></p>
+        <p><%= @event.actor_label.presence || admin_blank %></p>
+      </div>
+      <div>
+        <p class="admin-label"><%= t("platform_admin.workspace") %></p>
+        <p><%= @event.store&.name || admin_blank %></p>
+      </div>
+      <div>
+        <p class="admin-label"><%= t("platform_admin.audit.source") %></p>
+        <p><%= @event.source %></p>
+      </div>
+      <div>
+        <p class="admin-label"><%= t("platform_admin.audit.subject") %></p>
+        <p>
+          <% if @event.subject_type.present? %>
+            <%= @event.subject_type %> #<%= @event.subject_id %>
+          <% else %>
+            <%= admin_blank %>
+          <% end %>
+        </p>
+      </div>
+      <div>
+        <p class="admin-label"><%= t("platform_admin.audit.ip") %></p>
+        <p class="tabular-nums"><%= @event.ip.presence || admin_blank %></p>
+      </div>
+    </div>
+
+    <div>
+      <p class="admin-label"><%= t("platform_admin.audit.metadata") %></p>
+      <% if @safe_metadata.present? %>
+        <dl class="mt-2 space-y-2">
+          <% @safe_metadata.each do |key, value| %>
+            <div class="flex gap-3">
+              <dt class="admin-muted min-w-[10rem]"><%= key %></dt>
+              <dd class="tabular-nums break-all"><%= value %></dd>
+            </div>
+          <% end %>
+        </dl>
+      <% else %>
+        <p class="admin-muted"><%= admin_blank %></p>
+      <% end %>
+      <p class="admin-muted text-sm mt-3"><%= t("platform_admin.audit.metadata_note") %></p>
+    </div>
+  </div>
+</section>

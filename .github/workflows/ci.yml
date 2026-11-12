@@ -162,7 +162,19 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      # apt mirrors used by --with-deps occasionally fail DNS on GitHub-hosted runners.
+      - name: Install Playwright Chromium
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if npx playwright install-deps chromium && npx playwright install chromium; then
+              exit 0
+            fi
+            echo "Playwright install attempt ${attempt} failed; retrying..."
+            sleep $((attempt * 20))
+          done
+          echo "Playwright Chromium install failed after retries"
+          exit 1
       - run: npm run build:test-css
       - run: npm run test:responsive
       - run: npm run test:dark

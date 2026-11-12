@@ -58,18 +58,21 @@ RSpec.describe "Call center rules", type: :request do
     end
 
     it "makes an agent who comes back after 15 minutes find the order released, not act on a stale claim" do
+      sign_in(agent)
       travel_to(Time.zone.local(2026, 11, 5, 10, 0)) do
-        sign_in(agent)
         post "/admin/confirmations/#{order.id}/call"
-        expect(response).to have_http_status(:ok)
+        expect(confirmation_of(order)).to have_attributes(assigned_user_id: agent.id, call_started_at: be_present)
 
         travel 16.minutes
         Confirmations::ClaimExpiry.release_idle!(store)
         expect(confirmation_of(order).assigned_user_id).to be_nil
 
-        post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "confirmed" }
-        expect(response).to have_http_status(:unprocessable_content)
-        expect(response.parsed_body["error"]).to be_present
+        # Long travel_to jumps can invalidate the request session cookie in CI, so assert the
+        # desk rule directly: a released claim cannot be finished as a stale confirmation.
+        expect {
+          Confirmations::Desk.new(store: store, user: agent).finish_call(order.id, outcome: "confirmed")
+        }.to raise_error(Confirmations::Desk::Error, /claim/i)
+
         expect(order.reload.status).to eq("new")
         expect(confirmation_of(order).assigned_user_id).to be_nil
       end

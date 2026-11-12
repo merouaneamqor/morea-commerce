@@ -5,6 +5,10 @@ module Orders
   class Editor
     class Error < StandardError; end
 
+    # ActiveModel::Errors#full_messages asks its owner for human attribute names; without this an error on a
+    # field (an invalid phone, say) raised NoMethodError instead of showing the message.
+    extend ActiveModel::Translation
+
     attr_reader :store, :user, :order, :errors
 
     def initialize(store:, user: nil, external_effects: true)

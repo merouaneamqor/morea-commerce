@@ -21,7 +21,7 @@ module Admin
           .where("order_confirmations.callback_at <= ?", Time.current)
       elsif @filter == "available"
         orders = orders.where("order_confirmations.assigned_user_id IS NULL")
-          .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition <> 'wrong_number'")
+          .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
           .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
       end
       @orders = orders.includes(:order_items).order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC"))
@@ -92,6 +92,50 @@ module Admin
       call_error(e.message)
     end
 
+    def touch_call
+      desk.touch_call(params[:order_id])
+      render json: { ok: true }
+    rescue Confirmations::Desk::Error => e
+      render json: { error: e.message }, status: :unprocessable_content
+    end
+
+    # Logs "who opened WhatsApp, when", then opens WhatsApp with the ready message.
+    def whatsapp
+      order = desk.log_whatsapp(params[:order_id])
+      message = t("admin.confirmations.whatsapp_message", name: order.customer_name, store: current_store.name, number: order.number, total: order.total_display)
+      redirect_to "https://wa.me/#{order.customer_phone.to_s.gsub(/\D/, "")}?text=#{ERB::Util.url_encode(message)}", allow_other_host: true
+    rescue Confirmations::Desk::Error => e
+      redirect_back_or_to admin_confirmations_path, alert: e.message
+    end
+
+    def block_number
+      desk.block_number(params[:order_id], reason: params[:reason])
+      redirect_back_or_to admin_confirmations_path, notice: t("admin.confirmations.number_blocked")
+    rescue Confirmations::Desk::Error => e
+      redirect_back_or_to admin_confirmations_path, alert: e.message
+    end
+
+    def unblock
+      desk.unblock(params[:order_id])
+      redirect_back_or_to admin_orders_path, notice: t("admin.confirmations.number_unblocked")
+    rescue Confirmations::Desk::Error => e
+      redirect_back_or_to admin_orders_path, alert: e.message
+    end
+
+    def force_release
+      desk.force_release(params[:order_id])
+      redirect_back_or_to admin_confirmations_path, notice: t("admin.confirmations.released")
+    rescue Confirmations::Desk::Error => e
+      redirect_back_or_to admin_confirmations_path, alert: e.message
+    end
+
+    def requeue
+      desk.requeue(params[:order_id], phone: params[:phone])
+      redirect_back_or_to admin_orders_path, notice: t("admin.confirmations.requeued")
+    rescue Confirmations::Desk::Error => e
+      redirect_back_or_to admin_orders_path, alert: e.message
+    end
+
     def release
       desk.release(params[:order_id])
       redirect_to admin_confirmations_path(filter: "mine"), notice: t("admin.confirmations.released")
@@ -139,7 +183,7 @@ module Admin
       current_store.orders.active.where(status: "new", sendit_code: [ nil, "" ]).where.not(id: excluding)
         .joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")
         .where("order_confirmations.assigned_user_id IS NULL")
-        .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition <> 'wrong_number'")
+        .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
         .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
         .order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC")).pick("orders.id")
     end

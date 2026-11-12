@@ -22,7 +22,9 @@ module Admin
       "cancelled" => ->(scope) { scope.where(status: "cancelled") },
       "in_progress" => ->(scope) { scope.where(status: IN_PROGRESS) },
       "delivered" => ->(scope) { scope.where(status: "delivered") },
-      "returns" => ->(scope) { scope.where(status: "returned") }
+      "returns" => ->(scope) { scope.where(status: "returned") },
+      "wrong_number" => ->(scope) { scope.joins(:order_confirmation).where(status: "new", order_confirmations: { disposition: "wrong_number" }) },
+      "blocked" => ->(scope) { scope.joins(:order_confirmation).where(status: "new", order_confirmations: { disposition: "blocked" }) }
     }.freeze
 
     def index

@@ -22,7 +22,7 @@ RSpec.describe "Call center menu", type: :request do
     expect(menu.at_css("summary").text.squish).to eq("Centre d'appels")
     expect(items.keys).to eq(%w[queue analytics assignments rules billing])
     expect(items["queue"]["href"]).to eq("/confirmation")
-    expect(items["analytics"]["href"]).to eq("/admin/confirmations/dashboard")
+    expect(items["analytics"]["href"]).to eq("/admin/confirmations/analytics")
     expect(items["assignments"]["href"]).to eq("/admin/confirmations?filter=all")
     expect(items["rules"].name).to eq("span")                                     # no page yet: shown, not clickable
     expect(items["billing"].name).to eq("span")

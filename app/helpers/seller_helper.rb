@@ -161,7 +161,7 @@ module SellerHelper
   # The pages under "Centre d'appels" in the menu: [key, icon, label, link]; no link means "coming soon".
   SELLER_CALL_CENTER_MENU = [
     [ "queue", :phone, "File d'attente", "/confirmation" ],
-    [ "analytics", :chart, "Analyses", "/admin/confirmations/dashboard" ],
+    [ "analytics", :chart, "Analyses", "/admin/confirmations/analytics" ],
     [ "assignments", :team, "Attributions", "/admin/confirmations?filter=all" ],
     [ "rules", :settings, "Règles d'attribution", nil ],
     [ "billing", :wallet, "Facturation", nil ]
@@ -176,7 +176,7 @@ module SellerHelper
     return unless controller_name == "confirmations"
 
     case action_name
-    when "dashboard" then "analytics"
+    when "dashboard", "analytics" then "analytics"
     when "index" then params[:filter] == "all" ? "assignments" : "queue"
     else "queue"
     end

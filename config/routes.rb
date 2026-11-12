@@ -213,6 +213,7 @@ Rails.application.routes.draw do
         get :home
         get :center
         get :dashboard
+        get :analytics
         post :clock_in
         post :clock_out
       end

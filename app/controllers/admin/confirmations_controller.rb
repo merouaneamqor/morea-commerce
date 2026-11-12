@@ -52,6 +52,14 @@ module Admin
       @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
     end
 
+    # "Analyses": the call-center figures of the orders created in the range. An agent only sees her own calls;
+    # the owner can look at one agent with ?agent_id=.
+    def analytics
+      @date_range = selected_date_range(scope: "call_analytics", default: "last_30")
+      agent = agent_view? ? current_user : (current_store.users.find_by(id: params[:agent_id]) if params[:agent_id].present?)
+      @analytics = Confirmations::Analytics.new(store: current_store, from: @date_range.from, to: @date_range.to, range: @date_range.time_range, agent: agent)
+    end
+
     def dashboard
       @period = period_param
       @performance = Confirmations::Performance.new(store: current_store, range: period_range(@period),

@@ -197,6 +197,22 @@ RSpec.describe "Call center page", type: :request do
     end
   end
 
+  describe "the open tab" do
+    before { sign_in(agent) }
+
+    it "takes its own colour instead of black: waiting is yellow, unreachable orange, failed red, confirmed green" do
+      { "pending" => "bg-[#f5c242]", "unreachable" => "bg-[#f2994a]", "failed" => "bg-[#e5484d]", "confirmed" => "bg-[#3aa76d]" }.each do |tab, colour|
+        get "/admin/confirmations/center", params: { tab: tab }
+
+        classes = document.at_css("[data-tab=#{tab}]")["class"]
+        expect(classes).to include(colour), tab
+        expect(classes).not_to include("bg-[#1c1c1e]"), tab
+        expect(document.at_css("[data-tab=#{tab}]")["aria-current"]).to eq("page")
+        expect(document.css("[data-tab]:not([aria-current])").map { |other| other["class"] }.join).not_to include(colour)
+      end
+    end
+  end
+
   describe "an owner" do
     before { sign_in(owner) }
 

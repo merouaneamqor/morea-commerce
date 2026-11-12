@@ -1,0 +1,202 @@
+<%# Call center: header, stat cards, filters, failed-delivery alert, tabs and the order table.
+    Everything printed comes from @center (Confirmations::CallCenter) and @summary (Team::AgentEarnings). %>
+<% content_for :title, "#{t('call_center.title')} — Admin" %>
+<% content_for :admin_page_class, "admin-page--dashboard" %>
+<% center = @center %>
+<% figures = center.figures %>
+<% counts = center.counts %>
+<% store_name = current_store.name %>
+<% keep = request.query_parameters.slice("from", "to", "preset", "product", "source", "whatsapp", "missed", "q", "sort") %>
+<% tab_link = ->(key) { center_admin_confirmations_path(keep.merge("tab" => key)) } %>
+<% btn_dark = "inline-flex h-8 items-center gap-1.5 rounded-full bg-[#10162a] px-3.5 text-[13px] font-semibold text-white hover:bg-[#1b2340]" %>
+<% btn_light = "inline-flex h-8 items-center gap-1.5 rounded-full border border-[#e7e9ee] bg-white px-3.5 text-[13px] font-semibold text-[#10162a] hover:bg-[#f4f5f8]" %>
+<% field = "h-8 rounded-full border border-[#e7e9ee] bg-white px-3 text-[13px] text-[#10162a] focus:border-[#5b46d6] focus:outline-none" %>
+
+<div class="space-y-3" data-call-center>
+  <header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#10162a] px-5 py-3 text-white" data-cc-header>
+    <div class="flex items-center gap-3">
+      <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:phone, size: 20) %></span>
+      <div>
+        <h1 class="text-xl leading-tight font-bold"><%= t("call_center.title") %></h1>
+        <p class="text-[13px] leading-tight text-white/65"><%= t("call_center.subtitle") %> · <%= store_name %></p>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <% unless agent_view? %>
+        <%= link_to new_admin_order_path, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" do %>+ <%= t("call_center.create_order") %><% end %>
+      <% end %>
+      <span class="inline-flex h-8 items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold"><%= current_user.name.presence || current_user.email %></span>
+      <% if @open_shift %>
+        <%= button_to t("admin.confirmations.clock_out"), clock_out_admin_confirmations_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-white px-3.5 text-[13px] font-semibold text-[#10162a] hover:bg-[#eeebfd]" %>
+      <% elsif agent_view? %>
+        <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-[#5b46d6] px-3.5 text-[13px] font-semibold text-white hover:bg-[#4a37c2]" %>
+      <% end %>
+    </div>
+  </header>
+
+  <% if @needs_clock_in %>
+    <p class="rounded-2xl border border-[#e7e9ee] bg-[#eeebfd] px-4 py-2.5 text-[13px] font-medium text-[#3b2fa0]" role="status" data-clock-in-required><%= t("call_center.clock_in_required") %></p>
+  <% end %>
+
+  <%# Row 1: this agent's figures (the whole store for a manager) %>
+  <div class="grid grid-cols-2 gap-2.5 md:grid-cols-4 xl:grid-cols-7" data-cards="first">
+    <%= render "cc_card", key: "assigned", label: t("call_center.cards.assigned"), value: figures.assigned, hint: t("call_center.cards.assigned_hint"), tone: "#5b46d6" %>
+    <%= render "cc_card", key: "pending", label: t("call_center.cards.pending"), value: figures.pending, hint: t("call_center.cards.pending_hint"), tone: "#d08a1f" %>
+    <%= render "cc_card", key: "failed", label: t("call_center.cards.failed"), value: figures.failed, hint: t("call_center.cards.failed_hint"), tone: "#d4493e" %>
+    <%= render "cc_card", key: "confirmed", label: t("call_center.cards.confirmed"), value: figures.confirmed, hint: t("call_center.cards.confirmed_hint"), tone: "#2f9e5f" %>
+    <%= render "cc_card", key: "delivered", label: t("call_center.cards.delivered"), value: figures.delivered, hint: t("call_center.cards.delivered_hint"), tone: "#2f9e5f" %>
+    <%= render "cc_card", key: "cancelled", label: t("call_center.cards.cancelled"), value: figures.cancelled, hint: t("call_center.cards.cancelled_hint"), tone: "#6b7280" %>
+    <%= render "cc_card", key: "returned", label: t("call_center.cards.returned"), value: figures.returned, hint: t("call_center.cards.returned_hint"), tone: "#7a4fd8" %>
+  </div>
+
+  <%# Row 2: her commission (agents only). The deductions card is hidden when there is nothing to deduct. %>
+  <% if @summary %>
+    <% show_deductions = current_user.return_penalty_cents.to_i.positive? || @summary.pending_deductions.positive? %>
+    <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-3" data-cards="money">
+      <%= render "cc_card", key: "paid", label: t("call_center.cards.paid"), value: money(@summary.cash_paid), hint: t("call_center.cards.paid_hint"), tone: "#2f9e5f" %>
+      <%= render "cc_card", key: "due", label: t("call_center.cards.due"), value: money(@summary.unpaid), hint: t("call_center.cards.due_hint"), tone: "#5b46d6" %>
+      <% if show_deductions %>
+        <%= render "cc_card", key: "deductions", label: t("call_center.cards.deductions"), value: money(@summary.pending_deductions), hint: t("call_center.cards.deductions_hint"), tone: "#d4493e" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# Filters: one row %>
+  <%= form_with url: center_admin_confirmations_path, method: :get, class: "flex flex-wrap items-center gap-2 rounded-2xl border border-[#e7e9ee] bg-white p-3", data: { cc_filters: true } do %>
+    <%= hidden_field_tag :tab, center.tab %>
+    <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: center_admin_confirmations_path, theme: "light", size: "compact", extra: keep.slice("product", "source", "whatsapp", "missed", "q", "sort").merge("tab" => center.tab) %>
+    <%= hidden_field_tag :from, @date_range.from.iso8601 %><%= hidden_field_tag :to, @date_range.to.iso8601 %>
+    <%= select_tag :product, options_for_select(center.products, params[:product]), include_blank: t("call_center.filters.all_products"), class: field, "aria-label": t("call_center.filters.product") %>
+    <%= select_tag :sort, options_for_select([ [ t("call_center.filters.sort_recent"), "recent" ], [ t("call_center.filters.sort_oldest"), "oldest" ] ], params[:sort]), class: field %>
+    <%= select_tag :source, options_for_select([ [ t("call_center.filters.manual"), "manual" ] ] + center.sources, params[:source]), include_blank: t("call_center.filters.all_sources"), class: field, "aria-label": t("call_center.filters.source") %>
+    <%= select_tag :whatsapp, options_for_select([ [ t("call_center.filters.whatsapp_sent"), "sent" ], [ t("call_center.filters.whatsapp_not_sent"), "not_sent" ] ], params[:whatsapp]), include_blank: t("call_center.filters.whatsapp"), class: field %>
+    <label class="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#e7e9ee] bg-white px-3 text-[13px] text-[#10162a]"><%= check_box_tag :missed, "1", params[:missed] == "1", class: "accent-[#5b46d6]" %><%= t("call_center.filters.missed") %></label>
+    <%= search_field_tag :q, params[:q], placeholder: t("call_center.filters.search"), class: "#{field} min-w-[14rem] flex-1" %>
+    <%= submit_tag t("call_center.filters.refresh"), name: nil, class: "#{btn_dark} cursor-pointer" %>
+  <% end %>
+
+  <% if center.failed_count.positive? %>
+    <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#f3c9cd] bg-[#fdf0f1] px-4 py-3" role="alert" data-failed-alert>
+      <div>
+        <p class="text-[13px] font-bold text-[#a8342b]"><%= t("call_center.alert.title", count: center.failed_count) %></p>
+        <p class="text-xs text-[#a8342b]/80"><%= t("call_center.alert.body") %></p>
+      </div>
+      <%= link_to t("call_center.alert.action"), tab_link.call("failed"), class: btn_light %>
+    </div>
+  <% end %>
+
+  <section class="rounded-3xl border border-[#e7e9ee] bg-white p-4" data-queue>
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h2 class="text-base font-bold text-[#10162a]"><%= t("call_center.queue.title") %></h2>
+        <p class="text-xs text-[#6b7280]"><%= t("call_center.queue.hint") %></p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <%= link_to dashboard_admin_confirmations_path, class: btn_light do %><%= seller_icon(:chart, size: 14) %><%= t("call_center.queue.performances") %><% end %>
+      </div>
+    </div>
+
+    <nav class="mt-3 flex gap-1 overflow-x-auto rounded-full bg-[#f1f2f6] p-1" aria-label="<%= t('call_center.queue.title') %>" data-tabs>
+      <% Confirmations::CallCenter::TABS.each do |key| %>
+        <% active = center.tab == key %>
+        <%= link_to tab_link.call(key), "data-tab": key, "aria-current": (active ? "page" : nil),
+              class: "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold whitespace-nowrap transition #{active ? "bg-[#10162a] text-white" : (key == "failed" && counts[key].positive? ? "text-[#a8342b] hover:bg-white" : "text-[#4b5260] hover:bg-white")}" do %>
+          <%= t("call_center.tabs.#{key}") %>
+          <span class="rounded-full px-1.5 text-[11px] tabular-nums <%= active ? "bg-white/20 text-white" : (key == "failed" && counts[key].positive? ? "bg-[#fdecee] text-[#a8342b]" : "bg-white text-[#5b46d6]") %>" data-count="<%= key %>"><%= counts[key] %></span>
+        <% end %>
+      <% end %>
+    </nav>
+    <% if %w[pending planned blocked].include?(center.tab) %>
+      <p class="mt-2 text-[11px] text-[#9096a2]"><%= t("call_center.queue.live") %></p>
+    <% end %>
+
+    <div class="mt-3 overflow-x-auto rounded-2xl border border-[#e7e9ee]">
+      <table class="w-full text-left text-[13px]" data-orders-table>
+        <thead class="bg-[#f7f8fa] text-xs font-semibold text-[#6b7280]">
+          <tr>
+            <th class="px-3 py-2.5 whitespace-nowrap"><%= t("call_center.columns.order") %></th>
+            <th class="px-3 py-2.5"><%= t("call_center.columns.customer") %></th>
+            <th class="px-3 py-2.5"><%= t("call_center.columns.product") %></th>
+            <th class="px-3 py-2.5 text-end"><%= t("call_center.columns.amount") %></th>
+            <th class="px-3 py-2.5"><%= t("call_center.columns.city") %></th>
+            <th class="px-3 py-2.5 text-center"><%= t("call_center.columns.calls") %></th>
+            <th class="px-3 py-2.5"><%= t("call_center.columns.whatsapp") %></th>
+            <th class="px-3 py-2.5 text-end"><%= t("call_center.columns.actions") %></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#eef0f4]">
+          <% if center.rows.empty? %>
+            <tr><td colspan="8" class="px-3 py-8 text-center text-[#6b7280]"><%= t("call_center.queue.empty") %></td></tr>
+          <% end %>
+          <% center.rows.each do |order| %>
+            <% confirmation = order.order_confirmation %>
+            <% whatsapp = center.whatsapp_events[order.id] %>
+            <% source = order.store_connection&.name || t("call_center.filters.manual") %>
+            <% acting = %w[pending planned].include?(center.tab) %>
+            <tr class="align-middle hover:bg-[#fafafc]" data-order-row="<%= order.number %>">
+              <td class="px-3 py-2.5 whitespace-nowrap">
+                <%= link_to "##{order.number}", admin_order_path(order), class: "font-semibold text-[#10162a] hover:text-[#5b46d6]" %>
+                <p class="text-[11px] text-[#9096a2]"><span data-source><%= source %></span> · <%= l(order.created_at.in_time_zone(DateRange::ZONE), format: "%d/%m/%Y") %></p>
+              </td>
+              <td class="px-3 py-2.5">
+                <p class="font-medium text-[#10162a]"><%= order.customer_name %>
+                  <span class="ms-1 rounded-full bg-[#eeebfd] px-1.5 text-[11px] font-semibold text-[#5b46d6]" title="<%= t("call_center.customer_orders", count: order.customer.orders_count) %>"><%= order.customer.orders_count %></span></p>
+                <p class="flex items-center gap-1 text-[11px] text-[#6b7280]"><span dir="ltr"><%= order.customer_phone %></span>
+                  <button type="button" class="cursor-pointer text-[#9096a2] hover:text-[#10162a]" data-controller="copy" data-copy-text-value="<%= order.customer_phone %>" data-action="copy#copy" aria-label="<%= t("call_center.copy") %>">
+                    <svg viewBox="0 0 24 24" class="size-3.5 fill-none stroke-current [stroke-width:1.8]" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button></p>
+              </td>
+              <td class="max-w-[16rem] truncate px-3 py-2.5 text-[#10162a]" data-product>
+                <%= order.order_items.map { |item| [ "#{item.quantity > 1 ? "#{item.quantity} × " : ""}#{item.product_name}", item.variant_name.presence&.then { |v| "(#{v})" } ].compact.join(" ") }.join(", ") %>
+              </td>
+              <td class="px-3 py-2.5 text-end font-semibold whitespace-nowrap text-[#10162a] tabular-nums" data-amount="<%= order.total_cents %>"><%= order.total_display %></td>
+              <td class="px-3 py-2.5 text-[#4b5260]"><%= order.customer_city %></td>
+              <td class="px-3 py-2.5 text-center" data-calls="<%= center.attempt_counts[order.id].to_i %>"><span class="inline-flex min-w-6 justify-center rounded-full bg-[#f1f2f6] px-1.5 text-[12px] font-semibold text-[#10162a]"><%= center.attempt_counts[order.id].to_i %></span></td>
+              <td class="px-3 py-2.5 whitespace-nowrap" data-whatsapp="<%= whatsapp ? "sent" : "none" %>">
+                <% if whatsapp %>
+                  <span class="rounded-full bg-[#e8f6ee] px-2 py-0.5 text-[11px] font-semibold text-[#237a49]" title="<%= whatsapp.user&.name %>"><%= t("call_center.whatsapp_sent", time: l(whatsapp.created_at.in_time_zone(DateRange::ZONE), format: "%d/%m %H:%M")) %></span>
+                <% else %>
+                  <span class="text-[11px] text-[#9096a2]"><%= t("call_center.whatsapp_none") %></span>
+                <% end %>
+              </td>
+              <td class="px-3 py-2.5">
+                <div class="flex items-center justify-end gap-1.5">
+                  <% if acting %>
+                    <%= button_to whatsapp_admin_confirmation_path(order), form: { target: "_blank" }, disabled: @needs_clock_in, title: (t("call_center.clock_in_required") if @needs_clock_in),
+                          class: "grid size-8 cursor-pointer place-items-center rounded-full border border-[#cfeedd] bg-[#f1fbf5] text-[#237a49] hover:bg-[#e3f6ec] disabled:cursor-not-allowed disabled:opacity-40", "aria-label": "WhatsApp" do %>
+                      <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M3 21l1.6-4.6A8.5 8.5 0 1 1 8 19.6L3 21z"/><path d="M9 9.5c.4 2.4 2.600 4.600 5 5l1.200-1.200 2 .7c-.3 1.300-1.300 1.900-2.700 1.700-3-.4-5.700-3.100-6.100-6.100-.2-1.400.4-2.400 1.700-2.700l.7 2z"/></svg>
+                    <% end %>
+                    <details class="relative">
+                      <summary class="grid size-8 cursor-pointer list-none place-items-center rounded-full border border-[#f3c9cd] bg-[#fdf0f1] text-[#a8342b] hover:bg-[#fbe3e5] <%= "pointer-events-none opacity-40" if @needs_clock_in %>" title="<%= t("call_center.block") %>" aria-label="<%= t("call_center.block") %>">
+                        <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round]" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>
+                      </summary>
+                      <%= form_with url: block_number_admin_confirmation_path(order), class: "absolute end-0 z-30 mt-2 w-64 space-y-2 rounded-2xl border border-[#e7e9ee] bg-white p-3 shadow-[0_20px_50px_-20px_rgba(16,22,42,0.4)]" do %>
+                        <%= text_field_tag :reason, nil, required: true, maxlength: 500, placeholder: t("call_center.block_reason"), class: "#{field} w-full" %>
+                        <%= submit_tag t("call_center.block_submit"), name: nil, class: "#{btn_dark} w-full cursor-pointer justify-center" %>
+                      <% end %>
+                    </details>
+                    <%= button_to claim_admin_confirmation_path(order), disabled: @needs_clock_in, title: (t("call_center.clock_in_required") if @needs_clock_in),
+                          class: "#{btn_dark} cursor-pointer disabled:cursor-not-allowed disabled:opacity-40", data: { call: order.id } do %>
+                      <%= seller_icon(:phone, size: 14) %><%= t("call_center.call") %>
+                    <% end %>
+                  <% elsif center.tab == "blocked" && !agent_view? %>
+                    <%= button_to "Débloquer", unblock_admin_confirmation_path(order), class: "#{btn_light} cursor-pointer" %>
+                  <% else %>
+                    <span class="text-[#9096a2]">—</span>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if center.page > 1 || center.next_page? %>
+      <nav class="mt-3 flex items-center justify-between text-[13px]">
+        <% if center.page > 1 %><%= link_to "←", center_admin_confirmations_path(keep.merge("tab" => center.tab, "page" => center.page - 1)), class: btn_light %><% else %><span></span><% end %>
+        <span class="text-[#6b7280]"><%= center.page %></span>
+        <% if center.next_page? %><%= link_to "→", center_admin_confirmations_path(keep.merge("tab" => center.tab, "page" => center.page + 1)), class: btn_light %><% else %><span></span><% end %>
+      </nav>
+    <% end %>
+  </section>
+</div>

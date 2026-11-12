@@ -83,7 +83,7 @@ Rails.application.routes.draw do
   patch "/livraison/societes/:id", to: "admin/delivery_accounts#update", as: :seller_delivery_account
   delete "/livraison/societes/:id", to: "admin/delivery_accounts#destroy"
   {
-    "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations", "/mes-statistiques" => "/admin/my_stats",
+    "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations/center", "/mes-statistiques" => "/admin/my_stats",
     "/livraison" => "/admin/delivery", "/produits" => "/admin/products",
     "/equipe" => "/admin/staff", "/settings/profile" => "/admin/store/edit"
   }.each do |from, target|
@@ -210,6 +210,7 @@ Rails.application.routes.draw do
     resources :confirmations, only: :index, param: :order_id do
       collection do
         get :home
+        get :center
         get :dashboard
         post :clock_in
         post :clock_out

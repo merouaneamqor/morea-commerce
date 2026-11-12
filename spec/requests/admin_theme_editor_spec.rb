@@ -161,7 +161,7 @@ RSpec.describe "Admin theme editor", type: :request do
     kinds = theme.reload.snapshot.fetch("sections").map { |section| section.fetch("kind") }
     expect(kinds).to include("image_with_text")
     expect(kinds).not_to include("featured_collection")
-    expect(kinds.length).to eq(4)
+    expect(kinds.length).to eq(3)
     expect(theme.snapshot.dig("sections", -1, "translations", "en", "heading")).to eq("Added in the theme editor")
   end
 

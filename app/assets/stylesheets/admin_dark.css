@@ -149,3 +149,66 @@
 .admin-body[data-admin-theme="seallo_dark"] .admin-sync-panel__item { border-bottom-color: var(--s-line); }
 .admin-body[data-admin-theme="seallo_dark"] .admin-sync-status { color: var(--s-muted); }
 .admin-body[data-admin-theme="seallo_dark"] .admin-sync-status__attention { color: var(--s-rust); }
+
+/* Call-center glass shell forces light translucent panels; remap them for Dark Seallo.
+   Match the unlayered glass selectors so these win over rgba(255,255,255,0.82). */
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] {
+  background: var(--s-page);
+}
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] .bg-white:not(a):not(button):not(input):not(select):not(label):not(span):not([role="dialog"]),
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] .admin-card {
+  background-color: rgb(32 26 23 / 0.94);
+  border-color: var(--s-line);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 14px 32px -18px rgb(0 0 0 / 0.55), inset 0 1px rgb(255 255 255 / 0.06);
+}
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] [class*="border-[#e0e0e5]"] {
+  border-color: var(--s-line);
+}
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] [class^="bg-[#efeff3]"],
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] [class*=" bg-[#efeff3]"],
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] [class^="bg-[#f5f5f7]"],
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] [class*=" bg-[#f5f5f7]"] {
+  background-color: var(--s-soft2);
+}
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] .bg-white:has([data-controller~="date-range-picker"]) {
+  background-color: var(--s-card);
+}
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] [role="dialog"],
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-drawer] [role="dialog"] {
+  background-color: var(--s-card);
+}
+.admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] [data-order-modal-panel][role="dialog"] {
+  background-color: rgb(32 26 23 / 0.94);
+  border-color: rgb(255 255 255 / 0.12);
+  box-shadow: 0 40px 90px -30px rgb(0 0 0 / 0.65), inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+.admin-body[data-admin-theme="seallo_dark"] [data-order-modal] {
+  background: rgb(0 0 0 / 0.55);
+}
+.admin-body[data-admin-theme="seallo_dark"] [data-order-modal] .admin-card {
+  background: rgb(38 31 27 / 0.9);
+  border-color: var(--s-line);
+}
+.admin-body[data-admin-theme="seallo_dark"] [data-order-modal] .admin-input {
+  background: var(--s-soft);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] { background: var(--s-page); }
+  .admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] .bg-white,
+  .admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] .admin-card {
+    background-color: var(--s-card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] [data-order-modal-panel][role="dialog"] {
+    background-color: var(--s-card);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] .bg-white,
+  .admin-body[data-admin-theme="seallo_dark"] [data-seller-shell] .admin-card {
+    background-color: var(--s-card);
+  }
+}

@@ -41,6 +41,24 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     expect(document.css("[data-kpis=row2] [data-kpi]").map { |tile| tile.at_css("p").text.squish }).to eq([ "Taux de confirmation", "Taux de livraison", "Taux de retour" ])
   end
 
+  it "offers a collapsible menu: a desktop toggle, every label hideable, a tooltip with each name, and the choice restored before paint" do
+    sign_in(owner)
+    get "/dashboard", params: { locale: "fr" }
+
+    aside = document.at_css("aside")
+    toggle = aside.at_css("[data-sidebar-toggle]")
+    expect(toggle["aria-expanded"]).to eq("true")
+    expect(toggle["class"]).to include("hidden", "lg:grid")                                   # desktop only
+    expect([ toggle["data-label-collapse"], toggle["data-label-expand"] ]).to eq([ "Réduire le menu", "Agrandir le menu" ])
+    links = aside.css("nav ul li a")
+    expect(links).not_to be_empty
+    expect(links.map { |link| link.at_css("[data-label]")&.text&.squish }).to eq(links.map { |link| link["title"] })
+    expect(aside.css("[data-label]").map { |label| label.text.squish }).to include("Paramètres", "Se déconnecter", "Tableau de bord")
+    expect(aside.at_css("[data-collapse-hide]")).to be_present                                # the wordmark and the store card go when collapsed
+    expect(response.body).to include('localStorage.getItem("sellerSidebar") === "collapsed"')  # restored before the first paint
+    expect(document.at_css("[data-seller-drawer] [data-sidebar-toggle]")["class"]).to include("hidden")
+  end
+
   it "no longer shows the financial cards: they moved to Comptabilité" do
     sign_in(owner)
     customer = store.customers.create!(name: "Client", phone: "0612345678", email: "c-#{suffix}@example.test")

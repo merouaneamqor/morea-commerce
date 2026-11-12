@@ -3557,3 +3557,21 @@ main {
 @keyframes donut-in { from { stroke-dasharray: 0 100; } to { stroke-dasharray: var(--len) calc(100 - var(--len)); } }
 .donut-seg { stroke-dasharray: var(--len) calc(100 - var(--len)); animation: donut-in 1s cubic-bezier(0.22, 1, 0.36, 1) both; }
 @media (prefers-reduced-motion: reduce) { .donut-seg { animation: none; } }
+
+/* ——— Collapsible menu (desktop) ———
+   html[data-sidebar="collapsed"] shrinks the sidebar to its icons: labels, badges, the store card and the
+   wordmark go, links centre their icon (the title attribute gives the name on hover). Unlayered so it wins over
+   the Tailwind utilities on the links. The mobile drawer is never collapsed. */
+@media (min-width: 1024px) {
+  [data-seller-shell] aside { transition: width 0.2s ease; }
+  html[data-sidebar="collapsed"] [data-seller-shell] aside { width: 4.75rem; }
+  html[data-sidebar="collapsed"] [data-seller-shell] aside [data-label],
+  html[data-sidebar="collapsed"] [data-seller-shell] aside [data-badge],
+  html[data-sidebar="collapsed"] [data-seller-shell] aside [data-collapse-hide] { display: none; }
+  html[data-sidebar="collapsed"] [data-seller-shell] aside nav a,
+  html[data-sidebar="collapsed"] [data-seller-shell] aside nav button:not([data-sidebar-toggle]),
+  html[data-sidebar="collapsed"] [data-seller-shell] aside nav li > span { justify-content: center; padding-inline: 0; }
+  html[data-sidebar="collapsed"] [data-seller-shell] aside [data-sidebar-head] { justify-content: center; padding-inline: 0; }
+  html[data-sidebar="collapsed"] [data-seller-shell] aside [data-sidebar-toggle] svg { transform: rotate(180deg); }
+}
+@media (prefers-reduced-motion: reduce) { [data-seller-shell] aside { transition: none; } }

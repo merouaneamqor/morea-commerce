@@ -84,7 +84,7 @@ module Seller
     # Tracked articles with LOW_STOCK_THRESHOLD pieces or fewer: a product without variants by its own stock,
     # otherwise each active variant by its own stock. Lowest first. `count` is all of them, `items` the first few.
     def low_stock
-      items = @store.products.active.low_stock(LOW_STOCK_THRESHOLD).includes(:product_variants).flat_map do |product|
+      items = @store.products.visible.active.low_stock(LOW_STOCK_THRESHOLD).includes(:product_variants).flat_map do |product|
         variants = product.product_variants.select(&:active)
         if variants.empty?
           product.stock.to_i <= LOW_STOCK_THRESHOLD ? [ low_stock_item(product, nil, product.stock) ] : []
@@ -97,7 +97,7 @@ module Seller
 
     # Active products with no cost entered (a count, shown as a badge in the menu).
     def missing_costs
-      @store.products.active.where(cost_cents: [ nil, 0 ]).count
+      @store.products.visible.active.where(cost_cents: [ nil, 0 ]).count
     end
 
     private

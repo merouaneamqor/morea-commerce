@@ -1,0 +1,37 @@
+fr:
+  products_page:
+    all: "Toutes"
+    manual: "Manuel"
+    source: "Source"
+    switch: "Boutique"
+    imported_hint: "Importé de la boutique : prix, stock et photo se mettent à jour à chaque synchronisation."
+  connections:
+    products:
+      title: "Produits de la boutique"
+      help: "Les produits de cette boutique sont lus dans votre catalogue : prix, stock, variantes et photo viennent de la boutique, le coût d’achat reste le vôtre."
+      state:
+        never: "Pas encore synchronisés"
+        queued: "Synchronisation en attente…"
+        running: "Synchronisation en cours…"
+        ok: "Synchronisés le %{time} : %{total} produits (%{created} nouveaux, %{updated} mis à jour, %{archived} archivés)"
+        failed: "Échec de la dernière synchronisation : %{error}"
+      errors:
+        credentials_missing: "Clés API manquantes"
+        invalid_credentials: "Clés API refusées par la boutique"
+        missing_scopes: "Permission de lire les produits manquante"
+        disconnected: "Boutique déconnectée"
+        rate_limited: "Trop de requêtes, réessayez plus tard"
+        unavailable: "Boutique injoignable"
+        invalid_response: "Réponse inattendue de la boutique"
+        unsafe_domain: "Adresse de boutique non autorisée"
+      sync: "Synchroniser les produits"
+      queued: "Synchronisation lancée."
+      not_ready: "Ajoutez d’abord les clés API de cette boutique (ou reconnectez-la)."
+      credentials_saved: "Clés API enregistrées."
+      credentials_title: "Clés API pour lire les produits"
+      credentials_saved_hint: "Enregistré (non affiché). Laissez vide pour le garder."
+      consumer_key: "Clé client (consumer key)"
+      consumer_secret: "Secret client (consumer secret)"
+      access_token: "Jeton d’accès YouCan"
+      save_credentials: "Enregistrer les clés"
+      imported_count: "%{count} produits importés"

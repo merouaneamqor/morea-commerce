@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_05_034000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_040000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -956,6 +956,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_034000) do
     t.datetime "updated_at", null: false
     t.string "color_hex"
     t.jsonb "image_order", default: [], null: false
+    t.string "external_id"
+    t.index ["product_id", "external_id"], name: "index_product_variants_on_product_and_external_id", unique: true, where: "(external_id IS NOT NULL)"
     t.index ["product_id"], name: "index_product_variants_on_product_id"
   end
 
@@ -988,8 +990,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_034000) do
     t.text "movement"
     t.integer "image_order", default: [], null: false, array: true
     t.integer "cost_cents"
+    t.bigint "store_connection_id"
+    t.string "external_id"
+    t.datetime "external_synced_at"
     t.index ["featured"], name: "index_products_on_featured"
     t.index ["status"], name: "index_products_on_status"
+    t.index ["store_connection_id", "external_id"], name: "index_products_on_connection_and_external_id", unique: true, where: "(external_id IS NOT NULL)"
+    t.index ["store_connection_id"], name: "index_products_on_store_connection_id"
     t.index ["store_id", "slug"], name: "index_products_on_store_id_and_slug", unique: true
     t.index ["store_id"], name: "index_products_on_store_id"
     t.check_constraint "cost_cents IS NULL OR cost_cents >= 0", name: "products_cost_cents_nonnegative"
@@ -1101,6 +1108,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_034000) do
     t.integer "shopify_order_limit"
     t.datetime "shopify_billing_period_start"
     t.datetime "shopify_billing_period_end"
+    t.text "api_credentials_ciphertext"
+    t.string "products_sync_state"
+    t.datetime "products_synced_at"
+    t.string "products_sync_error"
+    t.jsonb "products_sync_counts", default: {}, null: false
     t.index ["external_domain"], name: "unique_seallo_shop", unique: true, where: "((shopify_app)::text = 'seallo_connect'::text)"
     t.index ["shopify_oauth_state_digest"], name: "index_store_connections_on_shopify_oauth_state_digest", unique: true
     t.index ["store_id", "provider", "external_domain"], name: "idx_on_store_id_provider_external_domain_3a7fd79a93", unique: true
@@ -1352,6 +1364,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_034000) do
   add_foreign_key "platform_oauth_tokens", "users", on_delete: :cascade
   add_foreign_key "product_translations", "products"
   add_foreign_key "product_variants", "products"
+  add_foreign_key "products", "store_connections", on_delete: :nullify
   add_foreign_key "products", "stores"
   add_foreign_key "push_subscriptions", "stores", on_delete: :cascade
   add_foreign_key "push_subscriptions", "users", on_delete: :cascade

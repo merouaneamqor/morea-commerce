@@ -8,6 +8,59 @@ module SellerHelper
   # Words that exist only in Morea (seallo has no such page): [English, Arabic].
   SELLER_EXTRA = {
     "Comptabilité" => [ "Accounting", "المحاسبة" ],
+    "Paliers de chiffre d'affaires" => [ "Revenue milestones", "مراحل رقم المعاملات" ],
+    "Livré depuis le début" => [ "Delivered since the start", "المسلَّم منذ البداية" ],
+    "Débutant" => [ "Beginner", "مبتدئ" ],
+    "Distribution des commandes" => [ "Order distribution", "توزيع الطلبات" ],
+    "Commandes de la période" => [ "Orders of the period", "طلبات الفترة" ],
+    "Confirmation" => [ "Confirmation", "التأكيد" ],
+    "Centre d'appels" => [ "Call center", "مركز الاتصال" ],
+    "File d'attente" => [ "Queue", "قائمة الانتظار" ],
+    "Analyses" => [ "Analytics", "التحليلات" ],
+    "Attributions" => [ "Assignments", "التعيينات" ],
+    "Règles d'attribution" => [ "Assignment rules", "قواعد التعيين" ],
+    "Facturation" => [ "Billing", "الفوترة" ],
+    "Expédition" => [ "Shipping", "الشحن" ],
+    "Programmées" => [ "Scheduled", "مجدولة" ],
+    "Faux numéros" => [ "Wrong numbers", "أرقام خاطئة" ],
+    "À expédier" => [ "To ship", "للشحن" ],
+    "En transit" => [ "In transit", "في الطريق" ],
+    "Problème" => [ "Problem", "مشكلة" ],
+    "Meilleurs produits" => [ "Best products", "أفضل المنتجات" ],
+    "Ventes livrées par produit, hors livraison" => [ "Delivered sales by product, delivery excluded", "المبيعات المسلّمة لكل منتج دون التوصيل" ],
+    "Aucune vente livrée sur la période." => [ "No delivered sale in the period.", "لا مبيعات مسلّمة في الفترة." ],
+    "commandes" => [ "orders", "طلبات" ],
+    "commande" => [ "order", "طلب" ],
+    "Réduire le menu" => [ "Collapse the menu", "طيّ القائمة" ],
+    "Agrandir le menu" => [ "Expand the menu", "توسيع القائمة" ],
+    "Je suis ici" => [ "I'm here", "أنا هنا" ],
+    "Je continue jusqu'à" => [ "I keep going to", "أواصل حتى" ],
+    "Masquer les paliers" => [ "Hide the milestones", "إخفاء المراحل" ],
+    "Afficher les paliers" => [ "Show the milestones", "إظهار المراحل" ],
+    "Prochain palier" => [ "Next tier", "المرحلة التالية" ],
+    "Palier maximal atteint" => [ "Top tier reached", "تم بلوغ أعلى مرحلة" ],
+    "avant" => [ "to", "قبل" ],
+    "Pionnier" => [ "Pioneer", "رائد" ],
+    "Doyen" => [ "Veteran", "عميد" ],
+    "Leader" => [ "Leader", "قائد" ],
+    "Maître" => [ "Master", "أستاذ" ],
+    "Légende" => [ "Legend", "أسطورة" ],
+    "Titan" => [ "Titan", "عملاق" ],
+    "Taux de confirmation" => [ "Confirmation rate", "نسبة التأكيد" ],
+    "Panier moyen" => [ "Average basket", "متوسط السلة" ],
+    "Taux de retour" => [ "Return rate", "نسبة الإرجاع" ],
+    "retournées" => [ "returned", "مرتجعة" ],
+    "Commandes livrées" => [ "Delivered orders", "الطلبات المسلّمة" ],
+    "commandes livrées" => [ "delivered orders", "طلبات مسلّمة" ],
+    "Toutes les commandes" => [ "All orders", "كل الطلبات" ],
+    "Stock faible" => [ "Low stock", "مخزون منخفض" ],
+    "Rupture" => [ "Out of stock", "نفد المخزون" ],
+    "pcs" => [ "pcs", "قطعة" ],
+    "Voir les produits" => [ "See products", "عرض المنتجات" ],
+    "Aucun article sous le seuil." => [ "No article below the threshold.", "لا توجد منتجات تحت الحد." ],
+    "Articles à" => [ "Articles at", "منتجات عند" ],
+    "pièces ou moins" => [ "pieces or fewer", "قطع أو أقل" ],
+    "confirmées" => [ "confirmed", "مؤكدة" ],
     "Accueil" => [ "Home", "الرئيسية" ],
     "Plus" => [ "More", "المزيد" ],
     "Menu" => [ "Menu", "القائمة" ],
@@ -38,6 +91,16 @@ module SellerHelper
     team: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
     settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
     logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    check: '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 9.5"/>',
+    cart: '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h2.5l2.2 11h10.3l2-8H6.5"/>',
+    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+    cancel: '<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>',
+    ban: '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
+    wallet: '<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1"/>',
+    alert: '<path d="M12 4 3 20h18L12 4z"/><path d="M12 10v4M12 17.5v.01"/>',
+    lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    flag: '<path d="M5 21V4"/><path d="M5 5h11l-2 4 2 4H5"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
     theme: '<rect x="3" y="3" width="7" height="18" rx="1"/><rect x="12" y="3" width="9" height="8" rx="1"/><rect x="12" y="13" width="9" height="8" rx="1"/>'
@@ -47,7 +110,7 @@ module SellerHelper
   SELLER_MENU = [
     [ "dashboard", :home, "Tableau de bord", "/dashboard" ],
     [ "orders", :orders, "Commandes", "/commandes" ],
-    [ "confirmation", :phone, "Confirmation", "/confirmation" ],
+    [ "confirmation", :phone, "Centre d'appels", "/confirmation" ],
     [ "stats", :chart, "Mes statistiques", "/mes-statistiques" ],
     [ "clients", :clients, "Clients", "/clients" ],
     [ "delivery", :truck, "Livraison", "/livraison" ],
@@ -58,6 +121,7 @@ module SellerHelper
     [ "team", :team, "Équipe", "/equipe" ],
     [ "integrations", :plug, "Intégrations API", "/integrations" ]
   ].freeze
+
 
   # Thumb-reach destinations on phones. Short labels; full sidebar stays via "Plus".
   SELLER_BOTTOM_NAV = [
@@ -134,6 +198,30 @@ module SellerHelper
     "⁦#{number_with_delimiter(cents.to_i.fdiv(100).round, delimiter: " ")} #{currency}⁩"
   end
 
+  # The pages under "Centre d'appels" in the menu: [key, icon, label, link]; no link means "coming soon".
+  SELLER_CALL_CENTER_MENU = [
+    [ "queue", :phone, "File d'attente", "/confirmation" ],
+    [ "analytics", :chart, "Analyses", "/admin/confirmations/dashboard" ],
+    [ "assignments", :team, "Attributions", "/admin/confirmations?filter=all" ],
+    [ "rules", :settings, "Règles d'attribution", nil ],
+    [ "billing", :wallet, "Facturation", nil ]
+  ].freeze
+
+  # An agent sees the queue and their own analytics only; assignments, rules and billing are the owner's.
+  def seller_call_center_menu(user)
+    user&.confirmation_agent_view? ? SELLER_CALL_CENTER_MENU.first(2) : SELLER_CALL_CENTER_MENU
+  end
+
+  def seller_call_center_active
+    return unless controller_name == "confirmations"
+
+    case action_name
+    when "dashboard" then "analytics"
+    when "index" then params[:filter] == "all" ? "assignments" : "queue"
+    else "queue"
+    end
+  end
+
   def seller_menu(user)
     agent = user&.confirmation_agent_view?
     SELLER_MENU.select { |key, *| agent ? %w[confirmation stats orders].include?(key) : key != "stats" }
@@ -150,6 +238,22 @@ module SellerHelper
   def carrier_settings_path_for(provider)
     helper = CARRIER_SETTINGS_PATHS[provider.to_s]
     helper && public_send(helper)
+  end
+
+  # Soft tints of the dashboard figures: card background, border, icon chip, icon colour. Colours only.
+  DASHBOARD_TONES = {
+    "neutral" => { card: "bg-white border-[#e0e0e5]", chip: "bg-[#efeff3] text-[#1c1c1e]" },
+    "green" => { card: "bg-[#f1faf5] border-[#d4eedd]", chip: "bg-[#dcf2e5] text-[#2f7a4a]" },
+    "blue" => { card: "bg-[#f2f7fd] border-[#d8e6f6]", chip: "bg-[#dfecfa] text-[#2f6fb5]" },
+    "amber" => { card: "bg-[#fff8ea] border-[#f3e3bf]", chip: "bg-[#fcebc6] text-[#a8690d]" },
+    "red" => { card: "bg-[#fef2f3] border-[#f5d7db]", chip: "bg-[#fbdfe2] text-[#b4344e]" },
+    "gray" => { card: "bg-[#f6f6f8] border-[#e3e3e8]", chip: "bg-[#e9e9ee] text-[#636366]" },
+    "ink" => { card: "bg-[#f6f6f8] border-[#e3e3e8]", chip: "bg-[#1c1c1e] text-white" },
+    "dark" => { card: "bg-[#1c1c1e] border-transparent text-white", chip: "bg-white/12 text-white" }
+  }.freeze
+
+  def dashboard_tone(name)
+    DASHBOARD_TONES.fetch(name.to_s, DASHBOARD_TONES["neutral"])
   end
 
   def seller_status_badge(status)

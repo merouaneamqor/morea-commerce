@@ -81,6 +81,7 @@ Rails.application.routes.draw do
   end
   # Seller workspace URLs, as on seallo. Each batch moves a page here; the others still open their current admin page.
   get "/dashboard", to: "admin/dashboard#show", as: :seller_dashboard
+  patch "/dashboard/paliers", to: "admin/dashboard#milestones", as: :seller_dashboard_milestones
   get "/clients", to: "admin/customers#index", as: :seller_customers
   get "/integrations", to: "admin/store_connections#index", as: :seller_integrations
   get "/publicites", to: "admin/meta_ads#show", as: :seller_ads
@@ -90,23 +91,6 @@ Rails.application.routes.draw do
   post "/livraison/societes", to: "admin/delivery_accounts#create", as: :seller_delivery_accounts
   patch "/livraison/societes/:id", to: "admin/delivery_accounts#update", as: :seller_delivery_account
   post "/livraison/societes/:id/default", to: "admin/delivery_accounts#make_default", as: :seller_delivery_account_default
-  delete "/livraison/societes/:id", to: "admin/delivery_accounts#destroy"
-  {
-    "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations", "/mes-statistiques" => "/admin/my_stats",
-    "/livraison" => "/admin/delivery", "/produits" => "/admin/products",
-    "/equipe" => "/admin/staff", "/settings/profile" => "/admin/store/edit"
-  }.each do |from, target|
-    get from, to: redirect { |_params, request| [ target, request.query_string.presence ].compact.join("?") }
-  end
-  # Seller workspace URLs, as on seallo. Each batch moves a page here; the others still open their current admin page.
-  get "/dashboard", to: "admin/dashboard#show", as: :seller_dashboard
-  patch "/dashboard/paliers", to: "admin/dashboard#milestones", as: :seller_dashboard_milestones
-  get "/clients", to: "admin/customers#index", as: :seller_customers
-  get "/integrations", to: "admin/store_connections#index", as: :seller_integrations
-  get "/comptabilite", to: "admin/accounting#show", as: :seller_accounting
-  get "/comptabilite/export", to: "admin/accounting#export", as: :seller_accounting_export, defaults: { format: "csv" }
-  post "/livraison/societes", to: "admin/delivery_accounts#create", as: :seller_delivery_accounts
-  patch "/livraison/societes/:id", to: "admin/delivery_accounts#update", as: :seller_delivery_account
   delete "/livraison/societes/:id", to: "admin/delivery_accounts#destroy"
   {
     "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations/center", "/mes-statistiques" => "/admin/my_stats",

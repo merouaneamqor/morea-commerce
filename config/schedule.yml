@@ -1,7 +1,7 @@
 # sidekiq-cron jobs, loaded automatically when Sidekiq boots.
 # Each integration can use an external cron independently of the other.
 # Set its *_EXTERNAL_CRON flag only when that integration has an external runner.
-<% if ENV["SENDIT_EXTERNAL_CRON"].present? && ENV["OZON_EXTERNAL_CRON"].present? && ENV["AMEEX_EXTERNAL_CRON"].present? && ENV["SHOPIFY_EXTERNAL_CRON"].present? && ENV["SEALLO_RETENTION_EXTERNAL_CRON"].present? && ENV["META_ADS_EXTERNAL_CRON"].present? && ENV["CLAIM_EXPIRY_EXTERNAL_CRON"].present? %>
+<% if ENV["SENDIT_EXTERNAL_CRON"].present? && ENV["OZON_EXTERNAL_CRON"].present? && ENV["AMEEX_EXTERNAL_CRON"].present? && ENV["SHOPIFY_EXTERNAL_CRON"].present? && ENV["SEALLO_RETENTION_EXTERNAL_CRON"].present? && ENV["META_ADS_EXTERNAL_CRON"].present? && ENV["CLAIM_EXPIRY_EXTERNAL_CRON"].present? && ENV["PRODUCTS_SYNC_EXTERNAL_CRON"].present? %>
 {}
 <% end %>
 <% unless ENV["SENDIT_EXTERNAL_CRON"].present? %>
@@ -77,4 +77,13 @@ release_idle_claims:
   queue: default
   active_job: true
   description: "Release confirmation claims with no activity for 15 minutes"
+<% end %>
+
+<% unless ENV["PRODUCTS_SYNC_EXTERNAL_CRON"].present? %>
+products_sync:
+  cron: "<%= ENV.fetch("PRODUCTS_SYNC_CRON", "17 */6 * * *") %>"
+  class: "ProductsSyncJob"
+  queue: default
+  active_job: true
+  description: "Read the catalog of every connected store (Shopify, WooCommerce, YouCan) into the products, every 6 hours"
 <% end %>

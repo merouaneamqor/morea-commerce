@@ -117,16 +117,12 @@ RSpec.describe "Call center page", type: :request do
       expect(alert.at_css("a")["href"]).to include("tab=failed")
     end
 
-    it "disables Appeler, WhatsApp and Bloquer until she clocks in, then enables them" do
-      get "/admin/confirmations/center"
-      expect(document.at_css("[data-clock-in-required]")).to be_present
-      expect(document.css("span[data-call].cursor-not-allowed").size).to eq(3)                    # a plain, greyed label: nothing to open yet
-      expect(document.css("a[data-call]")).to be_empty
-
-      ConfirmationShift.create!(store: store, user: agent, started_at: 1.hour.ago, last_seen_at: Time.current)
+    it "keeps Appeler, WhatsApp and Bloquer available while she is present on the desk" do
+      # Presence is recorded on each agent request (page open / heartbeat), so the call actions stay usable.
       get "/admin/confirmations/center"
       expect(document.at_css("[data-clock-in-required]")).to be_nil
       expect(document.css("a[data-call][data-turbo-frame=order-modal]").size).to eq(3)
+      expect(Confirmations::Presence.new(store: store, user: agent)).to be_present
     end
 
     it "puts the green Appeler button first (on the left) in the actions of each order" do

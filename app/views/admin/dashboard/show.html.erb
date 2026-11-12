@@ -16,6 +16,8 @@
 <% delta_text = ->(d) { d.nil? ? sl("sur la période") : "#{d.positive? ? "▲ +" : "▼ "}#{d} % #{sl("vs période précédente")}" } %>
 <% delta_class = ->(d, dark = false) { d.nil? ? (dark ? "text-white/60" : "text-[#6e6e73]") : (d.negative? ? (dark ? "text-[#ff8a95]" : "text-[#b4344e]") : (dark ? "text-[#7be0a3]" : "text-[#2f7a4a]")) } %>
 
+<%= render "admin/dashboard/onboarding" %>
+
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div>
     <h1 class="text-2xl font-bold text-[#1c1c1e] sm:text-[28px]"><%= sl("Bonjour") %><%= first_name.present? ? ", #{first_name}" : "" %></h1>

@@ -9,6 +9,7 @@ module Admin
 
       @date_range = selected_date_range(scope: "dashboard", default: "last_7", **legacy_period)
       @stats = Seller::DashboardStats.new(store: current_store, range: @date_range).to_h
+      @onboarding = Seller::Onboarding.new(store: current_store)
       @milestones = Seller::RevenueMilestones.new(store: current_store) if current_user.show_milestones
     end
 

@@ -68,7 +68,11 @@ RSpec.describe "Manager to confirmation-agent workflow", type: :request do
     expect(finish_form).to be_present
     expect(finish_form.css("[name='outcome'][value='confirmed'], [name='outcome'] option[value='confirmed']")).not_to be_empty
 
-    travel 84.seconds
+    travel 40.seconds
+    # Desk-presence heartbeat keeps the session inside the 45s grace window across the call.
+    ConfirmationShift.open.where(store: store, user: agent).update_all(last_seen_at: Time.current)
+    travel 44.seconds
+    ConfirmationShift.open.where(store: store, user: agent).update_all(last_seen_at: Time.current)
     worker.post finish_path, params: { outcome: "confirmed", notes: "Synthetic successful call; no telephone connection" }
     expect(worker.response).to have_http_status(:redirect)
     expect(URI(worker.response.location).request_uri).to eq("/admin/confirmations?filter=mine")

@@ -101,11 +101,11 @@ RSpec.describe "Admin theme editor", type: :request do
     expect(response).to have_http_status(:ok)
     document = Nokogiri::HTML(response.body)
     blocks = document.css("[data-section-index]")
-    expect(blocks.map { |node| node["data-section-index"] }).to eq(%w[1 2 3])
+    expect(blocks.map { |node| node["data-section-index"] }).to eq(%w[1 2])
     expect(blocks.first["role"]).to eq("button")
     expect(blocks.first["tabindex"]).to eq("0")
     expect(blocks.first["aria-pressed"]).to eq("true")
-    expect(blocks.first["data-preview-section"]).to eq("ticker")
+    expect(blocks.first["data-preview-section"]).to eq("featured_collection")
     expect(blocks.last["aria-pressed"]).to eq("false")
     expect(blocks.last["data-preview-section"]).to eq("rich_text")
   end

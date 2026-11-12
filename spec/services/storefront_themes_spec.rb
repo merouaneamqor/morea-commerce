@@ -24,7 +24,7 @@ RSpec.describe "Storefront theme lifecycle" do
       expect(theme.catalog_key).to eq("atelier")
       expect(theme.snapshot.fetch("sections")).not_to be_empty
       expect(theme.snapshot.fetch("sections").map { |section| section.fetch("kind") }).to eq(
-        %w[hero ticker featured_collection image_with_text collection_list rich_text]
+        %w[hero featured_collection image_with_text collection_list rich_text]
       )
       expect(theme.snapshot.dig("sections", 0, "translations", "en", "heading")).to eq("Pieces cut for movement")
       expect(theme.snapshot.dig("sections", 0, "translations", "en", "body")).to include("Clean lines")
@@ -54,7 +54,7 @@ RSpec.describe "Storefront theme lifecycle" do
 
       expect(result).to eq(replacement)
       expect(HomeSection.exists?(old_section.id)).to be(false)
-      expect(store.home_sections.ordered.pluck(:kind)).to eq(%w[hero ticker featured_collection rich_text])
+      expect(store.home_sections.ordered.pluck(:kind)).to eq(%w[hero featured_collection rich_text])
 
       hero = store.home_sections.ordered.first
       expect(hero.position).to eq(0)

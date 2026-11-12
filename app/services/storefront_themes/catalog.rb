@@ -28,11 +28,6 @@ module StorefrontThemes
                 "button_label" => "اكتشف المجموعة"
               }
             } },
-          { "kind" => "ticker", "visible" => true, "settings" => {}, "translations" => {
-            "fr" => { "body" => "Livraison partout au Maroc\nPaiement à la livraison\nRetours sous 7 jours" },
-            "en" => { "body" => "Delivery across Morocco\nCash on delivery\nReturns within 7 days" },
-            "ar" => { "body" => "التوصيل في جميع أنحاء المغرب\nالدفع عند الاستلام\nإرجاع خلال 7 أيام" }
-          } },
           { "kind" => "featured_collection", "visible" => true, "settings" => { "limit" => "4" }, "translations" => {
             "fr" => { "subheading" => "À regarder d’abord", "heading" => "Pièces signatures" },
             "en" => { "subheading" => "Start here", "heading" => "Signature pieces" },
@@ -104,11 +99,6 @@ module StorefrontThemes
               "body" => "قطع قليلة، كل واحدة مفيدة وواضحة.",
               "button_label" => "تسوق الآن"
             }
-          } },
-          { "kind" => "ticker", "visible" => true, "settings" => {}, "translations" => {
-            "fr" => { "body" => "Paiement à la livraison\nLivraison partout au Maroc" },
-            "en" => { "body" => "Cash on delivery\nDelivery across Morocco" },
-            "ar" => { "body" => "الدفع عند الاستلام\nالتوصيل في جميع أنحاء المغرب" }
           } },
           { "kind" => "featured_collection", "visible" => true, "settings" => { "limit" => "8" }, "translations" => {
             "fr" => { "heading" => "Sélection" }, "en" => { "heading" => "Featured" }, "ar" => { "heading" => "مختارات" }

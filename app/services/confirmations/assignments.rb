@@ -114,17 +114,18 @@ module Confirmations
       { assigned: per_agent.values.sum, left: unattributed_count, per_agent: per_agent }
     end
 
-    private
-
+    # The orders waiting for a call (also used by AssignmentRunner).
     def waiting_scope
       @waiting_scope ||= @store.orders.active.where(status: "new", sendit_code: [ nil, "" ])
         .joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")
         .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
     end
 
+    private
+
     def attribute!(order, agent, by:, how:)
       confirmation = OrderConfirmation.find_or_create_by!(order: order) { |row| row.store = @store }
-      attrs = { attributed_user: agent, attributed_at: (Time.current if agent) }
+      attrs = { attributed_user: agent, attributed_at: (Time.current if agent), assignment_rule: nil }
       attrs.merge!(assigned_user: nil, claimed_at: nil, call_started_at: nil, last_activity_at: nil) if confirmation.assigned_user_id && confirmation.assigned_user_id != agent&.id
       confirmation.update!(attrs)
       who = by.name.presence || by.email

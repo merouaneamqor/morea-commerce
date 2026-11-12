@@ -49,6 +49,12 @@ release_idle_claims:
   queue: default
   active_job: true
   description: "Release confirmation claims with no activity for 15 minutes"
+assignment_rules:
+  cron: "<%= ENV.fetch("ASSIGNMENT_RULES_CRON", "* * * * *") %>"
+  class: "AssignmentRulesJob"
+  queue: default
+  active_job: true
+  description: "Apply the attribution rules: give new orders to the agents online, move late orders to another agent online"
 <% end %>
 <% unless ENV["PRODUCTS_SYNC_EXTERNAL_CRON"].present? %>
 products_sync:

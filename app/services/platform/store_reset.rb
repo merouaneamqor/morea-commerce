@@ -13,7 +13,7 @@ module Platform
     # Tables with a store_id that this service empties. A spec fails when a new
     # store-owned table appears in neither list, so every migration has to decide.
     CLEARED_TABLES = %w[
-      advertising_accounts agent_changesets agent_deductions agent_payments blocked_phones carts collections confirmation_attempts
+      advertising_accounts agent_changesets agent_deductions agent_payments assignment_rules blocked_phones carts collections confirmation_attempts
       confirmation_shifts customers delivery_accounts discounts home_sections menu_items meta_ads_ad_accounts
       meta_ads_ad_sets meta_ads_ads meta_ads_campaigns meta_ads_connections meta_ads_daily_insights
       meta_ads_product_links oauth_access_tokens order_confirmations order_imports orders pages products push_subscriptions
@@ -118,6 +118,7 @@ module Platform
       @store.products.find_each(&:destroy!)
       @store.collections.find_each(&:destroy!)
       @store.discounts.delete_all
+      @store.assignment_rules.delete_all                      # attribution rules (their agent rows go with them); the agents themselves are kept
     end
 
     def clear_content

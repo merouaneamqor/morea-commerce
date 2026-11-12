@@ -1,0 +1,10 @@
+fr:
+  assignment_rules:
+    created: "Règle créée."
+    saved: "Règle enregistrée."
+    deleted: "Règle supprimée."
+    switched_on: "Règle « %{name} » activée."
+    switched_off: "Règle « %{name} » désactivée."
+    manual_source: "Commandes manuelles"
+    equal_label: "Chaque agent reçoit %{share} % des commandes."
+    total_label: "Total"

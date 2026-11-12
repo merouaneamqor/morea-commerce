@@ -1,0 +1,6 @@
+<%# The same form as a normal page (when it is not opened in the window). %>
+<% content_for :title, "#{sl("Règles d'attribution")} — Admin" %>
+<div class="mx-auto max-w-2xl space-y-3">
+  <h1 class="text-xl font-bold text-[#1c1c1e]"><%= @rule.persisted? ? sl("Modifier la règle") : sl("Créer une règle d'attribution") %></h1>
+  <div class="rounded-2xl border border-[#e0e0e5] bg-white p-5"><%= render "fields", rule: @rule, agents: agents, sources: sources %></div>
+</div>

@@ -6,6 +6,8 @@ class OrderConfirmation < ApplicationRecord
   belongs_to :assigned_user, class_name: "User", optional: true
   # Who the order is for (durable, set by an owner, a supervisor or the automatic attribution); assigned_user is the short claim.
   belongs_to :attributed_user, class_name: "User", optional: true
+  # The rule that attributed the order (nil for a hand attribution); only those orders move on by themselves when the agent is too slow.
+  belongs_to :assignment_rule, optional: true
   has_many :confirmation_attempts, dependent: :destroy
 
   validates :order_id, uniqueness: true

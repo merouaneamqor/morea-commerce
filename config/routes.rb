@@ -237,6 +237,14 @@ Rails.application.routes.draw do
       end
     end
 
+    # Attribution rules (the "Règles d'attribution" page): who gets the orders that come in, and what happens when an agent is too slow
+    resources :assignment_rules, path: "confirmations/rules", except: %i[show] do
+      member do
+        patch :toggle
+        patch :move
+      end
+    end
+
     resources :orders, only: %i[index show new create edit update] do
       collection do
         post :sendit_sync_all

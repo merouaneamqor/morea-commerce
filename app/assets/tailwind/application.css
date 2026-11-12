@@ -3728,3 +3728,6 @@ main {
 /* Attributions: the load bars of the agent cards grow in, like the other bars */
 [data-assignments] [data-grow] { animation: an-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
 @media (prefers-reduced-motion: reduce) { [data-assignments] [data-grow] { animation: none; } }
+
+/* The attribution rule window is narrower than the new-order window */
+[data-seller-shell] [data-order-modal-panel][data-narrow][role="dialog"] { width: min(40rem, 100%); zoom: 0.85; max-height: calc((100dvh - 1.5rem) / 0.85); }

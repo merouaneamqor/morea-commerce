@@ -1,0 +1,10 @@
+ar:
+  assignment_rules:
+    created: "تم إنشاء القاعدة."
+    saved: "تم حفظ القاعدة."
+    deleted: "تم حذف القاعدة."
+    switched_on: "تم تفعيل القاعدة «%{name}»."
+    switched_off: "تم إيقاف القاعدة «%{name}»."
+    manual_source: "الطلبات اليدوية"
+    equal_label: "يحصل كل وكيل على %{share} % من الطلبات."
+    total_label: "المجموع"

@@ -1,0 +1,103 @@
+<%# The create / edit form of a rule: name, how the orders are split, the agents (with a percentage each when splitting by percentage), the
+    conditions (amount range, sources) and the delay before a late order moves. locals: rule, agents, sources %>
+<% input = "admin-input !rounded-xl" %>
+<% label = "admin-label" %>
+<% heading = "flex items-center gap-1.5 text-[13px] font-semibold text-[#1c1c1e]" %>
+<% rule_agents = rule.assignment_rule_agents.reject(&:marked_for_destruction?).to_h { |row| [ row.user_id, row ] } %>
+<% minimum = rule.min_amount_cents ? format("%g", rule.min_amount_cents / 100.0) : nil %>
+<% maximum = rule.max_amount_cents ? format("%g", rule.max_amount_cents / 100.0) : nil %>
+
+<%= form_with model: rule, scope: :assignment_rule, url: (rule.persisted? ? admin_assignment_rule_path(rule) : admin_assignment_rules_path), method: (rule.persisted? ? :patch : :post), class: "space-y-4",
+      data: { controller: "assignment-rule-form", turbo_frame: (local_assigns[:modal] ? "_top" : nil), assignment_rule_form_equal_label_value: t("assignment_rules.equal_label"), assignment_rule_form_total_label_value: t("assignment_rules.total_label") } do |f| %>
+  <% if rule.errors.any? %>
+    <div class="rounded-xl border border-[#e5484d] bg-[#fdecec] px-3 py-2 text-[13px] font-semibold text-[#b4232a]" role="alert" data-rule-errors><%= rule.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <section class="space-y-2.5" data-section="basics">
+    <h3 class="<%= heading %>"><%= seller_icon(:flag, size: 14) %><%= sl("Informations de base") %></h3>
+    <div>
+      <%= f.label :name, safe_join([ sl("Nom de la règle"), content_tag(:span, " *", class: "text-[#d6455d]") ]), class: label %>
+      <%= f.text_field :name, class: input, required: true, maxlength: 120, placeholder: sl("ex : Grosses commandes aux meilleurs agents") %>
+    </div>
+    <div>
+      <%= f.label :description, sl("Description"), class: label %>
+      <%= f.text_area :description, rows: 2, class: input, placeholder: sl("Décrivez ce que fait cette règle…") %>
+    </div>
+  </section>
+
+  <section class="space-y-2.5 border-t border-[#1c1c1e]/10 pt-3" data-section="distribution">
+    <h3 class="<%= heading %>"><%= seller_icon(:team, size: 14) %><%= sl("Répartition entre les agents") %></h3>
+    <div class="grid gap-2 sm:grid-cols-2">
+      <% [ [ "equal", sl("Parts égales"), sl("Chaque agent reçoit la même part : 50/50 avec deux agents, 33/33/33 avec trois.") ], [ "percent", sl("Par pourcentage"), sl("Vous donnez à chaque agent sa part, le total fait 100 %.") ] ].each do |value, title, hint| %>
+        <label class="flex cursor-pointer items-start gap-2.5 rounded-xl border p-3 transition has-[:checked]:border-[#1c1c1e] has-[:checked]:bg-[#f7f7f9] border-[#e0e0e5]">
+          <%= f.radio_button :distribution, value, class: "mt-1 accent-[#1c1c1e]", data: { action: "assignment-rule-form#distributionChanged", assignment_rule_form_target: "distribution" } %>
+          <span><span class="block text-[13px] font-semibold text-[#1c1c1e]"><%= title %></span><span class="block text-[11.5px] text-[#6e6e73]"><%= hint %></span></span>
+        </label>
+      <% end %>
+    </div>
+    <% if agents.empty? %>
+      <p class="rounded-xl border border-[#f3e3bf] bg-[#fffaf0] px-3 py-2 text-[12.5px] text-[#8a5a12]" data-no-agents><%= sl("Aucun agent de confirmation. Ajoutez-en dans Équipe.") %></p>
+    <% else %>
+      <ul class="divide-y divide-[#1c1c1e]/10 rounded-xl border border-[#1c1c1e]/10 bg-white/60" data-agents-list>
+        <% agents.each do |agent| %>
+          <% row = rule_agents[agent.id] %>
+          <li class="flex items-center gap-3 px-3 py-2" data-agent="<%= agent.id %>">
+            <label class="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 text-[13px] text-[#1c1c1e]">
+              <%= check_box_tag "assignment_rule[agent_ids][]", agent.id, row.present?, id: "rule_agent_#{agent.id}", class: "size-4 accent-[#1c1c1e]", data: { action: "assignment-rule-form#recalc", assignment_rule_form_target: "agent" } %>
+              <span class="truncate font-medium" dir="auto"><%= agent.name.presence || agent.email %></span>
+            </label>
+            <span class="relative hidden w-24 shrink-0" data-assignment-rule-form-target="percentBox">
+              <%= number_field_tag "assignment_rule[percents][#{agent.id}]", row&.percent, min: 0, max: 100, step: 1, id: "rule_percent_#{agent.id}", class: "#{input} !h-8 pe-7 text-end", "aria-label": "#{agent.name} %", data: { action: "input->assignment-rule-form#recalc", assignment_rule_form_target: "percent" } %>
+              <span class="pointer-events-none absolute end-2.5 top-1/2 -translate-y-1/2 text-xs text-[#6e6e73]">%</span>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+      <p class="text-[12px] font-semibold text-[#6e6e73]" data-assignment-rule-form-target="summary" aria-live="polite"></p>
+    <% end %>
+  </section>
+
+  <section class="space-y-2.5 border-t border-[#1c1c1e]/10 pt-3" data-section="conditions">
+    <h3 class="<%= heading %>"><%= seller_icon(:target, size: 14) %><%= sl("Conditions") %> <span class="font-normal text-[#6e6e73]">(<%= sl("quand cette règle s'applique") %>)</span></h3>
+    <div class="grid gap-2.5 sm:grid-cols-2">
+      <div>
+        <%= label_tag "assignment_rule_min_amount", "#{sl("Montant minimum")} (#{current_store.currency})", class: label %>
+        <%= number_field_tag "assignment_rule[min_amount]", minimum, id: "assignment_rule_min_amount", min: 0, step: "0.01", class: input, placeholder: sl("Aucun minimum") %>
+      </div>
+      <div>
+        <%= label_tag "assignment_rule_max_amount", "#{sl("Montant maximum")} (#{current_store.currency})", class: label %>
+        <%= number_field_tag "assignment_rule[max_amount]", maximum, id: "assignment_rule_max_amount", min: 0, step: "0.01", class: input, placeholder: sl("Aucun maximum") %>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-4 text-[13px]">
+      <label class="flex cursor-pointer items-center gap-2"><%= radio_button_tag "assignment_rule[sources_mode]", "all", rule.all_sources?, class: "accent-[#1c1c1e]", data: { action: "assignment-rule-form#sourcesChanged", assignment_rule_form_target: "sourcesMode" } %><%= sl("Toutes les sources") %></label>
+      <label class="flex cursor-pointer items-center gap-2"><%= radio_button_tag "assignment_rule[sources_mode]", "chosen", !rule.all_sources?, class: "accent-[#1c1c1e]", data: { action: "assignment-rule-form#sourcesChanged", assignment_rule_form_target: "sourcesMode" } %><%= sl("Sources choisies") %></label>
+    </div>
+    <div class="hidden flex-wrap gap-2" data-assignment-rule-form-target="sources">
+      <% sources.each do |name, key| %>
+        <label class="flex cursor-pointer items-center gap-2 rounded-xl border border-[#e0e0e5] bg-white/70 px-3 py-1.5 text-[13px] has-[:checked]:border-[#1c1c1e] has-[:checked]:bg-[#f7f7f9]">
+          <%= check_box_tag "assignment_rule[sources][]", key, rule.sources.include?(key), id: "rule_source_#{key}", class: "size-4 accent-[#1c1c1e]" %><span dir="auto"><%= name %></span>
+        </label>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="space-y-2.5 border-t border-[#1c1c1e]/10 pt-3" data-section="timeout">
+    <h3 class="<%= heading %>"><%= seller_icon(:clock, size: 14) %><%= sl("Si l'agent est trop lent") %></h3>
+    <div class="flex flex-wrap items-end gap-4">
+      <label class="flex cursor-pointer items-center gap-2 text-[13px] text-[#1c1c1e]">
+        <%= f.check_box :transfer_on_timeout, class: "size-4 accent-[#1c1c1e]" %><%= sl("Passer la commande à un autre agent actif et en ligne") %>
+      </label>
+      <div class="w-40">
+        <%= f.label :timeout_minutes, sl("si elle n'est pas confirmée en (minutes)"), class: "#{label} !text-[11.5px]" %>
+        <%= f.number_field :timeout_minutes, min: AssignmentRule::MIN_TIMEOUT, max: AssignmentRule::MAX_TIMEOUT, step: 1, class: input, required: true %>
+      </div>
+    </div>
+    <label class="flex cursor-pointer items-center gap-2 text-[13px] text-[#1c1c1e]"><%= f.check_box :active, class: "size-4 accent-[#1c1c1e]" %><%= sl("Règle active") %></label>
+  </section>
+
+  <div class="flex justify-end gap-2 border-t border-[#1c1c1e]/10 pt-3">
+    <% if local_assigns[:modal] %><button type="button" class="admin-btn-secondary" data-action="order-modal#close"><%= sl("Annuler") %></button><% else %><%= link_to sl("Annuler"), admin_assignment_rules_path, class: "admin-btn-secondary" %><% end %>
+    <%= f.submit (rule.persisted? ? sl("Enregistrer la règle") : sl("Créer la règle")), class: "admin-btn" %>
+  </div>
+<% end %>

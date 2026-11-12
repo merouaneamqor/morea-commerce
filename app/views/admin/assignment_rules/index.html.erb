@@ -1,0 +1,111 @@
+<%# Règles d'attribution: the rules that give the incoming orders to the agents, and what happens when an agent is too slow. Printing only.
+    Applied by Confirmations::AssignmentRunner every minute. %>
+<% content_for :title, "#{sl("Règles d'attribution")} — Admin" %>
+<% content_for :admin_page_class, "admin-page--dashboard" %>
+<% rules = @rules %>
+<% active = rules.count(&:active) %>
+<% tones = { ink: "bg-[#ececf0] text-[#1c1c1e]", green: "bg-[#e3f3e8] text-[#2f9d5c]", amber: "bg-[#fdf0d9] text-[#d28a12]", blue: "bg-[#e6f0fd] text-[#2f6fed]" } %>
+<% label_of = ->(user) { user.name.presence || user.email } %>
+
+<%# The create/edit window opens in this frame, like "Nouvelle commande" %>
+<turbo-frame id="order-modal"></turbo-frame>
+
+<div class="space-y-3" data-assignment-rules>
+  <header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white" data-rules-header>
+    <div class="flex items-center gap-3">
+      <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:settings, size: 20) %></span>
+      <div>
+        <h1 class="text-xl leading-tight font-bold"><%= sl("Règles d'attribution") %></h1>
+        <p class="text-[13px] leading-tight text-white/65"><%= sl("Centre d'appels") %> · <%= sl("Configurez l'attribution automatique des commandes") %></p>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <%= link_to assignments_admin_confirmations_path, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" do %><%= seller_icon(:team, size: 14) %><%= sl("Attributions") %><% end %>
+      <%= link_to new_admin_assignment_rule_path, data: { turbo_frame: "order-modal" }, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3]", "data-new-rule": true do %>+ <%= sl("Créer une règle") %><% end %>
+    </div>
+  </header>
+
+  <section class="flex items-start gap-3 rounded-2xl border border-[#e0e0e5] bg-white px-4 py-3.5" data-rules-info>
+    <span class="grid size-8 shrink-0 place-items-center rounded-xl <%= tones[:blue] %>"><%= seller_icon(:flag, size: 15) %></span>
+    <div class="text-[12.5px] leading-relaxed text-[#3a3a3c]">
+      <p class="text-sm font-semibold text-[#1c1c1e]"><%= sl("Comment fonctionnent les règles d'attribution") %></p>
+      <p class="mt-1"><%= sl("Les règles sont lues de haut en bas, par ordre de priorité. Quand une commande arrive, la première règle active dont les conditions correspondent choisit l'agent : parmi ses agents qui sont actifs et en ligne (leur pointage est ouvert), en parts égales (50/50 avec deux agents) ou selon le pourcentage de chacun, sur la journée de la boutique.") %></p>
+      <p class="mt-1"><%= sl("Si l'agent n'a pas confirmé la commande dans le délai de la règle (30 minutes par défaut), elle passe automatiquement à un autre agent actif et en ligne. Sans règle qui correspond, ou si personne n'est en ligne, la commande reste ouverte à tous les agents.") %></p>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-2 gap-2.5 lg:grid-cols-4" data-rules-stats>
+    <% [ [ "total", sl("Total des règles"), rules.size, sl("règles configurées"), :settings, tones[:ink] ], [ "active", sl("Règles actives"), active, sl("actuellement activées"), :check, tones[:green] ],
+         [ "inactive", sl("Règles inactives"), rules.size - active, sl("actuellement désactivées"), :alert, tones[:amber] ] ].each do |key, label, value, hint, icon, tone| %>
+      <div class="rounded-xl border border-[#e0e0e5] bg-white px-3.5 py-3" data-stat="<%= key %>">
+        <p class="flex items-center gap-1.5 text-xs font-medium text-[#3a3a3c]"><span class="grid size-6 place-items-center rounded-lg <%= tone %>"><%= seller_icon(icon, size: 13) %></span><%= label %></p>
+        <p class="mt-2 text-2xl leading-none font-bold text-[#1c1c1e] tabular-nums" data-value><%= value %></p>
+        <p class="mt-1 text-[11px] text-[#6e6e73]"><%= hint %></p>
+      </div>
+    <% end %>
+    <div class="rounded-xl border border-[#e0e0e5] bg-white px-3.5 py-3" data-stat="automation">
+      <p class="flex items-center gap-1.5 text-xs font-medium text-[#3a3a3c]"><span class="grid size-6 place-items-center rounded-lg <%= tones[:blue] %>"><%= seller_icon(:target, size: 13) %></span><%= sl("Automatisation") %></p>
+      <p class="mt-2 text-2xl leading-none font-bold <%= active.positive? ? "text-[#2f7a4a]" : "text-[#8e8e93]" %>" data-value><%= active.positive? ? sl("Active") : sl("Inactive") %></p>
+      <p class="mt-1 text-[11px] text-[#6e6e73]"><%= sl("Attribution automatique chaque minute") %></p>
+    </div>
+  </section>
+
+  <section class="overflow-hidden rounded-2xl border border-[#e0e0e5] bg-white" data-rules-table>
+    <div class="px-5 pt-4 pb-3">
+      <h2 class="text-sm font-semibold text-[#1c1c1e]"><%= sl("Règles d'attribution") %></h2>
+      <p class="mt-0.5 text-xs text-[#6e6e73]"><%= sl("Les règles sont exécutées par ordre de priorité. Utilisez les flèches pour les réorganiser.") %></p>
+    </div>
+    <% if rules.empty? %>
+      <p class="px-5 py-10 text-center text-sm text-[#6e6e73]" data-no-rules><%= sl("Aucune règle pour l'instant. Créez-en une pour répartir automatiquement les commandes entre vos agents.") %></p>
+    <% else %>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-[13px]">
+          <thead class="bg-[#f7f8fa] text-xs font-semibold text-[#6e6e73]">
+            <tr><% [ "Priorité", "Nom de la règle", "Conditions", "Agents", "Répartition", "Délai", "Statut", "Actions" ].each do |heading| %><th class="px-4 py-2.5 whitespace-nowrap"><%= sl(heading) %></th><% end %></tr>
+          </thead>
+          <tbody class="divide-y divide-[#ececf0]">
+            <% rules.each_with_index do |rule, index| %>
+              <tr class="align-middle <%= "opacity-60" unless rule.active %>" data-rule="<%= rule.id %>" data-position="<%= index + 1 %>" data-active="<%= rule.active %>">
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span class="inline-flex items-center gap-1.5 font-semibold text-[#1c1c1e]">#<%= index + 1 %>
+                    <span class="inline-flex flex-col">
+                      <%= button_to move_admin_assignment_rule_path(rule, direction: "up"), method: :patch, disabled: index.zero?, "aria-label": sl("Monter"), class: "cursor-pointer leading-none text-[#6e6e73] hover:text-[#1c1c1e] disabled:cursor-not-allowed disabled:opacity-25", form: { class: "contents" } do %><svg viewBox="0 0 24 24" class="size-3.5 fill-none stroke-current [stroke-width:2.2] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg><% end %>
+                      <%= button_to move_admin_assignment_rule_path(rule, direction: "down"), method: :patch, disabled: index == rules.size - 1, "aria-label": sl("Descendre"), class: "cursor-pointer leading-none text-[#6e6e73] hover:text-[#1c1c1e] disabled:cursor-not-allowed disabled:opacity-25", form: { class: "contents" } do %><svg viewBox="0 0 24 24" class="size-3.5 fill-none stroke-current [stroke-width:2.2] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><% end %>
+                    </span></span>
+                </td>
+                <td class="px-4 py-3"><p class="font-semibold text-[#1c1c1e]" dir="auto"><%= rule.name %></p><% if rule.description.present? %><p class="max-w-[16rem] truncate text-[11px] text-[#8e8e93]" dir="auto"><%= rule.description %></p><% end %></td>
+                <td class="px-4 py-3" data-conditions>
+                  <% chips = [] %>
+                  <% chips << "#{sl("Montant")} ≥ #{money(rule.min_amount_cents, current_store.currency)}" if rule.min_amount_cents %>
+                  <% chips << "#{sl("Montant")} ≤ #{money(rule.max_amount_cents, current_store.currency)}" if rule.max_amount_cents %>
+                  <% chips << (rule.all_sources? ? sl("Toutes les sources") : "#{rule.sources.size} #{sl(rule.sources.size == 1 ? "source" : "sources")}") %>
+                  <div class="flex flex-wrap gap-1"><% chips.each do |chip| %><span class="rounded-md border border-[#e0e0e5] bg-white px-2 py-0.5 text-[11px] text-[#3a3a3c]"><%= chip %></span><% end %></div>
+                </td>
+                <td class="px-4 py-3" data-agents>
+                  <div class="flex flex-wrap gap-1"><% rule.assignment_rule_agents.each do |row| %><span class="rounded-full bg-[#efeff3] px-2 py-0.5 text-[11px] font-medium text-[#1c1c1e]" dir="auto"><%= label_of.call(row.user) %><%= " · #{row.percent} %" if rule.percent? %></span><% end %></div>
+                </td>
+                <td class="px-4 py-3"><span class="rounded-md bg-[#efeff3] px-2 py-0.5 text-[11px] font-medium text-[#3a3a3c]" data-distribution="<%= rule.distribution %>"><%= rule.percent? ? sl("Par pourcentage") : sl("Parts égales") %></span></td>
+                <td class="px-4 py-3 whitespace-nowrap text-[12px] text-[#3a3a3c]" data-timeout="<%= rule.timeout_minutes if rule.transfer_on_timeout %>"><%= rule.transfer_on_timeout ? "#{rule.timeout_minutes} min" : sl("Pas de transfert") %></td>
+                <td class="px-4 py-3">
+                  <%= button_to toggle_admin_assignment_rule_path(rule), method: :patch, "aria-label": "#{rule.name} : #{rule.active ? sl("désactiver") : sl("activer")}", "aria-pressed": rule.active, class: "relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition #{rule.active ? "bg-[#2f9d5c]" : "bg-[#d2d2d7]"}", form: { class: "contents" } do %>
+                    <span class="absolute start-0.5 size-5 rounded-full bg-white shadow transition <%= rule.active ? "translate-x-5 rtl:-translate-x-5" : "" %>"></span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="flex items-center gap-1">
+                    <%= link_to edit_admin_assignment_rule_path(rule), data: { turbo_frame: "order-modal" }, title: sl("Modifier"), "aria-label": sl("Modifier"), class: "grid size-8 place-items-center rounded-full bg-[#fff1dc] text-[#c26a00] hover:bg-[#ffe3b8]" do %>
+                      <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>
+                    <% end %>
+                    <%= button_to admin_assignment_rule_path(rule), method: :delete, title: sl("Supprimer"), "aria-label": sl("Supprimer"), form: { class: "contents", data: { turbo_confirm: sl("Supprimer cette règle ? Les commandes déjà attribuées gardent leur agent.") } }, class: "grid size-8 cursor-pointer place-items-center rounded-full bg-[#fbe7ea] text-[#d6455d] hover:bg-[#f6d3d9]" do %>
+                      <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </section>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -185,6 +185,40 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_120000) do
     t.index ["user_id"], name: "index_agent_payments_on_user_id"
     t.check_constraint "amount_cents > 0", name: "agent_payments_amount_positive"
     t.check_constraint "deductions_cents >= 0 AND deductions_cents <= amount_cents", name: "agent_payments_deductions_within_amount"
+  end
+
+  create_table "assignment_rule_agents", force: :cascade do |t|
+    t.bigint "assignment_rule_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "percent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assignment_rule_id", "user_id"], name: "index_rule_agents_on_rule_and_user", unique: true
+    t.index ["assignment_rule_id"], name: "index_assignment_rule_agents_on_assignment_rule_id"
+    t.index ["user_id"], name: "index_assignment_rule_agents_on_user_id"
+    t.check_constraint "percent IS NULL OR percent >= 0 AND percent <= 100", name: "assignment_rule_agents_percent"
+  end
+
+  create_table "assignment_rules", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "name", limit: 120, null: false
+    t.text "description"
+    t.integer "position", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.string "distribution", default: "equal", null: false
+    t.integer "min_amount_cents"
+    t.integer "max_amount_cents"
+    t.jsonb "sources", default: [], null: false
+    t.integer "timeout_minutes", default: 30, null: false
+    t.boolean "transfer_on_timeout", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id", "position"], name: "index_assignment_rules_on_store_id_and_position"
+    t.index ["store_id"], name: "index_assignment_rules_on_store_id"
+    t.check_constraint "distribution::text = ANY (ARRAY['equal'::character varying, 'percent'::character varying]::text[])", name: "assignment_rules_distribution"
+    t.check_constraint "max_amount_cents IS NULL OR min_amount_cents IS NULL OR max_amount_cents >= min_amount_cents", name: "assignment_rules_amount_range"
+    t.check_constraint "min_amount_cents IS NULL OR min_amount_cents >= 0", name: "assignment_rules_min_amount"
+    t.check_constraint "timeout_minutes >= 5 AND timeout_minutes <= 1440", name: "assignment_rules_timeout"
   end
 
   create_table "audit_events", force: :cascade do |t|
@@ -694,7 +728,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_120000) do
     t.datetime "last_activity_at"
     t.bigint "attributed_user_id"
     t.datetime "attributed_at"
+    t.bigint "assignment_rule_id"
     t.index ["assigned_user_id"], name: "index_order_confirmations_on_assigned_user_id"
+    t.index ["assignment_rule_id"], name: "index_order_confirmations_on_assignment_rule_id"
     t.index ["attributed_user_id"], name: "index_order_confirmations_on_attributed_user_id"
     t.index ["order_id"], name: "index_order_confirmations_on_order_id", unique: true
     t.index ["store_id", "disposition", "callback_at"], name: "index_confirmation_queue"
@@ -1298,6 +1334,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_120000) do
   add_foreign_key "agent_payments", "stores"
   add_foreign_key "agent_payments", "users"
   add_foreign_key "agent_payments", "users", column: "paid_by_id"
+  add_foreign_key "assignment_rule_agents", "assignment_rules", on_delete: :cascade
+  add_foreign_key "assignment_rule_agents", "users", on_delete: :cascade
+  add_foreign_key "assignment_rules", "stores"
   add_foreign_key "audit_events", "stores", on_delete: :nullify
   add_foreign_key "audit_events", "users", column: "actor_user_id", on_delete: :nullify
   add_foreign_key "blocked_phones", "stores"
@@ -1349,6 +1388,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_120000) do
   add_foreign_key "meta_ads_product_links", "products"
   add_foreign_key "meta_ads_product_links", "stores"
   add_foreign_key "oauth_access_tokens", "stores"
+  add_foreign_key "order_confirmations", "assignment_rules", on_delete: :nullify
   add_foreign_key "order_confirmations", "orders", on_delete: :cascade
   add_foreign_key "order_confirmations", "stores", on_delete: :cascade
   add_foreign_key "order_confirmations", "users", column: "assigned_user_id", on_delete: :nullify

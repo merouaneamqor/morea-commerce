@@ -113,7 +113,7 @@ module SellerHelper
     "customers" => "clients", "delivery" => "delivery", "products" => "products", "variants" => "products",
     "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
     "seallo_connections" => "integrations", "woocommerce_connections" => "integrations", "meta_ads" => "integrations",
-    "accounting" => "accounting"
+    "accounting" => "accounting", "assignment_rules" => "confirmation"
   }.freeze
 
   SELLER_STATUS_BADGES = {
@@ -163,7 +163,7 @@ module SellerHelper
     [ "queue", :phone, "File d'attente", "/confirmation" ],
     [ "analytics", :chart, "Analyses", "/admin/confirmations/analytics" ],
     [ "assignments", :team, "Attributions", "/admin/confirmations/assignments" ],
-    [ "rules", :settings, "Règles d'attribution", nil ],
+    [ "rules", :settings, "Règles d'attribution", "/admin/confirmations/rules" ],
     [ "billing", :wallet, "Facturation", nil ]
   ].freeze
 
@@ -173,6 +173,7 @@ module SellerHelper
   end
 
   def seller_call_center_active
+    return "rules" if controller_name == "assignment_rules"
     return unless controller_name == "confirmations"
 
     case action_name

@@ -2,6 +2,8 @@
 
 module Admin
   class OrdersController < BaseController
+    include DateRangeSelection
+
     before_action :require_shopify_workspace!, only: :shopify_sync_all
     before_action :agents_read_only!
     helper_method :agent_view?
@@ -27,39 +29,35 @@ module Admin
       "blocked" => ->(scope) { scope.joins(:order_confirmation).where(status: "new", order_confirmations: { disposition: "blocked" }) }
     }.freeze
 
+    PER_PAGE = 25
+    # Older links (the dashboard cards, bookmarks) carry these: they keep working, and open on every date.
+    LEGACY_FILTERS = %i[status group attention].freeze
+    CONFIRMATION_FILTERS = %w[pending planned confirmed cancelled wrong].freeze
+    SHIPPING_FILTERS = Orders::Overview::SHIPPING_GROUPS.keys.freeze
+
+    # The orders page: the figures of Orders::Overview (confirmation, shipping) for the date range, then the table, which
+    # applies the same date range and the filters. Without a filter, the number of rows is the "Commandes totales" card.
     def index
       @status = params[:status]
       @archived = @status == "archived"
       @connections = current_store.store_connections.order(:name)
       @shopify_connections = @connections.where(provider: "shopify", shopify_oauth: true).limit(100)
-      @orders = visible_orders.recent.includes(:customer, external_order_receipt: :store_connection)
-      if params[:connection_id].present?
-        connection = current_store.store_connections.find(params[:connection_id])
-        @orders = @orders.joins(:external_order_receipt).where(external_order_receipts: { store_connection_id: connection.id })
-      end
-      @orders = if @archived
-        @orders.archived
-      else
-        @orders.active
-      end
       @agents = current_store.users.active.where(confirmation_role: "agent").or(current_store.users.active.where(admin: true)).order(:email)
-      if params[:agent_id].present? && !agent_view?
-        @orders = params[:agent_id] == "none" ? @orders.left_joins(:order_confirmation).where(order_confirmations: { assigned_user_id: nil }) :
-          @orders.joins(:order_confirmation).where(order_confirmations: { assigned_user_id: @agents.find(params[:agent_id]).id })
-      end
-      @group_counts = ORDER_GROUPS.keys.index_with { |key| group_scope(@orders, key).count } unless @archived
-      @group = ORDER_GROUPS.key?(params[:group]) ? params[:group] : nil
-      @orders = group_scope(@orders, @group) if @group && !@archived
-      @orders = @orders.includes(order_confirmation: :assigned_user)
-      @orders = @orders.by_status(@status) if @status.present? && !@archived
-      @orders = @orders.where(status: Order::PROBLEM_STATUSES) if params[:attention] == "delivery_issues"
-      if params[:q].present?
-        q = "%#{Order.sanitize_sql_like(params[:q].strip)}%"
-        @orders = @orders.where(
-          "number ILIKE :q OR customer_name ILIKE :q OR customer_phone ILIKE :q OR COALESCE(tags, '') ILIKE :q",
-          q: q
-        )
-      end
+      @products = current_store.products.order(:name).pluck(:name, :id)
+      @date_range = selected_date_range(scope: "orders", default: "last_30")
+      @overview = Orders::Overview.new(scope: visible_orders.active, range: @date_range)
+
+      orders = visible_orders.recent.preload(:customer, :order_items, order_confirmation: :assigned_user, external_order_receipt: :store_connection)
+      orders = @archived ? orders.archived : orders.active
+      @date_filtered = params[:from].present? || LEGACY_FILTERS.none? { |key| params[key].present? }
+      orders = orders.where(created_at: @date_range.time_range) if @date_filtered && !@archived
+      orders = filter_orders(orders)
+
+      @total_count = orders.count
+      @page = [ params[:page].to_i, 1 ].max
+      @orders = orders.offset((@page - 1) * PER_PAGE).limit(PER_PAGE + 1).to_a
+      @has_next = @orders.length > PER_PAGE
+      @orders = @orders.first(PER_PAGE)
     end
 
     def show
@@ -261,6 +259,68 @@ end
     end
 
     private
+
+    # Every filter of the page. They only narrow the table; the cards above never depend on them. Each one reads ids
+    # through subqueries scoped to this workspace, so a crafted id cannot reach another store's records.
+    def filter_orders(orders)
+      orders = orders.by_status(@status) if @status.present? && !@archived
+      orders = orders.where(status: Order::PROBLEM_STATUSES) if params[:attention] == "delivery_issues"
+      group = ORDER_GROUPS.key?(params[:group]) ? params[:group] : nil
+      orders = group_scope(orders, group) if group && !@archived
+      orders = confirmation_filter(orders, params[:confirmation])
+      orders = orders.where(status: Orders::Overview::SHIPPING_GROUPS.fetch(params[:shipping])) if SHIPPING_FILTERS.include?(params[:shipping])
+      orders = orders.where.not(collected_at: nil) if params[:payment] == "paid"
+      orders = orders.awaiting_remittance if params[:payment] == "unpaid"
+      orders = orders.where.not(sendit_code: [ nil, "" ]) if params[:company] == "sendit"
+      orders = orders.where(sendit_code: [ nil, "" ]) if params[:company] == "none"
+      orders = agent_filter(orders)
+      orders = source_filter(orders)
+      if params[:product].present?
+        product_ids = current_store.products.where(id: params[:product]).select(:id)
+        orders = orders.where(id: OrderItem.where(product_id: product_ids).select(:order_id))
+      end
+      if params[:missed] == "1"
+        orders = orders.where(id: ConfirmationAttempt.joins(:order_confirmation).where(store: current_store, outcome: "no_answer").select("order_confirmations.order_id"))
+      end
+      if params[:q].present?
+        q = "%#{Order.sanitize_sql_like(params[:q].strip)}%"
+        orders = orders.where("orders.number ILIKE :q OR orders.customer_name ILIKE :q OR orders.customer_phone ILIKE :q OR COALESCE(orders.tags, '') ILIKE :q", q: q)
+      end
+      orders
+    end
+
+    # Where the order is in the call centre. "pending" counts the scheduled callbacks too, like the "En attente" card.
+    def confirmation_filter(orders, key)
+      return orders unless CONFIRMATION_FILTERS.include?(key)
+
+      confirmations = OrderConfirmation.where(store: current_store)
+      wrong = confirmations.where(disposition: %w[wrong_number blocked]).select(:order_id)
+      case key
+      when "pending" then orders.where(status: "new").where.not(id: wrong)
+      when "planned" then orders.where(status: "new", id: confirmations.where(disposition: "callback").select(:order_id))
+      when "confirmed" then orders.where(status: Orders::Overview::CONFIRMED_STATUSES)
+      when "cancelled" then orders.where(status: "cancelled")
+      when "wrong" then orders.where(status: "new", id: wrong)
+      end
+    end
+
+    # The agent holding the order's claim ("none" for unassigned). Not offered to agents.
+    def agent_filter(orders)
+      return orders if params[:agent_id].blank? || agent_view?
+
+      assigned = OrderConfirmation.where(store: current_store).where.not(assigned_user_id: nil)
+      return orders.where.not(id: assigned.select(:order_id)) if params[:agent_id] == "none"
+
+      orders.where(id: assigned.where(assigned_user_id: @agents.find(params[:agent_id]).id).select(:order_id))
+    end
+
+    def source_filter(orders)
+      return orders if params[:connection_id].blank?
+      return orders.where.not(id: ExternalOrderReceipt.select(:order_id)) if params[:connection_id] == "manual"
+
+      connection = current_store.store_connections.find(params[:connection_id])
+      orders.where(id: ExternalOrderReceipt.where(store_connection_id: connection.id).select(:order_id))
+    end
 
     def group_scope(scope, key)
       ORDER_GROUPS.fetch(key).call(scope)

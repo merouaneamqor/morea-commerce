@@ -1,0 +1,17 @@
+<%# One figure of the Orders page: the card opens the table filtered on it. Printing only.
+    locals: key, label, value, hint, accent (hex of the left edge), href, icon (optional), pill (optional [text, tone]) %>
+<% pill_text, pill_tone = local_assigns[:pill] %>
+<% pill_class = { up: "bg-[#e3f3e8] text-[#2f7a4a]", down: "bg-[#fbe7ea] text-[#b4344e]" }.fetch(pill_tone, "bg-[#efeff3] text-[#6e6e73]") %>
+<%= link_to href, "data-card": key, "data-value": value, title: label,
+      class: "flex h-[96px] min-w-0 flex-col justify-between rounded-xl border border-s-[3px] border-[#e0e0e5] bg-white px-3.5 py-3 transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-18px_rgba(0,0,0,0.4)]",
+      style: "border-inline-start-color: #{accent}" do %>
+  <div class="flex items-center justify-between gap-2">
+    <p class="flex min-w-0 items-center gap-1.5 text-xs font-medium text-[#3a3a3c]">
+      <% if local_assigns[:icon] %><span class="shrink-0 text-[#6e6e73]"><%= seller_icon(icon, size: 14) %></span><% end %>
+      <span class="truncate"><%= label %></span>
+    </p>
+    <% if pill_text.present? %><span class="rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap <%= pill_class %>"><%= pill_text %></span><% end %>
+  </div>
+  <p class="text-[24px] leading-none font-bold whitespace-nowrap text-[#1c1c1e] tabular-nums"><%= seller_number(value) %></p>
+  <p class="truncate text-[11px] text-[#6e6e73]"><%= hint %></p>
+<% end %>

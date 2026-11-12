@@ -18,7 +18,7 @@ module Seller
       [ "leader", "Leader", 2_000_000, "#7c5cd6" ],
       [ "maitre", "Maître", 5_000_000, "#e08a2c" ],
       [ "legende", "Légende", 10_000_000, "#d6455d" ],
-      [ "titan", "Titan", 50_000_000, "#1c1c1e" ]
+      [ "titan", "Titan", 50_000_000, "#f2b705" ]
     ].freeze
 
     Tier = Data.define(:key, :name, :threshold_cents, :unlocked, :fill, :color)

@@ -24,7 +24,7 @@ RSpec.describe Seller::DashboardStats do
 
   it "computes no money result itself: revenue and basket are read from AccountingStats, profit stays out" do
     order(status: "delivered", total: 20_000, delivered_at: now - 1.day)
-    expect(stats.keys).to match_array(%i[range currency pending money low_stock kpis latest])
+    expect(stats.keys).to match_array(%i[range currency pending money low_stock distribution top_products kpis latest])
     expect(stats[:kpis].keys).not_to include(:revenue, :net_profit, :average_order, :revenue_delta)
     expect(stats[:money].keys).to match_array(%i[revenue revenue_delta delivered_orders average_basket])
     accounting = AccountingStats.new(store: store, range: described_class.new(store: store, now: now).range)

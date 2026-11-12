@@ -54,24 +54,24 @@ RSpec.describe "Dashboard milestones", type: :request do
 
     tiers = document.css("[data-tier]")
     colors = tiers.map { |tier| tier["data-color"] }
-    expect(colors).to eq(%w[#3aa76d #3b82c4 #7c5cd6 #e08a2c #d6455d #1c1c1e])
+    expect(colors).to eq(%w[#3aa76d #3b82c4 #7c5cd6 #e08a2c #d6455d #f2b705])
     expect(colors.uniq.size).to eq(6)
     unlocked, locked = tiers.partition { |tier| tier["data-unlocked"] == "true" }
     expect(unlocked.map { |tier| tier.at_css("span")["style"] }).to eq([ "background: #3aa76d; color: #fff" ])
-    expect(locked.first.at_css("span")["style"]).to eq("background: color-mix(in srgb, #3b82c4 18%, white); color: #3b82c4")   # Doyen, still locked
+    expect(locked.first.at_css("span")["style"]).to eq("background: color-mix(in srgb, #3b82c4 26%, #1c1c1e); color: #3b82c4")   # Doyen, still locked
     fill = document.at_css(".ms-fill")["style"]
-    expect(fill).to include("--ms-w: 21.83%", "#3aa76d 0.0% 16.667%", "#3b82c4 16.667% 33.333%", "#1c1c1e 83.333% 100.0%")
+    expect(fill).to include("--ms-w: 21.83%", "#3aa76d 0.0% 16.667%", "#3b82c4 16.667% 33.333%", "#f2b705 83.333% 100.0%")
     expect(document.at_css("[data-milestone-current]")["style"]).to include("#3aa76d")   # Pionnier
     expect(document.at_css("[data-here] span")["style"]).to include("#3b82c4")            # the stage being filled
   end
 
-  it "shows the four headline figures as flat rectangles" do
+  it "is a black bar: smoked panel, white text, and every stage colour still readable on it" do
     get "/dashboard", params: { locale: "fr" }
 
-    cards = document.css("[data-kpis=headline] [data-kpi]")
-    expect(cards.map { |card| card["data-kpi"] }).to eq(%w[revenue orders confirmation_rate average_basket])
-    expect(cards.map { |card| card["class"][/min-h-\[\d+px\]/] }.uniq).to eq([ "min-h-[72px]" ])
-    expect(cards).to all(satisfy { |card| card["class"].include?("items-center") && !card["class"].include?("flex-col") }) # icon beside the text, not above it
+    section = document.at_css("[data-milestones]")
+    expect(section["class"]).to include("bg-[#1c1c1e]", "text-white")
+    expect(section["class"]).not_to include("bg-white")
+    expect(section.at_css("[data-milestone-goal]").text.squish).to eq("Je continue jusqu'à 500K MAD")
   end
 
   describe "the on/off switch" do

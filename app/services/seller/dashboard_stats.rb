@@ -46,6 +46,8 @@ module Seller
         pending: awaiting.count,
         money: money_figures,
         low_stock: low_stock,
+        distribution: distribution(created, counts),
+        top_products: top_products,
         kpis: {
           orders: total,
           orders_delta: delta(total, previous_total),
@@ -99,6 +101,56 @@ module Seller
     end
 
     private
+
+    # How the orders created in the range are spread, two ways. Each is a partition of what it covers: every order is in exactly one
+    # segment, so the segments always add up to the total of that view.
+    # - confirmation: all the orders, by where they are in the call centre (pending, scheduled callback, wrong or blocked number,
+    #   confirmed from then on, cancelled);
+    # - shipping: the confirmed orders only, by where they are on their way (to ship, in transit, delivered, problem, returned).
+    SHIPPING_GROUPS = {
+      "to_ship" => %w[confirmed preparing],
+      "in_transit" => %w[awaiting_pickup picked_up in_transit out_for_delivery],
+      "delivered" => %w[delivered],
+      "issue" => %w[address_issue unreachable postponed],
+      "returned" => %w[returned]
+    }.freeze
+
+    def distribution(created, counts)
+      dispositions = created.where(status: "new").left_joins(:order_confirmation).group("order_confirmations.disposition").count
+      new_total = counts.fetch("new", 0)
+      planned = dispositions.fetch("callback", 0)
+      wrong = dispositions.fetch("wrong_number", 0) + dispositions.fetch("blocked", 0)
+      confirmation = {
+        "pending" => new_total - planned - wrong,
+        "confirmed" => counts.slice(*CONFIRMED_STATUSES).values.sum,
+        "planned" => planned,
+        "cancelled" => counts.fetch("cancelled", 0),
+        "wrong" => wrong
+      }
+      shipping = SHIPPING_GROUPS.transform_values { |statuses| counts.slice(*statuses).values.sum }
+      { confirmation: segments(confirmation), shipping: segments(shipping) }
+    end
+
+    # The best sellers of the range: delivered orders, by the value of their items (price x quantity, delivery
+    # fees and discounts left out), top five. `bar` is the share of the best seller, for the length of the bar.
+    def top_products(limit = 5)
+      rows = OrderItem.joins(:order).merge(delivered_orders(range)).group("order_items.product_id", "order_items.product_name")
+        .pluck("order_items.product_id", "order_items.product_name", Arel.sql("SUM(order_items.total_cents)"),
+               Arel.sql("COUNT(DISTINCT order_items.order_id)"), Arel.sql("SUM(order_items.quantity)"))
+        .sort_by { |_id, name, cents, _orders, _qty| [ -cents, name.to_s ] }.first(limit)
+      best = rows.first&.dig(2).to_i
+      rows.map do |id, name, cents, order_count, quantity|
+        { id: id, name: name, revenue: units(cents), orders: order_count, quantity: quantity.to_i, bar: best.positive? ? (cents * 100.0 / best).round(1) : 0 }
+      end
+    end
+
+    def segments(counts)
+      total = counts.values.sum
+      list = counts.map do |key, count|
+        { key: key, count: count, share: total.positive? ? count * 100.0 / total : 0.0, percent: total.positive? ? (count * 100.0 / total).round(1) : 0.0 }
+      end
+      { total: total, segments: list }
+    end
 
     def low_stock_item(product, variant_name, stock)
       { id: product.id, slug: product.slug, name: product.name, variant: variant_name.presence, stock: stock.to_i }

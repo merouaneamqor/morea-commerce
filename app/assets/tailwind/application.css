@@ -3552,3 +3552,8 @@ main {
 @media (prefers-reduced-motion: reduce) {
   .ms-fill, .ms-here, .ms-here > span, .ms-trophy { animation: none; }
 }
+
+/* ——— Distribution ring: each segment draws itself in ——— */
+@keyframes donut-in { from { stroke-dasharray: 0 100; } to { stroke-dasharray: var(--len) calc(100 - var(--len)); } }
+.donut-seg { stroke-dasharray: var(--len) calc(100 - var(--len)); animation: donut-in 1s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) { .donut-seg { animation: none; } }

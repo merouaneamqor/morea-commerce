@@ -48,14 +48,110 @@ RSpec.describe "Dashboard figures", type: :request do
     expect(kpi("refusees")).to include("1")
   end
 
-  it "reads revenue and average basket from AccountingStats, the same figures as Comptabilité" do
+  it "reads revenue from AccountingStats, the same figure as Comptabilité, and no longer prints the average basket card" do
     get "/dashboard", params: { from: Date.current.iso8601, to: Date.current.iso8601, locale: "fr" }
 
     accounting = AccountingStats.new(store: store, range: DateRange.from_params({ from: Date.current.iso8601, to: Date.current.iso8601 }))
     revenue = accounting.totals.revenue / 100.0
     expect(revenue).to be_positive
     expect(kpi("revenue")).to include(ActionController::Base.helpers.number_with_precision(revenue, precision: 2, strip_insignificant_zeros: true, delimiter: " ", separator: ",").delete("⁦⁩"))
-    expect(kpi("average_basket")).to include("sur 2 commandes livrées")
+    expect(document.at_css("[data-kpi=average_basket]")).to be_nil
+  end
+
+  it "lays the cards out as six figures then three rates, in the asked order" do
+    get "/dashboard", params: { from: Date.current.iso8601, to: Date.current.iso8601, locale: "fr" }
+
+    expect(document.css("[data-kpis=row1] [data-kpi]").map { |card| card["data-kpi"] }).to eq(%w[revenue orders en-attente-de-confirmation en-cours-de-livraison annulees refusees])
+    expect(document.css("[data-kpis=row2] [data-kpi]").map { |card| card["data-kpi"] }).to eq(%w[confirmation_rate taux-de-livraison taux-de-retour])
+  end
+
+  describe "the order distribution" do
+    def view(key) = document.at_css("[data-distribution-view=#{key}]")
+    def segment(key, name) = view(key).at_css("[data-legend=#{name}]")
+    def count_of(key, name) = segment(key, name).at_css("[data-segment-count]").text.delete(BIDI_MARKS).squish.to_i
+
+    it "splits the 7 orders by confirmation, adding up to the total" do
+      get "/dashboard", params: { from: Date.current.iso8601, to: Date.current.iso8601, locale: "fr" }
+
+      expect(view("confirmation")["data-total"]).to eq("7")
+      expect(%w[pending confirmed planned cancelled wrong].to_h { |name| [ name, count_of("confirmation", name) ] }).to eq(
+        "pending" => 1, "confirmed" => 5, "planned" => 0, "cancelled" => 1, "wrong" => 0    # new / delivered 2 + transit + returned + confirmed / - / cancelled / -
+      )
+      expect(segment("confirmation", "confirmed").at_css("[data-segment-percent]").text.squish).to eq("71.4 %")   # 5 of 7
+      expect(view("confirmation").css("circle[data-segment]").map { |circle| circle["data-count"].to_i }.sum).to eq(7)
+    end
+
+    it "counts a scheduled callback and a wrong number apart from the pending orders" do
+      callback = make_order("new", 1_000)
+      OrderConfirmation.create!(store: store, order: callback, disposition: "callback", callback_at: 1.day.from_now)
+      bad = make_order("new", 1_000)
+      OrderConfirmation.create!(store: store, order: bad, disposition: "wrong_number")
+      blocked = make_order("new", 1_000)
+      OrderConfirmation.create!(store: store, order: blocked, disposition: "blocked")
+
+      get "/dashboard", params: { from: Date.current.iso8601, to: Date.current.iso8601, locale: "fr" }
+
+      expect(view("confirmation")["data-total"]).to eq("10")
+      expect(%w[pending planned wrong].map { |name| count_of("confirmation", name) }).to eq([ 1, 1, 2 ])
+    end
+
+    it "splits the 5 confirmed orders by where they are on their way" do
+      get "/dashboard", params: { from: Date.current.iso8601, to: Date.current.iso8601, locale: "fr" }
+
+      expect(view("shipping")["data-total"]).to eq("5")
+      expect(%w[to_ship in_transit delivered issue returned].to_h { |name| [ name, count_of("shipping", name) ] }).to eq(
+        "to_ship" => 1, "in_transit" => 1, "delivered" => 2, "issue" => 0, "returned" => 1
+      )
+    end
+
+    it "shows the confirmation view first and the shipping view hidden behind its button" do
+      get "/dashboard", params: { from: Date.current.iso8601, to: Date.current.iso8601, locale: "fr" }
+
+      expect(view("confirmation").has_attribute?("hidden")).to be(false)
+      expect(view("shipping").has_attribute?("hidden")).to be(true)
+      expect(document.css("[data-distribution] button[data-key]").map(&:text).map(&:squish)).to eq(%w[Confirmation Expédition])
+    end
+  end
+
+  describe "the best products" do
+    let(:tracksuit) { store.products.create!(name: "Tracksuit", price_cents: 10_000, status: "active") }
+    let(:cap) { store.products.create!(name: "Cap", price_cents: 5_000, status: "active") }
+
+    def item(order, product, quantity, total)
+      order.order_items.create!(product: product, product_name: product.name, quantity: quantity, unit_price_cents: total / quantity, total_cents: total)
+    end
+
+    it "ranks by the value of the delivered items, with orders, pieces and a bar relative to the best" do
+      delivered = store.orders.where(status: "delivered").order(:id).to_a
+      item(delivered[0], tracksuit, 2, 20_000)
+      item(delivered[0], cap, 1, 5_000)
+      item(delivered[1], tracksuit, 1, 8_000)
+      item(delivered[1], cap, 1, 2_000)
+      item(store.orders.find_by!(status: "returned"), cap, 9, 90_000)    # not delivered: left out
+      item(store.orders.find_by!(status: "in_transit"), cap, 9, 90_000)
+
+      get "/dashboard", params: { from: Date.current.iso8601, to: Date.current.iso8601, locale: "fr" }
+
+      rows = document.css("[data-product-row]")
+      expect(rows.map { |row| row.at_css("p.truncate").text.squish }).to eq(%w[Tracksuit Cap])
+      expect(rows.map { |row| row.at_css("[data-revenue]")["data-revenue"].to_f }).to eq([ 280.0, 70.0 ])      # 200 + 80, 50 + 20
+      expect(rows.first.text.delete(BIDI_MARKS)).to include("2 commandes · 3 pcs")
+      expect(rows.last.text.delete(BIDI_MARKS)).to include("2 commandes · 2 pcs")
+      expect(rows.last.at_css("div[style*=width]")["style"]).to include("width: 25.0%")                          # 70 / 280
+    end
+
+    it "shows the empty message when nothing was delivered with items, and never another store's sales" do
+      foreign = Store.create!(slug: "foreign-#{SecureRandom.hex(4)}", name: "Other", currency: "MAD")
+      stranger = foreign.customers.create!(name: "X", phone: "0699999999")
+      order = foreign.orders.create!(customer: stranger, number: "FX1", status: "delivered", currency: "MAD", customer_name: "X", customer_phone: "0699999999",
+        customer_city: "Fès", customer_address: "x", subtotal_cents: 9_900, total_cents: 9_900, delivered_at: Time.current)
+      order.order_items.create!(product: foreign.products.create!(name: "Secret", price_cents: 9_900, status: "active"), product_name: "Secret", quantity: 1, unit_price_cents: 9_900, total_cents: 9_900)
+
+      get "/dashboard", params: { from: Date.current.iso8601, to: Date.current.iso8601, locale: "fr" }
+
+      expect(document.at_css("[data-top-products]").text).to include("Aucune vente livrée sur la période.")
+      expect(response.body).not_to include("Secret")
+    end
   end
 
   describe "low stock alert (5 pieces or fewer)" do

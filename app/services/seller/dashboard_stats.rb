@@ -44,10 +44,15 @@ module Seller
         range: { from: range.from.iso8601, to: range.to.iso8601, days: range.days },
         currency: currency,
         pending: awaiting.count,
+        money: money_figures,
+        low_stock: low_stock,
         kpis: {
           orders: total,
           orders_delta: delta(total, previous_total),
+          confirmed: confirmed,
           confirmation_rate: percent(confirmed, total),
+          returned: counts.fetch("returned", 0),
+          return_rate: percent(counts.fetch("returned", 0), shipped),
           delivered: delivered,
           delivery_rate: percent(delivered, shipped),
           awaiting: awaiting.count,
@@ -70,12 +75,47 @@ module Seller
 
     def new_orders_count = orders.where(status: "new").count
 
+    # Pieces left at or below which an article is flagged on the dashboard.
+    LOW_STOCK_THRESHOLD = 5
+    LOW_STOCK_LIST_LIMIT = 6
+
+    # Tracked articles with LOW_STOCK_THRESHOLD pieces or fewer: a product without variants by its own stock,
+    # otherwise each active variant by its own stock. Lowest first. `count` is all of them, `items` the first few.
+    def low_stock
+      items = @store.products.active.low_stock(LOW_STOCK_THRESHOLD).includes(:product_variants).flat_map do |product|
+        variants = product.product_variants.select(&:active)
+        if variants.empty?
+          product.stock.to_i <= LOW_STOCK_THRESHOLD ? [ low_stock_item(product, nil, product.stock) ] : []
+        else
+          variants.select { |variant| variant.stock.to_i <= LOW_STOCK_THRESHOLD }.map { |variant| low_stock_item(product, variant.display_name, variant.stock) }
+        end
+      end.sort_by { |item| [ item[:stock], item[:name].to_s ] }
+      { threshold: LOW_STOCK_THRESHOLD, count: items.size, items: items.first(LOW_STOCK_LIST_LIMIT) }
+    end
+
     # Active products with no cost entered (a count, shown as a badge in the menu).
     def missing_costs
       @store.products.active.where(cost_cents: [ nil, 0 ]).count
     end
 
     private
+
+    def low_stock_item(product, variant_name, stock)
+      { id: product.id, slug: product.slug, name: product.name, variant: variant_name.presence, stock: stock.to_i }
+    end
+
+    # Revenue and average basket come from AccountingStats, the single source of money figures (delivered orders
+    # of the range, compared with the previous period), so the dashboard and Comptabilité always agree.
+    def money_figures
+      accounting = AccountingStats.new(store: @store, range: range)
+      totals = accounting.totals
+      {
+        revenue: units(totals.revenue),
+        revenue_delta: delta(totals.revenue, accounting.previous_totals.revenue),
+        delivered_orders: totals.orders,
+        average_basket: totals.average_basket && (totals.average_basket / 100).round(2).to_f
+      }
+    end
 
     def currency
       code = @store.currency.to_s.upcase

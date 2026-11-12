@@ -3054,7 +3054,7 @@ main {
    differ only in the --s-* variables. */
 @layer components {
   .admin-body:is([data-admin-theme="seallo"], [data-admin-theme="seallo_dark"]) {
-    --s-page: #e8e8ed;
+    --s-page: #fff;
     --s-card: #fff;
     --s-side: #efeff3;
     --s-line: #e0e0e5;
@@ -3190,7 +3190,7 @@ main {
    text-[#d8d8de] utilities in the markup, and utilities outrank the components layer. */
   .seallo-auth { --s-card: #fff; --s-ink: #1c1c1e; --s-ink-2: #3a3a3c; --s-ctl: #d8d8de; --s-rust: #1d1d1f; color: var(--s-ink); }
   .seallo-auth .admin-wordmark { color: #1d1d1f; font-size: 1.625rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
-  .seallo-auth .fx-stage { background: #e8e8ed; color: var(--s-ink); }
+  .seallo-auth .fx-stage { background: #fff; color: var(--s-ink); }
   .seallo-auth .fx-stage::before, .seallo-auth .fx-orb { display: none; }
   .seallo-auth .fx-glass { background: var(--s-card); border: 1px solid #e0e0e5; border-radius: 1.5rem; box-shadow: 0 24px 60px -36px rgba(60, 30, 15, 0.35); -webkit-backdrop-filter: none; backdrop-filter: none; }
   .seallo-auth .fx-input { background: var(--s-card); border-color: #8f837a; color: var(--s-ink); }
@@ -3217,8 +3217,8 @@ main {
   .seallo-auth .fx-stage header nav a.font-semibold { color: var(--s-ink); }
 
 /* Split layout for the auth pages: animated preview panel on the left, form on the right (as on the seallo sign-in page). */
-  .seallo-auth { background: #e8e8ed; }
-  .sa-split { display: grid; min-height: 100dvh; background: #e8e8ed; color: #1c1c1e; }
+  .seallo-auth { background: #fff; }
+  .sa-split { display: grid; min-height: 100dvh; background: #fff; color: #1c1c1e; }
   .sa-panel { display: none; position: sticky; top: 0; height: 100dvh; overflow: hidden; padding: 2rem; flex-direction: column; }
   .sa-form-col { display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
   .sa-form-wrap { width: 100%; max-width: 32rem; }
@@ -3471,32 +3471,29 @@ main {
    how a panel looks; no layout, text or figure is involved.
    Unlayered on purpose: it must win over Tailwind utilities (`bg-white`, `bg-[#1c1c1e]`).
    Falls back to solid colours when transparency is reduced or backdrop-filter is missing. */
+/* The page itself is plain white. Panels stand out by a thin grey border and a soft shadow; the blur shows
+   wherever a panel overlaps something (smoked headers, dialogs, dropdowns). */
 [data-seller-shell] {
-  background:
-    radial-gradient(1100px 520px at 6% -8%, rgba(255, 255, 255, 0.95), transparent 62%),
-    radial-gradient(900px 480px at 100% 0%, rgba(205, 205, 215, 0.75), transparent 58%),
-    radial-gradient(800px 500px at 50% 120%, rgba(190, 190, 200, 0.55), transparent 60%),
-    linear-gradient(180deg, #f2f2f5 0%, #e2e2e8 100%);
-  background-attachment: fixed;
+  background: #fff;
 }
 
 [data-seller-shell] .bg-white,
 [data-seller-shell] .admin-card {
-  background-color: rgba(255, 255, 255, 0.64);
+  background-color: rgba(255, 255, 255, 0.82);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   backdrop-filter: blur(24px) saturate(180%);
 }
 
 [data-seller-shell] [class*="border-[#e0e0e5]"],
 [data-seller-shell] .admin-card {
-  border-color: rgba(255, 255, 255, 0.72);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 [data-seller-shell] [class*="border-[#e0e0e5]"].rounded-2xl,
 [data-seller-shell] [class*="border-[#e0e0e5]"].rounded-3xl,
 [data-seller-shell] [class*="border-[#e0e0e5]"].rounded-xl,
 [data-seller-shell] .admin-card {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 12px 34px -14px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 14px 32px -18px rgba(0, 0, 0, 0.22);
 }
 
 /* Dark panels (headers, hero bars): smoked glass */
@@ -3517,7 +3514,7 @@ main {
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  [data-seller-shell] { background: #ececf0; }
+  [data-seller-shell] { background: #fff; }
   [data-seller-shell] .bg-white,
   [data-seller-shell] .admin-card { background-color: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
   [data-seller-shell] [class^="bg-[#1c1c1e]"],

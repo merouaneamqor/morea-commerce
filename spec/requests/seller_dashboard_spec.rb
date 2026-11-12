@@ -37,7 +37,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     expect(document.css("aside nav ul li").map { |li| li.text.squish }).not_to include(a_string_matching(/Profit/))
     expect(document.at_css("h1").text).to include("Bonjour, Salma")
     expect(response.body).to include("Boutique #{suffix}", "Plan · Starter")
-    expect(document.css("section.grid > div").first(2).map { |tile| tile.at_css("p").text.squish }).to eq([ "Commandes", "Taux de livraison" ])
+    expect(document.css("[data-kpis=headline] > div").map { |tile| tile.at_css("p").text.squish }).to eq([ "Chiffre d'affaires", "Commandes", "Taux de confirmation", "Panier moyen" ])
   end
 
   it "no longer shows the financial cards: they moved to Comptabilité" do
@@ -46,7 +46,8 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     store.orders.create!(customer: customer, number: "MONEY-#{suffix}", status: "delivered", currency: "MAD", customer_name: "Client", customer_phone: "0612345678",
       customer_city: "Fès", customer_address: "Rue 1", total_cents: 25_000, delivered_at: 1.hour.ago)
     get "/dashboard", params: { locale: "fr" }
-    expect(response.body).not_to include("Chiffre d'affaires", "Profit net", "Ventes livrées vs publicité", "Profit par produit", "Panier moyen")
+    # Revenue and average basket are back on the dashboard by request, read from AccountingStats; profit stays on Comptabilité.
+    expect(response.body).not_to include("Profit net", "Ventes livrées vs publicité", "Profit par produit")
     expect(document.css("[data-sales-chart]")).to be_empty
   end
 

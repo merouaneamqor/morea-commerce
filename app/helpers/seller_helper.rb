@@ -6,7 +6,24 @@ module SellerHelper
   SELLER_DICTIONARY = JSON.parse(Rails.root.join("config/seller_dictionary.json").read).freeze
 
   # Words that exist only in Morea (seallo has no such page): [English, Arabic].
-  SELLER_EXTRA = { "Comptabilité" => [ "Accounting", "المحاسبة" ] }.freeze
+  SELLER_EXTRA = {
+    "Comptabilité" => [ "Accounting", "المحاسبة" ],
+    "Taux de confirmation" => [ "Confirmation rate", "نسبة التأكيد" ],
+    "Panier moyen" => [ "Average basket", "متوسط السلة" ],
+    "Taux de retour" => [ "Return rate", "نسبة الإرجاع" ],
+    "retournées" => [ "returned", "مرتجعة" ],
+    "Commandes livrées" => [ "Delivered orders", "الطلبات المسلّمة" ],
+    "commandes livrées" => [ "delivered orders", "طلبات مسلّمة" ],
+    "Toutes les commandes" => [ "All orders", "كل الطلبات" ],
+    "Stock faible" => [ "Low stock", "مخزون منخفض" ],
+    "Rupture" => [ "Out of stock", "نفد المخزون" ],
+    "pcs" => [ "pcs", "قطعة" ],
+    "Voir les produits" => [ "See products", "عرض المنتجات" ],
+    "Aucun article sous le seuil." => [ "No article below the threshold.", "لا توجد منتجات تحت الحد." ],
+    "Articles à" => [ "Articles at", "منتجات عند" ],
+    "pièces ou moins" => [ "pieces or fewer", "قطع أو أقل" ],
+    "confirmées" => [ "confirmed", "مؤكدة" ]
+  }.freeze
 
   SELLER_ICONS = {
     home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',

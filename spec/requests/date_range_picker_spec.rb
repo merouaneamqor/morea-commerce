@@ -37,7 +37,7 @@ RSpec.describe "Date range picker", type: :request do
   end
 
   def revenue = clean(document.at_css("[data-card=revenue] [data-value]").text)
-  def orders_tile = clean(document.css("section.grid > div").first.css("p")[1].text)
+  def orders_tile = clean(document.at_css("[data-kpi=orders]").css("p")[1].text)
 
   describe "the component" do
     before { sign_in }
@@ -261,7 +261,7 @@ RSpec.describe "Date range picker", type: :request do
     it "compares with the same number of days just before" do
       get "/dashboard", params: { from: "2026-11-01", to: "2026-11-02" }
       expect(orders_tile).to eq("3")
-      expect(clean(document.css("section.grid > div").first.text)).to include("+200 % vs période précédente") # the 2 days before (30 and 31 October) hold 1 order
+      expect(clean(document.at_css("[data-kpi=orders]").text)).to include("+200 % vs période précédente") # the 2 days before (30 and 31 October) hold 1 order
     end
 
     it "opens an older ?period= link and keeps working" do

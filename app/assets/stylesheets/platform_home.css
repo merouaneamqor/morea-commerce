@@ -1,15 +1,15 @@
 /* Platform landing page (apex). Light, warm layout ported from the seallo landing page. */
 .platform-landing {
-  --brand: #a8432e;
-  --brand-dark: #8e3624;
-  --brand-tint: #f4e4de;
-  --ink: #1f2430;
-  --warm: #f3f1ef;
+  --brand: #5b46d6;
+  --brand-dark: #4a37c2;
+  --brand-tint: #eeebfd;
+  --ink: #10162a;
+  --warm: #e9ecf1;
   --cream: #f6efea;
   --card: #fdfcfb;
-  --line: #e8e3df;
-  --text: #5e5a58;
-  --muted: #8a8380;
+  --line: #e7e9ee;
+  --text: #4b5260;
+  --muted: #6b7280;
   position: relative;
   min-height: 100vh;
   overflow-x: hidden;
@@ -111,7 +111,7 @@
 .platform-demo-table table { width: 100%; margin-top: .75rem; border-collapse: collapse; font-size: .75rem; }
 @media (min-width: 640px) { .platform-demo-table table { font-size: .875rem; } }
 .platform-demo-table th { padding-bottom: .5rem; color: var(--muted); font-weight: 500; text-align: start; }
-.platform-demo-table td { padding: .5rem 0; border-top: 1px solid #f0ebe7; color: var(--ink); }
+.platform-demo-table td { padding: .5rem 0; border-top: 1px solid #eef0f4; color: var(--ink); }
 .platform-demo-table td.hide-sm { color: var(--text); }
 .platform-demo-table .hide-sm { display: none; }
 @media (min-width: 640px) { .platform-demo-table .hide-sm { display: table-cell; } }
@@ -203,7 +203,7 @@
 .platform-partners { display: flex; flex-direction: column; width: 100%; max-width: 100%; border: 1px solid var(--line); border-radius: 1rem; background: rgb(255 255 255 / .7); backdrop-filter: blur(4px); padding-block: .25rem; }
 .platform-partners > div { display: flex; flex-direction: column; gap: .5rem; padding: .75rem 1.25rem; }
 .platform-partners > div + div { border-top: 1px solid #ece6e2; }
-.platform-partners p { color: #a49d99; font-size: .625rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+.platform-partners p { color: #9096a2; font-size: .625rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
 .platform-partners ul { display: flex; align-items: center; gap: .875rem; height: 1.5rem; }
 .platform-partners img { width: auto; object-fit: contain; opacity: .75; filter: grayscale(1); transition: opacity .3s, filter .3s; }
 .platform-partners img:hover { opacity: 1; filter: none; }
@@ -221,7 +221,7 @@
 .platform-dialog-bar { position: absolute; inset-inline: 1.25rem; top: 1rem; display: flex; align-items: center; justify-content: space-between; }
 @media (min-width: 640px) { .platform-dialog-bar { inset-inline: 2rem; } }
 .platform-dialog-tabs { display: flex; gap: .25rem; overflow-x: auto; font-size: .875rem; }
-.platform-dialog-tabs button { flex: none; padding: .375rem .75rem; border: 0; border-radius: .5rem; background: none; color: #6f6967; font: inherit; font-weight: 500; cursor: pointer; }
+.platform-dialog-tabs button { flex: none; padding: .375rem .75rem; border: 0; border-radius: .5rem; background: none; color: #6b7280; font: inherit; font-weight: 500; cursor: pointer; }
 .platform-dialog-tabs button:hover { color: var(--ink); }
 .platform-dialog-tabs button.is-current { background: rgb(255 255 255 / .9); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
 .platform-dialog-close { flex: none; width: 2.25rem; height: 2.25rem; margin-inline-start: .75rem; border: 0; border-radius: 50%; background: rgb(255 255 255 / .8); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .08); cursor: pointer; }
@@ -238,7 +238,7 @@
 .platform-feats .platform-icon svg { width: 1.125rem; height: 1.125rem; }
 .platform-feats em { color: #b3aca8; font-size: .6875rem; font-style: normal; font-weight: 600; }
 .platform-feats h3 { margin-top: .625rem; color: var(--ink); font-size: .875rem; font-weight: 600; }
-.platform-feats p { margin-top: .25rem; color: #6f6967; font-size: .75rem; line-height: 1.6; }
+.platform-feats p { margin-top: .25rem; color: #6b7280; font-size: .75rem; line-height: 1.6; }
 .platform-icon { display: flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: .75rem; background: var(--brand-tint); color: var(--brand); }
 .platform-icon svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .platform-cards { display: grid; gap: 1.25rem; margin-top: 2.5rem; }

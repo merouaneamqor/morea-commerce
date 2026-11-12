@@ -8,13 +8,13 @@
 <% first_name = current_admin_user.name.to_s.strip.split(/\s+/).first.to_s %>
 <% number = ->(value) { seller_number(value) } %>
 <% delta_text = ->(d) { d.nil? ? sl("sur la période") : "#{d.positive? ? "+" : ""}#{d} % #{sl("vs période précédente")}" } %>
-<% delta_class = ->(d) { d.nil? ? "text-[#6f6967]" : (d.negative? ? "text-[#b4344e]" : "text-[#2f7a4a]") } %>
+<% delta_class = ->(d) { d.nil? ? "text-[#6b7280]" : (d.negative? ? "text-[#b4344e]" : "text-[#2f7a4a]") } %>
 <%
   tiles = [
     { label: "Commandes", value: number.(k[:orders]), sub: delta_text.(k[:orders_delta]), sub_class: delta_class.(k[:orders_delta]),
       extra: (k[:confirmation_rate] ? "#{k[:confirmation_rate]} % #{sl("confirmées")}" : nil), bg: "bg-[#eeecfa]" },
     { label: "Taux de livraison", value: (k[:delivery_rate] ? "#{k[:delivery_rate]} %" : "—"), sub: "#{number.(k[:delivered])} #{sl("livrées")}",
-      sub_class: "text-[#6f6967]", extra: nil, bg: "bg-[#e8eefa]" }
+      sub_class: "text-[#6b7280]", extra: nil, bg: "bg-[#e8eefa]" }
   ]
   pipeline = [
     [ "En attente de confirmation", k[:awaiting], (k[:awaiting].positive? ? "#{number.(k[:awaiting_amount])} #{cur} #{sl("à confirmer")}" : sl("Tout est confirmé")), "#4b4fb0", "/confirmation" ],
@@ -26,19 +26,19 @@
 
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div>
-    <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= sl("Bonjour") %><%= first_name.present? ? ", #{first_name}" : "" %></h1>
+    <h1 class="text-2xl font-bold text-[#10162a] sm:text-[28px]"><%= sl("Bonjour") %><%= first_name.present? ? ", #{first_name}" : "" %></h1>
     <p class="text-sm">
       <%= stats[:pending].positive? ? "#{number.(stats[:pending])} #{sl("commandes attendent une confirmation.")}" : sl("Aucune commande en attente de confirmation.") %>
     </p>
   </div>
   <div class="flex flex-wrap items-center gap-2">
-    <%= form_with url: "/commandes", method: :get, class: "hidden h-11 items-center gap-2 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm sm:flex" do %>
-      <span class="text-[#8a8380]"><%= seller_icon(:search) %></span>
-      <input name="q" placeholder="<%= sl("Rechercher une commande") %>" class="w-44 bg-transparent outline-none placeholder:text-[#a49d99]">
+    <%= form_with url: "/commandes", method: :get, class: "hidden h-11 items-center gap-2 rounded-xl border border-[#e7e9ee] bg-white px-3 text-sm sm:flex" do %>
+      <span class="text-[#6b7280]"><%= seller_icon(:search) %></span>
+      <input name="q" placeholder="<%= sl("Rechercher une commande") %>" class="w-44 bg-transparent outline-none placeholder:text-[#9096a2]">
     <% end %>
     <%= render "admin/shared/language_switcher" %>
     <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: seller_dashboard_path %>
-    <%= link_to sl("Confirmer les commandes"), "/commandes?status=new", class: "flex h-11 items-center rounded-xl bg-[#a8432e] px-4 text-sm font-semibold text-white shadow-[0_10px_24px_-12px_rgba(168,67,46,0.9)] hover:bg-[#8e3624]" %>
+    <%= link_to sl("Confirmer les commandes"), "/commandes?status=new", class: "flex h-11 items-center rounded-xl bg-[#5b46d6] px-4 text-sm font-semibold text-white shadow-[0_10px_24px_-12px_rgba(168,67,46,0.9)] hover:bg-[#4a37c2]" %>
   </div>
 </header>
 
@@ -46,34 +46,34 @@
   <% tiles.each do |tile| %>
     <div class="rounded-2xl p-4 sm:p-5 <%= tile[:bg] %>">
       <p class="text-sm"><%= sl(tile[:label]) %></p>
-      <p class="mt-1 text-2xl font-bold whitespace-nowrap text-[#1f2430] sm:text-[28px]"><%= tile[:value] %></p>
+      <p class="mt-1 text-2xl font-bold whitespace-nowrap text-[#10162a] sm:text-[28px]"><%= tile[:value] %></p>
       <p class="mt-1 text-xs <%= tile[:sub_class] %>"><%= tile[:sub] %></p>
-      <% if tile[:extra] %><p class="mt-0.5 text-xs text-[#6f6967]"><%= tile[:extra] %></p><% end %>
+      <% if tile[:extra] %><p class="mt-0.5 text-xs text-[#6b7280]"><%= tile[:extra] %></p><% end %>
     </div>
   <% end %>
 </section>
 
 <section class="grid grid-cols-2 gap-3 xl:grid-cols-4">
   <% pipeline.each do |label, value, sub, color, href| %>
-    <%= link_to href, class: "group rounded-2xl border border-[#e8e3df] bg-white p-4 transition hover:border-[#d6cfca] hover:shadow-[0_8px_24px_-16px_rgba(31,36,48,0.35)]" do %>
+    <%= link_to href, class: "group rounded-2xl border border-[#e7e9ee] bg-white p-4 transition hover:border-[#d5d9e1] hover:shadow-[0_8px_24px_-16px_rgba(16,22,42,0.35)]" do %>
       <p class="flex items-start gap-2 text-sm">
         <span class="mt-1 size-2.5 shrink-0 rounded-full" style="background-color: <%= color %>"></span>
         <span class="leading-tight"><%= sl(label) %></span>
-        <span class="ms-auto text-[#c0b8b3] transition group-hover:translate-x-0.5 group-hover:text-[#1f2430] rtl:rotate-180">→</span>
+        <span class="ms-auto text-[#c0b8b3] transition group-hover:translate-x-0.5 group-hover:text-[#10162a] rtl:rotate-180">→</span>
       </p>
-      <p class="mt-2 text-2xl leading-none font-bold text-[#1f2430]"><%= number.(value) %></p>
-      <p class="mt-2 truncate text-xs text-[#8a8380]"><%= sub %></p>
+      <p class="mt-2 text-2xl leading-none font-bold text-[#10162a]"><%= number.(value) %></p>
+      <p class="mt-2 truncate text-xs text-[#6b7280]"><%= sub %></p>
     <% end %>
   <% end %>
 </section>
 
-<section class="rounded-2xl border border-[#e8e3df] bg-white p-5">
-  <h2 class="font-semibold text-[#1f2430]"><%= sl("Dernières commandes") %></h2>
+<section class="rounded-2xl border border-[#e7e9ee] bg-white p-5">
+  <h2 class="font-semibold text-[#10162a]"><%= sl("Dernières commandes") %></h2>
   <% if stats[:latest].any? %>
     <div class="mt-3 overflow-x-auto">
       <table class="w-full min-w-[520px] text-sm">
         <thead>
-          <tr class="border-b border-[#f0ebe7] text-start text-xs text-[#8a8380]">
+          <tr class="border-b border-[#eef0f4] text-start text-xs text-[#6b7280]">
             <% [ "Commande", "Client", "Ville", "Total", "Statut" ].each do |heading| %><th class="px-2 py-2.5 text-start font-medium"><%= sl(heading) %></th><% end %>
           </tr>
         </thead>
@@ -81,10 +81,10 @@
           <% stats[:latest].each do |order| %>
             <% label, badge = seller_status_badge(order[:status]) %>
             <tr class="border-b border-[#f6f2ef] last:border-0">
-              <td class="px-2 py-3 font-semibold text-[#1f2430]" dir="ltr"><%= order[:number] %></td>
-              <td class="px-2 py-3 text-[#1f2430]" dir="auto"><%= order[:customer].presence || "—" %></td>
+              <td class="px-2 py-3 font-semibold text-[#10162a]" dir="ltr"><%= order[:number] %></td>
+              <td class="px-2 py-3 text-[#10162a]" dir="auto"><%= order[:customer].presence || "—" %></td>
               <td class="px-2 py-3" dir="auto"><%= order[:city].presence || "—" %></td>
-              <td class="px-2 py-3 text-[#1f2430]" dir="ltr"><%= number.(order[:total]) %> <%= cur %></td>
+              <td class="px-2 py-3 text-[#10162a]" dir="ltr"><%= number.(order[:total]) %> <%= cur %></td>
               <td class="px-2 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= badge %>"><%= sl(label) %></span></td>
             </tr>
           <% end %>
@@ -92,6 +92,6 @@
       </table>
     </div>
   <% else %>
-    <p class="mt-6 mb-2 text-center text-sm text-[#8a8380]"><%= sl("Vos commandes apparaîtront ici dès que votre boutique sera connectée.") %></p>
+    <p class="mt-6 mb-2 text-center text-sm text-[#6b7280]"><%= sl("Vos commandes apparaîtront ici dès que votre boutique sera connectée.") %></p>
   <% end %>
 </section>

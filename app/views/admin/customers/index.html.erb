@@ -5,14 +5,14 @@
 <% counts = @segments.counts %>
 <% currency = current_store.currency.to_s.upcase == "DH" ? "MAD" : current_store.currency.to_s.upcase %>
 <% tags = { "loyal" => [ "Client fidèle", "bg-[#e3f3e8] text-[#2f7a4a]" ], "at_risk" => [ "À risque", "bg-[#fbe7ea] text-[#b4344e]" ], "new" => [ "Nouveau", "bg-[#ebe9fb] text-[#4b4fb0]" ] } %>
-<% tabs = [ [ "all", nil, "Tous", "text-[#1f2430]" ], [ "loyal", "loyal", "Fidèles", "text-[#2f7a4a]" ], [ "at_risk", "risky", "À risque", "text-[#b4344e]" ], [ "new", "new", "Nouveaux", "text-[#4b4fb0]" ] ] %>
+<% tabs = [ [ "all", nil, "Tous", "text-[#10162a]" ], [ "loyal", "loyal", "Fidèles", "text-[#2f7a4a]" ], [ "at_risk", "risky", "À risque", "text-[#b4344e]" ], [ "new", "new", "Nouveaux", "text-[#4b4fb0]" ] ] %>
 <% locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>
 <% first_row = (@page - 1) * Admin::CustomersController::PER_PAGE + 1 %>
 <% page_path = ->(page) { admin_customers_path(segment: (@segment == "at_risk" ? "risky" : @segment), q: params[:q].presence, page: (page > 1 ? page : nil)) } %>
 
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div>
-    <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= sl("Clients") %></h1>
+    <h1 class="text-2xl font-bold text-[#10162a] sm:text-[28px]"><%= sl("Clients") %></h1>
     <p class="text-sm"><%= sl("Chaque numéro de téléphone est un client. La liste se remplit toute seule avec vos commandes.") %></p>
   </div>
   <%= render "admin/shared/language_switcher" %>
@@ -21,40 +21,40 @@
 <section class="grid grid-cols-2 gap-3 lg:grid-cols-4">
   <% tabs.each do |count_key, param, label, tone| %>
     <% active = param.nil? ? @segment.nil? : Admin::CustomersController::SEGMENT_PARAMS[param] == @segment %>
-    <%= link_to admin_customers_path(segment: param, q: params[:q].presence), class: "rounded-2xl border bg-white p-4 text-start transition #{active ? "border-[#1f2430] ring-1 ring-[#1f2430]" : "border-[#e8e3df] hover:border-[#d6cfca]"}" do %>
+    <%= link_to admin_customers_path(segment: param, q: params[:q].presence), class: "rounded-2xl border bg-white p-4 text-start transition #{active ? "border-[#10162a] ring-1 ring-[#10162a]" : "border-[#e7e9ee] hover:border-[#d5d9e1]"}" do %>
       <p class="text-sm"><%= sl(label) %></p>
       <p class="mt-1 text-2xl font-bold <%= tone %>"><%= seller_number(counts.fetch(count_key)) %></p>
     <% end %>
   <% end %>
 </section>
 
-<%= form_with url: admin_customers_path, method: :get, class: "flex h-11 items-center gap-2 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm", data: { customers_search: true } do %>
+<%= form_with url: admin_customers_path, method: :get, class: "flex h-11 items-center gap-2 rounded-xl border border-[#e7e9ee] bg-white px-3 text-sm", data: { customers_search: true } do %>
   <% if @segment %><%= hidden_field_tag :segment, (@segment == "at_risk" ? "risky" : @segment) %><% end %>
-  <span class="text-[#8a8380]"><%= seller_icon(:search) %></span>
-  <%= search_field_tag :q, params[:q], placeholder: sl("Nom, téléphone ou ville"), "aria-label": sl("Nom, téléphone ou ville"), class: "w-full bg-transparent text-[#1f2430] outline-none placeholder:text-[#a49d99]" %>
+  <span class="text-[#6b7280]"><%= seller_icon(:search) %></span>
+  <%= search_field_tag :q, params[:q], placeholder: sl("Nom, téléphone ou ville"), "aria-label": sl("Nom, téléphone ou ville"), class: "w-full bg-transparent text-[#10162a] outline-none placeholder:text-[#9096a2]" %>
 <% end %>
 
-<section class="overflow-hidden rounded-2xl border border-[#e8e3df] bg-white">
+<section class="overflow-hidden rounded-2xl border border-[#e7e9ee] bg-white">
   <% if @customers.empty? %>
     <div class="px-6 py-16 text-center">
-      <p class="font-semibold text-[#1f2430]"><%= params[:q].present? || @segment ? sl("Aucun client ne correspond.") : sl("Aucun client pour le moment.") %></p>
+      <p class="font-semibold text-[#10162a]"><%= params[:q].present? || @segment ? sl("Aucun client ne correspond.") : sl("Aucun client pour le moment.") %></p>
       <p class="mt-1 text-sm"><%= sl("Vos clients apparaissent ici dès leur première commande.") %></p>
-      <%= link_to sl("Voir les commandes"), "/commandes", class: "mt-5 inline-flex h-11 items-center rounded-xl border border-[#e8e3df] px-4 text-sm font-medium text-[#1f2430] hover:bg-[#f3f1ef]" %>
+      <%= link_to sl("Voir les commandes"), "/commandes", class: "mt-5 inline-flex h-11 items-center rounded-xl border border-[#e7e9ee] px-4 text-sm font-medium text-[#10162a] hover:bg-[#e9ecf1]" %>
     </div>
   <% else %>
-    <ul class="divide-y divide-[#f0ebe7] md:hidden">
+    <ul class="divide-y divide-[#eef0f4] md:hidden">
       <% @customers.each do |customer| %>
         <% stats = @segments.for(customer) %>
         <% label, badge = tags.fetch(stats.segment) %>
         <li class="cursor-pointer px-4 py-3.5" data-orders-for="<%= customer.phone %>">
           <div class="flex items-center justify-between gap-2">
-            <p class="truncate font-semibold text-[#1f2430]" dir="auto"><%= customer.name.presence || "—" %></p>
+            <p class="truncate font-semibold text-[#10162a]" dir="auto"><%= customer.name.presence || "—" %></p>
             <span class="rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap <%= badge %>"><%= sl(label) %></span>
           </div>
-          <p class="text-xs text-[#8a8380]"><span dir="ltr"><%= customer.phone %></span><% if customer.city.present? %><span dir="auto"> · <%= customer.city %></span><% end %></p>
+          <p class="text-xs text-[#6b7280]"><span dir="ltr"><%= customer.phone %></span><% if customer.city.present? %><span dir="auto"> · <%= customer.city %></span><% end %></p>
           <p class="mt-1.5 flex justify-between text-xs">
             <span><%= seller_number(customer.orders_count) %> <%= sl("commandes") %> · <%= seller_number(stats.delivered) %> <%= sl("livrées") %> · <%= seller_number(stats.returns) %> <%= sl("retours") %></span>
-            <b class="text-[#1f2430]"><%= seller_money(stats.delivered_cents, currency) %></b>
+            <b class="text-[#10162a]"><%= seller_money(stats.delivered_cents, currency) %></b>
           </p>
         </li>
       <% end %>
@@ -62,7 +62,7 @@
     <div class="hidden overflow-x-auto md:block">
       <table class="w-full min-w-[860px] text-sm">
         <thead>
-          <tr class="border-b border-[#f0ebe7] text-xs text-[#8a8380]">
+          <tr class="border-b border-[#eef0f4] text-xs text-[#6b7280]">
             <% [ "Client", "Ville", "Commandes", "Livrées", "Retours", "Total livré", "Dernière commande", "Profil" ].each do |heading| %><th class="px-4 py-3 text-start font-medium"><%= sl(heading) %></th><% end %>
           </tr>
         </thead>
@@ -72,17 +72,17 @@
             <% label, badge = tags.fetch(stats.segment) %>
             <tr class="cursor-pointer border-b border-[#f6f2ef] last:border-0 hover:bg-[#fbf9f8]" title="<%= sl("Voir ses commandes") %>" data-orders-for="<%= customer.phone %>">
               <td class="px-4 py-3.5">
-                <p class="font-semibold text-[#1f2430]" dir="auto"><%= customer.name.presence || "—" %></p>
-                <p class="text-xs text-[#8a8380]" dir="ltr"><%= customer.phone %></p>
+                <p class="font-semibold text-[#10162a]" dir="auto"><%= customer.name.presence || "—" %></p>
+                <p class="text-xs text-[#6b7280]" dir="ltr"><%= customer.phone %></p>
               </td>
               <td class="px-4 py-3.5" dir="auto"><%= customer.city.presence || "—" %></td>
-              <td class="px-4 py-3.5 text-[#1f2430]">
+              <td class="px-4 py-3.5 text-[#10162a]">
                 <%= seller_number(customer.orders_count) %>
                 <% if stats.in_progress.positive? %><span class="ms-2 rounded-md bg-[#ebe9fb] px-1.5 py-0.5 text-[11px] font-semibold text-[#4b4fb0]"><%= seller_number(stats.in_progress) %> <%= sl("en cours") %></span><% end %>
               </td>
               <td class="px-4 py-3.5 font-medium text-[#2f7a4a]"><%= seller_number(stats.delivered) %></td>
-              <td class="px-4 py-3.5 font-medium <%= stats.returns.positive? ? "text-[#b4344e]" : "text-[#8a8380]" %>"><%= seller_number(stats.returns) %></td>
-              <td class="px-4 py-3.5 font-semibold whitespace-nowrap text-[#1f2430]"><%= seller_money(stats.delivered_cents, currency) %></td>
+              <td class="px-4 py-3.5 font-medium <%= stats.returns.positive? ? "text-[#b4344e]" : "text-[#6b7280]" %>"><%= seller_number(stats.returns) %></td>
+              <td class="px-4 py-3.5 font-semibold whitespace-nowrap text-[#10162a]"><%= seller_money(stats.delivered_cents, currency) %></td>
               <td class="px-4 py-3.5 whitespace-nowrap"><% if stats.last_order_at %><time datetime="<%= stats.last_order_at.to_date.iso8601 %>" data-short-date><%= stats.last_order_at.to_date.iso8601 %></time><% else %>—<% end %></td>
               <td class="px-4 py-3.5"><span class="rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap <%= badge %>"><%= sl(label) %></span></td>
             </tr>
@@ -93,18 +93,18 @@
   <% end %>
 
   <% if @pages > 1 %>
-    <div class="flex items-center justify-between border-t border-[#f0ebe7] px-4 py-3 text-sm">
-      <span class="text-[#8a8380]" dir="ltr"><%= first_row %>–<%= first_row + @customers.size - 1 %> / <%= @total %></span>
+    <div class="flex items-center justify-between border-t border-[#eef0f4] px-4 py-3 text-sm">
+      <span class="text-[#6b7280]" dir="ltr"><%= first_row %>–<%= first_row + @customers.size - 1 %> / <%= @total %></span>
       <div class="flex gap-2">
         <% if @page > 1 %>
-          <%= link_to sl("Précédent"), page_path.(@page - 1), class: "rounded-lg border border-[#e8e3df] px-3 py-1.5 font-medium text-[#1f2430] hover:bg-[#f3f1ef]" %>
+          <%= link_to sl("Précédent"), page_path.(@page - 1), class: "rounded-lg border border-[#e7e9ee] px-3 py-1.5 font-medium text-[#10162a] hover:bg-[#e9ecf1]" %>
         <% else %>
-          <span class="rounded-lg border border-[#f0ebe7] px-3 py-1.5 text-[#c9c2be]"><%= sl("Précédent") %></span>
+          <span class="rounded-lg border border-[#eef0f4] px-3 py-1.5 text-[#c9c2be]"><%= sl("Précédent") %></span>
         <% end %>
         <% if @page < @pages %>
-          <%= link_to sl("Suivant"), page_path.(@page + 1), class: "rounded-lg border border-[#e8e3df] px-3 py-1.5 font-medium text-[#1f2430] hover:bg-[#f3f1ef]" %>
+          <%= link_to sl("Suivant"), page_path.(@page + 1), class: "rounded-lg border border-[#e7e9ee] px-3 py-1.5 font-medium text-[#10162a] hover:bg-[#e9ecf1]" %>
         <% else %>
-          <span class="rounded-lg border border-[#f0ebe7] px-3 py-1.5 text-[#c9c2be]"><%= sl("Suivant") %></span>
+          <span class="rounded-lg border border-[#eef0f4] px-3 py-1.5 text-[#c9c2be]"><%= sl("Suivant") %></span>
         <% end %>
       </div>
     </div>

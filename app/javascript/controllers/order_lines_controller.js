@@ -65,7 +65,7 @@ export default class extends Controller {
     const btn = document.createElement("button")
     btn.type = "button"
     btn.dataset.createProduct = ""
-    btn.className = "flex w-full items-center gap-2 border-t border-[#ebebeb] px-3 py-2 text-start text-[13px] font-semibold text-[#a8432e] hover:bg-[#f7f7f7]"
+    btn.className = "flex w-full items-center gap-2 border-t border-[#ebebeb] px-3 py-2 text-start text-[13px] font-semibold text-[#5b46d6] hover:bg-[#f7f7f7]"
     btn.textContent = "+ Créer le produit"
     btn.addEventListener("click", () => this.showCreateForm(name))
     return btn

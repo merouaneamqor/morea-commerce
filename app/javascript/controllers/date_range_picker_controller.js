@@ -17,9 +17,9 @@ const addMonths = ({ y, m }, n) => { const t = y * 12 + m + n; return { y: Math.
 
 const CELL = "grid size-9 place-items-center rounded-lg text-sm transition"
 const STATES = {
-  edge: "bg-[#a8432e] font-semibold text-white",
-  inside: "bg-[#f4e4de] text-[#a8432e]",
-  plain: "text-[#1f2430] hover:bg-[#f3f1ef]",
+  edge: "bg-[#5b46d6] font-semibold text-white",
+  inside: "bg-[#eeebfd] text-[#5b46d6]",
+  plain: "text-[#10162a] hover:bg-[#e9ecf1]",
   future: "cursor-not-allowed text-[#cfc8c3]"
 }
 
@@ -117,7 +117,7 @@ export default class extends Controller {
     grid.className = "grid grid-cols-7 gap-y-0.5 text-center"
     this.cfg.weekdays.forEach((name) => {
       const cell = document.createElement("span")
-      cell.className = "pb-1 text-[11px] font-medium text-[#8a8380]"
+      cell.className = "pb-1 text-[11px] font-medium text-[#6b7280]"
       cell.textContent = name
       grid.append(cell)
     })
@@ -139,7 +139,7 @@ export default class extends Controller {
   arrow(direction) {
     const button = document.createElement("button")
     button.type = "button"
-    button.className = "grid size-7 place-items-center rounded-lg text-[#5e5a58] hover:bg-[#f3f1ef] disabled:cursor-not-allowed disabled:opacity-30"
+    button.className = "grid size-7 place-items-center rounded-lg text-[#4b5260] hover:bg-[#e9ecf1] disabled:cursor-not-allowed disabled:opacity-30"
     button.setAttribute("aria-label", direction < 0 ? this.cfg.labels.previous : this.cfg.labels.next)
     const flip = (direction < 0) !== this.cfg.rtl // the chevron points to the start side; RTL mirrors it
     button.innerHTML = `<svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="${flip ? "m15 18-6-6 6-6" : "m9 18 6-6-6-6"}"/></svg>`

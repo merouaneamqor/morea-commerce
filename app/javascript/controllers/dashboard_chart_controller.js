@@ -16,8 +16,8 @@ export default class extends Controller {
     const foreground = style.color
     const rtl = document.documentElement.dir === "rtl"
     const themed = (name, fallback) => style.getPropertyValue?.(name)?.trim() || fallback
-    const muted = "#8a827c"
-    const original = ["#9a6f72", "#1a1716", "#c4a0a3", "#4a4340", "#f8cdd0", "#8a827c"]
+    const muted = "#9096a2"
+    const original = ["#9a6f72", "#10162a", "#c4a0a3", "#4a4340", "#f8cdd0", "#9096a2"]
     const palette = original.map((color, index) => themed(`--chart-${index + 1}`, color))
     const doughnut = config.type === "doughnut"
     const number = new Intl.NumberFormat(document.documentElement.lang || "en")

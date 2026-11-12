@@ -1,7 +1,7 @@
 <%# Development and test only. Shows connection state and last sync per ad account; never a token. %>
 <% content_for :title, "Meta Ads status" %>
 <% content_for :admin_page_class, "seller-page" %>
-<h1 class="text-xl font-bold text-[#1f2430]">Meta Ads · status (dev only)</h1>
+<h1 class="text-xl font-bold text-[#10162a]">Meta Ads · status (dev only)</h1>
 <dl class="mt-3 grid max-w-xl grid-cols-2 gap-1 text-sm" data-meta-dev-status>
   <dt>Configured</dt><dd><%= MetaAds::Oauth.configured? %></dd>
   <dt>Graph version</dt><dd><%= MetaAds::Config.api_version %></dd>

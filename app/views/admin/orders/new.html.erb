@@ -1,10 +1,43 @@
 <% content_for :title, "Create order — Admin" %>
+<% form_locals = { line_items: @line_items, editor_errors: @editor_errors, assignable_agents: @assignable_agents } %>
 
-<div class="admin-page-header">
-  <div class="flex items-center gap-2">
-    <%= link_to admin_orders_path, class: "admin-back", "aria-label": "Back to orders" do %><%= admin_icon(:back) %><% end %>
-    <h1 class="admin-page-header__title">Create order</h1>
+<% if turbo_frame_request? %>
+  <%# The window opened from the Orders page: a glass dialog in the order-modal frame, same form as the full page. %>
+  <% now = Time.current.in_time_zone(DateRange::ZONE) %>
+  <turbo-frame id="order-modal">
+    <div data-order-modal data-controller="order-modal" data-action="click->order-modal#backdrop">
+      <div data-order-modal-panel role="dialog" aria-modal="true" aria-labelledby="order-modal-title">
+        <header class="flex items-start justify-between gap-3 px-6 pt-6">
+          <div>
+            <h2 id="order-modal-title" class="text-2xl font-bold text-[#1c1c1e]"><%= t("orders_page.new_order") %></h2>
+            <p class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#6e6e73]">
+              <span class="inline-flex items-center gap-1.5"><%= seller_icon(:calculator, size: 13) %><%= l(now, format: "%d/%m/%Y") %></span>
+              <span class="inline-flex items-center gap-1.5"><%= seller_icon(:clock, size: 13) %><%= l(now, format: "%H:%M") %></span>
+            </p>
+            <p class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-[#6e6e73]" data-new-order-states>
+              <span>Confirmation: <%= order_state_badge(:confirmation, "pending") %></span>
+              <span>Shipping: <%= order_state_badge(:shipping, "to_ship") %></span>
+              <span>Payment: <%= order_state_badge(:confirmation, "pending") %></span>
+            </p>
+          </div>
+          <button type="button" data-action="order-modal#close" aria-label="<%= t("orders_page.list.cancel") %>"
+                  class="grid size-8 shrink-0 cursor-pointer place-items-center rounded-full bg-[#e5484d] text-white shadow-[0_8px_18px_-8px_rgba(229,72,77,0.9)] hover:bg-[#cf3a3f]">
+            <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:2.4] [stroke-linecap:round]" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+          </button>
+        </header>
+        <div class="px-6 pt-4 pb-6">
+          <%= render "form", form_locals.merge(modal: true) %>
+        </div>
+      </div>
+    </div>
+  </turbo-frame>
+<% else %>
+  <div class="admin-page-header">
+    <div class="flex items-center gap-2">
+      <%= link_to admin_orders_path, class: "admin-back", "aria-label": "Back to orders" do %><%= admin_icon(:back) %><% end %>
+      <h1 class="admin-page-header__title">Create order</h1>
+    </div>
   </div>
-</div>
 
-<%= render "form", line_items: @line_items, editor_errors: @editor_errors, assignable_agents: @assignable_agents %>
+  <%= render "form", form_locals %>
+<% end %>

@@ -336,6 +336,61 @@ RSpec.describe "Orders page", type: :request do
     end
   end
 
+  describe "the new order window" do
+    before { sign_in(owner) }
+
+    it "opens from the Orders page inside a frame, falling back to the full page without scripts" do
+      get "/admin/orders"
+
+      link = document.at_css("a[href='/admin/orders/new']")
+      expect(link["data-turbo-frame"]).to eq("order-modal")
+      expect(document.at_css("turbo-frame#order-modal")).to be_present
+    end
+
+    it "answers the frame with a glass dialog (no page layout): states, customer, items, totals, store and source" do
+      get "/admin/orders/new", headers: { "Turbo-Frame" => "order-modal" }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include("data-seller-shell")                       # the frame answer carries no layout
+      dialog = document.at_css("turbo-frame#order-modal [data-order-modal-panel][role=dialog]")
+      expect(dialog).to be_present
+      expect(dialog.at_css("#order-modal-title").text.squish).to eq(I18n.t("orders_page.new_order"))
+      expect(dialog.at_css("[data-new-order-states]").text.squish).to include("Confirmation:", "Shipping:", "Payment:")
+      expect(dialog.css("[data-section]").map { |section| section["data-section"] }).to eq(%w[customer items payment])
+      expect(dialog.css("[data-order-totals] dd").map { |cell| cell["data-order-lines-target"] }).to eq(%w[subtotal shippingText discountText grandTotal toCollect])
+      expect(dialog.at_css("[data-store-source]").text.squish).to include("Walkfit", "Manual")
+      expect(dialog.at_css("[data-action='order-modal#close']")).to be_present        # the close button
+      expect(dialog.at_css("form select[name='order[agent_id]']")).to be_present       # same form and fields as the full page
+    end
+
+    it "stays a normal page when it is not opened in a frame" do
+      get "/admin/orders/new"
+
+      expect(document.at_css("h1").text.squish).to eq("Create order")
+      expect(document.at_css("[data-order-modal]")).to be_nil
+      expect(document.at_css("[data-seller-shell]")).to be_present
+    end
+
+    it "keeps the window open, with the message, when the order is refused" do
+      post "/admin/orders", params: { order: { name: "Karim", phone: "0612345678", city: "Fès", address: "Rue 1" } }, headers: { "Turbo-Frame" => "order-modal" }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(document.at_css("turbo-frame#order-modal [data-order-modal-panel]")).to be_present
+      expect(response.body).to include("Add at least one product.")
+      expect(store.orders.where(number: nil).count).to eq(0)
+    end
+
+    it "answers a created order with a redirect to its page (the browser leaves the window for it)" do
+      expect do
+        post "/admin/orders", params: { order: { name: "Karim", phone: "0612345678", city: "Fès", address: "Rue 1", shipping_dh: 30, lines: [ { product_id: tracksuit.id, quantity: 2 } ] } },
+                              headers: { "Turbo-Frame" => "order-modal" }
+      end.to change { store.orders.count }.by(1)
+
+      expect(response).to redirect_to("/admin/orders/#{store.orders.order(:id).last.id}")
+      expect(store.orders.order(:id).last.total_cents).to eq(43_000)                    # 2 x 200,00 + 30,00 shipping
+    end
+  end
+
   it "renders in English and Arabic without a missing translation" do
     sign_in(owner)
     %w[en ar].each do |locale|

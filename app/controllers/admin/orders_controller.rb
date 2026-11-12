@@ -4,6 +4,9 @@ module Admin
   class OrdersController < BaseController
     include DateRangeSelection
 
+    # The new-order window is a Turbo frame: the frame answer carries no page layout.
+    layout :orders_layout
+
     before_action :require_shopify_workspace!, only: :shopify_sync_all
     before_action :agents_read_only!
     helper_method :agent_view?
@@ -352,6 +355,8 @@ end
     def set_order
       @order = visible_orders.find(params[:id])
     end
+
+    def orders_layout = turbo_frame_request? ? false : "admin"
 
     def agent_view?
       current_user.confirmation_agent_view?

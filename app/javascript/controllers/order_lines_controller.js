@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Search products and manage line items on the admin order form
 export default class extends Controller {
-  static targets = ["query", "results", "list", "empty", "template", "total", "picker", "submit"]
+  static targets = ["query", "results", "list", "empty", "template", "total", "picker", "submit", "subtotal", "shippingText", "discountText", "grandTotal", "toCollect", "codeNote"]
   static values = {
     searchUrl: String,
     quickUrl: String,
@@ -163,8 +163,31 @@ export default class extends Controller {
     if (this.hasTotalTarget) {
       this.totalTarget.textContent = this.formatMoney(subtotal)
     }
+    this.showTotals(subtotal)
     // No product, or products worth 0: nothing to save (the server refuses it too).
     if (this.hasSubmitTarget) this.submitTarget.disabled = subtotal <= 0
+  }
+
+  // The shipping rate is filled in by the city picker without an input event: look again just after a click.
+  recalcSoon() {
+    clearTimeout(this.soon)
+    this.soon = setTimeout(() => this.recalc(), 60)
+  }
+
+  // A preview of what the order adds up to; the server computes the saved total (and applies a discount code).
+  showTotals(subtotal) {
+    if (!this.hasGrandTotalTarget) return
+    const cents = (name) => Math.max(Math.round((parseFloat(this.element.querySelector(`[name="order[${name}]"]`)?.value) || 0) * 100), 0)
+    const shipping = cents("shipping_dh")
+    const code = (this.element.querySelector('[name="order[discount_code]"]')?.value || "").trim() !== ""
+    const discount = code ? 0 : Math.min(cents("discount_dh"), subtotal)
+    const total = Math.max(subtotal - discount + shipping, 0)
+    if (this.hasSubtotalTarget) this.subtotalTarget.textContent = this.formatMoney(subtotal)
+    if (this.hasShippingTextTarget) this.shippingTextTarget.textContent = this.formatMoney(shipping)
+    if (this.hasDiscountTextTarget) this.discountTextTarget.textContent = discount > 0 ? `-${this.formatMoney(discount)}` : this.formatMoney(0)
+    this.grandTotalTarget.textContent = this.formatMoney(total)
+    if (this.hasToCollectTarget) this.toCollectTarget.textContent = this.formatMoney(total)
+    if (this.hasCodeNoteTarget) this.codeNoteTarget.hidden = !code
   }
 
   clearSearch() {

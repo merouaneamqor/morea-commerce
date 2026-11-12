@@ -1,3 +1,4 @@
+<% modal = local_assigns.fetch(:modal, false) %>
 <% lines = local_assigns.fetch(:line_items, []) %>
 <% currency = (@order.currency.presence || current_store.currency) %>
 <% shipping_dh = (@order.shipping_cents.to_i / 100.0) %>
@@ -12,7 +13,7 @@
   order_lines_search_url_value: product_search_admin_orders_path,
   order_lines_quick_url_value: quick_product_admin_orders_path,
   order_lines_currency_value: currency,
-  action: "submit->checkout-city#validateCity",
+  action: "submit->checkout-city#validateCity input->order-lines#recalc change->order-lines#recalc click->order-lines#recalcSoon",
   checkout_city_subtotal_value: @order.subtotal_cents.to_i,
   checkout_city_discount_value: @order.discount_cents.to_i,
   checkout_city_free_threshold_value: current_store.free_shipping_threshold_cents.to_i,
@@ -40,7 +41,7 @@ end %>
     <div class="admin-banner admin-banner--critical"><%= editor_errors.full_messages.to_sentence %></div>
   <% end %>
 
-  <section class="admin-card">
+  <section class="admin-card" data-section="customer">
     <div class="admin-card__header"><h2 class="admin-card__title">Customer</h2></div>
     <div class="space-y-4 px-4 pb-4">
       <div class="admin-field-grid">
@@ -108,7 +109,7 @@ end %>
     </div>
   </section>
 
-  <section class="admin-card">
+  <section class="admin-card" data-section="items">
     <div class="admin-card__header">
       <h2 class="admin-card__title">Products</h2>
       <span class="admin-muted tabular-nums" data-order-lines-target="total">—</span>
@@ -128,6 +129,7 @@ end %>
       </div>
 
       <p class="admin-muted text-[13px]" data-order-lines-target="empty" <%= "hidden" if lines.any? %>>No products yet.</p>
+      <div class="flex items-center gap-3 px-3 text-[11px] font-semibold tracking-wider text-[#6e6e73] uppercase" data-items-head><span class="flex-1">Produit</span><span class="w-20 text-center">Qté</span><span class="w-24 text-end">Sous-total</span><span class="w-[3.25rem]"></span></div>
       <ul class="divide-y divide-[#ebebeb] rounded-lg border border-[#ebebeb]" data-order-lines-target="list">
         <% lines.each_with_index do |line, i| %>
           <li class="flex items-center gap-3 px-3 py-2"
@@ -167,10 +169,20 @@ end %>
           <button type="button" class="admin-btn-plain admin-btn-plain--critical" data-action="order-lines#remove">Remove</button>
         </li>
       </template>
+
+      <%# What the order adds up to, as the person types. A preview only: the server computes the saved total (it also applies a discount code). %>
+      <dl class="ms-auto w-full max-w-xs space-y-1.5 pt-1 text-[13px]" data-order-totals>
+        <div class="flex justify-between"><dt class="text-[#6e6e73]">Subtotal</dt><dd class="tabular-nums text-[#1c1c1e]" data-order-lines-target="subtotal">—</dd></div>
+        <div class="flex justify-between"><dt class="text-[#6e6e73]">Shipping fee</dt><dd class="tabular-nums text-[#1c1c1e]" data-order-lines-target="shippingText">—</dd></div>
+        <div class="flex justify-between"><dt class="text-[#6e6e73]">Discount</dt><dd class="tabular-nums text-[#1c1c1e]" data-order-lines-target="discountText">—</dd></div>
+        <div class="flex justify-between border-t border-dashed border-[#d2d2d7] pt-2 text-sm font-bold"><dt class="text-[#1c1c1e]">Total</dt><dd class="tabular-nums text-[#2f7a4a]" data-order-lines-target="grandTotal">—</dd></div>
+        <div class="flex justify-between"><dt class="text-[#6e6e73]">To collect</dt><dd class="tabular-nums font-semibold text-[#2f7a4a]" data-order-lines-target="toCollect">—</dd></div>
+        <p class="text-[11px] text-[#8e8e93]" data-order-lines-target="codeNote" hidden>The discount code is applied when the order is saved.</p>
+      </dl>
     </div>
   </section>
 
-  <section class="admin-card">
+  <section class="admin-card" data-section="payment">
     <div class="admin-card__header"><h2 class="admin-card__title">Payment</h2></div>
     <div class="space-y-4 px-4 pb-4">
       <div class="admin-field-grid">
@@ -209,8 +221,19 @@ end %>
     </div>
   </section>
 
+  <% if modal %>
+    <div class="grid gap-3 sm:grid-cols-2" data-store-source>
+      <div class="rounded-2xl border border-white/70 bg-white/60 p-4"><p class="flex items-center gap-1.5 text-xs text-[#6e6e73]"><%= seller_icon(:home, size: 14) %>Store</p><p class="mt-1 text-base font-bold text-[#1c1c1e]"><%= current_store.name %></p></div>
+      <div class="rounded-2xl border border-white/70 bg-white/60 p-4"><p class="flex items-center gap-1.5 text-xs text-[#6e6e73]"><%= seller_icon(:plug, size: 14) %>Source</p><p class="mt-1 text-base font-bold text-[#1c1c1e]">Manual</p></div>
+    </div>
+  <% end %>
+
   <div class="flex justify-end gap-2">
-    <%= link_to "Cancel", (@order.persisted? ? admin_order_path(@order) : admin_orders_path), class: "admin-btn-secondary" %>
+    <% if modal %>
+      <button type="button" class="admin-btn-secondary" data-action="order-modal#close">Cancel</button>
+    <% else %>
+      <%= link_to "Cancel", (@order.persisted? ? admin_order_path(@order) : admin_orders_path), class: "admin-btn-secondary" %>
+    <% end %>
     <%= f.submit (@order.persisted? ? "Save order" : "Create order"), class: "admin-btn disabled:cursor-not-allowed disabled:opacity-50", data: { order_lines_target: "submit" } %>
   </div>
 <% end %>

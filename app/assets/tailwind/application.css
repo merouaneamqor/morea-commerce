@@ -3602,3 +3602,24 @@ main {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
+
+/* ——— "Nouvelle commande" window: a glass dialog over a dimmed page ———
+   The dimmed backdrop carries no filter of its own (a filtered parent would hide the page from the panel's blur);
+   the panel blurs and tints what is behind it, and its sections are soft tinted glass cards. */
+[data-order-modal] {
+  position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 1rem;
+  background: rgba(24, 24, 28, 0.34);
+}
+[data-seller-shell] [data-order-modal-panel][role="dialog"] {
+  width: min(44rem, 100%); max-height: calc(100dvh - 2rem); overflow-y: auto; overscroll-behavior: contain;
+  border-radius: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(28px) saturate(180%); backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+[data-order-modal] .admin-card { background: rgba(255, 255, 255, 0.62); border: 1px solid rgba(255, 255, 255, 0.75); border-radius: 1rem; box-shadow: none; }
+[data-order-modal] [data-section="customer"] { background: rgba(228, 238, 252, 0.8); border-color: rgba(205, 222, 247, 0.9); }
+[data-order-modal] .admin-input { background: rgba(255, 255, 255, 0.88); }
+@media (prefers-reduced-transparency: reduce) {
+  [data-seller-shell] [data-order-modal-panel][role="dialog"] { background-color: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

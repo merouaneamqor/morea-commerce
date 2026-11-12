@@ -20,6 +20,7 @@
 <% group_label = "flex items-center gap-3 text-[11px] font-semibold tracking-wider text-[#6e6e73] uppercase" %>
 
 <div class="space-y-3" data-orders-page>
+  <turbo-frame id="order-modal"></turbo-frame>
   <header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white" data-orders-header>
     <div class="flex items-center gap-3">
       <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:orders, size: 20) %></span>
@@ -37,7 +38,7 @@
         <% if current_store.sendit_configured? %>
           <%= button_to "Sendit", sendit_sync_all_admin_orders_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" %>
         <% end %>
-        <%= link_to new_admin_order_path, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3]" do %>+ <%= t("orders_page.new_order") %><% end %>
+        <%= link_to new_admin_order_path, data: { turbo_frame: "order-modal" }, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3]" do %>+ <%= t("orders_page.new_order") %><% end %>
       <% end %>
     </div>
   </header>

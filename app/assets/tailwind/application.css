@@ -3724,3 +3724,7 @@ main {
 .ios-thumb { width: 0; background: rgba(28, 28, 30, 0.92); box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.22); }
 .ios-thumb.is-ready { transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), width 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
 @media (prefers-reduced-motion: reduce) { .ios-thumb.is-ready { transition: none; } }
+
+/* Attributions: the load bars of the agent cards grow in, like the other bars */
+[data-assignments] [data-grow] { animation: an-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) { [data-assignments] [data-grow] { animation: none; } }

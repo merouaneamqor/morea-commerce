@@ -212,6 +212,9 @@ module Confirmations
     # Claim for this user unless it is already theirs; refuses an order another agent holds.
     def take!(order, confirmation)
       raise Error, "This callback is not due yet." unless confirmation.due?
+      if @user.confirmation_agent_view? && confirmation.attributed_user_id && confirmation.attributed_user_id != @user.id
+        raise Error, "This order is assigned to another agent."
+      end
       if confirmation.assigned_user_id && confirmation.assigned_user_id != @user.id
         raise Error, "Another agent has claimed this order."
       end

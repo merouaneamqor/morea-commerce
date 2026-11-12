@@ -162,7 +162,7 @@ module SellerHelper
   SELLER_CALL_CENTER_MENU = [
     [ "queue", :phone, "File d'attente", "/confirmation" ],
     [ "analytics", :chart, "Analyses", "/admin/confirmations/analytics" ],
-    [ "assignments", :team, "Attributions", "/admin/confirmations?filter=all" ],
+    [ "assignments", :team, "Attributions", "/admin/confirmations/assignments" ],
     [ "rules", :settings, "Règles d'attribution", nil ],
     [ "billing", :wallet, "Facturation", nil ]
   ].freeze
@@ -177,6 +177,7 @@ module SellerHelper
 
     case action_name
     when "dashboard", "analytics" then "analytics"
+    when "assignments", "assign", "auto_assign" then "assignments"
     when "index" then params[:filter] == "all" ? "assignments" : "queue"
     else "queue"
     end

@@ -214,6 +214,8 @@ Rails.application.routes.draw do
         get :center
         get :dashboard
         get :analytics
+        get :assignments
+        post :auto_assign
         post :clock_in
         post :clock_out
       end
@@ -221,6 +223,7 @@ Rails.application.routes.draw do
         post :claim
         get :panel
         post :call
+        patch :assign
         post :touch_call
         post :whatsapp
         post :block_number

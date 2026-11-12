@@ -35,6 +35,8 @@ module Admin
         orders = orders.where("order_confirmations.assigned_user_id IS NULL")
           .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
           .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
+        # An agent does not see what is attributed to a colleague; owners and supervisors see everything.
+        orders = orders.where("order_confirmations.attributed_user_id IS NULL OR order_confirmations.attributed_user_id = ?", current_user.id) if agent_view?
       end
       @orders = orders.includes(:order_items).order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC"))
         .offset((@page - 1) * 50).limit(51).to_a
@@ -50,6 +52,33 @@ module Admin
     def home
       @home = Confirmations::AgentHome.new(store: current_store, user: current_user, range: period_range("today"))
       @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
+    end
+
+    # "Attributions": the orders waiting for a call and who they are for, with the agents' load. Owners and supervisors only.
+    def assignments
+      return head(:forbidden) if agent_view?
+
+      @assignments = Confirmations::Assignments.new(store: current_store, user: current_user, params: assignment_params)
+    end
+
+    def assign
+      return head(:forbidden) if agent_view?
+
+      agent = Confirmations::Assignments.new(store: current_store, user: current_user).assign!(params[:order_id], params[:agent_id], by: current_user)
+      redirect_back_or_to assignments_admin_confirmations_path, notice: (agent ? t("call_assignments.assigned", name: agent.name.presence || agent.email) : t("call_assignments.unassigned"))
+    rescue Confirmations::Assignments::Error => e
+      redirect_back_or_to assignments_admin_confirmations_path, alert: e.message
+    end
+
+    def auto_assign
+      return head(:forbidden) if agent_view?
+
+      result = Confirmations::Assignments.new(store: current_store, user: current_user).auto_assign!(by: current_user)
+      notice = t("call_assignments.auto_done", count: result[:assigned])
+      notice += " #{t("call_assignments.auto_left", count: result[:left])}" if result[:left].positive?
+      redirect_to assignments_admin_confirmations_path(agent: "all"), notice: notice
+    rescue Confirmations::Assignments::Error => e
+      redirect_to assignments_admin_confirmations_path, alert: e.message
     end
 
     # "Analyses": the call-center figures of the orders created in the range. An agent only sees her own calls;
@@ -209,6 +238,7 @@ module Admin
       current_store.orders.active.where(status: "new", sendit_code: [ nil, "" ]).where.not(id: excluding)
         .joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")
         .where("order_confirmations.assigned_user_id IS NULL")
+        .where("order_confirmations.attributed_user_id IS NULL OR order_confirmations.attributed_user_id = ?", current_user.id)
         .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
         .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
         .order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC")).pick("orders.id")
@@ -237,6 +267,10 @@ module Admin
 
     def desk
       Confirmations::Desk.new(store: current_store, user: current_user)
+    end
+
+    def assignment_params
+      params.permit(:agent, :status, :missed, :source, :product, :q, :sort, :per, :page).to_h.symbolize_keys
     end
   end
 end

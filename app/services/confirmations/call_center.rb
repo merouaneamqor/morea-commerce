@@ -85,7 +85,8 @@ module Confirmations
       return scope unless agent?
 
       held_by_others = OrderConfirmation.where(store: @store).where.not(assigned_user_id: [ nil, @user.id ]).select(:order_id)
-      scope.where.not(id: held_by_others)
+      attributed_to_others = OrderConfirmation.where(store: @store).where.not(attributed_user_id: [ nil, @user.id ]).select(:order_id)
+      scope.where.not(id: held_by_others).where.not(id: attributed_to_others)
     end
 
     def with_confirmation = base.joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")

@@ -527,14 +527,26 @@ button.admin-btn-plain {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
+  gap: 0.4rem 0.65rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.65rem;
   background: #f4e4de;
   color: #1f2430;
 }
-.admin-impersonation p { margin: 0; font-size: 0.875rem; font-weight: 600; }
+.admin-impersonation p {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
 .admin-impersonation form { margin: 0; }
+.admin-impersonation .admin-btn,
+.admin-impersonation .admin-btn-secondary {
+  min-block-size: 1.75rem;
+  block-size: 1.75rem;
+  padding-inline: 0.55rem;
+  font-size: 0.75rem;
+}
 @media (min-width: 1024px) {
   .admin-table .platform-workspace-actions {
     flex-direction: column;
@@ -556,8 +568,13 @@ button.admin-btn-plain {
     background: #fff;
     box-shadow: inset 0 -1px 0 #b5b5b5, inset 0 0 0 1px #e3e3e3;
   }
-  .admin-impersonation { position: sticky; top: 0.5rem; z-index: 30; }
-  .admin-impersonation .admin-btn { width: 100%; }
+  .admin-impersonation { position: sticky; top: 0.35rem; z-index: 30; }
+  .admin-impersonation .admin-btn,
+  .admin-impersonation .admin-btn-secondary {
+    width: auto;
+    min-block-size: 2.25rem;
+    block-size: auto;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {

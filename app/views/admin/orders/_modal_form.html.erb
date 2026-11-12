@@ -47,6 +47,11 @@
           <%= label_tag "order[delivery_provider]", t("orders_modal.company"), class: label %>
           <%= select_tag "order[delivery_provider]", options_for_select(companies, @order.delivery_provider), include_blank: t("orders_modal.company_placeholder"), class: input, data: { action: "change->delivery-company#change" } %>
         </div>
+      <% elsif !agent_view? %>
+        <div data-no-company>
+          <span class="admin-label"><%= t("orders_modal.company") %></span>
+          <%= link_to t("orders_modal.company_none"), "/livraison", class: "flex min-h-10 items-center rounded-xl border border-dashed border-[#1c1c1e]/25 px-3 text-xs font-semibold text-[#1c1c1e] underline decoration-dotted underline-offset-4" %>
+        </div>
       <% end %>
       <%= render "city_fields", combobox: true, city_label: t("orders_modal.city"), city_placeholder: t("orders_modal.city_placeholder"), city_hint: t("orders_modal.city_hint"), order: @order, cities: ctx[:cities], districts_by_city: ctx[:districts_by_city], district_required: ctx[:district_required], district_options: ctx[:district_options] %>
     </div>

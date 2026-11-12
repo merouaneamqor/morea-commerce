@@ -27,6 +27,7 @@ en:
     delivery: "Delivery information"
     company: "Delivery company"
     company_placeholder: "Select a delivery company"
+    company_none: "No delivery company connected — connect one in Delivery"
     city_placeholder: "Choose a city"
     city_hint: "The cities and delivery prices of the chosen company."
     city: "City"

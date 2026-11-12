@@ -27,6 +27,7 @@ fr:
     delivery: "Informations de livraison"
     company: "Société de livraison"
     company_placeholder: "Sélectionner une société de livraison"
+    company_none: "Aucune société connectée — en connecter une dans Livraison"
     city_placeholder: "Choisir une ville"
     city_hint: "Les villes et les prix de livraison de la société choisie."
     city: "Ville"

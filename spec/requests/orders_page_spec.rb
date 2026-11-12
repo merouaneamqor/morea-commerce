@@ -377,6 +377,7 @@ RSpec.describe "Orders page", type: :request do
     it "offers a delivery company only when the store is connected to one, never one that is not connected" do
       get "/admin/orders/new", headers: { "Turbo-Frame" => "order-modal" }
       expect(document.at_css("select[name='order[delivery_provider]']")).to be_nil
+      expect(document.at_css("[data-no-company] a")["href"]).to eq("/livraison")
 
       store.delivery_accounts.create!(provider: "ozon", name: "Ozon not connected")
       store.delivery_accounts.create!(provider: "sendit", name: "Sendit", connected_at: Time.current)

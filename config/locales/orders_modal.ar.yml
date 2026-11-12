@@ -27,6 +27,7 @@ ar:
     delivery: "معلومات التوصيل"
     company: "شركة التوصيل"
     company_placeholder: "اختر شركة توصيل"
+    company_none: "لا توجد شركة توصيل مرتبطة — اربط واحدة من التوصيل"
     city_placeholder: "اختر مدينة"
     city_hint: "مدن وأسعار التوصيل للشركة المختارة."
     city: "المدينة"

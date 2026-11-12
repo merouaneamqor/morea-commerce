@@ -36,4 +36,46 @@ RSpec.describe "Order delivery details", type: :request do
     expect(store.orders.count).to eq(0)
     expect(response).to have_http_status(:unprocessable_entity)
   end
+
+  describe "cities and delivery prices of the chosen company" do
+    let(:districts) do
+      [ { id: 1, ville: "Casablanca", name: "Casablanca - Ain sebaa", price: "19" }, { id: 2, ville: "Casablanca", name: "Casablanca - Maarif", price: "19" },
+        { id: 3, ville: "Rabat", name: "Rabat", price: "35" } ]
+    end
+
+    before do
+      allow(Sendit::Client).to receive(:configured?).and_return(true)
+      allow(Sendit::Districts).to receive(:all).and_return(districts)
+      store.delivery_accounts.create!(provider: "ameex", name: "Ameex", connected_at: Time.current)
+    end
+
+    def form = Nokogiri::HTML(response.body).at_css("form[data-controller~='order-composer']")
+
+    it "hands the window one catalog per connected company, with prices in centimes; a company without an API list has none" do
+      get "/admin/orders/new", headers: { "Turbo-Frame" => "order-modal" }
+
+      expect(form["data-controller"].split).to include("delivery-company")
+      catalogs = JSON.parse(form["data-delivery-company-catalogs-value"])
+      expect(catalogs.keys).to contain_exactly("ameex", "sendit")
+      expect(catalogs["sendit"]["cities"]).to eq(%w[Casablanca Rabat])
+      expect(catalogs["sendit"]["rates"]).to eq("Casablanca" => 1_900, "Rabat" => 3_500)           # 19 MAD and 35 MAD
+      expect(catalogs["sendit"]["districts"]["Casablanca"]).to eq([ "Ain sebaa", "Maarif" ])
+      expect(catalogs["ameex"]).to eq("cities" => [], "districts" => {}, "rates" => {})
+    end
+
+    it "lists no city until a company is chosen (the city is typed), and the city field is still a picker" do
+      get "/admin/orders/new", headers: { "Turbo-Frame" => "order-modal" }
+
+      expect(form["data-checkout-city-cities-value"]).to be_nil
+      expect(form.at_css("[data-checkout-city-target=combobox] input[name='order[city]']")).to be_present
+    end
+
+    it "keeps the cities of the company already chosen when the window is shown again after an error" do
+      post "/admin/orders", params: { order: { name: "", phone: "0612345678", delivery_provider: "sendit", city: "Rabat" } }, headers: { "Turbo-Frame" => "order-modal" }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(JSON.parse(form["data-checkout-city-cities-value"])).to eq(%w[Casablanca Rabat])
+      expect(JSON.parse(form["data-checkout-city-rates-value"])).to eq("Casablanca" => 1_900, "Rabat" => 3_500)
+    end
+  end
 end

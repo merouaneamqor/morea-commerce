@@ -3677,7 +3677,6 @@ main {
 [data-orders-table] { font-size: 11px; }
 [data-orders-table] th { font-size: 9px; }
 [data-orders-table] td p[class*="text-[11px]"] { font-size: 10px; }
-[data-orders-table] th + th, [data-orders-table] td + td { border-inline-start: 1px solid #e3e5ea; }
-[data-orders-table] tbody tr + tr td, [data-orders-table] tbody td { border-bottom: 1px solid #e3e5ea; }
+[data-orders-table] tbody td { border-bottom: 1px solid #eef0f4; }
 [data-orders-table] tbody tr:last-child td { border-bottom: 0; }
 [data-orders-table] th { border-bottom: 1px solid #e3e5ea; }

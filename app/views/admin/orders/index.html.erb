@@ -173,16 +173,16 @@
                   <% elsif held&.assigned_user_id && order.status == "new" && !agent_view? %>
                     <%= button_to t("orders_page.list.release"), force_release_admin_confirmation_path(order), class: btn_light %>
                   <% end %>
-                  <%= link_to admin_order_path(order), title: t("orders_page.list.view"), "aria-label": t("orders_page.list.view"), class: "grid size-8 place-items-center rounded-full text-[#6e6e73] hover:bg-[#efeff3] hover:text-[#1c1c1e]" do %>
+                  <%= link_to admin_order_path(order), title: t("orders_page.list.view"), "aria-label": t("orders_page.list.view"), class: "grid size-8 place-items-center rounded-full bg-[#e8f0fe] text-[#2f6fed] hover:bg-[#d5e4fd]" do %>
                     <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
                   <% end %>
                   <% if !agent_view? && order_editable_in_list?(order) %>
-                    <%= link_to edit_admin_order_path(order), title: t("orders_page.list.edit"), "aria-label": t("orders_page.list.edit"), class: "grid size-8 place-items-center rounded-full text-[#6e6e73] hover:bg-[#efeff3] hover:text-[#1c1c1e]" do %>
+                    <%= link_to edit_admin_order_path(order), title: t("orders_page.list.edit"), "aria-label": t("orders_page.list.edit"), class: "grid size-8 place-items-center rounded-full bg-[#fff1dc] text-[#c26a00] hover:bg-[#ffe3b8]" do %>
                       <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>
                     <% end %>
                   <% end %>
                   <% unless agent_view? %>
-                    <%= button_to duplicate_admin_order_path(order), method: :post, title: t("orders_page.list.duplicate"), "aria-label": t("orders_page.list.duplicate"), class: "grid size-8 cursor-pointer place-items-center rounded-full text-[#6e6e73] hover:bg-[#efeff3] hover:text-[#1c1c1e]" do %>
+                    <%= button_to duplicate_admin_order_path(order), method: :post, title: t("orders_page.list.duplicate"), "aria-label": t("orders_page.list.duplicate"), class: "grid size-8 cursor-pointer place-items-center rounded-full bg-[#ece9fb] text-[#6a4fd8] hover:bg-[#ddd7f7]" do %>
                       <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
                     <% end %>
                   <% end %>

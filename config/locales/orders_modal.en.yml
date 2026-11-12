@@ -27,6 +27,8 @@ en:
     delivery: "Delivery information"
     company: "Delivery company"
     company_placeholder: "Select a delivery company"
+    city_placeholder: "Choose a city"
+    city_hint: "The cities and delivery prices of the chosen company."
     city: "City"
     scheduled: "Scheduled for"
     scheduled_hint: "Optional. When the customer wants the order."

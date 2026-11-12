@@ -27,6 +27,8 @@ ar:
     delivery: "معلومات التوصيل"
     company: "شركة التوصيل"
     company_placeholder: "اختر شركة توصيل"
+    city_placeholder: "اختر مدينة"
+    city_hint: "مدن وأسعار التوصيل للشركة المختارة."
     city: "المدينة"
     scheduled: "مبرمج ليوم"
     scheduled_hint: "اختياري. متى يريد الزبون طلبه."

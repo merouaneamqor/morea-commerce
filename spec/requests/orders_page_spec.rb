@@ -371,7 +371,7 @@ RSpec.describe "Orders page", type: :request do
       expect(dialog.at_css("select[name='order[agent_id]']")).to be_present
       expect(dialog.css("[data-order-totals] dd").map { |cell| cell["data-order-composer-target"] }).to eq(%w[subtotal shippingText grandTotal advanceText toCollect])
       expect(dialog.at_css("[data-action='order-modal#close']")).to be_present
-      expect(dialog.at_css("form")["data-controller"]).to eq("order-composer checkout-city")
+      expect(dialog.at_css("form")["data-controller"]).to eq("order-composer checkout-city delivery-company")
     end
 
     it "offers a delivery company only when the store is connected to one, never one that is not connected" do

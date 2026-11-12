@@ -1,7 +1,7 @@
 <%# The city (Sendit list or free text) and district fields of an order, shared by the full form and the new-order window. locals: order, cities, districts_by_city, district_required, district_options %>
         <div data-checkout-city-target="cityField">
-          <%= label_tag "order[city]", "City", class: "admin-label" %>
-          <% if cities.any? %>
+          <%= label_tag "order[city]", local_assigns.fetch(:city_label, "City"), class: "admin-label" %>
+          <% if cities.any? || local_assigns[:combobox] %>
             <div class="admin-combobox" data-checkout-city-target="combobox">
               <%= text_field_tag "order[city]", order.customer_city,
                     required: true,
@@ -9,7 +9,7 @@
                     class: "admin-input",
                     role: "combobox",
                     aria: { autocomplete: "list", expanded: false, controls: "admin-order-city-list" },
-                    placeholder: "Start typing a city…",
+                    placeholder: local_assigns.fetch(:city_placeholder, "Start typing a city…"),
                     data: {
                       checkout_city_target: "city",
                       action: [
@@ -27,7 +27,7 @@
                   hidden
                   data-checkout-city-target="cityList"></ul>
             </div>
-            <p class="admin-help">Same Sendit cities as the storefront checkout.</p>
+            <p class="admin-help"><%= local_assigns.fetch(:city_hint, "Same Sendit cities as the storefront checkout.") %></p>
           <% else %>
             <%= text_field_tag "order[city]", order.customer_city, class: "admin-input", required: true,
                   data: { checkout_city_target: "city", action: "input->checkout-city#update" } %>

@@ -9,6 +9,7 @@ module Admin
 
       @date_range = selected_date_range(scope: "dashboard", default: "last_7", **legacy_period)
       @stats = Seller::DashboardStats.new(store: current_store, range: @date_range).to_h
+      @milestones = Seller::RevenueMilestones.new(store: current_store)
     end
 
     private

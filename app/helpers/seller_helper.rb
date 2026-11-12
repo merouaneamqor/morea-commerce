@@ -8,6 +8,18 @@ module SellerHelper
   # Words that exist only in Morea (seallo has no such page): [English, Arabic].
   SELLER_EXTRA = {
     "Comptabilité" => [ "Accounting", "المحاسبة" ],
+    "Paliers de chiffre d'affaires" => [ "Revenue milestones", "مراحل رقم المعاملات" ],
+    "Livré depuis le début" => [ "Delivered since the start", "المسلَّم منذ البداية" ],
+    "Débutant" => [ "Beginner", "مبتدئ" ],
+    "Prochain palier" => [ "Next tier", "المرحلة التالية" ],
+    "Palier maximal atteint" => [ "Top tier reached", "تم بلوغ أعلى مرحلة" ],
+    "avant" => [ "to", "قبل" ],
+    "Pionnier" => [ "Pioneer", "رائد" ],
+    "Doyen" => [ "Veteran", "عميد" ],
+    "Leader" => [ "Leader", "قائد" ],
+    "Maître" => [ "Master", "أستاذ" ],
+    "Légende" => [ "Legend", "أسطورة" ],
+    "Titan" => [ "Titan", "عملاق" ],
     "Taux de confirmation" => [ "Confirmation rate", "نسبة التأكيد" ],
     "Panier moyen" => [ "Average basket", "متوسط السلة" ],
     "Taux de retour" => [ "Return rate", "نسبة الإرجاع" ],
@@ -48,6 +60,8 @@ module SellerHelper
     ban: '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
     wallet: '<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1"/>',
     alert: '<path d="M12 4 3 20h18L12 4z"/><path d="M12 10v4M12 17.5v.01"/>',
+    lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    flag: '<path d="M5 21V4"/><path d="M5 5h11l-2 4 2 4H5"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>'
   }.freeze

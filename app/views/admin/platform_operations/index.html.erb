@@ -1,0 +1,125 @@
+<% content_for :title, t("platform_admin.operations.title") %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("platform_admin.operations.title") %></h1>
+    <p class="admin-page-header__meta"><%= t("platform_admin.operations.description") %></p>
+  </div>
+</div>
+
+<% unless @redis_available %>
+  <div class="admin-banner admin-banner--critical mb-4" data-redis-unavailable="true"><%= t("platform_admin.operations.redis_unavailable") %></div>
+<% end %>
+
+<section class="admin-card mb-4" data-platform-operations-dead>
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("platform_admin.operations.failed_jobs") %></h2>
+  </div>
+  <% if @dead_jobs.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.operations.empty_jobs") %></p>
+  <% else %>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("platform_admin.operations.columns.job") %></th>
+            <th><%= t("platform_admin.operations.columns.queue") %></th>
+            <th><%= t("platform_admin.operations.columns.workspace") %></th>
+            <th><%= t("platform_admin.operations.columns.error") %></th>
+            <th><%= t("platform_admin.operations.columns.when") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @dead_jobs.each do |job| %>
+            <tr data-job-set="dead" data-job-class="<%= job.class_name %>">
+              <td class="font-semibold"><%= job.class_name %></td>
+              <td class="admin-muted"><%= job.queue %></td>
+              <td>
+                <% if job.store_id.present? %>
+                  <%= link_to (job.store_name.presence || t("platform_admin.operations.unknown_workspace", id: job.store_id)), admin_tenant_path(job.store_id) %>
+                <% else %>
+                  <%= admin_blank %>
+                <% end %>
+              </td>
+              <td class="admin-muted"><%= job.error.presence || admin_blank %></td>
+              <td class="admin-muted"><%= job.failed_at&.strftime("%b %-d, %Y %H:%M") || admin_blank %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>
+
+<section class="admin-card mb-4" data-platform-operations-retry>
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("platform_admin.operations.retry_jobs") %></h2>
+  </div>
+  <% if @retry_jobs.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.operations.empty_retry") %></p>
+  <% else %>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("platform_admin.operations.columns.job") %></th>
+            <th><%= t("platform_admin.operations.columns.queue") %></th>
+            <th><%= t("platform_admin.operations.columns.workspace") %></th>
+            <th><%= t("platform_admin.operations.columns.error") %></th>
+            <th><%= t("platform_admin.operations.columns.when") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @retry_jobs.each do |job| %>
+            <tr data-job-set="retry" data-job-class="<%= job.class_name %>">
+              <td class="font-semibold"><%= job.class_name %></td>
+              <td class="admin-muted"><%= job.queue %></td>
+              <td>
+                <% if job.store_id.present? %>
+                  <%= link_to (job.store_name.presence || t("platform_admin.operations.unknown_workspace", id: job.store_id)), admin_tenant_path(job.store_id) %>
+                <% else %>
+                  <%= admin_blank %>
+                <% end %>
+              </td>
+              <td class="admin-muted"><%= job.error.presence || admin_blank %></td>
+              <td class="admin-muted"><%= job.failed_at&.strftime("%b %-d, %Y %H:%M") || admin_blank %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>
+
+<section class="admin-card">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("platform_admin.operations.webhook_failures") %></h2>
+  </div>
+  <% if @webhook_failures.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.operations.empty_webhooks") %></p>
+  <% else %>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("platform_admin.workspace") %></th>
+            <th><%= t("platform_admin.operations.columns.connection") %></th>
+            <th><%= t("platform_admin.operations.columns.code") %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @webhook_failures.each do |connection| %>
+            <% error_code = connection.shopify_api_error_code.presence || connection.last_error_code %>
+            <tr data-connection-id="<%= connection.id %>" data-error-code="<%= error_code %>">
+              <td class="font-semibold"><%= connection.store.name %></td>
+              <td><%= connection.provider.humanize %> · <span dir="ltr"><%= connection.external_domain %></span></td>
+              <td class="admin-muted"><%= error_code %></td>
+              <td><%= link_to t("platform_admin.integrations.view"), admin_platform_integration_path(connection.store), class: "admin-btn-plain" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>

@@ -178,6 +178,19 @@ Rails.application.routes.draw do
       delete :connections, action: :revoke_connections
     end
     get "platform", to: "platform#show", as: :platform
+    get "platform/search", to: "platform_searches#show", as: :platform_search
+    get "platform/billing", to: "platform_billing#index", as: :platform_billing
+    resources :platform_audit_events, path: "platform/audit", only: %i[index show]
+    resources :platform_integrations, path: "platform/integrations", only: %i[index show] do
+      member do
+        post :recheck
+      end
+    end
+    resource :platform_features, path: "platform/features", only: :show, controller: "platform_features" do
+      patch :update_home
+      patch :update_store
+    end
+    resources :platform_operations, path: "platform/operations", only: :index
     resources :platform_users, path: "platform/users", except: %i[show destroy] do
       member { post "lifecycle/:lifecycle", action: :lifecycle, as: :lifecycle, constraints: { lifecycle: /suspend|reactivate|archive|restore/ } }
     end
@@ -193,10 +206,11 @@ Rails.application.routes.draw do
       end
     end
     resource :impersonation, only: :destroy
-    resources :tenants, only: %i[index new create edit update] do
+    resources :tenants, only: %i[index new create show edit update] do
       member do
         post :enter
         post :reset
+        post :exit_workspace
       end
       resources :invoices, only: %i[index new create show] do
         member do

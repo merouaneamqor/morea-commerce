@@ -5,11 +5,14 @@ module Admin
   class TenantsController < BaseController
     layout "admin_platform"
     before_action :require_super_admin!
-    before_action :enter_platform_mode, only: %i[index new create edit update]
-    before_action :set_store, only: %i[edit update enter reset]
+    before_action :enter_platform_mode, only: %i[index new create show edit update exit_workspace]
+    before_action :set_store, only: %i[show edit update enter reset exit_workspace]
 
     def index
       redirect_to admin_platform_path
+    end
+
+    def show
     end
 
     def new
@@ -57,7 +60,7 @@ module Admin
         @access_request&.approve!(store: @store, reviewer: current_user)
       end
 
-      redirect_to admin_platform_path, notice: t("platform_admin.workspace_created", name: @store.name, origin: "#{@store.origin}/admin")
+      redirect_to admin_tenant_path(@store), notice: t("platform_admin.workspace_created", name: @store.name, origin: "#{@store.origin}/admin")
     rescue ActiveRecord::RecordInvalid
       @access_request = AccessRequest.pending.find_by(id: params[:access_request_id])
       render :new, status: :unprocessable_entity
@@ -68,7 +71,7 @@ module Admin
 
     def update
       if update_workspace
-        redirect_to admin_platform_path, notice: "Billing updated for #{@store.name}."
+        redirect_to admin_tenant_path(@store), notice: "Billing updated for #{@store.name}."
       else
         render :edit, status: :unprocessable_entity
       end
@@ -77,7 +80,7 @@ module Admin
     # Wipes the workspace's data and settings back to a freshly provisioned state.
     def reset
       Platform::StoreReset.new(store: @store, actor: current_user, ip: request.remote_ip).call(confirmation: params[:confirmation])
-      redirect_to admin_platform_path, notice: t("platform_admin.reset.done", name: @store.name), status: :see_other
+      redirect_to admin_tenant_path(@store), notice: t("platform_admin.reset.done", name: @store.name), status: :see_other
     rescue Platform::StoreReset::Denied => e
       redirect_to edit_admin_tenant_path(@store), alert: t("platform_admin.reset.denied.#{e.reason}"), status: :see_other
     end
@@ -86,6 +89,8 @@ module Admin
     # session so the super admin can return without knowing that member's password.
     # Super admins can also enter a store directly without impersonating a user.
     def enter
+      actor = current_user
+
       if params.key?(:user_id)
         # Impersonate a specific user
         user = @store.users.find_by(id: params[:user_id])
@@ -93,19 +98,45 @@ module Admin
           return redirect_to admin_platform_path(anchor: "workspaces"), alert: t("platform_admin.impersonate.invalid")
         end
 
-        session[:impersonator_id] = current_user.id
-        session[:impersonator_session_version] = current_user.session_version
+        session[:impersonator_id] = actor.id
+        session[:impersonator_session_version] = actor.session_version
         session[:user_id] = user.id
         session[:session_version] = user.session_version
         session[:admin_mode] = "store"
         session[:admin_store_id] = @store.id
+        session[:platform_workspace_id] = @store.id
+        Platform::AdminAudit.record(
+          action: "workspace.impersonate",
+          actor: actor,
+          store: @store,
+          subject: user,
+          ip: request.remote_ip,
+          slug: @store.slug
+        )
         redirect_to(user.confirmation_agent? ? home_admin_confirmations_path : admin_root_path)
       else
         # Direct access as super admin (no impersonation)
         session[:admin_mode] = "store"
         session[:admin_store_id] = @store.id
+        session[:platform_workspace_id] = @store.id
+        Platform::AdminAudit.record(
+          action: "workspace.enter",
+          actor: actor,
+          store: @store,
+          subject: @store,
+          ip: request.remote_ip,
+          slug: @store.slug
+        )
         redirect_to admin_root_path
       end
+    end
+
+    # Leave merchant admin while keeping the platform workspace bookmark.
+    def exit_workspace
+      workspace_id = session[:platform_workspace_id].presence || @store.id
+      session[:admin_mode] = "platform"
+      session.delete(:admin_store_id)
+      redirect_to admin_tenant_path(workspace_id)
     end
 
     private

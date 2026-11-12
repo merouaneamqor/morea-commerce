@@ -15,6 +15,14 @@ module Admin
 
     def resolve
       @request.resolve!
+      Platform::AdminAudit.record(
+        action: "privacy_rights.resolve",
+        actor: current_user,
+        subject: @request,
+        ip: request.remote_ip,
+        privacy_request_id: @request.id,
+        outcome: "ok"
+      )
       redirect_to admin_platform_privacy_rights_request_path(@request), notice: t("seallo_connect_pages.privacy_rights.admin.resolved")
     end
 

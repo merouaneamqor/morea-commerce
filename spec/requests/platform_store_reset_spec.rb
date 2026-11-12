@@ -35,7 +35,7 @@ RSpec.describe "Platform workspace reset", type: :request do
 
     expect { post reset_admin_tenant_path(store), params: { confirmation: store.slug } }.to change { store.orders.count }.from(1).to(0)
 
-    expect(response).to redirect_to(admin_platform_path)
+    expect(response).to redirect_to(admin_tenant_path(store))
     expect(flash[:notice]).to include(store.name)
     expect(store.customers.count).to eq(0)
     expect(store.reload.users).to contain_exactly(merchant)

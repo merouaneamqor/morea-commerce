@@ -1,2 +1,16 @@
 <% content_for :title, t("platform_users.new") %>
+<p class="admin-muted mb-4 px-1"><%= t("platform_users.access_help") %></p>
 <%= render "form" %>
+<script>
+(function () {
+  var form = document.getElementById("platform-user-form");
+  if (!form) return;
+  form.addEventListener("turbo:submit-start", function (event) {
+    var role = document.getElementById("user_role");
+    if (!role || role.value !== "super_admin") return;
+    if (!window.confirm(<%= raw t("platform_users.confirm.grant_super_admin").to_json %>)) {
+      event.detail.formSubmission.stop();
+    }
+  });
+})();
+</script>

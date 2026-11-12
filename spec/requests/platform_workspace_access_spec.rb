@@ -37,7 +37,7 @@ RSpec.describe "Platform workspace access", type: :request do
       expect(response).to have_http_status(:ok)
       expect(workspace_name).to include(store.name)
       delete admin_impersonation_path
-      expect(response).to redirect_to(admin_platform_path)
+      expect(response).to redirect_to(admin_tenant_path(store))
     end
     open_workspace(second, second_admin)
     patch admin_store_path, params: { store: { name: "Updated synthetic workspace" } }
@@ -46,7 +46,7 @@ RSpec.describe "Platform workspace access", type: :request do
     expect(first.reload.name).to eq("First synthetic workspace")
 
     delete admin_impersonation_path
-    expect(response).to redirect_to(admin_platform_path)
+    expect(response).to redirect_to(admin_tenant_path(second))
     follow_redirect!
     get admin_root_path
     expect(response).to redirect_to(admin_platform_path)
@@ -132,7 +132,7 @@ RSpec.describe "Platform workspace access", type: :request do
     expect(response.body).not_to include(admin_platform_path)
 
     delete admin_impersonation_path
-    expect(response).to redirect_to(admin_platform_path)
+    expect(response).to redirect_to(admin_tenant_path(first))
     follow_redirect!
     expect(response.body).to include(first.name)
     expect(response.body).not_to include(I18n.t("platform_admin.impersonate.stop", locale: :fr))
@@ -141,7 +141,9 @@ RSpec.describe "Platform workspace access", type: :request do
   it "allows super admin to enter a workspace directly without impersonating" do
     sign_in(owner)
 
-    post enter_admin_tenant_path(first)
+    expect {
+      post enter_admin_tenant_path(first)
+    }.to change { AuditEvent.where(action: "workspace.enter", store_id: first.id, actor_user_id: owner.id).count }.by(1)
 
     expect(response).to redirect_to(admin_root_path)
     follow_redirect!
@@ -150,8 +152,12 @@ RSpec.describe "Platform workspace access", type: :request do
     expect(response.body).not_to include(I18n.t("platform_admin.impersonate.stop", locale: :fr))
     expect(session[:admin_mode]).to eq("store")
     expect(session[:admin_store_id]).to eq(first.id)
+    expect(session[:platform_workspace_id]).to eq(first.id)
     expect(session[:impersonator_id]).to be_nil
     expect(session[:user_id]).to eq(owner.id)
+    expect(response.body).to include(I18n.t("platform_admin.workspace_banner.working_in", name: first.name, locale: :fr))
+    expect(response.body).to include(admin_tenant_path(first))
+    expect(response.body).to include(admin_platform_path)
   end
 
   it "allows super admin to enter a workspace with no users" do
@@ -166,6 +172,47 @@ RSpec.describe "Platform workspace access", type: :request do
     expect(workspace_name).to include(empty_store.name)
     expect(session[:admin_mode]).to eq("store")
     expect(session[:admin_store_id]).to eq(empty_store.id)
+    expect(session[:platform_workspace_id]).to eq(empty_store.id)
     expect(session[:impersonator_id]).to be_nil
+  end
+
+  it "shows the workspace detail page with identity, billing, staff and shortcuts" do
+    sign_in(owner)
+
+    get admin_tenant_path(first)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include(first.name, first.slug, first_admin.email)
+    expect(response.body).to include(I18n.t("platform_admin.workspace_detail.identity", locale: :fr))
+    expect(response.body).to include(I18n.t("platform_admin.workspace_detail.plan_billing", locale: :fr))
+    expect(response.body).to include(I18n.t("platform_admin.workspace_detail.shortcuts", locale: :fr))
+    expect(response.body).to include(edit_admin_tenant_path(first))
+    expect(response.body).to include(admin_tenant_invoices_path(first))
+    expect(response.body).to include(enter_admin_tenant_path(first))
+    expect(session[:admin_mode]).to eq("platform")
+  end
+
+  it "bookmarks the workspace on enter and exits back to its detail page" do
+    sign_in(owner)
+
+    expect {
+      post enter_admin_tenant_path(first), params: { user_id: first_admin.id }
+    }.to change { AuditEvent.where(action: "workspace.impersonate", store_id: first.id, actor_user_id: owner.id).count }.by(1)
+
+    expect(session[:platform_workspace_id]).to eq(first.id)
+
+    delete admin_impersonation_path
+    expect(response).to redirect_to(admin_tenant_path(first))
+    expect(AuditEvent.where(action: "workspace.impersonate.stop", actor_user_id: owner.id).count).to eq(1)
+
+    post enter_admin_tenant_path(second)
+    expect(session[:platform_workspace_id]).to eq(second.id)
+    expect(session[:admin_mode]).to eq("store")
+
+    post exit_workspace_admin_tenant_path(second)
+    expect(response).to redirect_to(admin_tenant_path(second))
+    expect(session[:admin_mode]).to eq("platform")
+    expect(session[:admin_store_id]).to be_nil
+    expect(session[:platform_workspace_id]).to eq(second.id)
   end
 end

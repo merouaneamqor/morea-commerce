@@ -6,6 +6,11 @@ ActiveAdmin.register_page "Feature Flags", namespace: :superadmin do
   content title: "Feature flags" do
     setting = PlatformSetting.current
 
+    panel "Platform console" do
+      para "The same home-page and theme-editor flags are also available in the platform shell."
+      text_node helpers.link_to("Open platform features", helpers.admin_platform_features_path, class: "button")
+    end
+
     panel "Public home page" do
       para "Choose what visitors see on the platform home page. Store admin, signup, and each storefront stay available. When both flags are on, visitors see Under maintenance."
       para "Visitors currently see: #{setting.home_page_label}."

@@ -1,0 +1,57 @@
+<% content_for :title, t("platform_admin.search.title") %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("platform_admin.search.title") %></h1>
+    <p class="admin-page-header__meta">
+      <% if @query.present? %>
+        <%= t("platform_admin.search.results", query: @query) %>
+      <% else %>
+        <%= t("platform_admin.search.placeholder") %>
+      <% end %>
+    </p>
+  </div>
+  <%= form_with url: admin_platform_search_path, method: :get, local: true, class: "platform-toolbar flex items-center gap-2" do %>
+    <label class="sr-only" for="platform-search-page-q"><%= t("platform_admin.search.label") %></label>
+    <%= text_field_tag :q, @query, id: "platform-search-page-q", class: "admin-input", placeholder: t("platform_admin.search.placeholder"), autocomplete: "off" %>
+    <%= submit_tag t("platform_admin.search.label"), class: "admin-btn" %>
+  <% end %>
+</div>
+
+<section class="admin-card" id="search-results">
+  <% if @query.blank? || @stores.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.search.empty") %></p>
+  <% else %>
+    <ul class="admin-mobile-list lg:hidden">
+      <% @stores.each do |store| %>
+        <li class="admin-mobile-list__card">
+          <p class="admin-mobile-list__name"><%= link_to store.name, admin_tenant_path(store) %></p>
+          <p class="admin-mobile-list__meta"><%= store.slug %></p>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("platform_admin.workspace") %></th>
+            <th><%= t("platform_admin.slug") %></th>
+            <th><%= t("platform_admin.storefront") %></th>
+            <th><%= t("platform_admin.status") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @stores.each do |store| %>
+            <tr>
+              <td class="font-semibold"><%= link_to store.name, admin_tenant_path(store) %></td>
+              <td class="admin-muted tabular-nums"><%= store.slug %></td>
+              <td><%= t(store.storefront_enabled? ? "platform_admin.storefront_enabled" : "platform_admin.storefront_disabled") %></td>
+              <td><%= store.billing_status.humanize %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>

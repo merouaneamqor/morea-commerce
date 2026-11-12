@@ -20,9 +20,11 @@ module Platform
       end
     end
 
-    def initialize(user:, actor:)
+    def initialize(user:, actor:, ip: nil, source: "ui")
       @user = user
       @actor = actor
+      @ip = ip
+      @source = source
     end
 
     def call(action)
@@ -36,8 +38,22 @@ module Platform
         raise Denied, :self if @user.id == @actor.id && rule[:to] != "active"
         raise Denied, :last_super_admin if leaving_last_super_admin?(rule[:to])
 
-        @user.update!(status: rule[:to], status_changed_at: Time.current)
+        attrs = { status: rule[:to], status_changed_at: Time.current }
+        # Leaving active ends live sessions immediately (same pattern as password reset).
+        attrs[:session_version] = @user.session_version + 1 if rule[:to] != "active"
+        @user.update!(attrs)
       end
+
+      AdminAudit.record(
+        action: "platform_user.lifecycle",
+        actor: @actor,
+        store: @user.store,
+        subject: @user,
+        ip: @ip,
+        source: @source,
+        lifecycle: action.to_s,
+        outcome: "ok"
+      )
       @user
     end
 

@@ -87,17 +87,29 @@ RSpec.describe "Merchant workspace access and approval", type: :request do
     end
 
     it "opens a prefilled review form without approving or provisioning" do
+      get "/admin/access_requests", params: { locale: "en" }
+      expect(document.at_css("main").text).to include(I18n.t("platform_admin.approve_flow_help", locale: :en))
+
       expect do
         post "/admin/access_requests/#{access_request.id}/approve"
         expect(response).to redirect_to(new_admin_tenant_path(access_request_id: access_request.id))
         follow_redirect!
       end.to change(Store, :count).by(0).and change(User, :count).by(0)
+        .and change { AuditEvent.where(action: "access_request.approve", subject: access_request).count }.by(1)
 
       expect(response).to have_http_status(:ok)
       expect(access_request.reload).to have_attributes(status: "pending", store_id: nil, reviewed_at: nil)
       expect(document.at_css("input[name='store[name]']")["value"]).to eq(access_request.store_name)
       expect(document.at_css("input[name='admin[email]']")["value"]).to eq(access_request.email)
       expect(document.at_css("input[name='store[storefront_enabled]'][type='checkbox']")["checked"]).to be_nil
+    end
+
+    it "links an approved request to its workspace" do
+      post "/admin/tenants", params: approval_params
+      workspace = access_request.reload.store
+      get "/admin/access_requests", params: { status: "approved", locale: "en" }
+      expect(response).to have_http_status(:ok)
+      expect(document.at_css("a[href='#{admin_tenant_path(workspace)}']").text).to include(workspace.name)
     end
   end
 
@@ -112,8 +124,8 @@ RSpec.describe "Merchant workspace access and approval", type: :request do
         post "/admin/tenants", params: approval_params
       end.to change(Store, :count).by(1).and change(User, :count).by(1)
 
-      expect(response).to redirect_to(admin_platform_path)
       workspace = access_request.reload.store
+      expect(response).to redirect_to(admin_tenant_path(workspace))
       expect(access_request).to have_attributes(status: "approved", reviewed_by_id: platform_admin.id)
       expect(access_request.reviewed_at).to be_present
       expect(workspace.storefront_enabled).to be(false)
@@ -135,8 +147,8 @@ RSpec.describe "Merchant workspace access and approval", type: :request do
       access_request.update!(storefront_enabled: true)
       post "/admin/tenants", params: approval_params(storefront_enabled: true)
 
-      expect(response).to redirect_to(admin_platform_path)
       workspace = access_request.reload.store
+      expect(response).to redirect_to(admin_tenant_path(workspace))
       expect(workspace.storefront_enabled).to be(true)
       expect(workspace.home_sections).not_to be_empty
       expect(workspace.menu_items).not_to be_empty
@@ -164,6 +176,7 @@ RSpec.describe "Merchant workspace access and approval", type: :request do
       expect do
         post "/admin/access_requests/#{access_request.id}/reject"
       end.to change(Store, :count).by(0).and change(User, :count).by(0)
+        .and change { AuditEvent.where(action: "access_request.reject", subject: access_request).count }.by(1)
 
       expect(response).to redirect_to(admin_access_requests_path)
       expect(access_request.reload).to have_attributes(status: "rejected", store_id: nil, reviewed_by_id: platform_admin.id)

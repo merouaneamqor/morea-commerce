@@ -33,6 +33,15 @@ module Admin
       end
 
       if @user.save
+        Platform::AdminAudit.record(
+          action: "platform_user.create",
+          actor: current_user,
+          store: @user.store,
+          subject: @user,
+          ip: request.remote_ip,
+          role: @user.super_admin? ? "super_admin" : "workspace_admin",
+          outcome: "ok"
+        )
         redirect_to admin_platform_users_path, notice: t("platform_users.created")
       else
         render :new, status: :unprocessable_entity
@@ -53,11 +62,23 @@ module Admin
           @user.errors.add(:base, t("platform_users.denied.#{reason}"))
           false
         else
+          # Role changes take effect on the next request; bump session_version so
+          # any live session picks up the new privileges immediately.
+          @user.session_version += 1 if @user.super_admin_changed?
           @user.save
         end
       end
 
       if saved
+        Platform::AdminAudit.record(
+          action: "platform_user.update",
+          actor: current_user,
+          store: @user.store,
+          subject: @user,
+          ip: request.remote_ip,
+          role: @user.super_admin? ? "super_admin" : "workspace_admin",
+          outcome: "ok"
+        )
         redirect_to admin_platform_users_path, notice: t("platform_users.saved")
       else
         render :edit, status: :unprocessable_entity
@@ -66,7 +87,7 @@ module Admin
 
     def lifecycle
       action = params[:lifecycle].to_s
-      Platform::UserLifecycle.new(user: @user, actor: current_user).call(action)
+      Platform::UserLifecycle.new(user: @user, actor: current_user, ip: request.remote_ip).call(action)
       redirect_to admin_platform_users_path(status: params[:return_status].presence), notice: t("platform_users.done.#{action}", email: @user.email)
     rescue Platform::UserLifecycle::Denied => e
       redirect_to admin_platform_users_path(status: params[:return_status].presence), alert: t("platform_users.denied.#{e.reason}")

@@ -58,15 +58,15 @@
   <div class="sa-chart-plot" dir="ltr">
     <svg viewBox="0 0 <%= width.to_i %> <%= height.to_i %>" preserveAspectRatio="none" aria-hidden="true">
       <defs>
-        <linearGradient id="sa-ca" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5b46d6" stop-opacity=".22"/><stop offset="1" stop-color="#5b46d6" stop-opacity="0"/></linearGradient>
+        <linearGradient id="sa-ca" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d1d1f" stop-opacity=".22"/><stop offset="1" stop-color="#1d1d1f" stop-opacity="0"/></linearGradient>
         <linearGradient id="sa-pr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10b981" stop-opacity=".25"/><stop offset="1" stop-color="#10b981" stop-opacity="0"/></linearGradient>
       </defs>
       <% [0.25, 0.5, 0.75].each do |g| %><line x1="0" x2="<%= width.to_i %>" y1="<%= height * g %>" y2="<%= height * g %>" stroke="#ece6e2" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/><% end %>
       <path d="<%= revenue_line %> L<%= width.to_i %>,<%= height.to_i %> L0,<%= height.to_i %> Z" fill="url(#sa-ca)"/>
       <path d="<%= profit_line %> L<%= width.to_i %>,<%= height.to_i %> L0,<%= height.to_i %> Z" fill="url(#sa-pr)"/>
-      <path d="<%= revenue_line %>" fill="none" stroke="#5b46d6" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      <path d="<%= revenue_line %>" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
       <path d="<%= profit_line %>" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-      <line x1="<%= revenue_pts[last][0] %>" x2="<%= revenue_pts[last][0] %>" y1="0" y2="<%= height.to_i %>" stroke="#10162a" stroke-opacity=".15" vector-effect="non-scaling-stroke"/>
+      <line x1="<%= revenue_pts[last][0] %>" x2="<%= revenue_pts[last][0] %>" y1="0" y2="<%= height.to_i %>" stroke="#1c1c1e" stroke-opacity=".15" vector-effect="non-scaling-stroke"/>
     </svg>
     <span class="sa-dot is-brand" style="left: 100%; top: <%= (revenue_pts[last][1] / height * 100).round(1) %>%"></span>
     <span class="sa-dot is-green" style="left: 100%; top: <%= (profit_pts[last][1] / height * 100).round(1) %>%"></span>

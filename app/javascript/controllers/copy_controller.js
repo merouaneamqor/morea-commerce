@@ -8,8 +8,8 @@ export default class extends Controller {
     event.preventDefault()
     try {
       await navigator.clipboard.writeText(this.textValue)
-      this.element.classList.add("text-[#5b46d6]")
-      setTimeout(() => this.element.classList.remove("text-[#5b46d6]"), 900)
+      this.element.classList.add("text-[#1d1d1f]")
+      setTimeout(() => this.element.classList.remove("text-[#1d1d1f]"), 900)
     } catch {
       // Clipboard blocked (insecure context): nothing to do, the number stays visible.
     }

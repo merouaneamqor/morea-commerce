@@ -52,10 +52,10 @@ module SellerHelper
   }.freeze
 
   SELLER_STATUS_BADGES = {
-    "new" => [ "Nouvelle", "bg-[#ebe9fb] text-[#4b4fb0]" ],
-    "confirmed" => [ "Confirmée", "bg-[#e4ecfb] text-[#3d63b8]" ],
-    "postponed" => [ "Reportée", "bg-[#f1f2f6] text-[#6b7280]" ],
-    "unreachable" => [ "Injoignable", "bg-[#f1f2f6] text-[#6b7280]" ],
+    "new" => [ "Nouvelle", "bg-[#ebe9fb] text-[#4b4b50]" ],
+    "confirmed" => [ "Confirmée", "bg-[#e4ecfb] text-[#4b4b50]" ],
+    "postponed" => [ "Reportée", "bg-[#efeff3] text-[#6e6e73]" ],
+    "unreachable" => [ "Injoignable", "bg-[#efeff3] text-[#6e6e73]" ],
     "cancelled" => [ "Annulée", "bg-[#fbe7ea] text-[#b4344e]" ],
     "shipped" => [ "En cours", "bg-[#fcf0dc] text-[#9a6412]" ],
     "delivered" => [ "Livrée", "bg-[#e3f3e8] text-[#2f7a4a]" ],
@@ -103,7 +103,7 @@ module SellerHelper
   end
 
   def seller_status_badge(status)
-    SELLER_STATUS_BADGES[SELLER_BADGE_FOR_STATUS.fetch(status, status)] || [ status.to_s.humanize, "bg-[#f1f2f6] text-[#6b7280]" ]
+    SELLER_STATUS_BADGES[SELLER_BADGE_FOR_STATUS.fetch(status, status)] || [ status.to_s.humanize, "bg-[#efeff3] text-[#6e6e73]" ]
   end
 
   def seller_plan_label(store)

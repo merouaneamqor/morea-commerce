@@ -15,9 +15,9 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
   <body class="seallo-flow" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
-    <div dir="<%= rtl? ? "rtl" : "ltr" %>" class="flex min-h-dvh flex-col bg-[#e9ecf1] text-[#4b5260]">
+    <div dir="<%= rtl? ? "rtl" : "ltr" %>" class="flex min-h-dvh flex-col bg-[#e8e8ed] text-[#3a3a3c]">
       <header class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 <%= content_for?(:tall_header) ? "py-6" : "py-4" %> sm:px-6">
-        <a href="/" class="text-2xl font-extrabold tracking-tight text-[#5b46d6]"><span dir="ltr">seallo</span></a>
+        <a href="/" class="text-2xl font-extrabold tracking-tight text-[#1d1d1f]"><span dir="ltr">seallo</span></a>
         <div class="flex items-center gap-3">
           <div class="sa-lang">
             <nav aria-label="<%= t("platform_home.language") %>" dir="ltr">
@@ -29,15 +29,15 @@
           <% if @guest %>
             <p class="hidden text-sm sm:block">
               <%= st("Vous avez déjà un compte ?") %>
-              <%= link_to st("Se connecter →"), admin_login_path(locale: I18n.locale), class: "font-semibold text-[#5b46d6] hover:underline" %>
+              <%= link_to st("Se connecter →"), admin_login_path(locale: I18n.locale), class: "font-semibold text-[#1d1d1f] hover:underline" %>
             </p>
           <% elsif @guest == false %>
             <div class="flex items-center gap-4">
-              <%= button_to st("Se déconnecter"), admin_logout_path, method: :delete, class: "text-sm font-medium hover:text-[#10162a]" %>
-              <%= link_to st("Tableau de bord →"), admin_root_path, class: "rounded-lg bg-[#10162a] px-4 py-2 text-sm font-semibold text-white hover:bg-[#10162a]/85" %>
+              <%= button_to st("Se déconnecter"), admin_logout_path, method: :delete, class: "text-sm font-medium hover:text-[#1c1c1e]" %>
+              <%= link_to st("Tableau de bord →"), admin_root_path, class: "rounded-lg bg-[#1c1c1e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1c1c1e]/85" %>
             </div>
           <% else %>
-            <%= button_to st("Se déconnecter"), admin_logout_path, method: :delete, class: "text-sm font-medium hover:text-[#10162a]" %>
+            <%= button_to st("Se déconnecter"), admin_logout_path, method: :delete, class: "text-sm font-medium hover:text-[#1c1c1e]" %>
           <% end %>
         </div>
       </header>

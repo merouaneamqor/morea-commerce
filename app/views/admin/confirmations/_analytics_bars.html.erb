@@ -1,0 +1,13 @@
+<%# Ranked horizontal bars: one name, one bar and one figure per row, on one baseline, one hue. The figure is at the tip of the bar;
+    nothing is coloured except the bars. locals: rows ([{ label:, count:, percent:, key:, danger: }]), data (name of the data-* key of a row), top (the count that fills the bar) %>
+<% top = [ local_assigns.fetch(:top, rows.map { |row| row[:count] }.max.to_i), 1 ].max %>
+<ul class="space-y-2.5">
+  <% rows.each do |row| %>
+    <% share = row[:count].zero? ? 0 : [ row[:count] * 100.0 / top, 2 ].max %>
+    <li class="grid grid-cols-[minmax(0,8.5rem)_1fr_auto] items-center gap-2.5 text-[12.5px]" data-tip="<%= row[:label] %> : <%= analytics_integer(row[:count]) %><%= " (#{row[:percent].round} %)" if row[:percent] %>" <%= local_assigns.fetch(:data, "row") %>="<%= row[:key] %>" data-count="<%= row[:count] %>">
+      <span class="truncate text-[#3a3a3c]" dir="auto" title="<%= row[:label] %>"><%= row[:label] %></span>
+      <span class="block h-2.5"><span class="block h-full rounded-e-[4px] <%= row[:danger] ? "bg-[#e34948]" : "bg-[#2a78d6]" %>" style="width: <%= share.round(1) %>%"></span></span>
+      <span class="w-16 text-end tabular-nums"><b class="font-semibold text-[#1c1c1e]"><%= analytics_integer(row[:count]) %></b><span class="ms-1.5 text-[11px] text-[#8e8e93]"><%= row[:percent] ? "#{row[:percent].round} %" : "—" %></span></span>
+    </li>
+  <% end %>
+</ul>

@@ -23,20 +23,20 @@ module ConfirmationsAnalyticsHelper
 
   # Two lines of a small chart in a 100 x 30 box; values may be nil (the line is simply not drawn there). The last
   # `dashed_from..` points are provisional and drawn dashed.
-  def analytics_sparkline(values, dashed_from: nil, color: "#2f6fed")
+  def analytics_sparkline(values, dashed_from: nil, color: "#2a78d6", size: "h-7 w-full")
     points = analytics_points(values, max: values.compact.max.to_f, height: 28, top: 1)
     solid, dashed = analytics_split(points, dashed_from)
-    tag.svg(viewBox: "0 0 100 30", preserveAspectRatio: "none", class: "h-9 w-full", role: "img", "aria-hidden": "true") do
+    tag.svg(viewBox: "0 0 100 30", preserveAspectRatio: "none", class: size, role: "img", "aria-hidden": "true") do
       safe_join([
         (tag.polyline(points: analytics_join(solid), fill: "none", stroke: color, "stroke-width": 1.6, "vector-effect": "non-scaling-stroke", "stroke-linejoin": "round") if solid.size > 1),
-        (tag.polyline(points: analytics_join(dashed), fill: "none", stroke: "#8e8e93", "stroke-width": 1.4, "stroke-dasharray": "3 3", "vector-effect": "non-scaling-stroke") if dashed.size > 1)
+        (tag.polyline(points: analytics_join(dashed), fill: "none", stroke: "#9a9da6", "stroke-width": 1.4, "stroke-dasharray": "3 3", "vector-effect": "non-scaling-stroke") if dashed.size > 1)
       ].compact)
     end
   end
 
   # A line chart with grid lines. series: [{ values:, color:, area: false }]; max: the top of the scale; shade_from: index
   # from which the background is grey (provisional days).
-  def analytics_line_chart(series, max:, shade_from: nil, count: nil, height: "h-44")
+  def analytics_line_chart(series, max:, shade_from: nil, count: nil, height: "h-32")
     count ||= series.first[:values].size
     max = max.to_f.positive? ? max.to_f : 1.0
     grid = [ 0, 0.25, 0.5, 0.75, 1 ].map { |share| tag.line(x1: 0, x2: 100, y1: (39 - share * 38).round(2), y2: (39 - share * 38).round(2), stroke: "#e8e8ed", "stroke-width": 1, "vector-effect": "non-scaling-stroke") }
@@ -50,26 +50,11 @@ module ConfirmationsAnalyticsHelper
     tag.svg(viewBox: "0 0 100 40", preserveAspectRatio: "none", class: "#{height} w-full", role: "img") { safe_join([ shade, *grid, *lines ].compact) }
   end
 
-  # A ring of 100 units (r = 15.9155). segments: [{ count:, color: }]
-  def analytics_donut(segments, size: "size-36")
-    total = segments.sum { |segment| segment[:count] }.to_f
-    offset = 0.0
-    rings = segments.select { |segment| segment[:count].positive? }.map do |segment|
-      length = segment[:count] / total * 100
-      circle = tag.circle(cx: 21, cy: 21, r: 15.9155, fill: "none", stroke: segment[:color], "stroke-width": 5.5, "stroke-dasharray": "#{[ length - 0.5, 0.2 ].max.round(3)} #{(100 - length + 0.5).round(3)}", "stroke-dashoffset": (-offset).round(3), "data-count": segment[:count])
-      offset += length
-      circle
-    end
-    tag.svg(viewBox: "0 0 42 42", class: "#{size} -rotate-90", role: "img") do
-      safe_join([ tag.circle(cx: 21, cy: 21, r: 15.9155, fill: "none", stroke: "#efeff3", "stroke-width": 5.5), *rings ])
-    end
-  end
-
-  # Colour of a heat-map cell: navy, darker when more calls were answered; grey when there was no call.
+  # Colour of a heat-map cell: one blue, darker when more calls were answered; light grey when there was no call.
   def analytics_heat_style(cell)
     return "background: #f3f4f7" if cell[:rate].nil?
 
-    "background: rgba(18, 62, 140, #{(0.14 + 0.86 * cell[:rate] / 100.0).round(2)})"
+    "background: rgba(42, 120, 214, #{(0.12 + 0.88 * cell[:rate] / 100.0).round(2)})"
   end
 
   FULL_WEEKDAYS = %w[lundi mardi mercredi jeudi vendredi samedi dimanche].freeze

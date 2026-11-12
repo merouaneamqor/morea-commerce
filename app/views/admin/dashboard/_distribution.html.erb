@@ -25,7 +25,7 @@
   <% views.each_with_index do |(key, view), index| %>
     <% data = view[:data] %>
     <% shown = data[:segments].select { |segment| segment[:count].positive? } %>
-    <div class="mt-4 grid items-center gap-5 sm:grid-cols-[11rem_1fr]" data-view-switch-target="panel" data-key="<%= key %>" data-distribution-view="<%= key %>" data-total="<%= data[:total] %>" <%= "hidden" unless index.zero? %>>
+    <div class="mt-4 grid grid-cols-1 items-center gap-5 sm:grid-cols-[11rem_1fr]" data-view-switch-target="panel" data-key="<%= key %>" data-distribution-view="<%= key %>" data-total="<%= data[:total] %>" <%= "hidden" unless index.zero? %>>
       <div class="relative mx-auto size-44">
         <svg viewBox="0 0 42 42" class="size-full -rotate-90" role="img" aria-label="<%= view[:title] %>">
           <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#efeff3" stroke-width="5.5"/>
@@ -47,7 +47,7 @@
           <li data-legend="<%= segment[:key] %>">
             <div class="flex items-center justify-between gap-2 text-[13px]">
               <span class="flex items-center gap-2 text-[#3a3a3c]"><span class="size-2.5 rounded-full" style="background: <%= view[:colors][segment[:key]] %>"></span><%= view[:labels][segment[:key]] %></span>
-              <span class="tabular-nums"><b class="font-semibold text-[#1c1c1e]" data-segment-count><%= seller_number(segment[:count]) %></b> <span class="text-xs text-[#8e8e93]" data-segment-percent><%= segment[:percent] %> %</span></span>
+              <span class="tabular-nums"><b class="font-semibold text-[#1c1c1e]" data-segment-count><%= seller_number(segment[:count]) %></b> <span class="text-xs text-[#8e8e93]" data-segment-percent><%= seller_number(segment[:percent]) %> %</span></span>
             </div>
             <div class="mt-1 h-1 rounded-full bg-[#efeff3]"><div class="h-full rounded-full" style="width: <%= segment[:share].round(2) %>%; background: <%= view[:colors][segment[:key]] %>"></div></div>
           </li>

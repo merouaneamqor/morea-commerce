@@ -151,7 +151,7 @@
                 <p class="text-[11px] text-[#8e8e93]"><%= l(order.created_at.in_time_zone(DateRange::ZONE), format: "%H:%M") %></p>
               </td>
               <td class="px-3 py-2.5">
-                <p class="font-medium text-[#1c1c1e]" dir="auto"><%= order.customer_name %></p>
+                <p class="font-medium whitespace-nowrap text-[#1c1c1e]" dir="auto"><%= order.customer_name %></p>
                 <p class="text-[11px] text-[#6e6e73]" dir="ltr"><%= order.customer_phone %></p>
               </td>
               <td class="max-w-[14rem] px-3 py-2.5" data-product>

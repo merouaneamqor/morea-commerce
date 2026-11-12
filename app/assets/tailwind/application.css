@@ -3463,7 +3463,7 @@ main {
 }
 
 /* Pages in the seallo design: the shell supplies spacing, so the old page padding and width cap are dropped. */
-.admin-page.seller-page { max-width: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+.admin-page.seller-page { max-width: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
 
 /* ——— Glass (Apple-like frosted look) ———
    Black, white and grey. Surfaces of the seller shell are translucent panels over a soft light
@@ -3477,7 +3477,7 @@ main {
   background: #fff;
 }
 
-[data-seller-shell] .bg-white,
+[data-seller-shell] .bg-white:not(a):not(button):not(input):not(select):not(label):not(span):not([role="dialog"]),
 [data-seller-shell] .admin-card {
   background-color: rgba(255, 255, 255, 0.82);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
@@ -3499,7 +3499,7 @@ main {
 /* Dark panels (headers, hero bars): smoked glass */
 [data-seller-shell] [class^="bg-[#1c1c1e]"],
 [data-seller-shell] [class*=" bg-[#1c1c1e]"] {
-  background-color: rgba(28, 28, 30, 0.84);
+  background-color: #1c1c1e;
   -webkit-backdrop-filter: blur(24px) saturate(160%);
   backdrop-filter: blur(24px) saturate(160%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 16px 40px -16px rgba(0, 0, 0, 0.45);
@@ -3583,3 +3583,22 @@ main {
 [data-sidebar-nav]::-webkit-scrollbar-track { background: transparent; }
 [data-sidebar-nav]::-webkit-scrollbar-thumb { background: transparent; border-radius: 9999px; }
 [data-sidebar-nav]:hover::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.22); }
+
+/* ——— Date picker: nothing that contains it may blur ———
+   backdrop-filter makes an element the containing block of its `position: fixed` children and a stacking context of
+   its own: the picker's panel (a bottom sheet on a phone, a dropdown on a computer) then jumped out of place and
+   slid under the cards that follow. Whatever contains a picker is a plain panel instead of glass. */
+[data-seller-shell] :has([data-controller~="date-range-picker"]) {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+[data-seller-shell] [class^="bg-[#1c1c1e]"]:has([data-controller~="date-range-picker"]),
+[data-seller-shell] [class*=" bg-[#1c1c1e]"]:has([data-controller~="date-range-picker"]) { background-color: #1c1c1e; }
+[data-seller-shell] .bg-white:has([data-controller~="date-range-picker"]) { background-color: #fff; }
+
+/* Dropdowns and sheets are opaque: what is behind them must not show through the date picker panel. */
+[data-seller-shell] [role="dialog"], [data-seller-drawer] [role="dialog"] {
+  background-color: #fff;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}

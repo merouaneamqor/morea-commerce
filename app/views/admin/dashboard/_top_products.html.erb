@@ -17,7 +17,7 @@
               <p class="shrink-0 text-sm font-semibold text-[#1c1c1e] tabular-nums" data-revenue="<%= product[:revenue] %>"><%= seller_number(product[:revenue]) %> <%= currency %></p>
             </div>
             <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[#efeff3]"><div class="h-full rounded-full bg-[#1c1c1e]" style="width: <%= product[:bar] %>%"></div></div>
-            <p class="mt-1 text-[11px] text-[#8e8e93]"><%= seller_number(product[:orders]) %> <%= sl("commandes") %> · <%= seller_number(product[:quantity]) %> <%= sl("pcs") %></p>
+            <p class="mt-1 text-[11px] text-[#8e8e93]"><%= seller_number(product[:orders]) %> <%= sl(product[:orders] == 1 ? "commande" : "commandes") %> · <%= seller_number(product[:quantity]) %> <%= sl("pcs") %></p>
           </div>
         </li>
       <% end %>

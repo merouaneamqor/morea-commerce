@@ -3638,3 +3638,8 @@ main {
 [data-order-modal-panel]::-webkit-scrollbar-thumb { background: rgba(28, 28, 30, 0.28); border-radius: 999px; }
 [data-order-modal-panel]::-webkit-scrollbar-thumb:hover { background: rgba(28, 28, 30, 0.45); }
 [data-order-modal] [data-section] { padding-block: 0.75rem; }
+
+/* Orders: no visible scrollbar on the list or in the new-order window (they still scroll with wheel, trackpad and touch) */
+[data-orders-table-wrap], [data-order-modal-panel] { scrollbar-width: none; -ms-overflow-style: none; }
+[data-orders-table-wrap]::-webkit-scrollbar, [data-order-modal-panel]::-webkit-scrollbar { display: none; width: 0; height: 0; }
+[data-seller-shell] [data-order-modal-panel][role="dialog"] { scrollbar-width: none; scrollbar-gutter: auto; }

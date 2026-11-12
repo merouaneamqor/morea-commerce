@@ -12,7 +12,44 @@
   <% if @workspace.entries.empty? %>
     <p class="admin-muted p-4"><%= t("platform_admin.integrations.workspace_empty") %></p>
   <% else %>
-    <div class="admin-table-wrap">
+    <ul class="admin-mobile-list lg:hidden">
+      <% @workspace.entries.each do |entry| %>
+        <li class="admin-mobile-list__card" data-connection-id="<%= entry.id %>">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= t("platform_admin.integrations.providers.#{entry.provider}", default: entry.provider.humanize) %></p>
+              <p class="admin-mobile-list__meta"><%= entry.label %></p>
+            </div>
+            <%= admin_badge(
+                  entry.connection_state,
+                  label: t("platform_admin.integrations.states.#{entry.connection_state}", default: entry.connection_state.humanize),
+                  tone: entry.failing? ? "warning" : (entry.connection_state == "verified" ? "success" : "neutral")
+                ) %>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= t("platform_admin.integrations.columns.verified_at") %>:
+            <%= entry.verified_at ? l(entry.verified_at, format: :short) : admin_blank %>
+            · <%= t("platform_admin.integrations.columns.last_sync") %>:
+            <%= entry.last_sync_at ? l(entry.last_sync_at, format: :short) : admin_blank %>
+          </p>
+          <% if entry.error_code.present? %>
+            <p class="admin-mobile-list__meta"><%= entry.error_code %></p>
+          <% end %>
+          <% if entry.recheckable? %>
+            <div class="flex flex-wrap gap-2 mt-2">
+              <%= button_to t("platform_admin.integrations.recheck"),
+                    recheck_admin_platform_integration_path(@workspace.store),
+                    method: :post,
+                    params: { kind: entry.kind, provider: entry.provider, connection_id: entry.id },
+                    form: { class: "inline w-full sm:w-auto", data: { turbo_confirm: t("platform_admin.integrations.recheck_confirm") } },
+                    class: "admin-btn-plain" %>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
       <table class="admin-table">
         <thead>
           <tr>
@@ -26,7 +63,7 @@
         </thead>
         <tbody>
           <% @workspace.entries.each do |entry| %>
-            <tr>
+            <tr data-connection-id="<%= entry.id %>">
               <td>
                 <span class="font-medium"><%= t("platform_admin.integrations.providers.#{entry.provider}", default: entry.provider.humanize) %></span>
                 <span class="admin-muted block text-[13px]"><%= entry.label %></span>

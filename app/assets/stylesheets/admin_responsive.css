@@ -773,3 +773,140 @@ button.admin-btn-plain {
 .confirm-choice--cancelled:has(:checked),
 .confirm-choice--wrong_number:has(:checked) { background: #8e0b21; border-color: #8e0b21; }
 .confirm-choice:focus-within { outline: 2px solid #a8432e; outline-offset: 2px; }
+
+/* Platform Super Admin: mobile-first shell and dense ops pages. */
+.admin-body--platform .platform-mobile-search {
+  position: sticky;
+  top: 3.5rem;
+  z-index: 35;
+  display: block;
+  padding: 0.5rem 0.75rem;
+  background: #f6f6f6;
+  border-bottom: 1px solid #ebebeb;
+}
+.admin-body--platform .platform-mobile-search .admin-input {
+  width: 100%;
+  min-block-size: 2.75rem;
+  font-size: 16px;
+}
+.admin-body--platform .admin-page--platform {
+  padding-block-start: 0.75rem;
+}
+.admin-body--platform .platform-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: stretch;
+  justify-content: flex-end;
+}
+.admin-body--platform .platform-toolbar > * {
+  flex: 1 1 auto;
+  min-inline-size: min(100%, 9rem);
+}
+.admin-body--platform .admin-page-header {
+  align-items: flex-start;
+}
+.admin-body--platform .admin-sidebar__heading {
+  margin-block-start: 0.85rem;
+}
+.admin-body--platform .admin-sidebar__heading:first-child {
+  margin-block-start: 0.15rem;
+}
+
+@media (max-width: 767px) {
+  /* Logical off-canvas for LTR and RTL. */
+  .admin-body--platform .admin-sidebar {
+    transform: translateX(-100%);
+  }
+  .admin-body--platform[dir="rtl"] .admin-sidebar,
+  html[dir="rtl"] .admin-body--platform .admin-sidebar {
+    transform: translateX(100%);
+  }
+  .admin-body--platform .is-menu-open .admin-sidebar,
+  .admin-body--platform[dir="rtl"] .is-menu-open .admin-sidebar,
+  html[dir="rtl"] .admin-body--platform .is-menu-open .admin-sidebar {
+    transform: none;
+  }
+
+  .admin-body--platform .admin-topbar__search {
+    display: none !important;
+  }
+  .admin-body--platform .admin-nav-item {
+    min-block-size: 2.75rem;
+    height: auto;
+    padding-block: 0.55rem;
+    font-size: 0.9375rem;
+  }
+  .admin-body--platform .admin-page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-body--platform .platform-toolbar {
+    width: 100%;
+  }
+  .admin-body--platform .platform-toolbar > :is(a, button, .admin-btn, .admin-btn-secondary, form) {
+    flex: 1 1 100%;
+  }
+  .admin-body--platform .platform-toolbar form {
+    display: flex;
+  }
+  .admin-body--platform .platform-toolbar form > :is(button, .admin-btn) {
+    flex: 1;
+    width: 100%;
+  }
+  .admin-body--platform .admin-card__header {
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .admin-body--platform .admin-mobile-list__actions {
+    margin-top: 0.85rem;
+  }
+  .admin-body--platform .admin-mobile-list__actions > * {
+    min-inline-size: 0;
+    flex: 1 1 calc(50% - 0.25rem);
+  }
+  .admin-body--platform .admin-metric__value {
+    font-size: 1.15rem;
+    overflow-wrap: anywhere;
+  }
+  .admin-body--platform .admin-main {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (min-width: 768px) {
+  .admin-body--platform .platform-mobile-search {
+    display: none;
+  }
+}
+
+/* Platform filter chips and dense action rows on phones. */
+.admin-body--platform .platform-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.admin-body--platform .platform-filter-row > a,
+.admin-body--platform .platform-filter-row > .admin-btn,
+.admin-body--platform .platform-filter-row > .admin-btn-secondary {
+  min-block-size: 2.5rem;
+}
+.admin-body--platform .admin-impersonate {
+  inline-size: min(100vw - 1.5rem, 24rem);
+  max-block-size: min(85dvh, 32rem);
+  overflow: auto;
+}
+@media (max-width: 767px) {
+  .admin-body--platform .admin-page-header__meta {
+    font-size: 0.8125rem;
+  }
+  .admin-body--platform .admin-field-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-body--platform .admin-input,
+  .admin-body--platform input.admin-input,
+  .admin-body--platform select.admin-input,
+  .admin-body--platform textarea.admin-input {
+    font-size: 16px;
+  }
+}

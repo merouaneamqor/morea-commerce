@@ -4,7 +4,7 @@ Platform staff use `/admin/platform` as the Seallo Super Admin console. Existing
 
 ## Navigation
 
-The platform shell covers overview, workspaces, access requests, staff, subscription billing, integrations, feature flags, operations, audit, privacy rights, and the platform agent API. Global search matches workspace name, slug, email, or connected shop domain.
+The platform shell covers overview, workspaces, access requests, staff, subscription billing, integrations, feature flags, operations, audit, privacy rights, and the platform agent API. Nav is grouped (Home, People, Billing, Operations). On phones the menu is a drawer, search sits under the top bar, and list pages use card layouts with tables from `lg` up. Global search matches workspace name, slug, email, or connected shop domain.
 
 ## Overview
 

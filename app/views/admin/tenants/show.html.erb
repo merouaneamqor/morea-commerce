@@ -88,7 +88,26 @@
   <% if staff.empty? %>
     <p class="admin-empty"><%= t("platform_admin.workspace_detail.no_staff") %></p>
   <% else %>
-    <div class="admin-table-wrap">
+    <ul class="admin-mobile-list lg:hidden">
+      <% staff.each do |user| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= user.name.presence || user.email %></p>
+              <p class="admin-mobile-list__meta"><%= workspace_member_role(user) %> · <%= user.email %></p>
+            </div>
+            <span class="admin-mobile-list__amount"><%= user.status.humanize %></span>
+          </div>
+          <% if user.impersonatable_by_super_admin? %>
+            <div class="admin-mobile-list__actions">
+              <%= button_to t("platform_admin.open_admin"), enter_admin_tenant_path(@store), method: :post, params: { user_id: user.id }, class: "admin-btn", form: { class: "inline w-full sm:w-auto" } %>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
       <table class="admin-table">
         <thead>
           <tr>

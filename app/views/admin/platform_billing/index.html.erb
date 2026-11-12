@@ -33,145 +33,237 @@
   <div class="admin-card__header">
     <h2 class="admin-card__title"><%= t("platform_admin.billing_page.overdue_list") %></h2>
   </div>
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th><%= t("platform_admin.invoice_ui.number") %></th>
-          <th><%= t("platform_admin.workspace") %></th>
-          <th><%= t("platform_admin.amount") %></th>
-          <th><%= t("platform_admin.billing_page.due") %></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @overdue_invoices.each do |invoice| %>
+  <% if @overdue_invoices.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.billing_page.no_overdue") %></p>
+  <% else %>
+    <ul class="admin-mobile-list lg:hidden">
+      <% @overdue_invoices.each do |invoice| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= invoice.number %></p>
+              <p class="admin-mobile-list__meta"><%= invoice.store.name %></p>
+            </div>
+            <span class="admin-mobile-list__amount"><%= money(invoice.amount_cents, "MAD") %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= t("platform_admin.billing_page.due") %>:
+            <%= invoice.due_on&.strftime("%b %-d, %Y") || admin_blank %>
+          </p>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <%= link_to t("platform_admin.billing_page.open_invoice"), admin_tenant_invoice_path(invoice.store, invoice), class: "admin-btn-plain" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
+      <table class="admin-table">
+        <thead>
           <tr>
-            <td class="font-semibold tabular-nums"><%= invoice.number %></td>
-            <td><%= invoice.store.name %></td>
-            <td class="tabular-nums"><%= money(invoice.amount_cents, "MAD") %></td>
-            <td class="admin-muted"><%= invoice.due_on&.strftime("%b %-d, %Y") || admin_blank %></td>
-            <td class="text-right">
-              <%= link_to t("platform_admin.billing_page.open_invoice"), admin_tenant_invoice_path(invoice.store, invoice), class: "admin-btn-plain" %>
-            </td>
+            <th><%= t("platform_admin.invoice_ui.number") %></th>
+            <th><%= t("platform_admin.workspace") %></th>
+            <th><%= t("platform_admin.amount") %></th>
+            <th><%= t("platform_admin.billing_page.due") %></th>
+            <th></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <% if @overdue_invoices.empty? %>
-      <p class="admin-empty"><%= t("platform_admin.billing_page.no_overdue") %></p>
-    <% end %>
-  </div>
+        </thead>
+        <tbody>
+          <% @overdue_invoices.each do |invoice| %>
+            <tr>
+              <td class="font-semibold tabular-nums"><%= invoice.number %></td>
+              <td><%= invoice.store.name %></td>
+              <td class="tabular-nums"><%= money(invoice.amount_cents, "MAD") %></td>
+              <td class="admin-muted"><%= invoice.due_on&.strftime("%b %-d, %Y") || admin_blank %></td>
+              <td class="text-right">
+                <%= link_to t("platform_admin.billing_page.open_invoice"), admin_tenant_invoice_path(invoice.store, invoice), class: "admin-btn-plain" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </section>
 
 <section class="admin-card mb-6">
   <div class="admin-card__header">
     <h2 class="admin-card__title"><%= t("platform_admin.billing_page.issued_list") %></h2>
   </div>
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th><%= t("platform_admin.invoice_ui.number") %></th>
-          <th><%= t("platform_admin.workspace") %></th>
-          <th><%= t("platform_admin.status") %></th>
-          <th><%= t("platform_admin.amount") %></th>
-          <th><%= t("platform_admin.billing_page.due") %></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @issued_invoices.each do |invoice| %>
+  <% if @issued_invoices.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.billing_page.no_issued") %></p>
+  <% else %>
+    <ul class="admin-mobile-list lg:hidden">
+      <% @issued_invoices.each do |invoice| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= invoice.number %></p>
+              <p class="admin-mobile-list__meta"><%= invoice.store.name %></p>
+            </div>
+            <span class="admin-mobile-list__amount"><%= money(invoice.amount_cents, "MAD") %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= invoice.status.humanize %><% if invoice.overdue? %>, <%= t("platform_admin.billing_console.overdue") %><% end %>
+            · <%= t("platform_admin.billing_page.due") %>:
+            <%= invoice.due_on&.strftime("%b %-d, %Y") || admin_blank %>
+          </p>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <%= link_to t("platform_admin.billing_page.open_invoice"), admin_tenant_invoice_path(invoice.store, invoice), class: "admin-btn-plain" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
+      <table class="admin-table">
+        <thead>
           <tr>
-            <td class="font-semibold tabular-nums"><%= invoice.number %></td>
-            <td><%= invoice.store.name %></td>
-            <td>
-              <%= invoice.status.humanize %>
-              <% if invoice.overdue? %><span class="admin-muted">, Overdue</span><% end %>
-            </td>
-            <td class="tabular-nums"><%= money(invoice.amount_cents, "MAD") %></td>
-            <td class="admin-muted"><%= invoice.due_on&.strftime("%b %-d, %Y") || admin_blank %></td>
-            <td class="text-right">
-              <%= link_to t("platform_admin.billing_page.open_invoice"), admin_tenant_invoice_path(invoice.store, invoice), class: "admin-btn-plain" %>
-            </td>
+            <th><%= t("platform_admin.invoice_ui.number") %></th>
+            <th><%= t("platform_admin.workspace") %></th>
+            <th><%= t("platform_admin.status") %></th>
+            <th><%= t("platform_admin.amount") %></th>
+            <th><%= t("platform_admin.billing_page.due") %></th>
+            <th></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <% if @issued_invoices.empty? %>
-      <p class="admin-empty"><%= t("platform_admin.billing_page.no_issued") %></p>
-    <% end %>
-  </div>
+        </thead>
+        <tbody>
+          <% @issued_invoices.each do |invoice| %>
+            <tr>
+              <td class="font-semibold tabular-nums"><%= invoice.number %></td>
+              <td><%= invoice.store.name %></td>
+              <td>
+                <%= invoice.status.humanize %>
+                <% if invoice.overdue? %><span class="admin-muted">, <%= t("platform_admin.billing_console.overdue") %></span><% end %>
+              </td>
+              <td class="tabular-nums"><%= money(invoice.amount_cents, "MAD") %></td>
+              <td class="admin-muted"><%= invoice.due_on&.strftime("%b %-d, %Y") || admin_blank %></td>
+              <td class="text-right">
+                <%= link_to t("platform_admin.billing_page.open_invoice"), admin_tenant_invoice_path(invoice.store, invoice), class: "admin-btn-plain" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </section>
 
 <section class="admin-card mb-6">
   <div class="admin-card__header">
     <h2 class="admin-card__title"><%= t("platform_admin.billing_page.renewals_list") %></h2>
   </div>
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th><%= t("platform_admin.workspace") %></th>
-          <th><%= t("platform_admin.status") %></th>
-          <th><%= t("platform_admin.period_ends") %></th>
-          <th><%= t("platform_admin.amount") %></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @renewals.each do |store| %>
+  <% if @renewals.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.billing_page.no_renewals") %></p>
+  <% else %>
+    <ul class="admin-mobile-list lg:hidden">
+      <% @renewals.each do |store| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= store.name %></p>
+              <p class="admin-mobile-list__meta"><%= store.billing_status.humanize %></p>
+            </div>
+            <span class="admin-mobile-list__amount"><%= money(store.billing_amount_cents, "MAD") %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= t("platform_admin.period_ends") %>:
+            <%= store.billing_period_ends_on&.strftime("%b %-d, %Y") || admin_blank %>
+          </p>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <%= link_to t("platform_admin.invoices"), admin_tenant_invoices_path(store), class: "admin-btn-plain" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
+      <table class="admin-table">
+        <thead>
           <tr>
-            <td class="font-semibold"><%= store.name %></td>
-            <td><%= store.billing_status.humanize %></td>
-            <td class="admin-muted"><%= store.billing_period_ends_on&.strftime("%b %-d, %Y") || admin_blank %></td>
-            <td class="tabular-nums"><%= money(store.billing_amount_cents, "MAD") %></td>
-            <td class="text-right">
-              <%= link_to t("platform_admin.invoices"), admin_tenant_invoices_path(store), class: "admin-btn-plain" %>
-            </td>
+            <th><%= t("platform_admin.workspace") %></th>
+            <th><%= t("platform_admin.status") %></th>
+            <th><%= t("platform_admin.period_ends") %></th>
+            <th><%= t("platform_admin.amount") %></th>
+            <th></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <% if @renewals.empty? %>
-      <p class="admin-empty"><%= t("platform_admin.billing_page.no_renewals") %></p>
-    <% end %>
-  </div>
+        </thead>
+        <tbody>
+          <% @renewals.each do |store| %>
+            <tr>
+              <td class="font-semibold"><%= store.name %></td>
+              <td><%= store.billing_status.humanize %></td>
+              <td class="admin-muted"><%= store.billing_period_ends_on&.strftime("%b %-d, %Y") || admin_blank %></td>
+              <td class="tabular-nums"><%= money(store.billing_amount_cents, "MAD") %></td>
+              <td class="text-right">
+                <%= link_to t("platform_admin.invoices"), admin_tenant_invoices_path(store), class: "admin-btn-plain" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </section>
 
 <section class="admin-card">
   <div class="admin-card__header">
     <h2 class="admin-card__title"><%= t("platform_admin.billing_page.plans_list") %></h2>
   </div>
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th><%= t("platform_admin.workspace") %></th>
-          <th><%= t("platform_admin.workspace_detail.plan") %></th>
-          <th><%= t("platform_admin.status") %></th>
-          <th><%= t("platform_admin.amount") %></th>
-          <th><%= t("platform_admin.period_ends") %></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @plans.each do |store| %>
+  <% if @plans.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.no_workspaces") %></p>
+  <% else %>
+    <ul class="admin-mobile-list lg:hidden">
+      <% @plans.each do |store| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= store.name %></p>
+              <p class="admin-mobile-list__meta">
+                <%= store.plan.presence&.humanize || admin_blank %>
+                · <%= store.billing_status.humanize %>
+              </p>
+            </div>
+            <span class="admin-mobile-list__amount"><%= money(store.billing_amount_cents, "MAD") %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= t("platform_admin.period_ends") %>:
+            <%= store.billing_period_ends_on&.strftime("%b %-d, %Y") || t("platform_admin.no_date") %>
+          </p>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <%= link_to t("platform_admin.invoices"), admin_tenant_invoices_path(store), class: "admin-btn-plain" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
+      <table class="admin-table">
+        <thead>
           <tr>
-            <td class="font-semibold"><%= store.name %></td>
-            <td><%= store.plan.presence&.humanize || admin_blank %></td>
-            <td><%= store.billing_status.humanize %></td>
-            <td class="tabular-nums"><%= money(store.billing_amount_cents, "MAD") %></td>
-            <td class="admin-muted"><%= store.billing_period_ends_on&.strftime("%b %-d, %Y") || t("platform_admin.no_date") %></td>
-            <td class="text-right">
-              <%= link_to t("platform_admin.invoices"), admin_tenant_invoices_path(store), class: "admin-btn-plain" %>
-            </td>
+            <th><%= t("platform_admin.workspace") %></th>
+            <th><%= t("platform_admin.workspace_detail.plan") %></th>
+            <th><%= t("platform_admin.status") %></th>
+            <th><%= t("platform_admin.amount") %></th>
+            <th><%= t("platform_admin.period_ends") %></th>
+            <th></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <% if @plans.empty? %>
-      <p class="admin-empty"><%= t("platform_admin.no_workspaces") %></p>
-    <% end %>
-  </div>
+        </thead>
+        <tbody>
+          <% @plans.each do |store| %>
+            <tr>
+              <td class="font-semibold"><%= store.name %></td>
+              <td><%= store.plan.presence&.humanize || admin_blank %></td>
+              <td><%= store.billing_status.humanize %></td>
+              <td class="tabular-nums"><%= money(store.billing_amount_cents, "MAD") %></td>
+              <td class="admin-muted"><%= store.billing_period_ends_on&.strftime("%b %-d, %Y") || t("platform_admin.no_date") %></td>
+              <td class="text-right">
+                <%= link_to t("platform_admin.invoices"), admin_tenant_invoices_path(store), class: "admin-btn-plain" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </section>

@@ -76,6 +76,7 @@ module Admin
       )
       @line_items = []
       @assignable_agents = assignable_agents
+      @companies = connected_companies
     end
 
     def create
@@ -88,6 +89,7 @@ module Admin
         @line_items = preview_lines
         @editor_errors = editor.errors
         @assignable_agents = assignable_agents
+        @companies = connected_companies
         flash.now[:alert] = editor.errors.full_messages.to_sentence.presence || "Could not create order."
         render :new, status: :unprocessable_entity
       end
@@ -171,7 +173,7 @@ module Admin
     end
 
 def collect
-  cents = params[:amount].present? ? parse_mad_cents(params[:amount]) : @order.total_cents
+  cents = params[:amount].present? ? parse_mad_cents(params[:amount]) : @order.to_collect_cents
   @order.record_collection!(cents: cents, user: current_user)
   redirect_to admin_order_path(@order), notice: "COD payment recorded."
 rescue ArgumentError, ActiveRecord::RecordInvalid => e
@@ -316,14 +318,15 @@ end
         .map { |provider| [ Carriers.provider(provider)["name"], provider ] }
     end
 
-    # Only Sendit tags its parcels on the orders (sendit_code), so another connected company matches none for now.
+    # An order belongs to a company when it was created with that company, or (Sendit) when its parcel carries a Sendit code.
     def company_filter(orders)
       key = params[:company]
       return orders if key.blank? || @companies.empty?
-      return orders.where(sendit_code: [ nil, "" ]) if key == "none"
+      return orders.where(delivery_provider: nil, sendit_code: [ nil, "" ]) if key == "none"
       return orders unless @companies.any? { |_name, provider| provider == key }
 
-      key == "sendit" ? orders.where.not(sendit_code: [ nil, "" ]) : orders.none
+      by_choice = orders.where(delivery_provider: key)
+      key == "sendit" ? by_choice.or(orders.where.not(sendit_code: [ nil, "" ])) : by_choice
     end
 
     # The agent holding the order's claim ("none" for unassigned). Not offered to agents.
@@ -389,7 +392,7 @@ end
     def editor_attrs
       raw = params.fetch(:order, {}).permit(
         :name, :phone, :phone_country, :city, :district, :address, :notes, :tags,
-        :shipping_dh, :discount_code, :discount_dh, :agent_id,
+        :shipping_dh, :discount_code, :discount_dh, :agent_id, :second_phone, :delivery_provider, :scheduled_for, :advance_dh, :shipping_excluded,
         lines: [ :product_id, :product_variant_id, :quantity ]
       )
       lines = raw[:lines]

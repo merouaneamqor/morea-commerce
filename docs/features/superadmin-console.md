@@ -24,7 +24,7 @@ Sensitive actions (impersonation, invoice issue/pay/void, staff lifecycle, featu
 
 ## Operations
 
-`/admin/platform/operations` reads Sidekiq dead/retry sets and recent connection error codes. Dead jobs whose class no longer exists (common when Redis was shared with an older app) are marked as orphans. Super admins can remove orphans, delete one job, or clear the whole dead set; each cleanup writes an audit event. Living mailers such as `RegistrationMailer` still need `SMTP_ADDRESS` (and related SMTP env) configured, or delivery fails against localhost:25.
+`/admin/platform/operations` reads Sidekiq dead/retry sets and recent connection error codes. Dead jobs whose class no longer exists (common when Redis was shared with an older app) are marked as orphans. Super admins can remove orphans, delete one job, or clear the whole dead set; each cleanup writes an audit event. The same page shows outbound mail readiness from `MAIL_FROM` / `SMTP_*` (never secret values). Signup and password-reset mail need those vars on `morea-web`, or delivery fails against localhost:25.
 
 ## Verification
 

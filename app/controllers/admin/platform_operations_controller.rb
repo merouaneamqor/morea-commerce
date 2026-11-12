@@ -22,6 +22,7 @@ module Admin
       @retry_jobs = []
       load_sidekiq_jobs
       @orphan_count = @dead_jobs.count(&:orphan)
+      @mail_status = Platform::MailStatus.current
       @webhook_failures = load_webhook_failures
     end
 

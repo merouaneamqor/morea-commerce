@@ -78,10 +78,31 @@ RSpec.describe "Platform operations console", type: :request do
     expect(document.at_css('[data-redis-unavailable="true"]')).to be_present
     expect(document.at_css("[data-platform-operations-dead]")).to be_present
     expect(document.at_css("[data-platform-operations-retry]")).to be_present
+    expect(document.at_css('[data-platform-mail-status][data-mail-configured="false"]')).to be_present
+    expect(document.at_css('[data-mail-state="missing"]')).to be_present
     expect(response.body).to include(I18n.t("platform_admin.operations.empty_jobs"))
     expect(response.body).to include(I18n.t("platform_admin.operations.empty_retry"))
     expect(document.at_css(%([data-connection-id="#{failing_connection.id}"][data-error-code="invalid_credentials"]))).to be_present
     expect(response.body).to include(store.name, "invalid_credentials")
+  end
+
+  it "shows ready mail status when SMTP env is present" do
+    previous = ENV.to_hash.slice("MAIL_FROM", "SMTP_ADDRESS", "SMTP_USERNAME", "SMTP_PASSWORD")
+    ENV["MAIL_FROM"] = "no-reply@seallo.ma"
+    ENV["SMTP_ADDRESS"] = "smtp.resend.com"
+    ENV["SMTP_USERNAME"] = "resend"
+    ENV["SMTP_PASSWORD"] = "synthetic-smtp-password"
+    allow(Sidekiq::DeadSet).to receive(:new).and_raise(Errno::ECONNREFUSED)
+
+    sign_in(super_admin)
+    get "/admin/platform/operations"
+
+    document = Nokogiri::HTML(response.body)
+    expect(document.at_css('[data-platform-mail-status][data-mail-configured="true"]')).to be_present
+    expect(document.at_css('[data-mail-state="ready"]')).to be_present
+  ensure
+    previous.each { |key, value| value.nil? ? ENV.delete(key) : ENV[key] = value }
+    (%w[MAIL_FROM SMTP_ADDRESS SMTP_USERNAME SMTP_PASSWORD] - previous.keys).each { |key| ENV.delete(key) }
   end
 
   it "attributes failed jobs to a workspace when args include store_id" do

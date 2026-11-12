@@ -65,10 +65,15 @@ RSpec.describe "Call center analytics page", type: :request do
     tabs = page.at_css("[data-analytics-tabs]")
     expect(tabs.at_css("[data-tab=overview]")["aria-current"]).to eq("page")
     expect(tabs.at_css("[data-tab=compare]")["href"]).to eq("/admin/confirmations/analytics?view=agents")
-    expect(tabs.css("select[data-tab=agent] option").map(&:text)).to include("Agent", "Saida", "Omar")
+    expect(tabs.at_css("[data-tab=agent]")["href"]).to eq("/admin/confirmations/analytics?view=agent")      # a tab like the others, not a drop-down
+    expect(page.at_css("[data-shifts-link]")).to be_nil                                                  # "Pointage et heures" is gone from the header
 
     get "/admin/confirmations/analytics", params: { from: Date.current.iso8601, to: Date.current.iso8601, agent_id: agent.id }
-    expect(page.at_css("[data-analytics-tabs] select[data-tab=agent]")["aria-current"]).to eq("page")
+    expect(page.at_css("[data-analytics-tabs] [data-tab=agent]")["aria-current"]).to eq("page")
+    expect(page.at_css("[data-analytics-tabs] [data-tab=overview]")["aria-current"]).to be_nil
+    switch = page.at_css("[data-agent-switch]")                                                         # the people to switch to, the chosen one marked
+    expect(switch.css("a[data-agent]").map { |link| link.at_css("span + span").text }).to eq([ "Saida", "Omar", "Owner" ])         # everybody who works the desk, the busiest first
+    expect(switch.at_css("a[aria-current=page]").text).to include("Saida")
     expect(page.at_css("h1 + p").text).to include("Saida")
     expect(page.css("[data-stage]").map { |stage| stage["data-count"].to_i }).to eq([ 2, 2, 1, 1, 1 ])   # her two orders: A1 delivered, A3 cancelled
   end
@@ -181,5 +186,19 @@ RSpec.describe "Call center analytics page", type: :request do
     expect(page.at_css("[data-agents-table]")).to be_nil
     expect(page.at_css("[data-kpis=analytics]")).to be_present
     expect(page.at_css("[data-agent-metrics]")).to be_present
+  end
+  it "opens the Agent tab on a list of everybody who works the desk, and a click on a person opens her figures" do
+    sign_in(owner)
+    get "/admin/confirmations/analytics", params: { from: Date.current.iso8601, to: Date.current.iso8601, view: "agent" }
+
+    expect(page.at_css("[data-analytics-tabs] [data-tab=agent]")["aria-current"]).to eq("page")
+    cards = page.css("[data-agent-picker] a[data-agent]")
+    expect(cards.map { |card| card.text.squish }.join(" ")).to include("Saida", "Omar")
+    expect(cards.map { |card| card["href"] }).to include("/admin/confirmations/analytics?agent_id=#{agent.id}")
+    expect(page.at_css("[data-kpis=analytics]")).to be_nil                                              # nothing is drawn before somebody is chosen
+    expect(page.at_css("[data-agent-switch]")).to be_nil
+
+    get cards.find { |card| card.text.include?("Saida") }["href"], params: { from: Date.current.iso8601, to: Date.current.iso8601 }
+    expect(page.at_css("[data-agent-header]").text).to include("Saida")
   end
 end

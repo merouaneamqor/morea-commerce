@@ -1,0 +1,23 @@
+<%# The Agent tab before anybody is chosen: every person who works the desk as a card, to click. Printing only; the figures come from
+    Confirmations::AgentComparison. locals: comparison, card, title, sub, chip, tones %>
+<% rows = comparison.rows %>
+<section class="<%= card %>" data-agent-picker>
+  <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:ink] %>"><%= seller_icon(:team, size: 16) %></span>
+    <div><h2 class="<%= title %>"><%= sl("Choisissez un agent") %></h2><p class="<%= sub %>"><%= sl("Cliquez sur un agent pour voir ses chiffres face à la médiane de l'équipe et le détail de ses commandes.") %></p></div></div>
+  <% if rows.empty? %>
+    <p class="my-6 text-center text-sm text-[#6e6e73]" data-no-agents><%= sl("Aucun agent pour cette boutique.") %></p>
+  <% else %>
+    <div class="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+      <% rows.each do |row| %>
+        <%= link_to analytics_admin_confirmations_path(agent_id: row.user.id), "data-agent": row.user.id, class: "group flex items-center gap-3 rounded-2xl border border-[#e0e0e5] bg-white px-4 py-3 transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-18px_rgba(0,0,0,0.4)]" do %>
+          <span class="grid size-11 shrink-0 place-items-center rounded-full bg-[#1c1c1e] text-sm font-bold text-white"><%= analytics_initials(row.user) %></span>
+          <span class="min-w-0 flex-1">
+            <span class="block truncate text-sm font-semibold text-[#1c1c1e]" dir="auto"><%= row.user.name.presence || row.user.email %></span>
+            <span class="block text-xs text-[#6e6e73]"><span data-assigned="<%= row.analytics.assigned %>"><%= analytics_integer(row.analytics.assigned) %></span> <%= sl(row.analytics.assigned == 1 ? "commande" : "commandes") %><% if row.metrics[:confirmation_rate] %> · <%= analytics_percent(row.metrics[:confirmation_rate]) %> <%= sl("confirmées") %><% end %></span>
+          </span>
+          <span class="text-[#8e8e93] group-hover:text-[#1c1c1e]" aria-hidden="true">→</span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</section>

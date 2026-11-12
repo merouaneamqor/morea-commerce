@@ -20,7 +20,7 @@ module Orders
     end
 
     def products
-      scope = @store.products.active.includes(:product_variants).order(:name, :id)
+      scope = @store.products.visible.active.includes(:product_variants).order(:name, :id)
       return scope.limit(EMPTY_QUERY_LIMIT).to_a if @query.blank?
 
       terms = @query.split

@@ -5,12 +5,27 @@
   <%= link_to "Add product", new_admin_product_path, class: "admin-btn" %>
 </div>
 
+<% if @connections.any? %>
+  <%# The store chooser: all the visible products, the manual ones, or one connected store (only switched-on stores are listed). %>
+  <nav class="mb-3 flex flex-wrap items-center gap-2" aria-label="<%= t("products_page.switch") %>" data-store-chooser>
+    <% chip = "inline-flex h-8 items-center gap-1.5 rounded-full border px-3.5 text-[13px] font-semibold transition" %>
+    <% on = "border-[#1c1c1e] bg-[#1c1c1e] text-white" %>
+    <% off = "border-[#e0e0e5] bg-white text-[#1c1c1e] hover:bg-[#efeff3]" %>
+    <%= link_to admin_products_path, "data-source": "all", "aria-current": (@source.blank? ? "true" : nil), class: "#{chip} #{@source.blank? ? on : off}" do %><%= t("products_page.all") %> <span class="text-[11px] opacity-70"><%= @counts.values.sum %></span><% end %>
+    <%= link_to admin_products_path(source: "manual"), "data-source": "manual", "aria-current": (@source == "manual" ? "true" : nil), class: "#{chip} #{@source == "manual" ? on : off}" do %><%= t("products_page.manual") %> <span class="text-[11px] opacity-70"><%= @counts[nil].to_i %></span><% end %>
+    <% @connections.each do |connection| %>
+      <%= link_to admin_products_path(source: connection.id), "data-source": connection.id, "aria-current": (@source == connection.id.to_s ? "true" : nil), class: "#{chip} #{@source == connection.id.to_s ? on : off}" do %><%= connection.name %> <span class="text-[11px] opacity-70"><%= connection.provider %> · <%= @counts[connection.id].to_i %></span><% end %>
+    <% end %>
+  </nav>
+<% end %>
+
 <div class="admin-card">
   <div class="admin-table-wrap">
     <table class="admin-table">
       <thead>
         <tr>
           <th>Product</th>
+          <th><%= t("products_page.source") %></th>
           <th>Status</th>
           <th>Inventory</th>
           <th class="is-numeric">Price</th>
@@ -25,6 +40,7 @@
                 <span class="admin-link"><%= product.name %></span>
               <% end %>
             </td>
+            <td class="admin-muted" data-source><%= product.store_connection&.name || t("products_page.manual") %></td>
             <td><%= admin_badge(product.status) %></td>
             <td>
               <% if product.track_inventory %>

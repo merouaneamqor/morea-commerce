@@ -64,7 +64,7 @@ module Confirmations
     end
 
     def products
-      @store.products.order(:name).pluck(:name, :id)
+      @store.products.visible.order(:name).pluck(:name, :id)
     end
 
     def sources

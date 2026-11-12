@@ -46,7 +46,7 @@ module Admin
       @connections = current_store.store_connections.order(:name)
       @shopify_connections = @connections.where(provider: "shopify", shopify_oauth: true).limit(100)
       @agents = current_store.users.active.where(confirmation_role: "agent").or(current_store.users.active.where(admin: true)).order(:email)
-      @products = current_store.products.order(:name).pluck(:name, :id)
+      @products = current_store.products.visible.order(:name).pluck(:name, :id)
       @companies = connected_companies
       @date_range = selected_date_range(scope: "orders", default: "last_30")
       @overview = Orders::Overview.new(scope: visible_orders.active, range: @date_range)

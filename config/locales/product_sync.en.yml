@@ -1,0 +1,37 @@
+en:
+  products_page:
+    all: "All"
+    manual: "Manual"
+    source: "Source"
+    switch: "Store"
+    imported_hint: "Imported from the store: price, stock and picture update at each sync."
+  connections:
+    products:
+      title: "Store products"
+      help: "This store's products are read into your catalog: price, stock, variants and picture come from the store, the cost of the goods stays yours."
+      state:
+        never: "Not synced yet"
+        queued: "Sync waiting…"
+        running: "Sync running…"
+        ok: "Synced %{time}: %{total} products (%{created} new, %{updated} updated, %{archived} archived)"
+        failed: "Last sync failed: %{error}"
+      errors:
+        credentials_missing: "API keys missing"
+        invalid_credentials: "API keys refused by the store"
+        missing_scopes: "Permission to read products missing"
+        disconnected: "Store disconnected"
+        rate_limited: "Too many requests, try again later"
+        unavailable: "Store unreachable"
+        invalid_response: "Unexpected answer from the store"
+        unsafe_domain: "Store address not allowed"
+      sync: "Sync products"
+      queued: "Sync started."
+      not_ready: "Add this store's API keys first (or reconnect it)."
+      credentials_saved: "API keys saved."
+      credentials_title: "API keys to read products"
+      credentials_saved_hint: "Saved (not shown). Leave empty to keep it."
+      consumer_key: "Consumer key"
+      consumer_secret: "Consumer secret"
+      access_token: "YouCan access token"
+      save_credentials: "Save keys"
+      imported_count: "%{count} products imported"

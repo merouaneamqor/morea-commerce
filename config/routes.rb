@@ -191,7 +191,13 @@ Rails.application.routes.draw do
       patch :update_home
       patch :update_store
     end
-    resources :platform_operations, path: "platform/operations", only: :index
+    resources :platform_operations, path: "platform/operations", only: :index do
+      collection do
+        delete :clear_orphans
+        delete :clear_dead
+        delete :destroy_dead
+      end
+    end
     resources :platform_users, path: "platform/users", except: %i[show destroy] do
       member { post "lifecycle/:lifecycle", action: :lifecycle, as: :lifecycle, constraints: { lifecycle: /suspend|reactivate|archive|restore/ } }
     end

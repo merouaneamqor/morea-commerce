@@ -179,6 +179,27 @@ en:
       webhook_failures: "Connection and webhook errors"
       empty_webhooks: "No recent connection or webhook error codes."
       unknown_workspace: "Workspace #%{id}"
+      orphan_badge: "Missing class"
+      orphan_help:
+        one: "%{count} failed job references a class that is no longer in this app (often leftover from an older Redis share). Remove orphans, or clear the whole dead set."
+        other: "%{count} failed jobs reference classes that are no longer in this app (often leftover from an older Redis share). Remove orphans, or clear the whole dead set."
+      clear_orphans:
+        one: "Remove %{count} orphan"
+        other: "Remove %{count} orphans"
+      clear_orphans_confirm:
+        one: "Delete %{count} dead job whose class no longer exists?"
+        other: "Delete %{count} dead jobs whose classes no longer exist?"
+      clear_dead: "Clear all dead jobs"
+      clear_dead_confirm: "Delete every job in the Sidekiq dead set? This cannot be undone."
+      delete_job: "Remove"
+      delete_job_confirm: "Remove this dead job?"
+      cleared_orphans:
+        one: "Removed %{count} orphan dead job."
+        other: "Removed %{count} orphan dead jobs."
+      cleared_dead:
+        one: "Cleared %{count} dead job."
+        other: "Cleared %{count} dead jobs."
+      cleared_one: "Removed the dead job."
       columns:
         job: "Job"
         queue: "Queue"

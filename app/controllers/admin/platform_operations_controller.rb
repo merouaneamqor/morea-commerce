@@ -12,7 +12,7 @@ module Admin
     WEBHOOK_LIMIT = 25
 
     FailedJob = Struct.new(
-      :jid, :class_name, :queue, :error, :failed_at, :set_name, :store_id, :store_name,
+      :jid, :class_name, :queue, :error, :failed_at, :set_name, :store_id, :store_name, :orphan,
       keyword_init: true
     )
 
@@ -21,13 +21,57 @@ module Admin
       @dead_jobs = []
       @retry_jobs = []
       load_sidekiq_jobs
+      @orphan_count = @dead_jobs.count(&:orphan)
       @webhook_failures = load_webhook_failures
+    end
+
+    def clear_orphans
+      result = with_sidekiq_cleanup { Platform::DeadJobCleanup.clear_orphans! }
+      return if performed?
+
+      audit_cleanup!(result)
+      redirect_to admin_platform_operations_path, notice: t("platform_admin.operations.cleared_orphans", count: result.removed)
+    end
+
+    def clear_dead
+      result = with_sidekiq_cleanup { Platform::DeadJobCleanup.clear_all! }
+      return if performed?
+
+      audit_cleanup!(result)
+      redirect_to admin_platform_operations_path, notice: t("platform_admin.operations.cleared_dead", count: result.removed)
+    end
+
+    def destroy_dead
+      result = with_sidekiq_cleanup { Platform::DeadJobCleanup.delete!(jid: params.require(:jid)) }
+      return if performed?
+
+      audit_cleanup!(result)
+      redirect_to admin_platform_operations_path, notice: t("platform_admin.operations.cleared_one")
     end
 
     private
 
     def enter_platform_mode
       session[:admin_mode] = "platform"
+    end
+
+    def with_sidekiq_cleanup
+      yield
+    rescue *redis_errors => error
+      Rails.error.report(error, handled: true, context: { surface: "platform_operations_cleanup" })
+      redirect_to admin_platform_operations_path, alert: t("platform_admin.operations.redis_unavailable")
+      nil
+    end
+
+    def audit_cleanup!(result)
+      Platform::AdminAudit.record(
+        action: "platform.operations.clear_dead_jobs",
+        actor: current_user,
+        source: "ui",
+        ip: request.remote_ip,
+        reason: result.mode,
+        count: result.removed
+      )
     end
 
     def load_sidekiq_jobs
@@ -55,15 +99,17 @@ module Admin
     def map_jobs(set, set_name)
       entries = set.first(JOB_LIMIT).map do |job|
         store_id = extract_store_id(job.args)
+        class_name = job.display_class.to_s
         FailedJob.new(
           jid: job.jid,
-          class_name: job.display_class.to_s,
+          class_name: class_name,
           queue: job.queue.to_s,
           error: job_error_message(job),
           failed_at: job_failed_at(job),
           set_name: set_name,
           store_id: store_id,
-          store_name: nil
+          store_name: nil,
+          orphan: set_name == "dead" && Platform::DeadJobCleanup.orphan_class?(class_name)
         )
       end
       attach_store_names!(entries)
@@ -77,10 +123,16 @@ module Admin
 
     def job_failed_at(job)
       stamp = job.item["failed_at"] || job.item["retry_at"]
+      stamp = job.score if stamp.blank? && job.respond_to?(:score)
       return if stamp.blank?
 
-      Time.zone.at(stamp.to_f)
-    rescue ArgumentError, TypeError
+      value = stamp.to_f
+      value /= 1000.0 if value >= 1_000_000_000_000
+      time = Time.zone.at(value)
+      return if time.year < 2000 || time.year > 2100
+
+      time
+    rescue ArgumentError, TypeError, RangeError
       nil
     end
 

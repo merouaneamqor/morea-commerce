@@ -178,6 +178,27 @@ fr:
       webhook_failures: "Erreurs de connexion et de webhook"
       empty_webhooks: "Aucun code d'erreur de connexion ou de webhook récent."
       unknown_workspace: "Espace #%{id}"
+      orphan_badge: "Classe absente"
+      orphan_help:
+        one: "%{count} job en échec pointe vers une classe qui n'existe plus dans cette app (souvent un reste d'un ancien partage Redis). Supprimez les orphelins, ou videz tout le dead set."
+        other: "%{count} jobs en échec pointent vers des classes qui n'existent plus dans cette app (souvent un reste d'un ancien partage Redis). Supprimez les orphelins, ou videz tout le dead set."
+      clear_orphans:
+        one: "Supprimer %{count} orphelin"
+        other: "Supprimer %{count} orphelins"
+      clear_orphans_confirm:
+        one: "Supprimer %{count} job mort dont la classe n'existe plus ?"
+        other: "Supprimer %{count} jobs morts dont les classes n'existent plus ?"
+      clear_dead: "Vider le dead set"
+      clear_dead_confirm: "Supprimer tous les jobs du dead set Sidekiq ? Action irréversible."
+      delete_job: "Retirer"
+      delete_job_confirm: "Retirer ce job mort ?"
+      cleared_orphans:
+        one: "%{count} job orphelin retiré."
+        other: "%{count} jobs orphelins retirés."
+      cleared_dead:
+        one: "%{count} job mort vidé."
+        other: "%{count} jobs morts vidés."
+      cleared_one: "Job mort retiré."
       columns:
         job: "Job"
         queue: "File"

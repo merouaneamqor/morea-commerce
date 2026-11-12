@@ -67,11 +67,11 @@ module ConfirmationsAnalyticsHelper
     end
   end
 
-  # Colour of a heat-map cell: the platform's ink, darker when more calls were answered; light grey when there was no call.
+  # Colour of a heat-map cell: the sky blue of "reached by phone", darker when more calls were answered; light grey when there was no call.
   def analytics_heat_style(cell)
     return "background: #f3f4f7" if cell[:rate].nil?
 
-    "background: rgba(28, 28, 30, #{(0.1 + 0.9 * cell[:rate] / 100.0).round(2)})"
+    "background: rgba(90, 180, 239, #{(0.14 + 0.86 * cell[:rate] / 100.0).round(2)})"
   end
 
   FULL_WEEKDAYS = %w[lundi mardi mercredi jeudi vendredi samedi dimanche].freeze

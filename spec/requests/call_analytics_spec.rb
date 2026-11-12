@@ -102,4 +102,16 @@ RSpec.describe "Call center analytics page", type: :request do
 
     expect(page.css("[data-stage]").first["data-count"].to_i).to eq(4)
   end
+
+  it "gives each stage of an order one colour, the same on every chart: blue, sky blue, green, purple, dark green" do
+    sign_in(owner)
+    get "/admin/confirmations/analytics", params: { from: Date.current.iso8601, to: Date.current.iso8601 }
+
+    colours = page.css("[data-stage]").to_h { |row| [ row["data-stage"], row.at_css("span[data-grow]")["style"][/background: (#\h+)/, 1] ] }
+    expect(colours).to eq("assigned" => "#2a78d6", "reached" => "#5ab4ef", "confirmed" => "#5bc98f", "shipped" => "#8b5cf6", "delivered" => "#136b3d")
+    expect(page.at_css("[data-day] span[style*='#5bc98f']")).to be_present                       # the confirmed part of a day is the confirmed green
+    expect(page.at_css("[data-rates-chart]").to_html).to include("#5bc98f", "#136b3d")            # confirmation and delivery lines
+    expect(page.at_css("[data-hourly]").to_html).to include("#2a78d6")                            # new orders are the received blue
+    expect(page.css("[data-heatmap] [data-cell]:not([data-calls='0'])").first["style"]).to include("rgba(90, 180, 239")   # answered calls: the sky blue of "reached"
+  end
 end

@@ -19,6 +19,7 @@ module Confirmations
 
     def claim(order_id)
       with_order(order_id) do |order, confirmation|
+        require_shift!
         require_open!(order)
         take!(order, confirmation)
       end
@@ -27,8 +28,91 @@ module Confirmations
     def release(order_id)
       with_order(order_id) do |order, confirmation|
         require_owner!(confirmation)
-        confirmation.update!(assigned_user: nil, claimed_at: nil, call_started_at: nil)
+        confirmation.update!(assigned_user: nil, claimed_at: nil, call_started_at: nil, last_activity_at: nil)
         order.record_event!("comment", body: "Confirmation claim released", user: @user)
+        confirmation
+      end
+    end
+
+    # Owner or manager releases a claim by hand ("Libérer"), whoever holds it.
+    def force_release(order_id)
+      raise Error, "Only owners and managers can release an order." if @user.confirmation_agent_view?
+
+      with_order(order_id) do |order, confirmation|
+        holder = confirmation.assigned_user
+        confirmation.update!(assigned_user: nil, claimed_at: nil, call_started_at: nil, last_activity_at: nil)
+        order.record_event!("comment", body: "Claim released by #{@user.name.presence || @user.email}#{" (held by #{holder.name.presence || holder.email})" if holder}", user: @user)
+        confirmation
+      end
+    end
+
+    # Keeps the open call alive: the panel pings while it is open so a long call is not released.
+    def touch_call(order_id)
+      with_order(order_id) do |_order, confirmation|
+        require_owner!(confirmation)
+        confirmation.update!(last_activity_at: Time.current)
+        confirmation
+      end
+    end
+
+    # The agent opened WhatsApp for this order: we log who and when. It does not prove delivery.
+    def log_whatsapp(order_id)
+      with_order(order_id) do |order, _confirmation|
+        require_shift!
+        order.record_event!("whatsapp", body: "WhatsApp opened by #{@user.name.presence || @user.email}", user: @user)
+        order
+      end
+    end
+
+    # Block the order's number for the store (reason required). This order leaves the queue for "Bloqués".
+    def block_number(order_id, reason:)
+      reason = reason.to_s.strip
+      raise Error, "Give a reason to block this number." if reason.blank?
+
+      with_order(order_id) do |order, confirmation|
+        require_shift!
+        BlockedPhone.block!(store: @store, phone: order.customer_phone, reason: reason, user: @user)
+        BlockedPhone.block!(store: @store, phone: order.second_phone, reason: reason, user: @user) if order.second_phone.present?
+        confirmation.update!(disposition: "blocked", assigned_user: nil, claimed_at: nil, call_started_at: nil, last_activity_at: nil, callback_at: nil)
+        order.record_event!("comment", body: "Number blocked — #{reason}", user: @user)
+        confirmation
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      raise Error, e.record.errors.full_messages.to_sentence
+    end
+
+    # Owner or manager unblocks the number: it leaves the list and its blocked orders go back to the queue.
+    def unblock(order_id)
+      raise Error, "Only owners and managers can unblock a number." if @user.confirmation_agent_view?
+
+      with_order(order_id) do |order, _confirmation|
+        keys = [ order.customer_phone, order.second_phone ].map { |phone| BlockedPhone.key_for(phone) }.reject(&:blank?)
+        BlockedPhone.where(store: @store, phone_key: keys).delete_all
+        OrderConfirmation.where(store: @store, disposition: "blocked").includes(:order).find_each do |row|
+          next unless ([ row.order.customer_phone, row.order.second_phone ].map { |phone| BlockedPhone.key_for(phone) } & keys).any?
+
+          row.update!(disposition: "pending")
+          row.order.record_event!("comment", body: "Number unblocked by #{@user.name.presence || @user.email}: back in the queue", user: @user)
+        end
+        order
+      end
+    end
+
+    # Manager fixes a wrong number and sends the order back to the queue.
+    def requeue(order_id, phone:)
+      raise Error, "Only owners and managers can send an order back to the queue." if @user.confirmation_agent_view?
+
+      with_order(order_id) do |order, confirmation|
+        raise Error, "Only orders flagged as wrong number can be sent back." unless confirmation.disposition == "wrong_number"
+        require_open!(order)
+
+        attrs = { name: order.customer_name, phone: phone.to_s, city: order.customer_city, district: order.customer_district, address: order.customer_address,
+                  second_phone: order.second_phone, notes: order.notes, tags: order.tags,
+                  lines: order.order_items.map { |item| { product_id: item.product_id, product_variant_id: item.product_variant_id, quantity: item.quantity } } }
+        apply_changes!(order, attrs)
+        blocked = BlockedPhone.blocked?(@store, order.reload.customer_phone, order.second_phone)
+        confirmation.update!(disposition: blocked ? "blocked" : "pending", callback_at: nil)
+        order.record_event!("comment", body: "Sent back to the queue by #{@user.name.presence || @user.email} with a corrected number", user: @user)
         confirmation
       end
     end
@@ -36,9 +120,10 @@ module Confirmations
     # "Appeler": claim + start the call clock. Reopening your own open call keeps the original start.
     def open_call(order_id)
       with_order(order_id) do |order, confirmation|
+        require_shift!
         require_open!(order)
         take!(order, confirmation)
-        confirmation.update!(call_started_at: confirmation.call_started_at || Time.current)
+        confirmation.update!(call_started_at: confirmation.call_started_at || Time.current, last_activity_at: Time.current)
         confirmation
       end
     end
@@ -52,7 +137,7 @@ module Confirmations
         if seconds && seconds > ABANDON_COUNT_AFTER
           confirmation.confirmation_attempts.create!(store: @store, user: @user, outcome: "abandoned", call_seconds: seconds, handled_seconds: handled_seconds(confirmation))
         end
-        confirmation.update!(call_started_at: nil)
+        confirmation.update!(call_started_at: nil, last_activity_at: Time.current)
         confirmation
       end
     end
@@ -74,12 +159,15 @@ module Confirmations
       callback = parse_callback(callback_at, outcome)
 
       with_order(order_id) do |order, confirmation|
+        require_shift!
         require_open!(order)
         require_owner!(confirmation)
         raise Error, "Open the call before finishing it." if panel && confirmation.call_started_at.nil?
 
         measured = panel ? call_seconds(confirmation) : nil
-        apply_changes!(order, changes) if changes
+        # Edits made during the call are kept only when the order goes on (confirmed, or a callback to finish later); a cancelled
+        # order, a wrong number or no answer must never be blocked by the order form rules.
+        apply_changes!(order, changes) if changes && %w[confirmed callback].include?(outcome)
         # The order lock serializes this count, so the third unanswered call always cancels.
         auto_cancel = outcome == "no_answer" && no_answer_count(confirmation) + 1 >= NO_ANSWER_LIMIT
         # Time held since the claim started; read before the claim is cleared below.
@@ -89,7 +177,7 @@ module Confirmations
         elsif %w[confirmed cancelled].include?(outcome)
           order.transition_to!(outcome, reason: notes, user: @user, source: :staff, sync_delivery: false)
         end
-        confirmation.update!(disposition: auto_cancel ? "cancelled" : outcome, callback_at: callback, assigned_user: nil, claimed_at: nil, call_started_at: nil)
+        confirmation.update!(disposition: auto_cancel ? "cancelled" : outcome, callback_at: callback, assigned_user: nil, claimed_at: nil, call_started_at: nil, last_activity_at: nil)
         confirmation.confirmation_attempts.create!(store: @store, user: @user, outcome: outcome, notes: notes, callback_at: callback, handled_seconds: handled, call_seconds: measured)
         body = "Confirmation outcome: #{outcome.humanize}#{" — #{notes}" if notes}"
         body = "#{body}. #{AUTO_CANCEL_REASON}" if auto_cancel
@@ -111,6 +199,9 @@ module Confirmations
 
     def with_order(order_id)
       authorize!
+      # Idle claims are released first (and committed on their own): an agent who comes back after
+      # 15 minutes of silence finds the order released instead of acting on a stale claim.
+      ClaimExpiry.release_idle!(@store)
       Order.transaction do
         order = @store.orders.lock.find(order_id)
         confirmation = OrderConfirmation.find_or_create_by!(order: order) { |row| row.store = @store }
@@ -126,7 +217,7 @@ module Confirmations
         raise Error, "Another agent has claimed this order."
       end
       unless confirmation.assigned_user_id == @user.id
-        confirmation.update!(assigned_user: @user, claimed_at: Time.current)
+        confirmation.update!(assigned_user: @user, claimed_at: Time.current, last_activity_at: Time.current)
         order.record_event!("comment", body: "Order claimed for confirmation", user: @user)
       end
       confirmation
@@ -186,6 +277,15 @@ module Confirmations
       return if @store && @user&.can_work_desk_for?(@store.id)
 
       raise Error, "Store administration access required."
+    end
+
+    # Agents must be present (confirmation page open / fresh heartbeat) to claim or handle
+    # orders. Looking needs no presence. Checked here so a crafted request cannot skip it.
+    def require_shift!
+      return unless @user.confirmation_agent_view?
+      return if Presence.new(store: @store, user: @user).present?
+
+      raise Error, I18n.t("admin.confirmations.clock_in_required")
     end
 
     def require_open!(order)

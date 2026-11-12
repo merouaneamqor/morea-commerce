@@ -1,80 +1,65 @@
-<% content_for :title, "Products, Admin" %>
+<% content_for :title, "Products — Admin" %>
 
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Products</h1>
-  <%= link_to "Add product", new_admin_product_path, class: "admin-btn admin-page-header__primary" %>
+  <%= link_to "Add product", new_admin_product_path, class: "admin-btn" %>
 </div>
 
-<div class="admin-card">
-  <% if @products.empty? %>
-    <p class="admin-empty">Add your first product to start selling.</p>
-  <% else %>
-    <ul class="admin-mobile-list md:hidden">
-      <% @products.each do |product| %>
-        <li>
-          <%= link_to edit_admin_product_path(product), class: "admin-mobile-list__item" do %>
-            <div class="admin-mobile-list__top">
-              <div class="admin-mobile-list__media">
-                <%= admin_thumb(product_image_url(product)) %>
-                <div>
-                  <p class="admin-mobile-list__name" dir="auto"><%= product.name %></p>
-                  <p class="admin-mobile-list__meta">
-                    <% if product.track_inventory %>
-                      <% qty = product.available_stock %>
-                      <span class="<%= "text-[#8e0b21]" if qty <= 5 %>"><%= qty %> in stock</span>
-                      <% if product.product_variants.size.positive? %>
-                        <span> · across <%= pluralize(product.product_variants.size, "variant", locale: :en) %></span>
-                      <% end %>
-                    <% else %>
-                      Inventory not tracked
-                    <% end %>
-                  </p>
-                </div>
-              </div>
-              <%= admin_badge(product.status) %>
-            </div>
-            <p class="admin-mobile-list__amount" dir="ltr"><%= product.price_display %></p>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
+<% if @connections.any? %>
+  <%# The store chooser: all the visible products, the manual ones, or one connected store (only switched-on stores are listed). %>
+  <nav class="mb-3 flex flex-wrap items-center gap-2" aria-label="<%= t("products_page.switch") %>" data-store-chooser>
+    <% chip = "inline-flex h-8 items-center gap-1.5 rounded-full border px-3.5 text-[13px] font-semibold transition" %>
+    <% on = "border-[#1c1c1e] bg-[#1c1c1e] text-white" %>
+    <% off = "border-[#e0e0e5] bg-white text-[#1c1c1e] hover:bg-[#efeff3]" %>
+    <%= link_to admin_products_path, "data-source": "all", "aria-current": (@source.blank? ? "true" : nil), class: "#{chip} #{@source.blank? ? on : off}" do %><%= t("products_page.all") %> <span class="text-[11px] opacity-70"><%= @counts.values.sum %></span><% end %>
+    <%= link_to admin_products_path(source: "manual"), "data-source": "manual", "aria-current": (@source == "manual" ? "true" : nil), class: "#{chip} #{@source == "manual" ? on : off}" do %><%= t("products_page.manual") %> <span class="text-[11px] opacity-70"><%= @counts[nil].to_i %></span><% end %>
+    <% @connections.each do |connection| %>
+      <%= link_to admin_products_path(source: connection.id), "data-source": connection.id, "aria-current": (@source == connection.id.to_s ? "true" : nil), class: "#{chip} #{@source == connection.id.to_s ? on : off}" do %><%= connection.name %> <span class="text-[11px] opacity-70"><%= connection.provider %> · <%= @counts[connection.id].to_i %></span><% end %>
+    <% end %>
+  </nav>
+<% end %>
 
-    <div class="admin-table-wrap hidden md:block">
-      <table class="admin-table">
-        <thead>
+<div class="admin-card">
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th><%= t("products_page.source") %></th>
+          <th>Status</th>
+          <th>Inventory</th>
+          <th class="is-numeric">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @products.each do |product| %>
           <tr>
-            <th>Product</th>
-            <th>Status</th>
-            <th>Inventory</th>
-            <th class="is-numeric">Price</th>
+            <td>
+              <%= link_to edit_admin_product_path(product), class: "flex items-center gap-3" do %>
+                <%= admin_thumb(product_image_url(product)) %>
+                <span class="admin-link"><%= product.name %></span>
+              <% end %>
+            </td>
+            <td class="admin-muted" data-source><%= product.store_connection&.name || t("products_page.manual") %></td>
+            <td><%= admin_badge(product.status) %></td>
+            <td>
+              <% if product.track_inventory %>
+                <% qty = product.available_stock %>
+                <span class="<%= "text-[#8e0b21]" if qty <= 5 %>"><%= qty %> in stock</span>
+                <% if product.product_variants.size.positive? %>
+                  <span class="admin-muted">across <%= pluralize(product.product_variants.size, "variant", locale: :en) %></span>
+                <% end %>
+              <% else %>
+                <span class="admin-muted">Inventory not tracked</span>
+              <% end %>
+            </td>
+            <td class="is-numeric"><%= product.price_display %></td>
           </tr>
-        </thead>
-        <tbody>
-          <% @products.each do |product| %>
-            <tr>
-              <td>
-                <%= link_to edit_admin_product_path(product), class: "flex items-center gap-3" do %>
-                  <%= admin_thumb(product_image_url(product)) %>
-                  <span class="admin-link"><%= product.name %></span>
-                <% end %>
-              </td>
-              <td><%= admin_badge(product.status) %></td>
-              <td>
-                <% if product.track_inventory %>
-                  <% qty = product.available_stock %>
-                  <span class="<%= "text-[#8e0b21]" if qty <= 5 %>"><%= qty %> in stock</span>
-                  <% if product.product_variants.size.positive? %>
-                    <span class="admin-muted">across <%= pluralize(product.product_variants.size, "variant", locale: :en) %></span>
-                  <% end %>
-                <% else %>
-                  <span class="admin-muted">Inventory not tracked</span>
-                <% end %>
-              </td>
-              <td class="is-numeric"><%= product.price_display %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  <% end %>
+        <% end %>
+      </tbody>
+    </table>
+    <% if @products.empty? %>
+      <p class="admin-empty">Add your first product to start selling.</p>
+    <% end %>
+  </div>
 </div>

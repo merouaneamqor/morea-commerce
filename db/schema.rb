@@ -152,6 +152,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
     t.index ["store_id"], name: "index_agent_changesets_on_store_id"
   end
 
+  create_table "agent_deductions", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "order_id", null: false
+    t.bigint "agent_payment_id"
+    t.integer "amount_cents", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_payment_id"], name: "index_agent_deductions_on_agent_payment_id"
+    t.index ["order_id"], name: "index_agent_deductions_on_order_id", unique: true
+    t.index ["store_id", "user_id", "status"], name: "index_agent_deductions_on_store_id_and_user_id_and_status"
+    t.index ["store_id"], name: "index_agent_deductions_on_store_id"
+    t.index ["user_id"], name: "index_agent_deductions_on_user_id"
+    t.check_constraint "amount_cents > 0", name: "agent_deductions_amount_positive"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'applied'::character varying]::text[])", name: "agent_deductions_status"
+  end
+
   create_table "agent_payments", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.bigint "user_id", null: false
@@ -160,11 +178,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
     t.datetime "paid_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "deductions_cents", default: 0, null: false
     t.index ["paid_by_id"], name: "index_agent_payments_on_paid_by_id"
     t.index ["store_id", "user_id", "paid_at"], name: "index_agent_payments_on_store_id_and_user_id_and_paid_at"
     t.index ["store_id"], name: "index_agent_payments_on_store_id"
     t.index ["user_id"], name: "index_agent_payments_on_user_id"
     t.check_constraint "amount_cents > 0", name: "agent_payments_amount_positive"
+    t.check_constraint "deductions_cents >= 0 AND deductions_cents <= amount_cents", name: "agent_payments_deductions_within_amount"
   end
 
   create_table "audit_events", force: :cascade do |t|
@@ -184,6 +204,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
     t.index ["store_id", "created_at"], name: "index_audit_events_on_store_id_and_created_at"
     t.index ["store_id"], name: "index_audit_events_on_store_id"
     t.check_constraint "source::text = ANY (ARRAY['ui'::character varying::text, 'api'::character varying::text, 'mcp'::character varying::text, 'job'::character varying::text, 'system'::character varying::text])", name: "audit_event_source"
+  end
+
+  create_table "blocked_phones", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "phone_key", null: false
+    t.string "reason", null: false
+    t.bigint "blocked_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["blocked_by_id"], name: "index_blocked_phones_on_blocked_by_id"
+    t.index ["store_id", "phone_key"], name: "index_blocked_phones_on_store_id_and_phone_key", unique: true
+    t.index ["store_id"], name: "index_blocked_phones_on_store_id"
   end
 
   create_table "cart_items", force: :cascade do |t|
@@ -672,11 +704,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "call_started_at"
+    t.datetime "last_activity_at"
     t.index ["assigned_user_id"], name: "index_order_confirmations_on_assigned_user_id"
     t.index ["order_id"], name: "index_order_confirmations_on_order_id", unique: true
     t.index ["store_id", "disposition", "callback_at"], name: "index_confirmation_queue"
     t.index ["store_id"], name: "index_order_confirmations_on_store_id"
-    t.check_constraint "disposition::text = ANY (ARRAY['pending'::character varying::text, 'no_answer'::character varying::text, 'callback'::character varying::text, 'confirmed'::character varying::text, 'cancelled'::character varying::text, 'wrong_number'::character varying::text])", name: "confirmation_disposition"
+    t.check_constraint "disposition::text = ANY (ARRAY['pending'::character varying, 'no_answer'::character varying, 'callback'::character varying, 'confirmed'::character varying, 'cancelled'::character varying, 'wrong_number'::character varying, 'blocked'::character varying]::text[])", name: "confirmation_disposition"
   end
 
   create_table "order_events", force: :cascade do |t|
@@ -784,6 +817,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
     t.string "ameex_message"
     t.text "ameex_error"
     t.datetime "ameex_synced_at"
+    t.string "delivery_provider", limit: 30
+    t.datetime "scheduled_for"
+    t.integer "advance_cents", default: 0, null: false
     t.index ["archived_at"], name: "index_orders_on_archived_at"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["customer_phone"], name: "index_orders_on_customer_phone"
@@ -796,6 +832,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
     t.index ["store_id", "ozon_code"], name: "index_orders_on_store_id_and_ozon_code", unique: true, where: "(ozon_code IS NOT NULL)"
     t.index ["store_id", "sendit_code"], name: "index_orders_on_store_id_and_sendit_code", unique: true, where: "(sendit_code IS NOT NULL)"
     t.index ["store_id"], name: "index_orders_on_store_id"
+    t.check_constraint "advance_cents >= 0", name: "orders_advance_cents_nonnegative"
     t.check_constraint "collected_cents IS NULL OR collected_cents >= 0", name: "orders_collected_cents_nonnegative"
     t.check_constraint "delivery_fee_cents IS NULL OR delivery_fee_cents >= 0", name: "orders_delivery_fee_cents_nonnegative"
     t.check_constraint "import_contact_issues <> '[]'::jsonb OR customer_id IS NOT NULL AND customer_name IS NOT NULL AND customer_phone IS NOT NULL AND customer_city IS NOT NULL AND customer_address IS NOT NULL", name: "orders_complete_contact_required"
@@ -1001,6 +1038,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
     t.datetime "updated_at", null: false
     t.string "color_hex"
     t.jsonb "image_order", default: [], null: false
+    t.string "external_id"
+    t.index ["product_id", "external_id"], name: "index_product_variants_on_product_and_external_id", unique: true, where: "(external_id IS NOT NULL)"
     t.index ["product_id"], name: "index_product_variants_on_product_id"
   end
 
@@ -1033,8 +1072,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
     t.text "movement"
     t.integer "image_order", default: [], null: false, array: true
     t.integer "cost_cents"
+    t.bigint "store_connection_id"
+    t.string "external_id"
+    t.datetime "external_synced_at"
     t.index ["featured"], name: "index_products_on_featured"
     t.index ["status"], name: "index_products_on_status"
+    t.index ["store_connection_id", "external_id"], name: "index_products_on_connection_and_external_id", unique: true, where: "(external_id IS NOT NULL)"
+    t.index ["store_connection_id"], name: "index_products_on_store_connection_id"
     t.index ["store_id", "slug"], name: "index_products_on_store_id_and_slug", unique: true
     t.index ["store_id"], name: "index_products_on_store_id"
     t.check_constraint "cost_cents IS NULL OR cost_cents >= 0", name: "products_cost_cents_nonnegative"
@@ -1146,6 +1190,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
     t.integer "shopify_order_limit"
     t.datetime "shopify_billing_period_start"
     t.datetime "shopify_billing_period_end"
+    t.text "api_credentials_ciphertext"
+    t.string "products_sync_state"
+    t.datetime "products_synced_at"
+    t.string "products_sync_error"
+    t.jsonb "products_sync_counts", default: {}, null: false
     t.index ["external_domain"], name: "unique_seallo_shop", unique: true, where: "((shopify_app)::text = 'seallo_connect'::text)"
     t.index ["shopify_oauth_state_digest"], name: "index_store_connections_on_shopify_oauth_state_digest", unique: true
     t.index ["store_id", "provider", "external_domain"], name: "idx_on_store_id_provider_external_domain_3a7fd79a93", unique: true
@@ -1279,6 +1328,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
     t.integer "session_version", default: 0, null: false
     t.string "confirmation_role", default: "supervisor", null: false
     t.integer "pay_per_delivery_cents", default: 0, null: false
+    t.integer "return_penalty_cents", default: 0, null: false
+    t.boolean "show_milestones", default: true, null: false
     t.index ["email"], name: "index_users_on_email_super_admin", unique: true, where: "(super_admin = true)"
     t.index ["status"], name: "index_users_on_status"
     t.index ["store_id", "email"], name: "index_users_on_store_id_and_email", unique: true
@@ -1286,6 +1337,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
     t.check_constraint "confirmation_role::text <> 'agent'::text OR admin = false", name: "users_agent_not_admin"
     t.check_constraint "confirmation_role::text = ANY (ARRAY['agent'::character varying::text, 'supervisor'::character varying::text])", name: "users_confirmation_role_check"
     t.check_constraint "pay_per_delivery_cents >= 0", name: "users_pay_per_delivery_nonnegative"
+    t.check_constraint "return_penalty_cents >= 0", name: "users_return_penalty_nonnegative"
     t.check_constraint "session_version >= 0", name: "users_session_version_nonnegative"
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying::text, 'suspended'::character varying::text, 'archived'::character varying::text])", name: "users_status_check"
   end
@@ -1318,11 +1370,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
   add_foreign_key "advertising_campaigns", "advertising_accounts"
   add_foreign_key "advertising_performances", "advertising_campaigns"
   add_foreign_key "agent_changesets", "stores"
+  add_foreign_key "agent_deductions", "agent_payments", on_delete: :nullify
+  add_foreign_key "agent_deductions", "orders"
+  add_foreign_key "agent_deductions", "stores"
+  add_foreign_key "agent_deductions", "users"
   add_foreign_key "agent_payments", "stores"
   add_foreign_key "agent_payments", "users"
   add_foreign_key "agent_payments", "users", column: "paid_by_id"
   add_foreign_key "audit_events", "stores", on_delete: :nullify
   add_foreign_key "audit_events", "users", column: "actor_user_id", on_delete: :nullify
+  add_foreign_key "blocked_phones", "stores"
+  add_foreign_key "blocked_phones", "users", column: "blocked_by_id", on_delete: :nullify
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "product_variants"
   add_foreign_key "cart_items", "products"
@@ -1393,6 +1451,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_100000) do
   add_foreign_key "privacy_rights_requests", "stores"
   add_foreign_key "product_translations", "products"
   add_foreign_key "product_variants", "products"
+  add_foreign_key "products", "store_connections", on_delete: :nullify
   add_foreign_key "products", "stores"
   add_foreign_key "push_subscriptions", "stores", on_delete: :cascade
   add_foreign_key "push_subscriptions", "users", on_delete: :cascade

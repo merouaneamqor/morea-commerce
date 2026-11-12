@@ -8,6 +8,10 @@ class Order < ApplicationRecord
   has_one :store_connection, through: :external_order_receipt
   has_many :order_imports, dependent: :destroy
   has_one :order_confirmation, dependent: :destroy
+  has_many :agent_deductions, dependent: :destroy
+
+  # A new order from a blocked number never enters the confirmation queue.
+  after_create :screen_blocked_phone
 
   # Happy-path progression (Sendit advances through these)
   FLOW = %w[
@@ -340,11 +344,21 @@ end
     update_columns(values) if values.any?
   end
 
+  # What the customer still pays at delivery: the total minus the advance already paid.
+  def to_collect_cents = [ total_cents - advance_cents.to_i, 0 ].max
+
   def total_display
     "#{(total_cents / 100.0).to_i.to_fs(:delimited)} #{currency}"
   end
 
   private
+
+  def screen_blocked_phone
+    return unless BlockedPhone.blocked?(store, customer_phone, second_phone)
+
+    OrderConfirmation.create!(store: store, order: self, disposition: "blocked")
+    record_event!("comment", body: "Number is on the store's blocked list: the order did not enter the queue")
+  end
 
   def apply_status_change!(new_status, reason: nil, user: nil, force: false, sync_delivery: true)
     raise ArgumentError, "Invalid transition #{status} → #{new_status}" unless force || can_transition_to?(new_status)
@@ -373,6 +387,7 @@ end
       end
 
       update!(status: new_status)
+      AgentDeduction.record_for!(self) if new_status == "returned"
       body = "Status changed from #{STATUS_LABELS.fetch(from, from.humanize)} to #{STATUS_LABELS.fetch(new_status, new_status.humanize)}"
       body = "#{body} — #{reason}" if reason.present?
       record_event!("status", body: body, user: user)

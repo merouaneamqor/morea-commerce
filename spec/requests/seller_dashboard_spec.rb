@@ -21,6 +21,10 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     document.css("aside nav ul a").map { |link| link["href"] }
   end
 
+  def owner_menu_links
+    %w[/dashboard /commandes /confirmation /admin/confirmations/dashboard /admin/confirmations?filter=all /clients /livraison /produits /themes /publicites /comptabilite /equipe /integrations]
+  end
+
   it "requires authentication" do
     host! "#{store.slug}.#{Store.base_domain}"
     get "/dashboard"
@@ -31,22 +35,23 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     sign_in(owner)
     get "/dashboard", params: { locale: "fr" }
     expect(response).to have_http_status(:ok)
-    expect(menu_links).to eq(%w[/dashboard /commandes /confirmation /clients /livraison /produits /themes /publicites /comptabilite /equipe /integrations])
-    expect(document.css("aside nav ul a").map(&:text).map(&:squish)).to include("Publicités")
+    expect(menu_links).to eq(owner_menu_links)
+    expect(document.css("aside nav ul a").map(&:text).map(&:squish)).to include("Publicités", "File d'attente", "Analyses")
     expect(document.css("aside nav ul li").map { |li| li.text.squish }).to include(a_string_including("Comptabilité"))
-    expect(document.css("aside nav ul li").map { |li| li.text.squish }).not_to include(a_string_matching(/Profit/))
+    expect(document.css("aside nav ul li").map { |li| li.text.squish }).not_to include(a_string_matching(/\bProfit\b/))
     expect(document.at_css("h1").text).to include("Bonjour, Salma")
     expect(response.body).to include("Boutique #{suffix}", "Plan Starter")
-    expect(document.css("section.grid > div").first(2).map { |tile| tile.at_css("p").text.squish }).to eq([ "Commandes", "Taux de livraison" ])
+    expect(document.css("[data-kpis=row1] [data-kpi]").first(2).map { |tile| tile.at_css("p").text.squish }).to eq([ "Chiffre d'affaires", "Commandes" ])
   end
 
-  it "no longer shows the financial cards: they moved to Comptabilité" do
+  it "shows revenue on the dashboard while keeping detailed accounting charts on Comptabilité" do
     sign_in(owner)
     customer = store.customers.create!(name: "Client", phone: "0612345678", email: "c-#{suffix}@example.test")
     store.orders.create!(customer: customer, number: "MONEY-#{suffix}", status: "delivered", currency: "MAD", customer_name: "Client", customer_phone: "0612345678",
       customer_city: "Fès", customer_address: "Rue 1", total_cents: 25_000, delivered_at: 1.hour.ago)
     get "/dashboard", params: { locale: "fr" }
-    expect(response.body).not_to include("Chiffre d'affaires", "Profit net", "Ventes livrées vs publicité", "Profit par produit", "Panier moyen")
+    expect(document.at_css("[data-kpi=revenue]").text).to include("Chiffre d'affaires")
+    expect(response.body).not_to include("Profit net", "Ventes livrées vs publicité", "Profit par produit", "Panier moyen")
     expect(document.css("[data-sales-chart]")).to be_empty
   end
 
@@ -72,7 +77,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     expect(response).to redirect_to(%r{/admin/confirmations})
     get home_admin_confirmations_path
     expect(response).to have_http_status(:ok)
-    expect(menu_links).to eq(%w[/commandes /confirmation /mes-statistiques])
+    expect(menu_links).to eq(%w[/commandes /confirmation /admin/confirmations/dashboard /mes-statistiques])
     expect(response.body).not_to include("Plan · ")
   end
 
@@ -157,7 +162,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
 
   it "sends the seallo page URLs that are not ported yet to their current page, keeping the query string" do
     host! Store.base_domain
-    { "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations", "/livraison" => "/admin/delivery",
+    { "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations/center", "/livraison" => "/admin/delivery",
       "/produits" => "/admin/products", "/equipe" => "/admin/staff", "/mes-statistiques" => "/admin/my_stats" }.each do |from, to|
       get from
       expect(response).to redirect_to("http://#{Store.base_domain}#{to}")

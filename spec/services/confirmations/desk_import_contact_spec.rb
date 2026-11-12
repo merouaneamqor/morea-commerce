@@ -12,7 +12,7 @@ RSpec.describe Confirmations::Desk, "import contact review" do
   end
   let(:desk) { described_class.new(store: store, user: agent) }
 
-  before { ConfirmationShift.create!(store: store, user: agent, started_at: 1.hour.ago) }
+  before { ConfirmationShift.create!(store: store, user: agent, started_at: 1.hour.ago, last_seen_at: Time.current) }
 
   it "refuses claiming or calling without persisting a confirmation or attempts" do
     [ :claim, :open_call ].each do |action|

@@ -3,10 +3,22 @@ module Admin
     PERIODS = %w[today week month].freeze
     FILTERS = %w[available mine all callbacks_due].freeze
 
+    include DateRangeSelection
+
     before_action :require_store_context!
     helper_method :agent_view?
 
+    # The call center page: stat cards, filters, tabs and the order table, all from Confirmations::CallCenter.
+    def center
+      @agent_present = Confirmations::Presence.new(store: current_store, user: current_user).present? if agent_view?
+      @date_range = selected_date_range(scope: "call_center", default: "last_30")
+      filters = params.permit(:tab, :product, :source, :whatsapp, :missed, :q, :sort, :page).to_h.symbolize_keys
+      @center = Confirmations::CallCenter.new(store: current_store, user: current_user, range: @date_range.time_range, params: filters)
+      @summary = Team::AgentEarnings.new(store: current_store, range: @date_range.time_range).summary_for(current_user) if agent_view?
+    end
+
     def index
+      @agent_present = Confirmations::Presence.new(store: current_store, user: current_user).present? if agent_view?
       @page = params[:page].to_i.clamp(1, 100_000)
       @filters = agent_view? ? FILTERS - %w[all] : FILTERS
       @filter = @filters.include?(params[:filter]) ? params[:filter] : "available"
@@ -19,7 +31,7 @@ module Admin
           .where("order_confirmations.callback_at <= ?", Time.current)
       elsif @filter == "available"
         orders = orders.where("order_confirmations.assigned_user_id IS NULL")
-          .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition <> 'wrong_number'")
+          .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
           .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
       end
       @orders = orders.includes(:order_items).order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC"))
@@ -39,6 +51,7 @@ module Admin
     def home
       @home = Confirmations::AgentHome.new(store: current_store, user: current_user, range: period_range("today"))
       @presence_seconds = Confirmations::Presence.new(store: current_store, user: current_user).seconds_within(period_range("today")) if agent_view?
+      @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
     end
 
     def dashboard
@@ -47,8 +60,10 @@ module Admin
         only: (current_user if agent_view?))
       @rows = @performance.rows
       @totals = @performance.totals
+      @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
     end
 
+    # Page-open presence for agents (main). Replaces stack clock_in / clock_out.
     def presence
       if agent_view?
         tracker = Confirmations::Presence.new(store: current_store, user: current_user)
@@ -74,6 +89,16 @@ module Admin
       call_error(e.message)
     end
 
+    # The call window: opened from "Appeler" in the order-modal frame.
+    def panel
+      @order = current_store.orders.includes(order_items: [ :product, :product_variant ]).find(params[:order_id])
+      return redirect_to(center_admin_confirmations_path, alert: t("call_panel.not_callable")) unless @order.status == "new" && @order.archived_at.nil? && @order.sendit_code.blank?
+
+      product_ids = @order.order_items.filter_map(&:product_id)
+      @variants = ProductVariant.where(product_id: product_ids, active: true).order(:id).group_by(&:product_id)
+      render :panel, layout: (turbo_frame_request? ? false : "admin")
+    end
+
     def abandon_call
       desk.abandon_call(params[:order_id])
       call_response({ ok: true }, notice: nil)
@@ -86,6 +111,50 @@ module Admin
       call_response({ ok: true, next_order_id: next_available_order_id(excluding: params[:order_id]) }, notice: t("admin.confirmations.recorded"))
     rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid, ArgumentError => e
       call_error(e.message)
+    end
+
+    def touch_call
+      desk.touch_call(params[:order_id])
+      render json: { ok: true }
+    rescue Confirmations::Desk::Error => e
+      render json: { error: e.message }, status: :unprocessable_content
+    end
+
+    # Logs "who opened WhatsApp, when", then opens WhatsApp with the ready message.
+    def whatsapp
+      order = desk.log_whatsapp(params[:order_id])
+      message = t("admin.confirmations.whatsapp_message", name: order.customer_name, store: current_store.name, number: order.number, total: order.total_display)
+      redirect_to "https://wa.me/#{order.customer_phone.to_s.gsub(/\D/, "")}?text=#{ERB::Util.url_encode(message)}", allow_other_host: true
+    rescue Confirmations::Desk::Error => e
+      redirect_back_or_to admin_confirmations_path, alert: e.message
+    end
+
+    def block_number
+      desk.block_number(params[:order_id], reason: params[:reason])
+      redirect_back_or_to admin_confirmations_path, notice: t("admin.confirmations.number_blocked")
+    rescue Confirmations::Desk::Error => e
+      redirect_back_or_to admin_confirmations_path, alert: e.message
+    end
+
+    def unblock
+      desk.unblock(params[:order_id])
+      redirect_back_or_to admin_orders_path, notice: t("admin.confirmations.number_unblocked")
+    rescue Confirmations::Desk::Error => e
+      redirect_back_or_to admin_orders_path, alert: e.message
+    end
+
+    def force_release
+      desk.force_release(params[:order_id])
+      redirect_back_or_to admin_confirmations_path, notice: t("admin.confirmations.released")
+    rescue Confirmations::Desk::Error => e
+      redirect_back_or_to admin_confirmations_path, alert: e.message
+    end
+
+    def requeue
+      desk.requeue(params[:order_id], phone: params[:phone])
+      redirect_back_or_to admin_orders_path, notice: t("admin.confirmations.requeued")
+    rescue Confirmations::Desk::Error => e
+      redirect_back_or_to admin_orders_path, alert: e.message
     end
 
     def release
@@ -135,7 +204,7 @@ module Admin
       current_store.orders.active.where(status: "new", sendit_code: [ nil, "" ]).where.not(id: excluding)
         .joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")
         .where("order_confirmations.assigned_user_id IS NULL")
-        .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition <> 'wrong_number'")
+        .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
         .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
         .order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC")).pick("orders.id")
     end
@@ -174,7 +243,7 @@ module Admin
       return held if held
 
       scope.where("order_confirmations.assigned_user_id IS NULL")
-        .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition <> 'wrong_number'")
+        .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
         .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
         .order(Arel.sql("(orders.import_contact_issues = '[]'::jsonb) DESC, order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC")).first
     end

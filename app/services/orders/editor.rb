@@ -5,6 +5,10 @@ module Orders
   class Editor
     class Error < StandardError; end
 
+    # ActiveModel::Errors#full_messages asks its owner for human attribute names; without this an error on a
+    # field (an invalid phone, say) raised NoMethodError instead of showing the message.
+    extend ActiveModel::Translation
+
     attr_reader :store, :user, :order, :errors
 
     def initialize(store:, user: nil, external_effects: true)
@@ -39,12 +43,14 @@ module Orders
           customer_city: contact[:city],
           customer_district: contact[:district],
           customer_address: contact[:address],
+          second_phone: contact[:second_phone],
           notes: attrs[:notes].presence,
           tags: normalize_tags(attrs[:tags]),
           payment_method: "cod",
           status: "new",
           currency: store.currency,
           **totals,
+          **delivery_attributes(attrs),
           **sendit_district_for(contact)
         )
 
@@ -98,6 +104,7 @@ module Orders
           customer_district: contact[:district],
           customer_address: contact[:address],
           second_phone: attrs.key?(:second_phone) ? contact[:second_phone] : order.second_phone,
+          **delivery_attributes(attrs, current: order),
           notes: attrs.key?(:notes) ? attrs[:notes].presence : order.notes,
           tags: attrs.key?(:tags) ? normalize_tags(attrs[:tags]) : order.tags,
           **totals,
@@ -262,11 +269,63 @@ module Orders
         errors.add(:discount_code, "is not valid") unless discount
       end
 
-      if errors.empty? && compute_totals(lines, attrs)[:total_cents].zero?
-        errors.add(:base, "The order total must be above 0 #{store.currency}.")
+      if errors.empty?
+        total = compute_totals(lines, attrs)[:total_cents]
+        errors.add(:base, "The order total must be above 0 #{store.currency}.") if total.zero?
+        validate_delivery_details(attrs, total)
       end
 
       errors.empty?
+    end
+
+    # The delivery company, the wished day and the advance typed with the order. On an update only the keys given are written.
+    def delivery_attributes(attrs, current: nil)
+      result = {}
+      result[:delivery_provider] = attrs[:delivery_provider].to_s.strip.presence if current.nil? || attrs.key?(:delivery_provider)
+      result[:scheduled_for] = parse_schedule(attrs[:scheduled_for]) if current.nil? || attrs.key?(:scheduled_for)
+      result[:advance_cents] = advance_cents(attrs[:advance_dh]) if current.nil? || attrs.key?(:advance_dh)
+      result
+    end
+
+    def parse_schedule(value)
+      return if value.blank?
+
+      ActiveSupport::TimeZone[DateRange::ZONE].parse(value.to_s)
+    rescue ArgumentError
+      nil
+    end
+
+    # "50" or "50,5" MAD to whole centimes; never negative.
+    def advance_cents(value)
+      return 0 if value.blank?
+
+      [ (BigDecimal(value.to_s.tr(",", ".")) * 100).round(0).to_i, 0 ].max
+    rescue ArgumentError
+      0
+    end
+
+    # Only a delivery company the store is connected to through its API can be chosen; the wished day must be a real date;
+    # the advance cannot be more than the order's total.
+    def validate_delivery_details(attrs, total)
+      provider = attrs[:delivery_provider].to_s.strip
+      if provider.present? && !connected_providers.include?(provider)
+        errors.add(:delivery_provider, "must be a delivery company this store is connected to")
+      end
+      if attrs[:scheduled_for].present? && parse_schedule(attrs[:scheduled_for]).nil?
+        errors.add(:scheduled_for, "is not a valid date")
+      end
+      if attrs[:advance_dh].present?
+        begin
+          errors.add(:base, "The advance cannot be negative.") if BigDecimal(attrs[:advance_dh].to_s.tr(",", ".")).negative?
+        rescue ArgumentError
+          errors.add(:base, "The advance must be an amount.")
+        end
+        errors.add(:base, "The advance cannot be more than the total of the order.") if advance_cents(attrs[:advance_dh]) > total
+      end
+    end
+
+    def connected_providers
+      @connected_providers ||= store.delivery_accounts.where(is_active: true).where.not(connected_at: nil).pluck(:provider).uniq
     end
 
     # The optional "Assign to agent" choice: only an active confirmation agent of this store.
@@ -319,7 +378,9 @@ module Orders
         discount_cents = 0 if discount_cents.negative?
       end
 
-      shipping_cents = if attrs.key?(:shipping_dh)
+      shipping_cents = if ActiveModel::Type::Boolean.new.cast(attrs[:shipping_excluded])
+        0   # "Exclus": the customer pays the products only
+      elsif attrs.key?(:shipping_dh)
         [ (attrs[:shipping_dh].to_f * 100).round, 0 ].max
       else
         0

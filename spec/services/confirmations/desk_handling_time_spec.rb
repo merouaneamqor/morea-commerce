@@ -7,7 +7,7 @@ RSpec.describe Confirmations::Desk, "handling time" do
   let(:product) { store.products.create!(slug: "tee-#{SecureRandom.hex(3)}", name: "Synthetic tee", price_cents: 10_000, stock: 10, status: "active", track_inventory: true) }
   let(:desk) { described_class.new(store: store, user: agent) }
 
-  before { ConfirmationShift.create!(store: store, user: agent, started_at: 1.hour.ago) } # agents work on shift
+  before { ConfirmationShift.create!(store: store, user: agent, started_at: 1.hour.ago, last_seen_at: Time.current) } # agents work on shift
 
   def new_order
     editor = Orders::Editor.new(store: store, user: agent, external_effects: false)

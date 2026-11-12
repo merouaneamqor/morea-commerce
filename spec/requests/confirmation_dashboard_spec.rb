@@ -156,6 +156,7 @@ RSpec.describe "Confirmation dashboard", type: :request do
 
     it "claims an order from the queue" do
       sign_in(agent)
+      ConfirmationShift.create!(store: store, user: agent, started_at: 5.minutes.ago, last_seen_at: Time.current)
       order = new_order
 
       post "/admin/confirmations/#{order.id}/claim"

@@ -2,7 +2,8 @@
 
 require "rails_helper"
 
-# The dashboard keeps the order counts and rates. Money figures are AccountingStats' job (see its spec).
+# Operational KPIs plus money/low_stock/distribution/top_products for the dashboard cards.
+# Money figures are read through AccountingStats so Comptabilité and the dashboard agree.
 RSpec.describe Seller::DashboardStats do
   let(:suffix) { SecureRandom.hex(4) }
   let(:store) { Store.create!(name: "Stats #{suffix}", slug: "stats-#{suffix}", currency: "MAD") }
@@ -22,9 +23,10 @@ RSpec.describe Seller::DashboardStats do
     expect(stats[:currency]).to eq("MAD")
   end
 
-  it "no longer computes any money result: that belongs to AccountingStats" do
+  it "exposes money, stock and product cards alongside the operational KPIs" do
     order(status: "delivered", total: 20_000, delivered_at: now - 1.day)
-    expect(stats.keys).to match_array(%i[range currency pending kpis latest])
+    expect(stats.keys).to match_array(%i[range currency pending money low_stock distribution top_products kpis latest])
+    expect(stats[:money]).to include(:revenue, :revenue_delta, :average_basket)
     expect(stats[:kpis].keys).not_to include(:revenue, :net_profit, :average_order, :revenue_delta)
   end
 

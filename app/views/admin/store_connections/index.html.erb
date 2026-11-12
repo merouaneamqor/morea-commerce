@@ -3,9 +3,9 @@
 <% content_for :admin_page_class, "seller-page" %>
 <% content_for :seller_lang, "1" %>
 <% platforms = [
-     { key: "shopify", name: "Shopify", logo: "/images/partners/shopify.png", desc: "Seallo importe les commandes et les produits Shopify.", steps: t("seller_integrations.shopify_steps"), href: admin_seallo_connect_path },
-     { key: "woocommerce", name: "WooCommerce", logo: "/images/partners/woocommerce.png", desc: "Seallo se connecte au site WordPress par une autorisation ou par des clés API.", steps: t("seller_integrations.woocommerce_steps"), href: admin_woocommerce_connect_path },
-     { key: "youcan", name: "YouCan", logo: "/images/partners/youcan.png", desc: "Seallo reçoit les commandes YouCan par un webhook signé.", steps: t("seller_integrations.youcan_steps"), href: admin_youcan_connect_path }
+     { key: "shopify", name: "Shopify", logo: "/images/partners/shopify.png", desc: "Commandes et produits en direct, dès leur création.", steps: t("seller_integrations.shopify_steps"), href: admin_seallo_connect_path },
+     { key: "woocommerce", name: "WooCommerce", logo: "/images/partners/woocommerce.png", desc: "Votre site WordPress : autorisation en un clic ou clés API.", steps: t("seller_integrations.woocommerce_steps"), href: admin_woocommerce_connect_path },
+     { key: "youcan", name: "YouCan", logo: "/images/partners/youcan.png", desc: "Votre boutique YouCan reliée en quelques secondes.", steps: t("seller_integrations.youcan_steps"), href: admin_youcan_connect_path }
    ] %>
 <% linked_by_provider = @connections.select(&:active?).group_by(&:provider) %>
 <% locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>
@@ -36,25 +36,25 @@
 
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div>
-    <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= sl("Intégrations API") %></h1>
-    <p class="max-w-2xl text-sm"><%= sl("Reliez Shopify, Sendit et la publicité. Seallo importe les commandes et les affiche sur le tableau de bord.") %></p>
+    <h1 class="text-2xl font-bold text-[#1c1c1e] sm:text-[28px]"><%= sl("Intégrations API") %></h1>
+    <p class="max-w-2xl text-sm"><%= sl("Reliez vos outils à seallo : les commandes arrivent toutes seules, et le tableau de bord se remplit en temps réel.") %></p>
   </div>
   <%= render "admin/shared/language_switcher" %>
 </header>
 
 <section>
-  <h2 class="mb-2.5 text-sm font-semibold text-[#1f2430]"><%= sl("Boutique en ligne") %></h2>
-  <button type="button" data-stores-open class="group flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4 text-start transition hover:border-[#d6cfca]">
+  <h2 class="mb-2.5 text-sm font-semibold text-[#1c1c1e]"><%= sl("Boutique en ligne") %></h2>
+  <button type="button" data-stores-open class="group flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e0e0e5] bg-white p-4 text-start transition hover:border-[#d2d2d7]">
     <span class="flex items-center gap-3">
       <span class="flex -space-x-2 rtl:space-x-reverse">
         <% platforms.each do |platform| %><img src="<%= platform[:logo] %>" alt="<%= platform[:name] %>" class="size-10 rounded-full border-2 border-white bg-white object-contain p-0.5 shadow-sm"><% end %>
       </span>
       <span>
-        <span class="block text-sm font-semibold text-[#1f2430]"><%= t("seller_integrations.stores_summary") %></span>
-        <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.stores_subtitle") %></span>
+        <span class="block text-sm font-semibold text-[#1c1c1e]"><%= t("seller_integrations.stores_summary") %></span>
+        <span class="text-xs text-[#6e6e73]"><%= t("seller_integrations.stores_subtitle") %></span>
       </span>
     </span>
-    <span class="text-sm font-semibold text-[#a8432e]"><%= t("seller_integrations.connect_store") %></span>
+    <span class="text-sm font-semibold text-[#1d1d1f]"><%= t("seller_integrations.connect_store") %> →</span>
   </button>
 
   <% connected_stores = @connections.select(&:active?) %>
@@ -65,17 +65,17 @@
         <% next unless platform %>
         <% synced_at = connection.shopify_orders_synced_at || connection.last_received_at %>
         <li class="flex flex-wrap items-center gap-3 rounded-2xl border border-[#bfe0c9] bg-white p-3.5" data-store="<%= connection.id %>">
-          <img src="<%= platform[:logo] %>" alt="<%= platform[:name] %>" class="size-11 shrink-0 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
+          <img src="<%= platform[:logo] %>" alt="<%= platform[:name] %>" class="size-11 shrink-0 rounded-full border border-[#ececf0] bg-white object-contain p-0.5">
           <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-semibold text-[#1f2430]" dir="ltr"><%= connection.external_domain %></p>
-            <p class="truncate text-xs text-[#8a8380]"><%= platform[:name] %>, <%= sl("Dernière synchronisation") %> <% if synced_at %><time datetime="<%= synced_at.iso8601 %>" data-when><%= synced_at.iso8601 %></time><% else %><%= admin_blank %><% end %></p>
+            <p class="truncate text-sm font-semibold text-[#1c1c1e]" dir="ltr"><%= connection.external_domain %></p>
+            <p class="truncate text-xs text-[#6e6e73]"><%= platform[:name] %> · <%= sl("Dernière synchronisation") %> : <% if synced_at %><time datetime="<%= synced_at.iso8601 %>" data-when><%= synced_at.iso8601 %></time><% else %>—<% end %></p>
           </div>
           <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
           <% if connection.provider == "shopify" && @shopify_configured %>
             <%= button_to sl("Synchroniser"), admin_store_connection_path(connection), method: :patch, params: { operation: "sync_shopify_orders" },
-                  class: "h-9 rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]" %>
+                  class: "h-9 rounded-lg border border-[#e0e0e5] px-3 text-xs font-semibold text-[#1c1c1e] hover:border-[#1d1d1f] hover:text-[#1d1d1f]" %>
           <% else %>
-            <%= link_to t("seller_integrations.details"), admin_store_connection_path(connection), class: "flex h-9 items-center rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]" %>
+            <%= link_to t("seller_integrations.details"), admin_store_connection_path(connection), class: "flex h-9 items-center rounded-lg border border-[#e0e0e5] px-3 text-xs font-semibold text-[#1c1c1e] hover:border-[#1d1d1f] hover:text-[#1d1d1f]" %>
           <% end %>
           <%= button_to sl("Déconnecter"), admin_store_connection_path(connection), method: :patch, params: { operation: "disconnect" },
                 class: "h-9 rounded-lg px-3 text-xs font-semibold text-[#b4344e] hover:bg-[#fbe7ea]",
@@ -86,19 +86,19 @@
   <% end %>
 </section>
 
-<section>
-  <h2 class="mb-2.5 text-sm font-semibold text-[#1f2430]"><%= sl("Sociétés de livraison") %></h2>
-  <button type="button" data-delivery-new class="group flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4 text-start transition hover:border-[#d6cfca]">
+<section id="delivery">
+  <h2 class="mb-2.5 text-sm font-semibold text-[#1c1c1e]"><%= sl("Sociétés de livraison") %></h2>
+  <button type="button" data-delivery-new class="group flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e0e0e5] bg-white p-4 text-start transition hover:border-[#d2d2d7]">
     <span class="flex items-center gap-3">
       <span class="flex -space-x-2 rtl:space-x-reverse">
         <% %w[sendit ozon cathedis ameex].each do |key| %><img src="/images/partners/<%= key %>.png" alt="" class="size-10 rounded-full border-2 border-white bg-white object-contain p-0.5 shadow-sm"><% end %>
       </span>
       <span>
-        <span class="block text-sm font-semibold text-[#1f2430]"><%= t("seller_integrations.delivery_summary", count: Carriers.providers.count { |key, info| key != "other" && !info["unavailable"] } - 4) %></span>
-        <span class="text-xs text-[#8a8380]"><%= sl("Ajoutez vos comptes de livraison, leurs tarifs et leur ville de ramassage.") %></span>
+        <span class="block text-sm font-semibold text-[#1c1c1e]"><%= t("seller_integrations.delivery_summary", count: Carriers.providers.count { |key, info| key != "other" && !info["unavailable"] } - 4) %></span>
+        <span class="text-xs text-[#6e6e73]"><%= sl("Ajoutez vos comptes de livraison, leurs tarifs et leur ville de ramassage.") %></span>
       </span>
     </span>
-    <span class="text-sm font-semibold text-[#a8432e]"><%= sl("Gérer les sociétés de livraison") %></span>
+    <span class="text-sm font-semibold text-[#1d1d1f]"><%= sl("Gérer les sociétés de livraison") %> →</span>
   </button>
 
   <%# Always-visible API carrier cards (Meta Ads pattern): status + Settings, including legacy Sendit without a managed account. %>
@@ -109,21 +109,21 @@
      ] %>
   <ul class="mt-3 space-y-2" data-carrier-settings>
     <% api_carriers.each do |carrier| %>
-      <li class="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4" data-carrier="<%= carrier[:key] %>">
+      <li class="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e0e0e5] bg-white p-4" data-carrier="<%= carrier[:key] %>">
         <span class="flex min-w-0 items-center gap-3">
-          <img src="<%= carrier[:logo] %>" alt="<%= carrier[:name] %>" class="size-11 shrink-0 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
+          <img src="<%= carrier[:logo] %>" alt="<%= carrier[:name] %>" class="size-11 shrink-0 rounded-full border border-[#ececf0] bg-white object-contain p-0.5">
           <span>
-            <span class="block text-sm font-semibold text-[#1f2430]"><%= carrier[:name] %></span>
-            <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.carrier_settings_subtitle") %></span>
+            <span class="block text-sm font-semibold text-[#1c1c1e]"><%= carrier[:name] %></span>
+            <span class="text-xs text-[#6e6e73]"><%= t("seller_integrations.carrier_settings_subtitle") %></span>
           </span>
         </span>
         <span class="flex flex-wrap items-center gap-2">
           <% if carrier[:connected] %>
             <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
           <% else %>
-            <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= sl("Non connectée") %></span>
+            <span class="rounded-full bg-[#efeff3] px-2.5 py-1 text-xs font-semibold text-[#6e6e73]"><%= sl("Non connectée") %></span>
           <% end %>
-          <%= link_to t("seller_integrations.carrier_settings"), carrier[:path], class: "text-sm font-semibold text-[#a8432e]" %>
+          <%= link_to t("seller_integrations.carrier_settings"), carrier[:path], class: "text-sm font-semibold text-[#1d1d1f]" %>
         </span>
       </li>
     <% end %>
@@ -133,28 +133,28 @@
     <ul class="mt-3 space-y-2" data-delivery-accounts>
       <% @delivery_accounts.each do |account| %>
         <% info = account.provider_info %>
-        <li class="flex flex-wrap items-center gap-3 rounded-2xl border bg-white p-3.5 <%= account.is_active? ? "border-[#bfe0c9]" : "border-[#e8e3df]" %>" data-account="<%= account.id %>">
+        <li class="flex flex-wrap items-center gap-3 rounded-2xl border bg-white p-3.5 <%= account.is_active? ? "border-[#bfe0c9]" : "border-[#e0e0e5]" %>" data-account="<%= account.id %>">
           <span data-logo="<%= account.provider %>"></span>
           <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-semibold text-[#1f2430]" dir="auto"><%= account.name %> <span class="ms-1 text-xs font-medium text-[#8a8380]" dir="ltr"><%= account.code %></span></p>
-            <p class="truncate text-xs text-[#8a8380]"><%= info["name"] %><% if info["unavailable"] %>, <%= t("seller_integrations.provider_unavailable") %><% end %><% if account.pickup_city.present? %>, <%= account.pickup_city %><% end %></p>
+            <p class="truncate text-sm font-semibold text-[#1c1c1e]" dir="auto"><%= account.name %> <span class="ms-1 text-xs font-medium text-[#6e6e73]" dir="ltr"><%= account.code %></span></p>
+            <p class="truncate text-xs text-[#6e6e73]"><%= info["name"] %><% if info["unavailable"] %> · <%= t("seller_integrations.provider_unavailable") %><% end %><% if account.pickup_city.present? %> · <%= account.pickup_city %><% end %></p>
           </div>
           <% if account.ships_by_default? %>
-            <span class="rounded-full bg-[#fff1e8] px-2.5 py-1 text-xs font-semibold text-[#a8432e]"><%= sl("Par défaut") %></span>
+            <span class="rounded-full bg-[#efeff3] px-2.5 py-1 text-xs font-semibold text-[#1d1d1f]"><%= sl("Par défaut") %></span>
           <% elsif account.shippable? %>
             <%= button_to sl("Définir par défaut"), seller_delivery_account_default_path(account.id), method: :post,
-                  class: "h-9 rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]",
+                  class: "h-9 rounded-lg border border-[#e0e0e5] px-3 text-xs font-semibold text-[#1c1c1e] hover:border-[#1d1d1f] hover:text-[#1d1d1f]",
                   title: sl("Société par défaut pour l'envoi automatique des colis.") %>
           <% end %>
           <% if account.connected? %>
             <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
           <% else %>
-            <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]"><%= sl("Non connectée") %></span>
+            <span class="rounded-full bg-[#efeff3] px-2.5 py-1 text-xs font-semibold text-[#6e6e73]"><%= sl("Non connectée") %></span>
           <% end %>
           <% if (settings_path = carrier_settings_path_for(account.provider)) %>
-            <%= link_to t("seller_integrations.carrier_settings"), settings_path, class: "text-sm font-semibold text-[#a8432e]" %>
+            <%= link_to t("seller_integrations.carrier_settings"), settings_path, class: "text-sm font-semibold text-[#1d1d1f]" %>
           <% end %>
-          <button type="button" data-delivery-edit="<%= account.id %>" class="h-9 rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]"><%= sl("Modifier") %></button>
+          <button type="button" data-delivery-edit="<%= account.id %>" class="h-9 rounded-lg border border-[#e0e0e5] px-3 text-xs font-semibold text-[#1c1c1e] hover:border-[#1d1d1f] hover:text-[#1d1d1f]"><%= sl("Modifier") %></button>
           <%= button_to sl("Supprimer"), seller_delivery_account_path(account.id), method: :delete, class: "h-9 rounded-lg px-3 text-xs font-semibold text-[#b4344e] hover:bg-[#fbe7ea]",
                 form: { onsubmit: "return confirm(#{t("seller_integrations.delete_account_confirm").to_json})" } %>
         </li>
@@ -164,40 +164,40 @@
 </section>
 
 <section>
-  <h2 class="mb-2.5 text-sm font-semibold text-[#1f2430]"><%= sl("Publicité") %></h2>
+  <h2 class="mb-2.5 text-sm font-semibold text-[#1c1c1e]"><%= sl("Publicité") %></h2>
   <div class="space-y-3">
     <%# Meta Ads first, TikTok Ads behind it: one card each, same design as the other integrations. %>
-    <div class="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4" data-ad-network="meta">
+    <div class="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e0e0e5] bg-white p-4" data-ad-network="meta">
       <span class="flex items-center gap-3">
-        <img src="/images/partners/meta.png" alt="Meta Ads" class="size-11 shrink-0 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
+        <img src="/images/partners/meta.png" alt="Meta Ads" class="size-11 shrink-0 rounded-full border border-[#ececf0] bg-white object-contain p-0.5">
         <span>
-          <span class="block text-sm font-semibold text-[#1f2430]">Meta Ads</span>
-          <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.ads_subtitle") %></span>
+          <span class="block text-sm font-semibold text-[#1c1c1e]">Meta Ads</span>
+          <span class="text-xs text-[#6e6e73]"><%= t("seller_integrations.ads_subtitle") %></span>
         </span>
       </span>
       <% meta_state = @meta_connection&.needs_reconnect? ? "needs_reauthorization" : (@meta_connection&.status || "disconnected") %>
       <span class="flex items-center gap-2" data-meta-card="<%= meta_state %>">
         <% if meta_state == "active" %>
           <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
-          <%= link_to t("meta_ads.manage"), admin_meta_ads_path, class: "text-sm font-semibold text-[#a8432e]" %>
+          <%= link_to "#{t("meta_ads.manage")} →", admin_meta_ads_path, class: "text-sm font-semibold text-[#1d1d1f]" %>
         <% else %>
-          <%= button_to t(meta_state == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect"), connect_admin_meta_ads_path, method: :post,
+          <%= button_to "#{t(meta_state == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect")} →", connect_admin_meta_ads_path, method: :post,
                 form: { data: { turbo: false } },
-                class: "text-sm font-semibold text-[#a8432e]" %>
+                class: "text-sm font-semibold text-[#1d1d1f]" %>
         <% end %>
       </span>
     </div>
-    <div class="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e8e3df] bg-white p-4" data-ad-network="tiktok">
+    <div class="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e0e0e5] bg-white p-4" data-ad-network="tiktok">
       <span class="flex items-center gap-3">
-        <img src="/images/partners/tiktok.png" alt="TikTok Ads" class="size-11 shrink-0 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
+        <img src="/images/partners/tiktok.png" alt="TikTok Ads" class="size-11 shrink-0 rounded-full border border-[#ececf0] bg-white object-contain p-0.5">
         <span>
-          <span class="block text-sm font-semibold text-[#1f2430]">TikTok Ads</span>
-          <span class="text-xs text-[#8a8380]"><%= t("seller_integrations.tiktok_subtitle") %></span>
+          <span class="block text-sm font-semibold text-[#1c1c1e]">TikTok Ads</span>
+          <span class="text-xs text-[#6e6e73]"><%= t("seller_integrations.tiktok_subtitle") %></span>
         </span>
       </span>
-      <%= button_to t("tiktok_ads.connect"), admin_connect_tiktok_ads_path, method: :post,
+      <%= button_to "#{t("tiktok_ads.connect")} →", admin_connect_tiktok_ads_path, method: :post,
             form: { data: { turbo: false } },
-            class: "text-sm font-semibold text-[#a8432e]" %>
+            class: "text-sm font-semibold text-[#1d1d1f]" %>
     </div>
   </div>
 </section>
@@ -205,20 +205,20 @@
 <div data-modal="stores" hidden class="lg-scrim fixed inset-0 z-50 grid place-items-center p-4">
   <div class="lg-panel w-full max-w-md rounded-2xl p-6" role="dialog" aria-modal="true">
     <div class="mb-1 flex items-center justify-between">
-      <h2 class="text-lg font-bold text-[#1f2430]"><%= t("seller_integrations.connect_store") %></h2>
-      <button type="button" data-close-modal class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="Fermer">Fermer</button>
+      <h2 class="text-lg font-bold text-[#1c1c1e]"><%= t("seller_integrations.connect_store") %></h2>
+      <button type="button" data-close-modal class="rounded-lg p-1.5 text-[#6e6e73] hover:bg-[#e8e8ed]" aria-label="✕">✕</button>
     </div>
     <p class="mb-4 text-sm"><%= t("seller_integrations.stores_pick_text") %></p>
     <div class="space-y-2">
       <% platforms.each do |platform| %>
         <% linked = linked_by_provider.fetch(platform[:key], []) %>
-        <div class="flex items-center gap-3 rounded-xl border p-3 <%= linked.any? ? "border-[#bfe0c9]" : "border-[#e8e3df]" %>">
-          <img src="<%= platform[:logo] %>" alt="<%= platform[:name] %>" class="size-11 shrink-0 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
+        <div class="flex items-center gap-3 rounded-xl border p-3 <%= linked.any? ? "border-[#bfe0c9]" : "border-[#e0e0e5]" %>">
+          <img src="<%= platform[:logo] %>" alt="<%= platform[:name] %>" class="size-11 shrink-0 rounded-full border border-[#ececf0] bg-white object-contain p-0.5">
           <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-semibold text-[#1f2430]"><%= platform[:name] %></p>
-            <p class="text-xs text-[#8a8380]"><%= sl(platform[:desc]) %></p>
+            <p class="truncate text-sm font-semibold text-[#1c1c1e]"><%= platform[:name] %></p>
+            <p class="text-xs text-[#6e6e73]"><%= sl(platform[:desc]) %></p>
           </div>
-          <button type="button" data-connect="<%= platform[:key] %>" class="h-9 shrink-0 rounded-lg px-3 text-xs font-semibold <%= linked.any? ? "border border-[#e8e3df] text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]" : "bg-[#a8432e] text-white hover:bg-[#8e3624]" %>"><%= linked.any? ? "+ #{t("seller_integrations.add_another_store")}" : sl("Connecter") %></button>
+          <button type="button" data-connect="<%= platform[:key] %>" class="h-9 shrink-0 rounded-lg px-3 text-xs font-semibold <%= linked.any? ? "border border-[#e0e0e5] text-[#1c1c1e] hover:border-[#1d1d1f] hover:text-[#1d1d1f]" : "bg-[#1d1d1f] text-white hover:bg-[#3a3a3c]" %>"><%= linked.any? ? "+ #{t("seller_integrations.add_another_store")}" : sl("Connecter") %></button>
         </div>
       <% end %>
     </div>
@@ -231,12 +231,12 @@
       <div class="mb-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <img src="<%= platform[:logo] %>" alt="" class="size-10 rounded-lg object-contain">
-          <h2 class="text-lg font-bold text-[#1f2430]"><%= sl("Connecter") %> <%= platform[:name] %></h2>
+          <h2 class="text-lg font-bold text-[#1c1c1e]"><%= sl("Connecter") %> <%= platform[:name] %></h2>
         </div>
-        <button type="button" data-close-modal class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="Fermer">Fermer</button>
+        <button type="button" data-close-modal class="rounded-lg p-1.5 text-[#6e6e73] hover:bg-[#e8e8ed]" aria-label="✕">✕</button>
       </div>
       <p class="text-sm"><%= platform[:steps] %></p>
-      <%= link_to t("seller_integrations.continue"), platform[:href], class: "mt-5 flex h-11 w-full items-center justify-center rounded-xl bg-[#a8432e] text-sm font-semibold text-white hover:bg-[#8e3624]" %>
+      <%= link_to t("seller_integrations.continue"), platform[:href], class: "mt-5 flex h-11 w-full items-center justify-center rounded-xl bg-[#1d1d1f] text-sm font-semibold text-white hover:bg-[#3a3a3c]" %>
     </div>
   </div>
 <% end %>
@@ -245,11 +245,7 @@
      data-catalog="<%= catalog.to_json %>" data-accounts="<%= accounts_json.to_json %>" data-strings="<%= modal_strings.to_json %>"
      data-currency="<%= currency %>" data-action="<%= seller_delivery_accounts_path %>" data-edit-path="/livraison/societes/"
      data-sendit="<%= t("seller_integrations.sendit").except(:errors).merge(browser_error: t("seller_integrations.sendit.errors.browser"), server_error: t("seller_integrations.sendit.errors.server_error", status: "%{status}"), detail_label: t("seller_integrations.sendit.errors.detail_label")).to_json %>"
-     data-sendit-url="https://app.sendit.ma/edit-profile?tab=tabAPI"
-     data-ozon="<%= t("seller_integrations.ozon").except(:errors).merge(browser_error: t("seller_integrations.ozon.errors.browser"), server_error: t("seller_integrations.ozon.errors.server_error", status: "%{status}"), detail_label: t("seller_integrations.ozon.errors.detail_label")).to_json %>"
-     data-ozon-url="https://ozonexpress.ma"
-     data-ameex="<%= t("seller_integrations.ameex").except(:errors).merge(browser_error: t("seller_integrations.ameex.errors.browser"), server_error: t("seller_integrations.ameex.errors.server_error", status: "%{status}"), detail_label: t("seller_integrations.ameex.errors.detail_label")).to_json %>"
-     data-ameex-url="https://ameex.app"></div>
+     data-sendit-url="https://app.sendit.ma/edit-profile?tab=tabAPI"></div>
 
 <script>
   (function () {
@@ -274,7 +270,7 @@
     var FLAGS = { MA: "🇲🇦", TN: "🇹🇳", CR: "🇨🇷", PA: "🇵🇦" };
     var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
     var state = { provider: null, account: null, region: "all", country: "all", q: "" };
-    var field = "h-11 w-full min-w-0 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#a8432e] focus:ring-2 focus:ring-[#a8432e]/20";
+    var field = "h-11 w-full min-w-0 rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm text-[#1c1c1e] outline-none focus:border-[#1d1d1f] focus:ring-2 focus:ring-[#1d1d1f]/20";
 
     var placeholder = function (p, size) {
       var hue = 7; for (var i = 0; i < p.name.length; i++) hue = (hue * 31 + p.name.charCodeAt(i)) % 360;
@@ -284,7 +280,7 @@
     // Every logo sits in the same round box, scaled to fit without stretching; a broken image falls back to the letter badge.
     var logo = function (p, size) {
       size = size || "size-11";
-      if (p.logo) return '<img src="' + esc(p.logo) + '" alt="' + esc(p.name) + '" data-logo-img data-size="' + size + '" class="' + size + ' shrink-0 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">';
+      if (p.logo) return '<img src="' + esc(p.logo) + '" alt="' + esc(p.name) + '" data-logo-img data-size="' + size + '" class="' + size + ' shrink-0 rounded-full border border-[#ececf0] bg-white object-contain p-0.5">';
       return placeholder(p, size);
     };
     document.addEventListener("error", function (event) {
@@ -296,17 +292,17 @@
     document.querySelectorAll("[data-logo]").forEach(function (el) { el.outerHTML = logo(catalog.providers[el.dataset.logo] || catalog.providers.other); });
 
     var entries = function () { return Object.keys(catalog.providers).filter(function (k) { return k !== "other" && !catalog.providers[k].unavailable; }).map(function (k) { return [k, catalog.providers[k]]; }); };
-    var chip = function (on) { return "flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm transition " + (on ? "border-[#a8432e] bg-[#f4e4de]/50 font-semibold text-[#a8432e]" : "border-transparent text-[#1f2430] hover:bg-[#f3f1ef]"); };
-    var count = function (n, on) { return '<span class="rounded-md px-1.5 text-xs font-semibold ' + (on ? "bg-white text-[#a8432e]" : "bg-[#f1eee9] text-[#6f6967]") + '">' + n + "</span>"; };
+    var chip = function (on) { return "flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm transition " + (on ? "border-[#1d1d1f] bg-[#ececf0]/50 font-semibold text-[#1d1d1f]" : "border-transparent text-[#1c1c1e] hover:bg-[#e8e8ed]"); };
+    var count = function (n, on) { return '<span class="rounded-md px-1.5 text-xs font-semibold ' + (on ? "bg-white text-[#1d1d1f]" : "bg-[#efeff3] text-[#6e6e73]") + '">' + n + "</span>"; };
 
     var providerCards = function () {
       var inRegion = entries().filter(function (e) { return state.region === "all" || e[1].region === state.region; });
       var list = inRegion.filter(function (e) { return state.country === "all" || e[1].countries.indexOf(state.country) >= 0; })
         .filter(function (e) { return !state.q || (e[1].name + " " + e[1].desc).toLowerCase().indexOf(state.q.toLowerCase()) >= 0; });
       return { list: list, html: list.map(function (e) {
-        return '<div class="flex items-center gap-3 rounded-xl border border-[#e8e3df] p-3 transition hover:border-[#d6cfca] hover:bg-[#fdfcfb]">' + logo(e[1]) +
-          '<div class="min-w-0 flex-1"><p class="truncate text-sm font-semibold text-[#1f2430]">' + esc(e[1].name) + '</p><p class="truncate text-xs text-[#8a8380]">' + esc(e[1].desc) + "</p></div>" +
-          '<button type="button" data-pick="' + e[0] + '" class="h-9 shrink-0 rounded-lg border border-[#e8e3df] px-3 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]">' + esc(S["Configurer"]) + "</button></div>";
+        return '<div class="flex items-center gap-3 rounded-xl border border-[#e0e0e5] p-3 transition hover:border-[#d2d2d7] hover:bg-[#fdfcfb]">' + logo(e[1]) +
+          '<div class="min-w-0 flex-1"><p class="truncate text-sm font-semibold text-[#1c1c1e]">' + esc(e[1].name) + '</p><p class="truncate text-xs text-[#6e6e73]">' + esc(e[1].desc) + "</p></div>" +
+          '<button type="button" data-pick="' + e[0] + '" class="h-9 shrink-0 rounded-lg border border-[#e0e0e5] px-3 text-xs font-semibold text-[#1c1c1e] hover:border-[#1d1d1f] hover:text-[#1d1d1f]">' + esc(S["Configurer"]) + "</button></div>";
       }).join("") };
     };
 
@@ -315,23 +311,23 @@
       var inRegion = all.filter(function (e) { return state.region === "all" || e[1].region === state.region; });
       var countries = Object.keys(catalog.countries).filter(function (c) { return inRegion.some(function (e) { return e[1].countries.indexOf(c) >= 0; }); });
       var regions = [["all", S["Toutes les régions"]]].concat(Object.keys(catalog.regions).map(function (k) { return [k, catalog.regions[k]]; }));
-      var html = '<h2 class="text-lg font-bold text-[#1f2430]">' + esc(S["Sélectionner le fournisseur de livraison"]) + '</h2><p class="mb-5 text-sm">' + esc(S["Choisissez votre société de livraison pour commencer."]) + "</p>" +
-        '<p class="mb-2 text-sm font-medium text-[#8a8380]">' + esc(S["Choisissez une région"]) + '</p><div class="grid gap-2 sm:grid-cols-3">' +
+      var html = '<h2 class="text-lg font-bold text-[#1c1c1e]">' + esc(S["Sélectionner le fournisseur de livraison"]) + '</h2><p class="mb-5 text-sm">' + esc(S["Choisissez votre société de livraison pour commencer."]) + "</p>" +
+        '<p class="mb-2 text-[11px] font-semibold tracking-wider text-[#6e6e73] uppercase">' + esc(S["Choisissez une région"]) + '</p><div class="grid gap-2 sm:grid-cols-3">' +
         regions.map(function (r) {
           var n = r[0] === "all" ? all.length : all.filter(function (e) { return e[1].region === r[0]; }).length, on = state.region === r[0];
-          return '<button type="button" data-region="' + r[0] + '" class="flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-start transition ' + (on ? "border-[#a8432e] bg-[#f4e4de]/40" : "border-[#e8e3df] hover:bg-[#f3f1ef]") + '"><span><span class="block text-sm font-semibold text-[#1f2430]">' + esc(r[1]) +
-            '</span><span class="text-xs text-[#8a8380]">' + n + " " + esc(S["fournisseurs"]) + "</span></span>" + "</button>";
+          return '<button type="button" data-region="' + r[0] + '" class="flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-start transition ' + (on ? "border-[#1d1d1f] bg-[#ececf0]/40" : "border-[#e0e0e5] hover:bg-[#e8e8ed]") + '"><span><span class="block text-sm font-semibold text-[#1c1c1e]">' + esc(r[1]) +
+            '</span><span class="text-xs text-[#6e6e73]">' + n + " " + esc(S["fournisseurs"]) + "</span></span>" + (on ? '<span class="grid size-5 place-items-center rounded-full bg-[#1d1d1f] text-[11px] text-white">✓</span>' : "") + "</button>";
         }).join("") + "</div>" +
-        '<p class="mt-5 mb-2 text-sm font-medium text-[#8a8380]">' + esc(S["Pays pris en charge"]) + '</p><div class="flex flex-wrap gap-1.5">' +
-        '<button type="button" data-country="all" class="' + chip(state.country === "all") + '">' + esc(S["Tous"]) + " " + count(inRegion.length, state.country === "all") + "</button>" +
-        countries.map(function (c) { return '<button type="button" data-country="' + c + '" class="' + chip(state.country === c) + '">' + esc(catalog.countries[c]) + " " + count(inRegion.filter(function (e) { return e[1].countries.indexOf(c) >= 0; }).length, state.country === c) + "</button>"; }).join("") + "</div>";
+        '<p class="mt-5 mb-2 text-[11px] font-semibold tracking-wider text-[#6e6e73] uppercase">' + esc(S["Pays pris en charge"]) + '</p><div class="flex flex-wrap gap-1.5">' +
+        '<button type="button" data-country="all" class="' + chip(state.country === "all") + '">🌍 ' + esc(S["Tous"]) + " " + count(inRegion.length, state.country === "all") + "</button>" +
+        countries.map(function (c) { return '<button type="button" data-country="' + c + '" class="' + chip(state.country === c) + '">' + (FLAGS[c] || c) + " " + esc(catalog.countries[c]) + " " + count(inRegion.filter(function (e) { return e[1].countries.indexOf(c) >= 0; }).length, state.country === c) + "</button>"; }).join("") + "</div>";
       var cards = providerCards();
-      html += '<div class="mt-5 flex items-center justify-between"><p class="text-sm font-semibold text-[#1f2430]">' + esc(S["Fournisseurs disponibles"]) + '</p><p class="text-xs text-[#8a8380]"><span data-result-count>' + cards.list.length + "</span> " + esc(S["résultats"]) + "</p></div>" +
-        '<label class="mt-2 flex h-11 items-center gap-2 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm"><span class="text-[#8a8380]"><svg viewBox="0 0 24 24" class="size-[18px] fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round]" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>' +
-        '<input data-search value="' + esc(state.q) + '" placeholder="' + esc(S["Rechercher un fournisseur…"]) + '" class="w-full bg-transparent text-[#1f2430] outline-none placeholder:text-[#a49d99]"></label>' +
+      html += '<div class="mt-5 flex items-center justify-between"><p class="text-sm font-semibold text-[#1c1c1e]">' + esc(S["Fournisseurs disponibles"]) + '</p><p class="text-xs text-[#6e6e73]"><span data-result-count>' + cards.list.length + "</span> " + esc(S["résultats"]) + "</p></div>" +
+        '<label class="mt-2 flex h-11 items-center gap-2 rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm"><span class="text-[#6e6e73]"><svg viewBox="0 0 24 24" class="size-[18px] fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round]" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>' +
+        '<input data-search value="' + esc(state.q) + '" placeholder="' + esc(S["Rechercher un fournisseur…"]) + '" class="w-full bg-transparent text-[#1c1c1e] outline-none placeholder:text-[#8e8e93]"></label>' +
         '<div class="mt-3 grid gap-2 sm:grid-cols-2" data-provider-list>' + cards.html + "</div>" +
-        '<button type="button" data-pick="other" class="mt-3 flex w-full items-center gap-3 rounded-xl border border-dashed border-[#d9d1cc] p-3 text-start hover:border-[#a8432e]"><span class="grid size-11 shrink-0 place-items-center rounded-xl bg-[#f3f1ef] text-lg text-[#8a8380]">+</span><span><span class="block text-sm font-semibold text-[#1f2430]">' +
-        esc(S["Autre société"]) + '</span><span class="text-xs text-[#8a8380]">' + esc(S["Votre société n'est pas dans la liste : suivi des colis à la main en attendant son intégration."]) + "</span></span></button>";
+        '<button type="button" data-pick="other" class="mt-3 flex w-full items-center gap-3 rounded-xl border border-dashed border-[#d9d1cc] p-3 text-start hover:border-[#1d1d1f]"><span class="grid size-11 shrink-0 place-items-center rounded-xl bg-[#e8e8ed] text-lg text-[#6e6e73]">+</span><span><span class="block text-sm font-semibold text-[#1c1c1e]">' +
+        esc(S["Autre société"]) + '</span><span class="text-xs text-[#6e6e73]">' + esc(S["Votre société n'est pas dans la liste : suivi des colis à la main en attendant son intégration."]) + "</span></span></button>";
       return html;
     };
 
@@ -342,84 +338,73 @@
     var step2 = function () {
       var key = state.provider, a = state.account, p = catalog.providers[key] || catalog.providers.other;
       var v = function (x, d) { return esc(a && a[x] != null ? a[x] : d); };
-      var label = "mb-1 block text-xs font-semibold text-[#8a8380]";
+      var label = "mb-1 block text-xs font-semibold text-[#6e6e73]";
       var token = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
       var html = '<form method="post" action="' + esc(a ? root.dataset.editPath + a.id : root.dataset.action) + '" data-delivery-form>' +
         '<input type="hidden" name="authenticity_token" value="' + esc(token) + '">' + (a ? '<input type="hidden" name="_method" value="patch">' : '<input type="hidden" name="delivery_account[provider]" value="' + esc(key) + '">') +
-        '<div class="mb-5 flex items-center gap-3 rounded-xl bg-[#f3f1ef] p-3">' + logo(p) + '<div><p class="font-semibold text-[#1f2430]">' + esc(p.name) + '</p><p class="text-xs text-[#8a8380]">' + esc(p.desc) + "</p></div></div>" +
+        '<div class="mb-5 flex items-center gap-3 rounded-xl bg-[#e8e8ed] p-3">' + logo(p) + '<div><p class="font-semibold text-[#1c1c1e]">' + esc(p.name) + '</p><p class="text-xs text-[#6e6e73]">' + esc(p.desc) + "</p></div></div>" +
         '<div class="grid gap-3 sm:grid-cols-2">' +
         '<label class="block sm:col-span-2"><span class="' + label + '">' + esc(S["Nom du compte"]) + '</span><input name="delivery_account[name]" value="' + (a ? esc(a.name) : (key === "other" ? "" : esc(p.name))) + '" class="' + field + '" required dir="auto" placeholder="' + (key === "other" ? esc(S["Nom de la société"]) : esc(p.name) + " (WALKFIT)") + '"></label>' +
         '<label class="block"><span class="' + label + '">' + esc(S["Contact"]) + '</span><input name="delivery_account[contact_name]" value="' + v("contact_name", "") + '" class="' + field + '" dir="auto"></label>' +
         '<label class="block"><span class="' + label + '">' + esc(S["Téléphone du contact"]) + '</span><input name="delivery_account[contact_phone]" value="' + v("contact_phone", "") + '" class="' + field + '" dir="ltr" inputmode="tel"></label>' +
         '<label class="block"><span class="' + label + '">' + esc(S["Ville de ramassage"]) + '</span><input name="delivery_account[pickup_city]" value="' + v("pickup_city", "") + '" class="' + field + '" dir="auto" placeholder="Casablanca - Aïn Sebaâ"></label>' +
-        '<label class="block"><span class="' + label + '">' + esc(S["Type de compte"]) + '</span><select name="delivery_account[account_type]" class="h-11 w-full cursor-pointer rounded-xl border border-[#e8e3df] bg-white px-3 text-sm font-medium text-[#1f2430] outline-none focus:border-[#a8432e]"><option value="normal"' + (a && a.account_type === "premium" ? "" : " selected") + ">" + esc(S["Normal"]) + '</option><option value="premium"' + (a && a.account_type === "premium" ? " selected" : "") + ">" + esc(S["Premium"]) + "</option></select></label>" +
+        '<label class="block"><span class="' + label + '">' + esc(S["Type de compte"]) + '</span><select name="delivery_account[account_type]" class="h-11 w-full cursor-pointer rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm font-medium text-[#1c1c1e] outline-none focus:border-[#1d1d1f]"><option value="normal"' + (a && a.account_type === "premium" ? "" : " selected") + ">" + esc(S["Normal"]) + '</option><option value="premium"' + (a && a.account_type === "premium" ? " selected" : "") + ">" + esc(S["Premium"]) + "</option></select></label>" +
         '<label class="block"><span class="' + label + '">' + esc(S["Frais par colis livré"]) + " (" + esc(currency) + ')</span><input type="number" min="0" step="0.01" name="delivery_account[delivery_fee]" value="' + v("delivery_fee", "") + '" class="' + field + '" dir="ltr"></label>' +
         '<label class="block"><span class="' + label + '">' + esc(S["Frais par colis retourné"]) + " (" + esc(currency) + ')</span><input type="number" min="0" step="0.01" name="delivery_account[return_fee]" value="' + v("return_fee", "") + '" class="' + field + '" dir="ltr"></label></div>';
       if (key !== "other") {
-        html += '<div class="mt-4 rounded-xl border border-[#f0ebe7] p-3.5"><p class="text-sm font-semibold text-[#1f2430]">' + esc(S["Connexion API"]) + '</p><p class="mt-0.5 text-xs text-[#8a8380]">' + esc(S["Clés fournies par"]) + " " + esc(p.name) + " " + esc(S["dans votre espace client. Elles sont gardées chiffrées ; l'envoi automatique des colis sera activé dès que le connecteur sera disponible."]) + "</p>" +
+        html += '<div class="mt-4 rounded-xl border border-[#ececf0] p-3.5"><p class="text-sm font-semibold text-[#1c1c1e]">' + esc(S["Connexion API"]) + '</p><p class="mt-0.5 text-xs text-[#6e6e73]">' + esc(S["Clés fournies par"]) + " " + esc(p.name) + " " + esc(S["dans votre espace client. Elles sont gardées chiffrées ; l'envoi automatique des colis sera activé dès que le connecteur sera disponible."]) + "</p>" +
           '<div class="mt-3 grid gap-3 sm:grid-cols-2"><input name="delivery_account[api_key]" class="' + field + '" dir="ltr" autocomplete="off" placeholder="' + esc(a && a.has_credentials ? S["Clé enregistrée (laisser vide pour garder)"] : S["Clé publique / identifiant"]) + '">' +
           '<input name="delivery_account[api_secret]" type="password" class="' + field + '" dir="ltr" autocomplete="new-password" placeholder="' + (a && a.has_credentials ? "••••••••" : esc(S["Clé secrète / token"])) + '"></div></div>';
       }
-      html += '<div class="mt-4 space-y-3"><label class="flex items-center justify-between gap-3 text-sm"><span><span class="block font-medium text-[#1f2430]">' + esc(S["Ouvrir le colis"]) + '</span><span class="text-xs text-[#8a8380]">' + esc(S["Le client peut ouvrir le colis avant de payer."]) + "</span></span>" + toggle("allow_open", a ? a.allow_open : true, S["Ouvrir le colis"]) + "</label>" +
-        '<label class="flex items-center justify-between gap-3 text-sm"><span class="font-medium text-[#1f2430]">' + esc(S["Compte actif"]) + "</span>" + toggle("is_active", a ? a.is_active : true, S["Compte actif"]) + "</label></div>" +
-        '<div class="mt-6 flex items-center justify-between">' + (a ? "<span></span>" : '<button type="button" data-back class="text-sm font-semibold text-[#8a8380] hover:text-[#1f2430]">← ' + esc(S["Retour"]) + "</button>") +
-        '<button type="submit" class="h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624]">' + esc(a ? S["Enregistrer"] : S["Ajouter la société"]) + "</button></div></form>";
+      html += '<div class="mt-4 space-y-3"><label class="flex items-center justify-between gap-3 text-sm"><span><span class="block font-medium text-[#1c1c1e]">' + esc(S["Ouvrir le colis"]) + '</span><span class="text-xs text-[#6e6e73]">' + esc(S["Le client peut ouvrir le colis avant de payer."]) + "</span></span>" + toggle("allow_open", a ? a.allow_open : true, S["Ouvrir le colis"]) + "</label>" +
+        '<label class="flex items-center justify-between gap-3 text-sm"><span class="font-medium text-[#1c1c1e]">' + esc(S["Compte actif"]) + "</span>" + toggle("is_active", a ? a.is_active : true, S["Compte actif"]) + "</label></div>" +
+        '<div class="mt-6 flex items-center justify-between">' + (a ? "<span></span>" : '<button type="button" data-back class="text-sm font-semibold text-[#6e6e73] hover:text-[#1c1c1e]">← ' + esc(S["Retour"]) + "</button>") +
+        '<button type="submit" class="h-11 rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c]">' + esc(a ? S["Enregistrer"] : S["Ajouter la société"]) + "</button></div></form>";
       return html;
     };
 
-    /* ---- Sendit / Ozon: real connection (keys checked against the courier API, webhook URL shown afterwards) ---- */
+    /* ---- Sendit: real connection (keys checked against Sendit's login, webhook URL shown afterwards) ---- */
     var SD = JSON.parse(root.dataset.sendit), SENDIT_URL = root.dataset.senditUrl;
-    var OD = JSON.parse(root.dataset.ozon), OZON_URL = root.dataset.ozonUrl;
-    var AD = JSON.parse(root.dataset.ameex), AMEEX_URL = root.dataset.ameexUrl;
     var eyeIcon = '<svg viewBox="0 0 24 24" class="size-[18px] fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
-    var courierCopy = function () { return state.provider === "ozon" ? OD : state.provider === "ameex" ? AD : SD; };
-    var webhookBlock = function (url, copy) {
-      copy = copy || courierCopy();
-      return '<div class="mt-4 rounded-xl border border-[#f0ebe7] p-3.5"><p class="text-sm font-semibold text-[#1f2430]">' + esc(copy.webhook_title) + '</p><p class="mt-0.5 text-xs text-[#8a8380]">' + esc(copy.webhook_help) + "</p>" +
+    var webhookBlock = function (url) {
+      return '<div class="mt-4 rounded-xl border border-[#ececf0] p-3.5"><p class="text-sm font-semibold text-[#1c1c1e]">' + esc(SD.webhook_title) + '</p><p class="mt-0.5 text-xs text-[#6e6e73]">' + esc(SD.webhook_help) + "</p>" +
         '<div class="mt-3 flex gap-2"><input readonly value="' + esc(url) + '" dir="ltr" data-webhook-url class="' + field + ' text-xs" onfocus="this.select()">' +
-        '<button type="button" data-copy-webhook class="h-11 shrink-0 rounded-xl border border-[#e8e3df] px-4 text-sm font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]">' + esc(copy.copy) + "</button></div></div>";
+        '<button type="button" data-copy-webhook class="h-11 shrink-0 rounded-xl border border-[#e0e0e5] px-4 text-sm font-semibold text-[#1c1c1e] hover:border-[#1d1d1f] hover:text-[#1d1d1f]">' + esc(SD.copy) + "</button></div></div>";
     };
-    var citiesLine = function (a, copy) {
+    var citiesLine = function (a) {
       if (!a) return "";
-      copy = copy || courierCopy();
-      var text = a.cities_count ? copy.cities.replace("%{count}", a.cities_count) : copy.cities_pending;
-      return '<p class="mt-3 text-xs text-[#8a8380]">' + esc(text) + "</p>";
+      var text = a.cities_count ? SD.cities.replace("%{count}", a.cities_count) : SD.cities_pending;
+      return '<p class="mt-3 text-xs text-[#6e6e73]">' + esc(text) + "</p>";
     };
-    var courierStep = function (provider) {
-      var copy = provider === "ozon" ? OD : provider === "ameex" ? AD : SD;
-      var helpUrl = provider === "ozon" ? OZON_URL : provider === "ameex" ? AMEEX_URL : SENDIT_URL;
-      var a = state.account, p = catalog.providers[provider], label = "mb-1 block text-xs font-semibold text-[#8a8380]";
+    var senditStep = function () {
+      var a = state.account, p = catalog.providers.sendit, label = "mb-1 block text-xs font-semibold text-[#6e6e73]";
       var token = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
-      var html = '<form method="post" action="' + esc(a ? root.dataset.editPath + a.id : root.dataset.action) + '" data-courier-form data-courier-provider="' + esc(provider) + '">' +
-        '<input type="hidden" name="authenticity_token" value="' + esc(token) + '">' + (a ? '<input type="hidden" name="_method" value="patch">' : '<input type="hidden" name="delivery_account[provider]" value="' + esc(provider) + '">') +
-        '<div class="mb-5 flex items-center gap-3 rounded-xl bg-[#f3f1ef] p-3">' + logo(p) + '<div><p class="font-semibold text-[#1f2430]">' + esc(p.name) + '</p><p class="text-xs text-[#8a8380]">' + esc(p.desc) + "</p></div></div>" +
-        '<p data-courier-error hidden role="alert" class="mb-4 rounded-xl bg-[#fbe7ea] px-3.5 py-2.5 text-sm text-[#b4344e]"></p>' +
-        '<div class="grid gap-3"><label class="block"><span class="' + label + '">' + esc(copy.name_label) + '</span><input name="delivery_account[name]" value="' + (a ? esc(a.name) : "") + '" required dir="auto" class="' + field + '" placeholder="' + esc(copy.name_placeholder) + '"></label>' +
-        '<label class="block"><span class="' + label + '">' + esc(copy.public_key) + '</span><input name="delivery_account[api_key]" value="' + (a ? esc(a.public_key) : "") + '" required dir="ltr" autocomplete="off" spellcheck="false" class="' + field + '"></label>' +
-        '<label class="block"><span class="' + label + '">' + esc(copy.secret_key) + '</span><span class="relative block"><input name="delivery_account[api_secret]" type="password" ' + (a && a.has_credentials ? "" : "required ") + 'dir="ltr" autocomplete="new-password" spellcheck="false" class="' + field + ' pe-11" placeholder="' + esc(a && a.has_credentials ? (a.secret_hint || copy.secret_saved) : "") + '">' +
-        '<button type="button" data-eye aria-label="' + esc(copy.toggle_secret) + '" class="absolute inset-y-0 end-0 flex items-center px-3 text-[#8a8380] hover:text-[#1f2430]" tabindex="-1">' + eyeIcon + "</button></span></label>" +
-        (provider === "ameex" && copy.webhook_secret ? '<label class="block"><span class="' + label + '">' + esc(copy.webhook_secret) + '</span><input name="delivery_account[webhook_secret]" type="password" dir="ltr" autocomplete="new-password" class="' + field + '" placeholder="' + esc(copy.webhook_secret_hint || "") + '"></label>' : "") +
-        "</div>" +
-        '<p class="mt-3 text-xs text-[#8a8380]">' + esc(copy.help) + ' <a href="' + esc(helpUrl) + '" target="_blank" rel="noopener" class="font-semibold text-[#a8432e] hover:underline">' + esc(copy.help_link) + " ↗</a></p>" +
-        (a && a.webhook_url ? webhookBlock(a.webhook_url, copy) + citiesLine(a, copy) : "") +
-        '<div class="mt-6 flex items-center justify-between">' + (a ? "<span></span>" : '<button type="button" data-back class="text-sm font-semibold text-[#8a8380] hover:text-[#1f2430]">← ' + esc(S["Retour"]) + "</button>") +
-        '<button type="submit" class="h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624] disabled:opacity-60">' + esc(copy.connect) + "</button></div></form>";
+      var html = '<form method="post" action="' + esc(a ? root.dataset.editPath + a.id : root.dataset.action) + '" data-sendit-form>' +
+        '<input type="hidden" name="authenticity_token" value="' + esc(token) + '">' + (a ? '<input type="hidden" name="_method" value="patch">' : '<input type="hidden" name="delivery_account[provider]" value="sendit">') +
+        '<div class="mb-5 flex items-center gap-3 rounded-xl bg-[#e8e8ed] p-3">' + logo(p) + '<div><p class="font-semibold text-[#1c1c1e]">' + esc(p.name) + '</p><p class="text-xs text-[#6e6e73]">' + esc(p.desc) + "</p></div></div>" +
+        '<p data-sendit-error hidden role="alert" class="mb-4 rounded-xl bg-[#fbe7ea] px-3.5 py-2.5 text-sm text-[#b4344e]"></p>' +
+        '<div class="grid gap-3"><label class="block"><span class="' + label + '">' + esc(SD.name_label) + '</span><input name="delivery_account[name]" value="' + (a ? esc(a.name) : "") + '" required dir="auto" class="' + field + '" placeholder="' + esc(SD.name_placeholder) + '"></label>' +
+        '<label class="block"><span class="' + label + '">' + esc(SD.public_key) + '</span><input name="delivery_account[api_key]" value="' + (a ? esc(a.public_key) : "") + '" required dir="ltr" autocomplete="off" spellcheck="false" class="' + field + '"></label>' +
+        '<label class="block"><span class="' + label + '">' + esc(SD.secret_key) + '</span><span class="relative block"><input name="delivery_account[api_secret]" type="password" ' + (a && a.has_credentials ? "" : "required ") + 'dir="ltr" autocomplete="new-password" spellcheck="false" class="' + field + ' pe-11" placeholder="' + esc(a && a.has_credentials ? (a.secret_hint || SD.secret_saved) : "") + '">' +
+        '<button type="button" data-eye aria-label="' + esc(SD.toggle_secret) + '" class="absolute inset-y-0 end-0 flex items-center px-3 text-[#6e6e73] hover:text-[#1c1c1e]" tabindex="-1">' + eyeIcon + "</button></span></label></div>" +
+        '<p class="mt-3 text-xs text-[#6e6e73]">' + esc(SD.help) + ' <a href="' + esc(SENDIT_URL) + '" target="_blank" rel="noopener" class="font-semibold text-[#1d1d1f] hover:underline">' + esc(SD.help_link) + " ↗</a></p>" +
+        (a && a.webhook_url ? webhookBlock(a.webhook_url) + citiesLine(a) : "") +
+        '<div class="mt-6 flex items-center justify-between">' + (a ? "<span></span>" : '<button type="button" data-back class="text-sm font-semibold text-[#6e6e73] hover:text-[#1c1c1e]">← ' + esc(S["Retour"]) + "</button>") +
+        '<button type="submit" class="h-11 rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c] disabled:opacity-60">' + esc(SD.connect) + "</button></div></form>";
       return html;
     };
-    var courierDone = function () {
-      var copy = courierCopy();
-      return '<div class="text-center"><h2 class="mt-3 text-lg font-bold text-[#1f2430]">' + esc(copy.success_title) + '</h2><p class="mt-1 text-sm">' + esc(copy.success_text) + "</p></div>" +
-        webhookBlock(state.done.webhook_url, copy) + citiesLine({ cities_count: null }, copy) +
-        '<div class="mt-6 flex justify-end"><button type="button" data-done class="h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624]">' + esc(copy.done) + "</button></div>";
+    var senditDone = function () {
+      return '<div class="text-center"><span class="mx-auto grid size-12 place-items-center rounded-full bg-[#e3f3e8] text-xl text-[#2f7a4a]">✓</span><h2 class="mt-3 text-lg font-bold text-[#1c1c1e]">' + esc(SD.success_title) + '</h2><p class="mt-1 text-sm">' + esc(SD.success_text) + "</p></div>" +
+        webhookBlock(state.done.webhook_url) + citiesLine({ cities_count: null }) +
+        '<div class="mt-6 flex justify-end"><button type="button" data-done class="h-11 rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c]">' + esc(SD.done) + "</button></div>";
     };
 
     var render = function () {
       var step = state.provider ? 2 : 1, editing = !!state.account;
-      var stepCls = function (n) { return "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold " + (step === n ? "bg-[#a8432e] text-white" : "text-[#8a8380]"); };
-      var body = state.done ? courierDone() : step === 1 ? step1() : (state.provider === "sendit" || state.provider === "ozon" || state.provider === "ameex") ? courierStep(state.provider) : step2();
-      root.innerHTML = '<div class="lg-panel flex max-h-[92dvh] w-full max-w-2xl flex-col rounded-2xl" role="dialog" aria-modal="true"><div class="flex items-center justify-between border-b border-[#f0ebe7] px-6 py-4"><div class="flex items-center gap-2">' +
-        (editing ? "" : '<span class="' + stepCls(1) + '">1. ' + esc(S["Fournisseur"]) + '</span><span class="h-px w-6 bg-[#e8e3df]"></span>') + '<span class="' + stepCls(2) + '">' + (editing ? "" : "2. ") + esc(S["Détails"]) + "</span></div>" +
-        '<button type="button" data-close class="rounded-lg p-1.5 text-[#8a8380] hover:bg-[#f3f1ef]" aria-label="Fermer">Fermer</button></div><div class="overflow-y-auto px-6 py-5">' + body + "</div></div>";
+      var stepCls = function (n) { return "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold " + (step === n ? "bg-[#1d1d1f] text-white" : "text-[#6e6e73]"); };
+      root.innerHTML = '<div class="lg-panel flex max-h-[92dvh] w-full max-w-2xl flex-col rounded-2xl" role="dialog" aria-modal="true"><div class="flex items-center justify-between border-b border-[#ececf0] px-6 py-4"><div class="flex items-center gap-2">' +
+        (editing ? "" : '<span class="' + stepCls(1) + '">1 · ' + esc(S["Fournisseur"]) + '</span><span class="h-px w-6 bg-[#e0e0e5]"></span>') + '<span class="' + stepCls(2) + '">' + (editing ? "" : "2 · ") + esc(S["Détails"]) + "</span></div>" +
+        '<button type="button" data-close class="rounded-lg p-1.5 text-[#6e6e73] hover:bg-[#e8e8ed]" aria-label="✕">✕</button></div><div class="overflow-y-auto px-6 py-5">' + (state.done ? senditDone() : step === 1 ? step1() : state.provider === "sendit" ? senditStep() : step2()) + "</div></div>";
     };
     var show = function () { render(); root.hidden = false; };
     var close = function () { if (state.done) return window.location.reload(); root.hidden = true; };
@@ -436,8 +421,8 @@
       if (eye) { var secret = eye.parentNode.querySelector("input"); secret.type = secret.type === "password" ? "text" : "password"; return; }
       var copyBtn = t.closest("[data-copy-webhook]");
       if (copyBtn) {
-        var url = root.querySelector("[data-webhook-url]").value, copy = courierCopy();
-        var copied = function () { copyBtn.textContent = copy.copied; setTimeout(function () { copyBtn.textContent = copy.copy; }, 1500); };
+        var url = root.querySelector("[data-webhook-url]").value;
+        var copied = function () { copyBtn.textContent = SD.copied; setTimeout(function () { copyBtn.textContent = SD.copy; }, 1500); };
         if (navigator.clipboard) navigator.clipboard.writeText(url).then(copied); else { var input = root.querySelector("[data-webhook-url]"); input.select(); document.execCommand("copy"); copied(); }
         return;
       }
@@ -449,16 +434,15 @@
       }
     });
     root.addEventListener("submit", function (e) {
-      var form = e.target.closest("[data-courier-form]");
+      var form = e.target.closest("[data-sendit-form]");
       if (!form) return;
       e.preventDefault();
-      var copy = form.dataset.courierProvider === "ozon" ? OD : form.dataset.courierProvider === "ameex" ? AD : SD;
-      var button = form.querySelector("[type=submit]"), box = form.querySelector("[data-courier-error]"), label = button.textContent;
-      box.hidden = true; button.disabled = true; button.textContent = copy.connecting;
+      var button = form.querySelector("[type=submit]"), box = form.querySelector("[data-sendit-error]"), label = button.textContent;
+      box.hidden = true; button.disabled = true; button.textContent = SD.connecting;
       var token = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
       var fail = function (message, detail) {
         box.textContent = message;
-        if (detail) { var line = document.createElement("span"); line.className = "mt-1.5 block text-xs opacity-80"; line.textContent = copy.detail_label + " : " + detail; box.appendChild(line); }
+        if (detail) { var line = document.createElement("span"); line.className = "mt-1.5 block text-xs opacity-80"; line.textContent = SD.detail_label + " : " + detail; box.appendChild(line); }
         box.hidden = false; button.disabled = false; button.textContent = label;
       };
       fetch(form.action, { method: "POST", body: new FormData(form), headers: { Accept: "application/json", "X-CSRF-Token": token }, credentials: "same-origin" })
@@ -472,9 +456,9 @@
         .then(function (r) {
           if (r.ok) { state.done = { webhook_url: r.json.webhook_url }; return render(); }
           if (r.json && r.json.error) return fail(r.json.error, r.json.detail);
-          fail(copy.server_error.replace("%{status}", r.status), null);
+          fail(SD.server_error.replace("%{status}", r.status), null);
         })
-        .catch(function () { fail(copy.browser_error, null); });
+        .catch(function () { fail(SD.browser_error, null); });
     });
     root.addEventListener("input", function (e) {
       if (!e.target.matches("[data-search]")) return;
@@ -489,19 +473,12 @@
       document.querySelectorAll("[data-modal]").forEach(function (m) { m.hidden = true; });
     });
 
-    var begin = function (account, provider) { state = { provider: account ? account.provider : (provider || null), account: account, region: "all", country: "all", q: "" }; show(); };
-    document.querySelectorAll("[data-delivery-new]").forEach(function (b) { b.addEventListener("click", function () { begin(null, b.dataset.deliveryNew); }); });
+    var begin = function (account) { state = { provider: account ? account.provider : null, account: account, region: "all", country: "all", q: "" }; show(); };
+    // Opened from the new-order window ("connect a delivery company"): go straight to choosing the company.
+    if (window.location.hash === "#delivery") begin(null);
+    document.querySelectorAll("[data-delivery-new]").forEach(function (b) { b.addEventListener("click", function () { begin(null); }); });
     document.querySelectorAll("[data-delivery-edit]").forEach(function (b) {
       b.addEventListener("click", function () { begin(accounts.filter(function (a) { return a.id === Number(b.dataset.deliveryEdit); })[0]); });
     });
-    // Deep links from a carrier settings page: open the connection dialog for that account or provider.
-    var params = new URLSearchParams(window.location.search);
-    var editId = Number(params.get("edit_account") || "");
-    if (editId) {
-      var editAccount = accounts.filter(function (a) { return a.id === editId; })[0];
-      if (editAccount) begin(editAccount);
-    } else if (params.get("connect")) {
-      begin(null, params.get("connect"));
-    }
   })();
 </script>

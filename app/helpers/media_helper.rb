@@ -12,7 +12,9 @@ module MediaHelper
 
   # Main uploaded image (first in the admin order); nil until one is uploaded
   def product_image_url(product)
-    media_url(product.ordered_images.first) if product.images.attached?
+    return media_url(product.ordered_images.first) if product.images.attached?
+
+    product.image_url.presence # the picture of an imported product stays at its store
   end
 
   # Second uploaded image, shown on card hover

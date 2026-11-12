@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
-    <title><%= content_for?(:title) ? yield(:title) : "#{Store.platform_name}, #{current_store&.name || "seallo"}" %></title>
+    <title><%= content_for?(:title) ? yield(:title) : "#{Store.platform_name} — #{current_store&.name || "seallo"}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <meta name="theme-color" content="<%= current_store&.admin_theme == "seallo_dark" ? "#15110f" : "#a8432e" %>">
     <link rel="manifest" href="<%= admin_pwa_manifest_path %>">
@@ -25,55 +25,85 @@
   </head>
   <body class="admin-body" data-admin-theme="<%= current_store&.admin_theme || "seallo" %>" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
     <% if current_admin_user %>
+      <%# Restore the collapsed menu before the first paint, so it does not jump. %>
+      <script>try { if (localStorage.getItem("sellerSidebar") === "collapsed") document.documentElement.setAttribute("data-sidebar", "collapsed"); } catch (error) {}</script>
       <% active = seller_active_key %>
       <% agent = current_admin_user.confirmation_agent_view? %>
       <% new_orders = current_store ? Seller::DashboardStats.new(store: current_store).new_orders_count : 0 %>
       <% missing_costs = current_store && !agent ? Seller::DashboardStats.new(store: current_store).missing_costs : 0 %>
       <%# Class strings are plain literals so Tailwind's scanner always generates them. %>
       <% nav_on = "lg-nav__active font-semibold" %>
-      <% nav_off = "text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" %>
-      <% badge_on = "bg-white text-[#a8432e]" %>
-      <% badge_off = "bg-[#f4e4de] text-[#a8432e]" %>
+      <% nav_off = "text-[#3a3a3c] hover:bg-[#e8e8ed] hover:text-[#1c1c1e]" %>
+      <% badge_on = "bg-white text-[#1d1d1f]" %>
+      <% badge_off = "bg-[#ececf0] text-[#1d1d1f]" %>
       <% sidebar = capture do %>
-        <nav class="lg-nav flex h-full flex-col overflow-y-auto rounded-2xl p-3">
-          <div class="flex items-center justify-between px-3 pt-2 pb-5">
-            <%= link_to (agent ? "/confirmation" : "/dashboard"), class: "text-2xl font-extrabold text-[#a8432e]", dir: "ltr" do %>seallo<% end %>
-            <button type="button" data-seller-close class="text-sm text-[#8a8380] lg:hidden" aria-label="<%= sl("Fermer") %>"><%= sl("Fermer") %></button>
+        <nav class="lg-nav flex h-full flex-col overflow-y-auto rounded-2xl p-2.5" data-sidebar-nav>
+          <div data-sidebar-head class="flex items-center justify-between px-3 pt-1 pb-3">
+            <%= link_to (agent ? "/confirmation" : "/dashboard"), "data-collapse-hide": true, class: "text-2xl font-extrabold tracking-tight text-[#1d1d1f]", dir: "ltr" do %>seallo<% end %>
+            <button type="button" data-seller-close class="text-[#6e6e73] lg:hidden" aria-label="<%= sl("Fermer") %>"><%= sl("Fermer") %></button>
+            <%# Desktop only: collapse the menu to its icons and open it again. The choice is remembered in this browser. %>
+            <button type="button" data-sidebar-toggle aria-expanded="true" title="<%= sl("Réduire le menu") %>" aria-label="<%= sl("Réduire le menu") %>" data-label-collapse="<%= sl("Réduire le menu") %>" data-label-expand="<%= sl("Agrandir le menu") %>"
+                    class="hidden size-8 cursor-pointer place-items-center rounded-lg text-[#6e6e73] hover:bg-[#efeff3] hover:text-[#1c1c1e] lg:grid">
+              <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round] transition-transform rtl:rotate-180" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
+            </button>
           </div>
-          <ul class="space-y-1">
+          <ul class="space-y-0.5">
             <% seller_menu(current_admin_user).each do |key, icon, label, href| %>
               <% on = key == active %>
               <li>
-                <% if href.nil? %>
-                  <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#a49d99]" title="<%= sl("Bientôt disponible") %>"><%= seller_icon(icon) %> <%= sl(label) %></span>
+                <% if key == "confirmation" %>
+                  <%# "Centre d'appels": a group that opens on click and lists its pages; it stays open on any of them. %>
+                  <% sub_active = seller_call_center_active %>
+                  <details class="group" data-call-center-nav <%= "open" if on %>>
+                    <summary title="<%= sl(label) %>" class="flex cursor-pointer list-none items-center gap-3 rounded-xl px-3 py-2 text-sm [&::-webkit-details-marker]:hidden <%= on ? nav_on : nav_off %>" data-onboarding-nav="<%= key %>">
+                      <%= seller_icon(icon) %> <span data-label><%= sl(label) %></span>
+                      <svg data-label viewBox="0 0 24 24" class="ms-auto size-4 shrink-0 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round] transition-transform group-open:rotate-180" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </summary>
+                    <ul class="mt-0.5 ms-5 space-y-0.5 border-s border-[#e0e0e5] ps-2" data-subnav>
+                      <% seller_call_center_menu(current_admin_user).each do |sub_key, sub_icon, sub_label, sub_href| %>
+                        <li>
+                          <% if sub_href.nil? %>
+                            <span class="flex cursor-not-allowed items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] text-[#8e8e93]" title="<%= sl(sub_label) %> · <%= sl("Bientôt disponible") %>" data-subnav-item="<%= sub_key %>"><%= seller_icon(sub_icon, size: 15) %> <span data-label><%= sl(sub_label) %></span></span>
+                          <% else %>
+                            <%= link_to sub_href, title: sl(sub_label), "data-subnav-item": sub_key, "aria-current": (sub_key == sub_active ? "page" : nil),
+                                  class: "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] #{sub_key == sub_active ? nav_on : nav_off}" do %>
+                              <%= seller_icon(sub_icon, size: 15) %> <span data-label><%= sl(sub_label) %></span>
+                            <% end %>
+                          <% end %>
+                        </li>
+                      <% end %>
+                    </ul>
+                  </details>
+                <% elsif href.nil? %>
+                  <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#8e8e93]" title="<%= sl(label) %> · <%= sl("Bientôt disponible") %>"><%= seller_icon(icon) %> <span data-label><%= sl(label) %></span></span>
                 <% else %>
-                  <%= link_to href, class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm #{on ? nav_on : nav_off}", data: { onboarding_nav: key } do %>
-                    <%= seller_icon(icon) %> <%= sl(label) %>
-                    <% if key == "orders" && new_orders.positive? %><span class="ms-auto rounded-full px-2 py-0.5 text-[11px] font-semibold <%= on ? badge_on : badge_off %>"><%= new_orders %></span><% end %>
-                    <% if key == "products" && missing_costs.positive? %><span class="ms-auto rounded-full bg-[#fbe7ea] px-2 py-0.5 text-[11px] font-semibold text-[#b4344e]" title="<%= sl("produits sans coût") %>"><%= missing_costs %></span><% end %>
+                  <%= link_to href, title: sl(label), class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm #{on ? nav_on : nav_off}", data: { onboarding_nav: key } do %>
+                    <%= seller_icon(icon) %> <span data-label><%= sl(label) %></span>
+                    <% if key == "orders" && new_orders.positive? %><span data-badge class="ms-auto rounded-full px-2 py-0.5 text-[11px] font-semibold <%= on ? badge_on : badge_off %>"><%= new_orders %></span><% end %>
+                    <% if key == "products" && missing_costs.positive? %><span data-badge class="ms-auto rounded-full bg-[#fbe7ea] px-2 py-0.5 text-[11px] font-semibold text-[#b4344e]" title="<%= sl("produits sans coût") %>"><%= missing_costs %></span><% end %>
                   <% end %>
                 <% end %>
               </li>
             <% end %>
           </ul>
-          <div class="mt-auto space-y-1 border-t border-[#f0ebe7]/pt-3">
+          <div class="mt-auto space-y-0.5 border-t border-[#ececf0] pt-2">
             <% if current_store && !agent %>
-              <div class="lg-nav__store mb-2 rounded-xl px-3 py-2.5">
-                <p data-seller-store class="truncate text-sm font-semibold text-[#1f2430]"><%= current_store.name %></p>
-                <% if seller_plan_label(current_store) %><p class="text-xs text-[#8a8380]"><%= sl("Plan") %> <%= seller_plan_label(current_store) %></p><% end %>
+              <div data-collapse-hide class="lg-nav__store mb-1.5 rounded-xl px-3 py-2">
+                <p data-seller-store class="truncate text-sm font-semibold text-[#1c1c1e]"><%= current_store.name %></p>
+                <% if seller_plan_label(current_store) %><p class="text-xs text-[#6e6e73]"><%= sl("Plan") %> <%= seller_plan_label(current_store) %></p><% end %>
               </div>
             <% end %>
             <%= render "admin/shared/order_alerts" %>
             <% if super_admin? %>
-              <%= link_to admin_platform_path, class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" do %><%= seller_icon(:plug) %> <%= t("platform_admin.title") %><% end %>
+              <%= link_to admin_platform_path, class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#3a3a3c] hover:bg-[#e8e8ed] hover:text-[#1c1c1e]" do %><%= seller_icon(:plug) %> <span data-label><%= t("platform_admin.title") %></span><% end %>
             <% end %>
-            <%= link_to "/settings/profile", class: "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" do %><%= seller_icon(:settings) %> <%= sl("Paramètres") %><% end %>
-            <%= button_to admin_logout_path, method: :delete, class: "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]" do %><%= seller_icon(:logout) %> <%= sl("Se déconnecter") %><% end %>
+            <%= link_to "/settings/profile", title: sl("Paramètres"), class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#3a3a3c] hover:bg-[#e8e8ed] hover:text-[#1c1c1e]" do %><%= seller_icon(:settings) %> <span data-label><%= sl("Paramètres") %></span><% end %>
+            <%= button_to admin_logout_path, method: :delete, title: sl("Se déconnecter"), class: "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#3a3a3c] hover:bg-[#e8e8ed] hover:text-[#1c1c1e]" do %><%= seller_icon(:logout) %> <span data-label><%= sl("Se déconnecter") %></span><% end %>
           </div>
         </nav>
       <% end %>
 
-      <div class="lg-shell text-[#5e5a58]" data-seller-shell>
+      <div class="lg-shell min-h-dvh text-[#3a3a3c]" data-seller-shell>
         <% if agent && current_store %>
           <div hidden data-controller="desk-presence" data-desk-presence-url-value="<%= presence_admin_confirmations_path %>"></div>
         <% end %>
@@ -88,9 +118,8 @@
             <%= render "admin/shared/impersonation_banner" if impersonating? %>
             <%= render "admin/shared/platform_workspace_banner" %>
             <div class="lg-chrome flex items-center justify-between rounded-2xl px-3 py-2.5 lg:hidden">
-
-              <button type="button" data-seller-open aria-expanded="false" class="rounded-xl border border-[#e8e3df]/bg-white/70 p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>
-              <span class="text-xl font-extrabold text-[#a8432e]" dir="ltr">seallo</span>
+              <button type="button" data-seller-open aria-expanded="false" class="rounded-lg border border-[#e0e0e5] bg-white p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>
+              <span class="text-xl font-extrabold tracking-tight text-[#1d1d1f]" dir="ltr">seallo</span>
               <span class="w-9"></span>
             </div>
             <%= render "admin/shared/pwa_install" %>
@@ -114,6 +143,25 @@
       </div>
       <script>
         (function () {
+          var root = document.documentElement;
+          function apply(collapsed) {
+            if (collapsed) root.setAttribute("data-sidebar", "collapsed"); else root.removeAttribute("data-sidebar");
+            document.querySelectorAll("[data-sidebar-toggle]").forEach(function (button) {
+              var label = collapsed ? button.dataset.labelExpand : button.dataset.labelCollapse;
+              button.setAttribute("aria-expanded", String(!collapsed));
+              button.setAttribute("title", label);
+              button.setAttribute("aria-label", label);
+            });
+          }
+          document.addEventListener("click", function (e) {
+            if (!e.target.closest("[data-sidebar-toggle]")) return;
+            var collapsed = root.getAttribute("data-sidebar") !== "collapsed";
+            apply(collapsed);
+            try { localStorage.setItem("sellerSidebar", collapsed ? "collapsed" : "expanded"); } catch (error) {}
+          });
+          apply(root.getAttribute("data-sidebar") === "collapsed");
+        })();
+        (function () {
           var drawer = document.querySelector("[data-seller-drawer]");
           if (!drawer) return;
           var triggers = Array.prototype.slice.call(document.querySelectorAll("[data-seller-open]"));
@@ -131,7 +179,7 @@
               lastTrigger = trigger;
               drawer.hidden = false;
               setExpanded("true");
-              drawer.querySelector("[data-seller-close]").focus();
+              drawer.querySelector("[data-seller-close]")?.focus();
             });
           });
           drawer.addEventListener("click", function (e) { if (e.target === drawer || e.target.closest("[data-seller-close]")) closeDrawer(); });

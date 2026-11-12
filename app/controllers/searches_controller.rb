@@ -9,7 +9,7 @@ class SearchesController < ApplicationController
     @in_stock = params[:in_stock] == "1"
     @page = [ params[:page].to_i, 1 ].max
 
-    products = current_store.products.active
+    products = current_store.products.native.active   # what the storefront sells: never the catalog imported from another store
     products = apply_query(products) if @query.present?
     products = apply_stock_filter(products) if @in_stock
     products = apply_sort(products)

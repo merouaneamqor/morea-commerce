@@ -112,7 +112,7 @@ export default class extends Controller {
   }
 
   filterCities() {
-    if (!this.hasCityTarget || !this.hasCityListTarget) return
+    if (!this.hasCityTarget || !this.hasCityListTarget || this.citiesValue.length === 0) return
 
     const matches = this.rankCities(this.cityTarget.value)
     this.renderCityList(matches)
@@ -120,7 +120,7 @@ export default class extends Controller {
   }
 
   openCities() {
-    if (!this.hasCityListTarget || !this.hasCityTarget) return
+    if (!this.hasCityListTarget || !this.hasCityTarget || this.citiesValue.length === 0) return
     if (this.cityListTarget.hidden && this.cityTarget.value.trim().length === 0) {
       this.renderCityList(this.citiesValue.slice(0, 12))
     }

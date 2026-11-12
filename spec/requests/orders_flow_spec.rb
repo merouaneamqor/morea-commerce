@@ -136,18 +136,15 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
   describe "the orders table" do
     before { sign_in(owner) }
 
-    it "shows Manuel for a manual order and keeps the key columns first, with one scrolling wrap" do
+    it "shows Manuel for a manual order, the columns of the new page in order, and one scrolling wrap" do
       create_order
 
       get "/admin/orders"
 
       headers = document.css("thead th").map { |th| th.text.squish }
-      expect(headers.first(6)).to eq(%w[Order Customer Phone City Status Amount])
-      expect(document.at_css("[data-source]").text.squish).to eq("Manuel")
-      expect(document.css(".admin-table-wrap").size).to eq(1)
-      expect(document.at_css("table.admin-table--sticky")).to be_present
-      expect(document.at_css("[data-orders-mobile]")).to be_present
-      expect(document.at_css("[data-orders-mobile] .admin-mobile-list__item")).to be_present
+      expect(headers).to eq(%w[id created customer product amount confirmation shipping source delivery city actions].map { |key| I18n.t("orders_page.columns.#{key}") })
+      expect(document.at_css("[data-source]").text.squish).to eq(I18n.t("orders_page.filters.manual"))
+      expect(document.css("[data-orders-table-wrap]").size).to eq(1)
     end
   end
 

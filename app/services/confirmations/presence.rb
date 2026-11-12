@@ -36,6 +36,7 @@ module Confirmations
       now = Time.current
       ended = now > shift.started_at ? now : shift.started_at + 1.second
       shift.update!(ended_at: ended, last_seen_at: now)
+      ClaimExpiry.release_for!(store: @store, user: @user)
     end
 
     def present?(now: Time.current)
@@ -62,6 +63,7 @@ module Confirmations
       seen = shift.last_seen_at || shift.started_at
       ended = seen > shift.started_at ? seen : shift.started_at + 1.second
       shift.update!(ended_at: ended)
+      ClaimExpiry.release_for!(store: @store, user: @user)
     end
 
     def authorize!

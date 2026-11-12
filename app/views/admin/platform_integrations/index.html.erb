@@ -5,7 +5,7 @@
     <h1 class="admin-page-header__title"><%= t("platform_admin.integrations.title") %></h1>
     <p class="admin-page-header__meta"><%= t("platform_admin.integrations.description") %></p>
   </div>
-  <div class="flex items-center gap-2">
+  <div class="platform-toolbar">
     <%= link_to t("platform_admin.integrations.seallo_link"), superadmin_seallo_connections_path, class: "admin-btn-secondary" %>
     <%= link_to t("platform_admin.back"), admin_platform_path, class: "admin-btn-secondary" %>
   </div>
@@ -18,7 +18,29 @@
   <% if @failing.empty? %>
     <p class="admin-muted px-5 pb-4"><%= t("platform_admin.integrations.failing_empty") %></p>
   <% else %>
-    <div class="admin-table-wrap">
+    <ul class="admin-mobile-list lg:hidden">
+      <% @failing.each do |entry| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= link_to entry.store_name, admin_platform_integration_path(entry.store_id), class: "admin-link" %></p>
+              <p class="admin-mobile-list__meta"><%= entry.store_slug %></p>
+            </div>
+            <span class="admin-mobile-list__amount"><%= t("platform_admin.integrations.states.#{entry.connection_state}", default: entry.connection_state.humanize) %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= t("platform_admin.integrations.providers.#{entry.provider}", default: entry.provider.humanize) %>
+            · <%= entry.label %>
+            · <%= entry.error_code.presence || admin_blank %>
+          </p>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <%= link_to t("platform_admin.integrations.view"), admin_platform_integration_path(entry.store_id), class: "admin-btn-plain" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
       <table class="admin-table">
         <thead>
           <tr>
@@ -58,7 +80,31 @@
   <% if @workspaces.empty? %>
     <p class="admin-muted px-5 pb-4"><%= t("platform_admin.integrations.workspaces_empty") %></p>
   <% else %>
-    <div class="admin-table-wrap">
+    <ul class="admin-mobile-list lg:hidden">
+      <% @workspaces.each do |workspace| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= link_to workspace.store.name, admin_platform_integration_path(workspace.store), class: "admin-link" %></p>
+              <p class="admin-mobile-list__meta"><%= workspace.store.slug %></p>
+            </div>
+            <span class="admin-mobile-list__amount"><%= workspace.entries.size %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <% if workspace.failing? %>
+              <%= t("platform_admin.integrations.columns.attention") %>: <%= workspace.failing_entries.size %>
+            <% else %>
+              <%= admin_blank %>
+            <% end %>
+          </p>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <%= link_to t("platform_admin.integrations.view"), admin_platform_integration_path(workspace.store), class: "admin-btn-plain" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
       <table class="admin-table">
         <thead>
           <tr>

@@ -26,9 +26,9 @@
         <ul class="admin-stack gap-2">
           <% items.each do |item| %>
             <% helper_name, *args = item.path %>
-            <li class="flex flex-wrap items-center justify-between gap-2" data-queue-kind="<%= item.kind %>" data-queue-tone="<%= item.tone %>">
-              <div class="min-w-0">
-                <%= link_to item.title, public_send("#{helper_name}_path", *args), class: "font-semibold" %>
+            <li class="flex flex-wrap items-start justify-between gap-2 py-1" data-queue-kind="<%= item.kind %>" data-queue-tone="<%= item.tone %>">
+              <div class="min-w-0 flex-1">
+                <%= link_to item.title, public_send("#{helper_name}_path", *args), class: "font-semibold inline-block min-h-[2.5rem] leading-snug py-1" %>
                 <p class="admin-muted text-sm"><%= item.detail %></p>
               </div>
               <%= admin_badge(item.tone, label: item.tone.to_s.humanize, tone: item.tone) %>

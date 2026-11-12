@@ -33,35 +33,57 @@
 </section>
 
 <section class="admin-card">
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th><%= t("platform_admin.audit.when") %></th>
-          <th><%= t("platform_admin.audit.action") %></th>
-          <th><%= t("platform_admin.audit.actor") %></th>
-          <th><%= t("platform_admin.workspace") %></th>
-          <th><%= t("platform_admin.audit.source") %></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @events.each do |event| %>
+  <% if @events.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.audit.empty") %></p>
+  <% else %>
+    <ul class="admin-mobile-list lg:hidden">
+      <% @events.each do |event| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= event.action %></p>
+              <p class="admin-mobile-list__meta"><%= event.created_at.strftime("%b %-d, %Y %H:%M") %></p>
+            </div>
+            <span class="admin-mobile-list__amount admin-muted"><%= event.source %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= event.actor_label.presence || admin_blank %>
+            · <%= event.store&.name || admin_blank %>
+          </p>
+          <div class="admin-mobile-list__actions">
+            <%= link_to t("platform_admin.audit.open"), admin_platform_audit_event_path(event), class: "admin-btn-plain" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
+      <table class="admin-table">
+        <thead>
           <tr>
-            <td class="admin-muted tabular-nums"><%= event.created_at.strftime("%b %-d, %Y %H:%M") %></td>
-            <td class="font-semibold"><%= event.action %></td>
-            <td><%= event.actor_label.presence || admin_blank %></td>
-            <td><%= event.store&.name || admin_blank %></td>
-            <td class="admin-muted"><%= event.source %></td>
-            <td class="text-right">
-              <%= link_to t("platform_admin.audit.open"), admin_platform_audit_event_path(event), class: "admin-btn-plain" %>
-            </td>
+            <th><%= t("platform_admin.audit.when") %></th>
+            <th><%= t("platform_admin.audit.action") %></th>
+            <th><%= t("platform_admin.audit.actor") %></th>
+            <th><%= t("platform_admin.workspace") %></th>
+            <th><%= t("platform_admin.audit.source") %></th>
+            <th></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <% if @events.empty? %>
-      <p class="admin-empty"><%= t("platform_admin.audit.empty") %></p>
-    <% end %>
-  </div>
+        </thead>
+        <tbody>
+          <% @events.each do |event| %>
+            <tr>
+              <td class="admin-muted tabular-nums"><%= event.created_at.strftime("%b %-d, %Y %H:%M") %></td>
+              <td class="font-semibold"><%= event.action %></td>
+              <td><%= event.actor_label.presence || admin_blank %></td>
+              <td><%= event.store&.name || admin_blank %></td>
+              <td class="admin-muted"><%= event.source %></td>
+              <td class="text-right">
+                <%= link_to t("platform_admin.audit.open"), admin_platform_audit_event_path(event), class: "admin-btn-plain" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </section>

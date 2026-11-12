@@ -6,7 +6,7 @@
     <p class="admin-page-header__meta"><%= t("platform_users.description") %></p>
     <p class="admin-page-header__meta"><%= t("platform_users.access_help") %></p>
   </div>
-  <div class="flex items-center gap-2">
+  <div class="platform-toolbar">
     <%= link_to t("platform_admin.back"), admin_platform_path, class: "admin-btn-secondary" %>
     <%= link_to t("platform_users.new"), new_admin_platform_user_path, class: "admin-btn" %>
   </div>
@@ -30,7 +30,36 @@
   <% if @users.empty? %>
     <p class="admin-muted p-4"><%= t("platform_users.empty", status: t("platform_users.statuses.#{@status}")) %></p>
   <% else %>
-    <div class="admin-table-wrap">
+    <ul class="admin-mobile-list lg:hidden">
+      <% @users.each do |user| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= link_to user.name.presence || admin_blank, edit_admin_platform_user_path(user), class: "admin-link" %></p>
+              <p class="admin-mobile-list__meta"><%= user.email %></p>
+            </div>
+            <%= admin_badge(user.status, label: t("platform_users.statuses.#{user.status}"), tone: { "active" => "success", "suspended" => "warning", "archived" => "neutral" }[user.status]) %>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= t(user.super_admin? ? "platform_users.roles.super_admin" : "platform_users.roles.workspace_admin") %>
+            · <%= user.store&.name || admin_blank %>
+          </p>
+          <div class="admin-mobile-list__actions">
+            <%= link_to t("platform_users.edit"), edit_admin_platform_user_path(user), class: "admin-btn-plain" %>
+            <% Platform::UserLifecycle::ACTIONS.each do |action, rule| %>
+              <% next unless rule[:from].include?(user.status) %>
+              <% next if user == current_user && rule[:to] != "active" %>
+              <%= button_to t("platform_users.actions.#{action}"), lifecycle_admin_platform_user_path(user, lifecycle: action),
+                    method: :post, params: { return_status: @status },
+                    form: { class: "inline", data: { turbo_confirm: t("platform_users.confirm.#{action}", email: user.email) } },
+                    class: "admin-btn-plain #{'admin-btn-plain--critical' if %w[suspend archive].include?(action)}" %>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
       <table class="admin-table">
         <thead>
           <tr>

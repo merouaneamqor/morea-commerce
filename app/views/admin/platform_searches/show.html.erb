@@ -11,7 +11,7 @@
       <% end %>
     </p>
   </div>
-  <%= form_with url: admin_platform_search_path, method: :get, local: true, class: "platform-toolbar flex items-center gap-2" do %>
+  <%= form_with url: admin_platform_search_path, method: :get, local: true, class: "platform-toolbar" do %>
     <label class="sr-only" for="platform-search-page-q"><%= t("platform_admin.search.label") %></label>
     <%= text_field_tag :q, @query, id: "platform-search-page-q", class: "admin-input", placeholder: t("platform_admin.search.placeholder"), autocomplete: "off" %>
     <%= submit_tag t("platform_admin.search.label"), class: "admin-btn" %>
@@ -25,8 +25,19 @@
     <ul class="admin-mobile-list lg:hidden">
       <% @stores.each do |store| %>
         <li class="admin-mobile-list__card">
-          <p class="admin-mobile-list__name"><%= link_to store.name, admin_tenant_path(store) %></p>
-          <p class="admin-mobile-list__meta"><%= store.slug %></p>
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= link_to store.name, admin_tenant_path(store) %></p>
+              <p class="admin-mobile-list__meta"><%= store.slug %></p>
+            </div>
+            <span class="admin-mobile-list__amount"><%= store.billing_status.humanize %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= t(store.storefront_enabled? ? "platform_admin.storefront_enabled" : "platform_admin.storefront_disabled") %>
+          </p>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <%= link_to t("platform_admin.audit.open"), admin_tenant_path(store), class: "admin-btn-plain" %>
+          </div>
         </li>
       <% end %>
     </ul>

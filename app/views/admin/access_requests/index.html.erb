@@ -6,10 +6,12 @@
     <p class="admin-page-header__meta"><%= t("platform_admin.request_description") %></p>
     <p class="admin-page-header__meta"><%= t("platform_admin.approve_flow_help") %></p>
   </div>
-  <%= link_to t("platform_admin.back"), admin_platform_path, class: "admin-btn-secondary" %>
+  <div class="platform-toolbar">
+    <%= link_to t("platform_admin.back"), admin_platform_path, class: "admin-btn-secondary" %>
+  </div>
 </div>
 
-<nav class="mb-4 flex gap-2" aria-label="<%= t("platform_admin.fields.status") %>">
+<nav class="mb-4 flex flex-wrap gap-2" aria-label="<%= t("platform_admin.fields.status") %>">
   <% AccessRequest::STATUSES.each do |status| %>
     <%= link_to t("platform_admin.status_count", status: t("platform_admin.request_statuses.#{status}"), count: @counts[status].to_i), admin_access_requests_path(status: status),
           class: (status == @status ? "admin-btn" : "admin-btn-secondary") %>

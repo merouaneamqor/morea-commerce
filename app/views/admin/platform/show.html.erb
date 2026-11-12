@@ -1,14 +1,14 @@
 <% content_for :title, t("platform_admin.document_title", name: Store.platform_name) %>
 
 <div class="admin-page-header">
-  <div>
+  <div class="min-w-0">
     <h1 class="admin-page-header__title"><%= t("platform_admin.title") %></h1>
     <p class="admin-page-header__meta"><%= t("platform_admin.overview_description") %></p>
   </div>
   <div class="platform-toolbar">
+    <%= link_to t("platform_admin.new_workspace"), new_admin_tenant_path, class: "admin-btn" %>
     <%= link_to t("platform_admin.requests_count", count: @pending_requests_count), admin_access_requests_path, class: "admin-btn-secondary", data: { access_requests_count: @pending_requests_count } %>
     <%= link_to t("seallo_connect_pages.privacy_rights.admin.title"), admin_platform_privacy_rights_requests_path, class: "admin-btn-secondary" %>
-    <%= link_to t("platform_admin.new_workspace"), new_admin_tenant_path, class: "admin-btn" %>
   </div>
 </div>
 

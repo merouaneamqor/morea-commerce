@@ -18,7 +18,29 @@
   <% if @dead_jobs.empty? %>
     <p class="admin-empty"><%= t("platform_admin.operations.empty_jobs") %></p>
   <% else %>
-    <div class="admin-table-wrap">
+    <ul class="admin-mobile-list lg:hidden">
+      <% @dead_jobs.each do |job| %>
+        <li class="admin-mobile-list__card" data-job-set="dead" data-job-class="<%= job.class_name %>">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= job.class_name %></p>
+              <p class="admin-mobile-list__meta"><%= job.queue %></p>
+            </div>
+            <span class="admin-mobile-list__amount admin-muted"><%= job.failed_at&.strftime("%b %-d, %Y %H:%M") || admin_blank %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <% if job.store_id.present? %>
+              <%= link_to (job.store_name.presence || t("platform_admin.operations.unknown_workspace", id: job.store_id)), admin_tenant_path(job.store_id) %>
+            <% else %>
+              <%= admin_blank %>
+            <% end %>
+            · <%= job.error.presence || admin_blank %>
+          </p>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
       <table class="admin-table">
         <thead>
           <tr>
@@ -58,7 +80,29 @@
   <% if @retry_jobs.empty? %>
     <p class="admin-empty"><%= t("platform_admin.operations.empty_retry") %></p>
   <% else %>
-    <div class="admin-table-wrap">
+    <ul class="admin-mobile-list lg:hidden">
+      <% @retry_jobs.each do |job| %>
+        <li class="admin-mobile-list__card" data-job-set="retry" data-job-class="<%= job.class_name %>">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= job.class_name %></p>
+              <p class="admin-mobile-list__meta"><%= job.queue %></p>
+            </div>
+            <span class="admin-mobile-list__amount admin-muted"><%= job.failed_at&.strftime("%b %-d, %Y %H:%M") || admin_blank %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <% if job.store_id.present? %>
+              <%= link_to (job.store_name.presence || t("platform_admin.operations.unknown_workspace", id: job.store_id)), admin_tenant_path(job.store_id) %>
+            <% else %>
+              <%= admin_blank %>
+            <% end %>
+            · <%= job.error.presence || admin_blank %>
+          </p>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
       <table class="admin-table">
         <thead>
           <tr>
@@ -98,7 +142,25 @@
   <% if @webhook_failures.empty? %>
     <p class="admin-empty"><%= t("platform_admin.operations.empty_webhooks") %></p>
   <% else %>
-    <div class="admin-table-wrap">
+    <ul class="admin-mobile-list lg:hidden">
+      <% @webhook_failures.each do |connection| %>
+        <% error_code = connection.shopify_api_error_code.presence || connection.last_error_code %>
+        <li class="admin-mobile-list__card" data-connection-id="<%= connection.id %>" data-error-code="<%= error_code %>">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= connection.store.name %></p>
+              <p class="admin-mobile-list__meta"><%= connection.provider.humanize %> · <span dir="ltr"><%= connection.external_domain %></span></p>
+            </div>
+            <span class="admin-mobile-list__amount admin-muted"><%= error_code %></span>
+          </div>
+          <div class="admin-mobile-list__actions">
+            <%= link_to t("platform_admin.integrations.view"), admin_platform_integration_path(connection.store), class: "admin-btn-plain" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
       <table class="admin-table">
         <thead>
           <tr>

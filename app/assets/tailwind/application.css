@@ -3575,3 +3575,11 @@ main {
   html[data-sidebar="collapsed"] [data-seller-shell] aside [data-sidebar-toggle] svg { transform: rotate(180deg); }
 }
 @media (prefers-reduced-motion: reduce) { [data-seller-shell] aside { transition: none; } }
+
+/* ——— Menu scrollbar: thin and invisible until you point at the menu, and only when the list really overflows ——— */
+[data-sidebar-nav] { scrollbar-width: thin; scrollbar-color: transparent transparent; overscroll-behavior: contain; }
+[data-sidebar-nav]:hover { scrollbar-color: rgba(0, 0, 0, 0.22) transparent; }
+[data-sidebar-nav]::-webkit-scrollbar { width: 6px; }
+[data-sidebar-nav]::-webkit-scrollbar-track { background: transparent; }
+[data-sidebar-nav]::-webkit-scrollbar-thumb { background: transparent; border-radius: 9999px; }
+[data-sidebar-nav]:hover::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.22); }

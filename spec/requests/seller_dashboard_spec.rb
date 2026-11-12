@@ -57,6 +57,12 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     expect(aside.at_css("[data-collapse-hide]")).to be_present                                # the wordmark and the store card go when collapsed
     expect(response.body).to include('localStorage.getItem("sellerSidebar") === "collapsed"')  # restored before the first paint
     expect(document.at_css("[data-seller-drawer] [data-sidebar-toggle]")["class"]).to include("hidden")
+
+    # A tighter list, so it fits without scrolling; it still scrolls (with a hidden thin bar) only if it ever overflows.
+    nav = aside.at_css("nav[data-sidebar-nav]")
+    expect(nav["class"]).to include("overflow-y-auto", "p-2.5")
+    expect(nav.at_css("ul")["class"]).to include("space-y-0.5")
+    expect(links.map { |link| link["class"][/py-[\d.]+/] }.uniq).to eq([ "py-2" ])
   end
 
   it "no longer shows the financial cards: they moved to Comptabilité" do

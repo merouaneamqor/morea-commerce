@@ -54,22 +54,22 @@ RSpec.describe "Dashboard milestones", type: :request do
 
     tiers = document.css("[data-tier]")
     colors = tiers.map { |tier| tier["data-color"] }
-    expect(colors).to eq(%w[#3aa76d #3b82c4 #7c5cd6 #e08a2c #d6455d #f2b705])
+    expect(colors).to eq(%w[#3aa76d #5aa9ee #7c5cd6 #e08a2c #d6455d #f2b705])
     expect(colors.uniq.size).to eq(6)
     unlocked, locked = tiers.partition { |tier| tier["data-unlocked"] == "true" }
     expect(unlocked.map { |tier| tier.at_css("span")["style"] }).to eq([ "background: #3aa76d; color: #fff" ])
-    expect(locked.first.at_css("span")["style"]).to eq("background: color-mix(in srgb, #3b82c4 26%, #1c1c1e); color: #3b82c4")   # Doyen, still locked
+    expect(locked.first.at_css("span")["style"]).to eq("background: color-mix(in srgb, #5aa9ee 26%, #10224a); color: #5aa9ee")   # Doyen, still locked
     fill = document.at_css(".ms-fill")["style"]
-    expect(fill).to include("--ms-w: 21.83%", "#3aa76d 0.0% 16.667%", "#3b82c4 16.667% 33.333%", "#f2b705 83.333% 100.0%")
+    expect(fill).to include("--ms-w: 21.83%", "#3aa76d 0.0% 16.667%", "#5aa9ee 16.667% 33.333%", "#f2b705 83.333% 100.0%")
     expect(document.at_css("[data-milestone-current]")["style"]).to include("#3aa76d")   # Pionnier
-    expect(document.at_css("[data-here] span")["style"]).to include("#3b82c4")            # the stage being filled
+    expect(document.at_css("[data-here] span")["style"]).to include("#5aa9ee")            # the stage being filled
   end
 
-  it "is a black bar: smoked panel, white text, and every stage colour still readable on it" do
+  it "is a navy blue bar: white text, and every stage colour still readable on it" do
     get "/dashboard", params: { locale: "fr" }
 
     section = document.at_css("[data-milestones]")
-    expect(section["class"]).to include("bg-[#1c1c1e]", "text-white")
+    expect(section["class"]).to include("bg-[#10224a]", "text-white")
     expect(section["class"]).not_to include("bg-white")
     expect(section.at_css("[data-milestone-goal]").text.squish).to eq("Je continue jusqu'à 500K MAD")
   end

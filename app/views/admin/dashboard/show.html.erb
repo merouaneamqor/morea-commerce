@@ -19,9 +19,6 @@
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div>
     <h1 class="text-2xl font-bold text-[#1c1c1e] sm:text-[28px]"><%= sl("Bonjour") %><%= first_name.present? ? ", #{first_name}" : "" %></h1>
-    <p class="text-sm">
-      <%= stats[:pending].positive? ? "#{number.(stats[:pending])} #{sl("commandes attendent une confirmation.")}" : sl("Aucune commande en attente de confirmation.") %>
-    </p>
   </div>
   <div class="flex flex-wrap items-center gap-2">
     <%= form_with url: "/commandes", method: :get, class: "hidden h-11 items-center gap-2 rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm sm:flex" do %>
@@ -45,29 +42,31 @@
   </div>
 <% end %>
 
-<%# Row 1: six figures. Row 2: the three rates. Every card: icon, value, description. %>
-<section class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6" data-kpis="row1">
-  <div class="[&>*]:h-full"><%= render "kpi", key: "revenue", label: sl("Chiffre d'affaires"), value: amount.(money[:revenue]), icon: :wallet, tone: "dark",
-        hint: delta_text.(money[:revenue_delta]), hint_class: delta_class.(money[:revenue_delta], true), hint2: sl("Commandes livrées") %></div>
-  <div class="[&>*]:h-full"><%= render "kpi", key: "orders", label: sl("Commandes"), value: number.(k[:orders]), icon: :orders, tone: "neutral",
-        hint: delta_text.(k[:orders_delta]), hint_class: delta_class.(k[:orders_delta]) %></div>
-  <div class="[&>*]:h-full"><%= render "kpi", key: "en-attente-de-confirmation", label: sl("En attente de confirmation"), value: number.(k[:awaiting]), icon: :clock, tone: "amber", href: "/confirmation",
-        hint: (k[:awaiting].positive? ? "#{number.(k[:awaiting_amount])} #{cur} #{sl("à confirmer")}" : sl("Tout est confirmé")) %></div>
-  <div class="[&>*]:h-full"><%= render "kpi", key: "en-cours-de-livraison", label: sl("En cours de livraison"), value: number.(k[:in_transit]), icon: :truck, tone: "blue", href: "/commandes?status=in_transit",
-        hint: "#{number.(k[:in_transit_amount])} #{cur} #{sl("sur la route")}" %></div>
-  <div class="[&>*]:h-full"><%= render "kpi", key: "annulees", label: sl("Annulées"), value: number.(k[:cancelled]), icon: :cancel, tone: "red", href: "/commandes?status=cancelled",
-        hint: (k[:cancel_rate] ? "#{k[:cancel_rate]} % #{sl("des commandes")}" : sl("sur la période")) %></div>
-  <div class="[&>*]:h-full"><%= render "kpi", key: "refusees", label: sl("Refusées"), value: number.(k[:refused]), icon: :ban, tone: "ink", href: "/commandes?status=returned",
-        hint: (k[:refusal_rate] ? "#{k[:refusal_rate]} % #{sl("des colis")}" : sl("sur la période")) %></div>
+<%# Row 1: six figures. Row 2: the three rates. Same card design as Comptabilité: grey icon beside the label, value with its unit,
+    short description; the revenue card is the gold one. %>
+<% pill_of = ->(d) { d.nil? ? nil : [ "#{d.positive? ? "+" : ""}#{d} %", (d.positive? ? :up : (d.negative? ? :down : :flat)) ] } %>
+<section class="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6" data-kpis="row1">
+  <%= render "kpi", key: "revenue", label: sl("Chiffre d'affaires"), icon: :profit, value: number.(money[:revenue]), unit: cur, featured: true,
+        pill: pill_of.(money[:revenue_delta]), sub: "#{sl("Commandes livrées")} · #{sl("vs période précédente")}" %>
+  <%= render "kpi", key: "orders", label: sl("Commandes"), icon: :orders, value: number.(k[:orders]),
+        pill: pill_of.(k[:orders_delta]), sub: (k[:orders_delta] ? sl("vs période précédente") : sl("sur la période")) %>
+  <%= render "kpi", key: "en-attente-de-confirmation", label: sl("En attente de confirmation"), icon: :clock, value: number.(k[:awaiting]), href: "/confirmation",
+        sub: (k[:awaiting].positive? ? "#{number.(k[:awaiting_amount])} #{cur} #{sl("à confirmer")}" : sl("Tout est confirmé")) %>
+  <%= render "kpi", key: "en-cours-de-livraison", label: sl("En cours de livraison"), icon: :truck, value: number.(k[:in_transit]), href: "/commandes?status=in_transit",
+        sub: "#{number.(k[:in_transit_amount])} #{cur} #{sl("sur la route")}" %>
+  <%= render "kpi", key: "annulees", label: sl("Annulées"), icon: :cancel, value: number.(k[:cancelled]), href: "/commandes?status=cancelled",
+        sub: (k[:cancel_rate] ? "#{k[:cancel_rate]} % #{sl("des commandes")}" : sl("sur la période")) %>
+  <%= render "kpi", key: "refusees", label: sl("Refusées"), icon: :ban, value: number.(k[:refused]), href: "/commandes?status=returned",
+        sub: (k[:refusal_rate] ? "#{k[:refusal_rate]} % #{sl("des colis")}" : sl("sur la période")) %>
 </section>
 
-<section class="grid grid-cols-1 gap-3 sm:grid-cols-3" data-kpis="row2">
-  <div class="[&>*]:h-full"><%= render "kpi", key: "confirmation_rate", label: sl("Taux de confirmation"), value: percent_text.(k[:confirmation_rate]), icon: :check, tone: "green",
-        hint: "#{number.(k[:confirmed])} #{sl("confirmées")} / #{number.(k[:orders])}" %></div>
-  <div class="[&>*]:h-full"><%= render "kpi", key: "taux-de-livraison", label: sl("Taux de livraison"), value: percent_text.(k[:delivery_rate]), icon: :box, tone: "green", href: "/commandes?status=delivered",
-        hint: "#{number.(k[:delivered])} #{sl("livrées")}" %></div>
-  <div class="[&>*]:h-full"><%= render "kpi", key: "taux-de-retour", label: sl("Taux de retour"), value: percent_text.(k[:return_rate]), icon: :undo, tone: "gray", href: "/commandes?status=returned",
-        hint: "#{number.(k[:returned])} #{sl("retournées")}" %></div>
+<section class="grid grid-cols-1 gap-2.5 sm:grid-cols-3" data-kpis="row2">
+  <%= render "kpi", key: "confirmation_rate", label: sl("Taux de confirmation"), icon: :check, value: percent_text.(k[:confirmation_rate]),
+        sub: "#{number.(k[:confirmed])} #{sl("confirmées")} / #{number.(k[:orders])}" %>
+  <%= render "kpi", key: "taux-de-livraison", label: sl("Taux de livraison"), icon: :box, value: percent_text.(k[:delivery_rate]), href: "/commandes?status=delivered",
+        sub: "#{number.(k[:delivered])} #{sl("livrées")}" %>
+  <%= render "kpi", key: "taux-de-retour", label: sl("Taux de retour"), icon: :undo, value: percent_text.(k[:return_rate]), href: "/commandes?status=returned",
+        sub: "#{number.(k[:returned])} #{sl("retournées")}" %>
 </section>
 
 <section class="grid gap-3 lg:grid-cols-2">

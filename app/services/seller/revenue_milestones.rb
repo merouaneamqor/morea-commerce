@@ -14,7 +14,7 @@ module Seller
     # [key, French name, threshold in MAD, colour of the stage]
     TIERS = [
       [ "pionnier", "Pionnier", 100_000, "#3aa76d" ],
-      [ "doyen", "Doyen", 500_000, "#3b82c4" ],
+      [ "doyen", "Doyen", 500_000, "#5aa9ee" ],
       [ "leader", "Leader", 2_000_000, "#7c5cd6" ],
       [ "maitre", "Maître", 5_000_000, "#e08a2c" ],
       [ "legende", "Légende", 10_000_000, "#d6455d" ],

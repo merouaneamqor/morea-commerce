@@ -65,6 +65,35 @@ RSpec.describe "Dashboard figures", type: :request do
     expect(document.css("[data-kpis=row2] [data-kpi]").map { |card| card["data-kpi"] }).to eq(%w[confirmation_rate taux-de-livraison taux-de-retour])
   end
 
+  it "draws the cards like Comptabilité: gold revenue card, white bordered cards with a small grey icon, no tints" do
+    get "/dashboard", params: { from: Date.current.iso8601, to: Date.current.iso8601, locale: "fr" }
+
+    cards = document.css("[data-kpis] [data-kpi]")
+    expect(cards.size).to eq(9)
+    expect(cards.map { |card| card["class"][/h-\[\d+px\]/] }.uniq).to eq([ "h-[110px]" ])
+    gold, others = cards.partition { |card| card["class"].include?("from-[#f7d9a4]") }
+    expect(gold.map { |card| card["data-kpi"] }).to eq([ "revenue" ])
+    expect(others).to all(satisfy { |card| card["class"].include?("border border-[#e0e0e5] bg-white") })
+    expect(others.map { |card| card.at_css("p span")["class"] }.uniq).to eq([ "shrink-0 text-[#6e6e73]" ])   # the grey icon beside the label
+    expect(response.body).not_to match(/bg-\[#(f1faf5|f2f7fd|fff8ea|fef2f3)\]/)                             # the old tints are gone
+  end
+
+  it "no longer prints the sentence about orders waiting under the greeting" do
+    get "/dashboard", params: { locale: "fr" }
+
+    expect(document.at_css("h1").text).to include("Bonjour")
+    expect(response.body).not_to include("attendent une confirmation")
+    expect(response.body).not_to include("Aucune commande en attente de confirmation.")
+  end
+
+  it "prints the milestone goal in white on the navy bar" do
+    get "/dashboard", params: { locale: "fr" }
+
+    goal = document.at_css("[data-milestone-goal]")
+    expect(goal["class"]).to include("text-white")
+    expect(goal.next_element["class"]).to include("text-white/65")
+  end
+
   describe "the order distribution" do
     def view(key) = document.at_css("[data-distribution-view=#{key}]")
     def segment(key, name) = view(key).at_css("[data-legend=#{name}]")

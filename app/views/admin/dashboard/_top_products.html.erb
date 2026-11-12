@@ -1,0 +1,28 @@
+<%# Best sellers of the period: delivered orders, by the value of their items. Printing only: every figure comes from
+    Seller::DashboardStats#top_products. locals: products, currency %>
+<% medals = [ "background: linear-gradient(135deg, #f2c94c, #d9a21b); color: #fff", "background: linear-gradient(135deg, #c5cad3, #8e94a0); color: #fff", "background: linear-gradient(135deg, #d99a5b, #b9692a); color: #fff" ] %>
+<% neutral = "background: #efeff3; color: #6e6e73" %>
+
+<div class="rounded-2xl border border-[#e0e0e5] bg-white p-5" data-top-products>
+  <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Meilleurs produits") %></h2>
+  <p class="text-xs text-[#6e6e73]"><%= sl("Ventes livrées par produit, hors livraison") %></p>
+  <% if products.any? %>
+    <ol class="mt-4 space-y-3.5">
+      <% products.each_with_index do |product, index| %>
+        <li class="flex items-center gap-3" data-product-row="<%= index + 1 %>">
+          <span class="grid size-8 shrink-0 place-items-center rounded-full text-[13px] font-bold" style="<%= medals[index] || neutral %>"><%= index + 1 %></span>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-baseline justify-between gap-3">
+              <p class="truncate text-sm font-semibold text-[#1c1c1e]" dir="auto"><%= product[:name].presence || "—" %></p>
+              <p class="shrink-0 text-sm font-semibold text-[#1c1c1e] tabular-nums" data-revenue="<%= product[:revenue] %>"><%= seller_number(product[:revenue]) %> <%= currency %></p>
+            </div>
+            <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[#efeff3]"><div class="h-full rounded-full bg-[#1c1c1e]" style="width: <%= product[:bar] %>%"></div></div>
+            <p class="mt-1 text-[11px] text-[#8e8e93]"><%= seller_number(product[:orders]) %> <%= sl("commandes") %> · <%= seller_number(product[:quantity]) %> <%= sl("pcs") %></p>
+          </div>
+        </li>
+      <% end %>
+    </ol>
+  <% else %>
+    <p class="mt-8 mb-4 text-center text-sm text-[#6e6e73]"><%= sl("Aucune vente livrée sur la période.") %></p>
+  <% end %>
+</div>

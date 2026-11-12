@@ -1,6 +1,6 @@
 /* Public Seallo Connect pages: plain, readable documents that work in light and dark mode. */
 .sc-doc {
-  --sc-bg: #f5f5f7;
+  --sc-bg: #ffffff;
   --sc-fg: #1c1b19;
   --sc-muted: #5c5a55;
   --sc-line: #dcd8d0;

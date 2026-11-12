@@ -22,10 +22,14 @@ RSpec.describe Seller::DashboardStats do
     expect(stats[:currency]).to eq("MAD")
   end
 
-  it "no longer computes any money result: that belongs to AccountingStats" do
+  it "computes no money result itself: revenue and basket are read from AccountingStats, profit stays out" do
     order(status: "delivered", total: 20_000, delivered_at: now - 1.day)
-    expect(stats.keys).to match_array(%i[range currency pending kpis latest])
+    expect(stats.keys).to match_array(%i[range currency pending money low_stock distribution top_products kpis latest])
     expect(stats[:kpis].keys).not_to include(:revenue, :net_profit, :average_order, :revenue_delta)
+    expect(stats[:money].keys).to match_array(%i[revenue revenue_delta delivered_orders average_basket])
+    accounting = AccountingStats.new(store: store, range: described_class.new(store: store, now: now).range)
+    expect(stats[:money][:revenue]).to eq(accounting.totals.revenue / 100.0)
+    expect(stats[:money][:average_basket]).to eq((accounting.totals.average_basket / 100).round(2).to_f)
   end
 
   it "reports how many active products have no cost" do

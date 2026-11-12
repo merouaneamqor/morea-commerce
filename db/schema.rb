@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_05_033100) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_05_034000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -1231,6 +1231,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_033100) do
     t.string "confirmation_role", default: "supervisor", null: false
     t.integer "pay_per_delivery_cents", default: 0, null: false
     t.integer "return_penalty_cents", default: 0, null: false
+    t.boolean "show_milestones", default: true, null: false
     t.index ["email"], name: "index_users_on_email_super_admin", unique: true, where: "(super_admin = true)"
     t.index ["status"], name: "index_users_on_status"
     t.index ["store_id", "email"], name: "index_users_on_store_id_and_email", unique: true

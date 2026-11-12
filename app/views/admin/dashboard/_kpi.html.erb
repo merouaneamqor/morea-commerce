@@ -1,0 +1,26 @@
+<%# One dashboard figure, drawn like the Comptabilité cards: a small grey icon beside the label, the value with its unit,
+    an optional change pill, a short description; the featured card is the gold one. Printing only.
+    locals: key, label, value, icon, unit (optional), sub (optional), pill (optional [text, tone]), featured (optional), href (optional) %>
+<% featured = local_assigns.fetch(:featured, false) %>
+<% unit = local_assigns[:unit] %>
+<% sub = local_assigns[:sub] %>
+<% pill_text, pill_tone = local_assigns[:pill] %>
+<% pill_class = { up: "bg-[#e3f3e8] text-[#2f7a4a]", down: "bg-[#fbe7ea] text-[#b4344e]" }.fetch(pill_tone, featured ? "bg-[#1c1c1e]/80 text-white" : "bg-[#efeff3] text-[#6e6e73]") %>
+<% hover = local_assigns[:href] ? "transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-18px_rgba(0,0,0,0.4)]" : "" %>
+<% css = "flex h-[110px] min-w-0 flex-col justify-between rounded-xl px-3.5 py-3 #{featured ? "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e] shadow-[0_14px_30px_-20px_rgba(190,120,20,0.8)]" : "border border-[#e0e0e5] bg-white"} #{hover}" %>
+<% body = capture do %>
+  <div class="flex items-center justify-between gap-2">
+    <p class="flex min-w-0 items-center gap-1.5 text-xs font-medium <%= featured ? "" : "text-[#3a3a3c]" %>" title="<%= label %>">
+      <span class="<%= featured ? "grid size-5 shrink-0 place-items-center rounded-md bg-[#1c1c1e] text-white" : "shrink-0 text-[#6e6e73]" %>"><%= seller_icon(icon, size: featured ? 12 : 14) %></span>
+      <span class="truncate"><%= label %></span>
+    </p>
+    <% if pill_text.present? %><span class="rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap <%= pill_class %>" data-change="<%= pill_tone %>"><%= pill_text %></span><% end %>
+  </div>
+  <p class="flex items-baseline gap-x-1 text-[22px] leading-none font-bold whitespace-nowrap text-[#1c1c1e] 2xl:text-[25px]" data-value><%= value %> <% if unit.present? %><span class="text-xs font-semibold <%= featured ? "text-[#7a5a1e]" : "text-[#6e6e73]" %>"><%= unit %></span><% end %></p>
+  <p class="line-clamp-2 min-w-0 text-[11px] leading-tight <%= featured ? "text-[#6d4f17]" : "text-[#6e6e73]" %>" title="<%= sub %>"><%= sub %></p>
+<% end %>
+<% if local_assigns[:href] %>
+  <%= link_to local_assigns[:href], "data-kpi": key, class: css do %><%= body %><% end %>
+<% else %>
+  <div data-kpi="<%= key %>" class="<%= css %>"><%= body %></div>
+<% end %>

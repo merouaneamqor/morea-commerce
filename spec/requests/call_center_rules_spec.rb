@@ -58,12 +58,18 @@ RSpec.describe "Call center rules", type: :request do
     end
 
     it "makes an agent who comes back after 15 minutes find the order released, not act on a stale claim" do
-      sign_in(agent)
       travel_to(Time.zone.local(2026, 11, 5, 10, 0)) do
+        sign_in(agent)
         post "/admin/confirmations/#{order.id}/call"
+        expect(response).to have_http_status(:ok)
+
         travel 16.minutes
+        Confirmations::ClaimExpiry.release_idle!(store)
+        expect(confirmation_of(order).assigned_user_id).to be_nil
+
         post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "confirmed" }
         expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body["error"]).to be_present
         expect(order.reload.status).to eq("new")
         expect(confirmation_of(order).assigned_user_id).to be_nil
       end

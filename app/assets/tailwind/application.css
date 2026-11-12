@@ -3531,14 +3531,12 @@ main {
 /* ——— Revenue milestones bar: the fill grows on load, moving stripes run along it, the marker pulses ——— */
 @keyframes ms-grow { from { width: 0; } to { width: var(--ms-w); } }
 @keyframes ms-stripes { from { background-position: 0 0, 0 0; } to { background-position: 32px 0, 0 0; } }
-/* The runner: two poses swapped every quarter second, a small bounce, and it slides to its place with the fill */
-@keyframes ms-pose-a { 0%, 49.9% { opacity: 1; } 50%, 100% { opacity: 0; } }
-@keyframes ms-pose-b { 0%, 49.9% { opacity: 0; } 50%, 100% { opacity: 1; } }
-@keyframes ms-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+/* The "I'm here" bubble slides to its place with the fill and floats a little; the trophy sways */
+@keyframes ms-here-in { from { left: 2.5rem; } to { left: clamp(2.5rem, var(--ms-pos), calc(100% - 2.5rem)); } }
+@keyframes ms-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
 @keyframes ms-trophy { 0%, 100% { transform: rotate(-6deg) scale(1); } 50% { transform: rotate(6deg) scale(1.12); } }
-.ms-runner { animation: ms-bounce 0.5s ease-in-out infinite; transition: left 1.4s cubic-bezier(0.22, 1, 0.36, 1); }
-.ms-run-a { animation: ms-pose-a 0.5s steps(1) infinite; }
-.ms-run-b { animation: ms-pose-b 0.5s steps(1) infinite; }
+.ms-here { left: clamp(2.5rem, var(--ms-pos), calc(100% - 2.5rem)); animation: ms-here-in 1.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.ms-here > span { animation: ms-float 1.6s ease-in-out infinite; }
 .ms-trophy { animation: ms-trophy 1.6s ease-in-out infinite; transform-origin: 50% 80%; }
 .ms-fill {
   width: var(--ms-w);
@@ -3550,6 +3548,5 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ms-fill, .ms-runner, .ms-trophy { animation: none; }
-  .ms-run-b { opacity: 0; }
+  .ms-fill, .ms-here, .ms-here > span, .ms-trophy { animation: none; }
 }

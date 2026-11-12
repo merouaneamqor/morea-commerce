@@ -1,6 +1,6 @@
 <%# Revenue milestones, one slim animated bar: lifetime delivered revenue (AccountingStats) on a track with six tier notches,
-    a little runner at the end of the fill (a trophy once the last tier is reached). Printing only: every figure comes from
-    Seller::RevenueMilestones. locals: milestones, currency. %>
+    an "I'm here" bubble at the end of the fill and the next goal in words (a trophy once the last tier is reached).
+    Printing only: every figure comes from Seller::RevenueMilestones. locals: milestones, currency. %>
 <% m = milestones %>
 <% current = m.current %>
 <% nxt = m.next_tier %>
@@ -30,21 +30,18 @@
       <div class="ms-fill h-full rounded-full" style="--ms-w: <%= m.overall_fill %>%"></div>
     </div>
 
-    <%# The motivator: a runner at the end of the fill, who keeps running; a trophy when the last tier is reached %>
     <div class="pointer-events-none absolute inset-x-1 top-0 h-6">
       <% if m.maxed? %>
         <span class="absolute top-0 text-[#1c1c1e]" data-trophy style="left: 100%; transform: translateX(-100%)">
           <svg viewBox="0 0 24 24" class="ms-trophy size-6 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 20h6M10 17h4"/></svg>
         </span>
       <% else %>
-        <span class="ms-runner absolute top-0 -translate-x-1/2 text-[#1c1c1e]" style="left: <%= m.overall_fill %>%" data-runner>
-          <svg viewBox="0 0 24 24" class="size-6 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true">
-            <circle cx="15" cy="4.5" r="2" class="fill-current"/>
-            <path d="M14 7.5 11 13"/>
-            <g class="ms-run-a"><path d="M13.5 8.5 18 10.5M13 8.5 9.500 10 7.500 12.500M11 13l4 2.500-1 4.500M11 13 8 16.500 4.500 17.500"/></g>
-            <g class="ms-run-b"><path d="M13.5 8.500 11 11.500 8 11M13.500 8.500 17.500 11.500 19.500 9.500M11 13l2.500 4-3 4M11 13 7.500 15 4 13.500"/></g>
-          </svg>
-        </span>
+        <div class="ms-here absolute top-0 -translate-x-1/2" style="--ms-pos: <%= m.overall_fill %>%" data-here>
+          <span class="relative block rounded-md bg-[#1c1c1e] px-2 py-1 text-[10px] leading-none font-semibold whitespace-nowrap text-white">
+            <%= sl("Je suis ici") %>
+            <i class="absolute start-1/2 top-full size-2 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-[#1c1c1e]"></i>
+          </span>
+        </div>
       <% end %>
     </div>
 
@@ -61,8 +58,12 @@
     </ol>
   </div>
 
-  <p class="min-w-[9rem] text-xs text-[#6e6e73]" data-milestone-remaining>
-    <% if m.maxed? %><%= sl("Palier maximal atteint") %>
-    <% else %><b class="font-semibold text-[#1c1c1e]"><%= mad.(m.remaining_cents) %></b> <%= sl("avant") %> <%= sl(nxt.name) %> · <%= m.percent_to_next %> %<% end %>
-  </p>
+  <div class="min-w-[10rem] text-xs leading-snug" data-milestone-remaining>
+    <% if m.maxed? %>
+      <p class="font-semibold text-[#1c1c1e]"><%= sl("Palier maximal atteint") %></p>
+    <% else %>
+      <p class="font-semibold text-[#1c1c1e]" data-milestone-goal><%= sl("Je continue jusqu'à") %> <%= short.(nxt.threshold_cents) %> <%= currency %></p>
+      <p class="text-[#6e6e73]"><b class="font-semibold text-[#3a3a3c]"><%= mad.(m.remaining_cents) %></b> <%= sl("avant") %> <%= sl(nxt.name) %> · <%= m.percent_to_next %> %</p>
+    <% end %>
+  </div>
 </section>

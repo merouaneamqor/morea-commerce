@@ -31,11 +31,13 @@ RSpec.describe "Dashboard milestones", type: :request do
     expect(text).to include("275 790", "Doyen", "31 %")
   end
 
-  it "shows the runner (no pulsing dot) at the end of the fill, and a trophy only once the last tier is reached" do
+  it "shows an \"I'm here\" bubble at the end of the fill (no person, no dot), the next goal in words, and a trophy only at the last tier" do
     get "/dashboard", params: { locale: "fr" }
-    expect(document.at_css("[data-milestones] [data-runner]")).to be_present
+    expect(document.at_css("[data-milestones] [data-here]").text.squish).to eq("Je suis ici")
+    expect(document.at_css("[data-milestone-goal]").text.squish).to eq("Je continue jusqu'à 500K MAD")   # the next tier, Doyen
     expect(document.at_css("[data-milestones] [data-trophy]")).to be_nil
-    expect(document.at_css("[data-runner]")["style"]).to include("left: 21.83%")   # (100 + 31) / 6 of the track
+    expect(document.at_css("[data-here]")["style"]).to include("--ms-pos: 21.83%")   # (100 + 31) / 6 of the track
+    expect(response.body).not_to include("data-runner")
     expect(response.body).not_to include("ms-dot")
 
     6.times do |i|
@@ -44,7 +46,7 @@ RSpec.describe "Dashboard milestones", type: :request do
     end
     get "/dashboard", params: { locale: "fr" }
     expect(document.at_css("[data-milestones] [data-trophy]")).to be_present
-    expect(document.at_css("[data-milestones] [data-runner]")).to be_nil
+    expect(document.at_css("[data-milestones] [data-here]")).to be_nil
   end
 
   describe "the on/off switch" do

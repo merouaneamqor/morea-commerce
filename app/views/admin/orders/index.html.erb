@@ -138,6 +138,7 @@
             <tr class="align-middle hover:bg-[#fafafc]" data-order-row="<%= order.number %>">
               <td class="px-3 py-2.5 font-semibold whitespace-nowrap">
                 <%= link_to "##{order.number}", admin_order_path(order), class: "text-[#1c1c1e] hover:underline" %>
+                <%= render "import_contact_alert", order: order, compact: true %>
                 <% if order.tag_list.any? %><span class="ms-1 text-[11px] font-normal text-[#8e8e93]"><%= order.tag_list.first(2).join(", ") %></span><% end %>
               </td>
               <td class="px-3 py-2.5 whitespace-nowrap text-[#4b4b50]">

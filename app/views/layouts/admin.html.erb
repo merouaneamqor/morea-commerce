@@ -32,12 +32,12 @@
       <% new_orders = current_store ? Seller::DashboardStats.new(store: current_store).new_orders_count : 0 %>
       <% missing_costs = current_store && !agent ? Seller::DashboardStats.new(store: current_store).missing_costs : 0 %>
       <%# Class strings are plain literals so Tailwind's scanner always generates them. %>
-      <% nav_on = "bg-[#ececf0] font-semibold text-[#1d1d1f]" %>
+      <% nav_on = "lg-nav__active font-semibold" %>
       <% nav_off = "text-[#3a3a3c] hover:bg-[#e8e8ed] hover:text-[#1c1c1e]" %>
       <% badge_on = "bg-white text-[#1d1d1f]" %>
       <% badge_off = "bg-[#ececf0] text-[#1d1d1f]" %>
       <% sidebar = capture do %>
-        <nav class="flex h-full flex-col overflow-y-auto rounded-2xl border border-[#e0e0e5] bg-white p-2.5" data-sidebar-nav>
+        <nav class="lg-nav flex h-full flex-col overflow-y-auto rounded-2xl p-2.5" data-sidebar-nav>
           <div data-sidebar-head class="flex items-center justify-between px-3 pt-1 pb-3">
             <%= link_to (agent ? "/confirmation" : "/dashboard"), "data-collapse-hide": true, class: "text-2xl font-extrabold tracking-tight text-[#1d1d1f]", dir: "ltr" do %>seallo<% end %>
             <button type="button" data-seller-close class="text-[#6e6e73] lg:hidden" aria-label="<%= sl("Fermer") %>"><%= sl("Fermer") %></button>
@@ -88,7 +88,7 @@
           </ul>
           <div class="mt-auto space-y-0.5 border-t border-[#ececf0] pt-2">
             <% if current_store && !agent %>
-              <div data-collapse-hide class="mb-1.5 rounded-xl bg-[#e8e8ed] px-3 py-2">
+              <div data-collapse-hide class="lg-nav__store mb-1.5 rounded-xl px-3 py-2">
                 <p data-seller-store class="truncate text-sm font-semibold text-[#1c1c1e]"><%= current_store.name %></p>
                 <% if seller_plan_label(current_store) %><p class="text-xs text-[#6e6e73]"><%= sl("Plan") %> <%= seller_plan_label(current_store) %></p><% end %>
               </div>

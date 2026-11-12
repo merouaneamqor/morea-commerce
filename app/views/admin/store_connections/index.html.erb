@@ -5,7 +5,7 @@
 <% platforms = [
      { key: "shopify", name: "Shopify", logo: "/images/partners/shopify.png", desc: "Commandes et produits en direct, dès leur création.", steps: t("seller_integrations.shopify_steps"), href: admin_seallo_connect_path },
      { key: "woocommerce", name: "WooCommerce", logo: "/images/partners/woocommerce.png", desc: "Votre site WordPress : autorisation en un clic ou clés API.", steps: t("seller_integrations.woocommerce_steps"), href: admin_woocommerce_connect_path },
-     { key: "youcan", name: "YouCan", logo: "/images/partners/youcan.png", desc: "Votre boutique YouCan reliée en quelques secondes.", steps: t("seller_integrations.youcan_steps"), href: new_admin_store_connection_path(provider: "youcan") }
+     { key: "youcan", name: "YouCan", logo: "/images/partners/youcan.png", desc: "Votre boutique YouCan reliée en quelques secondes.", steps: t("seller_integrations.youcan_steps"), href: admin_youcan_connect_path }
    ] %>
 <% linked_by_provider = @connections.select(&:active?).group_by(&:provider) %>
 <% locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>
@@ -19,8 +19,8 @@
   accounts_json = @delivery_accounts.map do |a|
     { id: a.id, provider: a.provider, name: a.name, contact_name: a.contact_name, contact_phone: a.contact_phone, account_type: a.account_type, pickup_city: a.pickup_city,
       allow_open: a.allow_open, delivery_fee: a.delivery_fee&.to_f, return_fee: a.return_fee&.to_f, is_active: a.is_active, has_credentials: a.credentials?,
-      public_key: (a.credentials["api_key"] if a.sendit?), secret_hint: (a.secret_hint if a.sendit?), webhook_url: a.webhook_url,
-      cities_count: a.cities_count, cities_synced: a.cities_synced_at.present? }
+      public_key: (a.credentials["api_key"] if a.sendit? || a.ozon? || a.ameex?), secret_hint: (a.secret_hint if a.sendit? || a.ozon? || a.ameex?), webhook_url: a.webhook_url,
+      cities_count: a.cities_count, cities_synced: a.cities_synced_at.present?, ships_by_default: a.ships_by_default?, shippable: a.shippable? }
   end
   modal_strings = [
     "Choisissez une région", "Toutes les régions", "fournisseurs", "Pays pris en charge", "Tous", "Fournisseurs disponibles", "résultats", "Rechercher un fournisseur…",
@@ -29,7 +29,8 @@
     "Téléphone du contact", "Ville de ramassage", "Type de compte", "Normal", "Premium", "Frais par colis livré", "Frais par colis retourné", "Connexion API",
     "Clés fournies par", "dans votre espace client. Elles sont gardées chiffrées ; l'envoi automatique des colis sera activé dès que le connecteur sera disponible.",
     "Clé enregistrée (laisser vide pour garder)", "Clé publique / identifiant", "Clé secrète / token", "Ouvrir le colis", "Le client peut ouvrir le colis avant de payer.",
-    "Compte actif", "Retour", "Enregistrer", "Ajouter la société"
+    "Compte actif", "Retour", "Enregistrer", "Ajouter la société",
+    "Par défaut", "Définir par défaut", "Société par défaut pour l'envoi automatique des colis."
   ].index_with { |text| sl(text) }
 %>
 
@@ -100,6 +101,34 @@
     <span class="text-sm font-semibold text-[#1d1d1f]"><%= sl("Gérer les sociétés de livraison") %> →</span>
   </button>
 
+  <%# Always-visible API carrier cards (Meta Ads pattern): status + Settings, including legacy Sendit without a managed account. %>
+  <% api_carriers = [
+       { key: "sendit", name: "Sendit", logo: "/images/partners/sendit.png", connected: current_store.sendit_configured?, path: admin_sendit_settings_path },
+       { key: "ozon", name: "Ozon Express", logo: "/images/partners/ozon.png", connected: current_store.ozon_configured?, path: admin_ozon_settings_path },
+       { key: "ameex", name: "Ameex", logo: "/images/partners/ameex.png", connected: current_store.ameex_configured?, path: admin_ameex_settings_path }
+     ] %>
+  <ul class="mt-3 space-y-2" data-carrier-settings>
+    <% api_carriers.each do |carrier| %>
+      <li class="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#e0e0e5] bg-white p-4" data-carrier="<%= carrier[:key] %>">
+        <span class="flex min-w-0 items-center gap-3">
+          <img src="<%= carrier[:logo] %>" alt="<%= carrier[:name] %>" class="size-11 shrink-0 rounded-full border border-[#ececf0] bg-white object-contain p-0.5">
+          <span>
+            <span class="block text-sm font-semibold text-[#1c1c1e]"><%= carrier[:name] %></span>
+            <span class="text-xs text-[#6e6e73]"><%= t("seller_integrations.carrier_settings_subtitle") %></span>
+          </span>
+        </span>
+        <span class="flex flex-wrap items-center gap-2">
+          <% if carrier[:connected] %>
+            <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
+          <% else %>
+            <span class="rounded-full bg-[#efeff3] px-2.5 py-1 text-xs font-semibold text-[#6e6e73]"><%= sl("Non connectée") %></span>
+          <% end %>
+          <%= link_to t("seller_integrations.carrier_settings"), carrier[:path], class: "text-sm font-semibold text-[#1d1d1f]" %>
+        </span>
+      </li>
+    <% end %>
+  </ul>
+
   <% if @delivery_accounts.any? %>
     <ul class="mt-3 space-y-2" data-delivery-accounts>
       <% @delivery_accounts.each do |account| %>
@@ -110,10 +139,20 @@
             <p class="truncate text-sm font-semibold text-[#1c1c1e]" dir="auto"><%= account.name %> <span class="ms-1 text-xs font-medium text-[#6e6e73]" dir="ltr"><%= account.code %></span></p>
             <p class="truncate text-xs text-[#6e6e73]"><%= info["name"] %><% if info["unavailable"] %> · <%= t("seller_integrations.provider_unavailable") %><% end %><% if account.pickup_city.present? %> · <%= account.pickup_city %><% end %></p>
           </div>
-          <% if account.is_active? %>
+          <% if account.ships_by_default? %>
+            <span class="rounded-full bg-[#efeff3] px-2.5 py-1 text-xs font-semibold text-[#1d1d1f]"><%= sl("Par défaut") %></span>
+          <% elsif account.shippable? %>
+            <%= button_to sl("Définir par défaut"), seller_delivery_account_default_path(account.id), method: :post,
+                  class: "h-9 rounded-lg border border-[#e0e0e5] px-3 text-xs font-semibold text-[#1c1c1e] hover:border-[#1d1d1f] hover:text-[#1d1d1f]",
+                  title: sl("Société par défaut pour l'envoi automatique des colis.") %>
+          <% end %>
+          <% if account.connected? %>
             <span class="flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span> <%= sl("Connectée") %></span>
           <% else %>
             <span class="rounded-full bg-[#efeff3] px-2.5 py-1 text-xs font-semibold text-[#6e6e73]"><%= sl("Non connectée") %></span>
+          <% end %>
+          <% if (settings_path = carrier_settings_path_for(account.provider)) %>
+            <%= link_to t("seller_integrations.carrier_settings"), settings_path, class: "text-sm font-semibold text-[#1d1d1f]" %>
           <% end %>
           <button type="button" data-delivery-edit="<%= account.id %>" class="h-9 rounded-lg border border-[#e0e0e5] px-3 text-xs font-semibold text-[#1c1c1e] hover:border-[#1d1d1f] hover:text-[#1d1d1f]"><%= sl("Modifier") %></button>
           <%= button_to sl("Supprimer"), seller_delivery_account_path(account.id), method: :delete, class: "h-9 rounded-lg px-3 text-xs font-semibold text-[#b4344e] hover:bg-[#fbe7ea]",
@@ -143,6 +182,7 @@
           <%= link_to "#{t("meta_ads.manage")} →", admin_meta_ads_path, class: "text-sm font-semibold text-[#1d1d1f]" %>
         <% else %>
           <%= button_to "#{t(meta_state == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect")} →", connect_admin_meta_ads_path, method: :post,
+                form: { data: { turbo: false } },
                 class: "text-sm font-semibold text-[#1d1d1f]" %>
         <% end %>
       </span>
@@ -155,7 +195,9 @@
           <span class="text-xs text-[#6e6e73]"><%= t("seller_integrations.tiktok_subtitle") %></span>
         </span>
       </span>
-      <%= button_to "#{t("tiktok_ads.connect")} →", admin_connect_tiktok_ads_path, method: :post, class: "text-sm font-semibold text-[#1d1d1f]" %>
+      <%= button_to "#{t("tiktok_ads.connect")} →", admin_connect_tiktok_ads_path, method: :post,
+            form: { data: { turbo: false } },
+            class: "text-sm font-semibold text-[#1d1d1f]" %>
     </div>
   </div>
 </section>

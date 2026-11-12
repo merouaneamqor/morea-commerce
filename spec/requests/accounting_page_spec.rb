@@ -51,7 +51,7 @@ RSpec.describe "Comptabilité page", type: :request do
       sign_in(owner)
       get "/comptabilite"
       links = document.css("aside nav ul a").map { |link| link["href"] }
-      expect(links).to eq(%w[/dashboard /commandes /confirmation /clients /livraison /produits /themes /publicites /comptabilite /equipe /integrations])
+      expect(links).to eq(%w[/dashboard /commandes /confirmation /admin/confirmations/dashboard /admin/confirmations?filter=all /clients /livraison /produits /themes /publicites /comptabilite /equipe /integrations])
       entry = document.at_css("aside nav ul a[href='/comptabilite']")
       expect(entry.text.squish).to eq("Comptabilité")
       expect(entry.at_css("svg rect")).to be_present

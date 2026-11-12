@@ -77,7 +77,11 @@ RSpec.describe "Call panel", type: :request do
     sign_in(agent)
     travel_to(Time.zone.local(2026, 11, 5, 10, 0, 0)) do
       post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
-      travel 83.seconds
+      travel 40.seconds
+      # Desk-presence heartbeat keeps the session inside the 45s grace window across the call.
+      ConfirmationShift.open.where(store: store, user: agent).update_all(last_seen_at: Time.current)
+      travel 43.seconds
+      ConfirmationShift.open.where(store: store, user: agent).update_all(last_seen_at: Time.current)
       post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed", notes: "OK" }
 
       expect(response).to have_http_status(:ok)
@@ -130,7 +134,10 @@ RSpec.describe "Call panel", type: :request do
     sign_in(agent)
     post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
-    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed", order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: {} } }
+    # Empty lines must reach the server as a collection: form-encoded {} is dropped.
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" },
+      params: { outcome: "confirmed", order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: [] } },
+      as: :json
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(order.reload.status).to eq("new")

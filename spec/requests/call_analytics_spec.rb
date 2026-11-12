@@ -72,7 +72,8 @@ RSpec.describe "Call center analytics page", type: :request do
     expect(page.at_css("[data-analytics-tabs] [data-tab=agent]")["aria-current"]).to eq("page")
     expect(page.at_css("[data-analytics-tabs] [data-tab=overview]")["aria-current"]).to be_nil
     switch = page.at_css("[data-agent-switch]")                                                         # the people to switch to, the chosen one marked
-    expect(switch.css("a[data-agent]").map { |link| link.at_css("span + span").text }).to eq([ "Saida", "Omar", "Owner" ])         # everybody who works the desk, the busiest first
+    expect(switch.css("a[data-agent]").map { |link| link.at_css("span + span").text }).to eq([ "Omar", "Owner", "Saida" ])         # everybody who works the desk, by name
+    expect(switch.has_attribute?("hidden")).to be(false)                                                  # shown while one agent is open
     expect(switch.at_css("a[aria-current=page]").text).to include("Saida")
     expect(page.at_css("h1 + p").text).to include("Saida")
     expect(page.css("[data-stage]").map { |stage| stage["data-count"].to_i }).to eq([ 2, 2, 1, 1, 1 ])   # her two orders: A1 delivered, A3 cancelled
@@ -196,7 +197,9 @@ RSpec.describe "Call center analytics page", type: :request do
     expect(cards.map { |card| card.text.squish }.join(" ")).to include("Saida", "Omar")
     expect(cards.map { |card| card["href"] }).to include("/admin/confirmations/analytics?agent_id=#{agent.id}")
     expect(page.at_css("[data-kpis=analytics]")).to be_nil                                              # nothing is drawn before somebody is chosen
-    expect(page.at_css("[data-agent-switch]")).to be_nil
+    expect(page.at_css("[data-agent-switch]").has_attribute?("hidden")).to be(true)                     # the row of agents exists but waits until one is open
+    expect(page.at_css("[data-agent-switch]")["data-controller"]).to eq("segmented")
+    expect(page.at_css("[data-analytics-view]")["data-analytics-agent"]).to eq("")
 
     get cards.find { |card| card.text.include?("Saida") }["href"], params: { from: Date.current.iso8601, to: Date.current.iso8601 }
     expect(page.at_css("[data-agent-header]").text).to include("Saida")

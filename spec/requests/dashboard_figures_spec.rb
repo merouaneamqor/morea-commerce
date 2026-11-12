@@ -215,4 +215,15 @@ RSpec.describe "Dashboard figures", type: :request do
       expect(response.body).not_to include("Secret low")
     end
   end
+  it "draws the Confirmation / Expédition switch as an iOS-style control: a thumb under the chosen side, text only on the buttons" do
+    get "/dashboard", params: { locale: "fr" }
+
+    switch = document.at_css("[data-distribution] [data-ios-switch]")
+    expect(switch.at_css("[data-view-switch-target=thumb].ios-thumb")).to be_present
+    buttons = switch.css("button[data-view-switch-target=button]")
+    expect(buttons.map { |button| button.text.squish }).to eq([ "Confirmation", "Expédition" ])
+    expect(buttons.map { |button| button["aria-pressed"] }).to eq(%w[true false])
+    expect(buttons.first["class"]).to include("text-white")
+    expect(buttons.map { |button| button["class"] }.join).not_to include("bg-[#1c1c1e]")                  # the dark background is the thumb's, not the button's
+  end
 end

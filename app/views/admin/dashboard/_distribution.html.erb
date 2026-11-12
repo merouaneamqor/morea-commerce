@@ -14,10 +14,11 @@
       <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Distribution des commandes") %></h2>
       <p class="text-xs text-[#6e6e73]"><%= sl("Commandes de la période") %></p>
     </div>
-    <div class="inline-flex rounded-full bg-[#efeff3] p-0.5 text-xs font-semibold" role="group">
+    <div class="ios-switch relative inline-flex rounded-full p-0.5 text-xs font-semibold" role="group" data-ios-switch>
+      <span class="ios-thumb pointer-events-none absolute start-0 top-0.5 bottom-0.5 rounded-full" data-view-switch-target="thumb" aria-hidden="true"></span>
       <% views.each_with_index do |(key, view), index| %>
         <button type="button" data-view-switch-target="button" data-key="<%= key %>" data-action="view-switch#show" data-view-switch-key-param="<%= key %>" aria-pressed="<%= index.zero? %>"
-                class="cursor-pointer rounded-full px-3 py-1 transition <%= index.zero? ? "bg-[#1c1c1e] text-white" : "text-[#6e6e73]" %>"><%= view[:title] %></button>
+                class="relative z-10 cursor-pointer rounded-full px-3 py-1 <%= index.zero? ? "text-white" : "text-[#6e6e73]" %>"><%= view[:title] %></button>
       <% end %>
     </div>
   </div>

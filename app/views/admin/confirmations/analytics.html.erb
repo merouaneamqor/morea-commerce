@@ -50,19 +50,23 @@
     </nav>
   <% end %>
 
-  <turbo-frame id="analytics-body" class="block space-y-3" data-turbo-action="advance">
-  <div class="space-y-3" data-analytics-view="<%= @view %>">
-
-  <%# One agent: the people to switch to, in one row, the current one in black %>
-  <% if @view == "agent" && agent && !agent_view? %>
-    <nav class="flex flex-wrap items-center justify-center gap-1.5" aria-label="<%= sl("Agent") %>" data-agent-switch>
-      <% @comparison.rows.each do |row| %>
-        <% current = row.user == agent %>
-        <%= link_to analytics_admin_confirmations_path(agent_id: row.user.id), "data-agent": row.user.id, "aria-current": (current ? "page" : nil),
-              class: "inline-flex h-8 items-center gap-2 rounded-full border px-3 text-[13px] font-semibold #{current ? "border-[#1c1c1e] bg-[#1c1c1e] text-white" : "border-[#e0e0e5] bg-white text-[#3a3a3c] hover:bg-[#f4f5f8]"}" do %><span class="grid size-5 place-items-center rounded-full text-[9px] font-bold <%= current ? "bg-white/20 text-white" : "bg-[#ececf0] text-[#1c1c1e]" %>"><%= analytics_initials(row.user) %></span><span dir="auto"><%= row.user.name.presence || row.user.email %></span><% end %>
+  <%# The people to switch to while one agent is open: a second iOS-style switch under the first, outside the frame so its thumb slides.
+      It is always there for the owner and shown only while an agent is open (the segmented controller shows and hides it as the frame changes). %>
+  <% unless agent_view? %>
+    <nav class="relative mx-auto flex w-fit max-w-full items-center overflow-x-auto rounded-full p-1 text-[13px] font-semibold" aria-label="<%= sl("Agent") %>" data-agent-switch data-controller="segmented" data-segmented-by-value="agent"
+         data-action="turbo:frame-load@document->segmented#frameLoaded resize@window->segmented#sync" <%= "hidden" unless @view == "agent" && agent %>>
+      <span data-segmented-target="thumb" class="pointer-events-none absolute start-0 top-1 bottom-1 rounded-full" aria-hidden="true"></span>
+      <% a.agents.each do |person| %>
+        <%= link_to analytics_admin_confirmations_path(agent_id: person.id), "data-agent": person.id, "data-segmented-target": "item", "aria-current": (person == agent ? "page" : nil),
+              data: { turbo_frame: "analytics-body", turbo_action: "advance", action: "click->segmented#select" }, class: "relative z-10 inline-flex h-8 shrink-0 items-center gap-2 rounded-full px-3 whitespace-nowrap" do %><span class="grid size-5 place-items-center rounded-full bg-[#ececf0] text-[9px] font-bold text-[#1c1c1e]" data-initials><%= analytics_initials(person) %></span><span dir="auto"><%= person.name.presence || person.email %></span><% end %>
       <% end %>
     </nav>
   <% end %>
+
+  <turbo-frame id="analytics-body" class="block space-y-3" data-turbo-action="advance">
+  <div class="space-y-3" data-analytics-view="<%= @view %>" data-analytics-agent="<%= agent&.id %>">
+
+
 
   <% if @view == "agents" %>
     <%= render "analytics_compare", comparison: @comparison, card: card, title: title, sub: sub, chip: chip, tones: tones, stage: stage %>

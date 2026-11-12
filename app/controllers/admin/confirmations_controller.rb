@@ -58,6 +58,11 @@ module Admin
       @date_range = selected_date_range(scope: "call_analytics", default: "last_30")
       agent = agent_view? ? current_user : (current_store.users.find_by(id: params[:agent_id]) if params[:agent_id].present?)
       @analytics = Confirmations::Analytics.new(store: current_store, from: @date_range.from, to: @date_range.to, range: @date_range.time_range, agent: agent)
+      @view = params[:view] == "agents" && !agent_view? ? "agents" : "overview"
+      # The team median and the other agents are needed to compare one agent, or all of them side by side.
+      if @view == "agents" || agent
+        @comparison = Confirmations::AgentComparison.new(store: current_store, from: @date_range.from, to: @date_range.to, range: @date_range.time_range)
+      end
     end
 
     def dashboard

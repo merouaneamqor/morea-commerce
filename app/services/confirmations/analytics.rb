@@ -20,8 +20,16 @@ module Confirmations
     MIN_CALLS_FOR_SLOT = 5
     TOP_REASONS = 5
 
-    Row = Data.define(:id, :created_at, :confirmed_at, :shipped_at, :delivered_at, :returned_at)
-    Call = Data.define(:order_id, :outcome, :created_at, :user_id)
+    Row = Data.define(:id, :number, :created_at, :status, :confirmed_at, :shipped_at, :delivered_at, :returned_at, :total_cents, :currency, :customer_name, :customer_city, :sendit_code)
+    Call = Data.define(:order_id, :outcome, :created_at, :user_id, :call_seconds)
+
+    SHORT_CALL_SECONDS = 30
+    OUTCOME_KEYS = %i[delivered returned cancelled in_progress fake not_reached].freeze
+    # Where a confirmed order is, by its status. Used by the delivery status card and the per-day chart.
+    DELIVERY_GROUPS = { not_shipped: %w[confirmed preparing], not_picked: %w[awaiting_pickup], in_transit: %w[picked_up in_transit], out_for_delivery: %w[out_for_delivery],
+                        postponed: %w[postponed], delivered: %w[delivered], failed: %w[address_issue unreachable], returned: %w[returned], cancelled_after: %w[cancelled] }.freeze
+    FAILURE_EVENT_PATTERNS = [ "% to Address issue%", "% to Unreachable%" ].freeze
+    RECOVERED_LIST_SIZE = 12
 
     attr_reader :agent
 
@@ -71,11 +79,7 @@ module Confirmations
     end
 
     def median_first_call_seconds
-      sorted = first_call_seconds.sort
-      return if sorted.empty?
-
-      middle = sorted.size / 2
-      sorted.size.odd? ? sorted[middle] : ((sorted[middle - 1] + sorted[middle]) / 2.0).round
+      median(first_call_seconds)
     end
 
     # [{ key:, orders:, confirmed:, rate: }] by how long the order waited for its first call.
@@ -175,15 +179,133 @@ module Confirmations
       end
     end
 
+
+    # --- returns, fakes, persistence, conversation (the agent figures) -----------------------------------------------
+    def returned = orders.count { |order| returned?(order) }
+    def return_rate = pct(returned, delivered + returned)
+
+    # Orders the agent flagged as a wrong number, over the orders assigned.
+    def fake_rate = pct(orders.count { |order| calls_by_order[order.id].to_a.any? { |call| call.outcome == "wrong_number" } }, assigned)
+
+    def calls_per_order = assigned.zero? ? nil : (calls_by_order.values.sum(&:size).fdiv(assigned)).round(1)
+
+    # Of the orders whose first call got no answer, the share that were called again.
+    def perseverance
+      unanswered = orders.select { |order| calls_by_order[order.id]&.first&.outcome == "no_answer" }
+      pct(unanswered.count { |order| calls_by_order[order.id].size >= 2 }, unanswered.size)
+    end
+
+    # Of the calls with a measured duration (call window), the share shorter than SHORT_CALL_SECONDS.
+    def short_calls_rate
+      timed = range_calls.select { |call| call.call_seconds && call.outcome != "abandoned" }
+      pct(timed.count { |call| call.call_seconds < SHORT_CALL_SECONDS }, timed.size)
+    end
+
+    def talk_median_seconds = median(range_calls.filter_map { |call| call.call_seconds if call.call_seconds&.positive? })
+
+    # The figures of the agent view and of the comparison table.
+    def metrics
+      { delivered_per_100: delivered_per_100, confirmation_rate: confirmation_rate, delivery_rate: delivery_rate, return_rate: return_rate, fake_rate: fake_rate,
+        median_first_call: median_first_call_seconds, calls_per_order: calls_per_order, perseverance: perseverance, short_calls: short_calls_rate, talk_median: talk_median_seconds }
+    end
+
+    # --- where the orders ended up ----------------------------------------------------------------------------------
+    def order_outcomes
+      @order_outcomes ||= begin
+        tally = orders.map { |order| outcome_of(order) }.tally
+        { total: orders.size, rows: OUTCOME_KEYS.map { |key| { key: key, count: tally[key].to_i, percent: pct(tally[key].to_i, orders.size) } } }
+      end
+    end
+
+    # Confirmed orders by where they are in the delivery, with the three headline figures.
+    def delivery_status
+      @delivery_status ||= begin
+        confirmed_orders = orders.select(&:confirmed_at)
+        total = confirmed_orders.size
+        rows = DELIVERY_GROUPS.map do |key, statuses|
+          count = confirmed_orders.count { |order| statuses.include?(order.status) }
+          { key: key, count: count, percent: pct(count, total) }
+        end
+        counts = rows.to_h { |row| [ row[:key], row[:count] ] }
+        { total: total, rows: rows, delivered_percent: pct(counts[:delivered], total), returned_percent: pct(counts[:returned], total),
+          en_route: counts[:not_picked] + counts[:in_transit] + counts[:out_for_delivery] + counts[:postponed] }
+      end
+    end
+
+    # One entry per day of the range: confirmed orders created that day by where they are now.
+    def delivery_by_day
+      @delivery_by_day ||= begin
+        confirmed_by_day = orders.select(&:confirmed_at).group_by { |order| local_date(order.created_at) }
+        days.map do |day|
+          list = confirmed_by_day[day].to_a
+          count = ->(*keys) { list.count { |order| keys.flat_map { |key| DELIVERY_GROUPS[key] }.include?(order.status) } }
+          { date: day, delivered: count.call(:delivered), en_route: count.call(:not_picked, :in_transit, :out_for_delivery), not_shipped: count.call(:not_shipped),
+            problem: count.call(:postponed, :failed), returned: count.call(:returned), total: list.size, provisional: day > local_date(@now) - PROVISIONAL_DAYS }
+        end
+      end
+    end
+
+    # Orders that had a delivery failure (unreachable or address issue, from the status history) and where they ended up.
+    def recovery
+      @recovery ||= begin
+        pattern_sql = FAILURE_EVENT_PATTERNS.map { "body LIKE ?" }.join(" OR ")
+        events = OrderEvent.where(order_id: orders.map(&:id), kind: "status").where(pattern_sql, *FAILURE_EVENT_PATTERNS).order(:created_at, :id).pluck(:order_id, :created_at)
+        first_failure = events.each_with_object({}) { |(order_id, at), found| found[order_id] ||= at }
+        by_id = orders.index_by(&:id)
+        failed = first_failure.keys.filter_map { |id| by_id[id] }
+        recovered = failed.select(&:delivered_at)
+        sent_back = failed.reject(&:delivered_at).select { |order| returned?(order) }
+        list = recovered.sort_by { |order| -order.delivered_at.to_i }.first(RECOVERED_LIST_SIZE).map do |order|
+          { number: order.number, name: order.customer_name, city: order.customer_city, carrier: (order.sendit_code.present? ? "Sendit" : nil), total_cents: order.total_cents, currency: order.currency,
+            failed_at: first_failure[order.id], delivered_at: order.delivered_at, days: (local_date(order.delivered_at) - local_date(first_failure[order.id])).to_i }
+        end
+        { total: failed.size, recovered: recovered.size, returned: sent_back.size, in_progress: failed.size - recovered.size - sent_back.size, rate: pct(recovered.size, failed.size), list: list }
+      end
+    end
+
+    # Share of the calls answered, hour by hour (nil when no call that hour).
+    def hourly_answer_rate
+      @hourly_answer_rate ||= begin
+        made = Array.new(24, 0)
+        answered = Array.new(24, 0)
+        range_calls.each do |call|
+          hour = local_hour(call.created_at)
+          made[hour] += 1
+          answered[hour] += 1 if ANSWERED.include?(call.outcome)
+        end
+        made.each_index.map { |hour| pct(answered[hour], made[hour]) }
+      end
+    end
+
     # The agents the page can switch to.
     def agents
-      @agents ||= @store.users.active.where(admin: true).or(@store.users.active.where(confirmation_role: "agent")).order(:name, :id).to_a
+      @agents ||= @store.users.active.where(admin: true).or(@store.users.active.where(confirmation_role: User::CONFIRMATION_ROLES)).order(:name, :id).to_a
     end
 
     private
 
     def pct(part, whole)
       whole.to_i.zero? ? nil : (part * 100.0 / whole).round(1)
+    end
+
+    def returned?(order) = order.status == "returned" || order.returned_at.present?
+
+    def outcome_of(order)
+      if order.delivered_at then :delivered
+      elsif returned?(order) then :returned
+      elsif order.status == "cancelled" then :cancelled
+      elsif order.confirmed_at then :in_progress
+      elsif calls_by_order[order.id].to_a.any? { |call| call.outcome == "wrong_number" } then :fake
+      else :not_reached
+      end
+    end
+
+    def median(values)
+      sorted = values.sort
+      return if sorted.empty?
+
+      middle = sorted.size / 2
+      sorted.size.odd? ? sorted[middle] : ((sorted[middle - 1] + sorted[middle]) / 2.0).round
     end
 
     def local_date(time) = time.in_time_zone(DateRange::ZONE).to_date
@@ -197,7 +319,7 @@ module Confirmations
       @orders ||= begin
         scope = @store.orders.active.where(created_at: @range)
         scope = scope.where(id: agent_order_ids) if @agent
-        scope.pluck(:id, :created_at, :confirmed_at, :shipped_at, :delivered_at, :returned_at).map { |row| Row.new(*row) }
+        scope.pluck(:id, :number, :created_at, :status, :confirmed_at, :shipped_at, :delivered_at, :returned_at, :total_cents, :currency, :customer_name, :customer_city, :sendit_code).map { |row| Row.new(*row) }
       end
     end
 
@@ -206,7 +328,7 @@ module Confirmations
       @calls_by_order ||= begin
         scope = ConfirmationAttempt.joins(:order_confirmation).where(store: @store, order_confirmations: { order_id: orders.map(&:id) })
         scope = scope.where(user_id: @agent.id) if @agent
-        scope.order(:created_at, :id).pluck("order_confirmations.order_id", :outcome, :created_at, :user_id).map { |row| Call.new(*row) }.group_by(&:order_id)
+        scope.order(:created_at, :id).pluck("order_confirmations.order_id", :outcome, :created_at, :user_id, :call_seconds).map { |row| Call.new(*row) }.group_by(&:order_id)
       end
     end
 
@@ -219,7 +341,7 @@ module Confirmations
       @range_calls ||= begin
         scope = ConfirmationAttempt.joins(:order_confirmation).where(store: @store, created_at: @range)
         scope = scope.where(user_id: @agent.id) if @agent
-        scope.pluck("order_confirmations.order_id", :outcome, :created_at, :user_id).map { |row| Call.new(*row) }
+        scope.pluck("order_confirmations.order_id", :outcome, :created_at, :user_id, :call_seconds).map { |row| Call.new(*row) }
       end
     end
 

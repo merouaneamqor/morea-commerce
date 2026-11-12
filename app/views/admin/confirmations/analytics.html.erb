@@ -13,7 +13,7 @@
 <% title = "text-sm font-semibold text-[#1c1c1e]" %>
 <% sub = "mt-0.5 text-xs leading-snug text-[#6e6e73]" %>
 <% chip = "grid size-8 shrink-0 place-items-center rounded-xl" %>
-<% extra = agent && !agent_view? ? { "agent_id" => agent.id } : {} %>
+<% extra = agent && !agent_view? ? { "agent_id" => agent.id } : (@view == "agents" ? { "view" => "agents" } : {}) %>
 <% total_calls = a.call_results[:total] %>
 <% ink = "#1c1c1e" %>
 <% gold = "#d9a21b" %>
@@ -34,21 +34,31 @@
     <div class="flex flex-wrap items-center gap-2">
       <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: analytics_admin_confirmations_path, theme: "dark", size: "compact", extra: extra %>
       <%= link_to center_admin_confirmations_path, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" do %><%= seller_icon(:phone, size: 14) %><%= sl("File d'attente") %><% end %>
+      <% unless agent_view? %><%= link_to dashboard_admin_confirmations_path, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20", "data-shifts-link": true do %><%= seller_icon(:clock, size: 14) %><%= sl("Pointage et heures") %><% end %><% end %>
     </div>
   </header>
 
   <%# Overview / compare the agents / one agent %>
   <% unless agent_view? %>
     <nav class="mx-auto flex w-fit flex-wrap items-center gap-1 rounded-full border border-[#e0e0e5] bg-white p-1 text-[13px] font-semibold" aria-label="<%= sl("Analyses") %>" data-analytics-tabs>
-      <%= link_to sl("Vue d'ensemble"), analytics_admin_confirmations_path, "data-tab": "overview", "aria-current": (agent ? nil : "page"),
-            class: "inline-flex h-8 items-center gap-1.5 rounded-full px-4 #{agent ? "text-[#3a3a3c] hover:bg-[#f4f5f8]" : "bg-[#1c1c1e] text-white"}" %>
-      <%= link_to sl("Comparer les agents"), dashboard_admin_confirmations_path, "data-tab": "compare", class: "inline-flex h-8 items-center gap-1.5 rounded-full px-4 text-[#3a3a3c] hover:bg-[#f4f5f8]" %>
+      <% overview_open = !agent && @view == "overview" %>
+      <%= link_to sl("Vue d'ensemble"), analytics_admin_confirmations_path, "data-tab": "overview", "aria-current": (overview_open ? "page" : nil),
+            class: "inline-flex h-8 items-center gap-1.5 rounded-full px-4 #{overview_open ? "bg-[#1c1c1e] text-white" : "text-[#3a3a3c] hover:bg-[#f4f5f8]"}" %>
+      <%= link_to sl("Comparer les agents"), analytics_admin_confirmations_path(view: "agents"), "data-tab": "compare", "aria-current": (@view == "agents" ? "page" : nil),
+            class: "inline-flex h-8 items-center gap-1.5 rounded-full px-4 #{@view == "agents" ? "bg-[#1c1c1e] text-white" : "text-[#3a3a3c] hover:bg-[#f4f5f8]"}" %>
       <%= form_with url: analytics_admin_confirmations_path, method: :get, class: "inline-flex", data: { controller: "auto-submit" } do %>
         <%= hidden_field_tag :from, @date_range.from.iso8601 %><%= hidden_field_tag :to, @date_range.to.iso8601 %>
         <%= select_tag :agent_id, options_for_select(a.agents.map { |person| [ person.name.presence || person.email, person.id ] }, agent&.id), include_blank: sl("Agent"), "data-tab": "agent", "aria-current": (agent ? "page" : nil),
               class: "h-8 cursor-pointer rounded-full border-0 px-4 text-[13px] font-semibold focus:outline-none #{agent ? "bg-[#1c1c1e] text-white" : "bg-transparent text-[#3a3a3c] hover:bg-[#f4f5f8]"}", data: { action: "auto-submit#submit" } %>
       <% end %>
     </nav>
+  <% end %>
+
+  <% if @view == "agents" %>
+    <%= render "analytics_compare", comparison: @comparison, card: card, title: title, sub: sub, chip: chip, tones: tones, stage: stage %>
+  <% else %>
+  <% if agent %>
+    <%= render "analytics_agent", a: a, comparison: @comparison, agent: agent, card: card, title: title, sub: sub, chip: chip, tones: tones %>
   <% end %>
 
   <%# Five tiles drawn like the dashboard's: the gold one first, the others white with a coloured symbol %>
@@ -289,7 +299,10 @@
     </div>
   </section>
 
-  <%# 5. Load by hour %>
+  <%# 5. Where the orders ended up and how the deliveries went %>
+  <%= render "analytics_delivery", a: a, card: card, title: title, sub: sub, chip: chip, tones: tones, days: days %>
+
+  <%# 6. Load by hour, and how often the customers answered %>
   <% hourly = a.hourly %>
   <% hourly_max = [ hourly[:new_orders].max, hourly[:calls].max, 1 ].max %>
   <section class="<%= card %>" data-hourly>
@@ -306,6 +319,17 @@
           <% 24.times do |hour| %><span class="h-full flex-1 hover:bg-[#1c1c1e]/5" data-tip="<%= hour %> h : <%= hourly[:new_orders][hour] %> <%= sl("nouvelles commandes") %>, <%= hourly[:calls][hour] %> <%= sl("appels") %>"></span><% end %>
         </div>
         <p class="mt-1 flex justify-between text-[10.5px] text-[#8e8e93]"><% [ 0, 3, 6, 9, 12, 15, 18, 21 ].each do |hour| %><span><%= hour %> h</span><% end %></p>
+      </div>
+    </div>
+    <h3 class="mt-4 text-[13px] font-semibold text-[#1c1c1e]"><%= sl("Taux de réponse par heure") %></h3>
+    <p class="mt-0.5 text-[11.5px] text-[#6e6e73]"><%= sl("Part des appels décrochés à chaque heure : plus la courbe est haute, plus les clients répondent.") %></p>
+    <div class="mt-3 flex gap-2" data-answer-rate>
+      <div class="flex h-24 w-8 shrink-0 flex-col justify-between text-end text-[10px] text-[#8e8e93] tabular-nums" aria-hidden="true"><span>100 %</span><span>0 %</span></div>
+      <div class="relative min-w-0 flex-1">
+        <%= analytics_line_chart([ { values: a.hourly_answer_rate, color: stage[:reached], area: true } ], max: 100, count: 24, height: "h-24") %>
+        <div class="absolute inset-x-0 top-0 flex h-24" aria-hidden="true">
+          <% 24.times do |hour| %><span class="h-full flex-1 hover:bg-[#1c1c1e]/5" data-tip="<%= hour %> h : <%= analytics_percent(a.hourly_answer_rate[hour]) %> <%= sl("décrochés") %>"></span><% end %>
+        </div>
       </div>
     </div>
   </section>
@@ -329,4 +353,5 @@
   <p class="px-1 text-[11px] text-[#8e8e93]" data-method-note>
     <%= sl("Chiffres calculés sur les commandes créées pendant la période (reçues, jointes, confirmées, expédiées, livrées) et sur les appels passés pendant la période. Les jours récents sont provisoires. Le taux d'upsell n'est pas encore calculé.") %>
   </p>
+  <% end %>
 </div>

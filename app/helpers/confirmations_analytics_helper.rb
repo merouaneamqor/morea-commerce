@@ -3,6 +3,61 @@
 module ConfirmationsAnalyticsHelper
   WEEKDAYS = %w[lun. mar. mer. jeu. ven. sam. dim.].freeze
 
+
+  METRIC_LABELS = { delivered_per_100: "Livrées pour 100", confirmation_rate: "Taux de confirmation", delivery_rate: "Livrées parmi les confirmées", return_rate: "Taux de retour",
+                    fake_rate: "Faux détectés", median_first_call: "Premier appel (médiane)", calls_per_order: "Appels par commande", perseverance: "Persévérance",
+                    short_calls: "Appels courts", talk_median: "Durée de conversation" }.freeze
+  METRIC_HINTS = { delivered_per_100: "Commandes livrées pour 100 assignées", confirmation_rate: "Confirmées sur assignées", delivery_rate: "Livrées sur confirmées",
+                   return_rate: "Retournées sur livrées + retournées", fake_rate: "Commandes signalées faux numéro", median_first_call: "Entre la commande et le premier appel",
+                   calls_per_order: "Appels enregistrés par commande", perseverance: "Rappelées après un premier appel sans réponse", short_calls: "Appels de moins de 30 s (fenêtre d'appel)",
+                   talk_median: "Durée médiane d'un appel (fenêtre d'appel)" }.freeze
+  METRIC_ICONS = { delivered_per_100: :box, confirmation_rate: :check, delivery_rate: :truck, return_rate: :undo, fake_rate: :ban, median_first_call: :clock, calls_per_order: :phone,
+                   perseverance: :undo, short_calls: :alert, talk_median: :clock }.freeze
+
+  # 39,2 (per 100), 68,3 %, 8 h 49 min, 1,8 or 0:27 depending on the figure.
+  def analytics_metric_value(metric, value)
+    return "—" if value.nil?
+
+    case metric
+    when :median_first_call then analytics_duration(value)
+    when :talk_median then analytics_mmss(value)
+    when :calls_per_order then number_with_precision(value, precision: 1).sub(".", ",")
+    when :delivered_per_100 then number_with_precision(value, precision: 1).sub(".", ",")
+    else analytics_percent(value)
+    end
+  end
+
+  def analytics_mmss(seconds)
+    return "—" if seconds.nil?
+
+    "#{seconds / 60}:#{format("%02d", seconds % 60)}"
+  end
+
+  # The gap to the team median as text: "+1,6 pts", "+28 min", "-0:04", "0,0".
+  def analytics_metric_delta(metric, value, reference)
+    return if value.nil? || reference.nil?
+
+    gap = value - reference
+    sign = gap.positive? ? "+" : (gap.negative? ? "−" : "")
+    amount = gap.abs
+    text =
+      case metric
+      when :median_first_call then analytics_duration(amount)
+      when :talk_median then analytics_mmss(amount.round)
+      when :calls_per_order, :delivered_per_100 then number_with_precision(amount, precision: 1).sub(".", ",")
+      else "#{number_with_precision(amount, precision: 1).sub(".", ",")} pts"
+      end
+    gap.zero? ? text : "#{sign}#{text}"
+  end
+
+  VERDICT_CLASSES = { good: "bg-[#e3f3e8] text-[#2f7a4a]", bad: "bg-[#fbe7ea] text-[#b4344e]" }.freeze
+
+  def analytics_verdict_class(verdict) = VERDICT_CLASSES.fetch(verdict, "bg-[#efeff3] text-[#6e6e73]")
+
+  def analytics_initials(user)
+    (user.name.presence || user.email).split(/[\s@.]+/).first(2).map { |part| part[0].to_s.upcase }.join
+  end
+
   def analytics_percent(value)
     value.nil? ? "—" : "#{number_with_precision(value, precision: 1, strip_insignificant_zeros: false)} %".sub(".", ",")
   end

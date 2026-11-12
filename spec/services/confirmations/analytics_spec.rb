@@ -23,9 +23,9 @@ RSpec.describe Confirmations::Analytics do
     record
   end
 
-  def call(order, outcome, at, user)
+  def call(order, outcome, at, user, seconds: nil)
     confirmation = OrderConfirmation.find_or_create_by!(store: store, order: order) { |row| row.disposition = "pending" }
-    ConfirmationAttempt.create!(store: store, order_confirmation: confirmation, user: user, outcome: outcome).tap { |attempt| attempt.update_columns(created_at: at) }
+    ConfirmationAttempt.create!(store: store, order_confirmation: confirmation, user: user, outcome: outcome).tap { |attempt| attempt.update_columns(created_at: at, call_seconds: seconds) }
   end
 
   # Five orders created on 10 and 11 Nov, and one cancelled order created before the range.
@@ -43,11 +43,15 @@ RSpec.describe Confirmations::Analytics do
     o4 = make("O4", zone.local(2026, 11, 11, 8, 0))
     make("O5", zone.local(2026, 11, 11, 8, 30))
     make("O6", zone.local(2026, 10, 20, 9, 0), status: "cancelled", cancelled: zone.local(2026, 11, 5, 9, 0))
-    call(o1, "confirmed", zone.local(2026, 11, 10, 9, 10), saida)
+    call(o1, "confirmed", zone.local(2026, 11, 10, 9, 10), saida, seconds: 120)
     call(o2, "no_answer", zone.local(2026, 11, 10, 10, 30), omar)
     call(o2, "confirmed", zone.local(2026, 11, 10, 13, 30), omar)
-    call(o3, "cancelled", zone.local(2026, 11, 10, 10, 5), saida)
+    call(o3, "cancelled", zone.local(2026, 11, 10, 10, 5), saida, seconds: 10)
     call(o4, "no_answer", zone.local(2026, 11, 11, 8, 10), omar)
+    # Both O1 and O2 had a delivery failure in their history; O1 was then delivered, O2 is still on the road.
+    { o1 => zone.local(2026, 11, 10, 12, 0), o2 => zone.local(2026, 11, 11, 9, 30) }.each do |order, at|
+      OrderEvent.create!(order: order, kind: "status", body: "Status changed from Out for delivery to Unreachable").update_columns(created_at: at)
+    end
   end
 
   after { travel_back }
@@ -127,6 +131,52 @@ RSpec.describe Confirmations::Analytics do
     expect(map[2][8]).to eq(calls: 1, answered: 0, rate: 0.0)                                                     # Wednesday 08:00: O4 no answer
     expect(map[0][0]).to eq(calls: 0, answered: 0, rate: nil)
     expect(analytics.answer_slots).to eq(best: nil, worst: nil)                                                   # every slot has fewer than 5 calls
+  end
+
+  it "says where the orders ended up (delivered, returned, cancelled, in progress, wrong number, not reached)" do
+    outcomes = analytics.order_outcomes
+    expect(outcomes[:total]).to eq(5)
+    expect(outcomes[:rows].map { |row| [ row[:key], row[:count], row[:percent] ] }).to eq([
+      [ :delivered, 1, 20.0 ], [ :returned, 0, 0.0 ], [ :cancelled, 1, 20.0 ], [ :in_progress, 1, 20.0 ], [ :fake, 0, 0.0 ], [ :not_reached, 2, 40.0 ]     # O1, -, O3, O2, -, O4 + O5
+    ])
+  end
+
+  it "describes the delivery of the confirmed orders: delivered share, orders on the road, returned share, and a row per status" do
+    status = analytics.delivery_status
+    expect(status).to include(total: 2, delivered_percent: 50.0, returned_percent: 0.0, en_route: 1)                # O1 delivered, O2 in transit
+    expect(status[:rows].to_h { |row| [ row[:key], row[:count] ] }).to include(delivered: 1, in_transit: 1, not_shipped: 0, failed: 0, returned: 0)
+  end
+
+  it "counts, per day, the confirmed orders by where they are now" do
+    tenth = analytics.delivery_by_day.find { |day| day[:date] == Date.new(2026, 11, 10) }
+    expect(tenth).to include(delivered: 1, en_route: 1, not_shipped: 0, problem: 0, returned: 0, total: 2)
+    expect(analytics.delivery_by_day.sum { |day| day[:total] }).to eq(2)
+  end
+
+  it "follows the orders that had a delivery failure: how many were finally delivered, and the list of the recovered ones" do
+    recovery = analytics.recovery
+    expect(recovery).to include(total: 2, recovered: 1, returned: 0, in_progress: 1, rate: 50.0)                   # O1 delivered, O2 still on the road
+    expect(recovery[:list].size).to eq(1)
+    expect(recovery[:list].first).to include(number: "O1", days: 1, total_cents: 20_000)                           # failed on the 10th, delivered on the 11th
+  end
+
+  it "gives the answer rate of each hour of the shop's clock" do
+    rates = analytics.hourly_answer_rate
+    expect(rates.each_with_index.reject { |rate, _| rate.nil? }).to eq([ [ 0.0, 8 ], [ 100.0, 9 ], [ 50.0, 10 ], [ 100.0, 13 ] ])
+  end
+
+  it "computes the agent figures for the whole team" do
+    expect(analytics.metrics).to eq(
+      delivered_per_100: 20.0, confirmation_rate: 40.0, delivery_rate: 50.0, return_rate: 0.0, fake_rate: 0.0, median_first_call: 600,
+      calls_per_order: 1.0, perseverance: 50.0, short_calls: 50.0, talk_median: 65                                  # 5 calls / 5 orders; O2 retried, O4 not; 10 s of 2 timed calls; (10 + 120) / 2
+    )
+  end
+
+  it "computes the agent figures for one agent" do
+    expect(analytics(agent: saida).metrics).to eq(
+      delivered_per_100: 50.0, confirmation_rate: 50.0, delivery_rate: 100.0, return_rate: 0.0, fake_rate: 0.0, median_first_call: 450,   # O1 600 s, O3 300 s
+      calls_per_order: 1.0, perseverance: nil, short_calls: 50.0, talk_median: 65
+    )
   end
 
   it "looks at one agent: only the orders she called and her own calls" do

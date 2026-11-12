@@ -1,6 +1,7 @@
 <%# One agent: a header, four counts, and the figures against the team median. Printing only: Confirmations::Analytics#metrics and the
     medians of Confirmations::AgentComparison. locals: a (the agent's analytics), comparison, agent, card, title, sub, chip, tones %>
 <% metrics = a.metrics %>
+<% metric_tones = { delivered_per_100: :green, confirmation_rate: :green, delivery_rate: :green, return_rate: :red, fake_rate: :red, median_first_call: :amber, calls_per_order: :blue, perseverance: :blue, short_calls: :amber, talk_median: :blue } %>
 <% counts = [ [ sl("Assignées"), a.assigned, :orders, tones[:blue] ], [ sl("Confirmées"), a.confirmed, :check, tones[:green] ], [ sl("Livrées"), a.delivered, :box, tones[:green] ], [ sl("Retournées"), a.returned, :undo, tones[:red] ] ] %>
 
 <section class="<%= card %>" data-agent-header>
@@ -27,9 +28,9 @@
       <% value = metrics[metric] %>
       <% reference = comparison.median(metric) %>
       <% verdict = comparison.verdict(metric, value) %>
-      <% delta = analytics_metric_delta(metric, value, reference) %>
+      <% delta = (analytics_metric_delta(metric, value, reference) if value && reference && value != reference) %>
       <div class="flex min-h-[104px] flex-col justify-between rounded-xl border border-[#e0e0e5] bg-white px-3.5 py-3" data-metric="<%= metric %>" data-verdict="<%= verdict %>" title="<%= sl(ConfirmationsAnalyticsHelper::METRIC_HINTS[metric]) %>">
-        <p class="flex items-center justify-between gap-2 text-xs font-medium text-[#6e6e73]"><span class="truncate"><%= sl(ConfirmationsAnalyticsHelper::METRIC_LABELS[metric]) %></span><span class="<%= chip %> !size-6 !rounded-lg <%= tones[:ink] %>"><%= seller_icon(ConfirmationsAnalyticsHelper::METRIC_ICONS[metric], size: 13) %></span></p>
+        <p class="flex items-center justify-between gap-2 text-xs font-medium text-[#6e6e73]"><span class="truncate"><%= sl(ConfirmationsAnalyticsHelper::METRIC_LABELS[metric]) %></span><span class="<%= chip %> !size-6 !rounded-lg <%= tones[metric_tones[metric]] %>"><%= seller_icon(ConfirmationsAnalyticsHelper::METRIC_ICONS[metric], size: 13) %></span></p>
         <p class="text-[22px] leading-none font-bold whitespace-nowrap text-[#1c1c1e] tabular-nums" data-value><%= analytics_metric_value(metric, value) %></p>
         <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-[#6e6e73]">
           <% if delta %><span class="rounded-full px-2 py-0.5 font-semibold tabular-nums <%= analytics_verdict_class(verdict) %>" data-delta><%= delta %></span><% end %>

@@ -184,7 +184,7 @@ RSpec.describe "Call center analytics page", type: :request do
     get "/admin/confirmations/analytics", params: { from: Date.current.iso8601, to: Date.current.iso8601, view: "agents" }
 
     expect(page.at_css("[data-agents-table]")).to be_nil
-    expect(page.at_css("[data-kpis=analytics]")).to be_present
+    expect(page.at_css("[data-kpis=analytics]")).to be_nil                                      # her own grid already holds those figures: no second set of tiles
     expect(page.at_css("[data-agent-metrics]")).to be_present
   end
   it "opens the Agent tab on a list of everybody who works the desk, and a click on a person opens her figures" do
@@ -200,5 +200,19 @@ RSpec.describe "Call center analytics page", type: :request do
 
     get cards.find { |card| card.text.include?("Saida") }["href"], params: { from: Date.current.iso8601, to: Date.current.iso8601 }
     expect(page.at_css("[data-agent-header]").text).to include("Saida")
+  end
+  it "draws the three tiles of percentages in white cards with green writing, and no tile twice under an agent" do
+    sign_in(owner)
+    get "/admin/confirmations/analytics", params: { from: Date.current.iso8601, to: Date.current.iso8601 }
+
+    tiles = page.css("[data-kpis=analytics] [data-kpi]")
+    expect(tiles.map { |tile| tile["class"] }).to all(include("bg-white")).and all(satisfy { |classes| !classes.include?("from-[#f7d9a4]") })   # no gold tile
+    green = page.css("[data-kpis=analytics] [data-kpi]").select { |tile| tile.at_css("[data-value]")["class"].include?("text-[#2f7a4a]") }
+    expect(green.map { |tile| tile["data-kpi"] }).to eq(%w[delivered_per_100 confirmation_rate delivery_rate])
+
+    get "/admin/confirmations/analytics", params: { from: Date.current.iso8601, to: Date.current.iso8601, agent_id: agent.id }
+    expect(page.at_css("[data-kpis=analytics]")).to be_nil
+    expect(page.css("[data-agent-metrics] [data-metric]").size).to eq(10)
+    expect(page.css("[data-agent-metrics] [data-delta]").map { |delta| delta.text.squish }).not_to include("0,0 pts")     # a gap of zero prints nothing
   end
 end

@@ -3694,3 +3694,28 @@ main {
 [data-call-analytics] [data-grow] { animation: an-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
 [data-call-analytics] [data-rise] { animation: an-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
 @media (prefers-reduced-motion: reduce) { [data-call-analytics] [data-grow], [data-call-analytics] [data-rise] { animation: none; } }
+
+/* Analyses: the switch between the views is an iOS-style segmented control on frosted glass: a dark glass thumb slides under the chosen
+   segment (the segmented controller moves it), and only the body below changes (a Turbo frame). The row of agents is frosted too.
+   Nothing inside opens a floating panel, so the blur is safe here. */
+[data-call-analytics] [data-analytics-tabs], [data-call-analytics] [data-agent-switch] a {
+  background: rgba(255, 255, 255, 0.55); border: 1px solid rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 12px 30px -16px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(28, 28, 30, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+[data-call-analytics] [data-agent-switch] a[aria-current="page"] {
+  background: rgba(28, 28, 30, 0.9); color: #fff; border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+[data-call-analytics] [data-analytics-tabs] a { color: #3a3a3c; transition: color 0.25s ease; }
+[data-call-analytics] [data-analytics-tabs] a[aria-current="page"] { color: #fff; }
+[data-call-analytics] [data-segmented-target="thumb"] {
+  width: 0; background: rgba(28, 28, 30, 0.92);
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+[data-call-analytics] [data-segmented-target="thumb"].is-ready { transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), width 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
+[data-call-analytics] turbo-frame[busy] { opacity: 0.55; transition: opacity 0.2s ease; }
+@media (prefers-reduced-motion: reduce) { [data-call-analytics] [data-segmented-target="thumb"].is-ready { transition: none; } }
+@media (prefers-reduced-transparency: reduce) {
+  [data-call-analytics] [data-analytics-tabs], [data-call-analytics] [data-agent-switch] a { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

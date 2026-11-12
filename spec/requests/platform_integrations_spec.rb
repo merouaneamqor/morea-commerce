@@ -126,6 +126,19 @@ RSpec.describe "Platform integration diagnostics", type: :request do
     expect(client).to have_received(:get).with("me", fields: "id")
   end
 
+  it "verifies Sendit credentials without creating parcels or refreshing cities" do
+    account = store.delivery_accounts.create!(provider: "sendit", name: "Sendit", account_type: "normal", is_active: true,
+      credentials: { "api_key" => "pub-check", "api_secret" => "sec-check" }, connected_at: nil)
+    allow(Sendit::Client).to receive(:verify!).and_return("session-token")
+    sign_in
+    expect do
+      post "#{show_path}/recheck", params: { kind: "sendit", connection_id: account.id, provider: "sendit" }
+    end.not_to change { ActiveJob::Base.queue_adapter.enqueued_jobs.size }
+    expect(response).to redirect_to(show_path)
+    expect(account.reload.connected_at).to be_present
+    expect(Sendit::Client).to have_received(:verify!).with(store, public_key: "pub-check", secret_key: "sec-check")
+  end
+
   it "supports a platform-only superadmin without a workspace" do
     expect(actor.store_id).to be_nil
     sign_in
@@ -135,3 +148,4 @@ RSpec.describe "Platform integration diagnostics", type: :request do
     expect(response).to have_http_status(:ok)
   end
 end
+

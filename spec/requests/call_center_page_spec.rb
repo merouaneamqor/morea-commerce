@@ -129,6 +129,17 @@ RSpec.describe "Call center page", type: :request do
       expect(document.css("a[data-call][data-turbo-frame=order-modal]").size).to eq(3)
     end
 
+    it "puts the green Appeler button first (on the left) in the actions of each order" do
+      ConfirmationShift.create!(store: store, user: agent, started_at: 1.hour.ago)
+      get "/admin/confirmations/center"
+
+      cell = document.at_css("[data-order-row=Q1] td:last-child > div")
+      first = cell.element_children.first
+      expect(first["data-call"]).to be_present
+      expect(first["class"]).to include("bg-[#2f9d5c]")
+      expect(first.text).to include("Appeler")
+    end
+
     it "keeps her out of the manager-only actions and the order-creation button" do
       get "/admin/confirmations/center"
       expect(document.text).not_to include("Créer une commande")

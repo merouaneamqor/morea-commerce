@@ -14,18 +14,18 @@
   <div class="platform-world-dots"></div>
   <svg viewBox="0 0 <%= width.to_i %> <%= height %>" focusable="false">
     <defs>
-      <linearGradient id="platform-arc-<%= uid %>"><stop offset="0" stop-color="#a8432e" stop-opacity=".2"/><stop offset=".5" stop-color="#a8432e" stop-opacity=".9"/><stop offset="1" stop-color="#a8432e" stop-opacity=".2"/></linearGradient>
-      <radialGradient id="platform-glow-<%= uid %>"><stop offset="0" stop-color="#a8432e" stop-opacity=".55"/><stop offset="1" stop-color="#a8432e" stop-opacity="0"/></radialGradient>
+      <linearGradient id="platform-arc-<%= uid %>"><stop offset="0" stop-color="#1d1d1f" stop-opacity=".2"/><stop offset=".5" stop-color="#1d1d1f" stop-opacity=".9"/><stop offset="1" stop-color="#1d1d1f" stop-opacity=".2"/></linearGradient>
+      <radialGradient id="platform-glow-<%= uid %>"><stop offset="0" stop-color="#1d1d1f" stop-opacity=".55"/><stop offset="1" stop-color="#1d1d1f" stop-opacity="0"/></radialGradient>
     </defs>
     <% cities.each_with_index do |(x, y), i| %>
       <% mx = ((hub[0] + x) / 2).round(1); my = ([hub[1], y].min - Math.hypot(x - hub[0], y - hub[1]) * 0.28).round(1) %>
       <% d = "M#{hub[0]} #{hub[1]} Q#{mx} #{my} #{x} #{y}" %>
       <path d="<%= d %>" fill="none" stroke="url(#platform-arc-<%= uid %>)" stroke-width="1.3"/>
-      <path d="<%= d %>" fill="none" stroke="#a8432e" stroke-width="2" stroke-linecap="round" stroke-dasharray="6 900" class="platform-flow" style="animation-delay: <%= ((i % 8) * 0.45).round(2) %>s"/>
+      <path d="<%= d %>" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round" stroke-dasharray="6 900" class="platform-flow" style="animation-delay: <%= ((i % 8) * 0.45).round(2) %>s"/>
       <circle cx="<%= x %>" cy="<%= y %>" r="8" fill="url(#platform-glow-<%= uid %>)"/>
-      <circle cx="<%= x %>" cy="<%= y %>" r="2.6" fill="#a8432e"/>
+      <circle cx="<%= x %>" cy="<%= y %>" r="2.6" fill="#1d1d1f"/>
     <% end %>
     <circle cx="<%= hub[0] %>" cy="<%= hub[1] %>" r="18" fill="url(#platform-glow-<%= uid %>)" class="platform-pulse"/>
-    <circle cx="<%= hub[0] %>" cy="<%= hub[1] %>" r="5" fill="#a8432e" stroke="#fff" stroke-width="2"/>
+    <circle cx="<%= hub[0] %>" cy="<%= hub[1] %>" r="5" fill="#1d1d1f" stroke="#fff" stroke-width="2"/>
   </svg>
 </div>

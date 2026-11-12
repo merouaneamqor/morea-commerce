@@ -26,7 +26,7 @@
     <div class="seallo-kpi"><span class="seallo-dot" style="background:#c98a2b"></span><span><%= t("admin.my_stats.#{key}") %></span><strong><%= n %></strong><small><%= t("admin.my_stats.of_confirmed", percent: pct.(n)) %></small></div>
   <% end %>
   <% { delivered: figures.delivered, postponed: figures.postponed, unreachable: figures.unreachable, returned: figures.returned }.each do |key, n| %>
-    <div class="seallo-kpi"><span class="seallo-dot" style="background:<%= { delivered: '#2f6b3f', postponed: '#4a5fa8', unreachable: '#7a6f67', returned: '#e07a5f' }[key] %>"></span><span><%= t("admin.my_stats.#{key}") %></span><strong><%= n %></strong><small><%= t("admin.my_stats.of_confirmed", percent: pct.(n)) %></small></div>
+    <div class="seallo-kpi"><span class="seallo-dot" style="background:<%= { delivered: '#2f6b3f', postponed: '#4b4b50', unreachable: '#7a6f67', returned: '#e07a5f' }[key] %>"></span><span><%= t("admin.my_stats.#{key}") %></span><strong><%= n %></strong><small><%= t("admin.my_stats.of_confirmed", percent: pct.(n)) %></small></div>
   <% end %>
 </div>
 <p class="admin-muted my-3 text-xs"><%= t("admin.my_stats.courier_note") %></p>

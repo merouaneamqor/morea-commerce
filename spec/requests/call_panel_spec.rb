@@ -1,4 +1,5 @@
 require "rails_helper"
+require "nokogiri"
 
 RSpec.describe "Call panel", type: :request do
   include ActiveSupport::Testing::TimeHelpers
@@ -110,11 +111,26 @@ RSpec.describe "Call panel", type: :request do
     expect(edit.body).to include("1 × Tracksuit → 3 × Tracksuit", "address: Rue 1 → Rue 2", "total: 230.0 → 630.0 MAD")
   end
 
+  it "cancels with a reason even when the order form would refuse the edits sent with it (they are ignored for a cancellation)" do
+    sign_in(agent)
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
+
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: {
+      outcome: "cancelled", notes: "par client",
+      order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: {} }       # no product: the editor would refuse a total of 0
+    }
+
+    expect(response).to have_http_status(:ok), response.body
+    expect(order.reload.status).to eq("cancelled")
+    expect(order.order_events.where(kind: "edited")).to be_empty
+    expect(confirmation.confirmation_attempts.last).to have_attributes(outcome: "cancelled", notes: "par client")
+  end
+
   it "refuses edits that bring the total to 0 and keeps the order and the attempt untouched" do
     sign_in(agent)
     post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
-    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed", order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: {} } }, as: :json
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed", order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: {} } }
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(order.reload.status).to eq("new")
@@ -164,5 +180,69 @@ RSpec.describe "Call panel", type: :request do
 
     expect(json["next_order_id"]).to eq(order.id).or eq(second.id)
     expect(json["next_order_id"]).not_to be_nil
+  end
+
+  describe "the call window" do
+    def page = Nokogiri::HTML(response.body)
+
+    it "opens in the order-modal frame with the customer, the products, the timer and the five results" do
+      sign_in(agent)
+      get "/admin/confirmations/#{order.id}/panel", headers: { "Turbo-Frame" => "order-modal" }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include("data-seller-shell")
+      dialog = page.at_css("turbo-frame#order-modal [data-call-panel][role=dialog]")
+      expect(dialog["data-call-panel-call-url-value"]).to eq("/admin/confirmations/#{order.id}/call")
+      expect(dialog["data-call-panel-finish-url-value"]).to eq("/admin/confirmations/#{order.id}/finish_call")
+      expect(dialog.at_css("[data-call-panel-target=timer]").text).to eq("00:00")
+      expect(dialog.at_css("input[name='order[name]']")["value"]).to eq("Karim")
+      expect(dialog.at_css("input[name='order[phone]']")["value"]).to end_with("612345678")
+      expect(dialog.at_css("a[href^='tel:']")).to be_present
+      expect(dialog.at_css("input[name='order[lines][0][quantity]']")["value"]).to eq("1")
+      expect(dialog.at_css("[data-call-panel-target=total]").text).to include("230")                         # 200 + 30
+      outcomes = dialog.css("[data-call-panel-outcome-param]").map { |button| button["data-call-panel-outcome-param"] }
+      expect(outcomes).to eq(%w[callback confirmed cancelled no_answer wrong_number])
+      expect(dialog.at_css("[data-action='call-panel#askCallback']")).to be_present
+    end
+
+    it "offers the variants of the product to change the colour or size" do
+      variant = product.product_variants.create!(name: "Rouge", price_cents: 21_000, stock: 5, active: true)
+      product.product_variants.create!(name: "Bleu", price_cents: 22_000, stock: 5, active: true)
+      order.order_items.first.update_columns(product_variant_id: variant.id)
+      sign_in(owner)
+      get "/admin/confirmations/#{order.id}/panel", headers: { "Turbo-Frame" => "order-modal" }
+
+      select = page.at_css("select[name='order[lines][0][product_variant_id]']")
+      expect(select.css("option").map { |option| [ option.text.strip, option["data-price-cents"] ] }).to eq([ [ "Rouge", "21000" ], [ "Bleu", "22000" ] ])
+      expect(select.at_css("option[selected]").text.strip).to eq("Rouge")
+    end
+
+    it "sends an order that can no longer be called back to the queue" do
+      order.update_columns(status: "cancelled")
+      sign_in(owner)
+
+      get "/admin/confirmations/#{order.id}/panel", headers: { "Turbo-Frame" => "order-modal" }
+
+      expect(response).to redirect_to("/admin/confirmations/center")
+    end
+
+    it "is only for this store's orders" do
+      other_store = Store.create!(slug: "call-o-#{SecureRandom.hex(4)}", name: "Other", currency: "MAD")
+      foreign = other_store.orders.create!(customer: other_store.customers.create!(name: "A", phone: "0611111111"), number: "X1", status: "new", currency: "MAD", customer_name: "A", customer_phone: "0611111111", customer_city: "Fès", customer_address: "a", subtotal_cents: 100, total_cents: 100)
+      sign_in(owner)
+
+      get "/admin/confirmations/#{foreign.id}/panel", headers: { "Turbo-Frame" => "order-modal" }
+
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "is the target of the Appeler button of the queue" do
+      sign_in(agent)
+      get "/admin/confirmations/center", params: { tab: "pending" }
+
+      link = page.at_css("a[data-call='#{order.id}']")
+      expect(link["href"]).to eq("/admin/confirmations/#{order.id}/panel")
+      expect(link["data-turbo-frame"]).to eq("order-modal")
+    end
   end
 end

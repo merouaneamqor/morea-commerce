@@ -2,6 +2,7 @@ class Product < ApplicationRecord
   include Translatable
 
   belongs_to :store
+  belongs_to :store_connection, optional: true
   has_many :product_variants, dependent: :destroy
   has_many :collection_products, dependent: :destroy
   has_many :collections, through: :collection_products
@@ -28,6 +29,10 @@ class Product < ApplicationRecord
   before_validation :ensure_slug, on: :create
 
   scope :active, -> { where(status: "active") }
+  # What the workspace works with: the products it made itself and those of its connected stores that are switched on.
+  scope :visible, -> { where(store_connection_id: nil).or(where(store_connection_id: StoreConnection.where(active: true).select(:id))) }
+  scope :native, -> { where(store_connection_id: nil) }   # made in this workspace (what the public storefront sells)
+  scope :imported, -> { where.not(store_connection_id: nil) }
   scope :featured, -> { where(featured: true) }
   scope :low_stock, lambda { |threshold = 5|
     where(track_inventory: true)

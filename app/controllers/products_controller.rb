@@ -1,6 +1,6 @@
 class ProductsController < ApplicationController
   def show
-    @product = current_store.products.active.includes(
+    @product = current_store.products.native.active.includes(
       :collections,
       :translations,
       images_attachments: :blob,

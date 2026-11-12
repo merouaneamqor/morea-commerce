@@ -11,15 +11,17 @@ RSpec.describe "Integration polling schedules" do
     allow(ENV).to receive(:fetch).with("SENDIT_POLL_CRON", "*/15 * * * *").and_return("*/15 * * * *")
     allow(ENV).to receive(:fetch).with("SHOPIFY_SYNC_CRON", "*/10 * * * *").and_return("*/10 * * * *")
     allow(ENV).to receive(:fetch).with("META_ADS_SYNC_CRON", "5 * * * *").and_return("5 * * * *")
+    allow(ENV).to receive(:fetch).with("CLAIM_EXPIRY_CRON", "*/5 * * * *").and_return("*/5 * * * *")
   end
 
-  def schedules(sendit_external: nil, ozon_external: nil, ameex_external: nil, shopify_external: nil, retention_external: nil, meta_external: nil)
+  def schedules(sendit_external: nil, ozon_external: nil, ameex_external: nil, shopify_external: nil, retention_external: nil, meta_external: nil, claim_external: nil)
     allow(ENV).to receive(:[]).with("SENDIT_EXTERNAL_CRON").and_return(sendit_external)
     allow(ENV).to receive(:[]).with("OZON_EXTERNAL_CRON").and_return(ozon_external)
     allow(ENV).to receive(:[]).with("AMEEX_EXTERNAL_CRON").and_return(ameex_external)
     allow(ENV).to receive(:[]).with("SHOPIFY_EXTERNAL_CRON").and_return(shopify_external)
     allow(ENV).to receive(:[]).with("SEALLO_RETENTION_EXTERNAL_CRON").and_return(retention_external)
     allow(ENV).to receive(:[]).with("META_ADS_EXTERNAL_CRON").and_return(meta_external)
+    allow(ENV).to receive(:[]).with("CLAIM_EXPIRY_EXTERNAL_CRON").and_return(claim_external)
     YAML.safe_load(ERB.new(Rails.root.join("config/schedule.yml").read).result)
   end
 
@@ -29,7 +31,8 @@ RSpec.describe "Integration polling schedules" do
       "sendit_poll", "sendit_cities_refresh",
       "ozon_poll", "ozon_cities_refresh",
       "ameex_poll", "ameex_cities_refresh",
-      "shopify_orders_sync", "seallo_retention", "meta_ads_sync"
+      "shopify_orders_sync", "seallo_retention", "meta_ads_sync",
+      "release_idle_claims"
     )
     expect(result.fetch("sendit_poll")).to include("cron" => "*/15 * * * *", "class" => "SenditPollJob", "active_job" => true)
     expect(result.fetch("ozon_poll")).to include("class" => "OzonPollJob", "active_job" => true)
@@ -41,7 +44,8 @@ RSpec.describe "Integration polling schedules" do
     expect(schedules(sendit_external: "1").keys).to contain_exactly(
       "ozon_poll", "ozon_cities_refresh",
       "ameex_poll", "ameex_cities_refresh",
-      "shopify_orders_sync", "seallo_retention", "meta_ads_sync"
+      "shopify_orders_sync", "seallo_retention", "meta_ads_sync",
+      "release_idle_claims"
     )
   end
 
@@ -50,18 +54,19 @@ RSpec.describe "Integration polling schedules" do
       "sendit_poll", "sendit_cities_refresh",
       "ozon_poll", "ozon_cities_refresh",
       "ameex_poll", "ameex_cities_refresh",
-      "seallo_retention", "meta_ads_sync"
+      "seallo_retention", "meta_ads_sync",
+      "release_idle_claims"
     )
   end
 
-  it "keeps only the retention sweep and the Meta Ads sync when courier and Shopify runners are external" do
-    expect(schedules(sendit_external: "1", ozon_external: "1", ameex_external: "1", shopify_external: "1").keys).to eq([ "seallo_retention", "meta_ads_sync" ])
+  it "keeps only the retention sweep, the Meta Ads sync and claim expiry when courier and Shopify runners are external" do
+    expect(schedules(sendit_external: "1", ozon_external: "1", ameex_external: "1", shopify_external: "1").keys).to eq([ "seallo_retention", "meta_ads_sync", "release_idle_claims" ])
   end
 
   it "renders an empty schedule when every job uses an external runner" do
     expect(schedules(
       sendit_external: "1", ozon_external: "1", ameex_external: "1",
-      shopify_external: "1", retention_external: "1", meta_external: "1"
+      shopify_external: "1", retention_external: "1", meta_external: "1", claim_external: "1"
     )).to eq({})
   end
 

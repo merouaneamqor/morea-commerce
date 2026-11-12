@@ -3,12 +3,12 @@
 <div class="fx-glass p-7 sm:p-9">
   <% if @registration.nil? %>
     <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("registration.expired_title") %></h1>
-    <p class="mt-3 text-sm leading-6 text-[#b9d3ff]" role="alert"><%= t("registration.expired_body") %></p>
+    <p class="mt-3 text-sm leading-6 text-[#d8d8de]" role="alert"><%= t("registration.expired_body") %></p>
     <%= link_to t("registration.request_new_link"), signup_thanks_path(locale: I18n.locale), class: "fx-btn mt-7 inline-flex items-center justify-center no-underline" %>
     <p class="mt-5 text-center text-sm"><%= link_to t("registration.sign_in"), admin_login_path(locale: I18n.locale), class: "fx-link" %></p>
   <% else %>
     <h1 class="text-3xl font-bold tracking-tight text-white"><%= t("registration.verify_title") %></h1>
-    <p class="mt-3 text-sm leading-6 text-[#b9d3ff]"><%= t("registration.verify_body") %></p>
+    <p class="mt-3 text-sm leading-6 text-[#d8d8de]"><%= t("registration.verify_body") %></p>
     <% if @registration.errors.any? %>
       <div role="alert" class="fx-alert mt-5">
         <p><%= t("registration.fix_fields") %></p>
@@ -21,7 +21,7 @@
         <%= label_tag :password, t("registration.password"), class: "fx-label" %>
         <%= password_field_tag :password, nil, required: true, autocomplete: "new-password", minlength: 12, maxlength: 72, autofocus: true,
               "aria-invalid": (@registration.errors.include?(:password) ? "true" : nil), "aria-describedby": "verify-password-help", class: "fx-input" %>
-        <p id="verify-password-help" class="mt-2 text-xs text-[#b9d3ff]"><%= t("registration.password_help") %></p>
+        <p id="verify-password-help" class="mt-2 text-xs text-[#d8d8de]"><%= t("registration.password_help") %></p>
       </div>
       <div>
         <%= label_tag :password_confirmation, t("registration.password_confirmation"), class: "fx-label" %>

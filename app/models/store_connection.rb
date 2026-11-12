@@ -9,6 +9,7 @@ class StoreConnection < ApplicationRecord
   belongs_to :store
   has_many :external_order_receipts, dependent: :restrict_with_error
   has_many :shopify_privacy_requests, dependent: :restrict_with_error
+  has_many :products, dependent: :nullify
   attr_readonly :store_id, :provider, :external_domain, :external_store_id, :token
 
   before_validation :normalize_identity, if: :new_record?
@@ -47,6 +48,33 @@ class StoreConnection < ApplicationRecord
 
     define_method("#{attribute}=") do |value|
       public_send("#{attribute}_ciphertext=", value.present? ? secret_encryptor.encrypt_and_sign(value.to_s, purpose: "store-connection-#{attribute}") : nil)
+    end
+  end
+
+  # API keys of the connected store, kept encrypted and never printed back: WooCommerce "consumer_key" and
+  # "consumer_secret", YouCan "access_token". Shopify uses its OAuth tokens instead.
+  def api_credentials
+    return {} if api_credentials_ciphertext.blank?
+
+    JSON.parse(secret_encryptor.decrypt_and_verify(api_credentials_ciphertext, purpose: "store-connection-api-credentials"))
+  rescue ActiveSupport::MessageEncryptor::InvalidMessage, JSON::ParserError
+    {}
+  end
+
+  def api_credentials=(values)
+    values = values.to_h.transform_keys(&:to_s).compact_blank
+    self.api_credentials_ciphertext = values.empty? ? nil : secret_encryptor.encrypt_and_sign(JSON.generate(values), purpose: "store-connection-api-credentials")
+  end
+
+  # Can the catalog of this store be read right now? (an active connection with what its platform needs)
+  def products_importable?
+    return false unless active?
+
+    case provider
+    when "shopify" then shopify_api_connected?
+    when "woocommerce" then api_credentials.values_at("consumer_key", "consumer_secret").all?(&:present?)
+    when "youcan" then api_credentials["access_token"].present?
+    else false
     end
   end
 

@@ -1,121 +1,138 @@
-<%# Seller dashboard, ported from the seallo dashboard page. Operational figures come from Seller::DashboardStats; the money figures live on the Comptabilité page. %>
+<%# Seller dashboard. Operational figures come from Seller::DashboardStats; revenue and average basket are read there from
+    AccountingStats (the single source of money figures), so this page and Comptabilité always agree. Printing only:
+    every figure is formatted here, none is calculated. %>
 <% content_for :title, sl("Tableau de bord") %>
 <% content_for :seller_lang, "1" %>
 <% content_for :admin_page_class, "seller-page" %>
 <% stats = @stats %>
 <% k = stats[:kpis] %>
+<% money = stats[:money] %>
+<% low = stats[:low_stock] %>
 <% cur = stats[:currency] %>
 <% first_name = current_admin_user.name.to_s.strip.split(/\s+/).first.to_s %>
 <% number = ->(value) { seller_number(value) } %>
-<% delta_text = ->(d) { d.nil? ? sl("sur la période") : "#{d.positive? ? "+" : ""}#{d} % #{sl("par rapport à la période précédente")}" } %>
-<% delta_class = ->(d) { d.nil? ? "text-[#6f6967]" : (d.negative? ? "text-[#b4344e]" : "text-[#2f7a4a]") } %>
-<%
-  tiles = [
-    { label: "Commandes", value: number.(k[:orders]), sub: delta_text.(k[:orders_delta]), sub_class: delta_class.(k[:orders_delta]),
-      extra: (k[:confirmation_rate] ? "#{k[:confirmation_rate]} % #{sl("confirmées")}" : nil), bg: "bg-[#eeecfa]" },
-    { label: "Taux de livraison", value: (k[:delivery_rate] ? "#{k[:delivery_rate]} %" : admin_blank), sub: "#{number.(k[:delivered])} #{sl("livrées")}",
-      sub_class: "text-[#6f6967]", extra: nil, bg: "bg-[#e8eefa]" }
-  ]
-  pipeline = [
-    [ "En attente de confirmation", k[:awaiting], (k[:awaiting].positive? ? "#{number.(k[:awaiting_amount])} #{cur} #{sl("à confirmer")}" : sl("Tout est confirmé")), "#4b4fb0", "/confirmation" ],
-    [ "Annulées", k[:cancelled], (k[:cancel_rate] ? "#{k[:cancel_rate]} % #{sl("des commandes")}" : sl("sur la période")), "#b4344e", "/commandes?status=cancelled" ],
-    [ "En cours de livraison", k[:in_transit], "#{number.(k[:in_transit_amount])} #{cur} #{sl("en livraison")}", "#d08a1f", "/commandes?status=in_transit" ],
-    [ "Refusées", k[:refused], (k[:refusal_rate] ? "#{k[:refusal_rate]} % #{sl("des colis")}" : sl("sur la période")), "#e0896a", "/commandes?status=returned" ]
-  ]
-%>
-
-<%= render "admin/dashboard/onboarding" %>
+<% amount = ->(value) { value.nil? ? "—" : "#{number.(value)} #{cur}" } %>
+<% percent_text = ->(value) { value.nil? ? "—" : "#{value} %" } %>
+<% delta_text = ->(d) { d.nil? ? sl("sur la période") : "#{d.positive? ? "▲ +" : "▼ "}#{d} % #{sl("vs période précédente")}" } %>
+<% delta_class = ->(d, dark = false) { d.nil? ? (dark ? "text-white/60" : "text-[#6e6e73]") : (d.negative? ? (dark ? "text-[#ff8a95]" : "text-[#b4344e]") : (dark ? "text-[#7be0a3]" : "text-[#2f7a4a]")) } %>
 
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div>
-    <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= sl("Bonjour") %><%= first_name.present? ? "#{(rtl? ? "، " : ", ")}#{first_name}" : "" %></h1>
-    <p class="text-sm">
-      <%= stats[:pending].positive? ? "#{number.(stats[:pending])} #{sl("commandes attendent une confirmation.")}" : sl("Aucune commande en attente de confirmation.") %>
-    </p>
+    <h1 class="text-2xl font-bold text-[#1c1c1e] sm:text-[28px]"><%= sl("Bonjour") %><%= first_name.present? ? ", #{first_name}" : "" %></h1>
   </div>
   <div class="flex flex-wrap items-center gap-2">
-    <%= form_with url: "/commandes", method: :get, class: "hidden h-11 items-center gap-2 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm sm:flex" do %>
-      <span class="text-[#8a8380]"><%= seller_icon(:search) %></span>
-      <input name="q" placeholder="<%= sl("Rechercher une commande") %>" class="w-44 bg-transparent outline-none placeholder:text-[#a49d99]">
+    <%= form_with url: "/commandes", method: :get, class: "hidden h-11 items-center gap-2 rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm sm:flex" do %>
+      <span class="text-[#6e6e73]"><%= seller_icon(:search) %></span>
+      <input name="q" placeholder="<%= sl("Rechercher une commande") %>" class="w-44 bg-transparent outline-none placeholder:text-[#8e8e93]">
     <% end %>
     <%= render "admin/shared/language_switcher" %>
     <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: seller_dashboard_path %>
-    <%= link_to sl("Confirmer les commandes"), "/commandes?status=new", class: "flex h-11 items-center rounded-xl bg-[#a8432e] px-4 text-sm font-semibold text-white hover:bg-[#8e3624]" %>
+    <%= link_to sl("Confirmer les commandes"), "/commandes?status=new", class: "flex h-11 items-center rounded-xl bg-[#1d1d1f] px-4 text-sm font-semibold text-white hover:bg-[#3a3a3c]" %>
   </div>
 </header>
 
-<%= form_with url: "/commandes", method: :get, class: "flex h-11 w-full items-center gap-2 rounded-xl border border-[#e8e3df] bg-white px-3 text-sm sm:hidden" do %>
-  <span class="text-[#8a8380]"><%= seller_icon(:search) %></span>
-  <input name="q" placeholder="<%= sl("Rechercher une commande") %>" class="min-w-0 flex-1 bg-transparent outline-none placeholder:text-[#a49d99]">
+<% if @milestones %>
+  <%= render "milestones", milestones: @milestones, currency: cur %>
+<% else %>
+  <div class="flex justify-end">
+    <%= button_to seller_dashboard_milestones_path(show: 1), method: :patch, "data-show-milestones": true,
+          class: "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-[#e0e0e5] bg-white px-3 text-xs font-semibold text-[#3a3a3c] hover:bg-[#efeff3]" do %>
+      <%= seller_icon(:flag, size: 13) %><%= sl("Afficher les paliers") %>
+    <% end %>
+  </div>
 <% end %>
 
-<section class="grid grid-cols-2 gap-3">
-  <% tiles.each do |tile| %>
-    <div class="rounded-2xl p-4 sm:p-5 <%= tile[:bg] %>">
-      <p class="text-sm"><%= sl(tile[:label]) %></p>
-      <p class="mt-1 text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= tile[:value] %></p>
-      <p class="mt-1 text-xs <%= tile[:sub_class] %>"><%= tile[:sub] %></p>
-      <% if tile[:extra] %><p class="mt-0.5 text-xs text-[#6f6967]"><%= tile[:extra] %></p><% end %>
+<%# Row 1: six figures. Row 2: the three rates. Same card design as Comptabilité: grey icon beside the label, value with its unit,
+    short description; the revenue card is the gold one. %>
+<% pill_of = ->(d) { d.nil? ? nil : [ "#{d.positive? ? "+" : ""}#{d} %", (d.positive? ? :up : (d.negative? ? :down : :flat)) ] } %>
+<section class="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6" data-kpis="row1">
+  <%= render "kpi", key: "revenue", label: sl("Chiffre d'affaires"), icon: :profit, value: number.(money[:revenue]), unit: cur, featured: true,
+        pill: pill_of.(money[:revenue_delta]), sub: "#{sl("Commandes livrées")} · #{sl("vs période précédente")}" %>
+  <%= render "kpi", key: "orders", label: sl("Commandes"), icon: :orders, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: number.(k[:orders]),
+        pill: pill_of.(k[:orders_delta]), sub: (k[:orders_delta] ? sl("vs période précédente") : sl("sur la période")) %>
+  <%= render "kpi", key: "en-attente-de-confirmation", label: sl("En attente de confirmation"), icon: :clock, tone: "bg-[#fdf0d9] text-[#d28a12]", value: number.(k[:awaiting]), href: "/confirmation",
+        sub: (k[:awaiting].positive? ? "#{number.(k[:awaiting_amount])} #{cur} #{sl("à confirmer")}" : sl("Tout est confirmé")) %>
+  <%= render "kpi", key: "en-cours-de-livraison", label: sl("En cours de livraison"), icon: :truck, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: number.(k[:in_transit]), href: "/commandes?status=in_transit",
+        sub: "#{number.(k[:in_transit_amount])} #{cur} #{sl("sur la route")}" %>
+  <%= render "kpi", key: "annulees", label: sl("Annulées"), icon: :cancel, tone: "bg-[#fbe7ea] text-[#d6455d]", value: number.(k[:cancelled]), href: "/commandes?status=cancelled",
+        sub: (k[:cancel_rate] ? "#{k[:cancel_rate]} % #{sl("des commandes")}" : sl("sur la période")) %>
+  <%= render "kpi", key: "refusees", label: sl("Refusées"), icon: :ban, tone: "bg-[#ececf0] text-[#1c1c1e]", value: number.(k[:refused]), href: "/commandes?status=returned",
+        sub: (k[:refusal_rate] ? "#{k[:refusal_rate]} % #{sl("des colis")}" : sl("sur la période")) %>
+</section>
+
+<section class="grid grid-cols-1 gap-2.5 sm:grid-cols-3" data-kpis="row2">
+  <%= render "kpi", key: "confirmation_rate", label: sl("Taux de confirmation"), icon: :check, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: percent_text.(k[:confirmation_rate]),
+        sub: "#{number.(k[:confirmed])} #{sl("confirmées")} / #{number.(k[:orders])}" %>
+  <%= render "kpi", key: "taux-de-livraison", label: sl("Taux de livraison"), icon: :box, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: percent_text.(k[:delivery_rate]), href: "/commandes?status=delivered",
+        sub: "#{number.(k[:delivered])} #{sl("livrées")}" %>
+  <%= render "kpi", key: "taux-de-retour", label: sl("Taux de retour"), icon: :undo, tone: "bg-[#fdf0d9] text-[#d28a12]", value: percent_text.(k[:return_rate]), href: "/commandes?status=returned",
+        sub: "#{number.(k[:returned])} #{sl("retournées")}" %>
+</section>
+
+<section class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+  <%= render "distribution", distribution: stats[:distribution] %>
+  <%= render "top_products", products: stats[:top_products], currency: cur %>
+</section>
+
+<section class="grid grid-cols-1 gap-3 lg:grid-cols-3">
+  <div class="rounded-2xl border border-[#e0e0e5] bg-white p-5 lg:col-span-2" data-latest>
+    <div class="flex items-center justify-between gap-2">
+      <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Dernières commandes") %></h2>
+      <%= link_to sl("Toutes les commandes"), "/commandes", class: "text-xs font-semibold text-[#6e6e73] hover:text-[#1c1c1e]" %>
     </div>
-  <% end %>
-</section>
-
-<section class="grid grid-cols-2 gap-3 xl:grid-cols-4">
-  <% pipeline.each do |label, value, sub, color, href| %>
-    <%= link_to href, class: "rounded-2xl border border-[#e8e3df] bg-white p-4 transition hover:border-[#d6cfca]" do %>
-      <p class="flex items-start gap-2 text-sm">
-        <span class="mt-1 size-2.5 shrink-0 rounded-full" style="background-color: <%= color %>"></span>
-        <span class="leading-tight"><%= sl(label) %></span>
-      </p>
-      <p class="mt-2 text-2xl leading-none font-bold text-[#1f2430]"><%= number.(value) %></p>
-      <p class="mt-2 truncate text-xs text-[#8a8380]"><%= sub %></p>
-    <% end %>
-  <% end %>
-</section>
-
-<section class="rounded-2xl border border-[#e8e3df] bg-white p-5">
-  <h2 class="font-semibold text-[#1f2430]"><%= sl("Dernières commandes") %></h2>
-  <% if stats[:latest].any? %>
-    <ul class="admin-mobile-list mt-3 md:hidden">
-      <% stats[:latest].each do |order| %>
-        <% label, badge = seller_status_badge(order[:status]) %>
-        <li>
-          <%= link_to admin_order_path(order[:id]), class: "admin-mobile-list__item" do %>
-            <div class="admin-mobile-list__top">
-              <div class="min-w-0">
-                <span class="admin-mobile-list__title" dir="ltr">#<%= order[:number] %></span>
-                <p class="admin-mobile-list__name" dir="auto"><%= order[:customer].presence || admin_blank %></p>
-                <p class="admin-mobile-list__meta" dir="auto"><%= order[:city].presence || admin_blank %></p>
-              </div>
-              <span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= badge %>"><%= sl(label) %></span>
-            </div>
-            <p class="admin-mobile-list__amount" dir="ltr"><%= number.(order[:total]) %> <%= cur %></p>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
-    <div class="mt-3 hidden overflow-x-auto md:block">
-      <table class="w-full min-w-[520px] text-sm">
-        <thead>
-          <tr class="border-b border-[#f0ebe7] text-start text-xs text-[#8a8380]">
-            <% [ "Commande", "Client", "Ville", "Total", "Statut" ].each do |heading| %><th class="px-2 py-2.5 text-start font-medium"><%= sl(heading) %></th><% end %>
-          </tr>
-        </thead>
-        <tbody>
-          <% stats[:latest].each do |order| %>
-            <% label, badge = seller_status_badge(order[:status]) %>
-            <tr class="border-b border-[#f6f2ef] last:border-0">
-              <td class="px-2 py-3 font-semibold text-[#1f2430]" dir="ltr"><%= order[:number] %></td>
-              <td class="px-2 py-3 text-[#1f2430]" dir="auto"><%= order[:customer].presence || admin_blank %></td>
-              <td class="px-2 py-3" dir="auto"><%= order[:city].presence || admin_blank %></td>
-              <td class="px-2 py-3 text-[#1f2430]" dir="ltr"><%= number.(order[:total]) %> <%= cur %></td>
-              <td class="px-2 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= badge %>"><%= sl(label) %></span></td>
+    <% if stats[:latest].any? %>
+      <div class="mt-3 overflow-x-auto">
+        <table class="w-full min-w-[480px] text-sm">
+          <thead>
+            <tr class="border-b border-[#ececf0] text-start text-xs text-[#6e6e73]">
+              <% [ "Commande", "Client", "Ville", "Total", "Statut" ].each do |heading| %><th class="px-2 py-2.5 text-start font-medium"><%= sl(heading) %></th><% end %>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <% stats[:latest].each do |order| %>
+              <% label, badge = seller_status_badge(order[:status]) %>
+              <tr class="border-b border-[#f1f1f4] last:border-0">
+                <td class="px-2 py-3 font-semibold text-[#1c1c1e]" dir="ltr"><%= order[:number] %></td>
+                <td class="px-2 py-3 text-[#1c1c1e]" dir="auto"><%= order[:customer].presence || "—" %></td>
+                <td class="px-2 py-3" dir="auto"><%= order[:city].presence || "—" %></td>
+                <td class="px-2 py-3 text-[#1c1c1e]" dir="ltr"><%= number.(order[:total]) %> <%= cur %></td>
+                <td class="px-2 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= badge %>"><%= sl(label) %></span></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="mt-6 mb-2 text-center text-sm text-[#6e6e73]"><%= sl("Vos commandes apparaîtront ici dès que votre boutique sera connectée.") %></p>
+    <% end %>
+  </div>
+
+  <div class="rounded-2xl border p-5 <%= low[:count].positive? ? "border-[#f3e3bf] bg-[#fffaf0]" : "border-[#e0e0e5] bg-white" %>" data-low-stock>
+    <div class="flex items-center justify-between gap-2">
+      <h2 class="flex items-center gap-2 font-semibold text-[#1c1c1e]">
+        <span class="grid size-7 place-items-center rounded-lg <%= low[:count].positive? ? "bg-[#fcebc6] text-[#a8690d]" : "bg-[#dcf2e5] text-[#2f7a4a]" %>"><%= seller_icon(low[:count].positive? ? :alert : :check, size: 15) %></span>
+        <%= sl("Stock faible") %>
+      </h2>
+      <span class="rounded-full px-2 py-0.5 text-xs font-semibold <%= low[:count].positive? ? "bg-[#fdf0d9] text-[#8a5a12]" : "bg-[#e3f3e8] text-[#2f7a4a]" %>" data-low-stock-count><%= low[:count] %></span>
     </div>
-  <% else %>
-    <p class="mt-6 mb-2 text-center text-sm text-[#8a8380]"><%= sl("Vos commandes apparaîtront ici dès que votre boutique sera connectée.") %></p>
-  <% end %>
+    <p class="mt-1 text-xs text-[#6e6e73]"><%= sl("Articles à") %> <%= low[:threshold] %> <%= sl("pièces ou moins") %></p>
+    <% if low[:items].any? %>
+      <ul class="mt-3 divide-y divide-[#f1ead8]">
+        <% low[:items].each do |item| %>
+          <li class="flex items-center justify-between gap-3 py-2.5" data-low-stock-item>
+            <%= link_to edit_admin_product_path(item[:slug]), class: "min-w-0 text-sm text-[#1c1c1e] hover:underline" do %>
+              <span class="block truncate font-medium" dir="auto"><%= item[:name] %></span>
+              <% if item[:variant] %><span class="block truncate text-xs text-[#6e6e73]" dir="auto"><%= item[:variant] %></span><% end %>
+            <% end %>
+            <span class="shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold <%= item[:stock].zero? ? "bg-[#fbe7ea] text-[#b4344e]" : "bg-[#fdf0d9] text-[#8a5a12]" %>" data-stock="<%= item[:stock] %>"><%= item[:stock].zero? ? sl("Rupture") : "#{item[:stock]} #{sl("pcs")}" %></span>
+          </li>
+        <% end %>
+      </ul>
+      <% if low[:count] > low[:items].size %>
+        <%= link_to "#{sl("Voir les produits")} (+#{low[:count] - low[:items].size})", "/produits", class: "mt-2 inline-block text-xs font-semibold text-[#6e6e73] hover:text-[#1c1c1e]" %>
+      <% end %>
+    <% else %>
+      <p class="mt-6 mb-2 text-center text-sm text-[#6e6e73]"><%= sl("Aucun article sous le seuil.") %></p>
+    <% end %>
+  </div>
 </section>

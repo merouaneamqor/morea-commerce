@@ -72,6 +72,17 @@ module Admin
 
         count = Connections::ShopifySyncRequest.call(store: current_store, connection_id: @connection.id)
         return redirect_to admin_store_connection_path(@connection), notice: t("shopify_sync.queued", count: count), status: :see_other
+      when "save_api_credentials"
+        return head :unprocessable_entity unless %w[woocommerce youcan].include?(@connection.provider)
+
+        @connection.with_lock { @connection.update!(api_credentials: api_credential_params, products_sync_state: nil, products_sync_error: nil) }
+        return redirect_to admin_store_connection_path(@connection), notice: t("connections.products.credentials_saved"), status: :see_other
+      when "sync_products"
+        return redirect_to(admin_store_connection_path(@connection), alert: t("connections.products.not_ready"), status: :see_other) unless @connection.products_importable?
+
+        @connection.update!(products_sync_state: "queued", products_sync_error: nil)
+        ProductsSyncJob.perform_later(@connection.id)
+        return redirect_to admin_store_connection_path(@connection), notice: t("connections.products.queued"), status: :see_other
       when "rotate_secret"
         return head :unprocessable_entity if @connection.provider == "shopify"
 
@@ -106,6 +117,12 @@ module Admin
     def set_connection
       @connection = current_store.store_connections.find(params[:id])
       @shopify_configured = ENV["SEALLO_APP_URL"].present? && ENV["SEALLO_BRIDGE_SECRET"].present? if @connection.shopify_app == "seallo_connect"
+    end
+
+    # Woo: consumer_key + consumer_secret; YouCan: access_token. A blank field keeps what was saved.
+    def api_credential_params
+      given = params.require(:store_connection).permit(:consumer_key, :consumer_secret, :access_token).to_h.compact_blank
+      @connection.api_credentials.merge(given)
     end
 
     def connection_params

@@ -356,7 +356,7 @@ RSpec.describe "Orders page", type: :request do
       expect(dialog).to be_present
       expect(dialog.at_css("#order-modal-title").text.squish).to include(I18n.t("orders_modal.title"))
       expect(dialog.text).to include(I18n.t("orders_modal.subtitle"), I18n.t("orders_modal.customer"), I18n.t("orders_modal.product"), I18n.t("orders_modal.delivery"), I18n.t("orders_modal.fees"))
-      expect(dialog.css("[data-section]").map { |section| section["data-section"] }).to eq(%w[customer items delivery fees summary])
+      expect(dialog.css("[data-section]").map { |section| section["data-section"] }).to eq(%w[customer delivery summary items fees])
       expect(dialog.css("input[name='order[name]'], input[name='order[phone]'], input[name='order[second_phone]'], input[name='order[address]']").map { |input| input["name"] })
         .to eq(%w[order[name] order[phone] order[second_phone] order[address]])
       expect(dialog.css("input[name='order[name]'][required], input[name='order[phone]'][required]").size).to eq(2)           # the two required stars

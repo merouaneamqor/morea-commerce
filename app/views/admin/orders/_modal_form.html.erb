@@ -9,19 +9,22 @@
 <% heading = "flex items-center gap-1.5 text-[13px] font-semibold text-[#1c1c1e]" %>
 <% rule = "border-t border-[#1c1c1e]/10 pt-4" %>
 
-<%= form_with model: [ :admin, @order ], url: admin_orders_path, class: "space-y-4", data: ctx[:data].merge(order_modal_form: true) do |f| %>
+<%= form_with model: [ :admin, @order ], url: admin_orders_path, class: "space-y-3", data: ctx[:data].merge(order_modal_form: true) do |f| %>
   <% if local_assigns[:editor_errors]&.any? %>
     <div class="admin-banner admin-banner--critical" role="alert"><%= editor_errors.full_messages.to_sentence %></div>
   <% end %>
 
-  <section class="space-y-3" data-section="customer">
+  <div class="grid items-start gap-x-6 gap-y-3 lg:grid-cols-2">
+  <div class="space-y-3">
+  <section class="space-y-2" data-section="customer">
     <h3 class="<%= heading %>"><%= seller_icon(:clients, size: 14) %><%= t("orders_modal.customer") %></h3>
+    <div class="grid gap-x-3 gap-y-2 sm:grid-cols-2">
     <div>
-      <%= label_tag "order[name]", t("orders_modal.name"), class: label %><span class="text-[#d6455d]"> *</span>
+      <%= label_tag "order[name]", safe_join([ t("orders_modal.name"), content_tag(:span, " *", class: "text-[#d6455d]") ]), class: label %>
       <%= text_field_tag "order[name]", @order.customer_name, class: input, required: true, placeholder: t("orders_modal.name_placeholder") %>
     </div>
     <div>
-      <%= label_tag "order[phone]", t("orders_modal.phone"), class: label %><span class="text-[#d6455d]"> *</span>
+      <%= label_tag "order[phone]", safe_join([ t("orders_modal.phone"), content_tag(:span, " *", class: "text-[#d6455d]") ]), class: label %>
       <%= telephone_field_tag "order[phone]", @order.customer_phone, class: input, required: true, placeholder: "+212 6XXXXXXXX", dir: "ltr" %>
     </div>
     <div>
@@ -33,9 +36,45 @@
       <%= label_tag "order[address]", t("orders_modal.address"), class: label %>
       <%= text_field_tag "order[address]", @order.customer_address, class: input, required: true, placeholder: t("orders_modal.address_placeholder") %>
     </div>
+    </div>
   </section>
 
-  <section class="space-y-3 <%= rule %>" data-section="items">
+  <section class="space-y-2 <%= rule %>" data-section="delivery">
+    <h3 class="<%= heading %>"><%= seller_icon(:truck, size: 14) %><%= t("orders_modal.delivery") %></h3>
+    <div class="grid gap-3 sm:grid-cols-2">
+      <% if companies.any? %>
+        <div>
+          <%= label_tag "order[delivery_provider]", t("orders_modal.company"), class: label %>
+          <%= select_tag "order[delivery_provider]", options_for_select(companies, @order.delivery_provider), include_blank: t("orders_modal.company_placeholder"), class: input %>
+        </div>
+      <% end %>
+      <%= render "city_fields", order: @order, cities: ctx[:cities], districts_by_city: ctx[:districts_by_city], district_required: ctx[:district_required], district_options: ctx[:district_options] %>
+    </div>
+    <div>
+      <%= label_tag "order[scheduled_for]", t("orders_modal.scheduled"), class: label %>
+      <%= datetime_local_field_tag "order[scheduled_for]", @order.scheduled_for&.in_time_zone(DateRange::ZONE)&.strftime("%Y-%m-%dT%H:%M"), class: input %>
+      <p class="admin-help"><%= t("orders_modal.scheduled_hint") %></p>
+    </div>
+    <div>
+      <%= label_tag "order[notes]", t("orders_modal.notes"), class: label %>
+      <%= text_area_tag "order[notes]", @order.notes, rows: 2, class: input, placeholder: t("orders_modal.notes_placeholder") %>
+    </div>
+  </section>
+
+
+  <section class="<%= rule %>" data-section="summary">
+    <h3 class="<%= heading %> mb-2"><%= t("orders_modal.summary") %></h3>
+    <dl class="ms-auto w-full max-w-xs space-y-1.5 text-[13px]" data-order-totals>
+      <div class="flex justify-between"><dt class="text-[#6e6e73]"><%= t("orders_modal.subtotal") %></dt><dd class="tabular-nums" data-order-composer-target="subtotal">—</dd></div>
+      <div class="flex justify-between"><dt class="text-[#6e6e73]"><%= t("orders_modal.shipping") %></dt><dd class="tabular-nums" data-order-composer-target="shippingText">—</dd></div>
+      <div class="flex justify-between border-t border-dashed border-[#1c1c1e]/15 pt-2 text-sm font-bold"><dt><%= t("orders_modal.total") %></dt><dd class="tabular-nums text-[#2f7a4a]" data-order-composer-target="grandTotal">—</dd></div>
+      <div class="flex justify-between"><dt class="text-[#6e6e73]"><%= t("orders_modal.advance_line") %></dt><dd class="tabular-nums" data-order-composer-target="advanceText">—</dd></div>
+      <div class="flex justify-between font-semibold"><dt><%= t("orders_modal.to_collect") %></dt><dd class="tabular-nums text-[#2f7a4a]" data-order-composer-target="toCollect">—</dd></div>
+    </dl>
+  </section>
+  </div>
+  <div class="space-y-3">
+  <section class="space-y-2" data-section="items">
     <div class="flex items-center justify-between gap-2">
       <h3 class="<%= heading %>"><%= seller_icon(:box, size: 14) %><%= t("orders_modal.product") %></h3>
       <span class="text-xs font-semibold text-[#6e6e73] tabular-nums" data-order-composer-target="total">—</span>
@@ -90,29 +129,7 @@
     </template>
   </section>
 
-  <section class="space-y-3 <%= rule %>" data-section="delivery">
-    <h3 class="<%= heading %>"><%= seller_icon(:truck, size: 14) %><%= t("orders_modal.delivery") %></h3>
-    <div class="grid gap-3 sm:grid-cols-2">
-      <% if companies.any? %>
-        <div>
-          <%= label_tag "order[delivery_provider]", t("orders_modal.company"), class: label %>
-          <%= select_tag "order[delivery_provider]", options_for_select(companies, @order.delivery_provider), include_blank: t("orders_modal.company_placeholder"), class: input %>
-        </div>
-      <% end %>
-      <%= render "city_fields", order: @order, cities: ctx[:cities], districts_by_city: ctx[:districts_by_city], district_required: ctx[:district_required], district_options: ctx[:district_options] %>
-    </div>
-    <div>
-      <%= label_tag "order[scheduled_for]", t("orders_modal.scheduled"), class: label %>
-      <%= datetime_local_field_tag "order[scheduled_for]", @order.scheduled_for&.in_time_zone(DateRange::ZONE)&.strftime("%Y-%m-%dT%H:%M"), class: input %>
-      <p class="admin-help"><%= t("orders_modal.scheduled_hint") %></p>
-    </div>
-    <div>
-      <%= label_tag "order[notes]", t("orders_modal.notes"), class: label %>
-      <%= text_area_tag "order[notes]", @order.notes, rows: 3, class: input, placeholder: t("orders_modal.notes_placeholder") %>
-    </div>
-  </section>
-
-  <section class="space-y-3 <%= rule %>" data-section="fees">
+  <section class="space-y-2 <%= rule %>" data-section="fees">
     <h3 class="<%= heading %>"><%= seller_icon(:truck, size: 14) %><%= t("orders_modal.fees") %></h3>
     <label class="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-[#1c1c1e]/10 bg-white/50 px-3 py-2.5">
       <span><span class="block text-[13px] font-semibold text-[#1c1c1e]"><%= t("orders_modal.excluded") %></span><span class="block text-xs text-[#6e6e73]"><%= t("orders_modal.excluded_hint") %></span></span>
@@ -122,6 +139,7 @@
         <span class="absolute start-0.5 size-5 rounded-full bg-white shadow transition peer-checked:translate-x-5 rtl:peer-checked:-translate-x-5"></span>
       </span>
     </label>
+    <div class="grid grid-cols-2 gap-3">
     <div data-order-composer-target="shippingField">
       <%= label_tag "order[shipping_dh]", t("orders_modal.shipping_amount", currency: currency), class: label %>
       <%= number_field_tag "order[shipping_dh]", @order.shipping_cents.to_i / 100.0, step: 1, min: 0, class: input, data: { checkout_city_target: "shippingInput", order_composer_target: "shippingInput" } %>
@@ -132,7 +150,7 @@
         <%= number_field_tag "order[advance_dh]", nil, step: "0.01", min: 0, class: "#{input} pe-14", placeholder: "0.00", data: { order_composer_target: "advance" } %>
         <span class="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#6e6e73]"><%= currency %></span>
       </div>
-      <p class="admin-help"><%= t("orders_modal.advance_hint") %></p>
+    </div>
     </div>
     <% unless @order.persisted? %>
       <div>
@@ -142,16 +160,9 @@
     <% end %>
   </section>
 
-  <section class="<%= rule %>" data-section="summary">
-    <h3 class="<%= heading %> mb-2"><%= t("orders_modal.summary") %></h3>
-    <dl class="ms-auto w-full max-w-xs space-y-1.5 text-[13px]" data-order-totals>
-      <div class="flex justify-between"><dt class="text-[#6e6e73]"><%= t("orders_modal.subtotal") %></dt><dd class="tabular-nums" data-order-composer-target="subtotal">—</dd></div>
-      <div class="flex justify-between"><dt class="text-[#6e6e73]"><%= t("orders_modal.shipping") %></dt><dd class="tabular-nums" data-order-composer-target="shippingText">—</dd></div>
-      <div class="flex justify-between border-t border-dashed border-[#1c1c1e]/15 pt-2 text-sm font-bold"><dt><%= t("orders_modal.total") %></dt><dd class="tabular-nums text-[#2f7a4a]" data-order-composer-target="grandTotal">—</dd></div>
-      <div class="flex justify-between"><dt class="text-[#6e6e73]"><%= t("orders_modal.advance_line") %></dt><dd class="tabular-nums" data-order-composer-target="advanceText">—</dd></div>
-      <div class="flex justify-between font-semibold"><dt><%= t("orders_modal.to_collect") %></dt><dd class="tabular-nums text-[#2f7a4a]" data-order-composer-target="toCollect">—</dd></div>
-    </dl>
-  </section>
+
+  </div>
+  </div>
 
   <div class="flex justify-end gap-2 border-t border-[#1c1c1e]/10 pt-4">
     <button type="button" class="admin-btn-secondary" data-action="order-modal#close"><%= t("orders_modal.cancel") %></button>

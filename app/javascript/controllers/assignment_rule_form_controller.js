@@ -4,15 +4,19 @@ import { Controller } from "@hotwired/stimulus"
 // agent gets the same share (the text says how much). The sources list is shown only when the rule is limited to chosen sources.
 export default class extends Controller {
   static targets = ["distribution", "agent", "percent", "percentBox", "summary", "sourcesMode", "sources"]
-  static values = { equalLabel: String, totalLabel: String }
+  static values = { equalLabel: String, totalLabel: String, selectedLabel: String }
 
   connect() {
     this.distributionChanged()
     this.sourcesChanged()
   }
 
+  get method() {
+    return this.distributionTargets.find((radio) => radio.checked)?.value
+  }
+
   get byPercent() {
-    return this.distributionTargets.find((radio) => radio.checked)?.value === "percent"
+    return this.method === "percent"
   }
 
   get chosen() {
@@ -60,7 +64,9 @@ export default class extends Controller {
       this.summaryTarget.classList.remove("text-[#6e6e73]")
     } else {
       const share = chosen.length ? Math.round((100 / chosen.length) * 10) / 10 : 0
-      this.summaryTarget.textContent = chosen.length ? this.equalLabelValue.replace("%{share}", String(share).replace(".", ",")) : ""
+      // equal parts say how much each agent gets; the other methods only say who the orders are shared between
+      const text = this.method === "equal" ? this.equalLabelValue.replace("%{share}", String(share).replace(".", ",")) : this.selectedLabelValue.replace("%{count}", String(chosen.length))
+      this.summaryTarget.textContent = chosen.length ? text : ""
       this.summaryTarget.classList.remove("text-[#2f7a4a]", "text-[#b4232a]")
       this.summaryTarget.classList.add("text-[#6e6e73]")
     }

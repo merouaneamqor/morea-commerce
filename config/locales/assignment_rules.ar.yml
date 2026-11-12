@@ -8,3 +8,4 @@ ar:
     manual_source: "الطلبات اليدوية"
     equal_label: "يحصل كل وكيل على %{share} % من الطلبات."
     total_label: "المجموع"
+    selected_label: "الوكلاء المحددون: %{count} — توزع الطلبات بينهم."

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -213,11 +213,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_130000) do
     t.boolean "transfer_on_timeout", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "min_success_percent"
     t.index ["store_id", "position"], name: "index_assignment_rules_on_store_id_and_position"
     t.index ["store_id"], name: "index_assignment_rules_on_store_id"
-    t.check_constraint "distribution::text = ANY (ARRAY['equal'::character varying, 'percent'::character varying]::text[])", name: "assignment_rules_distribution"
+    t.check_constraint "distribution::text = ANY (ARRAY['equal'::character varying, 'percent'::character varying, 'least_loaded'::character varying, 'best_performance'::character varying, 'random'::character varying]::text[])", name: "assignment_rules_distribution"
     t.check_constraint "max_amount_cents IS NULL OR min_amount_cents IS NULL OR max_amount_cents >= min_amount_cents", name: "assignment_rules_amount_range"
     t.check_constraint "min_amount_cents IS NULL OR min_amount_cents >= 0", name: "assignment_rules_min_amount"
+    t.check_constraint "min_success_percent IS NULL OR min_success_percent >= 0 AND min_success_percent <= 100", name: "assignment_rules_min_success"
     t.check_constraint "timeout_minutes >= 5 AND timeout_minutes <= 1440", name: "assignment_rules_timeout"
   end
 

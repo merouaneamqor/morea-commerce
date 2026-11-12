@@ -209,4 +209,37 @@ RSpec.describe "Attribution rules page", type: :request do
     expect(response).to have_http_status(:not_found)
     expect(foreign.reload.active).to be(true)
   end
+
+  it "offers the five ways to pick the agent and shows each agent's success rate and waiting orders in the form" do
+    sign_in(owner)
+    get "/admin/confirmations/rules/new", headers: { "Turbo-Frame" => "order-modal" }
+
+    expect(page.css("input[name='assignment_rule[distribution]']").map { |radio| radio["value"] }).to eq(%w[equal percent least_loaded best_performance random])
+    expect(page.at_css("[data-agent='#{saida.id}'] [data-agent-stat]").text.squish).to eq("— · 0 en cours")      # no call yet, nothing waiting
+    expect(page.at_css("input[name='assignment_rule[min_success_percent]']")).to be_present
+  end
+
+  it "saves the method and the minimum success rate, and shows them in the list" do
+    sign_in(owner)
+
+    post "/admin/confirmations/rules", params: form_params(distribution: "least_loaded", min_success_percent: "60")
+
+    expect(store.assignment_rules.sole).to have_attributes(distribution: "least_loaded", min_success_percent: 60)
+    get "/admin/confirmations/rules"
+    row = page.at_css("[data-rule]")
+    expect(row.at_css("[data-distribution]").text.squish).to eq("Charge la plus faible")
+    expect(row.at_css("[data-conditions]").text.squish).to include("Performance ≥ 60 %")
+
+    patch "/admin/confirmations/rules/#{store.assignment_rules.sole.id}", params: form_params(distribution: "random", min_success_percent: "")
+    expect(store.assignment_rules.sole).to have_attributes(distribution: "random", min_success_percent: nil)
+  end
+
+  it "refuses a minimum success rate above 100" do
+    sign_in(owner)
+
+    post "/admin/confirmations/rules", params: form_params(min_success_percent: "150")
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(store.assignment_rules.count).to eq(0)
+  end
 end

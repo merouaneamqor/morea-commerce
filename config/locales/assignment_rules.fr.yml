@@ -8,3 +8,4 @@ fr:
     manual_source: "Commandes manuelles"
     equal_label: "Chaque agent reçoit %{share} % des commandes."
     total_label: "Total"
+    selected_label: "%{count} agent(s) sélectionné(s) : les commandes sont réparties entre eux."

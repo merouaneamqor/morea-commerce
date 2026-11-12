@@ -52,7 +52,12 @@ RSpec.describe AssignmentRule do
     expect(build(min_amount_cents: -1)).not_to be_valid
     expect(build(min_amount_cents: 10_000, max_amount_cents: 5_000)).not_to be_valid
     expect(build(min_amount_cents: 5_000, max_amount_cents: 5_000)).to be_valid
-    expect(build(distribution: "random")).not_to be_valid
+    expect(build(distribution: "shuffle")).not_to be_valid
+    %w[equal least_loaded best_performance random].each { |method| expect(build(distribution: method)).to be_valid, method }
+    expect(build(min_success_percent: 101)).not_to be_valid
+    expect(build(min_success_percent: -1)).not_to be_valid
+    expect(build(min_success_percent: 0).min_success?).to be(false)
+    expect(build(min_success_percent: 60).min_success?).to be(true)
   end
 
   describe "#matches?" do

@@ -162,6 +162,82 @@ RSpec.describe Confirmations::AssignmentRunner do
     end
   end
 
+  describe "the other ways to pick the agent" do
+    # Saida has 3 of 4 calls confirmed in the last 30 days (75 %), Omar 1 of 2 (50 %), Hind never called.
+    before do
+      done = make("DONE", status: "confirmed")
+      confirmation = OrderConfirmation.create!(store: store, order: done, disposition: "confirmed")
+      { saida => %w[confirmed confirmed confirmed no_answer], omar => %w[confirmed cancelled] }.each do |agent, outcomes|
+        outcomes.each { |outcome| ConfirmationAttempt.create!(store: store, order_confirmation: confirmation, user: agent, outcome: outcome) }
+      end
+    end
+
+    it "gives the order to the agent with the fewest waiting orders (least loaded), the first agent on a tie" do
+      clock_in(saida, omar)
+      rule = rule!("Charge", agents: [ saida, omar ], distribution: "least_loaded")
+      3.times { |i| make("S#{i}", attributed: saida, rule: rule, attributed_minutes_ago: 1) }
+      make("O1", attributed: omar, rule: rule, attributed_minutes_ago: 1)
+      fresh = (1..3).map { |i| make("N#{i}", minutes_ago: 30 - i) }
+
+      run
+
+      expect(fresh.map { |order| owner_of(order) }).to eq([ omar, omar, saida ])      # Omar 1 -> 2 -> 3, then 3 against 3: the first agent
+    end
+
+    it "gives the orders to the agent with the best success rate (best performance)" do
+      clock_in(saida, omar)
+      rule!("Perf", agents: [ saida, omar ], distribution: "best_performance")
+      fresh = (1..3).map { |i| make("N#{i}", minutes_ago: 30 - i) }
+
+      run
+
+      expect(fresh.map { |order| owner_of(order) }).to eq([ saida, saida, saida ])    # 75 % against 50 %
+    end
+
+    it "leaves out the agents below the minimum success rate, and keeps an agent with no call yet eligible" do
+      clock_in(saida, omar, hind)
+      rule!("Seuil", agents: [ saida, omar, hind ], min_success_percent: 60)
+      fresh = (1..6).map { |i| make("N#{i}", minutes_ago: 30 - i) }
+
+      run
+
+      expect(fresh.map { |order| owner_of(order) }.tally).to eq(saida => 3, hind => 3)   # Omar (50 %) is out, Hind has no rate yet
+    end
+
+    it "gives nothing when nobody reaches the minimum success rate" do
+      clock_in(omar)
+      rule!("Seuil", agents: [ omar ], min_success_percent: 60)
+      order = make("N1")
+
+      expect(run).to eq(attributed: 0, transferred: 0)
+      expect(owner_of(order)).to be_nil
+    end
+
+    it "picks at random among the agents online and eligible, never an agent offline" do
+      clock_in(saida, omar)
+      rule!("Hasard", agents: [ saida, omar, hind ], distribution: "random")
+      fresh = (1..30).map { |i| make("N#{i}", minutes_ago: 100 - i) }
+
+      described_class.new(store: store, now: now, random: Random.new(7)).run!
+
+      tally = fresh.map { |order| owner_of(order) }.tally
+      expect(tally.keys).to contain_exactly(saida, omar)                              # Hind is offline
+      expect(tally.values.sum).to eq(30)
+      expect(tally.values.min).to be >= 8                                             # both get a real share
+    end
+
+    it "moves a late order with the same method: the least loaded other agent" do
+      clock_in(saida, omar, hind)
+      rule = rule!("Charge", agents: [ saida, omar, hind ], distribution: "least_loaded")
+      2.times { |i| make("H#{i}", attributed: hind, rule: rule, attributed_minutes_ago: 1) }
+      late = make("LT1", attributed: saida, rule: rule, attributed_minutes_ago: 40)
+
+      run
+
+      expect(owner_of(late)).to eq(omar)                                              # Omar has 0 waiting orders, Hind 2
+    end
+  end
+
   describe "moving a late order to an agent who is online" do
     let!(:rule) { rule!("Équitable", agents: [ saida, omar ]) }
 

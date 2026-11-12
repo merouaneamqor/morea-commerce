@@ -1,7 +1,9 @@
 # A rule of the Règles d'attribution page. Conditions are all optional: an empty rule covers every order. See Confirmations::AssignmentRunner for
 # how rules are applied (first matching rule in position order; equal or percentage split among the agents who are on shift).
 class AssignmentRule < ApplicationRecord
-  DISTRIBUTIONS = %w[equal percent].freeze
+  # equal = round robin with the same share each (50/50 with two agents); percent = a share given to each agent (70/30); least_loaded = the agent
+  # with the fewest waiting orders; best_performance = the agent with the best success rate; random = any eligible agent.
+  DISTRIBUTIONS = %w[equal percent least_loaded best_performance random].freeze
   MIN_TIMEOUT = 5
   MAX_TIMEOUT = 1440
 
@@ -20,6 +22,7 @@ class AssignmentRule < ApplicationRecord
 
   validates :name, presence: true, length: { maximum: 120 }
   validates :distribution, inclusion: { in: DISTRIBUTIONS }
+  validates :min_success_percent, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }, allow_nil: true
   validates :timeout_minutes, numericality: { only_integer: true, greater_than_or_equal_to: MIN_TIMEOUT, less_than_or_equal_to: MAX_TIMEOUT }
   validates :min_amount_cents, :max_amount_cents, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validate :amount_range_is_ordered
@@ -29,6 +32,7 @@ class AssignmentRule < ApplicationRecord
 
   def equal? = distribution == "equal"
   def percent? = distribution == "percent"
+  def min_success? = min_success_percent.to_i.positive?
   def all_sources? = sources.blank?
 
   # Does an order fall under this rule? Amount range (inclusive) and sources ("manual", or the id of a connected store).

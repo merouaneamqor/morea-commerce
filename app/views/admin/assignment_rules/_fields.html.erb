@@ -8,7 +8,7 @@
 <% maximum = rule.max_amount_cents ? format("%g", rule.max_amount_cents / 100.0) : nil %>
 
 <%= form_with model: rule, scope: :assignment_rule, url: (rule.persisted? ? admin_assignment_rule_path(rule) : admin_assignment_rules_path), method: (rule.persisted? ? :patch : :post), class: "space-y-4",
-      data: { controller: "assignment-rule-form", turbo_frame: (local_assigns[:modal] ? "_top" : nil), assignment_rule_form_equal_label_value: t("assignment_rules.equal_label"), assignment_rule_form_total_label_value: t("assignment_rules.total_label") } do |f| %>
+      data: { controller: "assignment-rule-form", turbo_frame: (local_assigns[:modal] ? "_top" : nil), assignment_rule_form_equal_label_value: t("assignment_rules.equal_label"), assignment_rule_form_total_label_value: t("assignment_rules.total_label"), assignment_rule_form_selected_label_value: t("assignment_rules.selected_label") } do |f| %>
   <% if rule.errors.any? %>
     <div class="rounded-xl border border-[#e5484d] bg-[#fdecec] px-3 py-2 text-[13px] font-semibold text-[#b4232a]" role="alert" data-rule-errors><%= rule.errors.full_messages.to_sentence %></div>
   <% end %>
@@ -28,10 +28,14 @@
   <section class="space-y-2.5 border-t border-[#1c1c1e]/10 pt-3" data-section="distribution">
     <h3 class="<%= heading %>"><%= seller_icon(:team, size: 14) %><%= sl("Répartition entre les agents") %></h3>
     <div class="grid gap-2 sm:grid-cols-2">
-      <% [ [ "equal", sl("Parts égales"), sl("Chaque agent reçoit la même part : 50/50 avec deux agents, 33/33/33 avec trois.") ], [ "percent", sl("Par pourcentage"), sl("Vous donnez à chaque agent sa part, le total fait 100 %.") ] ].each do |value, title, hint| %>
+      <% [ [ "equal", sl("Tour de rôle"), sl("Répartir équitablement : la même part pour chaque agent (50/50 avec deux agents, 33/33/33 avec trois)."), :undo ],
+           [ "percent", sl("Par pourcentage"), sl("Vous donnez à chaque agent sa part, le total fait 100 %."), :chart ],
+           [ "least_loaded", sl("Charge la plus faible"), sl("Attribuer à l'agent qui a le moins de commandes en attente."), :box ],
+           [ "best_performance", sl("Meilleure performance"), sl("Privilégier l'agent au meilleur taux de réussite."), :check ],
+           [ "random", sl("Aléatoire"), sl("Attribuer au hasard parmi les agents qualifiés."), :target ] ].each do |value, title, hint, icon| %>
         <label class="flex cursor-pointer items-start gap-2.5 rounded-xl border p-3 transition has-[:checked]:border-[#1c1c1e] has-[:checked]:bg-[#f7f7f9] border-[#e0e0e5]">
           <%= f.radio_button :distribution, value, class: "mt-1 accent-[#1c1c1e]", data: { action: "assignment-rule-form#distributionChanged", assignment_rule_form_target: "distribution" } %>
-          <span><span class="block text-[13px] font-semibold text-[#1c1c1e]"><%= title %></span><span class="block text-[11.5px] text-[#6e6e73]"><%= hint %></span></span>
+          <span><span class="flex items-center gap-1.5 text-[13px] font-semibold text-[#1c1c1e]"><%= seller_icon(icon, size: 13) %><%= title %></span><span class="block text-[11.5px] text-[#6e6e73]"><%= hint %></span></span>
         </label>
       <% end %>
     </div>
@@ -45,6 +49,8 @@
             <label class="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 text-[13px] text-[#1c1c1e]">
               <%= check_box_tag "assignment_rule[agent_ids][]", agent.id, row.present?, id: "rule_agent_#{agent.id}", class: "size-4 accent-[#1c1c1e]", data: { action: "assignment-rule-form#recalc", assignment_rule_form_target: "agent" } %>
               <span class="truncate font-medium" dir="auto"><%= agent.name.presence || agent.email %></span>
+              <% stat = agent_stats[agent.id] %>
+              <span class="ms-auto shrink-0 text-[11px] text-[#6e6e73] tabular-nums" data-agent-stat><%= stat[:success] ? "#{stat[:success].round} %" : "—" %> · <%= stat[:load] %> <%= sl("en cours") %></span>
             </label>
             <span class="relative hidden w-24 shrink-0" data-assignment-rule-form-target="percentBox">
               <%= number_field_tag "assignment_rule[percents][#{agent.id}]", row&.percent, min: 0, max: 100, step: 1, id: "rule_percent_#{agent.id}", class: "#{input} !h-8 pe-7 text-end", "aria-label": "#{agent.name} %", data: { action: "input->assignment-rule-form#recalc", assignment_rule_form_target: "percent" } %>
@@ -55,6 +61,13 @@
       </ul>
       <p class="text-[12px] font-semibold text-[#6e6e73]" data-assignment-rule-form-target="summary" aria-live="polite"></p>
     <% end %>
+    <div class="flex flex-wrap items-end gap-3 rounded-xl border border-[#d8e6f6] bg-[#f4f8fd] p-3" data-section="agent-criteria">
+      <div class="min-w-[12rem] flex-1"><p class="text-[13px] font-semibold text-[#1c1c1e]"><%= sl("Critère d'agent") %></p><p class="text-[11.5px] text-[#6e6e73]"><%= sl("Seuls les agents dont le taux de réussite (30 derniers jours) est au moins égal reçoivent les commandes. Un agent sans appel reste éligible.") %></p></div>
+      <div class="w-36">
+        <%= f.label :min_success_percent, sl("Taux de réussite minimum (%)"), class: "#{label} !text-[11.5px]" %>
+        <%= f.number_field :min_success_percent, min: 0, max: 100, step: 1, class: input, placeholder: "0" %>
+      </div>
+    </div>
   </section>
 
   <section class="space-y-2.5 border-t border-[#1c1c1e]/10 pt-3" data-section="conditions">

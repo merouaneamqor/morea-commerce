@@ -78,13 +78,14 @@
                   <% chips = [] %>
                   <% chips << "#{sl("Montant")} ≥ #{money(rule.min_amount_cents, current_store.currency)}" if rule.min_amount_cents %>
                   <% chips << "#{sl("Montant")} ≤ #{money(rule.max_amount_cents, current_store.currency)}" if rule.max_amount_cents %>
+                  <% chips << "#{sl("Performance")} ≥ #{rule.min_success_percent} %" if rule.min_success? %>
                   <% chips << (rule.all_sources? ? sl("Toutes les sources") : "#{rule.sources.size} #{sl(rule.sources.size == 1 ? "source" : "sources")}") %>
                   <div class="flex flex-wrap gap-1"><% chips.each do |chip| %><span class="rounded-md border border-[#e0e0e5] bg-white px-2 py-0.5 text-[11px] text-[#3a3a3c]"><%= chip %></span><% end %></div>
                 </td>
                 <td class="px-4 py-3" data-agents>
                   <div class="flex flex-wrap gap-1"><% rule.assignment_rule_agents.each do |row| %><span class="rounded-full bg-[#efeff3] px-2 py-0.5 text-[11px] font-medium text-[#1c1c1e]" dir="auto"><%= label_of.call(row.user) %><%= " · #{row.percent} %" if rule.percent? %></span><% end %></div>
                 </td>
-                <td class="px-4 py-3"><span class="rounded-md bg-[#efeff3] px-2 py-0.5 text-[11px] font-medium text-[#3a3a3c]" data-distribution="<%= rule.distribution %>"><%= rule.percent? ? sl("Par pourcentage") : sl("Parts égales") %></span></td>
+                <td class="px-4 py-3"><span class="rounded-md bg-[#efeff3] px-2 py-0.5 text-[11px] font-medium text-[#3a3a3c]" data-distribution="<%= rule.distribution %>"><%= sl({ "equal" => "Tour de rôle", "percent" => "Par pourcentage", "least_loaded" => "Charge la plus faible", "best_performance" => "Meilleure performance", "random" => "Aléatoire" }.fetch(rule.distribution)) %></span></td>
                 <td class="px-4 py-3 whitespace-nowrap text-[12px] text-[#3a3a3c]" data-timeout="<%= rule.timeout_minutes if rule.transfer_on_timeout %>"><%= rule.transfer_on_timeout ? "#{rule.timeout_minutes} min" : sl("Pas de transfert") %></td>
                 <td class="px-4 py-3">
                   <%= button_to toggle_admin_assignment_rule_path(rule), method: :patch, "aria-label": "#{rule.name} : #{rule.active ? sl("désactiver") : sl("activer")}", "aria-pressed": rule.active, class: "relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition #{rule.active ? "bg-[#2f9d5c]" : "bg-[#d2d2d7]"}", form: { class: "contents" } do %>

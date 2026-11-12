@@ -17,8 +17,9 @@ module Confirmations
       Store.where(id: AssignmentRule.active.select(:store_id)).find_each { |store| new(store: store, now: now).run! }
     end
 
-    def initialize(store:, now: Time.current)
-      @store, @now = store, now
+    # random: only for the "random" method (a seeded Random makes it repeatable in tests).
+    def initialize(store:, now: Time.current, random: Random.new)
+      @store, @now, @random = store, now, random
     end
 
     # { attributed: n, transferred: n }
@@ -75,13 +76,26 @@ module Confirmations
         .includes(:order, :assignment_rule, :attributed_user).order(:attributed_at, :id).to_a
     end
 
-    # The agent of the rule furthest below her share today: smallest (orders given today / weight). Only agents online and under capacity.
+    # The agent the rule picks among its agents who are online, under capacity and good enough (the rule's minimum success rate; an agent who made
+    # no call yet has no rate and stays eligible):
+    # - equal / percent: the agent furthest below her share today, smallest (orders given today / weight);
+    # - least_loaded: the fewest waiting orders; best_performance: the best success rate (fewest waiting orders on a tie); random: any of them.
     def pick(rule, except: nil)
       weights = rule.weights
       eligible = rule.assignment_rule_agents.map(&:user).select do |user|
-        weights[user.id].to_i.positive? && user != except && usable?(user)
+        weights[user.id].to_i.positive? && user != except && usable?(user) && good_enough?(rule, user)
       end
-      eligible.min_by { |user| [ shares[[ rule.id, user.id ]].to_f / weights[user.id], user.id ] }
+      case rule.distribution
+      when "least_loaded" then eligible.min_by { |user| [ loads[user.id].to_i, user.id ] }
+      when "best_performance" then eligible.max_by { |user| [ assignments.success_rates[user.id] || -1, -loads[user.id].to_i, -user.id ] }
+      when "random" then eligible.sample(random: @random)
+      else eligible.min_by { |user| [ shares[[ rule.id, user.id ]].to_f / weights[user.id], user.id ] }
+      end
+    end
+
+    def good_enough?(rule, user)
+      rate = assignments.success_rates[user.id]
+      !rule.min_success? || rate.nil? || rate >= rule.min_success_percent
     end
 
     # Any other agent online and under capacity, the least loaded first.

@@ -121,6 +121,17 @@ module Confirmations
         .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
     end
 
+    # { agent id => confirmed calls over all calls of the last 30 days (percent) }; agents who made no call are not in it.
+    def success_rates
+      @success_rates ||= begin
+        calls = ConfirmationAttempt.where(store: @store, created_at: SUCCESS_WINDOW.ago..).where.not(outcome: "abandoned").group(:user_id, :outcome).count
+        calls.keys.map(&:first).uniq.to_h do |user_id|
+          made = calls.sum { |(id, _), count| id == user_id ? count : 0 }
+          [ user_id, (calls[[ user_id, "confirmed" ]].to_i * 100.0 / made).round(1) ]
+        end
+      end
+    end
+
     private
 
     def attribute!(order, agent, by:, how:)
@@ -140,16 +151,6 @@ module Confirmations
 
     def calls_today
       @calls_today ||= ConfirmationAttempt.where(store: @store, created_at: Time.current.in_time_zone(DateRange::ZONE).beginning_of_day..).where.not(outcome: "abandoned").group(:user_id).count
-    end
-
-    def success_rates
-      @success_rates ||= begin
-        calls = ConfirmationAttempt.where(store: @store, created_at: SUCCESS_WINDOW.ago..).where.not(outcome: "abandoned").group(:user_id, :outcome).count
-        calls.keys.map(&:first).uniq.to_h do |user_id|
-          made = calls.sum { |(id, _), count| id == user_id ? count : 0 }
-          [ user_id, (calls[[ user_id, "confirmed" ]].to_i * 100.0 / made).round(1) ]
-        end
-      end
     end
 
     def filtered(scope)

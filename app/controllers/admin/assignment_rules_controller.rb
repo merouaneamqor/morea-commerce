@@ -5,7 +5,7 @@ module Admin
   class AssignmentRulesController < BaseController
     before_action :require_store_context!
     before_action :set_rule, only: %i[edit update destroy toggle move]
-    helper_method :agents, :sources
+    helper_method :agents, :sources, :agent_stats
 
     def index
       @rules = current_store.assignment_rules.includes(assignment_rule_agents: :user).to_a
@@ -70,6 +70,14 @@ module Admin
       @sources ||= [ [ t("assignment_rules.manual_source"), "manual" ] ] + current_store.store_connections.order(:name).pluck(:name, :id).map { |name, id| [ name, id.to_s ] }
     end
 
+    # { agent id => { success: rate or nil, load: waiting orders attributed to her } } for the agent list of the form.
+    def agent_stats
+      @agent_stats ||= begin
+        service = Confirmations::Assignments.new(store: current_store)
+        agents.to_h { |agent| [ agent.id, { success: service.success_rates[agent.id], load: service.loads[agent.id].to_i } ] }
+      end
+    end
+
     def render_form(status: :ok)
       render(turbo_frame_request? ? :form : :form_page, layout: !turbo_frame_request?, status: status)
     end
@@ -78,7 +86,8 @@ module Admin
     # her percentage when the rule splits by percentage.
     def save_rule
       form = params.require(:assignment_rule)
-      attrs = form.permit(:name, :description, :distribution, :timeout_minutes, :transfer_on_timeout, :active).to_h
+      attrs = form.permit(:name, :description, :distribution, :timeout_minutes, :transfer_on_timeout, :active, :min_success_percent).to_h
+      attrs["min_success_percent"] = nil if attrs["min_success_percent"].blank?
       problems = []
       %i[min_amount max_amount].each do |key|
         value = form[key].to_s.strip

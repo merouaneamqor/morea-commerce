@@ -217,6 +217,12 @@ Rails.application.routes.draw do
       member do
         post :claim
         post :call
+        post :touch_call
+        post :whatsapp
+        post :block_number
+        post :unblock
+        post :force_release
+        post :requeue
         post :abandon_call
         post :finish_call
         post :release

@@ -89,6 +89,7 @@
                   <%= button_to t("admin.confirmations.release"), release_admin_confirmation_path(order), class: "admin-btn-secondary" %>
                 <% elsif confirmation&.assigned_user_id %>
                   <span class="admin-muted text-sm"><%= t("admin.confirmations.claimed_elsewhere") %></span>
+                  <% unless agent_view? %><%= button_to "Libérer", force_release_admin_confirmation_path(order), class: "admin-btn-secondary" %><% end %>
                 <% elsif confirmation.nil? || confirmation.due? %>
                   <%= button_to t("admin.confirmations.claim"), claim_admin_confirmation_path(order), class: "admin-btn disabled:cursor-not-allowed disabled:opacity-50", disabled: @needs_clock_in, title: (t("admin.confirmations.clock_in_required") if @needs_clock_in) %>
                 <% else %>

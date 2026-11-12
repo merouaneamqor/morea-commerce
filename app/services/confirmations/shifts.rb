@@ -28,6 +28,7 @@ module Confirmations
         raise Error, "You are not on shift." if shift.ended_at
         shift.update!(ended_at: Time.current)
       end
+      ClaimExpiry.release_for!(store: @store, user: @user)
       shift
     rescue ActiveRecord::RecordInvalid => e
       raise Error, e.record.errors.full_messages.to_sentence

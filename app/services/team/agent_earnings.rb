@@ -13,8 +13,10 @@ module Team
       def delivery_rate = confirmed.zero? ? nil : delivered.fdiv(confirmed)
     end
 
-    Summary = Data.define(:user, :figures, :earned_period, :earned_total, :paid_total, :last_paid_at) do
+    Summary = Data.define(:user, :figures, :earned_period, :earned_total, :paid_total, :last_paid_at, :pending_deductions, :applied_deductions) do
       def unpaid = [ earned_total - paid_total, 0 ].max
+      # Cash actually handed over: settled earnings minus the deductions those payouts subtracted.
+      def cash_paid = paid_total - applied_deductions
     end
 
     def initialize(store:, range:)
@@ -29,7 +31,9 @@ module Team
         earned_period: delivered_ids(user, @range).size * rate,
         earned_total: delivered_ids(user, nil).size * rate,
         paid_total: payments(user).sum(:amount_cents),
-        last_paid_at: payments(user).maximum(:paid_at)
+        last_paid_at: payments(user).maximum(:paid_at),
+        pending_deductions: AgentDeduction.pending.where(store: @store, user: user).sum(:amount_cents),
+        applied_deductions: payments(user).sum(:deductions_cents)
       )
     end
 

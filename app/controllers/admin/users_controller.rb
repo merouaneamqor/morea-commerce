@@ -60,7 +60,19 @@ module Admin
       if summary.unpaid.zero?
         redirect_to admin_users_path, alert: t("admin.team.nothing_to_pay")
       else
-        AgentPayment.create!(store: current_store, user: @user, paid_by: current_user, amount_cents: summary.unpaid, paid_at: Time.current)
+        # The payout settles the unpaid earnings and subtracts the pending deductions, oldest first, as many
+        # as the earnings cover (a deduction is never split); the rest waits for the next payout.
+        AgentPayment.transaction do
+          payment = AgentPayment.create!(store: current_store, user: @user, paid_by: current_user, amount_cents: summary.unpaid, paid_at: Time.current)
+          covered = 0
+          AgentDeduction.pending.where(store: current_store, user: @user).order(:created_at, :id).lock.each do |deduction|
+            break if covered + deduction.amount_cents > summary.unpaid
+
+            deduction.update!(status: "applied", agent_payment: payment)
+            covered += deduction.amount_cents
+          end
+          payment.update!(deductions_cents: covered)
+        end
         redirect_to admin_users_path, notice: t("admin.team.paid", name: @user.name.presence || @user.email)
       end
     end
@@ -80,6 +92,8 @@ module Admin
       permitted = user_params_without_pay
       rate = params.dig(:user, :pay_per_delivery)
       permitted[:pay_per_delivery_cents] = parse_mad_cents(rate) if rate.present?
+      penalty = params.dig(:user, :return_penalty)
+      permitted[:return_penalty_cents] = penalty.present? ? parse_mad_cents(penalty) : 0 if params[:user]&.key?(:return_penalty)
       permitted
     end
   end

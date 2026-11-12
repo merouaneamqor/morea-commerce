@@ -55,6 +55,7 @@
   <% keep = { q: params[:q].presence, connection_id: params[:connection_id].presence, agent_id: params[:agent_id].presence } %>
   <nav class="admin-tabs" aria-label="Filter orders">
     <% Admin::OrdersController::ORDER_GROUPS.each_key do |key| %>
+      <% next if agent_view? && %w[wrong_number blocked].include?(key) %>
       <% active = !@archived && @status.blank? && (@group || "all") == key %>
       <%= link_to admin_orders_path(keep.merge(group: (key unless key == "all"))), class: "admin-tab #{'is-active' if active}" do %>
         <%= t("admin.orders_groups.#{key}") %> <span class="admin-tab__count"><%= @group_counts&.fetch(key) %></span>
@@ -74,7 +75,7 @@
   <div class="admin-table-wrap admin-table-wrap--sticky" data-orders-table>
     <table class="admin-table admin-table--sticky">
       <thead>
-        <tr><th>Order</th><th>Customer</th><th>Phone</th><th>City</th><th>Status</th><th class="is-numeric">Amount</th><th><%= t("connections.source") %></th><th>Date</th><th><%= t("admin.orders_groups.agent") %></th><% unless agent_view? %><th>Sendit</th><% end %></tr>
+        <tr><th>Order</th><th>Customer</th><th>Phone</th><th>City</th><th>Status</th><th class="is-numeric">Amount</th><th><%= t("connections.source") %></th><th>Date</th><th><%= t("admin.orders_groups.agent") %></th><% unless agent_view? %><th>Sendit</th><th><%= t("admin.orders_groups.actions") %></th><% end %></tr>
       </thead>
       <tbody>
         <% @orders.each do |order| %>
@@ -94,7 +95,25 @@
             <td class="admin-muted"><%= order.created_at.strftime("%b %-d, %H:%M") %></td>
             <% agent = order.order_confirmation&.assigned_user %>
             <td><%= agent ? tag.span(class: "seallo-agent") { tag.i((agent.name.presence || agent.email).first.upcase) + (agent.name.presence || agent.email) } : tag.span(t("admin.orders_groups.unassigned"), class: "admin-subdued") %></td>
-            <% unless agent_view? %><td><%= sendit_badge(order) || tag.span("—", class: "admin-subdued") %></td><% end %>
+            <% unless agent_view? %>
+              <td><%= sendit_badge(order) || tag.span("—", class: "admin-subdued") %></td>
+              <% confirmation = order.order_confirmation %>
+              <td data-order-actions>
+                <% if confirmation&.disposition == "wrong_number" %>
+                  <div class="flex items-center gap-2">
+                    <%= form_with url: requeue_admin_confirmation_path(order), class: "flex items-center gap-2" do |f| %>
+                      <%= text_field_tag :phone, order.customer_phone, class: "admin-input !w-36", "aria-label": "Corrected phone" %>
+                      <%= f.submit "Remettre en file", class: "admin-btn-secondary" %>
+                    <% end %>
+                    <%= button_to "Annuler", transition_admin_order_path(order), method: :patch, params: { to_status: "cancelled", cancel_reason: "Wrong number" }, class: "admin-btn-plain admin-btn-plain--critical" %>
+                  </div>
+                <% elsif confirmation&.disposition == "blocked" %>
+                  <%= button_to "Débloquer", unblock_admin_confirmation_path(order), class: "admin-btn-secondary" %>
+                <% elsif confirmation&.assigned_user_id && order.status == "new" %>
+                  <%= button_to "Libérer", force_release_admin_confirmation_path(order), class: "admin-btn-secondary" %>
+                <% end %>
+              </td>
+            <% end %>
           </tr>
         <% end %>
       </tbody>

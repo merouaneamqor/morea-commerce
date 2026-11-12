@@ -218,6 +218,7 @@ Rails.application.routes.draw do
       end
       member do
         post :claim
+        get :panel
         post :call
         post :touch_call
         post :whatsapp

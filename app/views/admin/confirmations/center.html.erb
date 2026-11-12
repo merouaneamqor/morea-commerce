@@ -177,9 +177,13 @@
                         <%= submit_tag t("call_center.block_submit"), name: nil, class: "#{btn_dark} w-full cursor-pointer justify-center" %>
                       <% end %>
                     </details>
-                    <%= button_to claim_admin_confirmation_path(order), disabled: @needs_clock_in, title: (t("call_center.clock_in_required") if @needs_clock_in),
-                          class: "#{btn_dark} cursor-pointer disabled:cursor-not-allowed disabled:opacity-40", data: { call: order.id } do %>
-                      <%= seller_icon(:phone, size: 14) %><%= t("call_center.call") %>
+                    <%# "Appeler" opens the call window (customer, products, timer, result buttons) in the same frame as "Créer une commande". %>
+                    <% if @needs_clock_in %>
+                      <span class="<%= btn_dark %> cursor-not-allowed opacity-40" title="<%= t("call_center.clock_in_required") %>" data-call="<%= order.id %>"><%= seller_icon(:phone, size: 14) %><%= t("call_center.call") %></span>
+                    <% else %>
+                      <%= link_to panel_admin_confirmation_path(order), data: { turbo_frame: "order-modal", call: order.id }, class: "#{btn_dark} cursor-pointer" do %>
+                        <%= seller_icon(:phone, size: 14) %><%= t("call_center.call") %>
+                      <% end %>
                     <% end %>
                   <% elsif center.tab == "blocked" && !agent_view? %>
                     <%= button_to "Débloquer", unblock_admin_confirmation_path(order), class: "#{btn_light} cursor-pointer" %>

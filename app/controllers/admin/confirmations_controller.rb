@@ -90,6 +90,17 @@ module Admin
       render json: { error: e.message }, status: :unprocessable_content
     end
 
+    # The call window: opened from "Appeler" in the order-modal frame. It shows the customer, the products and the result buttons;
+    # the call itself (claim, clock, finish) goes through the JSON endpoints below.
+    def panel
+      @order = current_store.orders.includes(order_items: [ :product, :product_variant ]).find(params[:order_id])
+      return redirect_to(center_admin_confirmations_path, alert: t("call_panel.not_callable")) unless @order.status == "new" && @order.archived_at.nil? && @order.sendit_code.blank?
+
+      product_ids = @order.order_items.filter_map(&:product_id)
+      @variants = ProductVariant.where(product_id: product_ids, active: true).order(:id).group_by(&:product_id)
+      render :panel, layout: (turbo_frame_request? ? false : "admin")
+    end
+
     def abandon_call
       desk.abandon_call(params[:order_id])
       render json: { ok: true }

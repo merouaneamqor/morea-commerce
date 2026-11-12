@@ -158,6 +158,25 @@ RSpec.describe "Orders page", type: :request do
       expect(document.at_css("[data-card=delivered]")["href"]).to include("shipping=delivered")
     end
 
+    it "draws the cards like the dashboard ones, and a card opens exactly its list, jumping to it" do
+      get "/admin/orders", params: { confirmation: "confirmed" }
+
+      open_card = document.at_css("[data-card=confirmed]")
+      expect(open_card["aria-current"]).to eq("true")
+      expect(open_card["href"]).not_to include("confirmation=")        # the open card goes back to all the orders
+      expect(open_card["href"]).to end_with("#orders-list")
+      expect(document.at_css("[data-card=cancelled]")["href"]).to include("confirmation=cancelled").and end_with("#orders-list")
+      expect(document.at_css("#orders-list")).to be_present            # the anchor the card jumps to
+      expect(document.at_css("[data-list-subtitle]").text).to include("Confirmées")
+      expect(numbers.size).to eq(open_card["data-value"].to_i)         # the list is exactly what the card counts: 11
+
+      cards = document.css("[data-overview] [data-card]")
+      expect(cards.map { |card| card["class"][/h-\[\d+px\]/] }.uniq).to eq([ "h-[110px]" ])                        # same size as the dashboard cards
+      expect(cards.select { |card| card["class"].include?("from-[#f7d9a4]") }.map { |card| card["data-card"] }).to eq([ "total" ])   # the gold card
+      expect(document.at_css("[data-overview]").to_html).not_to include("border-s-[3px]")                         # no coloured left edge any more
+      expect(cards.reject { |card| card["data-card"] == "total" }.map { |card| card.at_css("p span")["class"] }.uniq).to eq([ "shrink-0 text-[#6e6e73]" ])   # grey icon
+    end
+
     it "filters by payment, company, source, product, missed calls and search" do
       get "/admin/orders", params: { payment: "paid" }
       expect(numbers).to eq([ "D1" ])

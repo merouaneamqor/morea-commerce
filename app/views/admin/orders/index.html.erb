@@ -11,7 +11,9 @@
 <% filter_keys = %w[confirmation shipping payment company agent_id connection_id product missed q status group attention] %>
 <% range_params = request.query_parameters.slice("from", "to", "preset") %>
 <% filters = request.query_parameters.slice(*filter_keys) %>
-<% card_link = ->(extra = {}) { admin_orders_path(range_params.merge(extra)) } %>
+<% card_link = ->(extra = {}) { admin_orders_path(**range_params.to_h.symbolize_keys.merge(extra.to_h.symbolize_keys), anchor: "orders-list") } %>
+<% open_on = ->(name, value) { params[name] == value } %>
+<% card_filtered = params[:confirmation].present? || params[:shipping].present? %>
 <% btn_dark = "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-[#1c1c1e] px-3.5 text-[13px] font-semibold text-white hover:bg-[#3a3a3c]" %>
 <% btn_light = "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-[#e0e0e5] bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3]" %>
 <% field = "h-8 rounded-full border border-[#e0e0e5] bg-white px-3 text-[13px] text-[#1c1c1e] focus:border-[#1c1c1e] focus:outline-none" %>
@@ -57,41 +59,38 @@
   <% end %>
 
   <%# The figures: every order created in the range, counted once per card (see Orders::Overview) %>
+  <%# The figures: every order created in the range, counted once per card (see Orders::Overview). A card opens the list below
+      filtered on exactly what it counts; the open card goes back to all the orders. %>
   <section class="space-y-2.5" data-overview>
     <p class="<%= group_label %>"><%= t("orders_page.groups.confirmation") %><span class="h-px flex-1 bg-[#e0e0e5]"></span></p>
     <div class="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-5" data-cards="confirmation">
-      <%= render "overview_card", key: "total", label: t("orders_page.cards.total"), icon: :orders, value: total, accent: "#1c1c1e", href: card_link.call,
+      <% total_open = !card_filtered %>
+      <%= render "overview_card", key: "total", label: t("orders_page.cards.total"), icon: :orders, value: total, featured: true, href: card_link.call,
             pill: (overview.total_delta && [ "#{overview.total_delta.positive? ? "+" : ""}#{overview.total_delta} %", (overview.total_delta.positive? ? :up : (overview.total_delta.negative? ? :down : :flat)) ]),
             hint: (overview.total_delta ? t("orders_page.cards.total_hint") : t("orders_page.cards.total_hint_flat")) %>
-      <%= render "overview_card", key: "pending", label: t("orders_page.cards.pending"), icon: :clock, value: pending_total, accent: "#e0a52c", href: card_link.call("confirmation" => "pending"),
-            hint: t("orders_page.cards.pending_hint", pct: percent.(pending_total, total)) %>
-      <%= render "overview_card", key: "confirmed", label: t("orders_page.cards.confirmed"), icon: :check, value: confirmation[:confirmed], accent: "#3aa76d", href: card_link.call("confirmation" => "confirmed"),
-            hint: t("orders_page.cards.confirmed_hint", pct: percent.(confirmation[:confirmed], total)) %>
-      <%= render "overview_card", key: "cancelled", label: t("orders_page.cards.cancelled"), icon: :cancel, value: confirmation[:cancelled], accent: "#d6455d", href: card_link.call("confirmation" => "cancelled"),
-            hint: t("orders_page.cards.cancelled_hint", pct: percent.(confirmation[:cancelled], total)) %>
-      <%= render "overview_card", key: "wrong", label: t("orders_page.cards.wrong"), icon: :ban, value: confirmation[:wrong], accent: "#8e8e93", href: card_link.call("confirmation" => "wrong"),
-            hint: t("orders_page.cards.wrong_hint") %>
+      <% { "pending" => [ :clock, pending_total ], "confirmed" => [ :check, confirmation[:confirmed] ], "cancelled" => [ :cancel, confirmation[:cancelled] ], "wrong" => [ :ban, confirmation[:wrong] ] }.each do |key, (icon, count)| %>
+        <% on = open_on.("confirmation", key) %>
+        <%= render "overview_card", key: key, label: t("orders_page.cards.#{key}"), icon: icon, value: count, active: on, href: (on ? card_link.call : card_link.call("confirmation" => key)),
+              hint: (key == "wrong" ? t("orders_page.cards.wrong_hint") : t("orders_page.cards.#{key}_hint", pct: percent.(count, total))) %>
+      <% end %>
     </div>
 
     <p class="<%= group_label %> pt-1"><%= t("orders_page.groups.shipping") %><span class="h-px flex-1 bg-[#e0e0e5]"></span></p>
     <div class="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6" data-cards="shipping">
-      <%= render "overview_card", key: "to_ship", label: t("orders_page.cards.to_ship"), icon: :box, value: shipping[:to_ship], accent: "#6b7a99", href: card_link.call("shipping" => "to_ship"), hint: t("orders_page.cards.to_ship_hint") %>
-      <%= render "overview_card", key: "in_transit", label: t("orders_page.cards.in_transit"), icon: :truck, value: shipping[:in_transit], accent: "#3b82c4", href: card_link.call("shipping" => "in_transit"),
-            hint: t("orders_page.cards.in_transit_hint", pct: percent.(shipping[:in_transit], confirmation[:confirmed])) %>
-      <%= render "overview_card", key: "scheduled", label: t("orders_page.cards.scheduled"), icon: :clock, value: shipping[:scheduled], accent: "#7c5cd6", href: card_link.call("shipping" => "scheduled"), hint: t("orders_page.cards.scheduled_hint") %>
-      <%= render "overview_card", key: "delivered", label: t("orders_page.cards.delivered"), icon: :check, value: shipping[:delivered], accent: "#3aa76d", href: card_link.call("shipping" => "delivered"),
-            hint: t("orders_page.cards.delivered_hint", pct: percent.(shipping[:delivered], confirmation[:confirmed])) %>
-      <%= render "overview_card", key: "failed", label: t("orders_page.cards.failed"), icon: :alert, value: shipping[:failed], accent: "#e08a2c", href: card_link.call("shipping" => "failed"), hint: t("orders_page.cards.failed_hint") %>
-      <%= render "overview_card", key: "returned", label: t("orders_page.cards.returned"), icon: :undo, value: shipping[:returned], accent: "#d6455d", href: card_link.call("shipping" => "returned"),
-            hint: t("orders_page.cards.returned_hint", pct: percent.(shipping[:returned], confirmation[:confirmed])) %>
+      <% { "to_ship" => :box, "in_transit" => :truck, "scheduled" => :clock, "delivered" => :check, "failed" => :alert, "returned" => :undo }.each do |key, icon| %>
+        <% on = open_on.("shipping", key) %>
+        <% count = shipping[key.to_sym] %>
+        <%= render "overview_card", key: key, label: t("orders_page.cards.#{key}"), icon: icon, value: count, active: on, href: (on ? card_link.call : card_link.call("shipping" => key)),
+              hint: (%w[to_ship scheduled failed].include?(key) ? t("orders_page.cards.#{key}_hint") : t("orders_page.cards.#{key}_hint", pct: percent.(count, confirmation[:confirmed]))) %>
+      <% end %>
     </div>
   </section>
 
-  <section class="rounded-3xl border border-[#e0e0e5] bg-white p-4" data-orders-list>
+  <section id="orders-list" class="scroll-mt-4 rounded-3xl border border-[#e0e0e5] bg-white p-4" data-orders-list>
     <div class="flex flex-wrap items-start justify-between gap-2">
       <div>
         <h2 class="text-base font-bold text-[#1c1c1e]"><%= t("orders_page.list.title") %></h2>
-        <p class="text-xs text-[#6e6e73]"><%= t("orders_page.list.subtitle") %></p>
+        <p class="text-xs text-[#6e6e73]" data-list-subtitle><% if params[:confirmation].present? && Admin::OrdersController::CONFIRMATION_FILTERS.include?(params[:confirmation]) %><%= t("orders_page.list.filtered_by", name: t("orders_page.confirmation_options.#{params[:confirmation]}")) %><% elsif params[:shipping].present? && Admin::OrdersController::SHIPPING_FILTERS.include?(params[:shipping]) %><%= t("orders_page.list.filtered_by", name: t("orders_page.shipping_options.#{params[:shipping]}")) %><% else %><%= t("orders_page.list.subtitle") %><% end %></p>
       </div>
       <p class="text-xs font-semibold text-[#6e6e73]" data-total-count="<%= @total_count %>"><%= t("orders_page.list.count", count: @total_count) %></p>
     </div>

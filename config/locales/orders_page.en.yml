@@ -93,6 +93,7 @@ en:
     list:
       title: "All orders"
       subtitle: "View and manage your orders"
+      filtered_by: "Filter: %{name} — click the open card to show everything"
       count:
         zero: "0 orders"
         one: "1 order"

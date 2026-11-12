@@ -93,6 +93,7 @@ fr:
     list:
       title: "Toutes les commandes"
       subtitle: "Voir et gérer vos commandes"
+      filtered_by: "Filtre : %{name} — cliquez sur la carte ouverte pour tout afficher"
       count:
         zero: "0 commande"
         one: "1 commande"

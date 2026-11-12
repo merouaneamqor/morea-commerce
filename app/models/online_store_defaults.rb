@@ -29,10 +29,6 @@ class OnlineStoreDefaults
           body: t(loc, "home.hero_support"),
           button_label: st&.campaign_cta.presence || t(loc, "store.default_campaign_cta") }
       end,
-      section("ticker") do |loc, st|
-        { body: [ t(loc, "landing.trust.delivery"), t(loc, "landing.trust.returns"), t(loc, "store.footer_tagline"),
-                 st&.campaign_season.presence || "SS / 26" ].join("\n") }
-      end,
       section("featured_collection", { collection_id: store.featured_collection_id&.to_s, limit: "4" }) do |loc, _|
         { heading: t(loc, "home.selection_title") }
       end,

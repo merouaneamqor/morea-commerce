@@ -134,9 +134,8 @@
 /* Hero: text and order journey on one side, map and partners on the other */
 .platform-hero { display: grid; align-items: center; gap: 2rem; padding-top: 1.5rem; padding-bottom: 3rem; }
 .platform-hero-copy { min-width: 0; text-align: center; }
-.platform-eyebrow { display: inline-flex; align-items: center; gap: .5rem; padding: .375rem 1rem; border-radius: 999px; background: var(--brand-tint); color: var(--brand); font-size: .6875rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
-.platform-eyebrow span { width: .375rem; height: .375rem; border-radius: 50%; background: var(--brand); }
-.platform-hero h1 { margin-top: 1rem; color: var(--ink); font-size: 2.25rem; font-weight: 800; line-height: 1.06; letter-spacing: -.025em; }
+.platform-gate-label { color: var(--muted); font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.platform-hero h1 { color: var(--ink); font-size: 2.25rem; font-weight: 800; line-height: 1.06; letter-spacing: -.025em; }
 .platform-hero h1 > span:last-child { color: var(--brand); }
 .platform-hero h1 .nowrap { white-space: nowrap; }
 .platform-lead { max-width: 36rem; margin: 1rem auto 0; font-size: 1rem; line-height: 1.7; }

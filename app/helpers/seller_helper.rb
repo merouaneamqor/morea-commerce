@@ -40,6 +40,14 @@ module SellerHelper
     team: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
     settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
     logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    check: '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 9.5"/>',
+    cart: '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h2.5l2.2 11h10.3l2-8H6.5"/>',
+    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+    cancel: '<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>',
+    ban: '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
+    wallet: '<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1"/>',
+    alert: '<path d="M12 4 3 20h18L12 4z"/><path d="M12 10v4M12 17.5v.01"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>'
   }.freeze
@@ -117,6 +125,22 @@ module SellerHelper
 
   def seller_active_key
     SELLER_ACTIVE_BY_CONTROLLER[controller_name]
+  end
+
+  # Soft tints of the dashboard figures: card background, border, icon chip, icon colour. Colours only.
+  DASHBOARD_TONES = {
+    "neutral" => { card: "bg-white border-[#e0e0e5]", chip: "bg-[#efeff3] text-[#1c1c1e]" },
+    "green" => { card: "bg-[#f1faf5] border-[#d4eedd]", chip: "bg-[#dcf2e5] text-[#2f7a4a]" },
+    "blue" => { card: "bg-[#f2f7fd] border-[#d8e6f6]", chip: "bg-[#dfecfa] text-[#2f6fb5]" },
+    "amber" => { card: "bg-[#fff8ea] border-[#f3e3bf]", chip: "bg-[#fcebc6] text-[#a8690d]" },
+    "red" => { card: "bg-[#fef2f3] border-[#f5d7db]", chip: "bg-[#fbdfe2] text-[#b4344e]" },
+    "gray" => { card: "bg-[#f6f6f8] border-[#e3e3e8]", chip: "bg-[#e9e9ee] text-[#636366]" },
+    "ink" => { card: "bg-[#f6f6f8] border-[#e3e3e8]", chip: "bg-[#1c1c1e] text-white" },
+    "dark" => { card: "bg-[#1c1c1e] border-transparent text-white", chip: "bg-white/12 text-white" }
+  }.freeze
+
+  def dashboard_tone(name)
+    DASHBOARD_TONES.fetch(name.to_s, DASHBOARD_TONES["neutral"])
   end
 
   def seller_status_badge(status)

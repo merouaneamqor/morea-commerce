@@ -1,0 +1,23 @@
+<%# One dashboard figure: tinted card, label, icon chip, value, hints. Printing only.
+    locals: key, label, value, icon, tone, hint (optional), hint_class (optional), hint2 (optional), href (optional) %>
+<% palette = dashboard_tone(tone) %>
+<% dark = tone.to_s == "dark" %>
+<% hint = local_assigns[:hint] %>
+<% hint_class = local_assigns[:hint_class] || (dark ? "text-white/65" : "text-[#6e6e73]") %>
+<% css = "flex min-h-[116px] flex-col justify-between rounded-2xl border p-4 #{palette[:card]} #{local_assigns[:href] ? "group transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-18px_rgba(0,0,0,0.4)]" : ""}" %>
+<% body = capture do %>
+  <div class="flex items-start justify-between gap-2">
+    <p class="text-[13px] leading-tight font-medium <%= dark ? "text-white/75" : "text-[#4b4b50]" %>"><%= label %></p>
+    <span class="grid size-9 shrink-0 place-items-center rounded-xl <%= palette[:chip] %>"><%= seller_icon(icon, size: 18) %></span>
+  </div>
+  <div>
+    <p class="mt-2 text-[26px] leading-none font-bold tracking-tight whitespace-nowrap tabular-nums <%= dark ? "text-white" : "text-[#1c1c1e]" %>"><%= value %></p>
+    <% if hint.present? %><p class="mt-1.5 truncate text-xs <%= hint_class %>"><%= hint %></p><% end %>
+    <% if local_assigns[:hint2].present? %><p class="mt-0.5 truncate text-xs <%= dark ? "text-white/50" : "text-[#8e8e93]" %>"><%= local_assigns[:hint2] %></p><% end %>
+  </div>
+<% end %>
+<% if local_assigns[:href] %>
+  <%= link_to href, "data-kpi": key, class: css do %><%= body %><% end %>
+<% else %>
+  <div data-kpi="<%= key %>" class="<%= css %>"><%= body %></div>
+<% end %>

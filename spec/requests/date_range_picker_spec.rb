@@ -271,6 +271,26 @@ RSpec.describe "Date range picker", type: :request do
     end
   end
 
+  describe "opening the picker inside the glass layout" do
+    before { sign_in }
+
+    # Found in a real browser: backdrop-filter on the header or form holding the picker made it the containing block of
+    # the fixed bottom sheet and a stacking context, so the panel jumped out of place and slid under the cards after it.
+    it "keeps whatever contains a picker free of backdrop-filter, and its panel opaque" do
+      css = Rails.root.join("app/assets/tailwind/application.css").read
+      expect(css).to include(':has([data-controller~="date-range-picker"])')
+      expect(css).to match(/:has\(\[data-controller~="date-range-picker"\]\)\s*\{[^}]*backdrop-filter: none/m)
+      expect(css).to match(/\[role="dialog"\][^{]*\{[^}]*backdrop-filter: none/m)
+    end
+
+    it "aligns the call center picker to the start of its filter bar, so the panel does not leave the screen" do
+      get "/admin/confirmations/center"
+      panel = document.at_css("[data-date-range-picker-target=panel]")
+      expect(panel["class"]).to include("md:start-0")
+      expect(panel["class"]).not_to include("md:end-0")
+    end
+  end
+
   describe "remembering the last choice" do
     before { sign_in }
 

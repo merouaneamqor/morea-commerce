@@ -24,6 +24,7 @@ module SellerHelper
     "Ventes livrées par produit, hors livraison" => [ "Delivered sales by product, delivery excluded", "المبيعات المسلّمة لكل منتج دون التوصيل" ],
     "Aucune vente livrée sur la période." => [ "No delivered sale in the period.", "لا مبيعات مسلّمة في الفترة." ],
     "commandes" => [ "orders", "طلبات" ],
+    "commande" => [ "order", "طلب" ],
     "Réduire le menu" => [ "Collapse the menu", "طيّ القائمة" ],
     "Agrandir le menu" => [ "Expand the menu", "توسيع القائمة" ],
     "Je suis ici" => [ "I'm here", "أنا هنا" ],

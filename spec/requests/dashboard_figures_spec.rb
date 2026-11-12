@@ -106,7 +106,7 @@ RSpec.describe "Dashboard figures", type: :request do
       expect(%w[pending confirmed planned cancelled wrong].to_h { |name| [ name, count_of("confirmation", name) ] }).to eq(
         "pending" => 1, "confirmed" => 5, "planned" => 0, "cancelled" => 1, "wrong" => 0    # new / delivered 2 + transit + returned + confirmed / - / cancelled / -
       )
-      expect(segment("confirmation", "confirmed").at_css("[data-segment-percent]").text.squish).to eq("71.4 %")   # 5 of 7
+      expect(segment("confirmation", "confirmed").at_css("[data-segment-percent]").text.delete(BIDI_MARKS).squish).to eq("71,4 %")   # 5 of 7, French decimal comma
       expect(view("confirmation").css("circle[data-segment]").map { |circle| circle["data-count"].to_i }.sum).to eq(7)
     end
 

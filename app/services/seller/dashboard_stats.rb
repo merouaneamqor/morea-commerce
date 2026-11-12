@@ -46,7 +46,7 @@ module Seller
         pending: awaiting.count,
         money: money_figures,
         low_stock: low_stock,
-        distribution: distribution(created, counts),
+        distribution: distribution,
         top_products: top_products,
         kpis: {
           orders: total,
@@ -102,33 +102,15 @@ module Seller
 
     private
 
-    # How the orders created in the range are spread, two ways. Each is a partition of what it covers: every order is in exactly one
-    # segment, so the segments always add up to the total of that view.
-    # - confirmation: all the orders, by where they are in the call centre (pending, scheduled callback, wrong or blocked number,
-    #   confirmed from then on, cancelled);
-    # - shipping: the confirmed orders only, by where they are on their way (to ship, in transit, delivered, problem, returned).
-    SHIPPING_GROUPS = {
-      "to_ship" => %w[confirmed preparing],
-      "in_transit" => %w[awaiting_pickup picked_up in_transit out_for_delivery],
-      "delivered" => %w[delivered],
-      "issue" => %w[address_issue unreachable postponed],
-      "returned" => %w[returned]
-    }.freeze
-
-    def distribution(created, counts)
-      dispositions = created.where(status: "new").left_joins(:order_confirmation).group("order_confirmations.disposition").count
-      new_total = counts.fetch("new", 0)
-      planned = dispositions.fetch("callback", 0)
-      wrong = dispositions.fetch("wrong_number", 0) + dispositions.fetch("blocked", 0)
-      confirmation = {
-        "pending" => new_total - planned - wrong,
-        "confirmed" => counts.slice(*CONFIRMED_STATUSES).values.sum,
-        "planned" => planned,
-        "cancelled" => counts.fetch("cancelled", 0),
-        "wrong" => wrong
-      }
-      shipping = SHIPPING_GROUPS.transform_values { |statuses| counts.slice(*statuses).values.sum }
-      { confirmation: segments(confirmation), shipping: segments(shipping) }
+    # How the orders created in the range are spread, two ways (see Orders::Overview, the single source shared with the
+    # Orders page): by confirmation (all the orders) and by shipping (the confirmed orders only). Each view is a partition.
+    def distribution
+      overview = Orders::Overview.new(scope: orders, range: range)
+      confirmation = overview.confirmation.transform_keys(&:to_s)
+      shipping = overview.shipping
+      issues = shipping[:scheduled] + shipping[:failed]   # the dashboard shows postponed and failed deliveries together
+      { confirmation: segments(confirmation), shipping: segments({ "to_ship" => shipping[:to_ship], "in_transit" => shipping[:in_transit], "delivered" => shipping[:delivered],
+                                                                   "issue" => issues, "returned" => shipping[:returned] }) }
     end
 
     # The best sellers of the range: delivered orders, by the value of their items (price x quantity, delivery

@@ -113,13 +113,14 @@ RSpec.describe "Call center rules", type: :request do
       sign_in(owner)
     end
 
-    it "has its own tab with a counter on the owner side" do
+    it "has its own card with a counter on the owner side, and opens the list of those orders" do
       flag_wrong_number
 
       get "/admin/orders"
-      tab = document.css(".admin-tab").find { |node| node.text.include?(I18n.t("admin.orders_groups.wrong_number")) }
-      expect(tab.at_css(".admin-tab__count").text.strip).to eq("1")
+      expect(document.at_css("[data-card=wrong]")["data-value"]).to eq("1")
 
+      get "/admin/orders", params: { confirmation: "wrong" }
+      expect(document.css("[data-order-row]").map { |row| row["data-order-row"] }).to eq([ order.number ])
       get "/admin/orders", params: { group: "wrong_number" }
       expect(document.css("[data-order-row]").map { |row| row["data-order-row"] }).to eq([ order.number ])
     end

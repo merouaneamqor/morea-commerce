@@ -1,125 +1,205 @@
-<% content_for :title, "Orders — Admin" %>
+<%# Orders page: figures (Orders::Overview) for the date range, filters, and the table. Printing only: every figure is
+    counted in the service, the table applies the same date range and the chosen filters. %>
+<% content_for :title, "#{t('orders_page.title')} — Admin" %>
+<% content_for :admin_page_class, "admin-page--dashboard" %>
+<% overview = @overview %>
+<% total = overview.total %>
+<% confirmation = overview.confirmation %>
+<% shipping = overview.shipping %>
+<% pending_total = confirmation[:pending] + confirmation[:planned] %>
+<% percent = ->(count, whole) { Orders::Overview.percent(count, whole) || "—" } %>
+<% filter_keys = %w[confirmation shipping payment company agent_id connection_id product missed q status group attention] %>
+<% range_params = request.query_parameters.slice("from", "to", "preset") %>
+<% filters = request.query_parameters.slice(*filter_keys) %>
+<% card_link = ->(extra = {}) { admin_orders_path(**range_params.to_h.symbolize_keys.merge(extra.to_h.symbolize_keys), anchor: "orders-list") } %>
+<% open_on = ->(name, value) { params[name] == value } %>
+<% card_filtered = params[:confirmation].present? || params[:shipping].present? %>
+<% btn_dark = "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-[#1c1c1e] px-3.5 text-[13px] font-semibold text-white hover:bg-[#3a3a3c]" %>
+<% btn_light = "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-[#e0e0e5] bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3]" %>
+<% field = "h-8 rounded-full border border-[#e0e0e5] bg-white px-3 text-[13px] text-[#1c1c1e] focus:border-[#1c1c1e] focus:outline-none" %>
+<% group_label = "flex items-center gap-3 text-[11px] font-semibold tracking-wider text-[#6e6e73] uppercase" %>
 
-<div class="admin-page-header">
-  <h1 class="admin-page-header__title">Orders</h1>
-  <div class="flex flex-wrap items-center gap-2">
-    <% if agent_view? %>
-      <%= link_to t("admin.confirmations.title"), admin_confirmations_path, class: "admin-btn-secondary" %>
-    <% else %>
-      <% if @shopify_connections.any? %>
-        <%= button_to t("shopify_sync.button"), shopify_sync_all_admin_orders_path, class: "admin-btn-secondary", disabled: !Connections::ShopifyOauth.configured? %>
-      <% end %>
-      <% if current_store.sendit_configured? %>
-        <%= button_to "Sync with Sendit", sendit_sync_all_admin_orders_path, class: "admin-btn-secondary" %>
-      <% end %>
-      <%= link_to "Create order", new_admin_order_path, class: "admin-btn" %>
-    <% end %>
-  </div>
-</div>
-
-<% if @shopify_connections.any? && !agent_view? %>
-  <section class="admin-card p-4 mb-4" aria-labelledby="shopify-sync-title">
-    <h2 id="shopify-sync-title" class="admin-card__title"><%= t("shopify_sync.title") %></h2>
-    <p class="admin-muted mt-1"><%= t("shopify_sync.help") %></p>
-    <ul class="space-y-2 mt-3">
-      <% @shopify_connections.each do |connection| %>
-        <li class="flex flex-wrap items-center gap-2">
-          <%= link_to connection.name, admin_store_connection_path(connection), class: "admin-link" %>
-          <span class="admin-muted"><%= connection_state(connection) %></span>
-          <%= render "admin/store_connections/shopify_sync_status", connection: connection %>
-        </li>
-      <% end %>
-    </ul>
-  </section>
-<% end %>
-
-<div class="admin-card">
-  <%= form_with url: admin_orders_path, method: :get, class: "flex flex-wrap items-center gap-3 p-4" do %>
-    <%= hidden_field_tag :status, @status %>
-    <%= hidden_field_tag :q, params[:q] %>
-    <%= hidden_field_tag :attention, params[:attention] if params[:attention] == "delivery_issues" %>
-    <%= label_tag :connection_id, t("connections.source"), class: "admin-label" %>
-    <%= select_tag :connection_id, options_from_collection_for_select(@connections, :id, :name, params[:connection_id]), include_blank: t("connections.all_sources"), class: "admin-input !w-auto" %>
-    <%= hidden_field_tag :group, @group if @group %>
-    <% unless agent_view? %>
-      <%= select_tag :agent_id, options_for_select([ [ t("admin.orders_groups.unassigned"), "none" ] ] + @agents.map { |a| [ a.name.presence || a.email, a.id ] }, params[:agent_id]), include_blank: t("admin.orders_groups.all_agents"), class: "admin-input !w-auto" %>
-    <% end %>
-    <%= submit_tag t("connections.filter"), class: "admin-btn-secondary" %>
-  <% end %>
-  <% if params[:attention] == "delivery_issues" %>
-    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#ebebeb] px-4 py-2" role="status">
-      <span><%= t("dashboard.filters.delivery_issues") %></span>
-      <%= link_to t("dashboard.filters.clear"), admin_orders_path(connection_id: params[:connection_id].presence, q: params[:q].presence), class: "admin-link" %>
+<div class="space-y-3" data-orders-page>
+  <turbo-frame id="order-modal"></turbo-frame>
+  <header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white" data-orders-header>
+    <div class="flex items-center gap-3">
+      <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:orders, size: 20) %></span>
+      <div>
+        <h1 class="text-xl leading-tight font-bold"><%= t("orders_page.title") %></h1>
+        <p class="text-[13px] leading-tight text-white/65"><%= t("orders_page.subtitle") %> · <%= current_store.name %></p>
+      </div>
     </div>
-  <% end %>
-  <% keep = { q: params[:q].presence, connection_id: params[:connection_id].presence, agent_id: params[:agent_id].presence } %>
-  <nav class="admin-tabs" aria-label="Filter orders">
-    <% Admin::OrdersController::ORDER_GROUPS.each_key do |key| %>
-      <% next if agent_view? && %w[wrong_number blocked].include?(key) %>
-      <% active = !@archived && @status.blank? && (@group || "all") == key %>
-      <%= link_to admin_orders_path(keep.merge(group: (key unless key == "all"))), class: "admin-tab #{'is-active' if active}" do %>
-        <%= t("admin.orders_groups.#{key}") %> <span class="admin-tab__count"><%= @group_counts&.fetch(key) %></span>
-      <% end %>
-    <% end %>
-    <%= link_to "Archived", admin_orders_path(keep.merge(status: "archived")), class: "admin-tab #{'is-active' if @archived}" %>
-  </nav>
-
-  <% if params[:q].present? %>
-    <div class="flex items-center justify-between gap-3 border-b border-[#ebebeb] px-4 py-2 text-[13px]">
-      <span class="admin-muted">Results for “<%= params[:q] %>”</span>
-      <%= link_to "Clear search", admin_orders_path(status: @status.presence, connection_id: params[:connection_id].presence), class: "admin-btn-plain" %>
-    </div>
-  <% end %>
-
-  <%# The six columns that matter come first; Order and Customer stay pinned while the rest scrolls. %>
-  <div class="admin-table-wrap admin-table-wrap--sticky" data-orders-table>
-    <table class="admin-table admin-table--sticky">
-      <thead>
-        <tr><th>Order</th><th>Customer</th><th>Phone</th><th>City</th><th>Status</th><th class="is-numeric">Amount</th><th><%= t("connections.source") %></th><th>Date</th><th><%= t("admin.orders_groups.agent") %></th><% unless agent_view? %><th>Sendit</th><th><%= t("admin.orders_groups.actions") %></th><% end %></tr>
-      </thead>
-      <tbody>
-        <% @orders.each do |order| %>
-          <tr data-order-row="<%= order.number %>">
-            <td>
-              <%= link_to "##{order.number}", admin_order_path(order), class: "admin-link" %>
-              <% if order.tag_list.any? %>
-                <span class="admin-muted ms-1 text-xs"><%= order.tag_list.first(2).join(", ") %></span>
-              <% end %>
-            </td>
-            <td title="<%= order.customer_name %>"><%= order.customer_name %></td>
-            <td class="admin-muted"><%= order.customer_phone %></td>
-            <td class="admin-muted"><%= order.customer_city %></td>
-            <td><%= admin_badge(order.status) %></td>
-            <td class="is-numeric"><%= order.total_display %></td>
-            <td class="admin-muted" data-source><%= order.store_connection&.name || t("admin.orders_groups.manual") %></td>
-            <td class="admin-muted"><%= order.created_at.strftime("%b %-d, %H:%M") %></td>
-            <% agent = order.order_confirmation&.assigned_user %>
-            <td><%= agent ? tag.span(class: "seallo-agent") { tag.i((agent.name.presence || agent.email).first.upcase) + (agent.name.presence || agent.email) } : tag.span(t("admin.orders_groups.unassigned"), class: "admin-subdued") %></td>
-            <% unless agent_view? %>
-              <td><%= sendit_badge(order) || tag.span("—", class: "admin-subdued") %></td>
-              <% confirmation = order.order_confirmation %>
-              <td data-order-actions>
-                <% if confirmation&.disposition == "wrong_number" %>
-                  <div class="flex items-center gap-2">
-                    <%= form_with url: requeue_admin_confirmation_path(order), class: "flex items-center gap-2" do |f| %>
-                      <%= text_field_tag :phone, order.customer_phone, class: "admin-input !w-36", "aria-label": "Corrected phone" %>
-                      <%= f.submit "Remettre en file", class: "admin-btn-secondary" %>
-                    <% end %>
-                    <%= button_to "Annuler", transition_admin_order_path(order), method: :patch, params: { to_status: "cancelled", cancel_reason: "Wrong number" }, class: "admin-btn-plain admin-btn-plain--critical" %>
-                  </div>
-                <% elsif confirmation&.disposition == "blocked" %>
-                  <%= button_to "Débloquer", unblock_admin_confirmation_path(order), class: "admin-btn-secondary" %>
-                <% elsif confirmation&.assigned_user_id && order.status == "new" %>
-                  <%= button_to "Libérer", force_release_admin_confirmation_path(order), class: "admin-btn-secondary" %>
-                <% end %>
-              </td>
-            <% end %>
-          </tr>
+    <div class="flex flex-wrap items-center gap-2">
+      <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_orders_path, theme: "dark", size: "compact", extra: filters %>
+      <% unless agent_view? %>
+        <% if @shopify_connections.any? %>
+          <%= button_to t("shopify_sync.button"), shopify_sync_all_admin_orders_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20 disabled:opacity-50", disabled: !Connections::ShopifyOauth.configured? %>
         <% end %>
-      </tbody>
-    </table>
-    <% if @orders.empty? %>
-      <p class="admin-empty">No orders match these filters.</p>
+        <% if current_store.sendit_configured? %>
+          <%= button_to "Sendit", sendit_sync_all_admin_orders_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" %>
+        <% end %>
+        <%= link_to new_admin_order_path, data: { turbo_frame: "order-modal" }, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3]" do %>+ <%= t("orders_page.new_order") %><% end %>
+      <% end %>
+    </div>
+  </header>
+
+  <% if @shopify_connections.any? && !agent_view? %>
+    <section class="rounded-2xl border border-[#e0e0e5] bg-white p-4" aria-labelledby="shopify-sync-title">
+      <h2 id="shopify-sync-title" class="text-sm font-semibold text-[#1c1c1e]"><%= t("shopify_sync.title") %></h2>
+      <p class="mt-1 text-xs text-[#6e6e73]"><%= t("shopify_sync.help") %></p>
+      <ul class="mt-3 space-y-2">
+        <% @shopify_connections.each do |connection| %>
+          <li class="flex flex-wrap items-center gap-2 text-sm">
+            <%= link_to connection.name, admin_store_connection_path(connection), class: "font-semibold text-[#1c1c1e] hover:underline" %>
+            <span class="text-xs text-[#6e6e73]"><%= connection_state(connection) %></span>
+            <%= render "admin/store_connections/shopify_sync_status", connection: connection %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <%# The figures: every order created in the range, counted once per card (see Orders::Overview) %>
+  <%# The figures: every order created in the range, counted once per card (see Orders::Overview). A card opens the list below
+      filtered on exactly what it counts; the open card goes back to all the orders. %>
+  <section class="space-y-2.5" data-overview>
+    <p class="<%= group_label %>"><%= t("orders_page.groups.confirmation") %><span class="h-px flex-1 bg-[#e0e0e5]"></span></p>
+    <div class="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-5" data-cards="confirmation">
+      <% total_open = !card_filtered %>
+      <%= render "overview_card", key: "total", label: t("orders_page.cards.total"), icon: :orders, value: total, featured: true, href: card_link.call,
+            pill: (overview.total_delta && [ "#{overview.total_delta.positive? ? "+" : ""}#{overview.total_delta} %", (overview.total_delta.positive? ? :up : (overview.total_delta.negative? ? :down : :flat)) ]),
+            hint: (overview.total_delta ? t("orders_page.cards.total_hint") : t("orders_page.cards.total_hint_flat")) %>
+      <% { "pending" => [ :clock, pending_total ], "confirmed" => [ :check, confirmation[:confirmed] ], "cancelled" => [ :cancel, confirmation[:cancelled] ], "wrong" => [ :ban, confirmation[:wrong] ] }.each do |key, (icon, count)| %>
+        <% on = open_on.("confirmation", key) %>
+        <%= render "overview_card", key: key, label: t("orders_page.cards.#{key}"), icon: icon, value: count, active: on, href: (on ? card_link.call : card_link.call("confirmation" => key)),
+              hint: (key == "wrong" ? t("orders_page.cards.wrong_hint") : t("orders_page.cards.#{key}_hint", pct: percent.(count, total))) %>
+      <% end %>
+    </div>
+
+    <p class="<%= group_label %> pt-1"><%= t("orders_page.groups.shipping") %><span class="h-px flex-1 bg-[#e0e0e5]"></span></p>
+    <div class="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6" data-cards="shipping">
+      <% { "to_ship" => :box, "in_transit" => :truck, "scheduled" => :clock, "delivered" => :check, "failed" => :alert, "returned" => :undo }.each do |key, icon| %>
+        <% on = open_on.("shipping", key) %>
+        <% count = shipping[key.to_sym] %>
+        <%= render "overview_card", key: key, label: t("orders_page.cards.#{key}"), icon: icon, value: count, active: on, href: (on ? card_link.call : card_link.call("shipping" => key)),
+              hint: (%w[to_ship scheduled failed].include?(key) ? t("orders_page.cards.#{key}_hint") : t("orders_page.cards.#{key}_hint", pct: percent.(count, confirmation[:confirmed]))) %>
+      <% end %>
+    </div>
+  </section>
+
+  <section id="orders-list" class="scroll-mt-4 rounded-3xl border border-[#e0e0e5] bg-white p-4" data-orders-list>
+    <div class="flex flex-wrap items-start justify-between gap-2">
+      <div>
+        <h2 class="text-base font-bold text-[#1c1c1e]"><%= t("orders_page.list.title") %></h2>
+        <p class="text-xs text-[#6e6e73]" data-list-subtitle><% if params[:confirmation].present? && Admin::OrdersController::CONFIRMATION_FILTERS.include?(params[:confirmation]) %><%= t("orders_page.list.filtered_by", name: t("orders_page.confirmation_options.#{params[:confirmation]}")) %><% elsif params[:shipping].present? && Admin::OrdersController::SHIPPING_FILTERS.include?(params[:shipping]) %><%= t("orders_page.list.filtered_by", name: t("orders_page.shipping_options.#{params[:shipping]}")) %><% else %><%= t("orders_page.list.subtitle") %><% end %></p>
+      </div>
+      <p class="text-xs font-semibold text-[#6e6e73]" data-total-count="<%= @total_count %>"><%= t("orders_page.list.count", count: @total_count) %></p>
+    </div>
+    <% unless @date_filtered %><p class="mt-1 text-[11px] text-[#8e8e93]" data-all-dates><%= t("orders_page.list.all_dates") %></p><% end %>
+
+    <%= form_with url: admin_orders_path, method: :get, class: "mt-3 space-y-2", data: { controller: "auto-submit", orders_filters: true } do %>
+      <% range_params.each { |name, value| %><%= hidden_field_tag name, value %><% } %>
+      <%= hidden_field_tag :status, @status if @status.present? %>
+      <%= hidden_field_tag :group, params[:group] if params[:group].present? %>
+      <%= hidden_field_tag :attention, params[:attention] if params[:attention].present? %>
+      <%= search_field_tag :q, params[:q], placeholder: t("orders_page.filters.search"), class: "#{field} w-full", data: { action: "input->auto-submit#debounce", auto_submit_restore: params[:q].present? } %>
+      <div class="flex flex-wrap items-center gap-2">
+        <% unless agent_view? %>
+          <%= select_tag :agent_id, options_for_select([ [ t("orders_page.filters.unassigned"), "none" ] ] + @agents.map { |agent| [ agent.name.presence || agent.email, agent.id ] }, params[:agent_id]), include_blank: t("orders_page.filters.all_agents"), class: field, data: { action: "auto-submit#submit" } %>
+        <% end %>
+        <%= select_tag :product, options_for_select(@products, params[:product]), include_blank: t("orders_page.filters.all_products"), class: "#{field} max-w-[12rem]", data: { action: "auto-submit#submit" } %>
+        <%= select_tag :connection_id, options_for_select([ [ t("orders_page.filters.manual"), "manual" ] ] + @connections.map { |connection| [ connection.name, connection.id ] }, params[:connection_id]), include_blank: t("orders_page.filters.all_sources"), class: field, data: { action: "auto-submit#submit" } %>
+        <% if @companies.any? %>
+          <%= select_tag :company, options_for_select(@companies + [ [ t("orders_page.filters.no_company"), "none" ] ], params[:company]), include_blank: t("orders_page.filters.all_companies"), class: field, data: { action: "auto-submit#submit" } %>
+        <% end %>
+      </div>
     <% end %>
-  </div>
+
+    <div class="mt-3 overflow-x-auto rounded-2xl border border-[#e0e0e5]" data-orders-table-wrap>
+      <table class="w-full text-left text-[13px]" data-orders-table>
+        <thead class="bg-[#f5f5f7] text-[11px] font-semibold tracking-wider text-[#6e6e73] uppercase">
+          <tr>
+            <% %w[id created customer product amount confirmation shipping source delivery city].each do |column| %>
+              <th class="px-3 py-2.5 whitespace-nowrap <%= "text-end" if column == "amount" %>"><%= t("orders_page.columns.#{column}") %></th>
+            <% end %>
+            <th class="px-3 py-2.5 text-end whitespace-nowrap"><%= t("orders_page.columns.actions") %></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#eef0f4]">
+          <% if @orders.empty? %>
+            <tr><td colspan="11" class="px-3 py-8 text-center text-[#6e6e73]"><%= t("orders_page.list.empty") %></td></tr>
+          <% end %>
+          <% @orders.each do |order| %>
+            <% confirmation_state = order_confirmation_state(order) %>
+            <% shipping_state = order_shipping_state(order) %>
+            <% items = order.order_items.to_a %>
+            <% first_item = items.first %>
+            <% held = order.order_confirmation %>
+            <tr class="align-middle hover:bg-[#fafafc]" data-order-row="<%= order.number %>">
+              <td class="px-3 py-2.5 font-semibold whitespace-nowrap">
+                <%= link_to "##{order.number}", admin_order_path(order), class: "text-[#1c1c1e] hover:underline" %>
+                <% if order.tag_list.any? %><span class="ms-1 text-[11px] font-normal text-[#8e8e93]"><%= order.tag_list.first(2).join(", ") %></span><% end %>
+              </td>
+              <td class="px-3 py-2.5 whitespace-nowrap text-[#4b4b50]">
+                <p><%= l(order.created_at.in_time_zone(DateRange::ZONE), format: "%d/%m/%Y") %></p>
+                <p class="text-[11px] text-[#8e8e93]"><%= l(order.created_at.in_time_zone(DateRange::ZONE), format: "%H:%M") %></p>
+              </td>
+              <td class="px-3 py-2.5">
+                <p class="font-medium whitespace-nowrap text-[#1c1c1e]" dir="auto"><%= order.customer_name %></p>
+                <p class="text-[11px] text-[#6e6e73]" dir="ltr"><%= order.customer_phone %></p>
+              </td>
+              <td class="max-w-[14rem] px-3 py-2.5" data-product>
+                <% if first_item %>
+                  <p class="truncate font-medium text-[#1c1c1e]" dir="auto"><%= first_item.product_name %><% if items.size > 1 %> <span class="text-[11px] font-semibold text-[#6e6e73]"><%= t("orders_page.list.more_items", count: items.size - 1) %></span><% end %></p>
+                  <% if first_item.variant_name.present? %><p class="truncate text-[11px] text-[#8e8e93]" dir="auto"><%= first_item.variant_name %></p><% end %>
+                <% else %>—<% end %>
+              </td>
+              <td class="px-3 py-2.5 text-end font-semibold whitespace-nowrap text-[#1c1c1e] tabular-nums" data-amount="<%= order.total_cents %>"><%= order.total_display %></td>
+              <td class="px-3 py-2.5" data-confirmation="<%= confirmation_state %>"><%= order_state_badge(:confirmation, confirmation_state) %></td>
+              <td class="px-3 py-2.5" data-shipping="<%= shipping_state %>"><%= order_state_badge(:shipping, shipping_state) %></td>
+              <td class="px-3 py-2.5 whitespace-nowrap text-[#4b4b50]" data-source><%= order.store_connection&.name || t("orders_page.filters.manual") %></td>
+              <td class="px-3 py-2.5 whitespace-nowrap" data-delivery><%= sendit_badge(order) || tag.span("—", class: "text-[#8e8e93]") %></td>
+              <td class="px-3 py-2.5 text-[#4b4b50]" dir="auto"><%= order.customer_city %></td>
+              <td class="px-3 py-2.5" data-order-actions>
+                <div class="flex items-center justify-end gap-1.5">
+                  <% if confirmation_state == "wrong" && !agent_view? %>
+                    <%= form_with url: requeue_admin_confirmation_path(order), class: "flex items-center gap-1.5" do |f| %>
+                      <%= text_field_tag :phone, order.customer_phone, class: "#{field} !w-32", "aria-label": t("orders_page.list.corrected_phone") %>
+                      <%= f.submit t("orders_page.list.requeue"), class: btn_light %>
+                    <% end %>
+                    <%= button_to t("orders_page.list.cancel"), transition_admin_order_path(order), method: :patch, params: { to_status: "cancelled", cancel_reason: "Wrong number" }, class: "#{btn_light} !text-[#b4344e]" %>
+                  <% elsif confirmation_state == "blocked" && !agent_view? %>
+                    <%= button_to t("orders_page.list.unblock"), unblock_admin_confirmation_path(order), class: btn_light %>
+                  <% elsif held&.assigned_user_id && order.status == "new" && !agent_view? %>
+                    <%= button_to t("orders_page.list.release"), force_release_admin_confirmation_path(order), class: btn_light %>
+                  <% end %>
+                  <%= link_to admin_order_path(order), title: t("orders_page.list.view"), "aria-label": t("orders_page.list.view"), class: "grid size-8 place-items-center rounded-full text-[#6e6e73] hover:bg-[#efeff3] hover:text-[#1c1c1e]" do %>
+                    <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <% end %>
+                  <% if !agent_view? && order_editable_in_list?(order) %>
+                    <%= link_to edit_admin_order_path(order), title: t("orders_page.list.edit"), "aria-label": t("orders_page.list.edit"), class: "grid size-8 place-items-center rounded-full text-[#6e6e73] hover:bg-[#efeff3] hover:text-[#1c1c1e]" do %>
+                      <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>
+                    <% end %>
+                  <% end %>
+                  <% unless agent_view? %>
+                    <%= button_to duplicate_admin_order_path(order), method: :post, title: t("orders_page.list.duplicate"), "aria-label": t("orders_page.list.duplicate"), class: "grid size-8 cursor-pointer place-items-center rounded-full text-[#6e6e73] hover:bg-[#efeff3] hover:text-[#1c1c1e]" do %>
+                      <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+                    <% end %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @page > 1 || @has_next %>
+      <nav class="mt-3 flex items-center justify-between text-[13px]">
+        <% if @page > 1 %><%= link_to t("orders_page.list.previous"), admin_orders_path(request.query_parameters.merge("page" => @page - 1)), class: btn_light %><% else %><span></span><% end %>
+        <span class="text-[#6e6e73]"><%= @page %></span>
+        <% if @has_next %><%= link_to t("orders_page.list.next"), admin_orders_path(request.query_parameters.merge("page" => @page + 1)), class: btn_light %><% else %><span></span><% end %>
+      </nav>
+    <% end %>
+  </section>
 </div>

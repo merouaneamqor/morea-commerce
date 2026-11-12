@@ -218,6 +218,32 @@ RSpec.describe "Orders page", type: :request do
       expect(document.at_css("[data-all-dates]")).to be_nil
     end
 
+    it "applies the filters by itself: no Filtrer, Réinitialiser, Archivées, Appels manqués or Clients button, every control submits the form" do
+      get "/admin/orders"
+
+      form = document.at_css("form[data-orders-filters]")
+      expect(form["data-controller"]).to eq("auto-submit")
+      expect(form.css("input[type=submit], button[type=submit]")).to be_empty
+      expect(form.css("a")).to be_empty                                  # no reset, archive or customers link
+      expect(form.at_css("input[name=missed]")).to be_nil
+      selects = form.css("select")
+      expect(selects.map { |select| select["name"] }).to eq(%w[confirmation shipping payment company agent_id connection_id product])
+      expect(selects.map { |select| select["data-action"] }.uniq).to eq([ "auto-submit#submit" ])   # a choice applies at once, "all" is the way back
+      expect(form.at_css("input[name=q]")["data-action"]).to eq("input->auto-submit#debounce")        # the search waits for a pause in typing
+      expect(document.text).not_to include("Réinitialiser", "Archivées", "Appels manqués")
+    end
+
+    it "still honours the older ?missed=1 and ?status=archived links, which are no longer buttons" do
+      order = store.orders.find_by!(number: "P1")
+      ConfirmationAttempt.create!(store: store, order_confirmation: OrderConfirmation.create!(store: store, order: order), user: owner, outcome: "no_answer")
+      store.orders.find_by!(number: "P2").update!(archived_at: Time.current)
+
+      get "/admin/orders", params: { missed: "1" }
+      expect(numbers).to eq([ "P1" ])
+      get "/admin/orders", params: { status: "archived" }
+      expect(numbers).to eq([ "P2" ])
+    end
+
     it "pages by 25" do
       12.times { |i| make("MORE#{i}") }
 

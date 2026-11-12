@@ -97,27 +97,22 @@
     </div>
     <% unless @date_filtered %><p class="mt-1 text-[11px] text-[#8e8e93]" data-all-dates><%= t("orders_page.list.all_dates") %></p><% end %>
 
-    <%= form_with url: admin_orders_path, method: :get, class: "mt-3 space-y-2", data: { orders_filters: true } do %>
+    <%= form_with url: admin_orders_path, method: :get, class: "mt-3 space-y-2", data: { controller: "auto-submit", orders_filters: true } do %>
       <% range_params.each { |name, value| %><%= hidden_field_tag name, value %><% } %>
       <%= hidden_field_tag :status, @status if @status.present? %>
       <%= hidden_field_tag :group, params[:group] if params[:group].present? %>
       <%= hidden_field_tag :attention, params[:attention] if params[:attention].present? %>
-      <%= search_field_tag :q, params[:q], placeholder: t("orders_page.filters.search"), class: "#{field} w-full" %>
+      <%= search_field_tag :q, params[:q], placeholder: t("orders_page.filters.search"), class: "#{field} w-full", data: { action: "input->auto-submit#debounce", auto_submit_restore: params[:q].present? } %>
       <div class="flex flex-wrap items-center gap-2">
-        <%= select_tag :confirmation, options_for_select(Admin::OrdersController::CONFIRMATION_FILTERS.map { |key| [ t("orders_page.confirmation_options.#{key}"), key ] }, params[:confirmation]), include_blank: t("orders_page.filters.all_confirmations"), class: field %>
-        <%= select_tag :shipping, options_for_select(Admin::OrdersController::SHIPPING_FILTERS.map { |key| [ t("orders_page.shipping_options.#{key}"), key ] }, params[:shipping]), include_blank: t("orders_page.filters.all_shipping"), class: field %>
-        <%= select_tag :payment, options_for_select([ [ t("orders_page.filters.paid"), "paid" ], [ t("orders_page.filters.unpaid"), "unpaid" ] ], params[:payment]), include_blank: t("orders_page.filters.all_payments"), class: field %>
+        <%= select_tag :confirmation, options_for_select(Admin::OrdersController::CONFIRMATION_FILTERS.map { |key| [ t("orders_page.confirmation_options.#{key}"), key ] }, params[:confirmation]), include_blank: t("orders_page.filters.all_confirmations"), class: field, data: { action: "auto-submit#submit" } %>
+        <%= select_tag :shipping, options_for_select(Admin::OrdersController::SHIPPING_FILTERS.map { |key| [ t("orders_page.shipping_options.#{key}"), key ] }, params[:shipping]), include_blank: t("orders_page.filters.all_shipping"), class: field, data: { action: "auto-submit#submit" } %>
+        <%= select_tag :payment, options_for_select([ [ t("orders_page.filters.paid"), "paid" ], [ t("orders_page.filters.unpaid"), "unpaid" ] ], params[:payment]), include_blank: t("orders_page.filters.all_payments"), class: field, data: { action: "auto-submit#submit" } %>
         <% unless agent_view? %>
-          <%= select_tag :company, options_for_select([ [ t("orders_page.filters.sendit"), "sendit" ], [ t("orders_page.filters.no_company"), "none" ] ], params[:company]), include_blank: t("orders_page.filters.all_companies"), class: field %>
-          <%= select_tag :agent_id, options_for_select([ [ t("orders_page.filters.unassigned"), "none" ] ] + @agents.map { |agent| [ agent.name.presence || agent.email, agent.id ] }, params[:agent_id]), include_blank: t("orders_page.filters.all_agents"), class: field %>
+          <%= select_tag :company, options_for_select([ [ t("orders_page.filters.sendit"), "sendit" ], [ t("orders_page.filters.no_company"), "none" ] ], params[:company]), include_blank: t("orders_page.filters.all_companies"), class: field, data: { action: "auto-submit#submit" } %>
+          <%= select_tag :agent_id, options_for_select([ [ t("orders_page.filters.unassigned"), "none" ] ] + @agents.map { |agent| [ agent.name.presence || agent.email, agent.id ] }, params[:agent_id]), include_blank: t("orders_page.filters.all_agents"), class: field, data: { action: "auto-submit#submit" } %>
         <% end %>
-        <%= select_tag :connection_id, options_for_select([ [ t("orders_page.filters.manual"), "manual" ] ] + @connections.map { |connection| [ connection.name, connection.id ] }, params[:connection_id]), include_blank: t("orders_page.filters.all_sources"), class: field %>
-        <%= select_tag :product, options_for_select(@products, params[:product]), include_blank: t("orders_page.filters.all_products"), class: "#{field} max-w-[12rem]" %>
-        <label class="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#e0e0e5] bg-white px-3 text-[13px] text-[#1c1c1e]"><%= check_box_tag :missed, "1", params[:missed] == "1", class: "accent-[#1c1c1e]" %><%= t("orders_page.filters.missed") %></label>
-        <%= submit_tag t("orders_page.filters.apply"), name: nil, class: btn_dark %>
-        <%= link_to t("orders_page.filters.reset"), admin_orders_path(range_params), class: btn_light %>
-        <%= link_to t("orders_page.filters.archived"), admin_orders_path(range_params.merge("status" => "archived")), class: "#{btn_light} #{"!bg-[#1c1c1e] !text-white" if @archived}" %>
-        <% unless agent_view? %><%= link_to t("orders_page.filters.customers"), admin_customers_path, class: "#{btn_light} ms-auto" %><% end %>
+        <%= select_tag :connection_id, options_for_select([ [ t("orders_page.filters.manual"), "manual" ] ] + @connections.map { |connection| [ connection.name, connection.id ] }, params[:connection_id]), include_blank: t("orders_page.filters.all_sources"), class: field, data: { action: "auto-submit#submit" } %>
+        <%= select_tag :product, options_for_select(@products, params[:product]), include_blank: t("orders_page.filters.all_products"), class: "#{field} max-w-[12rem]", data: { action: "auto-submit#submit" } %>
       </div>
     <% end %>
 

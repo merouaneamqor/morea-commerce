@@ -42,6 +42,15 @@ RSpec.describe Seller::RevenueMilestones do
     expect(m.remaining_cents).to eq(27_579_000)         # 500 000 - 224 210 = 275 790 MAD
     expect(fills(m)).to eq([ 100, 31, 0, 0, 0, 0 ])     # (224 210 - 100 000) / (500 000 - 100 000) = 31,05 %
     expect(m.percent_to_next).to eq(31)
+    expect(m.overall_fill).to eq(21.83)                 # (100 + 31) / 6 bars of the single track
+  end
+
+  it "fills the single track from 0 to 100 % across the six equal bars" do
+    expect(milestones.overall_fill).to eq(0.0)
+    delivered(500_000)
+    expect(milestones.overall_fill).to eq(33.33)        # two bars full
+    6.times { delivered(10_000_000) }
+    expect(milestones.overall_fill).to eq(100.0)
   end
 
   it "unlocks a tier exactly at its threshold" do

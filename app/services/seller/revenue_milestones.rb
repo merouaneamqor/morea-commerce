@@ -47,6 +47,9 @@ module Seller
       end
     end
 
+    # Where the single track is filled to, as a percent of its whole length (the six bars have the same width).
+    def overall_fill = (tiers.sum(&:fill) / TIERS.size.to_f).round(2)
+
     def current = tiers.select(&:unlocked).last
     def next_tier = tiers.find { |tier| !tier.unlocked }
     def maxed? = next_tier.nil?

@@ -30,11 +30,11 @@ module Admin::OverviewHelper
       "new" => "#c4a0a3",
       "confirmed" => "#9a6f72",
       "preparing" => "#4a4340",
-      "shipped" => "#10162a",
+      "shipped" => "#1c1c1e",
       "delivered" => "#2f6f52",
       "address_issue" => "#b7791f",
       "unreachable" => "#b7791f",
-      "postponed" => "#9096a2",
+      "postponed" => "#8e8e93",
       "cancelled" => "#9b3a46",
       "returned" => "#b7791f"
     }
@@ -43,7 +43,7 @@ module Admin::OverviewHelper
       type: "doughnut",
       data: {
         labels: counts.keys.map { |status| t("dashboard.order_statuses.#{status}") },
-        datasets: [ { data: counts.values, statuses: counts.keys, backgroundColor: counts.keys.map { |status| colors.fetch(status, "#9096a2") } } ]
+        datasets: [ { data: counts.values, statuses: counts.keys, backgroundColor: counts.keys.map { |status| colors.fetch(status, "#8e8e93") } } ]
       }
     }
   end

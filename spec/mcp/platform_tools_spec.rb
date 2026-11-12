@@ -64,8 +64,8 @@ RSpec.describe PlatformTools do
     expect(tool.call(server_context: context, tenant_id: store.id, invoice_id: invoice.id, action: "mark_paid", confirm: true).error?).to be(true)
     expect(invoice.reload.status).to eq("draft")
     expect(tool.call(server_context: context, tenant_id: store.id, invoice_id: invoice.id, action: "issue", confirm: true).error?).to be(false)
-    expect(tool.call(server_context: context, tenant_id: store.id, invoice_id: invoice.id, action: "mark_paid", confirm: true).error?).to be(false)
-    expect(invoice.reload.status).to eq("paid")
+    expect(tool.call(server_context: context, tenant_id: store.id, invoice_id: invoice.id, action: "mark_paid", payment_reference: "MCP-REF-9", confirm: true).error?).to be(false)
+    expect(invoice.reload).to have_attributes(status: "paid", payment_reference: "MCP-REF-9")
     expect(store.reload.billing_status).to eq("active")
   end
 end

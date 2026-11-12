@@ -1,0 +1,60 @@
+<% content_for :title, "#{t("platform_admin.integrations.title")}, #{@workspace.store.name}" %>
+
+<div class="admin-page-header">
+  <%= link_to admin_platform_integrations_path, class: "admin-back", "aria-label": t("platform_admin.back") do %><%= admin_icon(:back) %><% end %>
+  <div>
+    <h1 class="admin-page-header__title"><%= @workspace.store.name %></h1>
+    <p class="admin-page-header__meta"><%= @workspace.store.slug %> · <%= t("platform_admin.integrations.description") %></p>
+  </div>
+</div>
+
+<section class="admin-card">
+  <% if @workspace.entries.empty? %>
+    <p class="admin-muted p-4"><%= t("platform_admin.integrations.workspace_empty") %></p>
+  <% else %>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("platform_admin.integrations.columns.provider") %></th>
+            <th><%= t("platform_admin.integrations.columns.state") %></th>
+            <th><%= t("platform_admin.integrations.columns.verified_at") %></th>
+            <th><%= t("platform_admin.integrations.columns.last_sync") %></th>
+            <th><%= t("platform_admin.integrations.columns.error") %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @workspace.entries.each do |entry| %>
+            <tr>
+              <td>
+                <span class="font-medium"><%= t("platform_admin.integrations.providers.#{entry.provider}", default: entry.provider.humanize) %></span>
+                <span class="admin-muted block text-[13px]"><%= entry.label %></span>
+              </td>
+              <td>
+                <%= admin_badge(
+                      entry.connection_state,
+                      label: t("platform_admin.integrations.states.#{entry.connection_state}", default: entry.connection_state.humanize),
+                      tone: entry.failing? ? "warning" : (entry.connection_state == "verified" ? "success" : "neutral")
+                    ) %>
+              </td>
+              <td class="admin-muted"><%= entry.verified_at ? l(entry.verified_at, format: :short) : admin_blank %></td>
+              <td class="admin-muted"><%= entry.last_sync_at ? l(entry.last_sync_at, format: :short) : admin_blank %></td>
+              <td class="admin-muted"><%= entry.error_code.presence || admin_blank %></td>
+              <td class="text-right whitespace-nowrap">
+                <% if entry.recheckable? %>
+                  <%= button_to t("platform_admin.integrations.recheck"),
+                        recheck_admin_platform_integration_path(@workspace.store),
+                        method: :post,
+                        params: { kind: entry.kind, provider: entry.provider, connection_id: entry.id },
+                        form: { class: "inline", data: { turbo_confirm: t("platform_admin.integrations.recheck_confirm") } },
+                        class: "admin-btn-plain" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>

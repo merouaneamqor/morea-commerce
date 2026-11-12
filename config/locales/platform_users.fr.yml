@@ -3,6 +3,7 @@ fr:
     nav: "Utilisateurs admin"
     title: "Utilisateurs admin"
     description: "Gérez les administrateurs de la plateforme et des espaces de travail. Les utilisateurs suspendus ou archivés ne peuvent pas se connecter."
+    access_help: "Seul un administrateur plateforme peut accorder l’accès plateforme. L’emprunt d’identité ouvre un espace en tant que membre non plateforme ; les administrateurs plateforme ne peuvent pas être empruntés."
     new: "Nouvel utilisateur admin"
     edit: "Modifier"
     save: "Enregistrer"
@@ -42,6 +43,7 @@ fr:
       reactivate: "Réactiver %{email} ?"
       archive: "Archiver %{email} ? Sa session sera fermée."
       restore: "Restaurer %{email} ?"
+      grant_super_admin: "Accorder l’accès administrateur plateforme ? Cette personne pourra gérer tous les espaces et le personnel."
     done:
       suspend: "%{email} suspendu."
       reactivate: "%{email} réactivé."

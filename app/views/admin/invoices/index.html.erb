@@ -6,6 +6,9 @@
     <p class="admin-page-header__meta"><%= @store.name %>, <%= @store.slug %></p>
   </div>
   <div class="flex gap-2">
+    <% if respond_to?(:admin_tenant_path) %>
+      <%= link_to t("platform_admin.workspace"), admin_tenant_path(@store), class: "admin-btn-secondary" %>
+    <% end %>
     <%= link_to "Billing", edit_admin_tenant_path(@store), class: "admin-btn-secondary" %>
     <%= link_to "New invoice", new_admin_tenant_invoice_path(@store), class: "admin-btn" %>
   </div>

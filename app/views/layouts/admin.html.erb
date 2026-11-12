@@ -116,6 +116,7 @@
 
           <main class="min-w-0 flex-1 space-y-4">
             <%= render "admin/shared/impersonation_banner" if impersonating? %>
+            <%= render "admin/shared/platform_workspace_banner" %>
             <div class="lg-chrome flex items-center justify-between rounded-2xl px-3 py-2.5 lg:hidden">
               <button type="button" data-seller-open aria-expanded="false" class="rounded-lg border border-[#e0e0e5] bg-white p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>
               <span class="text-xl font-extrabold tracking-tight text-[#1d1d1f]" dir="ltr">seallo</span>

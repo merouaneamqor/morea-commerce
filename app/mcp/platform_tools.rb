@@ -9,7 +9,7 @@ module PlatformTools
   }.freeze
   TENANT_FIELDS = %w[id name slug currency storefront_enabled billing_status billing_interval billing_amount_cents billing_period_ends_on].freeze
   USER_FIELDS = %w[id store_id name status admin super_admin confirmation_role].freeze
-  INVOICE_FIELDS = %w[id store_id number status amount_cents billing_interval period_starts_on period_ends_on due_on issued_at paid_at].freeze
+  INVOICE_FIELDS = %w[id store_id number status amount_cents billing_interval period_starts_on period_ends_on due_on issued_at paid_at payment_reference].freeze
 
   def self.authorize!(user)
     actor = User.find_by(id: user&.id)
@@ -106,22 +106,37 @@ module PlatformTools
   end
 
   class TransitionTenantInvoice < MCP::Tool
-    description "Issue, mark paid or void a tenant subscription invoice. Requires explicit user approval and confirm: true. Mark paid records an externally verified payment and activates billing; it does not collect money."
+    description "Issue, mark paid or void a tenant subscription invoice. Requires explicit user approval and confirm: true. Mark paid records an externally verified payment and activates billing; it does not collect money. Optional payment_reference (max 120) is stored when marking paid."
     input_schema(properties: {
       tenant_id: { type: "integer" }, invoice_id: { type: "integer" },
       action: { type: "string", enum: %w[issue mark_paid void] },
+      payment_reference: { type: "string", maxLength: 120, description: "External payment reference when action is mark_paid" },
       confirm: { type: "boolean" }
     }, required: %w[tenant_id invoice_id action confirm])
 
-    def self.call(server_context:, tenant_id:, invoice_id:, action:, confirm: false)
-      PlatformTools.run(server_context) do
+    def self.call(server_context:, tenant_id:, invoice_id:, action:, payment_reference: nil, confirm: false)
+      PlatformTools.run(server_context) do |actor|
         PlatformTools.confirm!(confirm)
         raise ArgumentError, "Unknown invoice action" unless %w[issue mark_paid void].include?(action)
 
         store = Store.find(tenant_id)
         store.with_lock do
           invoice = store.invoices.lock.find(invoice_id)
-          invoice.public_send("#{action}!")
+          if action == "mark_paid"
+            invoice.mark_paid!(payment_reference: payment_reference)
+          else
+            invoice.public_send("#{action}!")
+          end
+          Platform::AdminAudit.record(
+            action: "invoice.#{action}",
+            actor: actor,
+            store: store,
+            subject: invoice,
+            source: "mcp",
+            invoice_number: invoice.number,
+            payment_reference: invoice.payment_reference,
+            outcome: "ok"
+          )
           invoice.reload.slice(*INVOICE_FIELDS).merge(currency: store.currency)
         end
       end

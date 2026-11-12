@@ -36,7 +36,11 @@
             <% end %>
           </div>
 
-          <div class="admin-topbar__account shrink-0">
+          <div class="admin-topbar__account shrink-0 gap-2">
+            <%= form_with url: admin_platform_search_path, method: :get, local: true, class: "hidden sm:flex items-center" do %>
+              <label class="sr-only" for="platform-search-q"><%= t("platform_admin.search.label") %></label>
+              <%= text_field_tag :q, params[:q], id: "platform-search-q", class: "admin-input !py-1.5 !text-sm w-48 lg:w-64", placeholder: t("platform_admin.search.placeholder"), autocomplete: "off" %>
+            <% end %>
             <%= render "admin/shared/language_switcher" %>
             <span class="admin-avatar"><%= current_admin_user.name.to_s.first.presence || "S" %></span>
             <span class="hidden sm:inline"><%= current_admin_user.name.presence || current_admin_user.email %></span>
@@ -46,12 +50,17 @@
         <aside class="admin-sidebar" data-admin-menu-target="sidebar">
           <nav class="admin-sidebar__nav">
             <%= admin_nav_link t("platform_admin.overview"), admin_platform_path, icon: :home, active: controller_name == "platform" %>
+            <%= admin_nav_link t("platform_admin.workspaces"), admin_platform_path(anchor: "workspaces"), icon: :store, active: controller_name == "tenants" && action_name != "new" %>
             <%= admin_nav_link t("platform_admin.access_requests"), admin_access_requests_path, icon: :staff, active: controller_name == "access_requests" %>
             <%= admin_nav_link t("platform_users.nav"), admin_platform_users_path, icon: :staff, active: controller_name == "platform_users" %>
-            <%= admin_nav_link t("platform_admin.agent_nav"), admin_platform_agent_api_path, icon: :settings, active: controller_name == "platform_agent_api" %>
-            <%= admin_nav_link t("platform_admin.features_nav"), superadmin_feature_flags_path, icon: :settings, active: false %>
-            <%= admin_nav_link t("platform_admin.workspaces"), admin_platform_path(anchor: "workspaces"), icon: :store, active: false %>
-            <%= admin_nav_link t("platform_admin.new_workspace"), new_admin_tenant_path, icon: :products, active: controller_name == "tenants" %>
+            <%= admin_nav_link t("platform_admin.billing_nav"), admin_platform_billing_path, icon: :billing, active: controller_name == "platform_billing" || controller_name == "invoices" %>
+            <%= admin_nav_link t("platform_admin.integrations_nav"), admin_platform_integrations_path, icon: :external, active: controller_name == "platform_integrations" %>
+            <%= admin_nav_link t("platform_admin.features_nav"), admin_platform_features_path, icon: :settings, active: controller_name == "platform_features" %>
+            <%= admin_nav_link t("platform_admin.operations_nav"), admin_platform_operations_path, icon: :workflows, active: controller_name == "platform_operations" %>
+            <%= admin_nav_link t("platform_admin.audit_nav"), admin_platform_audit_events_path, icon: :analytics, active: controller_name == "platform_audit_events" %>
+            <%= admin_nav_link t("platform_admin.privacy_nav"), admin_platform_privacy_rights_requests_path, icon: :help, active: controller_name == "platform_privacy_rights_requests" %>
+            <%= admin_nav_link t("platform_admin.agent_nav"), admin_platform_agent_api_path, icon: :ai_chat, active: controller_name == "platform_agent_api" %>
+            <%= admin_nav_link t("platform_admin.new_workspace"), new_admin_tenant_path, icon: :products, active: controller_name == "tenants" && action_name == "new" %>
           </nav>
 
           <div class="admin-sidebar__footer">

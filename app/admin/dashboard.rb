@@ -7,13 +7,16 @@ ActiveAdmin.register_page "Dashboard", namespace: :superadmin do
     summary = Platform::DashboardSummary.new
 
     div class: "platform-overview" do
-      para "Manage workspaces, access and subscription billing across the platform."
+      para "Manage workspaces, access and subscription billing across the platform. The unified console lives at Platform admin."
       div class: "platform-overview__actions" do
-        text_node link_to("All workspaces", admin_tenants_path, class: "button")
+        text_node link_to("Unified console", admin_platform_path, class: "button")
+        text_node link_to("All workspaces", admin_platform_path(anchor: "workspaces"), class: "button")
         text_node link_to("New workspace", new_admin_tenant_path, class: "button")
         text_node link_to("Users and access", admin_platform_users_path, class: "button")
         text_node link_to("Access requests (#{summary.pending_requests_count})", admin_access_requests_path, class: "button")
-        text_node link_to("Feature flags", superadmin_feature_flags_path, class: "button")
+        text_node link_to("Billing", admin_platform_billing_path, class: "button")
+        text_node link_to("Feature flags", admin_platform_features_path, class: "button")
+        text_node link_to("Integrations", admin_platform_integrations_path, class: "button")
         text_node link_to("Seallo connections", superadmin_seallo_connections_path, class: "button")
       end
 

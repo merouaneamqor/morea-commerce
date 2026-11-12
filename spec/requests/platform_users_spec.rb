@@ -51,10 +51,27 @@ RSpec.describe "Platform admin user management", type: :request do
 
     it "creates a platform-only super admin" do
       email = "second-#{SecureRandom.hex(3)}@example.test"
-      post "/admin/platform/users", params: { user: { email: email, password: password, password_confirmation: password, role: "super_admin", store_id: "" } }
+      expect do
+        post "/admin/platform/users", params: { user: { email: email, password: password, password_confirmation: password, role: "super_admin", store_id: "" } }
+      end.to change { AuditEvent.where(action: "platform_user.create").count }.by(1)
       expect(response).to redirect_to(admin_platform_users_path)
       created = User.find_by!(email: email)
       expect([ created.super_admin?, created.store_id, created.status ]).to eq([ true, nil, "active" ])
+      expect(AuditEvent.where(action: "platform_user.create", subject: created).last.metadata["role"]).to eq("super_admin")
+    end
+
+    it "asks for confirmation before suspending, archiving or granting platform access" do
+      get "/admin/platform/users"
+      doc = Nokogiri::HTML(response.body)
+      suspend = doc.at_css("form[action='/admin/platform/users/#{merchant.id}/lifecycle/suspend']")
+      archive = doc.at_css("form[action='/admin/platform/users/#{merchant.id}/lifecycle/archive']")
+      expect(suspend["data-turbo-confirm"]).to include(merchant.email)
+      expect(archive["data-turbo-confirm"]).to include(merchant.email)
+      expect(response.body).to include(I18n.t("platform_users.access_help"))
+
+      get "/admin/platform/users/new"
+      expect(response.body).to include(I18n.t("platform_users.confirm.grant_super_admin"))
+      expect(response.body).to include(I18n.t("platform_users.access_help"))
     end
 
     it "rejects a workspace admin without a workspace or a password" do
@@ -74,11 +91,14 @@ RSpec.describe "Platform admin user management", type: :request do
 
     it "allows another active platform admin to demote an account" do
       other = User.create!(email: "other-#{SecureRandom.hex(4)}@example.test", password: password, admin: true, super_admin: true)
+      version = other.session_version
       patch "/admin/platform/users/#{other.id}", params: { user: { email: other.email, role: "workspace_admin", store_id: store.id } }
       expect(response).to redirect_to(admin_platform_users_path)
       expect(other.reload).not_to be_super_admin
       expect(other.store).to eq(store)
+      expect(other.session_version).to eq(version + 1)
       expect(owner.reload).to be_super_admin
+      expect(AuditEvent.where(action: "platform_user.update", subject: other).last.metadata["role"]).to eq("workspace_admin")
     end
 
     it "suspends and reactivates, blocking sign-in and live sessions while suspended" do
@@ -86,10 +106,13 @@ RSpec.describe "Platform admin user management", type: :request do
       merchant_session.host! Store.base_domain
       merchant_session.post "/admin/login", params: { email: merchant.email, password: password }
       expect(merchant_session.response).to have_http_status(:redirect)
+      version = merchant.session_version
 
-      lifecycle(merchant, "suspend")
+      expect { lifecycle(merchant, "suspend") }.to change { AuditEvent.where(action: "platform_user.lifecycle", subject: merchant).count }.by(1)
       expect(merchant.reload).to be_suspended
       expect(merchant.status_changed_at).to be_present
+      expect(merchant.session_version).to eq(version + 1)
+      expect(AuditEvent.where(action: "platform_user.lifecycle", subject: merchant).last.metadata["lifecycle"]).to eq("suspend")
       merchant_session.get "/admin"
       expect(URI.parse(merchant_session.response.location).path).to eq(admin_login_path)
       merchant_session.post "/admin/login", params: { email: merchant.email, password: password }

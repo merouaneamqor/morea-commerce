@@ -6,6 +6,7 @@
     <p class="admin-page-header__meta">
       <%= @store.name %>, <%= @invoice.status.humanize %>
       <% if @invoice.overdue? %>, Overdue<% end %>
+      · <%= t("platform_admin.invoice_ui.subscription_status") %>: <%= @store.billing_status.humanize %>
     </p>
   </div>
   <div class="flex flex-wrap gap-2 justify-end">
@@ -13,14 +14,13 @@
     <% if @invoice.status == "draft" %>
       <%= button_to "Issue", issue_admin_tenant_invoice_path(@store, @invoice), method: :post, class: "admin-btn" %>
     <% end %>
-    <% if @invoice.status == "issued" %>
-      <%= button_to "Mark paid", mark_paid_admin_tenant_invoice_path(@store, @invoice), method: :post, class: "admin-btn" %>
-    <% end %>
     <% if @invoice.status.in?(%w[draft issued]) %>
-      <%= button_to "Void", void_admin_tenant_invoice_path(@store, @invoice), method: :post, class: "admin-btn-secondary", form: { data: { turbo_confirm: "Void this invoice?" } } %>
+      <%= button_to "Void", void_admin_tenant_invoice_path(@store, @invoice), method: :post, class: "admin-btn-secondary", form: { data: { turbo_confirm: t("platform_admin.invoice_ui.void_confirm") } } %>
     <% end %>
   </div>
 </div>
+
+<p class="admin-muted mb-4"><%= t("platform_admin.invoice_ui.merchant_sales_note") %></p>
 
 <section class="admin-card print:shadow-none">
   <div class="admin-card__header">
@@ -65,11 +65,31 @@
         <p class="admin-label">Paid</p>
         <p><%= @invoice.paid_at&.strftime("%b %-d, %Y %H:%M") || admin_blank %></p>
       </div>
+      <% if @invoice.status == "paid" && @invoice.payment_reference.present? %>
+        <div>
+          <p class="admin-label"><%= t("platform_admin.invoice_ui.payment_reference") %></p>
+          <p class="tabular-nums"><%= @invoice.payment_reference %></p>
+        </div>
+      <% end %>
     </div>
     <% if @invoice.notes.present? %>
       <div>
         <p class="admin-label">Notes</p>
         <p class="whitespace-pre-wrap"><%= @invoice.notes %></p>
+      </div>
+    <% end %>
+
+    <% if @invoice.status == "issued" %>
+      <div class="border-t border-[var(--admin-border)] pt-4">
+        <h3 class="admin-card__title mb-3"><%= t("platform_admin.invoice_ui.mark_paid") %></h3>
+        <%= form_with url: mark_paid_admin_tenant_invoice_path(@store, @invoice), method: :post, class: "admin-stack max-w-md", data: { turbo_confirm: t("platform_admin.invoice_ui.mark_paid_confirm") } do %>
+          <div>
+            <%= label_tag :payment_reference, t("platform_admin.invoice_ui.payment_reference"), class: "admin-label" %>
+            <%= text_field_tag :payment_reference, nil, class: "admin-input", maxlength: 120, autocomplete: "off" %>
+            <p class="admin-muted text-sm mt-1"><%= t("platform_admin.invoice_ui.payment_reference_help") %></p>
+          </div>
+          <%= submit_tag t("platform_admin.invoice_ui.mark_paid"), class: "admin-btn" %>
+        <% end %>
       </div>
     <% end %>
   </div>

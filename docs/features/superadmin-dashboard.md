@@ -1,8 +1,10 @@
 # Superadmin overview
 
-`/superadmin` is the platform overview on the apex and known tenant hosts, including unpublished workspaces. It requires an active super-admin session; merchant accounts cannot access platform data. Sign in through `/admin/login`.
+`/superadmin` is the ActiveAdmin platform overview on the apex and known tenant hosts, including unpublished workspaces. It requires an active super-admin session; merchant accounts cannot access platform data. Sign in through `/admin/login`.
 
-The overview links to existing workspace creation, billing, user management, access-request review and feature flags. Workspace entry uses the existing authorized POST action. The newest-workspace list and overdue-invoice queue each show at most 10 records.
+Day-to-day Super Admin work belongs in the unified console at `/admin/platform` (see `docs/features/superadmin-console.md`). `/superadmin` keeps resolving and links into that console.
+
+The overview links to workspace creation, billing, user management, access-request review and feature flags. Workspace entry uses the existing authorized POST action. The newest-workspace list and overdue-invoice queue each show at most 10 records.
 
 Metrics are platform-wide:
 

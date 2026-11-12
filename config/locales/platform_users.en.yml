@@ -3,6 +3,7 @@ en:
     nav: "Admin users"
     title: "Admin users"
     description: "Manage platform administrators and workspace administrators. Archived and suspended users cannot sign in."
+    access_help: "Only a platform administrator can grant platform access. Impersonation opens a workspace as one of its non-platform members; platform administrators cannot be impersonated."
     new: "New admin user"
     edit: "Edit"
     save: "Save"
@@ -42,6 +43,7 @@ en:
       reactivate: "Reactivate %{email}?"
       archive: "Archive %{email}? They will be signed out."
       restore: "Restore %{email}?"
+      grant_super_admin: "Grant platform administrator access? This person will manage all workspaces and staff."
     done:
       suspend: "%{email} suspended."
       reactivate: "%{email} reactivated."

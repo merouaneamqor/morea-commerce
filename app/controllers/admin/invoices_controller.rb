@@ -30,20 +30,26 @@ module Admin
 
     def issue
       @invoice.issue!
+      audit_invoice!("invoice.issue")
       redirect_to admin_tenant_invoice_path(@store, @invoice), notice: "Invoice #{@invoice.number} issued."
     rescue ActiveRecord::RecordInvalid
       redirect_to admin_tenant_invoice_path(@store, @invoice), alert: "Cannot issue this invoice."
     end
 
     def mark_paid
-      @invoice.mark_paid!
-      redirect_to admin_tenant_invoice_path(@store, @invoice), notice: "Invoice #{@invoice.number} marked paid."
+      reference = params[:payment_reference]
+      @invoice.mark_paid!(payment_reference: reference)
+      audit_invoice!("invoice.mark_paid", payment_reference: @invoice.payment_reference)
+      @store.reload
+      redirect_to admin_tenant_invoice_path(@store, @invoice),
+        notice: "Invoice #{@invoice.number} marked paid. Subscription status: #{@store.billing_status}."
     rescue ActiveRecord::RecordInvalid
       redirect_to admin_tenant_invoice_path(@store, @invoice), alert: "Cannot mark this invoice paid."
     end
 
     def void
       @invoice.void!
+      audit_invoice!("invoice.void")
       redirect_to admin_tenant_invoice_path(@store, @invoice), notice: "Invoice #{@invoice.number} voided."
     rescue ActiveRecord::RecordInvalid
       redirect_to admin_tenant_invoice_path(@store, @invoice), alert: "Cannot void this invoice."
@@ -66,6 +72,19 @@ module Admin
     def invoice_params
       params.require(:invoice).permit(
         :amount_dh, :billing_interval, :period_starts_on, :period_ends_on, :due_on, :notes
+      )
+    end
+
+    def audit_invoice!(action, **metadata)
+      Platform::AdminAudit.record(
+        action: action,
+        actor: current_user,
+        store: @store,
+        subject: @invoice,
+        ip: request.remote_ip,
+        invoice_number: @invoice.number,
+        outcome: "ok",
+        **metadata
       )
     end
   end

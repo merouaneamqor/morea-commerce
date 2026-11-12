@@ -17,13 +17,31 @@ module Admin
         return redirect_to admin_login_path, alert: t("sign_in.signed_out")
       end
 
+      workspace_id = session[:platform_workspace_id]
+      impersonated = current_user
+      store = workspace_id.present? ? Store.find_by(id: workspace_id) : impersonated&.store
+
       session[:user_id] = impersonator.id
       session[:session_version] = impersonator.session_version
       session.delete(:impersonator_id)
       session.delete(:impersonator_session_version)
       session[:admin_mode] = "platform"
       session.delete(:admin_store_id)
-      redirect_to admin_platform_path, notice: t("platform_admin.impersonate.stopped")
+
+      Platform::AdminAudit.record(
+        action: "workspace.impersonate.stop",
+        actor: impersonator,
+        store: store,
+        subject: impersonated,
+        ip: request.remote_ip,
+        slug: store&.slug
+      )
+
+      if workspace_id.present?
+        redirect_to admin_tenant_path(workspace_id), notice: t("platform_admin.impersonate.stopped")
+      else
+        redirect_to admin_platform_path, notice: t("platform_admin.impersonate.stopped")
+      end
     end
   end
 end

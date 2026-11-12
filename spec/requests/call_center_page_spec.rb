@@ -224,6 +224,32 @@ RSpec.describe "Call center page", type: :request do
     end
   end
 
+  describe "the reasons of the cancelled orders" do
+    it "shows, in the Annulée tab, what the agent typed, who cancelled and when; an order cancelled outside a call says so" do
+      called = order(status: "cancelled", by: agent, outcome: "cancelled", number: "CAN1", name: "Hind", phone: "0677777771")
+      called.update_columns(cancel_reason: "Le client a changé d'avis")
+      called.order_confirmation.confirmation_attempts.where(outcome: "cancelled").update_all(notes: "Le client a changé d'avis")
+      other = order(status: "cancelled", number: "CAN2", name: "Omar", phone: "0677777772")
+      other.update_columns(cancelled_at: Time.current, cancel_reason: "Doublon")
+      sign_in(owner)
+
+      get "/admin/confirmations/center", params: { tab: "cancelled" }
+
+      expect(document.css("th").map { |th| th.text.squish }).to include("Raison d’annulation")
+      reason = ->(number) { document.at_css("[data-order-row=#{number}] [data-cancel-reason]").text.squish }
+      expect(reason.call("CAN1")).to include("Le client a changé d'avis", "par Saida")
+      expect(reason.call("CAN2")).to include("Doublon", "Annulée hors appel")
+    end
+
+    it "does not add the column to the other tabs" do
+      sign_in(owner)
+      get "/admin/confirmations/center", params: { tab: "pending" }
+
+      expect(document.css("[data-cancel-reason]")).to be_empty
+      expect(document.css("th").map { |th| th.text.squish }).not_to include("Raison d’annulation")
+    end
+  end
+
   describe "an owner" do
     before { sign_in(owner) }
 

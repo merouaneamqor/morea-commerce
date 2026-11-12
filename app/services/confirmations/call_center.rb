@@ -59,6 +59,12 @@ module Confirmations
         .group("order_confirmations.order_id").count
     end
 
+    # order id => the call that cancelled it (the agent, the reason typed, the time); the latest one wins. Used by the Annulée tab.
+    def cancellations
+      @cancellations ||= ConfirmationAttempt.joins(:order_confirmation).where(store: @store, outcome: "cancelled", order_confirmations: { order_id: rows.map(&:id) })
+        .includes(:user, :order_confirmation).order(:created_at).each_with_object({}) { |attempt, by_order| by_order[attempt.order_confirmation.order_id] = attempt }
+    end
+
     # order id => the latest "WhatsApp opened" event
     def whatsapp_events
       @whatsapp_events ||= OrderEvent.where(order_id: rows.map(&:id), kind: "whatsapp").includes(:user).order(:created_at).each_with_object({}) { |event, by_order| by_order[event.order_id] = event }

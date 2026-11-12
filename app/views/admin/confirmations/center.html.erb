@@ -133,13 +133,14 @@
             <th class="px-3 py-2.5 text-end"><%= t("call_center.columns.amount") %></th>
             <th class="px-3 py-2.5"><%= t("call_center.columns.city") %></th>
             <th class="px-3 py-2.5 text-center"><%= t("call_center.columns.calls") %></th>
+            <% if center.tab == "cancelled" %><th class="px-3 py-2.5"><%= t("call_center.columns.cancel_reason") %></th><% end %>
             <th class="px-3 py-2.5"><%= t("call_center.columns.whatsapp") %></th>
             <th class="px-3 py-2.5 text-end"><%= t("call_center.columns.actions") %></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-[#ececf0]">
           <% if center.rows.empty? %>
-            <tr><td colspan="8" class="px-3 py-8 text-center text-[#6e6e73]"><%= t("call_center.queue.empty") %></td></tr>
+            <tr><td colspan="<%= center.tab == "cancelled" ? 9 : 8 %>" class="px-3 py-8 text-center text-[#6e6e73]"><%= t("call_center.queue.empty") %></td></tr>
           <% end %>
           <% center.rows.each do |order| %>
             <% confirmation = order.order_confirmation %>
@@ -165,6 +166,17 @@
               <td class="px-3 py-2.5 text-[#3a3a3c]"><%= order.customer_city %></td>
               <% unreachable = confirmation&.disposition == "no_answer" %>
               <td class="px-3 py-2.5 text-center" data-calls="<%= center.attempt_counts[order.id].to_i %>" data-unreachable="<%= unreachable ? "yes" : "no" %>"><span class="inline-flex min-w-6 justify-center rounded-full px-1.5 text-[12px] font-semibold <%= unreachable ? "bg-[#fbe08a] text-[#7a5200]" : "bg-[#efeff3] text-[#1c1c1e]" %>" title="<%= t("call_center.unreachable_hint") if unreachable %>"><%= center.attempt_counts[order.id].to_i %></span><% if unreachable %><p class="mt-0.5 text-[10px] font-semibold text-[#9a6b00]"><%= t("call_center.unreachable") %></p><% end %></td>
+              <% if center.tab == "cancelled" %>
+                <% call = center.cancellations[order.id] %>
+                <% reason = call&.notes.presence || order.cancel_reason.presence %>
+                <td class="max-w-[16rem] px-3 py-2.5" data-cancel-reason>
+                  <p class="font-medium text-[#1c1c1e]" dir="auto"><%= reason || "—" %></p>
+                  <p class="text-[11px] text-[#8e8e93]">
+                    <% if call %><%= t("call_center.cancelled_by", name: call.user&.name.presence || call.user&.email) %> · <%= l(call.created_at.in_time_zone(DateRange::ZONE), format: "%d/%m/%Y %H:%M") %>
+                    <% else %><%= t("call_center.cancelled_other") %><% end %>
+                  </p>
+                </td>
+              <% end %>
               <td class="px-3 py-2.5 whitespace-nowrap" data-whatsapp="<%= whatsapp ? "sent" : "none" %>">
                 <% if whatsapp %>
                   <span class="rounded-full bg-[#e8f6ee] px-2 py-0.5 text-[11px] font-semibold text-[#237a49]" title="<%= whatsapp.user&.name %>"><%= t("call_center.whatsapp_sent", time: l(whatsapp.created_at.in_time_zone(DateRange::ZONE), format: "%d/%m %H:%M")) %></span>

@@ -115,7 +115,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
 
   it "sends the seallo page URLs that are not ported yet to their current page, keeping the query string" do
     host! Store.base_domain
-    { "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations", "/livraison" => "/admin/delivery",
+    { "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations/center", "/livraison" => "/admin/delivery",
       "/produits" => "/admin/products", "/equipe" => "/admin/staff", "/mes-statistiques" => "/admin/my_stats" }.each do |from, to|
       get from
       expect(response).to redirect_to("http://#{Store.base_domain}#{to}")

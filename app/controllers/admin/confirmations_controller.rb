@@ -3,8 +3,20 @@ module Admin
     PERIODS = %w[today week month].freeze
     FILTERS = %w[available mine all callbacks_due].freeze
 
+    include DateRangeSelection
+
     before_action :require_store_context!
     helper_method :agent_view?
+
+    # The call center page: stat cards, filters, tabs and the order table, all from Confirmations::CallCenter.
+    def center
+      @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
+      @needs_clock_in = agent_view? && @open_shift.nil?
+      @date_range = selected_date_range(scope: "call_center", default: "last_30")
+      filters = params.permit(:tab, :product, :source, :whatsapp, :missed, :q, :sort, :page).to_h.symbolize_keys
+      @center = Confirmations::CallCenter.new(store: current_store, user: current_user, range: @date_range.time_range, params: filters)
+      @summary = Team::AgentEarnings.new(store: current_store, range: @date_range.time_range).summary_for(current_user) if agent_view?
+    end
 
     def index
       @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)

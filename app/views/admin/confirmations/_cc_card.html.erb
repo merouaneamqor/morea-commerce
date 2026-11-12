@@ -1,0 +1,6 @@
+<%# One stat card of the call center. locals: label, value, hint, tone (hex of the small accent dot), key (data-card). Printing only. %>
+<div class="flex min-h-[84px] flex-col justify-between rounded-2xl border border-[#e7e9ee] bg-white px-3.5 py-3" data-card="<%= key %>" title="<%= hint %>">
+  <p class="flex items-center gap-2 text-xs font-medium text-[#6b7280]"><span class="size-2 rounded-full" style="background: <%= tone %>"></span><%= label %></p>
+  <p class="mt-1 text-2xl leading-none font-bold text-[#10162a] tabular-nums" data-value><%= value %></p>
+  <p class="mt-1 truncate text-[11px] text-[#9096a2]"><%= hint %></p>
+</div>

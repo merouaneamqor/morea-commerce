@@ -44,6 +44,7 @@ module Admin
       @shopify_connections = @connections.where(provider: "shopify", shopify_oauth: true).limit(100)
       @agents = current_store.users.active.where(confirmation_role: "agent").or(current_store.users.active.where(admin: true)).order(:email)
       @products = current_store.products.order(:name).pluck(:name, :id)
+      @companies = connected_companies
       @date_range = selected_date_range(scope: "orders", default: "last_30")
       @overview = Orders::Overview.new(scope: visible_orders.active, range: @date_range)
 
@@ -271,8 +272,7 @@ end
       orders = orders.where(status: Orders::Overview::SHIPPING_GROUPS.fetch(params[:shipping])) if SHIPPING_FILTERS.include?(params[:shipping])
       orders = orders.where.not(collected_at: nil) if params[:payment] == "paid"
       orders = orders.awaiting_remittance if params[:payment] == "unpaid"
-      orders = orders.where.not(sendit_code: [ nil, "" ]) if params[:company] == "sendit"
-      orders = orders.where(sendit_code: [ nil, "" ]) if params[:company] == "none"
+      orders = company_filter(orders)
       orders = agent_filter(orders)
       orders = source_filter(orders)
       if params[:product].present?
@@ -302,6 +302,25 @@ end
       when "cancelled" then orders.where(status: "cancelled")
       when "wrong" then orders.where(status: "new", id: wrong)
       end
+    end
+
+    # The delivery companies this store is connected to through their API (an active account that was connected): the only
+    # ones the company filter offers, and none for an agent. A company that is not connected never shows up.
+    def connected_companies
+      return [] if agent_view?
+
+      current_store.delivery_accounts.where(is_active: true).where.not(connected_at: nil).order(:provider).pluck(:provider).uniq
+        .map { |provider| [ Carriers.provider(provider)["name"], provider ] }
+    end
+
+    # Only Sendit tags its parcels on the orders (sendit_code), so another connected company matches none for now.
+    def company_filter(orders)
+      key = params[:company]
+      return orders if key.blank? || @companies.empty?
+      return orders.where(sendit_code: [ nil, "" ]) if key == "none"
+      return orders unless @companies.any? { |_name, provider| provider == key }
+
+      key == "sendit" ? orders.where.not(sendit_code: [ nil, "" ]) : orders.none
     end
 
     # The agent holding the order's claim ("none" for unassigned). Not offered to agents.

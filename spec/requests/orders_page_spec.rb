@@ -183,6 +183,7 @@ RSpec.describe "Orders page", type: :request do
       get "/admin/orders", params: { payment: "unpaid" }
       expect(numbers).to contain_exactly("D2", "D3")                      # delivered, cash not collected yet
 
+      store.delivery_accounts.create!(provider: "sendit", name: "Sendit principal", connected_at: Time.current)   # the company filter exists only for a connected company
       get "/admin/orders", params: { company: "sendit" }
       expect(numbers).to eq([ "T2" ])
       get "/admin/orders", params: { company: "none" }
@@ -203,6 +204,48 @@ RSpec.describe "Orders page", type: :request do
       expect(numbers).to eq([ "S2" ])
       get "/admin/orders", params: { q: "client d1" }
       expect(numbers).to eq([ "D1" ])
+    end
+
+    describe "the delivery company filter" do
+      def company_select = document.at_css("select[name=company]")
+
+      it "does not exist while no company is connected through its API" do
+        store.delivery_accounts.create!(provider: "ozon", name: "Ozon not connected yet")                                # an account with no connection
+        store.delivery_accounts.create!(provider: "ameex", name: "Ameex off", connected_at: Time.current, is_active: false)  # connected once, now inactive
+
+        get "/admin/orders"
+
+        expect(company_select).to be_nil
+        get "/admin/orders", params: { company: "sendit" }
+        expect(numbers.size).to eq(16)                                   # an unknown company is ignored, nothing is hidden by it
+      end
+
+      it "offers exactly the connected companies, plus no company, and never another store's" do
+        store.delivery_accounts.create!(provider: "sendit", name: "Sendit principal", connected_at: Time.current)
+        store.delivery_accounts.create!(provider: "sendit", name: "Sendit second", connected_at: Time.current)           # twice: listed once
+        store.delivery_accounts.create!(provider: "cathedis", name: "Cathedis", connected_at: Time.current)
+        store.delivery_accounts.create!(provider: "ozon", name: "Ozon not connected")
+        foreign = Store.create!(slug: "foreign-#{SecureRandom.hex(4)}", name: "Other", currency: "MAD")
+        foreign.delivery_accounts.create!(provider: "ameex", name: "Ameex elsewhere", connected_at: Time.current)
+
+        get "/admin/orders"
+
+        options = company_select.css("option").map { |option| [ option.text.squish, option["value"] ] }
+        expect(options).to eq([ [ I18n.t("orders_page.filters.all_companies"), "" ], [ "Cathedis", "cathedis" ], [ "Sendit", "sendit" ], [ I18n.t("orders_page.filters.no_company"), "none" ] ])
+      end
+
+      it "is not offered to an agent, and a company that is not connected cannot be forced through the URL" do
+        store.delivery_accounts.create!(provider: "sendit", name: "Sendit principal", connected_at: Time.current)
+        sign_in(agent)
+        get "/admin/orders"
+        expect(company_select).to be_nil
+
+        sign_in(owner)
+        get "/admin/orders", params: { company: "ozon" }                  # not connected: ignored
+        expect(numbers.size).to eq(16)
+        get "/admin/orders", params: { company: "none" }
+        expect(numbers.size).to eq(15)                                    # everything but the Sendit parcel T2
+      end
     end
 
     it "filters by the agent holding the order, and by unassigned" do
@@ -246,7 +289,7 @@ RSpec.describe "Orders page", type: :request do
       expect(form.css("a")).to be_empty                                  # no reset, archive or customers link
       expect(form.at_css("input[name=missed]")).to be_nil
       selects = form.css("select")
-      expect(selects.map { |select| select["name"] }).to eq(%w[confirmation shipping payment company agent_id connection_id product])
+      expect(selects.map { |select| select["name"] }).to eq(%w[agent_id product connection_id])   # in this order; the company filter appears only once a company is connected; the cards cover confirmation and shipping
       expect(selects.map { |select| select["data-action"] }.uniq).to eq([ "auto-submit#submit" ])   # a choice applies at once, "all" is the way back
       expect(form.at_css("input[name=q]")["data-action"]).to eq("input->auto-submit#debounce")        # the search waits for a pause in typing
       expect(document.text).not_to include("Réinitialiser", "Archivées", "Appels manqués")

@@ -103,15 +103,14 @@
       <%= hidden_field_tag :attention, params[:attention] if params[:attention].present? %>
       <%= search_field_tag :q, params[:q], placeholder: t("orders_page.filters.search"), class: "#{field} w-full", data: { action: "input->auto-submit#debounce", auto_submit_restore: params[:q].present? } %>
       <div class="flex flex-wrap items-center gap-2">
-        <%= select_tag :confirmation, options_for_select(Admin::OrdersController::CONFIRMATION_FILTERS.map { |key| [ t("orders_page.confirmation_options.#{key}"), key ] }, params[:confirmation]), include_blank: t("orders_page.filters.all_confirmations"), class: field, data: { action: "auto-submit#submit" } %>
-        <%= select_tag :shipping, options_for_select(Admin::OrdersController::SHIPPING_FILTERS.map { |key| [ t("orders_page.shipping_options.#{key}"), key ] }, params[:shipping]), include_blank: t("orders_page.filters.all_shipping"), class: field, data: { action: "auto-submit#submit" } %>
-        <%= select_tag :payment, options_for_select([ [ t("orders_page.filters.paid"), "paid" ], [ t("orders_page.filters.unpaid"), "unpaid" ] ], params[:payment]), include_blank: t("orders_page.filters.all_payments"), class: field, data: { action: "auto-submit#submit" } %>
         <% unless agent_view? %>
-          <%= select_tag :company, options_for_select([ [ t("orders_page.filters.sendit"), "sendit" ], [ t("orders_page.filters.no_company"), "none" ] ], params[:company]), include_blank: t("orders_page.filters.all_companies"), class: field, data: { action: "auto-submit#submit" } %>
           <%= select_tag :agent_id, options_for_select([ [ t("orders_page.filters.unassigned"), "none" ] ] + @agents.map { |agent| [ agent.name.presence || agent.email, agent.id ] }, params[:agent_id]), include_blank: t("orders_page.filters.all_agents"), class: field, data: { action: "auto-submit#submit" } %>
         <% end %>
-        <%= select_tag :connection_id, options_for_select([ [ t("orders_page.filters.manual"), "manual" ] ] + @connections.map { |connection| [ connection.name, connection.id ] }, params[:connection_id]), include_blank: t("orders_page.filters.all_sources"), class: field, data: { action: "auto-submit#submit" } %>
         <%= select_tag :product, options_for_select(@products, params[:product]), include_blank: t("orders_page.filters.all_products"), class: "#{field} max-w-[12rem]", data: { action: "auto-submit#submit" } %>
+        <%= select_tag :connection_id, options_for_select([ [ t("orders_page.filters.manual"), "manual" ] ] + @connections.map { |connection| [ connection.name, connection.id ] }, params[:connection_id]), include_blank: t("orders_page.filters.all_sources"), class: field, data: { action: "auto-submit#submit" } %>
+        <% if @companies.any? %>
+          <%= select_tag :company, options_for_select(@companies + [ [ t("orders_page.filters.no_company"), "none" ] ], params[:company]), include_blank: t("orders_page.filters.all_companies"), class: field, data: { action: "auto-submit#submit" } %>
+        <% end %>
       </div>
     <% end %>
 

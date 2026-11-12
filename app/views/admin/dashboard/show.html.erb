@@ -46,16 +46,16 @@
 <% end %>
 
 <%# Row 1: the four figures that matter most %>
-<section class="grid grid-cols-2 gap-3 lg:grid-cols-4" data-kpis="headline">
-  <div class="col-span-2 lg:col-span-1 [&>*]:h-full">
-    <%= render "kpi", key: "revenue", label: sl("Chiffre d'affaires"), value: amount.(money[:revenue]), icon: :wallet, tone: "dark",
+<section class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4" data-kpis="headline">
+  <div class="[&>*]:h-full">
+    <%= render "kpi", key: "revenue", label: sl("Chiffre d'affaires"), value: amount.(money[:revenue]), icon: :wallet, tone: "dark", compact: true,
           hint: delta_text.(money[:revenue_delta]), hint_class: delta_class.(money[:revenue_delta], true), hint2: sl("Commandes livrées") %>
   </div>
-  <div class="[&>*]:h-full"><%= render "kpi", key: "orders", label: sl("Commandes"), value: number.(k[:orders]), icon: :orders, tone: "neutral",
+  <div class="[&>*]:h-full"><%= render "kpi", key: "orders", label: sl("Commandes"), value: number.(k[:orders]), icon: :orders, tone: "neutral", compact: true,
         hint: delta_text.(k[:orders_delta]), hint_class: delta_class.(k[:orders_delta]) %></div>
-  <div class="[&>*]:h-full"><%= render "kpi", key: "confirmation_rate", label: sl("Taux de confirmation"), value: percent_text.(k[:confirmation_rate]), icon: :check, tone: "green",
+  <div class="[&>*]:h-full"><%= render "kpi", key: "confirmation_rate", label: sl("Taux de confirmation"), value: percent_text.(k[:confirmation_rate]), icon: :check, tone: "green", compact: true,
         hint: "#{number.(k[:confirmed])} #{sl("confirmées")} / #{number.(k[:orders])}" %></div>
-  <div class="[&>*]:h-full"><%= render "kpi", key: "average_basket", label: sl("Panier moyen"), value: amount.(money[:average_basket]), icon: :cart, tone: "blue",
+  <div class="[&>*]:h-full"><%= render "kpi", key: "average_basket", label: sl("Panier moyen"), value: amount.(money[:average_basket]), icon: :cart, tone: "blue", compact: true,
         hint: "#{sl("sur")} #{number.(money[:delivered_orders])} #{sl("commandes livrées")}" %></div>
 </section>
 

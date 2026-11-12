@@ -7,6 +7,9 @@
 <% mad = ->(cents) { "#{seller_number(cents / 100)} #{currency}" } %>
 <% short = ->(cents) { whole = cents / 100; whole >= 1_000_000 ? "#{whole / 1_000_000}M" : "#{whole / 1_000}K" } %>
 <% count = m.tiers.size %>
+<% stage = nxt || m.tiers.last %>
+<% segment = 100.0 / count %>
+<% gradient = "linear-gradient(90deg, " + m.tiers.each_with_index.map { |tier, i| "#{tier.color} #{(i * segment).round(3)}% #{((i + 1) * segment).round(3)}%" }.join(", ") + ")" %>
 
 <section class="relative flex flex-wrap items-center gap-x-6 gap-y-2 rounded-2xl border border-[#e0e0e5] bg-white px-4 py-2.5 pe-10" data-milestones>
   <%= button_to seller_dashboard_milestones_path(show: 0), method: :patch, form_class: "absolute end-2 top-2", title: sl("Masquer les paliers"), "aria-label": sl("Masquer les paliers"), "data-hide-milestones": true,
@@ -19,7 +22,7 @@
     <div class="leading-tight">
       <p class="text-lg font-bold tracking-tight whitespace-nowrap text-[#1c1c1e] tabular-nums" data-controller="count-up" data-count-up-target-value="<%= m.revenue_cents / 100 %>" data-count-up-suffix-value="<%= currency %>" data-milestone-revenue="<%= m.revenue_cents %>"><%= mad.(m.revenue_cents) %></p>
       <p class="flex items-center gap-1.5 text-[11px] text-[#6e6e73]">
-        <span class="rounded-full bg-[#1c1c1e] px-2 py-px text-[10px] font-semibold text-white" data-milestone-current><%= current ? sl(current.name) : sl("Débutant") %></span>
+        <span class="rounded-full px-2 py-px text-[10px] font-semibold text-white" style="background: <%= current ? current.color : "#1c1c1e" %>" data-milestone-current><%= current ? sl(current.name) : sl("Débutant") %></span>
         <%= sl("Livré depuis le début") %>
       </p>
     </div>
@@ -27,7 +30,7 @@
 
   <div class="relative h-12 min-w-[16rem] flex-1 px-1" role="progressbar" aria-label="<%= sl("Paliers de chiffre d'affaires") %>" aria-valuemin="0" aria-valuemax="100" aria-valuenow="<%= m.overall_fill.floor %>">
     <div class="absolute inset-x-1 top-6 h-2 rounded-full bg-[#e9e9ee]">
-      <div class="ms-fill h-full rounded-full" style="--ms-w: <%= m.overall_fill %>%"></div>
+      <div class="ms-fill h-full rounded-full" style="--ms-w: <%= m.overall_fill %>%; --ms-w-num: <%= [ m.overall_fill, 0.01 ].max %>; --ms-grad: <%= gradient %>"></div>
     </div>
 
     <div class="pointer-events-none absolute inset-x-1 top-0 h-6">
@@ -37,9 +40,9 @@
         </span>
       <% else %>
         <div class="ms-here absolute top-0 -translate-x-1/2" style="--ms-pos: <%= m.overall_fill %>%" data-here>
-          <span class="relative block rounded-md bg-[#1c1c1e] px-2 py-1 text-[10px] leading-none font-semibold whitespace-nowrap text-white">
+          <span class="relative block rounded-md px-2 py-1 text-[10px] leading-none font-semibold whitespace-nowrap text-white" style="background: <%= stage.color %>">
             <%= sl("Je suis ici") %>
-            <i class="absolute start-1/2 top-full size-2 -translate-x-1/2 -translate-y-1/2 rotate-45 bg-[#1c1c1e]"></i>
+            <i class="absolute start-1/2 top-full size-2 -translate-x-1/2 -translate-y-1/2 rotate-45" style="background: <%= stage.color %>"></i>
           </span>
         </div>
       <% end %>
@@ -50,9 +53,11 @@
         <% is_current = current && current.key == tier.key %>
         <% position = ((index + 1) * 100.0 / count).round(2) %>
         <li class="absolute top-[22px] flex flex-col items-center <%= index == count - 1 ? "-translate-x-full items-end" : "-translate-x-1/2" %>" style="left: <%= position %>%"
-            data-tier="<%= tier.key %>" data-unlocked="<%= tier.unlocked %>" data-fill="<%= tier.fill %>" data-current="<%= is_current ? "true" : "false" %>" title="<%= sl(tier.name) %> · <%= mad.(tier.threshold_cents) %>">
-          <span class="grid size-4 place-items-center rounded-full border-2 border-white <%= tier.unlocked ? "bg-[#1c1c1e] text-white" : "bg-[#d2d2d7] text-white" %> shadow-[0_0_0_1px_rgba(0,0,0,0.08)]"><%= seller_icon(tier.unlocked ? :check : :lock, size: 8) %></span>
-          <span class="mt-0.5 hidden text-[10px] leading-none whitespace-nowrap sm:block <%= is_current ? "font-bold text-[#1c1c1e]" : (tier.unlocked ? "font-semibold text-[#3a3a3c]" : "text-[#8e8e93]") %>"><%= sl(tier.name) %> <span class="font-normal opacity-70"><%= short.(tier.threshold_cents) %></span></span>
+            data-tier="<%= tier.key %>" data-unlocked="<%= tier.unlocked %>" data-fill="<%= tier.fill %>" data-color="<%= tier.color %>" data-current="<%= is_current ? "true" : "false" %>" title="<%= sl(tier.name) %> · <%= mad.(tier.threshold_cents) %>">
+          <%# Each stage has its own colour: a solid disc with a tick once unlocked, a tinted lock of the same colour before %>
+          <span class="grid size-[18px] place-items-center rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.08)]"
+                style="<%= tier.unlocked ? "background: #{tier.color}; color: #fff" : "background: color-mix(in srgb, #{tier.color} 18%, white); color: #{tier.color}" %>"><%= seller_icon(tier.unlocked ? :check : :lock, size: 9) %></span>
+          <span class="mt-0.5 hidden text-[10px] leading-none whitespace-nowrap sm:block <%= is_current ? "font-bold" : (tier.unlocked ? "font-semibold" : "") %>" style="color: <%= tier.unlocked ? tier.color : "#8e8e93" %>"><%= sl(tier.name) %> <span class="font-normal opacity-70"><%= short.(tier.threshold_cents) %></span></span>
         </li>
       <% end %>
     </ol>

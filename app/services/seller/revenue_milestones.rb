@@ -11,17 +11,17 @@ module Seller
   # - the current tier is the last unlocked one (none below the first threshold).
   # Whole centimes and integer maths for the amounts; percentages are rounded down so 99.9 % never reads 100 %.
   class RevenueMilestones
-    # [key, French name, threshold in MAD]
+    # [key, French name, threshold in MAD, colour of the stage]
     TIERS = [
-      [ "pionnier", "Pionnier", 100_000 ],
-      [ "doyen", "Doyen", 500_000 ],
-      [ "leader", "Leader", 2_000_000 ],
-      [ "maitre", "Maître", 5_000_000 ],
-      [ "legende", "Légende", 10_000_000 ],
-      [ "titan", "Titan", 50_000_000 ]
+      [ "pionnier", "Pionnier", 100_000, "#3aa76d" ],
+      [ "doyen", "Doyen", 500_000, "#3b82c4" ],
+      [ "leader", "Leader", 2_000_000, "#7c5cd6" ],
+      [ "maitre", "Maître", 5_000_000, "#e08a2c" ],
+      [ "legende", "Légende", 10_000_000, "#d6455d" ],
+      [ "titan", "Titan", 50_000_000, "#1c1c1e" ]
     ].freeze
 
-    Tier = Data.define(:key, :name, :threshold_cents, :unlocked, :fill)
+    Tier = Data.define(:key, :name, :threshold_cents, :unlocked, :fill, :color)
 
     attr_reader :revenue_cents
 
@@ -34,13 +34,13 @@ module Seller
     def tiers
       @tiers ||= begin
         previous = 0
-        TIERS.map do |key, name, mad|
+        TIERS.map do |key, name, mad, color|
           threshold = mad * 100
           fill = if revenue_cents >= threshold then 100
           elsif revenue_cents > previous then ((revenue_cents - previous) * 100 / (threshold - previous))
           else 0
           end
-          tier = Tier.new(key: key, name: name, threshold_cents: threshold, unlocked: revenue_cents >= threshold, fill: fill)
+          tier = Tier.new(key: key, name: name, threshold_cents: threshold, unlocked: revenue_cents >= threshold, fill: fill, color: color)
           previous = threshold
           tier
         end

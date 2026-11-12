@@ -49,6 +49,31 @@ RSpec.describe "Dashboard milestones", type: :request do
     expect(document.at_css("[data-milestones] [data-here]")).to be_nil
   end
 
+  it "gives every stage its own colour: solid with a tick once unlocked, a tinted lock of the same colour before" do
+    get "/dashboard", params: { locale: "fr" }
+
+    tiers = document.css("[data-tier]")
+    colors = tiers.map { |tier| tier["data-color"] }
+    expect(colors).to eq(%w[#3aa76d #3b82c4 #7c5cd6 #e08a2c #d6455d #1c1c1e])
+    expect(colors.uniq.size).to eq(6)
+    unlocked, locked = tiers.partition { |tier| tier["data-unlocked"] == "true" }
+    expect(unlocked.map { |tier| tier.at_css("span")["style"] }).to eq([ "background: #3aa76d; color: #fff" ])
+    expect(locked.first.at_css("span")["style"]).to eq("background: color-mix(in srgb, #3b82c4 18%, white); color: #3b82c4")   # Doyen, still locked
+    fill = document.at_css(".ms-fill")["style"]
+    expect(fill).to include("--ms-w: 21.83%", "#3aa76d 0.0% 16.667%", "#3b82c4 16.667% 33.333%", "#1c1c1e 83.333% 100.0%")
+    expect(document.at_css("[data-milestone-current]")["style"]).to include("#3aa76d")   # Pionnier
+    expect(document.at_css("[data-here] span")["style"]).to include("#3b82c4")            # the stage being filled
+  end
+
+  it "shows the four headline figures as flat rectangles" do
+    get "/dashboard", params: { locale: "fr" }
+
+    cards = document.css("[data-kpis=headline] [data-kpi]")
+    expect(cards.map { |card| card["data-kpi"] }).to eq(%w[revenue orders confirmation_rate average_basket])
+    expect(cards.map { |card| card["class"][/min-h-\[\d+px\]/] }.uniq).to eq([ "min-h-[72px]" ])
+    expect(cards).to all(satisfy { |card| card["class"].include?("items-center") && !card["class"].include?("flex-col") }) # icon beside the text, not above it
+  end
+
   describe "the on/off switch" do
     it "hides the bar for the person who switched it off, offers to show it again, and remembers" do
       get "/dashboard", params: { locale: "fr" }

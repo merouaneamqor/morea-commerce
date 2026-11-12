@@ -26,15 +26,6 @@ ar:
       access: "طلبات الانضمام"
       integrations: "أخطاء التكامل"
       privacy: "طلبات الخصوصية"
-    workspace_detail:
-      title: "مساحة العمل"
-      identity: "الهوية"
-      plan: "الخطة والفوترة"
-      connections: "الاتصالات"
-      shortcuts: "فتح إدارة التاجر"
-      return_banner: "جلسة المنصة في %{name}."
-      return_workspace: "سجل مساحة العمل"
-      return_platform: "نظرة المنصة"
     billing_console:
       title: "فوترة الاشتراكات"
       description: "فواتير اشتراك المنصة بالدرهم. مبيعات التجار منفصلة."
@@ -289,6 +280,7 @@ ar:
         confirmation_mismatch: "النص المكتوب لا يطابق النطاق الفرعي لمساحة العمل. لم يتم تغيير أي شيء."
         not_super_admin: "يلزم الوصول كمسؤول أعلى."
     workspace_detail:
+      title: "مساحة العمل"
       document_title: "%{name}"
       identity: "الهوية"
       host: "المضيف"
@@ -314,6 +306,9 @@ ar:
       accounting: "المحاسبة"
       configuration: "الإعدادات"
       configuration_help: "الفوترة وواجهة المتجر وإعادة التعيين موجودة في صفحة التعديل."
+      return_banner: "جلسة المنصة في %{name}."
+      return_workspace: "سجل مساحة العمل"
+      return_platform: "نظرة المنصة"
     workspace_banner:
       working_in: "أنت تعمل في %{name}."
       workspace_detail: "تفاصيل مساحة العمل"

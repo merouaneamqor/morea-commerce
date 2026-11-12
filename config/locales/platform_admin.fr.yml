@@ -26,15 +26,6 @@ fr:
       access: "Demandes d'accès"
       integrations: "Échecs d'intégration"
       privacy: "Demandes de confidentialité"
-    workspace_detail:
-      title: "Espace"
-      identity: "Identité"
-      plan: "Offre et facturation"
-      connections: "Connexions"
-      shortcuts: "Ouvrir l'admin marchand"
-      return_banner: "Session plateforme dans %{name}."
-      return_workspace: "Fiche de l'espace"
-      return_platform: "Vue plateforme"
     billing_console:
       title: "Facturation des abonnements"
       description: "Factures d'abonnement plateforme en MAD. Les ventes marchandes sont séparées."
@@ -289,6 +280,7 @@ fr:
         confirmation_mismatch: "Le texte saisi ne correspond pas au sous-domaine de l’espace. Rien n’a été modifié."
         not_super_admin: "Accès super administrateur requis."
     workspace_detail:
+      title: "Espace"
       document_title: "%{name}"
       identity: "Identité"
       host: "Hôte"
@@ -314,6 +306,9 @@ fr:
       accounting: "Comptabilité"
       configuration: "Configuration"
       configuration_help: "La facturation, la vitrine et la réinitialisation sont sur la page de modification."
+      return_banner: "Session plateforme dans %{name}."
+      return_workspace: "Fiche de l'espace"
+      return_platform: "Vue plateforme"
     workspace_banner:
       working_in: "Vous travaillez dans %{name}."
       workspace_detail: "Fiche de l’espace"

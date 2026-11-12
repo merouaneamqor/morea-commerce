@@ -32,10 +32,8 @@ module Admin
 
     def load_sidekiq_jobs
       require "sidekiq/api"
-      @dead_jobs = map_jobs(Sidekiq::DeadSet.new, "dead")
-      @retry_jobs = map_jobs(Sidekiq::RetrySet.new, "retry")
-    rescue *redis_errors => error
-      mark_redis_unavailable(error)
+      @dead_jobs = read_job_set(Sidekiq::DeadSet, "dead")
+      @retry_jobs = read_job_set(Sidekiq::RetrySet, "retry")
     end
 
     def redis_errors
@@ -46,11 +44,12 @@ module Admin
       errors
     end
 
-    def mark_redis_unavailable(error)
+    def read_job_set(set_class, set_name)
+      map_jobs(set_class.new, set_name)
+    rescue *redis_errors => error
       @redis_available = false
-      @dead_jobs = []
-      @retry_jobs = []
-      Rails.error.report(error, handled: true, context: { surface: "platform_operations" })
+      Rails.error.report(error, handled: true, context: { surface: "platform_operations", set: set_name })
+      []
     end
 
     def map_jobs(set, set_name)

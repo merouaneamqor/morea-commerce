@@ -50,7 +50,7 @@
       <% elsif !agent_view? %>
         <div data-no-company>
           <span class="admin-label"><%= t("orders_modal.company") %></span>
-          <%= link_to t("orders_modal.company_none"), seller_integrations_path(anchor: "delivery"), data: { turbo_frame: "_top" }, class: "flex min-h-10 items-center rounded-xl border border-dashed border-[#1c1c1e]/25 px-3 text-xs font-semibold text-[#1c1c1e] underline decoration-dotted underline-offset-4" %>
+          <%= link_to t("orders_modal.company_none"), seller_integrations_path(anchor: "delivery"), data: { turbo_frame: "_top" }, class: "flex min-h-10 items-center rounded-xl border border-[#e5484d] bg-[#fdecec] px-3 py-1.5 text-xs font-semibold text-[#b4232a] hover:bg-[#fbdcdc]" %>
         </div>
       <% end %>
       <%= render "city_fields", combobox: true, city_label: t("orders_modal.city"), city_placeholder: t("orders_modal.city_placeholder"), city_hint: t("orders_modal.city_hint"), order: @order, cities: ctx[:cities], districts_by_city: ctx[:districts_by_city], district_required: ctx[:district_required], district_options: ctx[:district_options] %>

@@ -174,7 +174,8 @@ RSpec.describe "Orders page", type: :request do
       expect(cards.map { |card| card["class"][/h-\[\d+px\]/] }.uniq).to eq([ "h-[110px]" ])                        # same size as the dashboard cards
       expect(cards.select { |card| card["class"].include?("from-[#f7d9a4]") }.map { |card| card["data-card"] }).to eq([ "total" ])   # the gold card
       expect(document.at_css("[data-overview]").to_html).not_to include("border-s-[3px]")                         # no coloured left edge any more
-      expect(cards.reject { |card| card["data-card"] == "total" }.map { |card| card.at_css("p span")["class"] }.uniq).to eq([ "shrink-0 text-[#6e6e73]" ])   # grey icon
+      chips = cards.reject { |card| card["data-card"] == "total" }.map { |card| card.at_css("p span")["class"] }
+      expect(chips).to all(include("grid size-6 shrink-0 place-items-center rounded-lg bg-[#"))   # only the symbol is coloured
     end
 
     it "filters by payment, company, source, product, missed calls and search" do

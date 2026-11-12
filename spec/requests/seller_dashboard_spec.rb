@@ -18,7 +18,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
   end
 
   def menu_links
-    document.css("aside nav ul a").map { |link| link["href"] }
+    document.css("aside nav ul a").reject { |link| link["data-subnav-item"].present? && link["data-subnav-item"] != "queue" }.map { |link| link["href"] }   # the pages inside Centre d'appels are checked in call_center_menu_spec
   end
 
   it "requires authentication" do
@@ -62,7 +62,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     nav = aside.at_css("nav[data-sidebar-nav]")
     expect(nav["class"]).to include("overflow-y-auto", "p-2.5")
     expect(nav.at_css("ul")["class"]).to include("space-y-0.5")
-    expect(links.map { |link| link["class"][/py-[\d.]+/] }.uniq).to eq([ "py-2" ])
+    expect(links.reject { |link| link["data-subnav-item"] }.map { |link| link["class"][/py-[\d.]+/] }.uniq).to eq([ "py-2" ])
   end
 
   it "no longer shows the financial cards: they moved to Comptabilité" do

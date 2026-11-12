@@ -44,7 +44,30 @@
             <% seller_menu(current_admin_user).each do |key, icon, label, href| %>
               <% on = key == active %>
               <li>
-                <% if href.nil? %>
+                <% if key == "confirmation" %>
+                  <%# "Centre d'appels": a group that opens on click and lists its pages; it stays open on any of them. %>
+                  <% sub_active = seller_call_center_active %>
+                  <details class="group" data-call-center-nav <%= "open" if on %>>
+                    <summary title="<%= sl(label) %>" class="flex cursor-pointer list-none items-center gap-3 rounded-xl px-3 py-2 text-sm [&::-webkit-details-marker]:hidden <%= on ? nav_on : nav_off %>">
+                      <%= seller_icon(icon) %> <span data-label><%= sl(label) %></span>
+                      <svg data-label viewBox="0 0 24 24" class="ms-auto size-4 shrink-0 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round] transition-transform group-open:rotate-180" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </summary>
+                    <ul class="mt-0.5 ms-5 space-y-0.5 border-s border-[#e0e0e5] ps-2" data-subnav>
+                      <% seller_call_center_menu(current_admin_user).each do |sub_key, sub_icon, sub_label, sub_href| %>
+                        <li>
+                          <% if sub_href.nil? %>
+                            <span class="flex cursor-not-allowed items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] text-[#8e8e93]" title="<%= sl(sub_label) %> · <%= sl("Bientôt disponible") %>" data-subnav-item="<%= sub_key %>"><%= seller_icon(sub_icon, size: 15) %> <span data-label><%= sl(sub_label) %></span></span>
+                          <% else %>
+                            <%= link_to sub_href, title: sl(sub_label), "data-subnav-item": sub_key, "aria-current": (sub_key == sub_active ? "page" : nil),
+                                  class: "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] #{sub_key == sub_active ? nav_on : nav_off}" do %>
+                              <%= seller_icon(sub_icon, size: 15) %> <span data-label><%= sl(sub_label) %></span>
+                            <% end %>
+                          <% end %>
+                        </li>
+                      <% end %>
+                    </ul>
+                  </details>
+                <% elsif href.nil? %>
                   <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#8e8e93]" title="<%= sl(label) %> · <%= sl("Bientôt disponible") %>"><%= seller_icon(icon) %> <span data-label><%= sl(label) %></span></span>
                 <% else %>
                   <%= link_to href, title: sl(label), class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm #{on ? nav_on : nav_off}" do %>

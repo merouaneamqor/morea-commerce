@@ -3680,3 +3680,10 @@ main {
 [data-orders-table] tbody td { border-bottom: 1px solid #eef0f4; }
 [data-orders-table] tbody tr:last-child td { border-bottom: 0; }
 [data-orders-table] th { border-bottom: 1px solid #e3e5ea; }
+
+/* Menu "Centre d'appels": the group's pages are hidden when the menu is reduced to its icons */
+@media (min-width: 1024px) {
+  html[data-sidebar="collapsed"] [data-seller-shell] aside [data-subnav] { display: none; }
+  html[data-sidebar="collapsed"] [data-seller-shell] aside summary { justify-content: center; padding-inline: 0; }
+}
+[data-call-center-nav] > summary::-webkit-details-marker { display: none; }

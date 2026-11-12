@@ -12,6 +12,9 @@
 <% btn_light = "inline-flex h-8 items-center gap-1.5 rounded-full border border-[#e0e0e5] bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#f4f5f8]" %>
 <% field = "h-8 rounded-full border border-[#e0e0e5] bg-white px-3 text-[13px] text-[#1c1c1e] focus:border-[#1d1d1f] focus:outline-none" %>
 
+<%# "Créer une commande" opens the same window as on the Orders page. %>
+<turbo-frame id="order-modal"></turbo-frame>
+
 <div class="space-y-3" data-call-center>
   <header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white" data-cc-header>
     <div class="flex items-center gap-3">
@@ -23,7 +26,7 @@
     </div>
     <div class="flex flex-wrap items-center gap-2">
       <% unless agent_view? %>
-        <%= link_to new_admin_order_path, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" do %>+ <%= t("call_center.create_order") %><% end %>
+        <%= link_to new_admin_order_path, data: { turbo_frame: "order-modal" }, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" do %>+ <%= t("call_center.create_order") %><% end %>
       <% end %>
       <span class="inline-flex h-8 items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold"><%= current_user.name.presence || current_user.email %></span>
       <% if @open_shift %>

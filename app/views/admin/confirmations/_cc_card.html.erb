@@ -1,6 +1,14 @@
-<%# One stat card of the call center. locals: label, value, hint, tone (hex of the small accent dot), key (data-card). Printing only. %>
+<%# One stat card of the call center, drawn like the dashboard cards: a small coloured symbol beside the label, the value, a short
+    description. Only the symbol is coloured. locals: label, value, hint, key (data-card); tone is kept for callers but unused. Printing only. %>
+<% symbols = {
+  "assigned" => [ :team, "bg-[#ececf0] text-[#1c1c1e]" ], "pending" => [ :clock, "bg-[#fdf0d9] text-[#d28a12]" ], "failed" => [ :alert, "bg-[#fbe7ea] text-[#d6455d]" ],
+  "confirmed" => [ :check, "bg-[#e3f3e8] text-[#2f9d5c]" ], "delivered" => [ :box, "bg-[#e3f3e8] text-[#2f9d5c]" ], "cancelled" => [ :cancel, "bg-[#fbe7ea] text-[#d6455d]" ],
+  "returned" => [ :undo, "bg-[#fdf0d9] text-[#d28a12]" ], "paid" => [ :wallet, "bg-[#e3f3e8] text-[#2f9d5c]" ], "due" => [ :calculator, "bg-[#e6f0fd] text-[#2f6fed]" ],
+  "deductions" => [ :ban, "bg-[#fbe7ea] text-[#d6455d]" ]
+} %>
+<% symbol, chip = symbols.fetch(key, [ :flag, "bg-[#efeff3] text-[#6e6e73]" ]) %>
 <div class="flex min-h-[84px] flex-col justify-between rounded-2xl border border-[#e0e0e5] bg-white px-3.5 py-3" data-card="<%= key %>" title="<%= hint %>">
-  <p class="flex items-center gap-2 text-xs font-medium text-[#6e6e73]"><span class="size-2 rounded-full" style="background: <%= tone %>"></span><%= label %></p>
+  <p class="flex items-center gap-2 text-xs font-medium text-[#6e6e73]"><span class="grid size-6 shrink-0 place-items-center rounded-lg <%= chip %>"><%= seller_icon(symbol, size: 14) %></span><%= label %></p>
   <p class="mt-1 text-2xl leading-none font-bold text-[#1c1c1e] tabular-nums" data-value><%= value %></p>
   <p class="mt-1 truncate text-[11px] text-[#8e8e93]"><%= hint %></p>
 </div>

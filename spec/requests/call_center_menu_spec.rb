@@ -26,7 +26,7 @@ RSpec.describe "Call center menu", type: :request do
     expect(items["assignments"]["href"]).to eq("/admin/confirmations/assignments")
     expect(items["rules"]["href"]).to eq("/admin/confirmations/rules")
     expect(items["attendance"]["href"]).to eq("/admin/confirmations/attendance")
-    expect(items["billing"].name).to eq("span")
+    expect(items["billing"]["href"]).to eq("/admin/agent-billing")
     expect(menu.has_attribute?("open")).to be(false)                           # closed away from the call center
   end
 

@@ -12,7 +12,7 @@ module Admin
       @date_range = selected_date_range(scope: "my_billing", default: "this_month")
       range = @date_range.time_range
       @summary = Team::AgentEarnings.new(store: current_store, range: range).summary_for(current_user)
-      @payments = AgentPayment.where(store: current_store, user: current_user, paid_at: range).order(paid_at: :desc).limit(50)
+      @payments = AgentPayment.where(store: current_store, user: current_user, paid_at: range).includes(proof_attachment: :blob).order(paid_at: :desc).limit(50)
       @deductions = AgentDeduction.where(store: current_store, user: current_user, created_at: range).includes(:order).order(created_at: :desc).limit(50)
     end
 

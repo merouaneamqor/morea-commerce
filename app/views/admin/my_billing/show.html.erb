@@ -54,6 +54,8 @@
           <th class="px-2 py-2 text-end font-medium"><%= sl("Gains réglés") %></th>
           <th class="px-2 py-2 text-end font-medium"><%= sl("Retenues") %></th>
           <th class="px-2 py-2 text-end font-medium"><%= sl("Montant reçu") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Mode de paiement") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Preuve") %></th>
         </tr></thead>
         <tbody class="divide-y divide-[#f1f1f4]">
           <% @payments.each do |payment| %>
@@ -62,6 +64,8 @@
               <td class="px-2 py-2.5 text-end tabular-nums"><%= money(payment.amount_cents) %></td>
               <td class="px-2 py-2.5 text-end tabular-nums"><%= payment.deductions_cents.positive? ? "− #{money(payment.deductions_cents)}" : "—" %></td>
               <td class="px-2 py-2.5 text-end"><span class="inline-block rounded-full bg-[#e3f3e8] px-2.5 py-0.5 text-[12px] font-semibold whitespace-nowrap text-[#2f7a4a] tabular-nums"><%= money(payment.cash_cents) %></span></td>
+              <td class="px-2 py-2.5"><%= payment.payment_method ? { "cash" => sl("Espèces"), "bank_transfer" => sl("Virement bancaire") }[payment.payment_method] : "—" %></td>
+              <td class="px-2 py-2.5"><% if payment.proof.attached? %><%= link_to sl("Voir la preuve"), rails_blob_path(payment.proof, disposition: "inline"), target: "_blank", rel: "noopener", class: "font-medium text-[#2b5f9e] hover:underline" %><% else %><span class="text-[#8e8e93]">—</span><% end %></td>
             </tr>
           <% end %>
         </tbody>

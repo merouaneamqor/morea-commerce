@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_13_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -179,12 +179,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_100000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "deductions_cents", default: 0, null: false
+    t.string "payment_method"
+    t.string "reference"
     t.index ["paid_by_id"], name: "index_agent_payments_on_paid_by_id"
     t.index ["store_id", "user_id", "paid_at"], name: "index_agent_payments_on_store_id_and_user_id_and_paid_at"
     t.index ["store_id"], name: "index_agent_payments_on_store_id"
     t.index ["user_id"], name: "index_agent_payments_on_user_id"
     t.check_constraint "amount_cents > 0", name: "agent_payments_amount_positive"
     t.check_constraint "deductions_cents >= 0 AND deductions_cents <= amount_cents", name: "agent_payments_deductions_within_amount"
+    t.check_constraint "payment_method IS NULL OR (payment_method::text = ANY (ARRAY['cash'::character varying, 'bank_transfer'::character varying]::text[]))", name: "agent_payments_method"
+    t.check_constraint "reference IS NULL OR char_length(reference::text) <= 200", name: "agent_payments_reference_length"
   end
 
   create_table "assignment_rule_agents", force: :cascade do |t|

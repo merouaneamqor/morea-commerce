@@ -251,3 +251,91 @@
   en: "No deduction in this period."
   ar: "لا توجد خصومات في هذه الفترة."
   es: "No hay retenciones en este periodo."
+"Facturation des agents":
+  en: "Agent billing"
+  ar: "فوترة الوكلاء"
+  es: "Facturación de agentes"
+"Payez vos agents et gardez la preuve de chaque paiement.":
+  en: "Pay your agents and keep the proof of every payment."
+  ar: "ادفع لوكلائك واحتفظ بإثبات كل دفعة."
+  es: "Paga a tus agentes y guarda la prueba de cada pago."
+"Reste à payer (équipe)":
+  en: "Left to pay (team)"
+  ar: "المتبقي للدفع (الفريق)"
+  es: "Pendiente de pago (equipo)"
+"Gains cumulés non payés":
+  en: "Unpaid total earnings"
+  ar: "الأرباح المتراكمة غير المدفوعة"
+  es: "Ganancias acumuladas sin pagar"
+"Payé sur la période":
+  en: "Paid in the period"
+  ar: "المدفوع خلال الفترة"
+  es: "Pagado en el periodo"
+"Aucun agent pour le moment.":
+  en: "No agent yet."
+  ar: "لا يوجد وكلاء حتى الآن."
+  es: "Aún no hay agentes."
+"Paiement":
+  en: "Payment"
+  ar: "الدفع"
+  es: "Pago"
+"Rien à payer":
+  en: "Nothing to pay"
+  ar: "لا شيء للدفع"
+  es: "Nada que pagar"
+"Payer":
+  en: "Pay"
+  ar: "دفع"
+  es: "Pagar"
+"Retenues déduites":
+  en: "Deductions taken off"
+  ar: "الخصومات المحسومة"
+  es: "Retenciones descontadas"
+"Montant à remettre":
+  en: "Amount to hand over"
+  ar: "المبلغ الواجب تسليمه"
+  es: "Importe a entregar"
+"Mode de paiement":
+  en: "Payment method"
+  ar: "طريقة الدفع"
+  es: "Método de pago"
+"Espèces":
+  en: "Cash"
+  ar: "نقدًا"
+  es: "Efectivo"
+"Virement bancaire":
+  en: "Bank transfer"
+  ar: "تحويل بنكي"
+  es: "Transferencia bancaria"
+"Référence (n° de virement, reçu…)":
+  en: "Reference (transfer no., receipt…)"
+  ar: "المرجع (رقم التحويل، الإيصال…)"
+  es: "Referencia (n.º de transferencia, recibo…)"
+"Preuve de paiement (photo ou PDF)":
+  en: "Proof of payment (photo or PDF)"
+  ar: "إثبات الدفع (صورة أو PDF)"
+  es: "Prueba de pago (foto o PDF)"
+"Obligatoire pour un virement bancaire.":
+  en: "Required for a bank transfer."
+  ar: "إلزامي في حالة التحويل البنكي."
+  es: "Obligatoria para una transferencia bancaria."
+"Confirmer le paiement":
+  en: "Confirm the payment"
+  ar: "تأكيد الدفع"
+  es: "Confirmar el pago"
+"Référence":
+  en: "Reference"
+  ar: "المرجع"
+  es: "Referencia"
+"Preuve":
+  en: "Proof"
+  ar: "الإثبات"
+  es: "Prueba"
+"Payé par":
+  en: "Paid by"
+  ar: "دفعه"
+  es: "Pagado por"
+"Voir la preuve":
+  en: "View the proof"
+  ar: "عرض الإثبات"
+  es: "Ver la prueba"

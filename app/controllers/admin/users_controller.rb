@@ -54,27 +54,12 @@ module Admin
       end
     end
 
-    # Records one payment covering everything earned and not yet paid.
+    # Records one payment covering everything earned and not yet paid (paid in cash; the Facturation page of the agents also records a bank transfer and a proof).
     def pay
-      summary = Team::AgentEarnings.new(store: current_store, range: Time.current.beginning_of_month..Time.current).summary_for(@user)
-      if summary.unpaid.zero?
-        redirect_to admin_users_path, alert: t("admin.team.nothing_to_pay")
-      else
-        # The payout settles the unpaid earnings and subtracts the pending deductions, oldest first, as many
-        # as the earnings cover (a deduction is never split); the rest waits for the next payout.
-        AgentPayment.transaction do
-          payment = AgentPayment.create!(store: current_store, user: @user, paid_by: current_user, amount_cents: summary.unpaid, paid_at: Time.current)
-          covered = 0
-          AgentDeduction.pending.where(store: current_store, user: @user).order(:created_at, :id).lock.each do |deduction|
-            break if covered + deduction.amount_cents > summary.unpaid
-
-            deduction.update!(status: "applied", agent_payment: payment)
-            covered += deduction.amount_cents
-          end
-          payment.update!(deductions_cents: covered)
-        end
-        redirect_to admin_users_path, notice: t("admin.team.paid", name: @user.name.presence || @user.email)
-      end
+      Team::AgentPayout.new(store: current_store, agent: @user, paid_by: current_user).pay!(method: "cash")
+      redirect_to admin_users_path, notice: t("admin.team.paid", name: @user.name.presence || @user.email)
+    rescue Team::AgentPayout::Error => e
+      redirect_to admin_users_path, alert: e.message == "Nothing to pay." ? t("admin.team.nothing_to_pay") : e.message
     end
 
     private

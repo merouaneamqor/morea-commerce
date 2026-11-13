@@ -61,7 +61,7 @@ module SellerHelper
     "customers" => "clients", "delivery" => "delivery", "products" => "products", "variants" => "products",
     "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
     "seallo_connections" => "integrations", "woocommerce_connections" => "integrations", "meta_ads" => "integrations",
-    "accounting" => "accounting", "assignment_rules" => "confirmation", "stores" => "store"
+    "accounting" => "accounting", "assignment_rules" => "confirmation", "stores" => "store", "agent_billing" => "confirmation"
   }.freeze
 
   SELLER_STATUS_BADGES = {
@@ -112,7 +112,7 @@ module SellerHelper
     [ "assignments", :team, "Attributions", "/admin/confirmations/assignments" ],
     [ "rules", :settings, "Règles d'attribution", "/admin/confirmations/rules" ],
     [ "attendance", :clock, "Pointages", "/admin/confirmations/attendance" ],
-    [ "billing", :wallet, "Facturation", nil ]
+    [ "billing", :wallet, "Facturation", "/admin/agent-billing" ]
   ].freeze
 
   # An agent sees the queue and their own analytics only; assignments, rules and billing are the owner's.
@@ -122,6 +122,7 @@ module SellerHelper
 
   def seller_call_center_active
     return "rules" if controller_name == "assignment_rules"
+    return "billing" if controller_name == "agent_billing"
     return unless controller_name == "confirmations"
 
     case action_name

@@ -15,15 +15,16 @@ RSpec.describe "Notices as toasts", type: :request do
 
   def page = Nokogiri::HTML(response.body)
 
-  it "shows a notice for one second in a floating window, and an error for four" do
+  it "shows a notice for two seconds in a window, and an error for four" do
     sign_in(owner)
     patch permissions_admin_user_path(saida), params: { areas: %w[dashboard queue] }
     follow_redirect!
     toast = page.at_css("[data-toasts] [data-toast-kind=notice]")
     expect(toast.text).to include("Saida")
     expect(toast["data-controller"]).to eq("toast")
-    expect(toast["data-toast-duration-value"]).to eq("1000")
-    expect(toast["class"]).to include("toast-glass")
+    expect(toast["data-toast-duration-value"]).to eq("2000")
+    expect(toast["class"]).to include("toast-overlay")
+    expect(toast.at_css(".toast-card")).to be_present # the welcome-window look: a glass card
     expect(page.at_css("[data-toasts]")["class"]).to include("fixed")
     expect(page.at_css("[data-toasts]")).to have_attributes(attributes: include("data-turbo-temporary"))
 

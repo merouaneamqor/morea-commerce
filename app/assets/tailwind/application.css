@@ -3738,8 +3738,10 @@ main {
 .glass-switch button.text-white { color: #1c1c1e; }
 @media (prefers-reduced-transparency: reduce) { .glass-switch { background: #efeff3; -webkit-backdrop-filter: none; backdrop-filter: none; } }
 
-/* Notices: a gray-glass window in the middle of the screen (frosted gray, dark text) that fades in and goes away by itself (toast_controller.js). */
-.toast-glass { background: rgba(126, 132, 146, 0.32); border: 1px solid rgba(255, 255, 255, 0.55); color: #1c1c1e; -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); box-shadow: 0 18px 40px -20px rgba(31, 36, 48, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.6); transition: opacity 0.28s ease, transform 0.28s ease; }
-.toast-glass.is-pre { opacity: 0; transform: scale(0.94); }
-@media (prefers-reduced-transparency: reduce) { .toast-glass { background: #d9dbe1; -webkit-backdrop-filter: none; backdrop-filter: none; } }
-@media (prefers-reduced-motion: reduce) { .toast-glass { transition: none; } }
+/* Notices: a window in the middle of the screen, like the agent's welcome window (white glass card over a light veil). It fades in and goes away by itself (toast_controller.js). */
+.toast-overlay { background: rgba(31, 36, 48, 0.18); transition: opacity 0.28s ease; }
+.toast-overlay .toast-card { transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+.toast-overlay.is-pre { opacity: 0; }
+.toast-overlay.is-pre .toast-card { transform: scale(0.94); }
+@media (prefers-reduced-transparency: reduce) { .toast-overlay .toast-card { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; } }
+@media (prefers-reduced-motion: reduce) { .toast-overlay, .toast-overlay .toast-card { transition: none; } }

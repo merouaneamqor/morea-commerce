@@ -2,19 +2,21 @@
 
 module Morea
   module Locales
-    AVAILABLE = %i[fr en ar].freeze
+    AVAILABLE = %i[fr en es ar].freeze
     DEFAULT = :fr
     RTL = %i[ar].freeze
 
     LABELS = {
       fr: "Français",
       en: "English",
+      es: "Español",
       ar: "العربية"
     }.freeze
 
     CODES = {
       fr: "FR",
       en: "EN",
+      es: "ES",
       ar: "AR"
     }.freeze
 

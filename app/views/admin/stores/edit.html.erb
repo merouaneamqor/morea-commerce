@@ -5,6 +5,28 @@
   <button type="submit" form="store-form" class="admin-btn">Save</button>
 </div>
 
+<section class="admin-card mb-4" id="logo" data-store-logo>
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= sl("Boutique") %> · <%= @store.name %></h2></div>
+  <div class="space-y-3 px-4 pb-4">
+    <p class="admin-help"><%= sl("Votre agent le voit en haut de son espace, à la place de seallo. Un PNG sans fond (transparent) rend le mieux.") %></p>
+    <span class="inline-grid h-20 min-w-40 place-items-center rounded-xl border border-dashed border-[#d0d0d6] bg-[#f6f6f8] px-5" data-store-logo-preview>
+      <% if @store.logo_ready? %><%= image_tag MediaUrl.for(@store.logo, store: @store), alt: @store.name, class: "max-h-14 w-auto object-contain" %><% else %><span class="text-sm text-[#8e8e93]"><%= sl("Aucun logo pour le moment.") %></span><% end %>
+    </span>
+    <%= form_with model: @store, url: admin_store_path, method: :patch, class: "flex flex-wrap items-end gap-2", data: { store_website_form: true } do |site_form| %>
+      <div class="min-w-64 flex-1">
+        <%= site_form.label :website_url, sl("Adresse du site"), class: "admin-label" %>
+        <%= site_form.text_field :website_url, placeholder: "https://walkfit33.com", dir: "ltr", maxlength: 200, class: "admin-input" %>
+        <p class="admin-help"><%= sl("Vos agents la voient sous le logo et peuvent cliquer dessus pour ouvrir la boutique.") %></p>
+      </div>
+      <%= site_form.submit sl("Enregistrer"), class: "admin-btn" %>
+    <% end %>
+    <%= form_with model: @store, url: logo_admin_store_path, method: :patch, class: "flex flex-wrap items-center gap-3", data: { controller: "auto-submit" } do |logo_form| %>
+      <label class="admin-btn-secondary cursor-pointer"><%= sl("Choisir un logo") %><%= logo_form.file_field :logo, accept: Store::LOGO_TYPES.join(","), class: "sr-only", data: { action: "auto-submit#submit", store_logo_input: true } %></label>
+      <% if @store.logo_ready? %><label class="admin-check"><%= check_box_tag "store[remove_logo]", "1", false, data: { action: "auto-submit#submit" } %> <%= sl("Retirer le logo") %></label><% end %>
+    <% end %>
+  </div>
+</section>
+
 <%= form_with model: @store, url: admin_store_path, method: :patch, id: "store-form", class: "admin-stack" do |f| %>
   <% if @store.errors.any? %>
     <div role="alert" class="admin-banner admin-banner--critical"><%= @store.errors.full_messages.to_sentence %></div>

@@ -1,0 +1,93 @@
+<%# The agents side by side: where each agent's orders ended up, a funnel per agent, the figures against the team median, and the recovery
+    of the failed deliveries per agent. Printing only. locals: comparison, card, title, sub, chip, tones, stage, range (date range for links) %>
+<% rows = comparison.rows %>
+<% outcome_colors = { delivered: "#136b3d", returned: "#d6455d", cancelled: "#8e8e93", in_progress: "#8b5cf6", fake: "#1c1c1e", not_reached: "#e0a52c" } %>
+<% outcome_labels = { delivered: sl("Livrées"), returned: sl("Retournées"), cancelled: sl("Annulées"), in_progress: sl("En cours"), fake: sl("Faux numéros"), not_reached: sl("Non jointes") } %>
+<% funnel_labels = { assigned: sl("Reçues"), reached: sl("Jointes par téléphone"), confirmed: sl("Confirmées"), shipped: sl("Expédiées"), delivered: sl("Livrées") } %>
+
+<% if rows.empty? %>
+  <section class="<%= card %>"><p class="my-6 text-center text-sm text-[#6e6e73]" data-no-agents><%= sl("Aucun agent n'a eu de commande sur cette période.") %></p></section>
+<% else %>
+  <section class="<%= card %>" data-agents-outcomes>
+    <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+      <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:blue] %>"><%= seller_icon(:orders, size: 16) %></span>
+        <div><h2 class="<%= title %>"><%= sl("Où en sont les commandes de chaque agent") %></h2><p class="<%= sub %>"><%= sl("Chaque commande appelée sur la période, selon ce qu'elle est devenue.") %></p></div></div>
+      <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#3a3a3c]"><% outcome_labels.each do |key, label| %><span class="flex items-center gap-1.5"><i class="size-2 rounded-full" style="background: <%= outcome_colors[key] %>"></i><%= label %></span><% end %></p>
+    </div>
+    <ul class="mt-4 space-y-3">
+      <% rows.each do |row| %>
+        <% outcomes = row.analytics.order_outcomes %>
+        <li class="grid grid-cols-[10rem_1fr_3rem] items-center gap-3" data-agent-row="<%= row.user.id %>" data-assigned="<%= row.analytics.assigned %>">
+          <span class="flex min-w-0 items-center gap-2 text-[13px] font-medium text-[#1c1c1e]"><span class="grid size-7 shrink-0 place-items-center rounded-full bg-[#1c1c1e] text-[10px] font-bold text-white"><%= analytics_initials(row.user) %></span><span class="truncate" dir="auto"><%= row.user.name.presence || row.user.email %></span></span>
+          <span class="flex h-2.5 gap-[2px] overflow-hidden rounded-full bg-[#efeff3]"><% outcomes[:rows].each do |part| %><% if part[:count].positive? %><span data-grow style="width: <%= (part[:count] * 100.0 / outcomes[:total]).round(2) %>%; background: <%= outcome_colors[part[:key]] %>" data-tip="<%= row.user.name %> · <%= outcome_labels[part[:key]] %> : <%= part[:count] %>" data-part="<%= part[:key] %>" data-count="<%= part[:count] %>"></span><% end %><% end %></span>
+          <span class="text-end text-xs text-[#8e8e93] tabular-nums"><%= analytics_integer(outcomes[:total]) %></span>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+
+  <section class="<%= card %>" data-agents-funnel>
+    <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:ink] %>"><%= seller_icon(:target, size: 16) %></span>
+      <div><h2 class="<%= title %>"><%= sl("Entonnoir par agent") %></h2><p class="<%= sub %>"><%= sl("Chaque barre est une part des commandes assignées à l'agent : les formes se comparent même quand les volumes diffèrent.") %></p></div></div>
+    <div class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
+      <% rows.each do |row| %>
+        <div class="rounded-2xl border border-[#e0e0e5] bg-[#fafafc] p-4" data-agent-funnel="<%= row.user.id %>">
+          <p class="flex items-center justify-between text-[13px] font-semibold text-[#1c1c1e]"><span class="flex items-center gap-2"><span class="grid size-7 place-items-center rounded-full bg-[#1c1c1e] text-[10px] font-bold text-white"><%= analytics_initials(row.user) %></span><span dir="auto"><%= row.user.name.presence || row.user.email %></span></span><span class="rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-[#8e8e93]"><%= analytics_integer(row.analytics.assigned) %></span></p>
+          <ol class="mt-3 space-y-2.5">
+            <% top = [ row.analytics.assigned, 1 ].max %>
+            <% row.analytics.funnel.each do |key, count, step_rate| %>
+              <li data-stage="<%= key %>" data-count="<%= count %>">
+                <div class="flex items-baseline justify-between gap-2 text-[12.5px]"><span class="flex items-center gap-2 text-[#3a3a3c]"><i class="size-2 rounded-full" style="background: <%= stage[key] %>"></i><%= funnel_labels[key] %></span>
+                  <span class="tabular-nums"><% if step_rate %><span class="me-2 rounded-full bg-white px-1.5 py-0.5 text-[10.5px] text-[#8e8e93]"><%= analytics_percent(step_rate) %> <%= sl("de l'étape précédente") %></span><% end %><b class="font-semibold text-[#1c1c1e]"><%= analytics_integer(count) %></b></span></div>
+                <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-[#efeff3]"><div data-grow class="h-full rounded-full" style="width: <%= count.zero? ? 0 : [ count * 100.0 / top, 1.5 ].max.round(1) %>%; background: <%= stage[key] %>"></div></div>
+              </li>
+            <% end %>
+          </ol>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="<%= card %>" data-agents-table>
+    <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:green] %>"><%= seller_icon(:calculator, size: 16) %></span>
+      <div><h2 class="<%= title %>"><%= sl("Les agents face à la médiane de l'équipe") %></h2><p class="<%= sub %>"><%= sl("Le vert est meilleur que la médiane de l'équipe et le rouge moins bon, quel que soit le sens de l'indicateur. Cliquez sur un agent pour ouvrir son profil.") %></p></div></div>
+    <div class="mt-4 overflow-x-auto">
+      <table class="w-full text-[12.5px]">
+        <thead class="text-[11px] text-[#6e6e73]"><tr><th class="px-2 py-2 text-start font-medium"><%= sl("Agent") %></th><th class="px-2 py-2 text-end font-medium"><%= sl("Assignées") %></th><th class="px-2 py-2 text-end font-medium" data-hours-head><%= sl("Temps travaillé") %></th>
+          <% Confirmations::AgentComparison::METRICS.each do |metric| %><th class="px-2 py-2 text-center font-medium"><%= sl(ConfirmationsAnalyticsHelper::METRIC_LABELS[metric]) %></th><% end %></tr></thead>
+        <tbody class="divide-y divide-[#f1f1f4]">
+          <% rows.each do |row| %>
+            <tr data-agent-row="<%= row.user.id %>">
+              <td class="px-2 py-2 whitespace-nowrap"><%= link_to analytics_admin_confirmations_path(agent_id: row.user.id), class: "flex items-center gap-2 font-medium text-[#1c1c1e] hover:underline" do %><span class="grid size-7 place-items-center rounded-full bg-[#ececf0] text-[10px] font-bold text-[#1c1c1e]"><%= analytics_initials(row.user) %></span><span dir="auto"><%= row.user.name.presence || row.user.email %></span><% end %></td>
+              <td class="px-2 py-2 text-end tabular-nums text-[#6e6e73]"><%= analytics_integer(row.analytics.assigned) %></td>
+              <td class="px-2 py-2 text-end tabular-nums text-[#1c1c1e]" data-worked="<%= row.worked_seconds %>"><%= row.worked_seconds.zero? ? "—" : "#{shift_hours(row.worked_seconds)} h" %></td>
+              <% Confirmations::AgentComparison::METRICS.each do |metric| %>
+                <% verdict = comparison.verdict(metric, row.metrics[metric]) %>
+                <td class="px-1.5 py-2 text-center"><span class="inline-block min-w-14 rounded-full px-2.5 py-1 font-medium whitespace-nowrap tabular-nums <%= analytics_verdict_class(verdict) %>" data-cell="<%= metric %>" data-verdict="<%= verdict %>"><%= analytics_metric_value(metric, row.metrics[metric]) %></span></td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+        <tfoot><tr class="border-t border-[#e0e0e5] text-[#6e6e73]" data-median-row><td class="px-2 py-2 font-medium" colspan="3"><%= sl("Médiane de l'équipe") %></td>
+          <% Confirmations::AgentComparison::METRICS.each do |metric| %><td class="px-1.5 py-2 text-center tabular-nums" data-median-cell="<%= metric %>"><%= analytics_metric_value(metric, comparison.median(metric)) %></td><% end %></tr></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section class="<%= card %>" data-agents-recovery>
+    <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:amber] %>"><%= seller_icon(:undo, size: 16) %></span>
+      <div><h2 class="<%= title %>"><%= sl("Récupération des livraisons") %></h2><p class="<%= sub %>"><%= sl("Commandes passées par un échec de livraison, et ce qu'elles sont devenues, par agent.") %></p></div></div>
+    <ul class="mt-4 space-y-3">
+      <% rows.each do |row| %>
+        <% recovery = row.analytics.recovery %>
+        <li class="grid grid-cols-[10rem_5rem_1fr_3.5rem] items-center gap-3" data-recovery-row="<%= row.user.id %>" data-failed="<%= recovery[:total] %>">
+          <span class="truncate text-[13px] font-medium text-[#1c1c1e]" dir="auto"><%= row.user.name.presence || row.user.email %></span>
+          <span class="text-xs text-[#8e8e93]"><%= recovery[:total] %> <%= sl("échecs") %></span>
+          <span class="min-w-0"><span class="flex h-2 gap-[2px] overflow-hidden rounded-full bg-[#efeff3]"><% [ [ :recovered, "#136b3d" ], [ :returned, "#d6455d" ], [ :in_progress, "#e0a52c" ] ].each do |key, color| %><% if recovery[key].positive? %><span data-grow style="width: <%= (recovery[key] * 100.0 / recovery[:total]).round(2) %>%; background: <%= color %>"></span><% end %><% end %></span>
+            <span class="mt-1 block text-[11px] text-[#8e8e93]"><%= recovery[:recovered] %> <%= sl("récupérées") %>, <%= recovery[:returned] %> <%= sl("retournées") %>, <%= recovery[:in_progress] %> <%= sl("en cours") %></span></span>
+          <span class="text-end text-sm font-bold text-[#1c1c1e] tabular-nums"><%= analytics_percent(recovery[:rate]) %></span>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+<% end %>

@@ -1,0 +1,104 @@
+<%# An agent's own billing, drawn like the dashboard: same header, same figure cards (the gold one is what they earned in all), a bar showing how much
+    of it was paid, and cards for the payouts and the return deductions. Only their own figures (Team::AgentEarnings); nothing about other agents. %>
+<% content_for :title, "#{sl("Facturation")} — Admin" %>
+<% content_for :seller_lang, "1" %>
+<% content_for :admin_page_class, "seller-page" %>
+<% summary = @summary %>
+<% currency = current_store.currency %>
+<% first_name = (current_user.name.presence || current_user.email).to_s.strip.split(/\s+/).first.to_s %>
+<% amount = ->(cents) { seller_number(cents.to_i.fdiv(100)) } %>
+<% card = "rounded-2xl border border-[#e0e0e5] bg-white p-5" %>
+<% paid_percent = summary.earned_total.zero? ? 0 : [ (summary.paid_total * 100.0 / summary.earned_total).round, 100 ].min %>
+<% last_paid = summary.last_paid_at ? "#{sl("Dernier paiement le")} #{l(summary.last_paid_at.in_time_zone(DateRange::ZONE).to_date)}" : sl("Aucun paiement pour le moment.") %>
+
+<header class="flex flex-wrap items-start justify-between gap-3">
+  <div>
+    <h1 class="text-2xl font-bold text-[#1c1c1e] sm:text-[28px]"><%= sl("Facturation") %></h1>
+    <p class="mt-1 text-sm text-[#6e6e73]"><%= first_name %> · <%= sl("Tes gains, tes paiements et tes retenues.") %></p>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <%= render "admin/shared/language_switcher" %>
+    <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_my_billing_path %>
+  </div>
+</header>
+
+<section class="mt-3 grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-5" data-my-billing-summary>
+  <%= render "admin/dashboard/kpi", key: "earned_total", label: sl("Gains cumulés"), icon: :profit, value: amount.(summary.earned_total), unit: currency, featured: true,
+        sub: "#{sl("Par commande livrée")} : #{amount.(current_user.pay_per_delivery_cents)} #{currency}" %>
+  <%= render "admin/dashboard/kpi", key: "earned_month", label: sl("Gagné sur la période"), icon: :calculator, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: amount.(summary.earned_period), unit: currency, sub: sl("Commandes livrées") %>
+  <%= render "admin/dashboard/kpi", key: "paid", label: sl("Déjà payé"), icon: :wallet, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: amount.(summary.paid_total), unit: currency, sub: last_paid %>
+  <%= render "admin/dashboard/kpi", key: "unpaid", label: sl("Reste à payer"), icon: :clock, tone: "bg-[#fdf0d9] text-[#d28a12]", value: amount.(summary.unpaid), unit: currency, sub: sl("Gains cumulés") %>
+  <%= render "admin/dashboard/kpi", key: "pending_deductions", label: sl("Retenues en attente"), icon: :undo, tone: "bg-[#fbe7ea] text-[#d6455d]", value: amount.(summary.pending_deductions), unit: currency, sub: sl("Retenues pour retours") %>
+</section>
+
+<section class="<%= card %> mt-3" data-paid-progress>
+  <div class="flex items-center justify-between gap-2 text-sm">
+    <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Déjà payé") %> / <%= sl("Gains cumulés") %></h2>
+    <span class="font-semibold tabular-nums text-[#2f9d5c]" data-paid-percent="<%= paid_percent %>"><%= paid_percent %> %</span>
+  </div>
+  <div class="mt-3 h-2.5 overflow-hidden rounded-full bg-[#efeff3]"><span class="block h-full rounded-full bg-[#2f9d5c]" style="width: <%= paid_percent %>%"></span></div>
+</section>
+
+<section class="<%= card %> mt-3" data-my-payments>
+  <div class="flex items-start gap-3">
+    <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-[#e3f3e8] text-[#2f9d5c]"><%= seller_icon(:wallet, size: 18) %></span>
+    <div><h2 class="font-semibold text-[#1c1c1e]"><%= sl("Historique des paiements") %></h2><p class="text-xs text-[#6e6e73]"><%= last_paid %></p></div>
+  </div>
+  <% if @payments.empty? %>
+    <p class="my-6 text-center text-sm text-[#6e6e73]" data-no-payments><%= sl("Aucun paiement sur cette période.") %></p>
+  <% else %>
+    <div class="mt-3 overflow-x-auto">
+      <table class="w-full text-[13px]">
+        <thead class="text-[11px] text-[#6e6e73]"><tr>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Date de paiement") %></th>
+          <th class="px-2 py-2 text-end font-medium"><%= sl("Gains réglés") %></th>
+          <th class="px-2 py-2 text-end font-medium"><%= sl("Retenues") %></th>
+          <th class="px-2 py-2 text-end font-medium"><%= sl("Montant reçu") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Mode de paiement") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Preuve") %></th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#f1f1f4]">
+          <% @payments.each do |payment| %>
+            <tr data-payment>
+              <td class="px-2 py-2.5 tabular-nums"><%= l(payment.paid_at.in_time_zone(DateRange::ZONE).to_date) %></td>
+              <td class="px-2 py-2.5 text-end tabular-nums"><%= money(payment.amount_cents) %></td>
+              <td class="px-2 py-2.5 text-end tabular-nums"><%= payment.deductions_cents.positive? ? "− #{money(payment.deductions_cents)}" : "—" %></td>
+              <td class="px-2 py-2.5 text-end"><span class="inline-block rounded-full bg-[#e3f3e8] px-2.5 py-0.5 text-[12px] font-semibold whitespace-nowrap text-[#2f7a4a] tabular-nums"><%= money(payment.cash_cents) %></span></td>
+              <td class="px-2 py-2.5"><%= payment.payment_method ? { "cash" => sl("Espèces"), "bank_transfer" => sl("Virement bancaire") }[payment.payment_method] : "—" %></td>
+              <td class="px-2 py-2.5"><% if payment.proof.attached? %><%= link_to sl("Voir la preuve"), rails_blob_path(payment.proof, disposition: "inline"), target: "_blank", rel: "noopener", class: "font-medium text-[#2b5f9e] hover:underline" %><% else %><span class="text-[#8e8e93]">—</span><% end %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>
+
+<section class="<%= card %> mt-3" data-my-deductions>
+  <div class="flex items-start gap-3">
+    <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-[#fbe7ea] text-[#d6455d]"><%= seller_icon(:undo, size: 18) %></span>
+    <div><h2 class="font-semibold text-[#1c1c1e]"><%= sl("Retenues pour retours") %></h2><p class="text-xs text-[#6e6e73]"><%= sl("Une retenue est prélevée sur ton prochain paiement quand une commande que tu as confirmée est retournée.") %></p></div>
+  </div>
+  <% if @deductions.empty? %>
+    <p class="my-6 text-center text-sm text-[#6e6e73]" data-no-deductions><%= sl("Aucune retenue sur cette période.") %></p>
+  <% else %>
+    <div class="mt-3 overflow-x-auto">
+      <table class="w-full text-[13px]">
+        <thead class="text-[11px] text-[#6e6e73]"><tr>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Commande retournée") %></th>
+          <th class="px-2 py-2 text-end font-medium"><%= sl("Montant retenu") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("État de la retenue") %></th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#f1f1f4]">
+          <% @deductions.each do |deduction| %>
+            <tr data-deduction>
+              <td class="px-2 py-2.5 font-semibold text-[#1c1c1e]" dir="ltr">#<%= deduction.order.number %></td>
+              <td class="px-2 py-2.5 text-end tabular-nums"><%= money(deduction.amount_cents) %></td>
+              <td class="px-2 py-2.5"><% if deduction.status == "applied" %><span class="inline-block rounded-full bg-[#e3f3e8] px-2.5 py-0.5 text-[12px] font-medium text-[#2f7a4a]"><%= sl("Déjà déduite") %></span><% else %><span class="inline-block rounded-full bg-[#fdf0d9] px-2.5 py-0.5 text-[12px] font-medium text-[#8a5a12]"><%= sl("À déduire au prochain paiement") %></span><% end %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>

@@ -3,7 +3,7 @@
 module Morea
   # Copy for the "Our story" page (slug "about"), one body per locale.
   module OurStory
-    TITLES = { "fr" => "Notre histoire", "en" => "Our story", "ar" => "قصتنا" }.freeze
+    TITLES = { "fr" => "Notre histoire", "en" => "Our story", "es" => "Nuestra historia", "ar" => "قصتنا" }.freeze
 
     BODIES = {
       "en" => <<~TEXT.strip,
@@ -75,6 +75,41 @@ module Morea
         Bougez librement. Sentez-vous en confiance. Restez fidèle à vous-même.
 
         **MOREA — Avancer avec intention.**
+      TEXT
+      "es" => <<~TEXT.strip,
+        ## Avanzar con intención.
+
+        MOREA nació de una convicción sencilla: toda mujer merece moverse con libertad, sentirse segura y expresar su estilo sin renunciar a sus valores.
+
+        Creemos que el recato y el movimiento van de la mano. Que la elegancia, la comodidad y el rendimiento nunca deben ser una elección entre uno u otro.
+
+        ## Diseñada para el movimiento. Hecha para ti.
+
+        En MOREA creamos ropa deportiva recatada que permite a las mujeres adoptar un estilo de vida activo con total confianza.
+
+        Desde los paseos matutinos hasta las sesiones de Pilates, pasando por las aventuras del día a día, nuestras prendas están pensadas para acompañarte, con el equilibrio justo entre cobertura, comodidad y elegancia natural.
+
+        Cada detalle tiene una razón de ser. Cada diseño celebra a la mujer que lo lleva.
+
+        ## El recato es nuestra fuerza.
+
+        No vemos el recato como un límite, sino como una forma de expresarse.
+
+        Nuestra visión: redefinir la ropa deportiva recatada con diseños atemporales, siluetas versátiles y detalles cuidados que permitan a cada mujer sentirse cómoda y bella a su manera.
+
+        ## Orgullosamente marroquí. Inspirada por mujeres de todo el mundo.
+
+        Con raíces en Marruecos e inspirada por las mujeres de hoy, MOREA celebra la individualidad, la ambición y la confianza en una misma.
+
+        Construimos algo más que una marca deportiva. Creamos una comunidad de mujeres que avanzan, se mantienen fieles a sí mismas y viven plenamente cada etapa de su camino.
+
+        ## Más que ropa deportiva. Una forma de pensar.
+
+        Tanto si empiezas tu camino deportivo, persigues un objetivo personal o simplemente adoptas un estilo de vida activo, MOREA te acompaña.
+
+        Muévete con libertad. Siéntete segura. Sé fiel a ti misma.
+
+        **MOREA — Avanzar con intención.**
       TEXT
       "ar" => <<~TEXT.strip
         ## تحرّكي بهدف.

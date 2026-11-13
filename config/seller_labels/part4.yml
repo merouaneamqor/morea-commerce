@@ -1,0 +1,825 @@
+# Texts added after the first export of the seller pages: the key is the French text, with its English, Arabic and Spanish translation.
+"Attribuée à":
+  en: "Assigned to"
+  ar: "مُسندة إلى"
+  es: "Asignado a"
+"Créée":
+  en: "Created"
+  ar: "تم الإنشاء"
+  es: "Creado"
+"Costa Rica":
+  en: "Costa Rica"
+  ar: "كوستاريكا"
+  es: "Costa Rica"
+"Panama":
+  en: "Panama"
+  ar: "بنما"
+  es: "Panamá"
+"Tes gains, tes paiements et tes retenues.":
+  en: "Your earnings, payments and deductions."
+  ar: "أرباحك ومدفوعاتك والخصومات."
+  es: "Tus ganancias, pagos y retenciones."
+"Mes gains":
+  en: "My earnings"
+  ar: "أرباحي"
+  es: "Mis ganancias"
+"Par commande livrée":
+  en: "Per delivered order"
+  ar: "لكل طلب مُسلَّم"
+  es: "Por pedido entregado"
+"Gains cumulés":
+  en: "Total earnings"
+  ar: "إجمالي الأرباح"
+  es: "Ganancias acumuladas"
+"Gagné ce mois-ci":
+  en: "Earned this month"
+  ar: "المكتسب هذا الشهر"
+  es: "Ganado este mes"
+"Déjà payé":
+  en: "Already paid"
+  ar: "تم دفعه"
+  es: "Ya pagado"
+"Reste à payer":
+  en: "Left to pay"
+  ar: "المتبقي للدفع"
+  es: "Pendiente de pago"
+"Dernier paiement le":
+  en: "Last payment on"
+  ar: "آخر دفعة بتاريخ"
+  es: "Último pago el"
+"Aucun paiement pour le moment.":
+  en: "No payment yet."
+  ar: "لا توجد دفعات حتى الآن."
+  es: "Aún no hay pagos."
+"Retenues en attente":
+  en: "Pending deductions"
+  ar: "خصومات قيد الانتظار"
+  es: "Retenciones pendientes"
+"Historique des paiements":
+  en: "Payment history"
+  ar: "سجل المدفوعات"
+  es: "Historial de pagos"
+"Date de paiement":
+  en: "Payment date"
+  ar: "تاريخ الدفع"
+  es: "Fecha de pago"
+"Gains réglés":
+  en: "Earnings settled"
+  ar: "الأرباح المسوّاة"
+  es: "Ganancias liquidadas"
+"Retenues":
+  en: "Deductions"
+  ar: "الخصومات"
+  es: "Retenciones"
+"Montant reçu":
+  en: "Amount received"
+  ar: "المبلغ المستلم"
+  es: "Importe recibido"
+"Retenues pour retours":
+  en: "Deductions for returns"
+  ar: "خصومات المرتجعات"
+  es: "Retenciones por devoluciones"
+"Une retenue est prélevée sur ton prochain paiement quand une commande que tu as confirmée est retournée.":
+  en: "A deduction is taken from your next payment when an order you confirmed is returned."
+  ar: "يُخصم مبلغ من دفعتك القادمة عندما يُرجَع طلب قمت بتأكيده."
+  es: "Se descuenta una retención de tu próximo pago cuando se devuelve un pedido que confirmaste."
+"Aucune retenue.":
+  en: "No deductions."
+  ar: "لا توجد خصومات."
+  es: "Sin retenciones."
+"Commande retournée":
+  en: "Returned order"
+  ar: "الطلب المرتجع"
+  es: "Pedido devuelto"
+"Montant retenu":
+  en: "Amount deducted"
+  ar: "المبلغ المخصوم"
+  es: "Importe retenido"
+"État de la retenue":
+  en: "Deduction status"
+  ar: "حالة الخصم"
+  es: "Estado de la retención"
+"Déjà déduite":
+  en: "Already deducted"
+  ar: "تم خصمها"
+  es: "Ya descontada"
+"À déduire au prochain paiement":
+  en: "To be deducted from the next payment"
+  ar: "تُخصم من الدفعة القادمة"
+  es: "Se descontará en el próximo pago"
+"Temps travaillé":
+  en: "Time worked"
+  ar: "وقت العمل"
+  es: "Tiempo trabajado"
+"Temps de travail":
+  en: "Working time"
+  ar: "وقت العمل"
+  es: "Tiempo de trabajo"
+"Total sur la période":
+  en: "Total for the period"
+  ar: "الإجمالي خلال الفترة"
+  es: "Total del periodo"
+"Arrivée":
+  en: "Arrival"
+  ar: "الحضور"
+  es: "Entrada"
+"Départ":
+  en: "Departure"
+  ar: "الانصراف"
+  es: "Salida"
+"Durée":
+  en: "Duration"
+  ar: "المدة"
+  es: "Duración"
+"Pointages":
+  en: "Attendance"
+  ar: "سجل الحضور"
+  es: "Fichajes"
+"Quand chaque agent est arrivé et parti":
+  en: "When each agent arrived and left"
+  ar: "متى حضر كل وكيل ومتى انصرف"
+  es: "Cuándo entró y salió cada agente"
+"Temps de présence par agent":
+  en: "Time on shift per agent"
+  ar: "وقت الحضور لكل وكيل"
+  es: "Tiempo de presencia por agente"
+"Total de l'équipe":
+  en: "Team total"
+  ar: "إجمالي الفريق"
+  es: "Total del equipo"
+"Un agent qui quitte la page ou le téléphone est pointé « parti » automatiquement après 3 minutes, à sa dernière présence.":
+  en: "An agent who leaves the page or the phone is clocked out automatically after 3 minutes, at their last sign of presence."
+  ar: "الوكيل الذي يغادر الصفحة أو الهاتف يُسجَّل انصرافه تلقائيًا بعد 3 دقائق، عند آخر ظهور له."
+  es: "Un agente que sale de la página o del teléfono se ficha como «salida» automáticamente a los 3 minutos, en su última presencia."
+"État":
+  en: "Status"
+  ar: "الحالة"
+  es: "Estado"
+"Première arrivée":
+  en: "First arrival"
+  ar: "أول حضور"
+  es: "Primera entrada"
+"Dernier départ":
+  en: "Last departure"
+  ar: "آخر انصراف"
+  es: "Última salida"
+"En poste depuis":
+  en: "On shift since"
+  ar: "في الخدمة منذ"
+  es: "En turno desde"
+"Hors poste":
+  en: "Off shift"
+  ar: "خارج الخدمة"
+  es: "Fuera de turno"
+"Journal des pointages":
+  en: "Attendance log"
+  ar: "سجل التسجيلات"
+  es: "Registro de fichajes"
+"Tous les agents":
+  en: "All agents"
+  ar: "جميع الوكلاء"
+  es: "Todos los agentes"
+"Aucun pointage sur cette période.":
+  en: "No attendance record in this period."
+  ar: "لا توجد تسجيلات حضور في هذه الفترة."
+  es: "No hay fichajes en este periodo."
+"Fin du pointage":
+  en: "How it ended"
+  ar: "نهاية التسجيل"
+  es: "Cómo terminó"
+"Départ pointé par l'agent":
+  en: "Clocked out by the agent"
+  ar: "سجّل الوكيل انصرافه"
+  es: "Salida fichada por el agente"
+"Automatique : page quittée":
+  en: "Automatic: page left"
+  ar: "تلقائي: تمت مغادرة الصفحة"
+  es: "Automático: página abandonada"
+"Bloqué":
+  en: "Blocked"
+  ar: "محظور"
+  es: "Bloqueado"
+"Les commandes qui vous sont attribuées, avec leur statut.":
+  en: "The orders assigned to you, with their status."
+  ar: "الطلبات المُسندة إليك مع حالتها."
+  es: "Los pedidos que se te han asignado, con su estado."
+"Date":
+  en: "Date"
+  ar: "التاريخ"
+  es: "Fecha"
+"Vous n'êtes pas en poste":
+  en: "You are not on shift"
+  ar: "أنت لست في الخدمة"
+  es: "No estás en turno"
+"Plus tard":
+  en: "Later"
+  ar: "لاحقًا"
+  es: "Más tarde"
+"Logo de la boutique":
+  en: "Store logo"
+  ar: "شعار المتجر"
+  es: "Logo de la tienda"
+"Retirer le logo":
+  en: "Remove the logo"
+  ar: "إزالة الشعار"
+  es: "Quitar el logo"
+"Votre agent le voit en haut de son espace, à la place de seallo. Un PNG sans fond (transparent) rend le mieux.":
+  en: "Your agent sees it at the top of their workspace, instead of seallo. A PNG without background (transparent) looks best."
+  ar: "يراه الوكيل أعلى مساحة عمله بدلًا من seallo. أفضل شكل هو صورة PNG بدون خلفية (شفافة)."
+  es: "Tu agente lo ve en la parte superior de su espacio, en lugar de seallo. Un PNG sin fondo (transparente) queda mejor."
+"Aucun logo pour le moment.":
+  en: "No logo yet."
+  ar: "لا يوجد شعار حتى الآن."
+  es: "Aún no hay logo."
+"Choisir un logo":
+  en: "Choose a logo"
+  ar: "اختيار شعار"
+  es: "Elegir un logo"
+"Boutique":
+  en: "Store"
+  ar: "المتجر"
+  es: "Tienda"
+"Gagné sur la période":
+  en: "Earned in the period"
+  ar: "المكتسب خلال الفترة"
+  es: "Ganado en el periodo"
+"Aucun paiement sur cette période.":
+  en: "No payment in this period."
+  ar: "لا توجد دفعات في هذه الفترة."
+  es: "No hay pagos en este periodo."
+"Aucune retenue sur cette période.":
+  en: "No deduction in this period."
+  ar: "لا توجد خصومات في هذه الفترة."
+  es: "No hay retenciones en este periodo."
+"Facturation des agents":
+  en: "Agent billing"
+  ar: "فوترة الوكلاء"
+  es: "Facturación de agentes"
+"Payez vos agents et gardez la preuve de chaque paiement.":
+  en: "Pay your agents and keep the proof of every payment."
+  ar: "ادفع لوكلائك واحتفظ بإثبات كل دفعة."
+  es: "Paga a tus agentes y guarda la prueba de cada pago."
+"Reste à payer (équipe)":
+  en: "Left to pay (team)"
+  ar: "المتبقي للدفع (الفريق)"
+  es: "Pendiente de pago (equipo)"
+"Gains cumulés non payés":
+  en: "Unpaid total earnings"
+  ar: "الأرباح المتراكمة غير المدفوعة"
+  es: "Ganancias acumuladas sin pagar"
+"Payé sur la période":
+  en: "Paid in the period"
+  ar: "المدفوع خلال الفترة"
+  es: "Pagado en el periodo"
+"Aucun agent pour le moment.":
+  en: "No agent yet."
+  ar: "لا يوجد وكلاء حتى الآن."
+  es: "Aún no hay agentes."
+"Paiement":
+  en: "Payment"
+  ar: "الدفع"
+  es: "Pago"
+"Rien à payer":
+  en: "Nothing to pay"
+  ar: "لا شيء للدفع"
+  es: "Nada que pagar"
+"Payer":
+  en: "Pay"
+  ar: "دفع"
+  es: "Pagar"
+"Retenues déduites":
+  en: "Deductions taken off"
+  ar: "الخصومات المحسومة"
+  es: "Retenciones descontadas"
+"Montant à remettre":
+  en: "Amount to hand over"
+  ar: "المبلغ الواجب تسليمه"
+  es: "Importe a entregar"
+"Mode de paiement":
+  en: "Payment method"
+  ar: "طريقة الدفع"
+  es: "Método de pago"
+"Espèces":
+  en: "Cash"
+  ar: "نقدًا"
+  es: "Efectivo"
+"Virement bancaire":
+  en: "Bank transfer"
+  ar: "تحويل بنكي"
+  es: "Transferencia bancaria"
+"Référence (n° de virement, reçu…)":
+  en: "Reference (transfer no., receipt…)"
+  ar: "المرجع (رقم التحويل، الإيصال…)"
+  es: "Referencia (n.º de transferencia, recibo…)"
+"Preuve de paiement (photo ou PDF)":
+  en: "Proof of payment (photo or PDF)"
+  ar: "إثبات الدفع (صورة أو PDF)"
+  es: "Prueba de pago (foto o PDF)"
+"Obligatoire pour un virement bancaire.":
+  en: "Required for a bank transfer."
+  ar: "إلزامي في حالة التحويل البنكي."
+  es: "Obligatoria para una transferencia bancaria."
+"Confirmer le paiement":
+  en: "Confirm the payment"
+  ar: "تأكيد الدفع"
+  es: "Confirmar el pago"
+"Référence":
+  en: "Reference"
+  ar: "المرجع"
+  es: "Referencia"
+"Preuve":
+  en: "Proof"
+  ar: "الإثبات"
+  es: "Prueba"
+"Payé par":
+  en: "Paid by"
+  ar: "دفعه"
+  es: "Pagado por"
+"Voir la preuve":
+  en: "View the proof"
+  ar: "عرض الإثبات"
+  es: "Ver la prueba"
+"Payer un agent":
+  en: "Pay an agent"
+  ar: "دفع لوكيل"
+  es: "Pagar a un agente"
+"Choisir un agent":
+  en: "Choose an agent"
+  ar: "اختر وكيلًا"
+  es: "Elegir un agente"
+"Tout sélectionner":
+  en: "Select all"
+  ar: "تحديد الكل"
+  es: "Seleccionar todo"
+"commandes sélectionnées":
+  en: "orders selected"
+  ar: "طلبات محددة"
+  es: "pedidos seleccionados"
+"Facultatif":
+  en: "Optional"
+  ar: "اختياري"
+  es: "Opcional"
+"Montant à payer":
+  en: "Amount to pay"
+  ar: "المبلغ المستحق الدفع"
+  es: "Importe a pagar"
+"Paramètres WhatsApp":
+  en: "WhatsApp settings"
+  ar: "إعدادات واتساب"
+  es: "Ajustes de WhatsApp"
+"Gérez vos comptes WhatsApp Business et le message automatique des nouvelles commandes":
+  en: "Manage your WhatsApp Business accounts and the automatic new-order message"
+  ar: "أدِر حسابات واتساب للأعمال ورسالة الطلبات الجديدة التلقائية"
+  es: "Gestiona tus cuentas de WhatsApp Business y el mensaje automático de los pedidos nuevos"
+"Comptes connectés":
+  en: "Connected accounts"
+  ar: "الحسابات المتصلة"
+  es: "Cuentas conectadas"
+"Quand une commande arrive d'une boutique, le client reçoit automatiquement le message ci-dessous.":
+  en: "When an order arrives from a store, the customer automatically receives the message below."
+  ar: "عند وصول طلب من متجر، يتلقى العميل الرسالة أدناه تلقائيًا."
+  es: "Cuando llega un pedido de una tienda, el cliente recibe automáticamente el mensaje de abajo."
+"Aucun compte WhatsApp connecté pour le moment.":
+  en: "No WhatsApp account connected yet."
+  ar: "لا يوجد حساب واتساب متصل حتى الآن."
+  es: "Aún no hay ninguna cuenta de WhatsApp conectada."
+"Supprimer ce compte WhatsApp ?":
+  en: "Delete this WhatsApp account?"
+  ar: "حذف حساب واتساب هذا؟"
+  es: "¿Eliminar esta cuenta de WhatsApp?"
+"ID du numéro de téléphone":
+  en: "Phone number ID"
+  ar: "معرّف رقم الهاتف"
+  es: "ID del número de teléfono"
+"ID du compte Business":
+  en: "Business account ID"
+  ar: "معرّف حساب الأعمال"
+  es: "ID de la cuenta Business"
+"Jeton d'accès":
+  en: "Access token"
+  ar: "رمز الوصول"
+  es: "Token de acceso"
+"Envoyer un message automatique à chaque nouvelle commande":
+  en: "Send an automatic message for every new order"
+  ar: "إرسال رسالة تلقائية لكل طلب جديد"
+  es: "Enviar un mensaje automático por cada pedido nuevo"
+"Les commandes saisies à la main ne sont pas concernées.":
+  en: "Orders typed by hand are not affected."
+  ar: "لا تشمل الطلبات المُدخلة يدويًا."
+  es: "Los pedidos introducidos a mano no se ven afectados."
+"Message au client":
+  en: "Message to the customer"
+  ar: "الرسالة إلى العميل"
+  es: "Mensaje al cliente"
+"Mots-clés":
+  en: "Keywords"
+  ar: "الكلمات المفتاحية"
+  es: "Palabras clave"
+"Accusés de lecture":
+  en: "Read receipts"
+  ar: "إشعارات القراءة"
+  es: "Confirmaciones de lectura"
+"Nouveau jeton d'accès (laisser vide pour garder l'actuel)":
+  en: "New access token (leave empty to keep the current one)"
+  ar: "رمز وصول جديد (اتركه فارغًا للإبقاء على الحالي)"
+  es: "Nuevo token de acceso (déjalo vacío para conservar el actual)"
+"Numéro pour un test (06 12 34 56 78)":
+  en: "Number for a test (06 12 34 56 78)"
+  ar: "رقم للاختبار (06 12 34 56 78)"
+  es: "Número para una prueba (06 12 34 56 78)"
+"Envoyer un test":
+  en: "Send a test"
+  ar: "إرسال اختبار"
+  es: "Enviar una prueba"
+"Configuration manuelle":
+  en: "Manual setup"
+  ar: "إعداد يدوي"
+  es: "Configuración manual"
+"Dans Meta Business Manager, ouvrez WhatsApp > Configuration de l'API, puis copiez l'ID du numéro de téléphone et un jeton d'accès permanent.":
+  en: "In Meta Business Manager, open WhatsApp > API setup, then copy the phone number ID and a permanent access token."
+  ar: "في Meta Business Manager افتح واتساب > إعداد API ثم انسخ معرّف رقم الهاتف ورمز وصول دائم."
+  es: "En Meta Business Manager abre WhatsApp > Configuración de la API y copia el ID del número de teléfono y un token de acceso permanente."
+"Numéro affiché":
+  en: "Displayed number"
+  ar: "الرقم المعروض"
+  es: "Número mostrado"
+"Ajouter le compte":
+  en: "Add the account"
+  ar: "إضافة الحساب"
+  es: "Añadir la cuenta"
+"Important : WhatsApp n'autorise un texte libre qu'aux clients qui ont écrit à votre numéro dans les dernières 24 heures. Pour écrire en premier à un nouveau client, Meta exige un template approuvé (bientôt disponible ici).":
+  en: "Important: WhatsApp only allows free text to customers who wrote to your number in the last 24 hours. To write first to a new customer, Meta requires an approved template (coming soon here)."
+  ar: "مهم: يسمح واتساب بالنص الحر فقط للعملاء الذين راسلوا رقمك خلال آخر 24 ساعة. للكتابة أولًا إلى عميل جديد تشترط Meta قالبًا معتمدًا (قريبًا هنا)."
+  es: "Importante: WhatsApp solo permite texto libre a los clientes que escribieron a tu número en las últimas 24 horas. Para escribir primero a un cliente nuevo, Meta exige una plantilla aprobada (próximamente aquí)."
+"Derniers messages":
+  en: "Latest messages"
+  ar: "آخر الرسائل"
+  es: "Últimos mensajes"
+"Aucun message envoyé pour le moment.":
+  en: "No message sent yet."
+  ar: "لم تُرسل أي رسالة حتى الآن."
+  es: "Aún no se ha enviado ningún mensaje."
+"Destinataire":
+  en: "Recipient"
+  ar: "المستلم"
+  es: "Destinatario"
+"Message":
+  en: "Message"
+  ar: "الرسالة"
+  es: "Mensaje"
+"Test":
+  en: "Test"
+  ar: "اختبار"
+  es: "Prueba"
+"Envoyé":
+  en: "Sent"
+  ar: "تم الإرسال"
+  es: "Enviado"
+"Échec":
+  en: "Failed"
+  ar: "فشل"
+  es: "Error"
+"WhatsApp":
+  en: "WhatsApp"
+  ar: "واتساب"
+  es: "WhatsApp"
+"Adresse du site":
+  en: "Website address"
+  ar: "عنوان الموقع"
+  es: "Dirección del sitio"
+"Vos agents la voient sous le logo et peuvent cliquer dessus pour ouvrir la boutique.":
+  en: "Your agents see it under the logo and can click it to open the store."
+  ar: "يراه وكلاؤك تحت الشعار ويمكنهم النقر عليه لفتح المتجر."
+  es: "Tus agentes lo ven bajo el logo y pueden hacer clic para abrir la tienda."
+"Changer de plan":
+  en: "Change plan"
+  ar: "تغيير الخطة"
+  es: "Cambiar de plan"
+"Gestion de l'équipe":
+  en: "Team management"
+  ar: "إدارة الفريق"
+  es: "Gestión del equipo"
+"Gérez les utilisateurs et les rôles de votre boutique":
+  en: "Manage the users and roles of your store"
+  ar: "أدِر مستخدمي متجرك وأدوارهم"
+  es: "Gestiona los usuarios y los roles de tu tienda"
+"Utilisateurs":
+  en: "Users"
+  ar: "المستخدمون"
+  es: "Usuarios"
+"Rôles":
+  en: "Roles"
+  ar: "الأدوار"
+  es: "Roles"
+"Accès complet à la boutique : commandes, centre d'appels, règles d'attribution, facturation des agents, WhatsApp, boutique et équipe.":
+  en: "Full access to the store: orders, call center, assignment rules, agent billing, WhatsApp, store and team."
+  ar: "وصول كامل إلى المتجر: الطلبات، مركز الاتصال، قواعد الإسناد، فوترة الوكلاء، واتساب، المتجر والفريق."
+  es: "Acceso completo a la tienda: pedidos, centro de llamadas, reglas de asignación, facturación de agentes, WhatsApp, tienda y equipo."
+"Suit le centre d'appels avec l'équipe.":
+  en: "Follows the call center with the team."
+  ar: "يتابع مركز الاتصال مع الفريق."
+  es: "Sigue el centro de llamadas con el equipo."
+"Son propre tableau de bord, sa file d'attente selon les règles d'attribution, la création de commandes, son pointage et sa facturation.":
+  en: "Their own dashboard, their queue according to the assignment rules, order creation, their attendance and their billing."
+  ar: "لوحة التحكم الخاصة به، وقائمة انتظاره وفق قواعد الإسناد، وإنشاء الطلبات، وتسجيل حضوره وفوترته."
+  es: "Su propio panel, su cola según las reglas de asignación, la creación de pedidos, su fichaje y su facturación."
+"utilisateurs":
+  en: "users"
+  ar: "مستخدمين"
+  es: "usuarios"
+"Utilisateurs totaux":
+  en: "Total users"
+  ar: "إجمالي المستخدمين"
+  es: "Usuarios totales"
+"Membres de l'équipe":
+  en: "Team members"
+  ar: "أعضاء الفريق"
+  es: "Miembros del equipo"
+"Utilisateurs actifs":
+  en: "Active users"
+  ar: "المستخدمون النشطون"
+  es: "Usuarios activos"
+"Peuvent se connecter":
+  en: "Can sign in"
+  ar: "يمكنهم تسجيل الدخول"
+  es: "Pueden iniciar sesión"
+"Utilisateurs inactifs":
+  en: "Inactive users"
+  ar: "المستخدمون غير النشطين"
+  es: "Usuarios inactivos"
+"Suspendus ou archivés":
+  en: "Suspended or archived"
+  ar: "معلّقون أو مؤرشفون"
+  es: "Suspendidos o archivados"
+"Propriétaires":
+  en: "Owners"
+  ar: "المالكون"
+  es: "Propietarios"
+"Accès complet":
+  en: "Full access"
+  ar: "وصول كامل"
+  es: "Acceso completo"
+"Voyez et gérez tous les utilisateurs de votre boutique":
+  en: "See and manage all the users of your store"
+  ar: "اطّلع على جميع مستخدمي متجرك وأدِرهم"
+  es: "Ve y gestiona todos los usuarios de tu tienda"
+"Rechercher des utilisateurs…":
+  en: "Search users…"
+  ar: "ابحث عن المستخدمين…"
+  es: "Buscar usuarios…"
+"Aucun utilisateur ne correspond à cette recherche.":
+  en: "No user matches this search."
+  ar: "لا يوجد مستخدم يطابق هذا البحث."
+  es: "Ningún usuario coincide con esta búsqueda."
+"Nom":
+  en: "Name"
+  ar: "الاسم"
+  es: "Nombre"
+"Rôle":
+  en: "Role"
+  ar: "الدور"
+  es: "Rol"
+"Ce mois-ci":
+  en: "This month"
+  ar: "هذا الشهر"
+  es: "Este mes"
+"Accès aux boutiques":
+  en: "Store access"
+  ar: "الوصول إلى المتاجر"
+  es: "Acceso a las tiendas"
+"Créé par":
+  en: "Created by"
+  ar: "أنشأه"
+  es: "Creado por"
+"Créé le":
+  en: "Created on"
+  ar: "تاريخ الإنشاء"
+  es: "Creado el"
+"boutique":
+  en: "store"
+  ar: "متجر"
+  es: "tienda"
+"Système":
+  en: "System"
+  ar: "النظام"
+  es: "Sistema"
+"Suspendu":
+  en: "Suspended"
+  ar: "معلّق"
+  es: "Suspendido"
+"Archivé":
+  en: "Archived"
+  ar: "مؤرشف"
+  es: "Archivado"
+"Rôles totaux":
+  en: "Total roles"
+  ar: "إجمالي الأدوار"
+  es: "Roles totales"
+"Rôles de la boutique":
+  en: "Roles of the store"
+  ar: "أدوار المتجر"
+  es: "Roles de la tienda"
+"Rôles actifs":
+  en: "Active roles"
+  ar: "الأدوار النشطة"
+  es: "Roles activos"
+"Utilisables maintenant":
+  en: "Usable now"
+  ar: "قابلة للاستخدام الآن"
+  es: "Utilizables ahora"
+"Rôles personnalisés":
+  en: "Custom roles"
+  ar: "أدوار مخصصة"
+  es: "Roles personalizados"
+"Rôles système":
+  en: "System roles"
+  ar: "أدوار النظام"
+  es: "Roles del sistema"
+"Fournis par seallo":
+  en: "Provided by seallo"
+  ar: "مقدَّمة من seallo"
+  es: "Proporcionados por seallo"
+"Voyez les rôles de votre boutique et ce que chacun peut ouvrir":
+  en: "See the roles of your store and what each one can open"
+  ar: "اطّلع على أدوار متجرك وما يمكن لكل دور فتحه"
+  es: "Ve los roles de tu tienda y lo que puede abrir cada uno"
+"Rechercher des rôles…":
+  en: "Search roles…"
+  ar: "ابحث عن الأدوار…"
+  es: "Buscar roles…"
+"Créer un rôle":
+  en: "Create a role"
+  ar: "إنشاء دور"
+  es: "Crear un rol"
+"Aucun rôle ne correspond à cette recherche.":
+  en: "No role matches this search."
+  ar: "لا يوجد دور يطابق هذا البحث."
+  es: "Ningún rol coincide con esta búsqueda."
+"Permissions":
+  en: "Permissions"
+  ar: "الصلاحيات"
+  es: "Permisos"
+"Type":
+  en: "Type"
+  ar: "النوع"
+  es: "Tipo"
+"Propriétaire":
+  en: "Owner"
+  ar: "المالك"
+  es: "Propietario"
+"Agent de confirmation":
+  en: "Confirmation agent"
+  ar: "وكيل التأكيد"
+  es: "Agente de confirmación"
+"Permissions d'applications":
+  en: "Application permissions"
+  ar: "صلاحيات التطبيقات"
+  es: "Permisos de aplicaciones"
+"Permissions d'applications des utilisateurs":
+  en: "Users' application permissions"
+  ar: "صلاحيات تطبيقات المستخدمين"
+  es: "Permisos de aplicaciones de los usuarios"
+"Par défaut, chaque utilisateur accède aux parties de la boutique selon son rôle. Les permissions personnalisées arrivent bientôt.":
+  en: "By default, each user reaches the parts of the store according to their role. Custom permissions are coming soon."
+  ar: "افتراضيًا يصل كل مستخدم إلى أجزاء المتجر وفق دوره. الصلاحيات المخصصة قادمة قريبًا."
+  es: "Por defecto, cada usuario accede a las partes de la tienda según su rol. Los permisos personalizados llegarán pronto."
+"Sélectionner un utilisateur":
+  en: "Select a user"
+  ar: "اختر مستخدمًا"
+  es: "Seleccionar un usuario"
+"-- Sélectionnez un utilisateur --":
+  en: "-- Select a user --"
+  ar: "-- اختر مستخدمًا --"
+  es: "-- Selecciona un usuario --"
+"accès":
+  en: "accesses"
+  ar: "صلاحيات وصول"
+  es: "accesos"
+"Non autorisé":
+  en: "Not allowed"
+  ar: "غير مسموح"
+  es: "No permitido"
+"Créer des commandes":
+  en: "Create orders"
+  ar: "إنشاء الطلبات"
+  es: "Crear pedidos"
+"Centre d'appels : file d'attente":
+  en: "Call center: queue"
+  ar: "مركز الاتصال: قائمة الانتظار"
+  es: "Centro de llamadas: cola de espera"
+"Analyses du centre d'appels":
+  en: "Call center analytics"
+  ar: "تحليلات مركز الاتصال"
+  es: "Análisis del centro de llamadas"
+"Pointage":
+  en: "Attendance"
+  ar: "تسجيل الحضور"
+  es: "Fichaje"
+"Sa facturation":
+  en: "Their billing"
+  ar: "فوترته"
+  es: "Su facturación"
+"Attributions et règles d'attribution":
+  en: "Assignments and assignment rules"
+  ar: "الإسنادات وقواعد الإسناد"
+  es: "Asignaciones y reglas de asignación"
+"Pointages de l'équipe":
+  en: "Team attendance"
+  ar: "سجل حضور الفريق"
+  es: "Fichajes del equipo"
+"Boutique (logo, adresse du site)":
+  en: "Store (logo, website address)"
+  ar: "المتجر (الشعار، عنوان الموقع)"
+  es: "Tienda (logo, dirección del sitio)"
+"Abonnement et plan":
+  en: "Subscription and plan"
+  ar: "الاشتراك والخطة"
+  es: "Suscripción y plan"
+"Ajouter un utilisateur":
+  en: "Add a user"
+  ar: "إضافة مستخدم"
+  es: "Añadir un usuario"
+"Boutiques":
+  en: "Stores"
+  ar: "المتاجر"
+  es: "Tiendas"
+"Activité de l'équipe":
+  en: "Team activity"
+  ar: "نشاط الفريق"
+  es: "Actividad del equipo"
+"Qui est en ligne, combien de temps chacun a travaillé et ce qu'il a fait":
+  en: "Who is online, how long each person worked and what they did"
+  ar: "من هو متصل، وكم عمل كل شخص، وماذا فعل"
+  es: "Quién está en línea, cuánto ha trabajado cada uno y qué ha hecho"
+"En direct":
+  en: "Live"
+  ar: "مباشر"
+  es: "En directo"
+"Présence de l'équipe":
+  en: "Team presence"
+  ar: "حضور الفريق"
+  es: "Presencia del equipo"
+"en ligne":
+  en: "online"
+  ar: "متصل"
+  es: "en línea"
+"Hors ligne":
+  en: "Offline"
+  ar: "غير متصل"
+  es: "Desconectado"
+"Temps travaillé par l'équipe":
+  en: "Time worked by the team"
+  ar: "وقت عمل الفريق"
+  es: "Tiempo trabajado por el equipo"
+"Moyenne par personne ayant travaillé":
+  en: "Average per person who worked"
+  ar: "المتوسط لكل شخص عمل"
+  es: "Media por persona que ha trabajado"
+"personnes ont appelé":
+  en: "people made calls"
+  ar: "أشخاص أجروا مكالمات"
+  es: "personas han llamado"
+"Rechercher une personne":
+  en: "Search a person"
+  ar: "ابحث عن شخص"
+  es: "Buscar una persona"
+"Tous les rôles":
+  en: "All roles"
+  ar: "كل الأدوار"
+  es: "Todos los roles"
+"Personne":
+  en: "Person"
+  ar: "الشخص"
+  es: "Persona"
+"Première / dernière activité":
+  en: "First / last activity"
+  ar: "أول / آخر نشاط"
+  es: "Primera / última actividad"
+"Ce qui a été fait":
+  en: "What was done"
+  ar: "ما تم إنجازه"
+  es: "Lo que se ha hecho"
+"Dernière action":
+  en: "Last action"
+  ar: "آخر إجراء"
+  es: "Última acción"
+"Vu pour la dernière fois":
+  en: "Last seen"
+  ar: "شوهد آخر مرة"
+  es: "Visto por última vez"
+"Aucune personne ne correspond à ces filtres.":
+  en: "No one matches these filters."
+  ar: "لا أحد يطابق هذه التصفية."
+  es: "Nadie coincide con estos filtros."
+"Super administrateur":
+  en: "Super administrator"
+  ar: "المشرف العام"
+  es: "Superadministrador"
+"Accès à toute la plateforme : toutes les boutiques, les utilisateurs, les abonnements et l'administration de seallo.":
+  en: "Access to the whole platform: all stores, users, subscriptions and the seallo administration."
+  ar: "وصول إلى المنصة بالكامل: جميع المتاجر والمستخدمين والاشتراكات وإدارة seallo."
+  es: "Acceso a toda la plataforma: todas las tiendas, los usuarios, las suscripciones y la administración de seallo."
+"Administration de la plateforme":
+  en: "Platform administration"
+  ar: "إدارة المنصة"
+  es: "Administración de la plataforma"

@@ -59,6 +59,12 @@ module Confirmations
         .group("order_confirmations.order_id").count
     end
 
+    # order id => the call that cancelled it (the agent, the reason typed, the time); the latest one wins. Used by the Annulée tab.
+    def cancellations
+      @cancellations ||= ConfirmationAttempt.joins(:order_confirmation).where(store: @store, outcome: "cancelled", order_confirmations: { order_id: rows.map(&:id) })
+        .includes(:user, :order_confirmation).order(:created_at).each_with_object({}) { |attempt, by_order| by_order[attempt.order_confirmation.order_id] = attempt }
+    end
+
     # order id => the latest "WhatsApp opened" event
     def whatsapp_events
       @whatsapp_events ||= OrderEvent.where(order_id: rows.map(&:id), kind: "whatsapp").includes(:user).order(:created_at).each_with_object({}) { |event, by_order| by_order[event.order_id] = event }
@@ -79,7 +85,14 @@ module Confirmations
       return scope unless agent?
 
       held_by_others = OrderConfirmation.where(store: @store).where.not(assigned_user_id: [ nil, @user.id ]).select(:order_id)
-      scope.where.not(id: held_by_others)
+      attributed_to_others = OrderConfirmation.where(store: @store).where.not(attributed_user_id: [ nil, @user.id ]).select(:order_id)
+      scope = scope.where.not(id: held_by_others).where.not(id: attributed_to_others)
+      return scope unless @store.assignment_enforced?
+
+      # The owner's attribution rules decide: only what was given to this agent, or what they already hold or confirmed.
+      given = OrderConfirmation.where(store: @store).where("attributed_user_id = :user OR assigned_user_id = :user", user: @user.id).select(:order_id)
+      confirmed = ConfirmationAttempt.joins(:order_confirmation).where(store: @store, user: @user, outcome: "confirmed").select("order_confirmations.order_id")
+      scope.where(id: given).or(scope.where(id: confirmed))
     end
 
     def with_confirmation = base.joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")

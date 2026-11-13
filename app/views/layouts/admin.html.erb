@@ -39,7 +39,24 @@
       <% sidebar = capture do %>
         <nav class="lg-nav flex h-full flex-col overflow-y-auto rounded-2xl p-2.5" data-sidebar-nav>
           <div data-sidebar-head class="flex items-center justify-between px-3 pt-1 pb-3">
-            <%= link_to (agent ? "/confirmation" : "/dashboard"), "data-collapse-hide": true, class: "text-2xl font-extrabold tracking-tight text-[#1d1d1f]", dir: "ltr" do %>seallo<% end %>
+            <% if agent && current_store %>
+              <%# An agent sees their store: its logo (or its name), the name and the address of the site; never the platform name. %>
+              <div class="flex min-w-0 flex-1 items-center gap-2" data-collapse-hide data-agent-brand-block>
+                <%= link_to "/mes-statistiques", data: { agent_brand: true }, class: "block max-w-[5rem] shrink-0", dir: "ltr" do %><% if current_store.logo_ready? %><%= image_tag MediaUrl.for(current_store.logo, store: current_store), alt: current_store.name, class: "max-h-14 w-auto max-w-[5rem] object-contain" %><% else %><span class="block max-w-[6.5rem] truncate text-lg font-extrabold tracking-tight text-[#1d1d1f]"><%= current_store.name %></span><% end %><% end %>
+                <div class="min-w-0">
+                  <% if current_store.logo_ready? %><p class="truncate text-[13px] leading-tight font-semibold text-[#1d1d1f]" title="<%= current_store.name %>" data-agent-store-name><%= current_store.name %></p><% end %>
+                  <% if current_store.website_url.present? %>
+                    <%= link_to current_store.website_label, current_store.website_url, target: "_blank", rel: "noopener noreferrer", title: current_store.website_url, class: "block text-[10px] leading-tight break-all text-[#6e6e73] hover:text-[#1d1d1f] hover:underline", dir: "ltr", data: { agent_store_url: true } %>
+                  <% elsif current_store.storefront_enabled? %>
+                    <%= link_to current_store.host_label, current_store.origin, target: "_blank", rel: "noopener", title: current_store.host_label, class: "block text-[10px] leading-tight break-all text-[#6e6e73] hover:text-[#1d1d1f] hover:underline", dir: "ltr", data: { agent_store_url: true } %>
+                  <% else %>
+                    <p class="text-[10px] leading-tight break-all text-[#6e6e73]" dir="ltr" title="<%= current_store.host_label %>" data-agent-store-url><%= current_store.host_label %></p>
+                  <% end %>
+                </div>
+              </div>
+            <% else %>
+              <%= link_to (agent ? "/confirmation" : "/dashboard"), "data-collapse-hide": true, class: "text-2xl font-extrabold tracking-tight text-[#1d1d1f]", dir: "ltr" do %>seallo<% end %>
+            <% end %>
             <button type="button" data-seller-close class="text-[#6e6e73] lg:hidden" aria-label="<%= sl("Fermer") %>"><%= sl("Fermer") %></button>
             <%# Desktop only: collapse the menu to its icons and open it again. The choice is remembered in this browser. %>
             <button type="button" data-sidebar-toggle aria-expanded="true" title="<%= sl("Réduire le menu") %>" aria-label="<%= sl("Réduire le menu") %>" data-label-collapse="<%= sl("Réduire le menu") %>" data-label-expand="<%= sl("Agrandir le menu") %>"
@@ -88,10 +105,12 @@
           </ul>
           <div class="mt-auto space-y-0.5 border-t border-[#ececf0] pt-2">
             <% if current_store && !agent %>
-              <div data-collapse-hide class="lg-nav__store mb-1.5 rounded-xl px-3 py-2">
+              <%# The plan card opens the plans page, where the owner changes the subscription (the plans live on the shared host). %>
+              <%= link_to seller_plans_url, data: { collapse_hide: true, plan_card: true }, title: sl("Changer de plan"), class: "lg-nav__store group mb-1.5 block rounded-xl px-3 py-2 transition" do %>
                 <p data-seller-store class="truncate text-sm font-semibold text-[#1c1c1e]"><%= current_store.name %></p>
                 <% if seller_plan_label(current_store) %><p class="text-xs text-[#6e6e73]"><%= sl("Plan") %> <%= seller_plan_label(current_store) %></p><% end %>
-              </div>
+                <p class="mt-0.5 text-[11px] font-semibold text-[#1c1c1e] underline-offset-2 group-hover:underline"><%= sl("Changer de plan") %> →</p>
+              <% end %>
             <% end %>
             <%= render "admin/shared/order_alerts" %>
             <% if super_admin? %>
@@ -104,9 +123,6 @@
       <% end %>
 
       <div class="lg-shell min-h-dvh text-[#3a3a3c]" data-seller-shell>
-        <% if agent && current_store %>
-          <div hidden data-controller="desk-presence" data-desk-presence-url-value="<%= presence_admin_confirmations_path %>"></div>
-        <% end %>
         <div class="mx-auto flex max-w-[1400px] gap-5 p-4 lg:p-5">
           <aside class="sticky top-5 hidden h-[calc(100dvh-2.5rem)] w-56 shrink-0 lg:block"><%= sidebar %></aside>
 
@@ -114,12 +130,21 @@
             <div class="h-full w-64"><%= sidebar %></div>
           </div>
 
+          <%# An agent on shift: this page tells the server every 30 s that they are still here (see presence_controller.js). %>
+          <% on_shift = agent && current_store && ConfirmationShift.open.exists?(store: current_store, user: current_admin_user) %>
+          <% if on_shift %>
+            <span hidden data-presence data-controller="presence" data-presence-url-value="<%= heartbeat_admin_confirmations_path %>"></span>
+          <% end %>
+          <% if agent && current_store %>
+            <%# Glass welcome window: name, word of the day, clock-in when not on shift, and a congratulation at every hundred orders handled today. %>
+            <%= render "admin/shared/agent_welcome", welcome: Confirmations::AgentWelcome.new(store: current_store, user: current_admin_user), on_shift: on_shift %>
+          <% end %>
           <main class="min-w-0 flex-1 space-y-4">
             <%= render "admin/shared/impersonation_banner" if impersonating? %>
             <%= render "admin/shared/platform_workspace_banner" %>
             <div class="lg-chrome flex items-center justify-between rounded-2xl px-3 py-2.5 lg:hidden">
               <button type="button" data-seller-open aria-expanded="false" class="rounded-lg border border-[#e0e0e5] bg-white p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>
-              <span class="text-xl font-extrabold tracking-tight text-[#1d1d1f]" dir="ltr">seallo</span>
+              <span class="text-xl font-extrabold tracking-tight text-[#1d1d1f]" dir="ltr"><% if agent && current_store %><% if current_store.logo_ready? %><%= image_tag MediaUrl.for(current_store.logo, store: current_store), alt: current_store.name, class: "max-h-8 w-auto max-w-[9rem] object-contain" %><% else %><%= current_store.name %><% end %><% else %>seallo<% end %></span>
               <span class="w-9"></span>
             </div>
             <%= render "admin/shared/pwa_install" %>

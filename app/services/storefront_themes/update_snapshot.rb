@@ -7,7 +7,7 @@ module StorefrontThemes
     MAX_SECTIONS = 50
     MAX_SETTING_LENGTH = 2_048
     MAX_TEXT_LENGTH = 20_000
-    LOCALES = %w[fr en ar].freeze
+    LOCALES = Morea::Locales::AVAILABLE.map(&:to_s).freeze
 
     class StoreMismatch < ArgumentError; end
     class PublishedTheme < ArgumentError; end

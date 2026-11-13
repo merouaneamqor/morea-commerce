@@ -68,7 +68,7 @@ module AccountingHelper
 
   # Pill colours: for a cost, going up is bad.
   def acc_pill_class(tone, good_when)
-    return "bg-[#f1eee9] text-[#6f6967]" if tone == :flat
+    return "bg-[#efeff3] text-[#6e6e73]" if tone == :flat
 
     ((tone == :up) == (good_when == :up)) ? "bg-[#e3f3e8] text-[#2f7a4a]" : "bg-[#fbe7ea] text-[#b4344e]"
   end

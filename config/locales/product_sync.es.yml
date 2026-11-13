@@ -1,0 +1,37 @@
+es:
+  products_page:
+    all: "Todos"
+    manual: "Manual"
+    source: "Origen"
+    switch: "Tienda"
+    imported_hint: "Importado de la tienda: el precio, el stock y la foto se actualizan en cada sincronización."
+  connections:
+    products:
+      title: "Productos de la tienda"
+      help: "Los productos de esta tienda se leen de tu catálogo: el precio, el stock, las variantes y la foto vienen de la tienda; el coste de compra sigue siendo tuyo."
+      state:
+        never: "Aún no sincronizados"
+        queued: "Sincronización pendiente…"
+        running: "Sincronización en curso…"
+        ok: "Sincronizados el %{time}: %{total} productos (%{created} nuevos, %{updated} actualizados, %{archived} archivados)"
+        failed: "Error en la última sincronización: %{error}"
+      errors:
+        credentials_missing: "Faltan las claves API"
+        invalid_credentials: "Claves API rechazadas por la tienda"
+        missing_scopes: "Falta el permiso para leer los productos"
+        disconnected: "Tienda desconectada"
+        rate_limited: "Demasiadas solicitudes, inténtalo de nuevo más tarde"
+        unavailable: "Tienda no localizable"
+        invalid_response: "Respuesta inesperada de la tienda"
+        unsafe_domain: "Dirección de tienda no autorizada"
+      sync: "Sincronizar los productos"
+      queued: "Sincronización iniciada."
+      not_ready: "Añade primero las claves API de esta tienda (o vuelve a conectarla)."
+      credentials_saved: "Claves API guardadas."
+      credentials_title: "Claves API para leer los productos"
+      credentials_saved_hint: "Guardado (no se muestra). Déjalo vacío para conservarlo."
+      consumer_key: "Clave de cliente (consumer key)"
+      consumer_secret: "Secreto de cliente (consumer secret)"
+      access_token: "Token de acceso de YouCan"
+      save_credentials: "Guardar las claves"
+      imported_count: "%{count} productos importados"

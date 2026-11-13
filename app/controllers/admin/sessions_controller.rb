@@ -16,6 +16,7 @@ module Admin
         reset_session
         session[:user_id] = user.id
         session[:session_version] = user.session_version
+        session[:login_nonce] = SecureRandom.hex(6) # the "clock in" notice comes back at every sign-in
         session[:admin_mode] = user.super_admin? ? "platform" : "store"
         session[:remember_admin] = true if remember
         session[:return_to] = return_to if return_to.present?
@@ -64,7 +65,9 @@ module Admin
         return return_to
       end
 
-      admin_entry_path(user)
+      return admin_platform_path if user&.super_admin?
+
+      user&.confirmation_agent? ? admin_my_stats_path : admin_root_path
     end
   end
 end

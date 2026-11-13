@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -170,6 +170,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
     t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'applied'::character varying]::text[])", name: "agent_deductions_status"
   end
 
+  create_table "agent_payment_items", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "agent_payment_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "order_id", null: false
+    t.integer "amount_cents", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_payment_id"], name: "index_agent_payment_items_on_agent_payment_id"
+    t.index ["order_id"], name: "index_agent_payment_items_on_order_id", unique: true
+    t.index ["store_id"], name: "index_agent_payment_items_on_store_id"
+    t.index ["user_id"], name: "index_agent_payment_items_on_user_id"
+    t.check_constraint "amount_cents > 0", name: "agent_payment_items_amount_positive"
+  end
+
   create_table "agent_payments", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.bigint "user_id", null: false
@@ -179,12 +194,52 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "deductions_cents", default: 0, null: false
+    t.string "payment_method"
+    t.string "reference"
     t.index ["paid_by_id"], name: "index_agent_payments_on_paid_by_id"
     t.index ["store_id", "user_id", "paid_at"], name: "index_agent_payments_on_store_id_and_user_id_and_paid_at"
     t.index ["store_id"], name: "index_agent_payments_on_store_id"
     t.index ["user_id"], name: "index_agent_payments_on_user_id"
     t.check_constraint "amount_cents > 0", name: "agent_payments_amount_positive"
     t.check_constraint "deductions_cents >= 0 AND deductions_cents <= amount_cents", name: "agent_payments_deductions_within_amount"
+    t.check_constraint "payment_method IS NULL OR (payment_method::text = ANY (ARRAY['cash'::character varying, 'bank_transfer'::character varying]::text[]))", name: "agent_payments_method"
+    t.check_constraint "reference IS NULL OR char_length(reference::text) <= 200", name: "agent_payments_reference_length"
+  end
+
+  create_table "assignment_rule_agents", force: :cascade do |t|
+    t.bigint "assignment_rule_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "percent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assignment_rule_id", "user_id"], name: "index_rule_agents_on_rule_and_user", unique: true
+    t.index ["assignment_rule_id"], name: "index_assignment_rule_agents_on_assignment_rule_id"
+    t.index ["user_id"], name: "index_assignment_rule_agents_on_user_id"
+    t.check_constraint "percent IS NULL OR percent >= 0 AND percent <= 100", name: "assignment_rule_agents_percent"
+  end
+
+  create_table "assignment_rules", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "name", limit: 120, null: false
+    t.text "description"
+    t.integer "position", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.string "distribution", default: "equal", null: false
+    t.integer "min_amount_cents"
+    t.integer "max_amount_cents"
+    t.jsonb "sources", default: [], null: false
+    t.integer "timeout_minutes", default: 30, null: false
+    t.boolean "transfer_on_timeout", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "min_success_percent"
+    t.index ["store_id", "position"], name: "index_assignment_rules_on_store_id_and_position"
+    t.index ["store_id"], name: "index_assignment_rules_on_store_id"
+    t.check_constraint "distribution::text = ANY (ARRAY['equal'::character varying, 'percent'::character varying, 'least_loaded'::character varying, 'best_performance'::character varying, 'random'::character varying]::text[])", name: "assignment_rules_distribution"
+    t.check_constraint "max_amount_cents IS NULL OR min_amount_cents IS NULL OR max_amount_cents >= min_amount_cents", name: "assignment_rules_amount_range"
+    t.check_constraint "min_amount_cents IS NULL OR min_amount_cents >= 0", name: "assignment_rules_min_amount"
+    t.check_constraint "min_success_percent IS NULL OR min_success_percent >= 0 AND min_success_percent <= 100", name: "assignment_rules_min_success"
+    t.check_constraint "timeout_minutes >= 5 AND timeout_minutes <= 1440", name: "assignment_rules_timeout"
   end
 
   create_table "audit_events", force: :cascade do |t|
@@ -306,11 +361,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "last_seen_at"
+    t.string "end_reason"
     t.index ["store_id", "started_at"], name: "index_confirmation_shifts_on_store_id_and_started_at"
     t.index ["store_id"], name: "index_confirmation_shifts_on_store_id"
     t.index ["user_id"], name: "index_confirmation_shifts_on_user_id"
     t.index ["user_id"], name: "index_confirmation_shifts_one_open_per_user", unique: true, where: "(ended_at IS NULL)"
     t.check_constraint "ended_at IS NULL OR ended_at > started_at", name: "confirmation_shift_order"
+    t.check_constraint "end_reason IS NULL OR (end_reason::text = ANY (ARRAY['manual'::character varying, 'inactive'::character varying]::text[]))", name: "confirmation_shifts_end_reason"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -705,10 +762,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
     t.datetime "updated_at", null: false
     t.datetime "call_started_at"
     t.datetime "last_activity_at"
+    t.bigint "attributed_user_id"
+    t.datetime "attributed_at"
+    t.bigint "assignment_rule_id"
     t.index ["assigned_user_id"], name: "index_order_confirmations_on_assigned_user_id"
     t.index ["order_id"], name: "index_order_confirmations_on_order_id", unique: true
     t.index ["store_id", "disposition", "callback_at"], name: "index_confirmation_queue"
     t.index ["store_id"], name: "index_order_confirmations_on_store_id"
+    t.index ["assignment_rule_id"], name: "index_order_confirmations_on_assignment_rule_id"
+    t.index ["attributed_user_id"], name: "index_order_confirmations_on_attributed_user_id"
     t.check_constraint "disposition::text = ANY (ARRAY['pending'::character varying, 'no_answer'::character varying, 'callback'::character varying, 'confirmed'::character varying, 'cancelled'::character varying, 'wrong_number'::character varying, 'blocked'::character varying]::text[])", name: "confirmation_disposition"
   end
 
@@ -755,7 +817,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
 
   create_table "orders", force: :cascade do |t|
     t.bigint "store_id", null: false
-    t.bigint "customer_id"
+    t.bigint "customer_id", null: false
     t.string "number", null: false
     t.string "status", default: "new", null: false
     t.string "payment_method", default: "cod", null: false
@@ -763,10 +825,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
     t.integer "shipping_cents", default: 0, null: false
     t.integer "total_cents", default: 0, null: false
     t.string "currency", default: "DH", null: false
-    t.string "customer_name"
-    t.string "customer_phone"
-    t.string "customer_city"
-    t.string "customer_address"
+    t.string "customer_name", null: false
+    t.string "customer_phone", null: false
+    t.string "customer_city", null: false
+    t.string "customer_address", null: false
     t.text "notes"
     t.datetime "confirmed_at"
     t.datetime "shipped_at"
@@ -1305,6 +1367,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
     t.string "legal_registration_number"
     t.string "legal_address"
     t.integer "minimum_purchase_age", default: 16, null: false
+    t.string "website_url"
     t.index ["api_token_digest"], name: "index_stores_on_api_token_digest", unique: true
     t.index ["billing_interval"], name: "index_stores_on_billing_interval"
     t.index ["billing_status"], name: "index_stores_on_billing_status"
@@ -1312,6 +1375,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
     t.check_constraint "admin_theme::text = ANY (ARRAY['seallo'::character varying::text, 'seallo_dark'::character varying::text])", name: "stores_admin_theme"
     t.check_constraint "minimum_purchase_age >= 13 AND minimum_purchase_age <= 21", name: "stores_minimum_purchase_age_range"
     t.check_constraint "plan IS NULL OR (plan::text = ANY (ARRAY['free'::character varying::text, 'starter'::character varying::text, 'intermediate'::character varying::text, 'professional'::character varying::text, 'business'::character varying::text]))", name: "stores_plan_known"
+    t.check_constraint "website_url IS NULL OR char_length(website_url::text) <= 200", name: "stores_website_url_length"
   end
 
   create_table "users", force: :cascade do |t|
@@ -1330,16 +1394,58 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
     t.integer "pay_per_delivery_cents", default: 0, null: false
     t.integer "return_penalty_cents", default: 0, null: false
     t.boolean "show_milestones", default: true, null: false
+    t.bigint "created_by_id"
     t.index ["email"], name: "index_users_on_email_super_admin", unique: true, where: "(super_admin = true)"
     t.index ["status"], name: "index_users_on_status"
     t.index ["store_id", "email"], name: "index_users_on_store_id_and_email", unique: true
     t.index ["store_id"], name: "index_users_on_store_id"
+    t.index ["created_by_id"], name: "index_users_on_created_by_id"
     t.check_constraint "confirmation_role::text <> 'agent'::text OR admin = false", name: "users_agent_not_admin"
     t.check_constraint "confirmation_role::text = ANY (ARRAY['agent'::character varying::text, 'supervisor'::character varying::text])", name: "users_confirmation_role_check"
     t.check_constraint "pay_per_delivery_cents >= 0", name: "users_pay_per_delivery_nonnegative"
     t.check_constraint "return_penalty_cents >= 0", name: "users_return_penalty_nonnegative"
     t.check_constraint "session_version >= 0", name: "users_session_version_nonnegative"
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying::text, 'suspended'::character varying::text, 'archived'::character varying::text])", name: "users_status_check"
+  end
+
+  create_table "whatsapp_accounts", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "name", null: false
+    t.string "display_phone"
+    t.string "phone_number_id", null: false
+    t.string "business_account_id"
+    t.text "access_token_ciphertext", null: false
+    t.string "api_version", default: "v21.0", null: false
+    t.boolean "read_receipts", default: true, null: false
+    t.boolean "auto_send_new_orders", default: false, null: false
+    t.text "new_order_message"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id", "phone_number_id"], name: "index_whatsapp_accounts_on_store_id_and_phone_number_id", unique: true
+    t.index ["store_id"], name: "index_whatsapp_accounts_on_store_id"
+    t.check_constraint "new_order_message IS NULL OR char_length(new_order_message) <= 1000", name: "whatsapp_accounts_message_length"
+  end
+
+  create_table "whatsapp_messages", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "whatsapp_account_id", null: false
+    t.bigint "order_id"
+    t.string "kind", null: false
+    t.string "to_phone", null: false
+    t.text "body", null: false
+    t.string "status", default: "queued", null: false
+    t.string "wa_message_id"
+    t.text "error"
+    t.datetime "sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id", "kind"], name: "index_whatsapp_messages_one_new_order_message", unique: true, where: "(((kind)::text = 'new_order'::text) AND (order_id IS NOT NULL))"
+    t.index ["order_id"], name: "index_whatsapp_messages_on_order_id"
+    t.index ["store_id"], name: "index_whatsapp_messages_on_store_id"
+    t.index ["whatsapp_account_id"], name: "index_whatsapp_messages_on_whatsapp_account_id"
+    t.check_constraint "kind::text = ANY (ARRAY['new_order'::character varying, 'test'::character varying]::text[])", name: "whatsapp_messages_kind"
+    t.check_constraint "status::text = ANY (ARRAY['queued'::character varying, 'sent'::character varying, 'failed'::character varying]::text[])", name: "whatsapp_messages_status"
   end
 
   create_table "woocommerce_connection_codes", force: :cascade do |t|
@@ -1374,9 +1480,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
   add_foreign_key "agent_deductions", "orders"
   add_foreign_key "agent_deductions", "stores"
   add_foreign_key "agent_deductions", "users"
+  add_foreign_key "agent_payment_items", "agent_payments", on_delete: :cascade
+  add_foreign_key "agent_payment_items", "orders", on_delete: :cascade
+  add_foreign_key "agent_payment_items", "stores"
+  add_foreign_key "agent_payment_items", "users"
   add_foreign_key "agent_payments", "stores"
   add_foreign_key "agent_payments", "users"
   add_foreign_key "agent_payments", "users", column: "paid_by_id"
+  add_foreign_key "assignment_rule_agents", "assignment_rules", on_delete: :cascade
+  add_foreign_key "assignment_rule_agents", "users", on_delete: :cascade
+  add_foreign_key "assignment_rules", "stores"
   add_foreign_key "audit_events", "stores", on_delete: :nullify
   add_foreign_key "audit_events", "users", column: "actor_user_id", on_delete: :nullify
   add_foreign_key "blocked_phones", "stores"
@@ -1431,6 +1544,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
   add_foreign_key "order_confirmations", "orders", on_delete: :cascade
   add_foreign_key "order_confirmations", "stores", on_delete: :cascade
   add_foreign_key "order_confirmations", "users", column: "assigned_user_id", on_delete: :nullify
+  add_foreign_key "order_confirmations", "assignment_rules", on_delete: :nullify
+  add_foreign_key "order_confirmations", "users", column: "attributed_user_id", on_delete: :nullify
   add_foreign_key "order_events", "orders"
   add_foreign_key "order_events", "users"
   add_foreign_key "order_imports", "orders", on_delete: :cascade
@@ -1464,6 +1579,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
   add_foreign_key "store_translations", "stores"
   add_foreign_key "storefront_themes", "stores"
   add_foreign_key "users", "stores"
+  add_foreign_key "users", "users", column: "created_by_id", on_delete: :nullify
+  add_foreign_key "whatsapp_accounts", "stores"
+  add_foreign_key "whatsapp_messages", "orders", on_delete: :nullify
+  add_foreign_key "whatsapp_messages", "stores"
+  add_foreign_key "whatsapp_messages", "whatsapp_accounts", on_delete: :cascade
   add_foreign_key "woocommerce_connection_codes", "stores"
   add_foreign_key "woocommerce_connection_codes", "users"
 end

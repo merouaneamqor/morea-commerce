@@ -1,0 +1,37 @@
+<%# The agent's welcome window (glass, in the middle of the screen): "Bienvenue, name", the word of the day, and the clock-in button when they are
+    not on shift; plus a congratulation at every hundred orders handled today. Shown once per sign-in. locals: welcome (Confirmations::AgentWelcome), on_shift %>
+<% key = session[:login_nonce].to_s %>
+<div data-controller="agent-welcome" data-agent-welcome
+     data-agent-welcome-welcome-key-value="agentWelcome-<%= key %>"
+     data-agent-welcome-milestone-key-value="agentMilestone-<%= current_admin_user.id %>-<%= DateRange.today %>"
+     data-agent-welcome-milestone-value="<%= welcome.milestone %>">
+  <div data-agent-welcome-target="welcome" hidden class="fixed inset-0 bg-[rgba(31,36,48,0.28)] z-[60] grid place-items-center p-4">
+    <div role="alertdialog" aria-modal="true" aria-labelledby="agent-welcome-title" class="w-full max-w-md rounded-3xl border border-white/70 bg-white/70 p-7 text-center shadow-[0_30px_80px_-24px_rgba(31,36,48,0.35),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl backdrop-saturate-150">
+      <span class="mx-auto grid size-14 place-items-center rounded-2xl bg-white/70 text-[#1c1c1e] shadow-[0_8px_24px_-12px_rgba(0,0,0,0.35)]"><%= seller_icon(on_shift ? :check : :clock, size: 28) %></span>
+      <h2 id="agent-welcome-title" class="mt-4 text-2xl font-bold text-[#1c1c1e]"><%= t("agent_welcome.title", name: welcome.first_name) %></h2>
+      <p class="mt-4 text-[11px] font-semibold tracking-wide text-[#6e6e73] uppercase"><%= t("agent_welcome.word_of_the_day") %></p>
+      <p class="mt-1 text-base leading-relaxed font-medium text-[#1c1c1e]" data-word-of-the-day>« <%= welcome.word_of_the_day %> »</p>
+      <div class="mt-6 flex flex-col gap-2">
+        <% if on_shift %>
+          <button type="button" data-action="agent-welcome#closeWelcome" class="flex h-11 w-full cursor-pointer items-center justify-center rounded-xl bg-[#1d1d1f] text-sm font-semibold text-white hover:bg-[#3a3a3c]"><%= t("agent_welcome.start") %></button>
+        <% else %>
+          <p class="text-xs text-[#6e6e73]"><%= t("call_center.clock_in_required") %></p>
+          <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path, form: { data: { action: "submit->agent-welcome#closeWelcome" }, class: "m-0 w-full" },
+                class: "flex h-11 w-full cursor-pointer items-center justify-center rounded-xl bg-[#1d1d1f] text-sm font-semibold text-white hover:bg-[#3a3a3c]" %>
+          <button type="button" data-action="agent-welcome#closeWelcome" class="flex h-10 w-full cursor-pointer items-center justify-center rounded-xl text-sm font-semibold text-[#6e6e73] hover:bg-white/60"><%= sl("Plus tard") %></button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <% if welcome.milestone.positive? %>
+    <div data-agent-welcome-target="milestone" hidden class="fixed inset-0 bg-[rgba(31,36,48,0.28)] z-[61] grid place-items-center p-4">
+      <div role="alertdialog" aria-modal="true" aria-labelledby="agent-milestone-title" class="w-full max-w-md rounded-3xl border border-white/70 bg-white/70 p-7 text-center shadow-[0_30px_80px_-24px_rgba(31,36,48,0.35),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl backdrop-saturate-150">
+        <span class="mx-auto grid size-14 place-items-center rounded-2xl bg-white/70 text-[#2f9d5c] shadow-[0_8px_24px_-12px_rgba(0,0,0,0.35)]"><%= seller_icon(:check, size: 28) %></span>
+        <h2 id="agent-milestone-title" class="mt-4 text-2xl font-bold text-[#1c1c1e]"><%= t("agent_welcome.milestone_title", name: welcome.first_name) %></h2>
+        <p class="mt-3 text-base leading-relaxed font-medium text-[#1c1c1e]" data-milestone-message><%= welcome.milestone_message %></p>
+        <button type="button" data-action="agent-welcome#closeMilestone" class="mt-6 flex h-11 w-full cursor-pointer items-center justify-center rounded-xl bg-[#1d1d1f] text-sm font-semibold text-white hover:bg-[#3a3a3c]"><%= t("agent_welcome.continue") %></button>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -6,7 +6,6 @@ module Admin
     layout "admin"
     before_action :require_admin!
     before_action :confine_confirmation_agents!
-    before_action :note_agent_on_platform
     before_action :sync_store_billing_past_due!
     before_action :require_subscription_access!
 
@@ -36,13 +35,13 @@ end
 
     # Confirmation agents are not admins: they reach the desk, its performance page
     # and the billing page (needed when a subscription blocks the store).
-    AGENT_ALLOWED_CONTROLLERS = %w[admin/confirmations admin/orders admin/my_stats admin/subscriptions admin/push_subscriptions].freeze
+    AGENT_ALLOWED_CONTROLLERS = %w[admin/confirmations admin/orders admin/my_stats admin/my_billing admin/subscriptions admin/push_subscriptions].freeze
 
     def confine_confirmation_agents!
       return unless current_user&.confirmation_agent? && !current_user.super_admin?
       return if AGENT_ALLOWED_CONTROLLERS.include?(controller_path)
 
-      redirect_to home_admin_confirmations_path
+      redirect_to admin_my_stats_path
     end
 
     def require_super_admin!
@@ -61,16 +60,5 @@ end
       current_store&.billing_past_due?
     end
 
-    # A confirmation agent who has a platform page open can see orders. Closing
-    # the page ends the session. The interval is a stat and is not used for pay.
-    def note_agent_on_platform
-      return unless current_user&.confirmation_agent_view? && current_store
-      return if controller_path == "admin/confirmations" && action_name == "presence" && params[:away] == "1"
-
-      Confirmations::Presence.new(store: current_store, user: current_user).ping!
-      @agent_present = true
-    rescue Confirmations::Presence::Error
-      @agent_present = false
-    end
   end
 end

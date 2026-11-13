@@ -3,78 +3,11 @@
 # The seller workspace shell (sidebar, header) and the copy of its pages, ported from seallo.
 # Strings are written in French, as on seallo, and translated through the same dictionary.
 module SellerHelper
-  SELLER_DICTIONARY = JSON.parse(Rails.root.join("config/seller_dictionary.json").read).freeze
+  # Every text of the seller pages, written in French (the key), with its English, Arabic and Spanish translation: config/seller_labels/*.yml.
+  SELLER_LABELS = Dir[Rails.root.join("config/seller_labels/*.yml")].sort.each_with_object({}) { |file, labels| labels.merge!(YAML.safe_load_file(file)) }.freeze
 
-  # Words that exist only in Morea (seallo has no such page): [English, Arabic].
-  SELLER_EXTRA = {
-    "Comptabilité" => [ "Accounting", "المحاسبة" ],
-    "Paliers de chiffre d'affaires" => [ "Revenue milestones", "مراحل رقم المعاملات" ],
-    "Livré depuis le début" => [ "Delivered since the start", "المسلَّم منذ البداية" ],
-    "Débutant" => [ "Beginner", "مبتدئ" ],
-    "Distribution des commandes" => [ "Order distribution", "توزيع الطلبات" ],
-    "Commandes de la période" => [ "Orders of the period", "طلبات الفترة" ],
-    "Confirmation" => [ "Confirmation", "التأكيد" ],
-    "Centre d'appels" => [ "Call center", "مركز الاتصال" ],
-    "File d'attente" => [ "Queue", "قائمة الانتظار" ],
-    "Analyses" => [ "Analytics", "التحليلات" ],
-    "Attributions" => [ "Assignments", "التعيينات" ],
-    "Règles d'attribution" => [ "Assignment rules", "قواعد التعيين" ],
-    "Facturation" => [ "Billing", "الفوترة" ],
-    "Expédition" => [ "Shipping", "الشحن" ],
-    "Programmées" => [ "Scheduled", "مجدولة" ],
-    "Faux numéros" => [ "Wrong numbers", "أرقام خاطئة" ],
-    "À expédier" => [ "To ship", "للشحن" ],
-    "En transit" => [ "In transit", "في الطريق" ],
-    "Problème" => [ "Problem", "مشكلة" ],
-    "Meilleurs produits" => [ "Best products", "أفضل المنتجات" ],
-    "Ventes livrées par produit, hors livraison" => [ "Delivered sales by product, delivery excluded", "المبيعات المسلّمة لكل منتج دون التوصيل" ],
-    "Aucune vente livrée sur la période." => [ "No delivered sale in the period.", "لا مبيعات مسلّمة في الفترة." ],
-    "commandes" => [ "orders", "طلبات" ],
-    "commande" => [ "order", "طلب" ],
-    "Réduire le menu" => [ "Collapse the menu", "طيّ القائمة" ],
-    "Agrandir le menu" => [ "Expand the menu", "توسيع القائمة" ],
-    "Je suis ici" => [ "I'm here", "أنا هنا" ],
-    "Je continue jusqu'à" => [ "I keep going to", "أواصل حتى" ],
-    "Masquer les paliers" => [ "Hide the milestones", "إخفاء المراحل" ],
-    "Afficher les paliers" => [ "Show the milestones", "إظهار المراحل" ],
-    "Prochain palier" => [ "Next tier", "المرحلة التالية" ],
-    "Palier maximal atteint" => [ "Top tier reached", "تم بلوغ أعلى مرحلة" ],
-    "avant" => [ "to", "قبل" ],
-    "Pionnier" => [ "Pioneer", "رائد" ],
-    "Doyen" => [ "Veteran", "عميد" ],
-    "Leader" => [ "Leader", "قائد" ],
-    "Maître" => [ "Master", "أستاذ" ],
-    "Légende" => [ "Legend", "أسطورة" ],
-    "Titan" => [ "Titan", "عملاق" ],
-    "Taux de confirmation" => [ "Confirmation rate", "نسبة التأكيد" ],
-    "Panier moyen" => [ "Average basket", "متوسط السلة" ],
-    "Taux de retour" => [ "Return rate", "نسبة الإرجاع" ],
-    "retournées" => [ "returned", "مرتجعة" ],
-    "Commandes livrées" => [ "Delivered orders", "الطلبات المسلّمة" ],
-    "commandes livrées" => [ "delivered orders", "طلبات مسلّمة" ],
-    "Toutes les commandes" => [ "All orders", "كل الطلبات" ],
-    "Stock faible" => [ "Low stock", "مخزون منخفض" ],
-    "Rupture" => [ "Out of stock", "نفد المخزون" ],
-    "pcs" => [ "pcs", "قطعة" ],
-    "Voir les produits" => [ "See products", "عرض المنتجات" ],
-    "Aucun article sous le seuil." => [ "No article below the threshold.", "لا توجد منتجات تحت الحد." ],
-    "Articles à" => [ "Articles at", "منتجات عند" ],
-    "pièces ou moins" => [ "pieces or fewer", "قطع أو أقل" ],
-    "confirmées" => [ "confirmed", "مؤكدة" ],
-    "Accueil" => [ "Home", "الرئيسية" ],
-    "Plus" => [ "More", "المزيد" ],
-    "Menu" => [ "Menu", "القائمة" ],
-    "Stats" => [ "Statistics", "إحصائيات" ],
-    "Statistiques" => [ "Statistics", "إحصائيات" ],
-    "Fermer" => [ "Close", "إغلاق" ],
-    "en livraison" => [ "out for delivery", "قيد التوصيل" ],
-    "à confirmer" => [ "to confirm", "بانتظار التأكيد" ],
-    "des commandes" => [ "of orders", "من الطلبات" ],
-    "des colis" => [ "of parcels", "من الطرود" ],
-    "par rapport à la période précédente" => [ "compared with the previous period", "مقارنة بالفترة السابقة" ],
-    "commandes attendent une confirmation." => [ "orders are waiting for confirmation.", "طلبات بانتظار التأكيد." ],
-    "Éditeur de thème" => [ "Theme editor", "محرر القالب" ]
-  }.freeze
+  # The French texts asked for in another language that have no translation (filled in tests only, to catch a forgotten text).
+  def self.untranslated = (@untranslated ||= Set.new)
 
   SELLER_ICONS = {
     home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
@@ -103,6 +36,7 @@ module SellerHelper
     flag: '<path d="M5 21V4"/><path d="M5 5h11l-2 4 2 4H5"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+    shop: '<path d="M4 9 5.5 4h13L20 9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9"/><path d="M5 12v8h14v-8"/><path d="M10 20v-4h4v4"/>',
     theme: '<rect x="3" y="3" width="7" height="18" rx="1"/><rect x="12" y="3" width="9" height="8" rx="1"/><rect x="12" y="13" width="9" height="8" rx="1"/>'
   }.freeze
 
@@ -119,9 +53,9 @@ module SellerHelper
     [ "ads", :target, "Publicités", "/publicites" ],
     [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
-    [ "integrations", :plug, "Intégrations API", "/integrations" ]
+    [ "integrations", :plug, "Intégrations API", "/integrations" ],
+    [ "store", :shop, "Boutique", "/boutique" ]
   ].freeze
-
 
   # Thumb-reach destinations on phones. Short labels; full sidebar stays via "Plus".
   SELLER_BOTTOM_NAV = [
@@ -139,13 +73,13 @@ module SellerHelper
 
   # Which menu entry a controller belongs to, so the pages not yet ported still highlight their entry.
   SELLER_ACTIVE_BY_CONTROLLER = {
-    "dashboard" => "dashboard", "orders" => "orders", "confirmations" => "confirmation", "my_stats" => "stats",
+    "dashboard" => "dashboard", "orders" => "orders", "confirmations" => "confirmation", "my_stats" => "stats", "my_billing" => "billing",
     "customers" => "clients", "delivery" => "delivery", "products" => "products", "variants" => "products",
     "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
     "seallo_connections" => "integrations", "woocommerce_connections" => "integrations",
     "sendit_settings" => "integrations", "ozon_settings" => "integrations", "ameex_settings" => "integrations",
     "meta_ads" => "ads", "advertising" => "ads", "pixels" => "ads",
-    "accounting" => "accounting",
+    "accounting" => "accounting", "assignment_rules" => "confirmation", "stores" => "store", "agent_billing" => "confirmation",
     "themes" => "themes", "online_store" => "themes", "home_sections" => "themes"
   }.freeze
 
@@ -157,12 +91,12 @@ module SellerHelper
   }.freeze
 
   SELLER_STATUS_BADGES = {
-    "new" => [ "Nouvelle", "bg-[#ebe9fb] text-[#4b4fb0]" ],
-    "confirmed" => [ "Confirmée", "bg-[#e4ecfb] text-[#3d63b8]" ],
-    "postponed" => [ "Reportée", "bg-[#f1eee9] text-[#6f6967]" ],
-    "unreachable" => [ "Injoignable", "bg-[#f1eee9] text-[#6f6967]" ],
+    "new" => [ "Nouvelle", "bg-[#fdf0d9] text-[#8a5a12]" ],
+    "confirmed" => [ "Confirmée", "bg-[#e3f3e8] text-[#2f7a4a]" ],
+    "postponed" => [ "Reportée", "bg-[#e1edfb] text-[#2b5f9e]" ],
+    "unreachable" => [ "Injoignable", "bg-[#fdeadb] text-[#b4560f]" ],
     "cancelled" => [ "Annulée", "bg-[#fbe7ea] text-[#b4344e]" ],
-    "shipped" => [ "En cours", "bg-[#fcf0dc] text-[#9a6412]" ],
+    "shipped" => [ "En cours", "bg-[#eee8fb] text-[#5b3fb0]" ],
     "delivered" => [ "Livrée", "bg-[#e3f3e8] text-[#2f7a4a]" ],
     "returned" => [ "Retournée", "bg-[#fbe7ea] text-[#b4344e]" ]
   }.freeze
@@ -176,10 +110,9 @@ module SellerHelper
   def sl(french)
     return french if I18n.locale == :fr
 
-    pair = SELLER_DICTIONARY[french] || SELLER_EXTRA[french]
-    return french unless pair
-
-    I18n.locale == :en ? pair[0] : pair[1]
+    text = SELLER_LABELS.dig(french, I18n.locale.to_s).presence
+    SellerHelper.untranslated << [ I18n.locale, french ] if text.nil? && Rails.env.test?
+    text || french
   end
 
   def seller_icon(name, size: 18)
@@ -201,10 +134,11 @@ module SellerHelper
   # The pages under "Centre d'appels" in the menu: [key, icon, label, link]; no link means "coming soon".
   SELLER_CALL_CENTER_MENU = [
     [ "queue", :phone, "File d'attente", "/confirmation" ],
-    [ "analytics", :chart, "Analyses", "/admin/confirmations/dashboard" ],
-    [ "assignments", :team, "Attributions", "/admin/confirmations?filter=all" ],
-    [ "rules", :settings, "Règles d'attribution", nil ],
-    [ "billing", :wallet, "Facturation", nil ]
+    [ "analytics", :chart, "Analyses", "/admin/confirmations/analytics" ],
+    [ "assignments", :team, "Attributions", "/admin/confirmations/assignments" ],
+    [ "rules", :settings, "Règles d'attribution", "/admin/confirmations/rules" ],
+    [ "attendance", :clock, "Pointages", "/admin/confirmations/attendance" ],
+    [ "billing", :wallet, "Facturation", "/admin/agent-billing" ]
   ].freeze
 
   # An agent sees the queue and their own analytics only; assignments, rules and billing are the owner's.
@@ -213,18 +147,30 @@ module SellerHelper
   end
 
   def seller_call_center_active
+    return "rules" if controller_name == "assignment_rules"
+    return "billing" if controller_name == "agent_billing"
     return unless controller_name == "confirmations"
 
     case action_name
-    when "dashboard" then "analytics"
+    when "dashboard", "analytics" then "analytics"
+    when "assignments", "assign", "auto_assign" then "assignments"
+    when "attendance" then "attendance"
     when "index" then params[:filter] == "all" ? "assignments" : "queue"
     else "queue"
     end
   end
 
+  # An agent's menu: their own dashboard, their call center and their own billing, nothing about the rest of the store.
+  SELLER_AGENT_MENU = [
+    [ "stats", :home, "Tableau de bord", "/mes-statistiques" ],
+    [ "confirmation", :phone, "Centre d'appels", "/confirmation" ],
+    [ "billing", :wallet, "Facturation", "/facturation" ]
+  ].freeze
+
   def seller_menu(user)
-    agent = user&.confirmation_agent_view?
-    SELLER_MENU.select { |key, *| agent ? %w[confirmation stats orders].include?(key) : key != "stats" }
+    return SELLER_AGENT_MENU if user&.confirmation_agent_view?
+
+    SELLER_MENU.reject { |key, *| key == "stats" }
   end
 
   def seller_bottom_nav(user)
@@ -257,7 +203,14 @@ module SellerHelper
   end
 
   def seller_status_badge(status)
-    SELLER_STATUS_BADGES[SELLER_BADGE_FOR_STATUS.fetch(status, status)] || [ status.to_s.humanize, "bg-[#f1eee9] text-[#6f6967]" ]
+    SELLER_STATUS_BADGES[SELLER_BADGE_FOR_STATUS.fetch(status, status)] || [ status.to_s.humanize, "bg-[#efeff3] text-[#6e6e73]" ]
+  end
+
+  # The plans page, where the owner changes the subscription. It must open on a host that shares the owner's sign-in: the host they are on when it is
+  # the shared (apex) host, otherwise the shared host of the platform (a workspace subdomain shares its sign-in with it).
+  def seller_plans_url
+    host = Store.apex_host?(request.host) ? request.host : Store.base_domain
+    plans_url(host: host, port: request.optional_port, locale: I18n.locale)
   end
 
   def seller_plan_label(store)

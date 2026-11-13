@@ -59,9 +59,10 @@ RSpec.describe "Storefront theme lifecycle" do
       hero = store.home_sections.ordered.first
       expect(hero.position).to eq(0)
       expect(hero.settings).to include("link" => "collections")
-      expect(hero.translations.order(:locale).pluck(:locale)).to contain_exactly("ar", "en", "fr")
+      expect(hero.translations.order(:locale).pluck(:locale)).to contain_exactly("ar", "en", "es", "fr")
       expect(hero.translations.find_by!(locale: "en").heading).to eq("The essentials, held")
       expect(hero.translations.find_by!(locale: "fr").heading).to eq("L'essentiel, tenu")
+      expect(hero.translations.find_by!(locale: "es").heading).to eq("Lo esencial, claro")
       expect(hero.translations.find_by!(locale: "ar").heading).to eq("الأساسيات، بوضوح")
       expect(hero.translations.find_by!(locale: "en").body).to eq("Few pieces, each useful and clear.")
 

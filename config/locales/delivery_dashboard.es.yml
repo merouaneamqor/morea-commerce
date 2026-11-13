@@ -1,0 +1,53 @@
+{
+  "es": {
+    "delivery_dashboard": {
+      "title": "Entregas",
+      "subtitle": "Sigue los envíos y el rendimiento de los repartidores.",
+      "issues_link": "Problemas de entrega",
+      "orders": "Gestionar los pedidos",
+      "from": "Desde",
+      "through": "Hasta",
+      "status": "Estado de entrega",
+      "all_statuses": "Todos los estados",
+      "search": "Buscar un envío",
+      "placeholder": "Seguimiento, pedido, cliente o ciudad",
+      "apply": "Aplicar",
+      "reset": "Restablecer",
+      "cohort": "Estado actual de los pedidos recibidos en el periodo, incluidos los archivados. Los pedidos nuevos y los confirmados/cancelados sin envío se excluyen. El estado y la búsqueda filtran únicamente la lista.",
+      "total": "Total de envíos",
+      "of_shipments": "%{percent} % de los envíos",
+      "companies": "Empresas de transporte",
+      "manual": "Manual",
+      "staff_managed": "Gestión manual",
+      "configured": "Configurado",
+      "not_configured": "No configurado",
+      "shipments": "Envíos",
+      "delivered": "Entregados",
+      "average": "Plazo medio",
+      "days": "%{count} días",
+      "last_sync": "Última sincronización: %{time}",
+      "no_sync": "Ninguna sincronización registrada en el periodo.",
+      "configure": "Configurar Sendit",
+      "manual_note": "Pedidos sin código de seguimiento de Sendit. Gestiona los estados desde cada pedido.",
+      "recent": "Envíos recientes",
+      "list_note": "Hasta 30 envíos. Abre un pedido para el seguimiento, las etiquetas y las acciones.",
+      "empty": "Ningún envío coincide con los filtros.",
+      "order": "Seguimiento / pedido",
+      "customer": "Cliente",
+      "city": "Ciudad",
+      "company": "Empresa",
+      "state": "Estado",
+      "cod": "Importe a cobrar",
+      "breakdown": "Distribución de los estados",
+      "duration_note": "Calculado sobre las entregas con fechas de envío y de entrega válidas.",
+      "groups": {
+        "collection": "Recogida",
+        "in_delivery": "En reparto",
+        "issues": "Problemas de entrega",
+        "delivered": "Entregados",
+        "returned": "Devueltos",
+        "cancelled": "Cancelados"
+      }
+    }
+  }
+}

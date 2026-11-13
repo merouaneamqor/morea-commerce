@@ -301,5 +301,106 @@
       "expiry": "تنتهي صلاحية الرابط خلال 15 دقيقة ويمكن استخدامه مرة واحدة فقط.",
       "ignore": "إذا لم تطلب إعادة تعيين كلمة المرور، فتجاهل هذه الرسالة. لن تتغير كلمة مرورك."
     }
+  },
+  "es": {
+    "registration": {
+      "title": "Crear tu cuenta — %{name}",
+      "heading": "Crea tu cuenta",
+      "lead": "Introduce el nombre de tu empresa y tu email. Te enviaremos un enlace para verificar tu email y elegir una contraseña.",
+      "business_name": "Nombre de tu empresa",
+      "email": "Dirección de email",
+      "password": "Contraseña",
+      "password_confirmation": "Confirmar la contraseña",
+      "password_help": "Usa al menos 12 caracteres.",
+      "subscription_note": "Crear la cuenta es gratis. Explora tu espacio y suscríbete cuando estés listo para usar sus herramientas.",
+      "submit": "Continuar con mi email",
+      "have_account": "¿Ya tienes una cuenta?",
+      "sign_in": "Iniciar sesión",
+      "fix_fields": "Por favor, revisa la siguiente información.",
+      "check_email_title": "Revisa tu correo",
+      "check_email_body": "Si esta dirección se puede registrar, recibirás un enlace para verificar tu email y elegir tu contraseña. Si ya tienes una cuenta, inicia sesión.",
+      "resend_title": "¿No has recibido el email?",
+      "resend_help": "Revisa tu carpeta de correo no deseado o introduce tu email a continuación para pedir un nuevo enlace.",
+      "resend": "Reenviar el email de verificación",
+      "verify_title": "Termina de crear tu cuenta",
+      "verify_body": "Elige tu contraseña para verificar esta dirección de email y abrir tu espacio.",
+      "verify_submit": "Verificar mi email y crear mi cuenta",
+      "expired_title": "Este enlace ya no es válido",
+      "expired_body": "Es posible que el enlace haya caducado o que ya se haya utilizado. Pide un nuevo enlace o inicia sesión si tu cuenta ya está verificada.",
+      "request_new_link": "Obtener un nuevo enlace",
+      "back": "Volver al inicio",
+      "verified": "Tu email está verificado. Te damos la bienvenida a tu espacio.",
+      "resend_notice": "Si hay una cuenta pendiente que se pueda verificar con esta dirección, se enviará un enlace de verificación.",
+      "aside": {
+        "chip": "Empezar",
+        "headline": "Tu actividad empieza aquí.",
+        "steps": [
+          "Introduce el nombre de tu empresa y tu email",
+          "Verifica tu email y elige una contraseña",
+          "Explora tu espacio y suscríbete para usar tus herramientas"
+        ]
+      },
+      "no_account": "¿Todavía no tienes una cuenta?",
+      "forgot_password": "¿Has olvidado tu contraseña?",
+      "create_account": "Crear una cuenta"
+    },
+    "registration_mailer": {
+      "subject": "Verifica tu email — %{name}",
+      "body": "Confirma tu dirección de email para terminar de crear tu cuenta.",
+      "button": "Verificar mi email",
+      "expiry": "Este enlace caduca en 24 horas. Puedes pedir un nuevo enlace desde la página de registro.",
+      "ignore": "Si no has solicitado este registro, puedes ignorar este email."
+    },
+    "activerecord": {
+      "attributes": {
+        "registration": {
+          "business_name": "Nombre de tu empresa",
+          "email": "Dirección de email",
+          "password": "Contraseña",
+          "password_confirmation": "Confirmar la contraseña"
+        }
+      },
+      "errors": {
+        "models": {
+          "registration": {
+            "blank": "debe estar rellenado",
+            "too_short": "es demasiado corto (mínimo %{count} caracteres)",
+            "too_long": "es demasiado largo (máximo %{count} caracteres)",
+            "invalid": "no es válido",
+            "confirmation": "no coincide con %{attribute}",
+            "taken": "ya está en uso",
+            "password_too_long": "es demasiado largo (máximo 72 bytes)"
+          }
+        }
+      }
+    },
+    "password_reset": {
+      "title": "Restablecer tu contraseña",
+      "heading": "¿Has olvidado tu contraseña?",
+      "lead": "Introduce tu email. Si existe una cuenta válida, te enviaremos un enlace de restablecimiento.",
+      "workspace": "Espacio de trabajo (opcional)",
+      "workspace_help": "Si usas este email en varios espacios, introduce el prefijo de la dirección de tu espacio para elegir la cuenta correcta.",
+      "submit": "Enviar el enlace",
+      "back_to_sign_in": "Volver al inicio de sesión",
+      "edit_title": "Elige una nueva contraseña",
+      "edit_lead": "Usa una contraseña segura que no hayas utilizado antes en esta cuenta.",
+      "invalid_title": "Este enlace ya no es válido",
+      "invalid_body": "Es posible que el enlace haya caducado o que ya se haya utilizado. Pide un nuevo enlace para restablecer tu contraseña.",
+      "request_new_link": "Obtener un nuevo enlace",
+      "update": "Guardar la contraseña",
+      "requested": "Si existe una cuenta válida con este email, recibirás un enlace de restablecimiento.",
+      "updated": "Tu contraseña se ha cambiado. Inicia sesión con tu nueva contraseña.",
+      "throttled": "Demasiados intentos. Por favor, inténtalo de nuevo más tarde.",
+      "aside_chip": "Recuperación de la cuenta",
+      "aside_title": "Recupera tu actividad.",
+      "aside_body": "Restablece tu contraseña de forma segura con tu dirección de email verificada. El enlace caduca a los 15 minutos."
+    },
+    "password_reset_mailer": {
+      "subject": "Restablece tu contraseña — %{name}",
+      "body": "Usa el enlace de abajo para elegir una nueva contraseña.",
+      "button": "Restablecer mi contraseña",
+      "expiry": "Este enlace caduca en 15 minutos y solo se puede utilizar una vez.",
+      "ignore": "Si no has solicitado este restablecimiento, ignora este email. Tu contraseña no cambiará."
+    }
   }
 }

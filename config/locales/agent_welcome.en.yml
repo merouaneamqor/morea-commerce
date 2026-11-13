@@ -1,0 +1,26 @@
+en:
+  agent_welcome:
+    title: "Welcome, %{name}"
+    word_of_the_day: "Your word of the day"
+    start: "Let's go"
+    continue: "Keep going"
+    milestone_title: "Well done, %{name}!"
+    quotes:
+      - "Every call is a chance to make a difference."
+      - "A reassured customer is one more order."
+      - "A smile can be heard on the phone: call with yours."
+      - "Little by little, great numbers are built."
+      - "Your perseverance makes all the difference."
+      - "Today is a great day to beat your record."
+      - "Good listening beats a long speech."
+      - "Don't count the calls, make every call count."
+      - "Consistency always beats a one-day effort."
+      - "Every “yes” starts with a warm hello."
+      - "Great teams are built with small wins."
+      - "Take a deep breath: you are ready."
+    milestones:
+      - "%{count} orders handled today: what a great streak!"
+      - "Already %{count} orders handled. Your energy is contagious!"
+      - "%{count} orders handled: you are on fire. Keep that rhythm!"
+      - "Wow, %{count} orders handled today. The team is proud of you!"
+      - "%{count} orders handled: a real record. Breathe, then let's go again!"

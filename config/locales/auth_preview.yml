@@ -80,3 +80,30 @@ ar:
       stores: "المتاجر"
       delivery: "شركات التوصيل"
       ads: "الإعلانات"
+es:
+  auth_preview:
+    eyebrow: "Un pedido, de principio a fin"
+    headline: "Tu comercio electrónico,"
+    headline_accent: "bajo control."
+    tagline: "Confirma, entrega, cobra y ve el beneficio real de cada pedido, en un mismo lugar."
+    live: "En directo"
+    new_order: "Nuevo pedido · Shopify"
+    steps: ["Realizado", "Confirmado", "Enviado", "Entregado", "Pagado"]
+    step_notes:
+      - "Pedido recibido de tu tienda"
+      - "Confirmado por tu agente"
+      - "Enviado automáticamente a entrega"
+      - "Paquete entregado al cliente"
+      - "Dinero cobrado, beneficio calculado"
+    revenue: "Facturación"
+    profit: "Beneficio neto"
+    revenue_short: "Fact."
+    profit_short: "Beneficio"
+    days_30: "30 días"
+    months: ["ene.", "feb.", "mar.", "abr.", "may.", "jun.", "jul.", "ago.", "sept.", "oct.", "nov.", "dic."]
+    best_sellers: "★ Productos más vendidos"
+    orders_abbr: "ped."
+    partner_titles:
+      stores: "Tiendas"
+      delivery: "Entrega"
+      ads: "Publicidad"

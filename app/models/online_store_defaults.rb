@@ -45,18 +45,20 @@ class OnlineStoreDefaults
   def pages
     phone = store.phone.presence
     email = store.email.presence
-    contact = { "fr" => [ phone, email ].compact.join(" ou "), "en" => [ phone, email ].compact.join(" or "), "ar" => [ phone, email ].compact.join(" أو ") }
+    contact = { "fr" => [ phone, email ].compact.join(" ou "), "en" => [ phone, email ].compact.join(" or "), "es" => [ phone, email ].compact.join(" o "), "ar" => [ phone, email ].compact.join(" أو ") }
 
     [
       page("about", LOCALES.index_with { |loc| { title: Morea::OurStory::TITLES[loc], body: Morea::OurStory::BODIES[loc] } }),
       page("shipping", {
         "fr" => { title: "Livraison & paiement", body: "Nous livrons partout au Maroc.\n\nLe paiement se fait à la livraison. #{store_text("fr", :cod_note)}" },
         "en" => { title: "Shipping & payment", body: "We deliver across Morocco.\n\nYou pay on delivery. #{store_text("en", :cod_note)}" },
+        "es" => { title: "Entrega y pago", body: "Entregamos en todo Marruecos.\n\nEl pago se realiza en el momento de la entrega. #{store_text("es", :cod_note)}" },
         "ar" => { title: "التوصيل والدفع", body: "نوصل إلى جميع أنحاء المغرب.\n\nالدفع عند الاستلام. #{store_text("ar", :cod_note)}" }
       }),
       page("returns", {
         "fr" => { title: "Retours & remboursements", body: "Vous disposez de 7 jours après réception pour nous retourner un article non porté, dans son état d’origine.\n\nContactez-nous au #{contact["fr"]} pour organiser le retour. Le remboursement (ou l’échange) est traité après inspection, sans frais cachés." },
         "en" => { title: "Returns & refunds", body: "You have 7 days after delivery to return an unused item in its original condition.\n\nContact us at #{contact["en"]} to arrange your return. Refunds or exchanges are processed after inspection, with no hidden fees." },
+        "es" => { title: "Devoluciones y reembolsos", body: "Dispones de 7 días desde la recepción para devolvernos un artículo no usado, en su estado original.\n\nContáctanos en #{contact["es"]} para organizar la devolución. El reembolso (o el cambio) se tramita tras la inspección, sin cargos ocultos." },
         "ar" => { title: "الإرجاع والاسترداد", body: "لديكم 7 أيام بعد الاستلام لإرجاع أي قطعة غير مستعملة وبحالتها الأصلية.\n\nتواصلوا معنا على #{contact["ar"]} لترتيب الإرجاع. يُعالَج الاسترداد أو الاستبدال بعد الفحص، دون رسوم مخفية." }
       }),
       page("privacy", privacy_page_translations),
@@ -70,15 +72,15 @@ class OnlineStoreDefaults
     header = [
       [ "collections", ->(loc) { t(loc, "nav.shop") } ],
       ([ "collection:#{collection.slug}", ->(loc) { collection.translation_for(loc)&.name.presence || collection.name } ] if collection),
-      [ "page:about", ->(loc) { { "fr" => "Notre histoire", "en" => "Our story", "ar" => "قصتنا" }[loc] } ]
+      [ "page:about", ->(loc) { { "fr" => "Notre histoire", "en" => "Our story", "es" => "Nuestra historia", "ar" => "قصتنا" }[loc] } ]
     ].compact
     footer = [
       [ "page:privacy", ->(loc) { Morea::PrivacyPolicy.menu_labels[loc] } ],
       [ "page:terms", ->(loc) { Morea::TermsOfService.menu_labels[loc] } ],
       [ "page:cookies", ->(loc) { Morea::CookiePolicy.menu_labels[loc] } ],
-      [ "page:shipping", ->(loc) { { "fr" => "Livraison & paiement", "en" => "Shipping & payment", "ar" => "التوصيل والدفع" }[loc] } ],
-      [ "page:returns", ->(loc) { { "fr" => "Retours & remboursements", "en" => "Returns & refunds", "ar" => "الإرجاع والاسترداد" }[loc] } ],
-      [ "privacy_rights", ->(loc) { { "fr" => "Vos droits", "en" => "Your data rights", "ar" => "حقوق بياناتك" }[loc] } ],
+      [ "page:shipping", ->(loc) { { "fr" => "Livraison & paiement", "en" => "Shipping & payment", "es" => "Entrega y pago", "ar" => "التوصيل والدفع" }[loc] } ],
+      [ "page:returns", ->(loc) { { "fr" => "Retours & remboursements", "en" => "Returns & refunds", "es" => "Devoluciones y reembolsos", "ar" => "الإرجاع والاسترداد" }[loc] } ],
+      [ "privacy_rights", ->(loc) { { "fr" => "Vos droits", "en" => "Your data rights", "es" => "Tus derechos", "ar" => "حقوق بياناتك" }[loc] } ],
       [ "track", ->(loc) { t(loc, "nav.track_order") } ],
       [ "https://www.instagram.com/morea.style/", ->(_) { "Instagram" } ]
     ]

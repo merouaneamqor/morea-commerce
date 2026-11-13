@@ -2,8 +2,7 @@
 
 require "rails_helper"
 
-# Operational KPIs plus money/low_stock/distribution/top_products for the dashboard cards.
-# Money figures are read through AccountingStats so Comptabilité and the dashboard agree.
+# The dashboard keeps the order counts and rates. Money figures are AccountingStats' job (see its spec).
 RSpec.describe Seller::DashboardStats do
   let(:suffix) { SecureRandom.hex(4) }
   let(:store) { Store.create!(name: "Stats #{suffix}", slug: "stats-#{suffix}", currency: "MAD") }
@@ -23,11 +22,14 @@ RSpec.describe Seller::DashboardStats do
     expect(stats[:currency]).to eq("MAD")
   end
 
-  it "exposes money, stock and product cards alongside the operational KPIs" do
+  it "computes no money result itself: revenue and basket are read from AccountingStats, profit stays out" do
     order(status: "delivered", total: 20_000, delivered_at: now - 1.day)
     expect(stats.keys).to match_array(%i[range currency pending money low_stock distribution top_products kpis latest])
-    expect(stats[:money]).to include(:revenue, :revenue_delta, :average_basket)
     expect(stats[:kpis].keys).not_to include(:revenue, :net_profit, :average_order, :revenue_delta)
+    expect(stats[:money].keys).to match_array(%i[revenue revenue_delta delivered_orders average_basket])
+    accounting = AccountingStats.new(store: store, range: described_class.new(store: store, now: now).range)
+    expect(stats[:money][:revenue]).to eq(accounting.totals.revenue / 100.0)
+    expect(stats[:money][:average_basket]).to eq((accounting.totals.average_basket / 100).round(2).to_f)
   end
 
   it "reports how many active products have no cost" do

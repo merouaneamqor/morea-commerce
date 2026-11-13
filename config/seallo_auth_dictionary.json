@@ -1,466 +1,582 @@
 {
  "+15 000 commandes ? Plan sur mesure →": [
   "15,000+ orders? Custom plan →",
-  "أكثر من 15 000 طلب؟ خطة مخصّصة ←"
+  "أكثر من 15 000 طلب؟ خطة مخصّصة ←",
+  "¿Más de 15.000 pedidos? Plan a medida →"
  ],
  "/ an": [
   "/ year",
-  "/ سنة"
+  "/ سنة",
+  "/ año"
  ],
  "/ mois": [
   "/ month",
-  "/ شهر"
+  "/ شهر",
+  "/ mes"
  ],
  "30 jours": [
   "30 days",
-  "30 يومًا"
+  "30 يومًا",
+  "30 días"
  ],
  "8 caractères minimum": [
   "At least 8 characters",
-  "8 أحرف على الأقل"
+  "8 أحرف على الأقل",
+  "Mínimo 8 caracteres"
  ],
  "Activation sous 24 h": [
   "Activated within 24 h",
-  "تفعيل خلال 24 ساعة"
+  "تفعيل خلال 24 ساعة",
+  "Activación en 24 h"
  ],
  "Annuel": [
   "Yearly",
-  "سنوي"
+  "سنوي",
+  "Anual"
  ],
  "Argent encaissé, bénéfice calculé": [
   "Cash collected, profit calculated",
-  "تمّ القبض وحُسب الربح"
+  "تمّ القبض وحُسب الربح",
+  "Dinero cobrado, beneficio calculado"
  ],
  "Aucun paiement exigé avant le": [
   "No payment required before",
-  "لا يُطلب أي دفع قبل"
+  "لا يُطلب أي دفع قبل",
+  "No se exige ningún pago antes del"
  ],
  "Banque": [
   "Bank",
-  "البنك"
+  "البنك",
+  "Banco"
  ],
  "Bientôt disponible": [
   "Coming soon",
-  "قريبًا"
+  "قريبًا",
+  "Próximamente"
  ],
  "Bon retour sur seallo": [
   "Welcome back to seallo",
-  "مرحبًا بعودتك إلى seallo"
+  "مرحبًا بعودتك إلى seallo",
+  "Bienvenido de nuevo a seallo"
  ],
  "Boutique Atlas": [
   "Atlas Store",
-  "متجر الأطلس"
+  "متجر الأطلس",
+  "Tienda Atlas"
  ],
  "Boutiques illimitées": [
   "Unlimited stores",
-  "متاجر غير محدودة"
+  "متاجر غير محدودة",
+  "Tiendas ilimitadas"
  ],
  "Bénéfice": [
   "Profit",
-  "الربح"
+  "الربح",
+  "Beneficio"
  ],
  "Bénéfice net": [
   "Net profit",
-  "صافي الربح"
+  "صافي الربح",
+  "Beneficio neto"
  ],
  "Bénéfice réel": [
   "Real profit",
-  "الربح الحقيقي"
+  "الربح الحقيقي",
+  "Beneficio real"
  ],
  "CA": [
   "Revenue",
-  "المعاملات"
+  "المعاملات",
+  "Facturación"
  ],
  "Carte bancaire": [
   "Bank card",
-  "بطاقة بنكية"
+  "بطاقة بنكية",
+  "Tarjeta bancaria"
  ],
  "Changer": [
   "Change",
-  "تغيير"
+  "تغيير",
+  "Cambiar"
  ],
  "Chiffre d'affaires": [
   "Revenue",
-  "رقم المعاملات"
+  "رقم المعاملات",
+  "Facturación"
  ],
  "Choisissez votre plan": [
   "Choose your plan",
-  "اختر خطتك"
+  "اختر خطتك",
+  "Elige tu plan"
  ],
  "Colis livré au client": [
   "Parcel delivered to the customer",
-  "سُلّم الطرد للزبون"
+  "سُلّم الطرد للزبون",
+  "Paquete entregado al cliente"
  ],
  "Commande reçue de votre boutique": [
   "Order received from your store",
-  "وصل الطلب من متجرك"
+  "وصل الطلب من متجرك",
+  "Pedido recibido de tu tienda"
  ],
  "Commandes automatiques": [
   "Automatic orders",
-  "طلبات تلقائية"
+  "طلبات تلقائية",
+  "Pedidos automáticos"
  ],
  "Commandes du jour": [
   "Orders today",
-  "طلبات اليوم"
+  "طلبات اليوم",
+  "Pedidos de hoy"
  ],
  "Commandes entrantes": [
   "Incoming orders",
-  "الطلبات الواردة"
+  "الطلبات الواردة",
+  "Pedidos entrantes"
  ],
  "Commandes illimitées": [
   "Unlimited orders",
-  "طلبات غير محدودة"
+  "طلبات غير محدودة",
+  "Pedidos ilimitados"
  ],
  "Commencer": [
   "Get started",
-  "ابدأ"
+  "ابدأ",
+  "Empezar"
  ],
  "Compte": [
   "Account",
-  "الحساب"
+  "الحساب",
+  "Cuenta"
  ],
  "Confirmation par équipe": [
   "Team confirmation",
-  "تأكيد عبر الفريق"
+  "تأكيد عبر الفريق",
+  "Confirmación por equipo"
  ],
  "Confirmer le mot de passe": [
   "Confirm password",
-  "تأكيد كلمة المرور"
+  "تأكيد كلمة المرور",
+  "Confirmar contraseña"
  ],
  "Confirmez, livrez, encaissez et voyez le vrai bénéfice de chaque commande, au même endroit.": [
   "Confirm, deliver, collect and see the real profit of every order, in one place.",
-  "أكّد واشحن واقبض وشاهد الربح الحقيقي لكل طلب، في مكان واحد."
+  "أكّد واشحن واقبض وشاهد الربح الحقيقي لكل طلب، في مكان واحد.",
+  "Confirma, entrega, cobra y ve el beneficio real de cada pedido, todo en un solo lugar."
  ],
  "Confirmée": [
   "Confirmed",
-  "مؤكَّد"
+  "مؤكَّد",
+  "Confirmado"
  ],
  "Confirmée par votre agent": [
   "Confirmed by your agent",
-  "أكّده وكيلك"
+  "أكّده وكيلك",
+  "Confirmado por tu agente"
  ],
  "Connectez-vous pour suivre vos commandes.": [
   "Sign in to track your orders.",
-  "سجّل الدخول لمتابعة طلباتك."
+  "سجّل الدخول لمتابعة طلباتك.",
+  "Inicia sesión para seguir tus pedidos."
  ],
  "Connexion": [
   "Sign in",
-  "تسجيل الدخول"
+  "تسجيل الدخول",
+  "Iniciar sesión"
  ],
  "Continuer l'essai, payer plus tard": [
   "Continue the trial, pay later",
-  "أكمل التجربة وادفع لاحقًا"
+  "أكمل التجربة وادفع لاحقًا",
+  "Continuar la prueba, pagar más tarde"
  ],
  "Copier": [
   "Copy",
-  "نسخ"
+  "نسخ",
+  "Copiar"
  ],
  "Copié ✓": [
   "Copied ✓",
-  "تم النسخ ✓"
+  "تم النسخ ✓",
+  "Copiado ✓"
  ],
  "Créer mon compte": [
   "Create my account",
-  "إنشاء حسابي"
+  "إنشاء حسابي",
+  "Crear mi cuenta"
  ],
  "Créer un compte": [
   "Create an account",
-  "إنشاء حساب"
+  "إنشاء حساب",
+  "Crear una cuenta"
  ],
  "Créez votre compte seallo": [
   "Create your seallo account",
-  "أنشئ حسابك في seallo"
+  "أنشئ حسابك في seallo",
+  "Crea tu cuenta de seallo"
  ],
  "Devise": [
   "Currency",
-  "العملة"
+  "العملة",
+  "Moneda"
  ],
  "Devise de votre boutique": [
   "Your store currency",
-  "عملة متجرك"
+  "عملة متجرك",
+  "Moneda de tu tienda"
  ],
  "E-mail": [
   "Email",
-  "البريد الإلكتروني"
+  "البريد الإلكتروني",
+  "Correo electrónico"
  ],
  "Effectuez un virement de": [
   "Make a transfer of",
-  "قم بتحويل مبلغ"
+  "قم بتحويل مبلغ",
+  "Haz una transferencia de"
  ],
  "En attendant, payez par virement ou continuez votre essai gratuit.": [
   "Meanwhile, pay by transfer or keep using your free trial.",
-  "في الأثناء، ادفع بالتحويل أو أكمل تجربتك المجانية."
+  "في الأثناء، ادفع بالتحويل أو أكمل تجربتك المجانية.",
+  "Mientras tanto, paga por transferencia o continúa con tu prueba gratuita."
  ],
  "En direct": [
   "Live",
-  "مباشر"
+  "مباشر",
+  "En directo"
  ],
  "Envoi à la livraison": [
   "Sent to delivery",
-  "إرسال إلى التوصيل"
+  "إرسال إلى التوصيل",
+  "Envío a entrega"
  ],
  "Envoyée automatiquement à la livraison": [
   "Sent automatically to delivery",
-  "أُرسل تلقائيًا إلى التوصيل"
+  "أُرسل تلقائيًا إلى التوصيل",
+  "Enviado automáticamente a entrega"
  ],
  "Ex. : numéro de l'opération sur votre reçu": [
   "E.g. the transaction number on your receipt",
-  "مثال: رقم العملية في الإيصال"
+  "مثال: رقم العملية في الإيصال",
+  "Ej.: número de la operación en tu recibo"
  ],
  "Expédiée": [
   "Shipped",
-  "مشحون"
+  "مشحون",
+  "Enviado"
  ],
  "Facturation annuelle": [
   "Yearly billing",
-  "فوترة سنوية"
+  "فوترة سنوية",
+  "Facturación anual"
  ],
  "Facturation mensuelle": [
   "Monthly billing",
-  "فوترة شهرية"
+  "فوترة شهرية",
+  "Facturación mensual"
  ],
  "Gratuit": [
   "Free",
-  "مجاني"
+  "مجاني",
+  "Gratis"
  ],
  "Gratuit, en moins d’une minute.": [
   "Free, in less than a minute.",
-  "مجاني، في أقل من دقيقة."
+  "مجاني، في أقل من دقيقة.",
+  "Gratis, en menos de un minuto."
  ],
  "Inclus partout :": [
   "Included everywhere:",
-  "مضمّن في كل الخطط:"
+  "مضمّن في كل الخطط:",
+  "Incluido en todos los planes:"
  ],
  "J'ai effectué le virement": [
   "I have made the transfer",
-  "لقد قمت بالتحويل"
+  "لقد قمت بالتحويل",
+  "He hecho la transferencia"
  ],
  "Le paiement par carte va s'ouvrir sur la page sécurisée de notre prestataire.": [
   "Card payment will open on our provider’s secure page.",
-  "سيُفتح الدفع بالبطاقة في الصفحة الآمنة لمزوّد الدفع."
+  "سيُفتح الدفع بالبطاقة في الصفحة الآمنة لمزوّد الدفع.",
+  "El pago con tarjeta se abrirá en la página segura de nuestro proveedor."
  ],
  "Le plus populaire": [
   "Most popular",
-  "الأكثر طلبًا"
+  "الأكثر طلبًا",
+  "El más popular"
  ],
  "Livrée": [
   "Delivered",
-  "مُسلَّم"
+  "مُسلَّم",
+  "Entregado"
  ],
  "Mensuel": [
   "Monthly",
-  "شهري"
+  "شهري",
+  "Mensual"
  ],
  "Mettre à jour la référence": [
   "Update the reference",
-  "تحديث المرجع"
+  "تحديث المرجع",
+  "Actualizar la referencia"
  ],
  "Montant": [
   "Amount",
-  "المبلغ"
+  "المبلغ",
+  "Importe"
  ],
  "Mot de passe": [
   "Password",
-  "كلمة المرور"
+  "كلمة المرور",
+  "Contraseña"
  ],
  "Mot de passe oublié ?": [
   "Forgot password?",
-  "نسيت كلمة المرور؟"
+  "نسيت كلمة المرور؟",
+  "¿Olvidaste tu contraseña?"
  ],
  "Moyen de paiement": [
   "Payment method",
-  "طريقة الدفع"
+  "طريقة الدفع",
+  "Método de pago"
  ],
  "Nom complet": [
   "Full name",
-  "الاسم الكامل"
+  "الاسم الكامل",
+  "Nombre completo"
  ],
  "Nom de la boutique": [
   "Store name",
-  "اسم المتجر"
+  "اسم المتجر",
+  "Nombre de la tienda"
  ],
  "Nous activons votre abonnement dès réception, en général sous 24 h.": [
   "We activate your subscription as soon as it arrives, usually within 24 h.",
-  "نفعّل اشتراكك فور وصول التحويل، عادةً خلال 24 ساعة."
+  "نفعّل اشتراكك فور وصول التحويل، عادةً خلال 24 ساعة.",
+  "Activamos tu suscripción en cuanto la recibimos, normalmente en 24 h."
  ],
  "Nouvelle commande · Shopify": [
   "New order · Shopify",
-  "طلب جديد · Shopify"
+  "طلب جديد · Shopify",
+  "Nuevo pedido · Shopify"
  ],
  "Offre de lancement": [
   "Launch offer",
-  "عرض الإطلاق"
+  "عرض الإطلاق",
+  "Oferta de lanzamiento"
  ],
  "Paiement": [
   "Payment",
-  "الدفع"
+  "الدفع",
+  "Pago"
  ],
  "Paiement par carte bientôt disponible": [
   "Card payment coming soon",
-  "الدفع بالبطاقة قريبًا"
+  "الدفع بالبطاقة قريبًا",
+  "Pago con tarjeta próximamente"
  ],
  "Pas encore de compte ?": [
   "No account yet?",
-  "ليس لديك حساب؟"
+  "ليس لديك حساب؟",
+  "¿Aún no tienes cuenta?"
  ],
  "Passée": [
   "Placed",
-  "مُسجَّل"
+  "مُسجَّل",
+  "Realizado"
  ],
  "Payée": [
   "Paid",
-  "مدفوع"
+  "مدفوع",
+  "Pagado"
  ],
  "Plan": [
   "Plan",
-  "الخطة"
+  "الخطة",
+  "Plan"
  ],
  "Plan actuel": [
   "Current plan",
-  "خطتك الحالية"
+  "خطتك الحالية",
+  "Plan actual"
  ],
  "Plan choisi": [
   "Selected plan",
-  "الخطة المختارة"
+  "الخطة المختارة",
+  "Plan elegido"
  ],
  "Prix": [
   "Price",
-  "السعر"
+  "السعر",
+  "Precio"
  ],
  "Pubs Meta et TikTok": [
   "Meta & TikTok ads",
-  "إعلانات Meta وTikTok"
+  "إعلانات Meta وTikTok",
+  "Publicidad en Meta y TikTok"
  ],
  "Retapez le mot de passe": [
   "Re-enter the password",
-  "أعد كتابة كلمة المرور"
+  "أعد كتابة كلمة المرور",
+  "Vuelve a escribir la contraseña"
  ],
  "Récapitulatif": [
   "Summary",
-  "الملخّص"
+  "الملخّص",
+  "Resumen"
  ],
  "Référence": [
   "Reference",
-  "المرجع"
+  "المرجع",
+  "Referencia"
  ],
  "Référence du virement": [
   "Transfer reference",
-  "مرجع التحويل"
+  "مرجع التحويل",
+  "Referencia de la transferencia"
  ],
  "Sans carte, sans engagement": [
   "No card, no commitment",
-  "بلا بطاقة ولا التزام"
+  "بلا بطاقة ولا التزام",
+  "Sin tarjeta, sin compromiso"
  ],
  "Se connecter": [
   "Sign in",
-  "تسجيل الدخول"
+  "تسجيل الدخول",
+  "Iniciar sesión"
  ],
  "Se connecter →": [
   "Sign in →",
-  "تسجيل الدخول ←"
+  "تسجيل الدخول ←",
+  "Iniciar sesión →"
  ],
  "Se déconnecter": [
   "Sign out",
-  "تسجيل الخروج"
+  "تسجيل الخروج",
+  "Cerrar sesión"
  ],
  "Se souvenir de moi": [
   "Remember me",
-  "تذكّرني"
+  "تذكّرني",
+  "Recordarme"
  ],
  "Starter": [
+  "Starter",
   "Starter",
   "Starter"
  ],
  "Suivi des colis": [
   "Parcel tracking",
-  "تتبّع الطرود"
+  "تتبّع الطرود",
+  "Seguimiento de paquetes"
  ],
  "Support WhatsApp": [
   "WhatsApp support",
-  "دعم عبر واتساب"
+  "دعم عبر واتساب",
+  "Soporte por WhatsApp"
  ],
  "Tableau de bord →": [
   "Dashboard →",
-  "لوحة التحكم ←"
+  "لوحة التحكم ←",
+  "Panel →"
  ],
  "Titulaire": [
   "Account holder",
-  "صاحب الحساب"
+  "صاحب الحساب",
+  "Titular"
  ],
  "Total": [
   "Total",
-  "المجموع"
+  "المجموع",
+  "Total"
  ],
  "Tous les outils, illimités": [
   "All tools, unlimited",
-  "كل الأدوات بلا حدود"
+  "كل الأدوات بلا حدود",
+  "Todas las herramientas, sin límites"
  ],
  "Toutes les fonctionnalités dans chaque plan. Prix en dollars, ou dans la devise de votre pays.": [
   "Every feature in every plan. Prices in dollars, or in your country’s currency.",
-  "كل المميزات في كل خطة. الأسعار بالدولار أو بعملة بلدك."
+  "كل المميزات في كل خطة. الأسعار بالدولار أو بعملة بلدك.",
+  "Todas las funciones en cada plan. Precios en dólares o en la moneda de tu país."
  ],
  "Téléphone": [
   "Phone",
-  "الهاتف"
+  "الهاتف",
+  "Teléfono"
  ],
  "Un instant…": [
   "One moment…",
-  "لحظة…"
+  "لحظة…",
+  "Un momento…"
  ],
  "Une commande, de bout en bout": [
   "One order, end to end",
-  "طلب واحد من البداية إلى النهاية"
+  "طلب واحد من البداية إلى النهاية",
+  "Un pedido, de principio a fin"
  ],
  "Virement bancaire": [
   "Bank transfer",
-  "تحويل بنكي"
+  "تحويل بنكي",
+  "Transferencia bancaria"
  ],
  "Virement en cours de vérification": [
   "Transfer being verified",
-  "التحويل قيد التحقّق"
+  "التحويل قيد التحقّق",
+  "Transferencia en proceso de verificación"
  ],
  "Visa, Mastercard, CMI": [
   "Visa, Mastercard, CMI",
-  "Visa وMastercard وCMI"
+  "Visa وMastercard وCMI",
+  "Visa, Mastercard, CMI"
  ],
  "Votre essai gratuit est actif jusqu'au": [
   "Your free trial is active until",
-  "تجربتك المجانية فعّالة حتى"
+  "تجربتك المجانية فعّالة حتى",
+  "Tu prueba gratuita está activa hasta el"
  ],
  "Votre mot de passe": [
   "Your password",
-  "كلمة المرور"
+  "كلمة المرور",
+  "Tu contraseña"
  ],
  "Vous avez déjà un compte ?": [
   "Already have an account?",
-  "لديك حساب بالفعل؟"
+  "لديك حساب بالفعل؟",
+  "¿Ya tienes una cuenta?"
  ],
  "Vous pouvez payer maintenant ou plus tard.": [
   "You can pay now or later.",
-  "يمكنك الدفع الآن أو لاحقًا."
+  "يمكنك الدفع الآن أو لاحقًا.",
+  "Puedes pagar ahora o más tarde."
  ],
  "cmd": [
   "orders",
-  "طلب"
+  "طلب",
+  "pedidos"
  ],
  "vers ce compte :": [
   "to this account:",
-  "إلى هذا الحساب:"
+  "إلى هذا الحساب:",
+  "a esta cuenta:"
  ],
  "vous@exemple.com": [
   "you@example.com",
-  "you@example.com"
+  "you@example.com",
+  "tu@ejemplo.com"
  ],
  "Économie": [
   "You save",
-  "التوفير"
+  "التوفير",
+  "Ahorras"
  ],
  "↑ 18 % vs lundi dernier": [
   "↑ 18% vs last Monday",
-  "↑ 18 % مقارنة بالاثنين الماضي"
+  "↑ 18 % مقارنة بالاثنين الماضي",
+  "↑ 18 % frente al lunes pasado"
  ],
  "★ Meilleurs produits": [
   "★ Best sellers",
-  "★ الأكثر مبيعًا"
+  "★ الأكثر مبيعًا",
+  "★ Productos más vendidos"
  ]
 }

@@ -3,7 +3,20 @@ module Admin
     before_action :set_user, only: %i[edit update destroy pay]
 
     def index
-      @users = current_store.users.order(:email)
+      @tab = %w[roles permissions].include?(params[:tab]) ? params[:tab] : "users"
+      @query = params[:q].to_s.strip
+      @all_users = current_store.users.order(:email)
+      @users = @all_users
+      if @query.present?
+        like = "%#{ActiveRecord::Base.sanitize_sql_like(@query)}%"
+        @users = @users.where("users.name ILIKE :like OR users.email ILIKE :like", like: like)
+      end
+      @users = @users.includes(:created_by)
+      @permission_user = @all_users.reject(&:super_admin?).find { |user| user.id == params[:user_id].to_i } if @tab == "permissions"
+      if @tab == "users"
+        @activity = Team::Activity.new(store: current_store, users: @all_users.reject(&:super_admin?))
+        @activity_rows = @activity.filtered(presence: params[:presence], role: params[:role], query: params[:aq])
+      end
       earnings = Team::AgentEarnings.new(store: current_store, range: Time.current.beginning_of_month..Time.current)
       @summaries = @users.to_h { |user| [ user.id, earnings.summary_for(user) ] }
     end
@@ -14,6 +27,7 @@ module Admin
 
     def create
       @user = current_store.users.new(user_params)
+      @user.created_by = current_user
       if valid_staff_access? && @user.save
         redirect_to admin_users_path, notice: "Staff account created."
       else
@@ -55,27 +69,12 @@ module Admin
       end
     end
 
-    # Records one payment covering everything earned and not yet paid.
+    # Records one payment covering everything earned and not yet paid (paid in cash; the Facturation page of the agents also records a bank transfer and a proof).
     def pay
-      summary = Team::AgentEarnings.new(store: current_store, range: Time.current.beginning_of_month..Time.current).summary_for(@user)
-      if summary.unpaid.zero?
-        redirect_to admin_users_path, alert: t("admin.team.nothing_to_pay")
-      else
-        # The payout settles the unpaid earnings and subtracts the pending deductions, oldest first, as many
-        # as the earnings cover (a deduction is never split); the rest waits for the next payout.
-        AgentPayment.transaction do
-          payment = AgentPayment.create!(store: current_store, user: @user, paid_by: current_user, amount_cents: summary.unpaid, paid_at: Time.current)
-          covered = 0
-          AgentDeduction.pending.where(store: current_store, user: @user).order(:created_at, :id).lock.each do |deduction|
-            break if covered + deduction.amount_cents > summary.unpaid
-
-            deduction.update!(status: "applied", agent_payment: payment)
-            covered += deduction.amount_cents
-          end
-          payment.update!(deductions_cents: covered)
-        end
-        redirect_to admin_users_path, notice: t("admin.team.paid", name: @user.name.presence || @user.email)
-      end
+      Team::AgentPayout.new(store: current_store, agent: @user, paid_by: current_user).pay_all!(method: "cash")
+      redirect_to admin_users_path, notice: t("admin.team.paid", name: @user.name.presence || @user.email)
+    rescue Team::AgentPayout::Error => e
+      redirect_to admin_users_path, alert: e.message == "Nothing to pay." ? t("admin.team.nothing_to_pay") : e.message
     end
 
     private

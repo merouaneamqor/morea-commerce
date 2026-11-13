@@ -1,0 +1,6 @@
+es:
+  tiktok_ads:
+    connect: "Conectar TikTok Ads"
+    errors:
+      config_missing: "TikTok aún no está configurado en esta plataforma: falta %{settings}."
+      not_ready: "La conexión con TikTok Ads aún no está disponible en esta plataforma."

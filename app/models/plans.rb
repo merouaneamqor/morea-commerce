@@ -19,6 +19,9 @@ module Plans
   def annual_months_paid = CONFIG.fetch("annual_months_paid")
   def card_enabled? = CONFIG.fetch("card_enabled")
 
+  # Until payment methods are built, a signed-in owner who changes plan gets it at once, as if it were paid (PLANS_SKIP_PAYMENT=0 brings the payment step back).
+  def skip_payment? = ENV.fetch("PLANS_SKIP_PAYMENT", "1") == "1"
+
   def bank
     defaults = CONFIG.fetch("bank")
     {

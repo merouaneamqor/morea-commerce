@@ -103,6 +103,16 @@ store.translations.destroy_all
     campaign_cta: "Discover The Essential"
   },
   {
+    locale: "es",
+    tagline: "El conjunto deportivo recatado.",
+    about: "Morea diseña conjuntos deportivos recatados para mujeres activas: comodidad, estilo, rendimiento y cobertura que acompañan al movimiento.",
+    cod_label: "Pago contra reembolso",
+    cod_note: "No necesitas cuenta. Confirmamos por teléfono y entregamos en todo Marruecos.",
+    campaign_title: "Nueva colección",
+    campaign_season: "SS / 26",
+    campaign_cta: "Descubre Lo Esencial"
+  },
+  {
     locale: "ar",
     tagline: "طقم الرياضة المحتشم.",
     about: "تصمم موريا أطقم رياضية محتشمة كاملة للنساء النشيطات — راحة وأناقة وأداء وتغطية تتحرك معك.",
@@ -135,6 +145,7 @@ essentials = create_collection!(
   translations: {
     "fr" => { name: "Essentiels", subtitle: "Le mouvement du quotidien, entièrement couvert", description: "Pièces fondatrices et ensembles complets pour l'entraînement, la marche et la vie de tous les jours." },
     "en" => { name: "Essentials", subtitle: "Everyday movement, fully covered", description: "Foundational pieces and complete sets for training, walking, and daily life." },
+    "es" => { name: "Esenciales", subtitle: "El movimiento del día a día, totalmente cubierto", description: "Piezas básicas y conjuntos completos para entrenar, caminar y vivir el día a día." },
     "ar" => { name: "الأساسيات", subtitle: "حركة يومية بتغطية كاملة", description: "قطع أساسية وأطقم كاملة للتدريب والمشي والحياة اليومية." }
   }
 )
@@ -145,7 +156,8 @@ premium = create_collection!(
   position: 2,
   translations: {
     "fr" => { name: "Premium", subtitle: "Performance pudique élevée", description: "Tissus raffinés et silhouettes plus discrètes pour les femmes qui veulent présence et aisance." },
-    "en" => { name: "Premium", subtitle: "Elevated modest performance", description: "Refined fabrics and quieter silhouettes for women who want both presence and ease." }
+    "en" => { name: "Premium", subtitle: "Elevated modest performance", description: "Refined fabrics and quieter silhouettes for women who want both presence and ease." },
+    "es" => { name: "Premium", subtitle: "Rendimiento recatado de alto nivel", description: "Tejidos refinados y siluetas más discretas para mujeres que buscan presencia y soltura." }
   }
 )
 
@@ -155,7 +167,8 @@ casual = create_collection!(
   position: 3,
   translations: {
     "fr" => { name: "Casual", subtitle: "Jours doux, couverture forte", description: "Couches pudiques détendues pour les week-ends et les échauffements." },
-    "en" => { name: "Casual", subtitle: "Soft days, strong coverage", description: "Relaxed modest layers for weekends and warm-ups." }
+    "en" => { name: "Casual", subtitle: "Soft days, strong coverage", description: "Relaxed modest layers for weekends and warm-ups." },
+    "es" => { name: "Casual", subtitle: "Días suaves, cobertura total", description: "Capas recatadas y relajadas para los fines de semana y el calentamiento." }
   }
 )
 
@@ -189,6 +202,17 @@ catalog = [
         dimensions: "Set includes top + bottom. Sizes S–XL",
         origin: "Designed for Morocco",
         care: "Machine wash cold, gentle cycle. Hang dry. Do not bleach."
+      },
+      "es" => {
+        name: "El Conjunto Esencial",
+        short_description: "Un conjunto deportivo recatado completo: armonioso, cubierto y listo para moverte.",
+        story: "Un conjunto pensado para acompañar tus movimientos, del deporte a la vida diaria, sin renunciar al estilo ni al recato.",
+        material: "Jersey elástico transpirable con tacto suave cepillado. Opaco en movimiento. Ligero sobre la piel.",
+        fit: "Holgado sobre el cuerpo con una línea limpia. Pensado para rozar, no para ceñir. Disponible de la S a la XL.",
+        movement: "Elástico en cuatro direcciones que aguanta estiramientos, zancadas y caminatas largas. La cobertura se mantiene en su sitio.",
+        dimensions: "Conjunto de top + pantalón. Tallas S–XL",
+        origin: "Diseñado para Marruecos",
+        care: "Lavar a máquina en frío, ciclo delicado. Secar al aire. No usar lejía."
       },
       "ar" => {
         name: "الطقم الأساسي",
@@ -244,6 +268,17 @@ catalog = [
         dimensions: "Sizes S–XL",
         origin: "Designed for Morocco",
         care: "Wash cold. Do not iron print."
+      },
+      "es" => {
+        name: "Top de rendimiento longline",
+        short_description: "Cobertura alargada, elástico suave, para superponer o llevar solo.",
+        story: "Corte más largo sobre las caderas para moverte, estirarte y entrenar sin ajustarte la ropa.",
+        material: "Punto elástico de secado rápido.",
+        fit: "Silueta longline hasta media cadera. Hombro suave, dobladillo limpio.",
+        movement: "Se mantiene en su sitio en estiramientos con los brazos en alto y calentamientos.",
+        dimensions: "Tallas S–XL",
+        origin: "Diseñado para Marruecos",
+        care: "Lavar en frío. No planchar la estampación."
       }
     },
     variants: [
@@ -280,6 +315,17 @@ catalog = [
         dimensions: "Sizes S–XL",
         origin: "Designed for Morocco",
         care: "Machine wash cold. Low iron if needed."
+      },
+      "es" => {
+        name: "Pantalón motion de pierna ancha",
+        short_description: "Cobertura de largo completo con una pierna ancha y fluida que conserva la estructura.",
+        story: "Diseñado para caminar, estirarse y viajar: largo recatado con espacio para respirar.",
+        material: "Sarga técnica suave con elástico ligero.",
+        fit: "Talle alto. Pierna ancha. Largo hasta el tobillo.",
+        movement: "Zancada fluida sin ceñir. Estructura donde la necesitas.",
+        dimensions: "Tallas S–XL",
+        origin: "Diseñado para Marruecos",
+        care: "Lavar a máquina en frío. Planchar a baja temperatura si es necesario."
       }
     },
     variants: %w[S M L XL].map { |size|
@@ -312,6 +358,16 @@ catalog = [
         movement: "Stays secure through turns and pace changes.",
         origin: "Designed for Morocco",
         care: "Wash cold. Hang dry."
+      },
+      "es" => {
+        name: "Hiyab deportivo",
+        short_description: "Seguro, transpirable, pensado para quedarse en su sitio durante el calentamiento y los entrenamientos.",
+        story: "Un hiyab deportivo debe desaparecer en la sesión: lo bastante ligero para respirar, lo bastante estable para olvidarlo.",
+        material: "Jersey transpirable con elástico suave.",
+        fit: "Talla única. Cobertura ajustable.",
+        movement: "Se mantiene estable en los giros y cambios de ritmo.",
+        origin: "Diseñado para Marruecos",
+        care: "Lavar en frío. Secar al aire."
       },
       "ar" => {
         name: "حجاب رياضي",
@@ -357,6 +413,17 @@ catalog = [
         dimensions: "Sizes S–L",
         origin: "Designed for Morocco",
         care: "Wash cold inside out."
+      },
+      "es" => {
+        name: "Chaqueta de estudio oversize",
+        short_description: "Una capa ligera para antes y después: largo recatado, líneas limpias.",
+        story: "La prenda que te pones al salir del estudio. Estructura suave, sin ruido, cobertura total.",
+        material: "Felpa cepillada ligera.",
+        fit: "Oversize. Largo hasta media muslo.",
+        movement: "Fácil de ponerse sobre los conjuntos. Hombros libres.",
+        dimensions: "Tallas S–L",
+        origin: "Diseñado para Marruecos",
+        care: "Lavar en frío del revés."
       }
     },
     variants: %w[S M L].flat_map { |size|
@@ -393,6 +460,17 @@ catalog = [
         dimensions: "Sizes S–L",
         origin: "Designed for Morocco",
         care: "Gentle wash. Reshape while damp."
+      },
+      "es" => {
+        name: "Conjunto Soft Day",
+        short_description: "Una silueta más suave para los días tranquilos: siempre cubierta, siempre cuidada.",
+        story: "No todos los días son de entrenamiento. Soft Day es para los paseos, los recados y las horas intermedias.",
+        material: "Elástico de mezcla de algodón.",
+        fit: "Top y pantalón holgados. Caída suave.",
+        movement: "Soltura sin prisas para el día a día.",
+        dimensions: "Tallas S–L",
+        origin: "Diseñado para Marruecos",
+        care: "Lavado delicado. Dar forma con la prenda aún húmeda."
       }
     },
     variants: %w[S M L].flat_map { |size|

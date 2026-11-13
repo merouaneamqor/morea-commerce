@@ -184,5 +184,67 @@
         "agent_button": "ابدأ مع وكيلك"
       }
     }
+  },
+  "es": {
+    "platform_home": {
+      "refresh": {
+        "eyebrow": "Plataforma COD para comerciantes online",
+        "headline": "Tu e-commerce,",
+        "headline_accent": "bajo control.",
+        "lead": "Vende allí donde tus clientes compran. Online y en persona. Con IA y en redes sociales. A nivel local y mundial.",
+        "badges": [
+          "Pedidos",
+          "Entrega",
+          "Stock",
+          "Seguimiento"
+        ],
+        "features_title": "Todo lo que necesitas para tus pedidos COD",
+        "features_lead": "Un solo espacio para confirmar, entregar y hacer seguimiento.",
+        "features": [
+          {
+            "title": "Confirmación",
+            "body": "Confirma, cancela o programa una rellamada. Tu equipo sigue cada pedido directamente desde la plataforma."
+          },
+          {
+            "title": "Entrega",
+            "body": "Envía tus pedidos al transportista conectado. Encuentra las etiquetas y el seguimiento de tus paquetes en el mismo lugar."
+          },
+          {
+            "title": "Visión general",
+            "body": "Pedidos recientes, actividad y stock: mantén una visión clara del día a día de tu tienda."
+          }
+        ],
+        "journey_title": "El recorrido de un pedido",
+        "steps": [
+          {
+            "title": "Pedido",
+            "body": "Llega desde tu tienda"
+          },
+          {
+            "title": "Confirmado",
+            "body": "Tu equipo confirma con el cliente"
+          },
+          {
+            "title": "Stock reservado",
+            "body": "Los artículos quedan reservados"
+          },
+          {
+            "title": "Envío",
+            "body": "A través del transportista conectado"
+          },
+          {
+            "title": "Seguimiento",
+            "body": "Entregas y devoluciones centralizadas"
+          }
+        ],
+        "cta_title": "¿Listo para mantener el control?",
+        "cta_body": "Crea tu cuenta gratuita, verifica tu email y elige una suscripción cuando estés listo.",
+        "footer": "Tu e-commerce, bajo control.",
+        "navigation": "Navegación principal",
+        "nav_journey": "Recorrido",
+        "nav_contact": "Contacto",
+        "agent_button": "Empieza con tu agente"
+      }
+    }
   }
 }

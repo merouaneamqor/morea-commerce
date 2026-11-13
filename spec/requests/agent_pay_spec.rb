@@ -72,13 +72,16 @@ RSpec.describe "Agent pay and statistics", type: :request do
     sign_in(agent)
 
     get admin_users_path
-    expect(response).to redirect_to(home_admin_confirmations_path)
+    expect(response).to redirect_to(admin_my_stats_path)
     post pay_admin_user_path(agent)
     expect(AgentPayment.count).to eq(0)
 
     get admin_my_stats_path
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include("8 MAD")
+    get admin_my_billing_path
+    expect(response).to have_http_status(:ok)
+    earned = Nokogiri::HTML(response.body).at_css("[data-kpi='earned_total'] [data-value]").text.squish.delete("⁦⁩")
+    expect(earned).to eq("8 MAD")
   end
 
   it "renders the team, orders and customers pages for the owner" do

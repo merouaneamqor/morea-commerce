@@ -2,7 +2,7 @@
 
 module StorefrontThemes
   class Catalog
-    LOCALES = %w[fr en ar].freeze
+    LOCALES = Morea::Locales::AVAILABLE.map(&:to_s).freeze
     THEMES = {
       "atelier" => {
         "name" => "Atelier",
@@ -21,6 +21,12 @@ module StorefrontThemes
                 "body" => "Clean lines, held fabric, made for the day ahead.",
                 "button_label" => "Discover the collection"
               },
+              "es" => {
+                "subheading" => "Nueva temporada",
+                "heading" => "Piezas hechas para moverse",
+                "body" => "Líneas limpias, tejido firme, para el ritmo del día.",
+                "button_label" => "Descubrir la colección"
+              },
               "ar" => {
                 "subheading" => "موسم جديد",
                 "heading" => "قطع صُممت للحركة",
@@ -31,6 +37,7 @@ module StorefrontThemes
           { "kind" => "featured_collection", "visible" => true, "settings" => { "limit" => "4" }, "translations" => {
             "fr" => { "subheading" => "À regarder d’abord", "heading" => "Pièces signatures" },
             "en" => { "subheading" => "Start here", "heading" => "Signature pieces" },
+            "es" => { "subheading" => "Empieza aquí", "heading" => "Piezas insignia" },
             "ar" => { "subheading" => "ابدأ من هنا", "heading" => "قطع مميزة" }
           } },
           { "kind" => "image_with_text", "visible" => true, "settings" => { "link" => "page:about", "image_position" => "left" }, "translations" => {
@@ -46,6 +53,12 @@ module StorefrontThemes
               "body" => "Each piece starts from a fabric, a cut, and a real use. The essentials, nothing extra.",
               "button_label" => "Our story"
             },
+            "es" => {
+              "subheading" => "La casa",
+              "heading" => "Un punto de vista, firme",
+              "body" => "Cada pieza parte de un tejido, un corte y un uso real. Lo esencial, sin más.",
+              "button_label" => "Nuestra historia"
+            },
             "ar" => {
               "subheading" => "الدار",
               "heading" => "رؤية واضحة ومثبتة",
@@ -56,6 +69,7 @@ module StorefrontThemes
           { "kind" => "collection_list", "visible" => true, "settings" => { "limit" => "3" }, "translations" => {
             "fr" => { "subheading" => "Explorer", "heading" => "Collections" },
             "en" => { "subheading" => "Explore", "heading" => "Collections" },
+            "es" => { "subheading" => "Explorar", "heading" => "Colecciones" },
             "ar" => { "subheading" => "استكشف", "heading" => "المجموعات" }
           } },
           { "kind" => "rich_text", "visible" => true, "settings" => { "link" => "collections" }, "translations" => {
@@ -68,6 +82,11 @@ module StorefrontThemes
               "subheading" => "Order",
               "body" => "Choose a piece. Receive it. Pay on delivery.",
               "button_label" => "See the full edit"
+            },
+            "es" => {
+              "subheading" => "Pedir",
+              "body" => "Elige una pieza. Recíbela. Paga contra reembolso.",
+              "button_label" => "Ver toda la selección"
             },
             "ar" => {
               "subheading" => "اطلب",
@@ -93,6 +112,12 @@ module StorefrontThemes
               "body" => "Few pieces, each useful and clear.",
               "button_label" => "Shop now"
             },
+            "es" => {
+              "subheading" => "Esencial",
+              "heading" => "Lo esencial, claro",
+              "body" => "Pocas piezas, cada una útil y clara.",
+              "button_label" => "Ver la tienda"
+            },
             "ar" => {
               "subheading" => "أساسي",
               "heading" => "الأساسيات، بوضوح",
@@ -101,11 +126,12 @@ module StorefrontThemes
             }
           } },
           { "kind" => "featured_collection", "visible" => true, "settings" => { "limit" => "8" }, "translations" => {
-            "fr" => { "heading" => "Sélection" }, "en" => { "heading" => "Featured" }, "ar" => { "heading" => "مختارات" }
+            "fr" => { "heading" => "Sélection" }, "en" => { "heading" => "Featured" }, "es" => { "heading" => "Selección" }, "ar" => { "heading" => "مختارات" }
           } },
           { "kind" => "rich_text", "visible" => true, "settings" => { "link" => "page:about" }, "translations" => {
             "fr" => { "body" => "Des pièces utiles, faites pour durer.", "button_label" => "En savoir plus" },
             "en" => { "body" => "Useful pieces, made to last.", "button_label" => "Learn more" },
+            "es" => { "body" => "Piezas útiles, hechas para durar.", "button_label" => "Saber más" },
             "ar" => { "body" => "قطع عملية مصممة لتدوم.", "button_label" => "اعرف المزيد" }
           } }
         ]

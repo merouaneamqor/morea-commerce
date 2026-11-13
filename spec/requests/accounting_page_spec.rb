@@ -50,8 +50,8 @@ RSpec.describe "Comptabilité page", type: :request do
     it "puts Comptabilité (calculator icon) where Profit was, for the owner" do
       sign_in(owner)
       get "/comptabilite"
-      links = document.css("aside nav ul a").map { |link| link["href"] }
-      expect(links).to eq(%w[/dashboard /commandes /confirmation /admin/confirmations/dashboard /admin/confirmations?filter=all /clients /livraison /produits /themes /publicites /comptabilite /equipe /integrations])
+      links = document.css("aside nav ul a").reject { |link| link["data-subnav-item"].present? && link["data-subnav-item"] != "queue" }.map { |link| link["href"] }
+      expect(links).to eq(%w[/dashboard /commandes /confirmation /clients /livraison /produits /comptabilite /equipe /integrations /boutique])
       entry = document.at_css("aside nav ul a[href='/comptabilite']")
       expect(entry.text.squish).to eq("Comptabilité")
       expect(entry.at_css("svg rect")).to be_present

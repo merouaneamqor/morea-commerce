@@ -18,11 +18,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
   end
 
   def menu_links
-    document.css("aside nav ul a").map { |link| link["href"] }
-  end
-
-  def owner_menu_links
-    %w[/dashboard /commandes /confirmation /admin/confirmations/dashboard /admin/confirmations?filter=all /clients /livraison /produits /themes /publicites /comptabilite /equipe /integrations]
+    document.css("aside nav ul a").reject { |link| link["data-subnav-item"].present? && link["data-subnav-item"] != "queue" }.map { |link| link["href"] }   # the pages inside Centre d'appels are checked in call_center_menu_spec
   end
 
   it "requires authentication" do
@@ -31,27 +27,52 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     expect(response).to redirect_to(%r{/admin/login})
   end
 
-  it "renders the seallo shell and dashboard for the store owner with the sidebar entries" do
+  it "renders the seallo shell and dashboard for the store owner with the eleven sidebar entries" do
     sign_in(owner)
     get "/dashboard", params: { locale: "fr" }
     expect(response).to have_http_status(:ok)
-    expect(menu_links).to eq(owner_menu_links)
-    expect(document.css("aside nav ul a").map(&:text).map(&:squish)).to include("Publicités", "File d'attente", "Analyses")
+    expect(menu_links).to eq(%w[/dashboard /commandes /confirmation /clients /livraison /produits /comptabilite /equipe /integrations /boutique])
+    expect(document.css("aside nav ul li span").map(&:text).join).to include("Publicités")
     expect(document.css("aside nav ul li").map { |li| li.text.squish }).to include(a_string_including("Comptabilité"))
     expect(document.css("aside nav ul li").map { |li| li.text.squish }).not_to include(a_string_matching(/\bProfit\b/))
     expect(document.at_css("h1").text).to include("Bonjour, Salma")
-    expect(response.body).to include("Boutique #{suffix}", "Plan Starter")
-    expect(document.css("[data-kpis=row1] [data-kpi]").first(2).map { |tile| tile.at_css("p").text.squish }).to eq([ "Chiffre d'affaires", "Commandes" ])
+    expect(response.body).to include("Boutique #{suffix}", "Plan · Starter")
+    expect(document.css("[data-kpis=row1] [data-kpi]").map { |tile| tile.at_css("p").text.squish }).to eq([ "Chiffre d'affaires", "Commandes", "En attente de confirmation", "En cours de livraison", "Annulées", "Refusées" ])
+    expect(document.css("[data-kpis=row2] [data-kpi]").map { |tile| tile.at_css("p").text.squish }).to eq([ "Taux de confirmation", "Taux de livraison", "Taux de retour" ])
   end
 
-  it "shows revenue on the dashboard while keeping detailed accounting charts on Comptabilité" do
+  it "offers a collapsible menu: a desktop toggle, every label hideable, a tooltip with each name, and the choice restored before paint" do
+    sign_in(owner)
+    get "/dashboard", params: { locale: "fr" }
+
+    aside = document.at_css("aside")
+    toggle = aside.at_css("[data-sidebar-toggle]")
+    expect(toggle["aria-expanded"]).to eq("true")
+    expect(toggle["class"]).to include("hidden", "lg:grid")                                   # desktop only
+    expect([ toggle["data-label-collapse"], toggle["data-label-expand"] ]).to eq([ "Réduire le menu", "Agrandir le menu" ])
+    links = aside.css("nav ul li a")
+    expect(links).not_to be_empty
+    expect(links.map { |link| link.at_css("[data-label]")&.text&.squish }).to eq(links.map { |link| link["title"] })
+    expect(aside.css("[data-label]").map { |label| label.text.squish }).to include("Paramètres", "Se déconnecter", "Tableau de bord")
+    expect(aside.at_css("[data-collapse-hide]")).to be_present                                # the wordmark and the store card go when collapsed
+    expect(response.body).to include('localStorage.getItem("sellerSidebar") === "collapsed"')  # restored before the first paint
+    expect(document.at_css("[data-seller-drawer] [data-sidebar-toggle]")["class"]).to include("hidden")
+
+    # A tighter list, so it fits without scrolling; it still scrolls (with a hidden thin bar) only if it ever overflows.
+    nav = aside.at_css("nav[data-sidebar-nav]")
+    expect(nav["class"]).to include("overflow-y-auto", "p-2.5")
+    expect(nav.at_css("ul")["class"]).to include("space-y-0.5")
+    expect(links.reject { |link| link["data-subnav-item"] }.map { |link| link["class"][/py-[\d.]+/] }.uniq).to eq([ "py-2" ])
+  end
+
+  it "no longer shows the financial cards: they moved to Comptabilité" do
     sign_in(owner)
     customer = store.customers.create!(name: "Client", phone: "0612345678", email: "c-#{suffix}@example.test")
     store.orders.create!(customer: customer, number: "MONEY-#{suffix}", status: "delivered", currency: "MAD", customer_name: "Client", customer_phone: "0612345678",
       customer_city: "Fès", customer_address: "Rue 1", total_cents: 25_000, delivered_at: 1.hour.ago)
     get "/dashboard", params: { locale: "fr" }
-    expect(document.at_css("[data-kpi=revenue]").text).to include("Chiffre d'affaires")
-    expect(response.body).not_to include("Profit net", "Ventes livrées vs publicité", "Profit par produit", "Panier moyen")
+    # Revenue and average basket are back on the dashboard by request, read from AccountingStats; profit stays on Comptabilité.
+    expect(response.body).not_to include("Profit net", "Ventes livrées vs publicité", "Profit par produit")
     expect(document.css("[data-sales-chart]")).to be_empty
   end
 
@@ -70,14 +91,14 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     expect(body).not_to include("FOREIGN-#{suffix}", "999 MAD")
   end
 
-  it "limits a confirmation agent to confirmation, statistics and orders, and keeps them off the dashboard" do
+  it "limits a confirmation agent to their dashboard, call center and billing, and keeps them off the store dashboard" do
     agent = store.users.create!(email: "agent-#{suffix}@example.test", password: password, confirmation_role: "agent")
     sign_in(agent)
     get "/dashboard"
-    expect(response).to redirect_to(%r{/admin/confirmations})
+    expect(response).to redirect_to(%r{/admin/my_stats})
     get home_admin_confirmations_path
     expect(response).to have_http_status(:ok)
-    expect(menu_links).to eq(%w[/commandes /confirmation /admin/confirmations/dashboard /mes-statistiques])
+    expect(menu_links).to eq(%w[/mes-statistiques /confirmation /facturation])
     expect(response.body).not_to include("Plan · ")
   end
 

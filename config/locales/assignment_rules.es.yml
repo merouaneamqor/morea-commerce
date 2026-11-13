@@ -1,0 +1,11 @@
+es:
+  assignment_rules:
+    created: "Regla creada."
+    saved: "Regla guardada."
+    deleted: "Regla eliminada."
+    switched_on: "Regla «%{name}» activada."
+    switched_off: "Regla «%{name}» desactivada."
+    manual_source: "Pedidos manuales"
+    equal_label: "Cada agente recibe el %{share} % de los pedidos."
+    total_label: "Total"
+    selected_label: "%{count} agente(s) seleccionado(s): los pedidos se reparten entre ellos."

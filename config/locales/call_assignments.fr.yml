@@ -1,0 +1,11 @@
+fr:
+  call_assignments:
+    assigned: "Commande attribuée à %{name}."
+    unassigned: "Attribution retirée : la commande est ouverte à tous les agents."
+    auto_done:
+      zero: "Aucune commande attribuée."
+      one: "1 commande attribuée automatiquement."
+      other: "%{count} commandes attribuées automatiquement."
+    auto_left:
+      one: "1 commande reste sans agent (les agents actifs sont à leur capacité)."
+      other: "%{count} commandes restent sans agent (les agents actifs sont à leur capacité)."

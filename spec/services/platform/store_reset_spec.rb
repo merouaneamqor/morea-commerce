@@ -24,6 +24,7 @@ RSpec.describe Platform::StoreReset do
     collection = workspace.collections.create!(name: "Synthetic collection")
     collection.collection_products.create!(product: product)
     workspace.discounts.create!(code: "TEST10", discount_type: "percent", value: 10)
+    workspace.assignment_rules.new(name: "Synthetic rule").save!(validate: false)          # no agent row: the agents are kept, only the rule goes
     workspace.store_expenses.create!(spent_on: Date.current, category: "rent", amount_cents: 500)
     cart = workspace.carts.create!(token: SecureRandom.hex(8))
     cart.cart_items.create!(product: product, product_variant: variant, quantity: 1, unit_price_cents: 101)
@@ -114,7 +115,7 @@ RSpec.describe Platform::StoreReset do
     end
 
     it "does not touch any other workspace" do
-      before = %w[orders customers products collections carts discounts store_expenses store_connections pages home_sections menu_items oauth_access_tokens].index_with { |table| count_for(table, bystander.id) }
+      before = %w[orders customers products collections carts discounts assignment_rules store_expenses store_connections pages home_sections menu_items oauth_access_tokens].index_with { |table| count_for(table, bystander.id) }
       tagline = bystander.reload.tagline
 
       reset!

@@ -1,0 +1,26 @@
+fr:
+  agent_welcome:
+    title: "Bienvenue, %{name}"
+    word_of_the_day: "Votre mot du jour"
+    start: "C'est parti"
+    continue: "Continuer"
+    milestone_title: "Bravo, %{name} !"
+    quotes:
+      - "Chaque appel est une occasion de faire la différence."
+      - "Un client rassuré, c'est une commande de plus."
+      - "Le sourire s'entend au téléphone : appelez avec le vôtre."
+      - "Petit à petit, les beaux chiffres se construisent."
+      - "Votre persévérance fait toute la différence."
+      - "Aujourd'hui est une belle journée pour battre votre record."
+      - "Une bonne écoute vaut mieux qu'un long discours."
+      - "Ne comptez pas les appels, faites que chaque appel compte."
+      - "La régularité gagne toujours sur l'effort d'un jour."
+      - "Chaque « oui » commence par un bonjour chaleureux."
+      - "Les grandes équipes se construisent avec de petites victoires."
+      - "Prenez une grande inspiration : vous êtes prêt."
+    milestones:
+      - "%{count} commandes traitées aujourd'hui : quelle belle série !"
+      - "Déjà %{count} commandes traitées. Votre énergie est contagieuse !"
+      - "%{count} commandes traitées : vous êtes une machine. Gardez ce rythme !"
+      - "Wow, %{count} commandes traitées aujourd'hui. L'équipe est fière de vous !"
+      - "%{count} commandes traitées : un vrai record. Respirez, puis on repart !"

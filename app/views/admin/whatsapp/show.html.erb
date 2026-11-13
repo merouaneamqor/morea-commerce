@@ -1,0 +1,133 @@
+<%# WhatsApp Business (Cloud API) settings, for the owner: the connected numbers, the automatic message sent when an order arrives (with keywords), a test send
+    and the log of the messages. The access token is never shown back, only its last characters. %>
+<% content_for :title, "#{sl("Paramètres WhatsApp")} — Admin" %>
+<% content_for :seller_lang, "1" %>
+<% content_for :admin_page_class, "seller-page" %>
+<% card = "rounded-2xl border border-[#e0e0e5] bg-white p-5" %>
+<% field = "h-10 w-full rounded-lg border border-[#e0e0e5] bg-white px-3 text-[13px] text-[#1c1c1e] focus:border-[#25d366] focus:outline-none" %>
+<% status_tones = { "sent" => "bg-[#e3f3e8] text-[#2f7a4a]", "failed" => "bg-[#fbe7ea] text-[#b4344e]", "queued" => "bg-[#fdf0d9] text-[#8a5a12]" } %>
+<% status_labels = { "sent" => sl("Envoyé"), "failed" => sl("Échec"), "queued" => sl("En attente") } %>
+
+<header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#25d366] px-5 py-3 text-white" data-whatsapp-header>
+  <div class="flex items-center gap-3">
+    <%= link_to center_admin_confirmations_path, class: "grid size-9 place-items-center rounded-full bg-white/15 hover:bg-white/25", title: sl("File d'attente") do %><svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round] rtl:rotate-180" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg><% end %>
+    <span class="grid size-11 place-items-center rounded-2xl bg-white/20"><svg viewBox="0 0 24 24" class="size-6 fill-current" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.2 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.8 0-1.3.7-2 .9-2.2.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.8.9c.3.1.5.2.5.3.1.2.1.8-.1 1.4Z"/></svg></span>
+    <div>
+      <h1 class="text-xl leading-tight font-bold"><%= sl("Paramètres WhatsApp") %></h1>
+      <p class="text-[13px] leading-tight text-white/85"><%= sl("Gérez vos comptes WhatsApp Business et le message automatique des nouvelles commandes") %></p>
+    </div>
+  </div>
+  <%= link_to sl("File d'attente"), center_admin_confirmations_path, class: "inline-flex h-8 items-center rounded-full bg-white/15 px-3.5 text-[13px] font-semibold text-white hover:bg-white/25" %>
+</header>
+
+<section class="<%= card %> mt-3" data-whatsapp-accounts>
+  <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Comptes connectés") %></h2>
+  <p class="text-xs text-[#6e6e73]"><%= sl("Quand une commande arrive d'une boutique, le client reçoit automatiquement le message ci-dessous.") %></p>
+
+  <% if @accounts.empty? %>
+    <p class="my-6 text-center text-sm text-[#6e6e73]" data-no-accounts><%= sl("Aucun compte WhatsApp connecté pour le moment.") %></p>
+  <% end %>
+
+  <div class="mt-3 grid grid-cols-1 gap-4 xl:grid-cols-2">
+    <% @accounts.each do |account| %>
+      <article class="rounded-2xl border border-[#e0e0e5] bg-[#fcfcfd] p-4" data-whatsapp-account="<%= account.id %>">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h3 class="text-base font-bold text-[#1c1c1e]" dir="auto"><%= account.name %></h3>
+            <p class="text-xs text-[#6e6e73]" dir="ltr"><%= account.display_phone.presence || "—" %></p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="rounded-full px-2.5 py-0.5 text-[11px] font-semibold <%= account.active? ? "bg-[#e3f3e8] text-[#2f7a4a]" : "bg-[#efeff3] text-[#6e6e73]" %>"><%= account.active? ? sl("Actif") : sl("Inactif") %></span>
+            <%= button_to admin_whatsapp_account_path(account), method: :delete, form: { data: { turbo_confirm: sl("Supprimer ce compte WhatsApp ?") } },
+                  class: "cursor-pointer text-xs font-semibold text-[#b4344e] hover:underline", title: sl("Supprimer") do %><%= sl("Supprimer") %><% end %>
+          </div>
+        </div>
+
+        <dl class="mt-3 space-y-1.5 text-[13px]">
+          <div class="flex justify-between rounded-lg bg-[#f4f4f6] px-3 py-2"><dt class="text-[#6e6e73]"><%= sl("ID du numéro de téléphone") %></dt><dd class="font-mono text-xs" dir="ltr"><%= account.phone_number_id %></dd></div>
+          <% if account.business_account_id.present? %><div class="flex justify-between rounded-lg bg-[#f4f4f6] px-3 py-2"><dt class="text-[#6e6e73]"><%= sl("ID du compte Business") %></dt><dd class="font-mono text-xs" dir="ltr"><%= account.business_account_id %></dd></div><% end %>
+          <div class="flex justify-between rounded-lg bg-[#f4f4f6] px-3 py-2"><dt class="text-[#6e6e73]"><%= sl("Jeton d'accès") %></dt><dd class="font-mono text-xs" dir="ltr" data-token-hint><%= account.token_hint %></dd></div>
+        </dl>
+
+        <%= form_with model: account, url: admin_whatsapp_account_path(account), method: :patch, class: "mt-4 space-y-3", data: { controller: "keyword-insert" } do |f| %>
+          <label class="flex items-start gap-3 rounded-xl bg-[#f4f4f6] px-3 py-2.5 text-[13px]">
+            <%= f.check_box :auto_send_new_orders, class: "mt-0.5 size-4 accent-[#25d366]" %>
+            <span><b class="block text-[#1c1c1e]"><%= sl("Envoyer un message automatique à chaque nouvelle commande") %></b><span class="text-xs text-[#6e6e73]"><%= sl("Les commandes saisies à la main ne sont pas concernées.") %></span></span>
+          </label>
+          <div>
+            <%= f.label :new_order_message, sl("Message au client"), class: "mb-1 block text-xs font-medium text-[#6e6e73]" %>
+            <%= f.text_area :new_order_message, value: account.message_template, rows: 4, maxlength: 1000, class: "w-full rounded-lg border border-[#e0e0e5] bg-white p-3 text-[13px] focus:border-[#25d366] focus:outline-none", data: { keyword_insert_target: "text" } %>
+            <p class="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] text-[#6e6e73]"><%= sl("Mots-clés") %> :
+              <% Whatsapp::Keywords::KEYS.each do |key| %>
+                <button type="button" data-action="keyword-insert#insert" data-keyword-insert-keyword-param="<%= key %>" class="cursor-pointer rounded-full border border-[#d4eedd] bg-[#f1faf5] px-2 py-0.5 font-mono text-[11px] text-[#2f7a4a] hover:bg-[#e3f3e8]">{{<%= key %>}}</button>
+              <% end %>
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-x-5 gap-y-1 text-[13px]">
+            <label class="inline-flex items-center gap-2"><%= f.check_box :active, class: "size-4 accent-[#25d366]" %><%= sl("Compte actif") %></label>
+            <label class="inline-flex items-center gap-2"><%= f.check_box :read_receipts, class: "size-4 accent-[#25d366]" %><%= sl("Accusés de lecture") %></label>
+          </div>
+          <div>
+            <%= f.label :access_token, sl("Nouveau jeton d'accès (laisser vide pour garder l'actuel)"), class: "mb-1 block text-xs font-medium text-[#6e6e73]" %>
+            <%= f.password_field :access_token, autocomplete: "off", value: nil, class: field %>
+          </div>
+          <%= f.submit sl("Enregistrer"), class: "h-10 w-full cursor-pointer rounded-xl bg-[#25d366] text-sm font-semibold text-white hover:bg-[#1fb855]" %>
+        <% end %>
+
+        <%= form_with url: admin_test_whatsapp_account_path(account), method: :post, class: "mt-3 flex gap-2", data: { whatsapp_test: true } do %>
+          <%= telephone_field_tag :to, nil, placeholder: sl("Numéro pour un test (06 12 34 56 78)"), required: true, class: field %>
+          <%= submit_tag sl("Envoyer un test"), class: "h-10 shrink-0 cursor-pointer rounded-xl border border-[#25d366] px-4 text-sm font-semibold text-[#1a8f47] hover:bg-[#f1faf5]" %>
+        <% end %>
+      </article>
+    <% end %>
+
+    <%# Manual configuration: the numbers Meta gives in the WhatsApp Business Manager (API setup page). %>
+    <article class="rounded-2xl border border-dashed border-[#c9c9cf] p-4" data-whatsapp-new>
+      <h3 class="text-base font-bold text-[#1c1c1e]"><%= sl("Configuration manuelle") %></h3>
+      <p class="mt-1 text-xs text-[#6e6e73]"><%= sl("Dans Meta Business Manager, ouvrez WhatsApp > Configuration de l'API, puis copiez l'ID du numéro de téléphone et un jeton d'accès permanent.") %></p>
+      <%= form_with url: admin_whatsapp_accounts_path, scope: :whatsapp_account, method: :post, class: "mt-3 space-y-3" do |f| %>
+        <div><%= f.label :name, sl("Nom du compte"), class: "mb-1 block text-xs font-medium text-[#6e6e73]" %><%= f.text_field :name, required: true, maxlength: 80, placeholder: current_store.name, class: field %></div>
+        <div><%= f.label :display_phone, sl("Numéro affiché"), class: "mb-1 block text-xs font-medium text-[#6e6e73]" %><%= f.text_field :display_phone, maxlength: 40, placeholder: "+212 6 00 00 00 00", dir: "ltr", class: field %></div>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div><%= f.label :phone_number_id, sl("ID du numéro de téléphone"), class: "mb-1 block text-xs font-medium text-[#6e6e73]" %><%= f.text_field :phone_number_id, required: true, inputmode: "numeric", dir: "ltr", class: field %></div>
+          <div><%= f.label :business_account_id, sl("ID du compte Business"), class: "mb-1 block text-xs font-medium text-[#6e6e73]" %><%= f.text_field :business_account_id, inputmode: "numeric", dir: "ltr", class: field %></div>
+        </div>
+        <div><%= f.label :access_token, sl("Jeton d'accès"), class: "mb-1 block text-xs font-medium text-[#6e6e73]" %><%= f.password_field :access_token, required: true, autocomplete: "off", class: field %></div>
+        <%= f.hidden_field :api_version, value: "v21.0" %>
+        <%= f.submit sl("Ajouter le compte"), class: "h-10 w-full cursor-pointer rounded-xl bg-[#1d1d1f] text-sm font-semibold text-white hover:bg-[#3a3a3c]" %>
+      <% end %>
+    </article>
+  </div>
+
+  <p class="mt-4 rounded-xl bg-[#fdf6e6] px-3 py-2.5 text-xs text-[#8a5a12]" data-whatsapp-limit><%= sl("Important : WhatsApp n'autorise un texte libre qu'aux clients qui ont écrit à votre numéro dans les dernières 24 heures. Pour écrire en premier à un nouveau client, Meta exige un template approuvé (bientôt disponible ici).") %></p>
+</section>
+
+<section class="<%= card %> mt-3" data-whatsapp-log>
+  <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Derniers messages") %></h2>
+  <% if @messages.empty? %>
+    <p class="my-6 text-center text-sm text-[#6e6e73]" data-no-messages><%= sl("Aucun message envoyé pour le moment.") %></p>
+  <% else %>
+    <div class="mt-3 overflow-x-auto">
+      <table class="w-full text-[13px]">
+        <thead class="text-[11px] text-[#6e6e73]"><tr>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Date") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Commande") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Destinataire") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Statut") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Message") %></th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#f1f1f4]">
+          <% @messages.each do |message| %>
+            <tr data-whatsapp-message="<%= message.id %>" data-status="<%= message.status %>">
+              <td class="px-2 py-2.5 whitespace-nowrap tabular-nums"><%= l(message.created_at.in_time_zone(DateRange::ZONE), format: :short) %></td>
+              <td class="px-2 py-2.5 font-semibold" dir="ltr"><%= message.order ? "##{message.order.number}" : sl("Test") %></td>
+              <td class="px-2 py-2.5" dir="ltr"><%= message.to_phone %></td>
+              <td class="px-2 py-2.5"><span class="inline-block rounded-full px-2.5 py-0.5 text-[12px] font-medium <%= status_tones[message.status] %>" title="<%= message.error %>"><%= status_labels[message.status] %></span></td>
+              <td class="max-w-md px-2 py-2.5 text-[#6e6e73]" dir="auto"><span class="line-clamp-2" title="<%= message.error.presence || message.body %>"><%= message.error.presence || message.body %></span></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>

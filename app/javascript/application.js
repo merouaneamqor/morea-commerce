@@ -2,7 +2,11 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 
-const path = window.location.pathname
-if (document.querySelector("[data-seller-shell], [data-admin-pwa]") || path.startsWith("/admin") || path.startsWith("/superadmin")) {
-  import("admin_pwa")
-}
+import "admin_pwa"
+
+// A form inside a Turbo frame that answers with a whole page (for example the new order, redirected to its page) leaves
+// the frame and opens that page normally instead of showing "Content missing".
+document.addEventListener("turbo:frame-missing", (event) => {
+  event.preventDefault()
+  event.detail.visit(event.detail.response)
+})

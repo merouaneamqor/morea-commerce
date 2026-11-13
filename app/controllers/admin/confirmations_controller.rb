@@ -10,7 +10,8 @@ module Admin
 
     # The call center page: stat cards, filters, tabs and the order table, all from Confirmations::CallCenter.
     def center
-      @agent_present = Confirmations::Presence.new(store: current_store, user: current_user).present? if agent_view?
+      @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
+      @needs_clock_in = agent_view? && @open_shift.nil?
       @date_range = selected_date_range(scope: "call_center", default: "last_30")
       filters = params.permit(:tab, :product, :source, :whatsapp, :missed, :q, :sort, :page).to_h.symbolize_keys
       @center = Confirmations::CallCenter.new(store: current_store, user: current_user, range: @date_range.time_range, params: filters)
@@ -18,7 +19,8 @@ module Admin
     end
 
     def index
-      @agent_present = Confirmations::Presence.new(store: current_store, user: current_user).present? if agent_view?
+      @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
+      @needs_clock_in = agent_view? && @open_shift.nil?
       @page = params[:page].to_i.clamp(1, 100_000)
       @filters = agent_view? ? FILTERS - %w[all] : FILTERS
       @filter = @filters.include?(params[:filter]) ? params[:filter] : "available"
@@ -33,6 +35,8 @@ module Admin
         orders = orders.where("order_confirmations.assigned_user_id IS NULL")
           .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
           .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
+        # An agent does not see what is attributed to a colleague; owners and supervisors see everything.
+        orders = orders.where(agent_queue_condition, current_user.id) if agent_view?
       end
       @orders = orders.includes(:order_items).order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC"))
         .offset((@page - 1) * 50).limit(51).to_a
@@ -54,6 +58,52 @@ module Admin
       @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
     end
 
+    # "Attributions": the orders waiting for a call and who they are for, with the agents' load. Owners and supervisors only.
+    def assignments
+      return head(:forbidden) if agent_view?
+
+      @assignments = Confirmations::Assignments.new(store: current_store, user: current_user, params: assignment_params)
+    end
+
+    def assign
+      return head(:forbidden) if agent_view?
+
+      agent = Confirmations::Assignments.new(store: current_store, user: current_user).assign!(params[:order_id], params[:agent_id], by: current_user)
+      redirect_back_or_to assignments_admin_confirmations_path, notice: (agent ? t("call_assignments.assigned", name: agent.name.presence || agent.email) : t("call_assignments.unassigned"))
+    rescue Confirmations::Assignments::Error => e
+      redirect_back_or_to assignments_admin_confirmations_path, alert: e.message
+    end
+
+    def auto_assign
+      return head(:forbidden) if agent_view?
+
+      result = Confirmations::Assignments.new(store: current_store, user: current_user).auto_assign!(by: current_user)
+      notice = t("call_assignments.auto_done", count: result[:assigned])
+      notice += " #{t("call_assignments.auto_left", count: result[:left])}" if result[:left].positive?
+      redirect_to assignments_admin_confirmations_path(agent: "all"), notice: notice
+    rescue Confirmations::Assignments::Error => e
+      redirect_to assignments_admin_confirmations_path, alert: e.message
+    end
+
+    # "Analyses": the call-center figures of the orders created in the range. An agent only sees her own calls;
+    # the owner can look at one agent with ?agent_id=.
+    def analytics
+      @date_range = selected_date_range(scope: "call_analytics", default: "last_30")
+      agent = agent_view? ? current_user : (current_store.users.find_by(id: params[:agent_id]) if params[:agent_id].present?)
+      @analytics = Confirmations::Analytics.new(store: current_store, from: @date_range.from, to: @date_range.to, range: @date_range.time_range, agent: agent)
+      # overview, agents (all of them side by side), agent (one of them, chosen from the list). An agent only has her own overview.
+      @view =
+        if agent_view? then "overview"
+        elsif params[:view] == "agents" then "agents"
+        elsif agent || params[:view] == "agent" then "agent"
+        else "overview"
+        end
+      # The team median and the other agents are needed to compare one agent, to choose one, or to see them side by side.
+      if %w[agents agent].include?(@view) || agent
+        @comparison = Confirmations::AgentComparison.new(store: current_store, from: @date_range.from, to: @date_range.to, range: @date_range.time_range)
+      end
+    end
+
     def dashboard
       @period = period_param
       @performance = Confirmations::Performance.new(store: current_store, range: period_range(@period),
@@ -63,7 +113,7 @@ module Admin
       @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
     end
 
-    # Page-open presence for agents (main). Replaces stack clock_in / clock_out.
+    # Page-open presence for agents (main). Kept alongside stack clock_in / clock_out.
     def presence
       if agent_view?
         tracker = Confirmations::Presence.new(store: current_store, user: current_user)
@@ -74,6 +124,42 @@ module Admin
       head :no_content
     end
 
+    # "Pointages": who was on shift and when. Owners and supervisors only.
+    def attendance
+      return head(:forbidden) if agent_view?
+
+      @date_range = selected_date_range(scope: "attendance", default: "last_7")
+      @attendance = Confirmations::Attendance.new(store: current_store, range: @date_range.time_range, agent_id: params[:agent_id])
+    end
+
+    # Sent by the page every 30 seconds while an agent is on shift and the page is visible. The answer says whether the shift is still open.
+    def heartbeat
+      open = Confirmations::Shifts.new(store: current_store, user: current_user).heartbeat
+      render json: { open: open }
+    rescue Confirmations::Shifts::Error
+      render json: { open: false }
+    end
+
+    def clock_in
+      Confirmations::Shifts.new(store: current_store, user: current_user).clock_in
+      back_to_where_it_was notice: t("admin.confirmations.clocked_in")
+    rescue Confirmations::Shifts::Error => e
+      back_to_where_it_was alert: e.message
+    end
+
+    def clock_out
+      Confirmations::Shifts.new(store: current_store, user: current_user).clock_out
+      back_to_where_it_was notice: t("admin.confirmations.clocked_out")
+    rescue Confirmations::Shifts::Error => e
+      back_to_where_it_was alert: e.message
+    end
+
+    # Clocking in or out keeps the person on the page they clicked from (call center, dashboard...): the button works in place.
+    def back_to_where_it_was(flash)
+      redirect_back_or_to dashboard_admin_confirmations_path(period: period_param), **flash
+    end
+    private :back_to_where_it_was
+
     def claim
       desk.claim(params[:order_id])
       redirect_to admin_confirmations_path(filter: "mine"), notice: t("admin.confirmations.claimed")
@@ -81,15 +167,16 @@ module Admin
       redirect_to admin_confirmations_path, alert: e.message
     end
 
-    # Call endpoints support the queue forms and JSON clients.
+    # Call panel endpoints (JSON, used by the panel's Stimulus controller).
     def call
       confirmation = desk.open_call(params[:order_id])
-      call_response({ order_id: confirmation.order_id, call_started_at: confirmation.call_started_at.iso8601(3), server_now: Time.current.iso8601(3) }, notice: t("admin.confirmations.claimed"))
+      render json: { order_id: confirmation.order_id, call_started_at: confirmation.call_started_at.iso8601(3), server_now: Time.current.iso8601(3) }
     rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid => e
-      call_error(e.message)
+      render json: { error: e.message }, status: :unprocessable_content
     end
 
-    # The call window: opened from "Appeler" in the order-modal frame.
+    # The call window: opened from "Appeler" in the order-modal frame. It shows the customer, the products and the result buttons;
+    # the call itself (claim, clock, finish) goes through the JSON endpoints below.
     def panel
       @order = current_store.orders.includes(order_items: [ :product, :product_variant ]).find(params[:order_id])
       return redirect_to(center_admin_confirmations_path, alert: t("call_panel.not_callable")) unless @order.status == "new" && @order.archived_at.nil? && @order.sendit_code.blank?
@@ -101,16 +188,16 @@ module Admin
 
     def abandon_call
       desk.abandon_call(params[:order_id])
-      call_response({ ok: true }, notice: nil)
+      render json: { ok: true }
     rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid => e
-      call_error(e.message)
+      render json: { error: e.message }, status: :unprocessable_content
     end
 
     def finish_call
       desk.finish_call(params[:order_id], outcome: params[:outcome], notes: params[:notes], callback_at: params[:callback_at], changes: call_changes)
-      call_response({ ok: true, next_order_id: next_available_order_id(excluding: params[:order_id]) }, notice: t("admin.confirmations.recorded"))
+      render json: { ok: true, next_order_id: next_available_order_id(excluding: params[:order_id]) }
     rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid, ArgumentError => e
-      call_error(e.message)
+      render json: { error: e.message }, status: :unprocessable_content
     end
 
     def touch_call
@@ -173,20 +260,6 @@ module Admin
 
     private
 
-    def call_response(payload, notice:)
-      respond_to do |format|
-        format.json { render json: payload }
-        format.html { redirect_to admin_confirmations_path(filter: "mine"), notice: notice }
-      end
-    end
-
-    def call_error(message)
-      respond_to do |format|
-        format.json { render json: { error: message }, status: :unprocessable_content }
-        format.html { redirect_to admin_confirmations_path(filter: "mine"), alert: message }
-      end
-    end
-
     # The edits sent by the panel, in the order editor's shape; nil when the panel sent none.
     def call_changes
       return unless params[:order].present?
@@ -204,9 +277,19 @@ module Admin
       current_store.orders.active.where(status: "new", sendit_code: [ nil, "" ]).where.not(id: excluding)
         .joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")
         .where("order_confirmations.assigned_user_id IS NULL")
+        .where(agent_queue_condition, current_user.id)
         .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
         .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
         .order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC")).pick("orders.id")
+    end
+
+    # Which waiting orders an agent may take: with an active attribution rule only the ones given to them, otherwise the open pool too.
+    def agent_queue_condition
+      if current_store.assignment_enforced?
+        "order_confirmations.attributed_user_id = ?"
+      else
+        "order_confirmations.attributed_user_id IS NULL OR order_confirmations.attributed_user_id = ?"
+      end
     end
 
     def require_store_context!
@@ -242,10 +325,15 @@ module Admin
         .order(Arel.sql("(order_confirmations.call_started_at IS NULL), order_confirmations.claimed_at ASC")).first
       return held if held
 
-      scope.where("order_confirmations.assigned_user_id IS NULL")
+      available = scope.where("order_confirmations.assigned_user_id IS NULL")
         .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
         .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
-        .order(Arel.sql("(orders.import_contact_issues = '[]'::jsonb) DESC, order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC")).first
+      available = available.where(agent_queue_condition, current_user.id)
+      available.order(Arel.sql("(orders.import_contact_issues = '[]'::jsonb) DESC, order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC")).first
+    end
+
+    def assignment_params
+      params.permit(:agent, :status, :missed, :source, :product, :q, :sort, :per, :page).to_h.symbolize_keys
     end
   end
 end

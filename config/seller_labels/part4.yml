@@ -195,3 +195,23 @@
   en: "Automatic: page left"
   ar: "تلقائي: تمت مغادرة الصفحة"
   es: "Automático: página abandonada"
+"Bloqué":
+  en: "Blocked"
+  ar: "محظور"
+  es: "Bloqueado"
+"Les commandes qui vous sont attribuées, avec leur statut.":
+  en: "The orders assigned to you, with their status."
+  ar: "الطلبات المُسندة إليك مع حالتها."
+  es: "Los pedidos que se te han asignado, con su estado."
+"Date":
+  en: "Date"
+  ar: "التاريخ"
+  es: "Fecha"
+"Vous n'êtes pas en poste":
+  en: "You are not on shift"
+  ar: "أنت لست في الخدمة"
+  es: "No estás en turno"
+"Plus tard":
+  en: "Later"
+  ar: "لاحقًا"
+  es: "Más tarde"

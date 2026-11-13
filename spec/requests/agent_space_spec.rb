@@ -111,4 +111,26 @@ RSpec.describe "Agent workspace", type: :request do
     expect(page.at_css("[data-agent-row='#{saida.id}'] [data-worked]")["data-worked"].to_i).to be_between(5390, 5410)
     expect(page.at_css("[data-agent-row='#{omar.id}'] [data-worked]")["data-worked"]).to eq("0")
   end
+
+  it "lists the agent's orders with their status on the dashboard, searchable, in every language, and never a colleague's" do
+    mine = make("MINE-1", attributed: saida)
+    make("MINE-2", attributed: saida)
+    make("THEIRS-1", attributed: omar)
+    mine.update!(customer_name: "Hamza Alaoui")
+    sign_in(saida)
+
+    get admin_my_stats_path
+    expect(page.css("[data-my-orders] [data-order-row]").map { |row| row["data-order-row"] }).to contain_exactly("MINE-1", "MINE-2")
+    expect(page.at_css("[data-order-row='MINE-1'] [data-status]")["data-status"]).to eq("new")
+
+    get admin_my_stats_path, params: { q: "alaoui" }
+    expect(page.css("[data-my-orders] [data-order-row]").map { |row| row["data-order-row"] }).to eq([ "MINE-1" ])
+    expect(page.at_css("[data-clear-search]")).to be_present
+    get admin_my_stats_path, params: { q: "THEIRS" }
+    expect(page.at_css("[data-no-orders]")).to be_present
+
+    SellerHelper.untranslated.clear
+    %w[en es ar].each { |locale| get admin_my_stats_path, params: { locale: locale } }
+    expect(SellerHelper.untranslated.to_a).to eq([])
+  end
 end

@@ -59,6 +59,24 @@ RSpec.describe "Agent presence", type: :request do
     expect(shift.reload).to have_attributes(end_reason: "inactive", ended_at: be_within(1.second).of(40.minutes.ago))
   end
 
+  it "asks an agent who is not on shift to clock in when they open the site, and stops once they are on shift; never asks the owner" do
+    sign_in(saida)
+    get admin_my_stats_path
+    prompt = page.at_css("[data-clock-in-prompt]")
+    expect(prompt).to be_present
+    expect(prompt.at_css("form")["action"]).to eq(clock_in_admin_confirmations_path)
+    expect(prompt.at_css("[data-action='clock-in-prompt#dismiss']")).to be_present
+
+    post clock_in_admin_confirmations_path
+    get admin_my_stats_path
+    expect(page.at_css("[data-clock-in-prompt]")).to be_nil
+
+    delete admin_logout_path rescue nil
+    sign_in(owner)
+    get "/admin/orders"
+    expect(page.at_css("[data-clock-in-prompt]")).to be_nil
+  end
+
   it "only puts the presence beat on the pages of an agent who is on shift" do
     sign_in(saida)
     get admin_my_stats_path

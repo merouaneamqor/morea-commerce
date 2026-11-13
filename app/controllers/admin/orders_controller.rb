@@ -370,15 +370,7 @@ end
     def visible_orders
       return current_store.orders unless agent_view?
 
-      held_by_others = OrderConfirmation.where(store: current_store).where.not(assigned_user_id: [ nil, current_user.id ]).select(:order_id)
-      attributed_to_others = OrderConfirmation.where(store: current_store).where.not(attributed_user_id: [ nil, current_user.id ]).select(:order_id)
-      scope = current_store.orders.where.not(id: held_by_others).where.not(id: attributed_to_others)
-      return scope unless current_store.assignment_enforced?
-
-      # With an active attribution rule an agent sees only the orders given to them, held by them or confirmed by them.
-      given = OrderConfirmation.where(store: current_store).where("attributed_user_id = :user OR assigned_user_id = :user", user: current_user.id).select(:order_id)
-      confirmed = ConfirmationAttempt.joins(:order_confirmation).where(store: current_store, user: current_user, outcome: "confirmed").select("order_confirmations.order_id")
-      scope.where(id: given).or(scope.where(id: confirmed))
+      Confirmations::AgentOrders.new(store: current_store, user: current_user).scope
     end
 
     def agents_read_only!

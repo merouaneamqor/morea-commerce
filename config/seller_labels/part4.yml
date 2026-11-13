@@ -239,3 +239,15 @@
   en: "Store"
   ar: "المتجر"
   es: "Tienda"
+"Gagné sur la période":
+  en: "Earned in the period"
+  ar: "المكتسب خلال الفترة"
+  es: "Ganado en el periodo"
+"Aucun paiement sur cette période.":
+  en: "No payment in this period."
+  ar: "لا توجد دفعات في هذه الفترة."
+  es: "No hay pagos en este periodo."
+"Aucune retenue sur cette période.":
+  en: "No deduction in this period."
+  ar: "لا توجد خصومات في هذه الفترة."
+  es: "No hay retenciones en este periodo."

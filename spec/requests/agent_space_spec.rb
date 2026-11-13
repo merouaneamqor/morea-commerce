@@ -239,4 +239,28 @@ RSpec.describe "Agent workspace", type: :request do
       expect { patch admin_store_path, params: { store: { remove_logo: "1" } } }.to have_enqueued_job(ActiveStorage::PurgeJob)
     end
   end
+
+  it "lets the agent change the dates of Facturation: the period figures move, the total earnings, paid and left stay fixed" do
+    customer = store.customers.create!(name: "Client", phone: "0612345678")
+    order = store.orders.create!(customer: customer, number: "D1", status: "delivered", currency: "MAD", customer_name: "Client", customer_phone: "0612345678",
+      customer_city: "Fès", customer_address: "Rue 1", subtotal_cents: 20_000, total_cents: 20_000, confirmed_at: 41.days.ago, delivered_at: 40.days.ago)
+    OrderConfirmation.create!(store: store, order: order, disposition: "confirmed", assigned_user: saida, claimed_at: 41.days.ago)
+    AgentPayment.create!(store: store, user: saida, amount_cents: 300, paid_at: 40.days.ago)
+    AgentPayment.create!(store: store, user: saida, amount_cents: 200, paid_at: 2.days.ago)
+    sign_in(saida)
+    value = ->(key) { page.at_css("[data-kpi='#{key}'] [data-value]").text.squish.delete("⁦⁩") }
+
+    get admin_my_billing_path, params: { from: 7.days.ago.to_date.iso8601, to: Date.current.iso8601 }
+    expect(page.at_css("[data-date-range-label]")).to be_present
+    expect([ value.("earned_total"), value.("paid"), value.("unpaid"), value.("earned_month") ]).to eq([ "8 MAD", "5 MAD", "3 MAD", "0 MAD" ])
+    expect(page.css("[data-payment]").size).to eq(1)
+
+    get admin_my_billing_path, params: { from: 60.days.ago.to_date.iso8601, to: Date.current.iso8601 }
+    expect([ value.("earned_total"), value.("paid"), value.("unpaid"), value.("earned_month") ]).to eq([ "8 MAD", "5 MAD", "3 MAD", "8 MAD" ])
+    expect(page.css("[data-payment]").size).to eq(2)
+
+    get admin_my_billing_path, params: { from: 20.days.ago.to_date.iso8601, to: 10.days.ago.to_date.iso8601 }
+    expect(page.at_css("[data-no-payments]")).to be_present
+    expect(value.("earned_total")).to eq("8 MAD")
+  end
 end

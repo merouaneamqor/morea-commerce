@@ -268,7 +268,7 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
     # The Team page shows the agent's confirmations of the month in their row.
     sign_in(owner)
     get "/admin/staff"
-    expect(document.at_css("[data-member='#{agent.id}']").text.squish).to include("1 confirmées")
+    expect(document.at_css("[data-member='#{agent.id}']").text.squish).to include("1 / 0")
     expect(document.text).to include("Saida")
     month = Time.current.beginning_of_month..Time.current.end_of_month
     expect(Team::AgentEarnings.new(store: store, range: month).summary_for(agent).figures.confirmed).to eq(1)

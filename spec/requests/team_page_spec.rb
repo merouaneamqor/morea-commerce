@@ -27,7 +27,7 @@ RSpec.describe "Team page", type: :request do
     rows = page.css("[data-member]").to_h { |row| [ row["data-member"].to_i, row ] }
     expect(rows.keys).to contain_exactly(owner.id, saida.id, yasmine.id)
     expect(rows[owner.id].text).to include(I18n.t("admin.team.you"), I18n.t("admin.team.owner"))
-    expect(rows[saida.id].text).to include("Moubarak Amqor", I18n.t("admin.team.role_agent"), "Actif", "1 boutique")
+    expect(rows[saida.id].text).to include("Moubarak Amqor", "Agent", "Actif", "1 boutique")
     expect(rows[yasmine.id].text).to include("Suspendu", "Système")
     expect(page.at_css("[data-add-user]")["href"]).to eq(new_admin_user_path)
     expect(rows[owner.id].at_css("form[action='#{admin_user_path(owner)}']")).to be_nil # you cannot remove yourself

@@ -264,6 +264,11 @@ class Store < ApplicationRecord
     update!(attributes)
   end
 
+  # The plan is active for a full period without a payment having been made (see Plans.skip_payment?).
+  def activate_plan_without_payment!
+    update!(billing_status: "active", billing_period_ends_on: billing_interval == "yearly" ? Date.current + 1.year : Date.current + 1.month)
+  end
+
   def billing_past_due?
     billing_status == "past_due" || invoices.overdue.exists?
   end

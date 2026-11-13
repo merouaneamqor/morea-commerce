@@ -12,8 +12,8 @@ class SubscriptionSetupController < ApplicationController
     store = plan_owner&.store
     chosen = session[:signup_plan] || {}
     @guest = plan_owner.nil?
-    @current = store&.trial_ends_at ? store.plan : chosen["plan"]
-    @current_billing = store&.trial_ends_at ? store.billing_interval.sub("yearly", "annual") : chosen["billing"]
+    @current = store&.plan_selected? ? store.plan : chosen["plan"]
+    @current_billing = store&.plan_selected? ? store.billing_interval.sub("yearly", "annual") : chosen["billing"]
     @current_currency = store&.plan_selected? ? store.currency : chosen["currency"]
   end
 
@@ -36,7 +36,15 @@ class SubscriptionSetupController < ApplicationController
     return redirect_to admin_root_path, status: :see_other unless owner.store.plan_selected?
 
     owner.store.choose_plan!(plan: plan, billing: billing, currency: currency)
-    redirect_to owner.store.free_plan? ? admin_root_path : payment_path(locale: I18n.locale), status: :see_other
+    return redirect_to admin_root_path, notice: t("signup_plans.changed"), status: :see_other if owner.store.free_plan?
+
+    # A signed-in owner changes plan with one click: no payment step for now, the plan is active as if paid.
+    if Plans.skip_payment?
+      owner.store.activate_plan_without_payment!
+      return redirect_to admin_root_path, notice: t("signup_plans.changed"), status: :see_other
+    end
+
+    redirect_to payment_path(locale: I18n.locale), status: :see_other
   end
 
   # Step 3: summary and payment methods.

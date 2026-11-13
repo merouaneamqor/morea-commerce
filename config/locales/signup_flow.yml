@@ -2,6 +2,7 @@
 fr:
   signup_plans:
     invalid: "Choisissez un plan valide."
+    changed: "Votre plan a bien été changé."
   signup_payment:
     reference_required: "Indiquez la référence du virement."
     reference_too_long: "La référence est trop longue (100 caractères maximum)."
@@ -13,6 +14,7 @@ fr:
 en:
   signup_plans:
     invalid: "Choose a valid plan."
+    changed: "Your plan has been changed."
   signup_payment:
     reference_required: "Enter the transfer reference."
     reference_too_long: "The reference is too long (100 characters maximum)."
@@ -24,6 +26,7 @@ en:
 ar:
   signup_plans:
     invalid: "اختر خطة صالحة."
+    changed: "تم تغيير خطتك."
   signup_payment:
     reference_required: "أدخل مرجع التحويل."
     reference_too_long: "المرجع طويل جدًا (100 حرف كحد أقصى)."
@@ -35,6 +38,7 @@ ar:
 es:
   signup_plans:
     invalid: "Elige un plan válido."
+    changed: "Tu plan se ha cambiado."
   signup_payment:
     reference_required: "Indica la referencia de la transferencia."
     reference_too_long: "La referencia es demasiado larga (100 caracteres como máximo)."

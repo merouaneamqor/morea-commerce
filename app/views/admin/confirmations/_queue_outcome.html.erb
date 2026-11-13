@@ -1,0 +1,22 @@
+<%# locals: order, confirmation, id_suffix: (optional, avoids duplicate ids when mobile + desktop both render) %>
+<% call_open = confirmation.call_started_at.present? %>
+<% suffix = local_assigns.fetch(:id_suffix, nil) %>
+<% field_key = suffix.present? ? "#{order.id}_#{suffix}" : order.id %>
+<%= form_with url: (call_open ? finish_call_admin_confirmation_path(order) : outcome_admin_confirmation_path(order)), class: "grid gap-3 max-w-2xl py-2", data: { call_form_order_id: (order.id if call_open) } do |form| %>
+  <% if call_open %><p class="font-medium" role="status"><%= t("admin.confirmations.call_in_progress") %></p><% end %>
+  <div>
+    <%= form.label :outcome, t("admin.confirmations.outcome"), for: "outcome_#{field_key}", class: "admin-label" %>
+    <%= form.select :outcome, ConfirmationAttempt::RESULTS.map { |value| [t("admin.confirmations.outcomes.#{value}"), value] }, { include_blank: call_open }, id: "outcome_#{field_key}", required: call_open, class: "admin-input" %>
+  </div>
+  <div>
+    <%= form.label :callback_at, t("admin.confirmations.callback_time"), for: "callback_#{field_key}", class: "admin-label" %>
+    <%= form.datetime_local_field :callback_at, id: "callback_#{field_key}", class: "admin-input" %>
+    <p class="admin-muted text-xs mt-1"><%= t("admin.confirmations.timezone", zone: Time.zone.name) %></p>
+  </div>
+  <div>
+    <%= form.label :notes, t("admin.confirmations.notes"), for: "notes_#{field_key}", class: "admin-label" %>
+    <%= form.text_area :notes, id: "notes_#{field_key}", maxlength: 2000, rows: 2, class: "admin-input" %>
+  </div>
+  <p class="admin-muted text-sm"><%= t("admin.confirmations.dispatch_note") %></p>
+  <%= form.submit t(call_open ? "admin.confirmations.finish_call" : "admin.confirmations.save"), class: "admin-btn justify-self-start" %>
+<% end %>

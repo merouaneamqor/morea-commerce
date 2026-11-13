@@ -14,6 +14,9 @@ module Mutations
       argument :legal_entity_name, String, required: false
       argument :cndp_authorization, String, required: false
       argument :privacy_rights_contact, String, required: false
+      argument :legal_registration_number, String, required: false
+      argument :legal_address, String, required: false
+      argument :minimum_purchase_age, Integer, required: false
       argument :featured_product_slug, String, required: false
       argument :clear_featured_product, Boolean, required: false
       argument :featured_collection_slug, String, required: false

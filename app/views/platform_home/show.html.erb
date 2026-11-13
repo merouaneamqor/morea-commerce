@@ -1,0 +1,84 @@
+<% content_for :title, t("platform_home.title") %>
+<% content_for :head do %>
+  <meta name="color-scheme" content="light">
+  <%= render "shared/platform_icons" %>
+  <%= stylesheet_link_tag "platform_home", "data-turbo-track": "reload" %>
+<% end %>
+<% s = ->(key) { t("platform_home.seallo.#{key}") } %>
+<div class="platform-landing" dir="<%= rtl? ? "rtl" : "ltr" %>">
+  <%= render "platform_home/header" %>
+  <main id="main-content" tabindex="-1">
+    <span id="top"></span>
+    <section class="platform-container platform-hero" aria-labelledby="platform-title">
+      <div class="platform-hero-copy">
+        <h1 id="platform-title"><span class="nowrap"><%= s.("h1a") %></span><br><span><%= s.("h1b") %></span></h1>
+        <div class="platform-map platform-map-mobile" dir="ltr" aria-hidden="true"><%= render "platform_home/network_map", uid: "m" %></div>
+        <p class="platform-lead"><%= s.("sub") %></p>
+        <%= render "platform_home/flow_steps" %>
+      </div>
+      <div class="platform-hero-side">
+        <div class="platform-map platform-map-desktop" dir="ltr" aria-hidden="true"><%= render "platform_home/network_map", uid: "d" %></div>
+        <%= render "platform_home/partners" %>
+      </div>
+    </section>
+  </main>
+  <%= render "platform_home/sections" %>
+  <%= render "platform_home/footer" %>
+</div>
+<script>
+  (function () {
+    var root = document.querySelector(".platform-landing");
+    if (!root) return;
+
+    // Order journey: steps advance on their own until the visitor picks one.
+    var flow = root.querySelector("[data-flow]");
+    if (flow) {
+      var steps = flow.querySelectorAll("[data-flow-step]");
+      var dots = flow.querySelectorAll("[data-flow-dot]");
+      var count = flow.querySelector("[data-flow-count]");
+      var title = flow.querySelector("[data-flow-title]");
+      var body = flow.querySelector("[data-flow-body]");
+      var active = 0, timer = null;
+      var show = function (i) {
+        active = i;
+        steps.forEach(function (b, n) {
+          b.classList.toggle("is-active", n === i);
+          b.classList.toggle("is-passed", n < i);
+          b.setAttribute("aria-pressed", n === i ? "true" : "false");
+          var link = b.parentNode.querySelector(".platform-flow-link span");
+          if (link) link.style.width = n < i ? "100%" : "0";
+        });
+        dots.forEach(function (d, n) { d.classList.toggle("is-active", n === i); });
+        count.textContent = count.dataset.word + " " + (i + 1) + " " + count.dataset.of + " " + steps.length;
+        title.textContent = steps[i].dataset.title;
+        body.textContent = steps[i].dataset.detail;
+      };
+      var pick = function (i) { clearInterval(timer); show(i); };
+      steps.forEach(function (b, n) { b.addEventListener("click", function () { pick(n); }); });
+      dots.forEach(function (d, n) { d.addEventListener("click", function () { pick(n); }); });
+      show(0);
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        timer = setInterval(function () { show((active + 1) % steps.length); }, 3500);
+      }
+    }
+
+    // Menu sections open in a window over the page.
+    var modal = root.querySelector("[data-modal]");
+    var sections = modal.querySelectorAll("[data-section]");
+    var open = function (id) {
+      modal.hidden = false;
+      document.body.style.overflow = "hidden";
+      sections.forEach(function (el) { el.hidden = el.dataset.section !== id; });
+      root.querySelectorAll("[data-open]").forEach(function (b) { b.classList.toggle("is-current", b.dataset.open === id); });
+    };
+    var close = function () {
+      modal.hidden = true;
+      document.body.style.overflow = "";
+      root.querySelectorAll("[data-open]").forEach(function (b) { b.classList.remove("is-current"); });
+    };
+    root.querySelectorAll("[data-open]").forEach(function (b) { b.addEventListener("click", function () { open(b.dataset.open); }); });
+    modal.querySelector("[data-close]").addEventListener("click", close);
+    modal.addEventListener("click", function (e) { if (e.target === modal) close(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !modal.hidden) close(); });
+  })();
+</script>

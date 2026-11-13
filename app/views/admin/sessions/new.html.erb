@@ -1,28 +1,62 @@
-<% content_for :title, "Log in — Admin" %>
+<% content_for :localized, "1" %>
+<% content_for :title, st("Connexion") %>
+<% content_for :back_label, t("sign_in.back") %>
+<% content_for :topbar do %>
+  <nav class="flex items-center gap-2" aria-label="<%= t("sign_in.language") %>">
+    <% Morea::Locales::AVAILABLE.each do |locale| %>
+      <%= link_to locale.to_s.upcase, admin_login_path(locale: locale),
+            class: (locale.to_s == I18n.locale.to_s ? "font-semibold text-white" : "fx-link"),
+            "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
+    <% end %>
+  </nav>
+<% end %>
+<% apex = Store.apex_host?(request.host) %>
+<% show_workspace = apex %>
+<% account_origin = apex ? "" : Store.platform_origin %>
+<% label_class = "text-sm font-medium text-[#1f2430]" %>
+<% eye = '<svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'.html_safe %>
 
-<div class="w-full max-w-[24rem]">
-  <div class="admin-card">
-    <div class="p-8">
-      <span class="admin-topbar__logo !h-10 !w-10 !text-base">M</span>
-      <h1 class="mt-6 text-xl font-bold text-[#303030]">Log in</h1>
-      <p class="admin-muted mt-1">Continue to <%= current_store&.name || "store" %> admin</p>
-
-      <% if alert.present? %>
-        <div class="admin-banner admin-banner--critical mt-6 mb-0"><%= alert %></div>
-      <% end %>
-
-      <%= form_with url: admin_login_path, method: :post, class: "mt-6 space-y-4" do %>
-        <div>
-          <%= label_tag :email, "Email", class: "admin-label" %>
-          <%= email_field_tag :email, params[:email], required: true, autocomplete: "username", class: "admin-input !min-h-10" %>
-        </div>
-        <div>
-          <%= label_tag :password, "Password", class: "admin-label" %>
-          <%= password_field_tag :password, nil, required: true, autocomplete: "current-password", class: "admin-input !min-h-10" %>
-        </div>
-        <%= submit_tag "Log in", class: "admin-btn !h-10 w-full" %>
-      <% end %>
-    </div>
-  </div>
-  <p class="admin-subdued mt-4 text-center text-xs">Orders, catalog and COD for morea.website</p>
+<div class="mb-5">
+  <h1><%= st("Connexion") %></h1>
+  <p class="mt-1 text-sm text-[#6b6059]"><%= apex ? st("Connectez-vous pour suivre vos commandes.") : t("sign_in.tenant_subtitle", name: current_store&.name) %></p>
 </div>
+
+<% if alert.present? %><div role="alert" class="fx-alert mb-4"><%= alert %></div><% end %>
+<% if notice.present? %><div class="mb-4 text-center text-sm font-medium text-green-600"><%= notice %></div><% end %>
+
+<%= form_with url: admin_login_path, method: :post, class: "flex flex-col gap-6" do %>
+  <div class="grid gap-6">
+    <div class="grid gap-2">
+      <%= label_tag :email, st("E-mail"), class: label_class %>
+      <%= email_field_tag :email, params[:email], required: true, autofocus: true, autocomplete: "username", placeholder: st("vous@exemple.com"), class: "fx-input !mt-0" %>
+    </div>
+    <div class="grid gap-2">
+      <div class="flex items-center">
+        <%= label_tag :password, st("Mot de passe"), class: label_class %>
+        <%= link_to st("Mot de passe oublié ?"), "#{account_origin}#{new_password_reset_path(locale: I18n.locale)}", class: "fx-link ms-auto text-sm underline underline-offset-4" %>
+      </div>
+      <div class="relative">
+        <%= password_field_tag :password, nil, required: true, autocomplete: "current-password", placeholder: st("Votre mot de passe"), class: "fx-input !mt-0 pe-10" %>
+        <button type="button" data-toggle-password class="absolute inset-y-0 end-0 flex items-center px-3 text-[#8a8380] hover:text-[#1f2430]" tabindex="-1" aria-label="<%= st("Mot de passe") %>"><%= eye %></button>
+      </div>
+    </div>
+    <% if show_workspace %>
+      <details class="text-sm text-[#6b6059]" <%= "open" if params[:workspace].present? %>>
+        <summary class="cursor-pointer select-none"><%= t("signup_flow.workspace_label") %></summary>
+        <div class="mt-2 grid gap-2">
+          <%= text_field_tag :workspace, params[:workspace], autocomplete: "off", autocapitalize: "none", spellcheck: false, "aria-label": t("signup_flow.workspace_label"), "aria-describedby": "workspace-help", class: "fx-input !mt-0" %>
+          <p id="workspace-help" class="text-xs"><%= t("signup_flow.workspace_help") %></p>
+        </div>
+      </details>
+    <% end %>
+    <div class="flex items-center gap-3">
+      <%= check_box_tag :remember, "1", params[:remember] == "1", class: "size-4 rounded border-[#e8e3df] accent-[#a8432e]" %>
+      <%= label_tag :remember, st("Se souvenir de moi"), class: label_class %>
+    </div>
+    <%= submit_tag st("Se connecter"), class: "fx-btn mt-4" %>
+  </div>
+  <div class="text-center text-sm text-[#6b6059]">
+    <%= st("Pas encore de compte ?") %>
+    <%= link_to st("Créer un compte"), "#{account_origin}#{signup_path(locale: I18n.locale)}", class: "fx-link font-semibold underline underline-offset-4" %>
+  </div>
+<% end %>

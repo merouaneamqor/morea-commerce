@@ -3,7 +3,7 @@
   <% locale = tf.object.locale %>
   <details class="admin-card admin-disclosure" <%= "open" if locale == "fr" %>>
     <summary class="admin-card__header admin-disclosure__summary">
-      <h2 class="admin-card__title"><%= local_assigns[:title] ? "#{title} · " : "" %><%= Morea::Locales.label_for(locale) %></h2>
+      <h2 class="admin-card__title"><%= local_assigns[:title] ? "#{title}, " : "" %><%= Morea::Locales.label_for(locale) %></h2>
       <% if record.locale_complete?(locale) %><span class="admin-badge admin-badge--success">Complete</span><% else %><span class="admin-badge admin-badge--attention">Missing</span><% end %>
     </summary>
     <div class="space-y-4 px-4 pb-4">

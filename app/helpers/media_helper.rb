@@ -6,13 +6,15 @@ module MediaHelper
     if url.start_with?("http")
       object_image_tag(url, alt: alt || product.name, widths: widths, sizes: sizes, css_class: css_class, loading: loading, fetchpriority: fetchpriority)
     else
-      image_tag url, alt: alt || product.name, class: css_class, loading: loading, decoding: "async", fetchpriority: fetchpriority
+      image_tag url, alt: alt || product.name, class: css_class, loading: loading, decoding: fetchpriority.to_s == "high" ? "sync" : "async", fetchpriority: fetchpriority
     end
   end
 
   # Main uploaded image (first in the admin order); nil until one is uploaded
   def product_image_url(product)
-    media_url(product.ordered_images.first) if product.images.attached?
+    return media_url(product.ordered_images.first) if product.images.attached?
+
+    product.image_url.presence # the picture of an imported product stays at its store
   end
 
   # Second uploaded image, shown on card hover
@@ -41,7 +43,7 @@ module MediaHelper
       sizes: sizes,
       class: css_class,
       loading: loading,
-      decoding: "async"
+      decoding: fetchpriority.to_s == "high" ? "sync" : "async"
     }
     options[:fetchpriority] = fetchpriority if fetchpriority
 
@@ -65,19 +67,37 @@ module MediaHelper
     url
   end
 
-  def preload_hero_image(url)
+  def preload_hero_image(url, widths: [ 640, 960, 1440, 1920 ], sizes: "100vw")
     return if url.blank?
 
     if url.to_s.start_with?("http")
       tag.link(
         rel: "preload",
         as: "image",
-        href: cdn_image_url(url, width: 1280),
-        imagesrcset: [ 640, 960, 1280 ].map { |w| "#{cdn_image_url(url, width: w)} #{w}w" }.join(", "),
-        imagesizes: "(max-width: 768px) 100vw, 58vw"
+        href: cdn_image_url(url, width: widths[1] || widths.first),
+        imagesrcset: widths.map { |w| "#{cdn_image_url(url, width: w)} #{w}w" }.join(", "),
+        imagesizes: sizes,
+        fetchpriority: "high"
       )
     else
-      tag.link(rel: "preload", as: "image", href: url)
+      tag.link(rel: "preload", as: "image", href: url, fetchpriority: "high")
+    end
+  end
+
+  def page_lcp_preload(section)
+    return if section.blank?
+
+    case section.kind
+    when "hero"
+      preload_hero_image(section.image_src, widths: [ 640, 960, 1440, 1920 ], sizes: "100vw") if section.image_src.present?
+    when "image_with_text"
+      preload_hero_image(section.image_src, widths: [ 640, 960, 1280 ], sizes: "(max-width: 768px) 100vw, 50vw") if section.image_src.present?
+    when "rich_text"
+      tag.link(rel: "preload", as: "image", href: cdn_image_url(section.image_src, width: 1600), fetchpriority: "high") if section.image_src.present?
+    when "featured_collection"
+      product = section.products.first
+      url = product_image_url(product) if product
+      preload_hero_image(url, widths: [ 640, 960, 1280 ], sizes: "(max-width: 768px) 50vw, 25vw") if url.present?
     end
   end
 

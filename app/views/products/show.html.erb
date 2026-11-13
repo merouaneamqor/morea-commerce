@@ -1,6 +1,11 @@
 <% content_for :title, "#{@product.seo_title.presence || @product.name} — #{current_store.name}" %>
 <% content_for :meta_description, @product.seo_description.presence || @product.short_description %>
 <% content_for :mobile_buy, "1" %>
+<% if @gallery.first.present? %>
+  <% content_for :lcp do %>
+    <%= preload_hero_image(@gallery.first, widths: [640, 960, 1280], sizes: "(max-width: 768px) 90vw, 58vw") %>
+  <% end %>
+<% end %>
 <%= pixel_event_tag "ViewContent", product_pixel_payload(@product) %>
 
 <div data-controller="variant-gallery variant-picker"
@@ -23,7 +28,7 @@
   </nav>
 
   <div class="pdp__grid">
-    <div class="pdp__gallery" data-controller="reveal" data-variant-gallery-target="gallery">
+    <div class="pdp__gallery" data-variant-gallery-target="gallery">
       <% @gallery.each_with_index do |url, i| %>
         <div class="pdp__shot object-frame <%= "pdp__shot--lead" if i.zero? %>">
           <%= object_image_tag url,

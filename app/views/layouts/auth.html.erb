@@ -1,0 +1,42 @@
+<% localized = content_for?(:localized) %>
+<!DOCTYPE html>
+<html lang="<%= localized ? I18n.locale : "en" %>" dir="<%= localized && rtl? ? "rtl" : "ltr" %>">
+  <head>
+    <meta charset="utf-8">
+    <title><%= content_for?(:title) ? yield(:title) : "Sign in" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= render "shared/platform_icons" %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "auth_responsive", "data-turbo-track": "reload" %>
+  </head>
+  <body class="seallo-auth" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
+    <div class="sa-split" dir="<%= localized && rtl? ? "rtl" : "ltr" %>">
+      <aside class="sa-panel" aria-hidden="true"><%= render "layouts/auth_preview" %></aside>
+
+      <div class="sa-form-col">
+        <div class="sa-form-wrap">
+          <div class="sa-form-top">
+            <a href="/" class="sa-mark sa-mark-small" aria-label="<%= Store.platform_name %>"><span dir="ltr">seallo</span></a>
+            <div class="sa-lang"><%= yield :topbar %></div>
+          </div>
+          <%= yield %>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("click", function (e) {
+        var button = e.target.closest("[data-toggle-password]");
+        if (!button) return;
+        var input = button.parentNode.querySelector("input");
+        if (input) input.type = input.type === "password" ? "text" : "password";
+      });
+    </script>
+  </body>
+</html>

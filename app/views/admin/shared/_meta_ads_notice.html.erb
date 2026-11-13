@@ -1,0 +1,11 @@
+<%# In-app Meta Ads notice: the token ends within 7 days, or Meta access has to be renewed (expired, revoked, error 190). %>
+<% meta_connection = current_store&.meta_ads_connection %>
+<% if meta_connection && (meta_connection.needs_reconnect? || meta_connection.expires_soon?) && controller_path != "admin/meta_ads" %>
+  <% expired = meta_connection.needs_reconnect? %>
+  <div role="alert" class="flex flex-wrap items-center justify-between gap-3 rounded-xl px-4 py-3 text-sm <%= expired ? "bg-[#fbe7ea] text-[#b4344e]" : "bg-[#fdf0d9] text-[#8a5a12]" %>" data-meta-notice="<%= expired ? "needs_reconnect" : "expires_soon" %>">
+    <span><%= expired ? t("meta_ads.notice.needs_reconnect") : t("meta_ads.notice.expires_soon", date: l(meta_connection.token_expires_at.to_date, format: "%d/%m/%Y")) %></span>
+    <%= button_to t("meta_ads.reconnect"), connect_admin_meta_ads_path, method: :post,
+          form: { data: { turbo: false } },
+          class: "rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-[#1f2430] hover:bg-[#f3f1ef]" %>
+  </div>
+<% end %>

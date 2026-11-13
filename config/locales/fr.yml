@@ -1,4 +1,7 @@
 fr:
+  time:
+    formats:
+      short: "%d/%m/%Y %H:%M"
   store:
     preparing: "La boutique se prépare."
     missing_eyebrow: "Boutique multi-tenant"
@@ -13,6 +16,7 @@ fr:
     view_all: "Tout voir"
     collections_title: "S'entraîner, se déplacer, se poser"
     explore: "Explorer"
+    hero_support: "Parcourez la sélection. Payez à la livraison partout au Maroc."
   landing:
     eyebrow: "Activewear"
     hero_product: "L'Essentiel Set"
@@ -44,9 +48,19 @@ fr:
     menu: "Menu"
     main_menu: "Menu principal"
     shop: "Boutique"
+    search: "Rechercher"
     bag: "Panier"
     track_order: "Suivre une commande"
   shop:
+    search_title: "Rechercher"
+    search_placeholder: "Rechercher des produits"
+    search_submit: "Rechercher"
+    search_results: "Résultats pour « %{query} »"
+    search_prompt: "Recherchez par nom ou description du produit."
+    search_no_results: "Aucun produit ne correspond à « %{query} »."
+    previous_page: "Précédent"
+    next_page: "Suivant"
+    page_status: "Page %{page} sur %{pages}"
     in_stock_only: "En stock uniquement"
     product_count:
       one: "%{count} produit"
@@ -168,6 +182,8 @@ fr:
       district_invalid: "Choisissez un quartier de la liste."
       empty_cart: "Votre panier est vide."
       discount_code: "Ce code promo est invalide ou expiré."
+      privacy_accepted: "Veuillez accepter la politique de confidentialité et les conditions pour commander."
+      age_confirmed: "Veuillez confirmer que vous avez au moins %{age} ans."
     form_errors: "Veuillez corriger"
     placeholders:
       name: "Ex. Sara Benali"
@@ -203,23 +219,33 @@ fr:
   footer:
     information: "Informations"
     customer_care: "Service client"
+    registration: "Immatriculation : %{number}"
+    age_note: "Cette boutique s’adresse aux clients âgés de %{age} ans ou plus."
+    pricing_note: "Les prix affichés au paiement incluent la livraison une fois la ville choisie. Paiement à la livraison — aucun frais caché."
   data_protection:
     privacy_policy: "politique de confidentialité"
+    terms_of_service: "conditions générales"
     cookie_title: "Cookies"
-    cookie_body: "Nous utilisons des cookies pour le panier, le bon fonctionnement du site et, le cas échéant, la mesure d’audience (Meta, TikTok)."
-    cookie_policy_link: "En savoir plus sur vos données"
+    cookie_body: "Nous utilisons des cookies nécessaires au panier et au fonctionnement du site. La mesure d’audience (Meta, TikTok) ne se charge que si vous acceptez."
+    cookie_body_platform: "Nous utilisons un cookie nécessaire pour mémoriser votre langue. Aucun cookie de mesure n’est chargé sur ces pages. Les polices Google Fonts peuvent être chargées depuis le CDN de Google."
+    cookie_policy_link: "Politique de cookies"
     cookie_ok: "Compris"
+    cookie_accept: "Accepter"
+    cookie_reject: "Refuser la mesure"
     checkout_notice: "Conformément à la loi n° 09-08, vous disposez d’un droit d’accès, de rectification et, pour motif légitime, d’opposition au traitement de vos données personnelles."
     checkout_notice_with_cndp: "Conformément à la loi n° 09-08, vous disposez d’un droit d’accès, de rectification et, pour motif légitime, d’opposition au traitement de vos données personnelles. Ce traitement a été notifié à la CNDP sous le n° %{number}."
     checkout_submit_notice_html: "En commandant, vous acceptez notre %{privacy_link}."
+    checkout_consent_html: "J’ai lu et j’accepte la %{privacy_link} et les %{terms_link}."
+    checkout_age_html: "Je confirme avoir au moins %{age} ans."
     track_notice: "Nous utilisons votre numéro de commande et votre téléphone uniquement pour retrouver le suivi de votre achat."
+    skip_to_content: "Aller au contenu"
   privacy_policy:
     purposes: "la gestion et la livraison de vos commandes, la relation client (confirmation par téléphone), le suivi de commande et, le cas échéant, la lutte contre la fraude."
     cndp_authorized: "Ce traitement a été notifié et autorisé par la CNDP au titre du récépissé ou de l’autorisation n° %{number}."
     cndp_pending: "Le responsable du traitement s’engage à notifier ce traitement à la Commission Nationale de contrôle de la protection des données à caractère personnel (CNDP) conformément à la loi 09-08."
-    cookies_section: "Des cookies techniques sont nécessaires au panier et à la session. Des cookies de mesure (Meta Pixel, TikTok Pixel) peuvent également être utilisés lorsque la boutique les a activés. Un bandeau informatif vous en informe lors de votre visite."
+    cookies_section: "Des cookies techniques sont nécessaires au panier et à la session. Les cookies de mesure (Meta Pixel, TikTok Pixel) ne se chargent qu’après votre acceptation dans le bandeau. Vous pouvez refuser la mesure et continuer vos achats."
     retention: "Les données liées à une commande sont conservées le temps nécessaire à la livraison, aux obligations comptables et légales applicables, puis archivées ou supprimées de manière proportionnée."
-    prospecting: "Vos données ne sont pas utilisées à des fins de prospection commerciale sans votre consentement préalable. Vous pouvez vous opposer à tout moment en contactant le service indiqué ci-dessous."
+    prospecting: "Vos données ne sont pas utilisées à des fins de prospection commerciale sans votre consentement préalable. Vous pouvez vous opposer à tout moment en contactant le service indiqué ci-dessous ou via le formulaire de droits sur ce site."
     recipients:
       store_staff: "• L’équipe de la boutique (traitement des commandes)"
       sendit: "• Sendit (transport et livraison au Maroc)"
@@ -243,3 +269,148 @@ fr:
       %{retention}
 
       %{prospecting}
+  terms_of_service:
+    body: |
+      Ces conditions régissent les achats sur %{site}, exploité par %{store}.
+
+      Les commandes sont payables à la livraison (%{currency}). Le total affiché au paiement (produits, remises et livraison une fois la ville choisie) est le montant remis au livreur. Aucun frais en ligne caché.
+
+      Vous devez avoir au moins %{age} ans pour commander. Les descriptions produits ne constituent pas des allégations médicales, financières ou réglementées sauf mention explicite et étayée.
+
+      Les retours et remboursements suivent la page retours de la boutique. Pour toute question : %{contact}.
+  cookie_policy:
+    body: |
+      %{store} utilise des cookies sur %{site}.
+
+      Les cookies nécessaires font fonctionner le panier, la langue et la session. Ils ne nécessitent pas de consentement.
+
+      Les cookies de mesure (Meta Pixel, TikTok Pixel) aident à comprendre les visites et les publicités. Ils ne se chargent que si vous appuyez sur Accepter. Refusez la mesure pour naviguer sans eux.
+
+      Voir aussi la page confidentialité : %{privacy_path}. Contact : %{contact}.
+  privacy_rights:
+    eyebrow: "Données personnelles"
+    title: "Vos droits"
+    lead: "Demandez l’accès, la correction, l’opposition ou la suppression des données personnelles liées à vos commandes auprès de cette boutique."
+    unsubscribe_note: "Cette vitrine n’envoie pas de campagnes e-mail marketing. Choisissez « Arrêter le marketing » si vous avez reçu un message promotionnel par un autre canal, ou pour enregistrer votre préférence."
+    minimization: "Nous ne demandons que ce qui est nécessaire pour traiter votre demande. N’envoyez pas de numéros de carte."
+    submit: "Envoyer la demande"
+    submitted: "Votre demande a été enregistrée. La boutique vous recontactera avec les coordonnées fournies."
+    fields:
+      type: "Type de demande"
+      name: "Votre nom"
+      contact: "E-mail ou téléphone"
+      contact_help: "Comment la boutique doit vous joindre pour cette demande."
+      order_number: "N° de commande (optionnel)"
+      details: "Détails (optionnel)"
+    types:
+      access: "Accéder à mes données"
+      rectify: "Corriger mes données"
+      object: "M’opposer au traitement"
+      delete: "Supprimer mes données"
+      unsubscribe: "Arrêter le marketing"
+    statuses:
+      open: "Ouverte"
+      in_progress: "En cours"
+      resolved: "Résolue"
+      rejected: "Refusée"
+    admin:
+      title: "Demandes de droits acheteurs"
+      instructions: "Demandes envoyées depuis la vitrine. Marquez-les résolues après avoir répondu au client."
+      empty: "Aucune demande pour l’instant."
+      back: "Retour aux demandes"
+      resolve: "Marquer résolue"
+      resolved: "Demande marquée résolue."
+  platform_home:
+    title: "Seallo, plateforme e-commerce multi-boutiques"
+    language: "Langue"
+    nav: { journey: "Fonctionnement", features: "Fonctionnalités", integrations: "Intégrations", faq: "FAQ", sign_in: "Connexion", signup: "Créer un compte" }
+    hero:
+      eyebrow: "Plateforme e-commerce multi-boutiques"
+      headline: "Gérez vos boutiques en paiement à la livraison depuis une seule plateforme."
+      lead: "Chaque boutique garde sa vitrine, son catalogue et son paiement. Votre équipe confirme les commandes, gère le stock et expédie depuis une seule administration."
+      primary: "Créer un compte"
+      secondary: "Voir le parcours d'une commande"
+      store_hint: "Vous cherchez une boutique ? Ouvrez-la sur sa propre adresse, par exemple votre-boutique.%{domain}."
+      badges: [ "Vitrines séparées", "Paiement à la livraison", "Français · Anglais · Arabe", "API et MCP" ]
+    journey:
+      title: "Une commande, du paiement à la livraison"
+      lead: "Le même dossier suit la commande à chaque étape, sans tableur."
+      steps:
+        - { title: "Commande passée", body: "Le client commande sur la vitrine, ou un outil connecté envoie la commande par l'API." }
+        - { title: "Confirmation", body: "L'équipe prend la commande dans une file, appelle le client et enregistre le résultat ou un rappel." }
+        - { title: "Stock réservé", body: "À la confirmation, les articles sont réservés pour ne pas vendre deux fois la même unité." }
+        - { title: "Expédiée", body: "La commande part chez le transporteur connecté, et l'étiquette et le suivi reviennent dans l'administration." }
+        - { title: "Livrée ou retournée", body: "Les mises à jour du transporteur passent la commande en livrée ou retournée, avec l'historique conservé." }
+    preview:
+      title: "Votre journée en un coup d'œil"
+      note: "Illustration de la vue d'ensemble de l'administration. Les chiffres sont des exemples, pas des données réelles."
+      metrics: [ { label: "Nouvelles commandes", value: "42" }, { label: "Confirmées", value: "31" }, { label: "Expédiées", value: "27" }, { label: "Livrées", value: "19" } ]
+    features:
+      title: "Tout ce dont une équipe boutique a besoin"
+      lead: "Conçu pour les boutiques qui vendent en paiement à la livraison."
+      items:
+        - { title: "Une vitrine par boutique", body: "Adresse, catalogue, collections, pages et panier propres. Les boutiques sont isolées les unes des autres." }
+        - { title: "Gestion des commandes", body: "Créer, modifier, commenter, archiver et dupliquer des commandes, et imprimer les bons de préparation." }
+        - { title: "File de confirmation", body: "Prise exclusive, rappels, notes internes et résultats clairs pour chaque commande." }
+        - { title: "Produits et stock", body: "Variantes, galeries par couleur et historique de chaque mouvement de stock." }
+        - { title: "Expédition", body: "Envoi au transporteur connecté, impression des étiquettes et synchronisation du statut de livraison." }
+        - { title: "Comptes équipe", body: "L'équipe se connecte à sa boutique, avec sessions expirantes et journal d'audit." }
+        - { title: "Pixels de suivi", body: "Ajoutez les pixels Meta et TikTok par boutique." }
+        - { title: "API et automatisation", body: "Jetons de boutique, GraphQL et MCP permettent à des outils connectés de lire et gérer une boutique." }
+    integrations:
+      title: "Se connecte à vos outils"
+      lead: "Les connexions transporteur, publicité et automatisation disponibles aujourd'hui."
+      items: [ "Expédition Sendit", "Meta Pixel", "TikTok Pixel", "Alertes Discord", "API GraphQL", "MCP", "OAuth" ]
+    faq:
+      title: "Questions"
+      items:
+        - { q: "Est-ce une place de marché ?", a: "Non. Chaque boutique a sa propre adresse et sa vitrine. La plateforme est l'administration derrière elles." }
+        - { q: "Quelles langues sont prises en charge ?", a: "Les vitrines prennent en charge le français, l'anglais et l'arabe, y compris la mise en page de droite à gauche." }
+        - { q: "Quels transporteurs puis-je utiliser ?", a: "Sendit est connecté aujourd'hui pour les expéditions au Maroc." }
+        - { q: "Mes outils peuvent-ils envoyer des commandes ?", a: "Oui. Un jeton de boutique permet à un outil connecté de créer des commandes par l'API. Une requête rejouée ne crée pas de doublon." }
+        - { q: "Comment ouvrir une boutique ?", a: "Créez votre compte gratuit et vérifiez votre email. Explorez votre espace, puis abonnez-vous pour utiliser ses outils." }
+    cta:
+      headline: "Prêt à gérer votre boutique ?"
+      body: "Créez votre compte gratuit, vérifiez votre email et choisissez un abonnement lorsque vous êtes prêt."
+      button: "Créer un compte"
+    footer:
+      tagline: "Plateforme e-commerce multi-boutiques"
+      admin: "Connexion administration"
+      imprint: "Les pages confidentialité et conditions de Seallo Connect indiquent l'opérateur de la plateforme et les contrats. Chaque boutique publie son entité légale, son immatriculation et sa page de confidentialité."
+    gate:
+      sign_in: "Se connecter"
+      maintenance:
+        title: "En maintenance — Seallo"
+        eyebrow: "En maintenance"
+        heading: "Nous revenons très bientôt."
+        body: "Seallo est momentanément indisponible le temps d'une mise à jour. Vos boutiques, commandes et comptes sont en sécurité."
+        note: "Si vous avez déjà un espace, vous pouvez toujours vous connecter."
+      coming_soon:
+        title: "Bientôt disponible — Seallo"
+        eyebrow: "Bientôt disponible"
+        heading: "Seallo ouvre bientôt."
+        body: "Un seul endroit pour confirmer les commandes en paiement à la livraison, compter le bénéfice et expédier. Nous posons les derniers éléments."
+        note: "Vous avez déjà un espace ? Connectez-vous à votre administration."
+  signup:
+    title: "Demander un accès — %{name}"
+    heading: "Demander un accès"
+    lead: "Parlez-nous de votre boutique. Un administrateur de la plateforme examine chaque demande et crée votre boutique. Rien n'est créé avant l'approbation."
+    store_name: "Nom de la boutique"
+    email: "Email"
+    phone: "Téléphone (facultatif)"
+    submit: "Envoyer la demande"
+    have_account: "Vous avez déjà un compte ?"
+    sign_in: "Se connecter"
+    fix_fields: "Veuillez vérifier les champs signalés."
+    throttled: "Trop de demandes. Veuillez réessayer plus tard."
+    errors:
+      store_name: "Saisissez le nom de votre boutique (2 à 80 caractères)."
+      email: "Saisissez une adresse email valide."
+      phone: "Le numéro de téléphone est trop long."
+    aside:
+      chip: "Demande d'accès"
+      headline: "Ouvrez votre boutique en paiement à la livraison."
+      points: [ "Votre propre vitrine et votre adresse", "Confirmez, expédiez et suivez chaque commande", "Données séparées et isolées pour chaque boutique" ]
+    thanks_title: "Demande reçue"
+    thanks_body: "Nous l'examinerons et vous contacterons à l'email indiqué. Votre boutique est créée une fois la demande approuvée."
+    back: "Retour à l'accueil"

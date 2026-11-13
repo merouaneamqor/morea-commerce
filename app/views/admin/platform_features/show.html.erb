@@ -1,0 +1,259 @@
+<% content_for :title, t("platform_admin.features.title") %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("platform_admin.features.title") %></h1>
+    <p class="admin-page-header__meta"><%= t("platform_admin.features.description") %></p>
+  </div>
+  <div class="platform-toolbar">
+    <%= link_to t("platform_admin.features.legacy_link"), superadmin_feature_flags_path, class: "admin-btn-plain" %>
+    <%= link_to t("platform_admin.back"), admin_platform_path, class: "admin-btn-secondary" %>
+  </div>
+</div>
+
+<section class="admin-card mb-4" data-platform-features-home>
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("platform_admin.features.home_title") %></h2>
+  </div>
+  <div class="space-y-3 px-4 pb-4">
+    <p class="admin-help"><%= t("platform_admin.features.home_description") %></p>
+    <p class="text-sm" data-home-effective="<%= @setting.home_page %>">
+      <%= t("platform_admin.features.home_effective", state: t("platform_admin.features.home_states.#{@setting.home_page}")) %>
+    </p>
+    <ul class="admin-mobile-list lg:hidden">
+      <% [
+        { flag: "home_maintenance", enabled: @setting.home_maintenance? },
+        { flag: "home_coming_soon", enabled: @setting.home_coming_soon? }
+      ].each do |row| %>
+        <li class="admin-mobile-list__card" data-home-flag="<%= row[:flag] %>" data-enabled="<%= row[:enabled] %>">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= t("platform_admin.features.flags.#{row[:flag]}") %></p>
+            </div>
+            <%= admin_badge(
+                  row[:enabled] ? "enabled" : "disabled",
+                  label: row[:enabled] ? t("platform_admin.features.enabled") : t("platform_admin.features.disabled"),
+                  tone: row[:enabled] ? "warning" : "neutral"
+                ) %>
+          </div>
+          <div class="admin-mobile-list__actions">
+            <%= button_to(
+                  row[:enabled] ? t("platform_admin.features.disable") : t("platform_admin.features.enable"),
+                  update_home_admin_platform_features_path,
+                  method: :patch,
+                  params: { flag: row[:flag], enabled: !row[:enabled] },
+                  form: {
+                    class: "inline w-full sm:w-auto",
+                    data: { turbo_confirm: t("platform_admin.features.confirm_home", flag: t("platform_admin.features.flags.#{row[:flag]}")) }
+                  },
+                  class: "admin-btn-plain"
+                ) %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("platform_admin.features.columns.page") %></th>
+            <th><%= t("platform_admin.features.columns.status") %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% [
+            { flag: "home_maintenance", enabled: @setting.home_maintenance? },
+            { flag: "home_coming_soon", enabled: @setting.home_coming_soon? }
+          ].each do |row| %>
+            <tr data-home-flag="<%= row[:flag] %>" data-enabled="<%= row[:enabled] %>">
+              <td class="font-medium"><%= t("platform_admin.features.flags.#{row[:flag]}") %></td>
+              <td>
+                <%= admin_badge(
+                      row[:enabled] ? "enabled" : "disabled",
+                      label: row[:enabled] ? t("platform_admin.features.enabled") : t("platform_admin.features.disabled"),
+                      tone: row[:enabled] ? "warning" : "neutral"
+                    ) %>
+              </td>
+              <td class="text-right">
+                <%= button_to(
+                      row[:enabled] ? t("platform_admin.features.disable") : t("platform_admin.features.enable"),
+                      update_home_admin_platform_features_path,
+                      method: :patch,
+                      params: { flag: row[:flag], enabled: !row[:enabled] },
+                      form: {
+                        class: "inline",
+                        data: { turbo_confirm: t("platform_admin.features.confirm_home", flag: t("platform_admin.features.flags.#{row[:flag]}")) }
+                      },
+                      class: "admin-btn-plain"
+                    ) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="admin-card mb-4" data-platform-features-theme-editor>
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("platform_admin.features.theme_editor_title") %></h2>
+  </div>
+  <div class="space-y-3 px-4 pb-4">
+    <p class="admin-help"><%= t("platform_admin.features.theme_editor_description") %></p>
+    <% if @stores.empty? %>
+      <p class="admin-empty"><%= t("platform_admin.no_workspaces") %></p>
+    <% else %>
+      <ul class="admin-mobile-list lg:hidden">
+        <% @stores.each do |store| %>
+          <% enabled = store.storefront_theme_editor_enabled? %>
+          <li class="admin-mobile-list__card" data-store-id="<%= store.id %>" data-theme-editor="<%= enabled %>">
+            <div class="admin-mobile-list__top">
+              <div>
+                <p class="admin-mobile-list__name"><%= store.name %></p>
+                <p class="admin-mobile-list__meta"><%= store.slug %></p>
+              </div>
+              <%= admin_badge(
+                    enabled ? "enabled" : "disabled",
+                    label: enabled ? t("platform_admin.features.enabled") : t("platform_admin.features.disabled"),
+                    tone: enabled ? "success" : "neutral"
+                  ) %>
+            </div>
+            <p class="admin-mobile-list__meta">
+              <%= t(store.storefront_enabled? ? "platform_admin.features.published" : "platform_admin.features.unpublished") %>
+            </p>
+            <div class="admin-mobile-list__actions">
+              <%= button_to(
+                    enabled ? t("platform_admin.features.disable") : t("platform_admin.features.enable"),
+                    update_store_admin_platform_features_path,
+                    method: :patch,
+                    params: { store_id: store.id, enabled: !enabled },
+                    form: {
+                      class: "inline w-full sm:w-auto",
+                      data: { turbo_confirm: t("platform_admin.features.confirm_theme_editor", name: store.name) }
+                    },
+                    class: "admin-btn-plain"
+                  ) %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+
+      <div class="admin-table-wrap hidden lg:block">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th><%= t("platform_admin.features.columns.workspace") %></th>
+              <th><%= t("platform_admin.features.columns.storefront") %></th>
+              <th><%= t("platform_admin.features.columns.theme_editor") %></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @stores.each do |store| %>
+              <% enabled = store.storefront_theme_editor_enabled? %>
+              <tr data-store-id="<%= store.id %>" data-theme-editor="<%= enabled %>">
+                <td>
+                  <span class="font-medium"><%= store.name %></span>
+                  <span class="admin-muted block text-[13px]"><%= store.slug %></span>
+                </td>
+                <td>
+                  <%= t(store.storefront_enabled? ? "platform_admin.features.published" : "platform_admin.features.unpublished") %>
+                </td>
+                <td>
+                  <%= admin_badge(
+                        enabled ? "enabled" : "disabled",
+                        label: enabled ? t("platform_admin.features.enabled") : t("platform_admin.features.disabled"),
+                        tone: enabled ? "success" : "neutral"
+                      ) %>
+                </td>
+                <td class="text-right">
+                  <%= button_to(
+                        enabled ? t("platform_admin.features.disable") : t("platform_admin.features.enable"),
+                        update_store_admin_platform_features_path,
+                        method: :patch,
+                        params: { store_id: store.id, enabled: !enabled },
+                        form: {
+                          class: "inline",
+                          data: { turbo_confirm: t("platform_admin.features.confirm_theme_editor", name: store.name) }
+                        },
+                        class: "admin-btn-plain"
+                      ) %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<section class="admin-card" data-platform-features-history>
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("platform_admin.features.history_title") %></h2>
+  </div>
+  <% if @flag_events.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.features.history_empty") %></p>
+  <% else %>
+    <ul class="admin-mobile-list lg:hidden">
+      <% @flag_events.each do |event| %>
+        <li class="admin-mobile-list__card" data-audit-action="<%= event.action %>">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= event.action %></p>
+              <p class="admin-mobile-list__meta"><%= l(event.created_at, format: :long) rescue event.created_at %></p>
+            </div>
+            <span class="admin-mobile-list__amount">
+              <% if event.metadata.key?("enabled") %>
+                <%= event.metadata["enabled"] ? t("platform_admin.features.enabled") : t("platform_admin.features.disabled") %>
+              <% else %>
+                <%= admin_blank %>
+              <% end %>
+            </span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= event.metadata["flag"] %>
+            · <%= event.store&.name || admin_blank %>
+            · <%= event.actor_label.presence || event.actor_user&.email || admin_blank %>
+          </p>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("platform_admin.features.columns.when") %></th>
+            <th><%= t("platform_admin.features.columns.action") %></th>
+            <th><%= t("platform_admin.features.columns.flag") %></th>
+            <th><%= t("platform_admin.features.columns.enabled") %></th>
+            <th><%= t("platform_admin.features.columns.workspace") %></th>
+            <th><%= t("platform_admin.features.columns.actor") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @flag_events.each do |event| %>
+            <tr data-audit-action="<%= event.action %>">
+              <td class="admin-muted whitespace-nowrap"><%= l(event.created_at, format: :long) rescue event.created_at %></td>
+              <td><%= event.action %></td>
+              <td><%= event.metadata["flag"] %></td>
+              <td>
+                <% if event.metadata.key?("enabled") %>
+                  <%= event.metadata["enabled"] ? t("platform_admin.features.enabled") : t("platform_admin.features.disabled") %>
+                <% else %>
+                  <%= admin_blank %>
+                <% end %>
+              </td>
+              <td class="admin-muted"><%= event.store&.name || admin_blank %></td>
+              <td class="admin-muted"><%= event.actor_label.presence || event.actor_user&.email || admin_blank %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>

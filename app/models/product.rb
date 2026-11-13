@@ -2,6 +2,7 @@ class Product < ApplicationRecord
   include Translatable
 
   belongs_to :store
+  belongs_to :store_connection, optional: true
   has_many :product_variants, dependent: :destroy
   has_many :collection_products, dependent: :destroy
   has_many :collections, through: :collection_products
@@ -22,11 +23,16 @@ class Product < ApplicationRecord
   validates :slug, uniqueness: { scope: :store_id }
   validates :status, inclusion: { in: STATUSES }
   validates :price_cents, numericality: { greater_than_or_equal_to: 0 }
+  validates :cost_cents, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
   validates :stock, numericality: { greater_than_or_equal_to: 0 }
 
   before_validation :ensure_slug, on: :create
 
   scope :active, -> { where(status: "active") }
+  # What the workspace works with: the products it made itself and those of its connected stores that are switched on.
+  scope :visible, -> { where(store_connection_id: nil).or(where(store_connection_id: StoreConnection.where(active: true).select(:id))) }
+  scope :native, -> { where(store_connection_id: nil) }   # made in this workspace (what the public storefront sells)
+  scope :imported, -> { where.not(store_connection_id: nil) }
   scope :featured, -> { where(featured: true) }
   scope :low_stock, lambda { |threshold = 5|
     where(track_inventory: true)
@@ -52,6 +58,14 @@ class Product < ApplicationRecord
 
   def price_dh=(value)
     self.price_cents = value.to_i * 100
+  end
+
+  def cost_dh
+    cost_cents.to_i / 100 if cost_cents.present?
+  end
+
+  def cost_dh=(value)
+    self.cost_cents = value.present? ? value.to_i * 100 : nil
   end
 
   def compare_at_dh

@@ -1,0 +1,30 @@
+en:
+  admin_theme:
+    heading: "Choose your theme"
+    help: "Pick how your workspace looks. You can change it later in Settings."
+    names:
+      seallo: "Seallo"
+      seallo_dark: "Dark Seallo"
+    descriptions:
+      seallo: "Warm cream pages, rust accents"
+      seallo_dark: "Warm charcoal, easy on the eyes at night"
+fr:
+  admin_theme:
+    heading: "Choisissez votre thème"
+    help: "Choisissez l’apparence de votre espace. Vous pourrez la modifier plus tard dans Paramètres."
+    names:
+      seallo: "Seallo"
+      seallo_dark: "Seallo sombre"
+    descriptions:
+      seallo: "Pages crème, accents rouille"
+      seallo_dark: "Anthracite chaud, reposant le soir"
+ar:
+  admin_theme:
+    heading: "اختر المظهر"
+    help: "اختر مظهر مساحة عملك. يمكنك تغييره لاحقاً من الإعدادات."
+    names:
+      seallo: "سياللو"
+      seallo_dark: "سياللو داكن"
+    descriptions:
+      seallo: "صفحات بلون الكريم ولمسات قرميدية"
+      seallo_dark: "فحمي دافئ، مريح للعين ليلاً"

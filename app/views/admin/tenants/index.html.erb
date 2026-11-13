@@ -1,39 +1,69 @@
-<% content_for :title, "All stores — Admin" %>
+<% content_for :title, "All stores, Admin" %>
 
 <div class="admin-page-header">
   <div>
     <h1 class="admin-page-header__title">All stores</h1>
     <p class="admin-muted mt-1"><%= @stores.size %> <%= "store".pluralize(@stores.size) %></p>
   </div>
-  <%= link_to "New store", new_admin_tenant_path, class: "admin-btn" %>
+  <div class="platform-toolbar">
+    <%= link_to "New store", new_admin_tenant_path, class: "admin-btn" %>
+  </div>
 </div>
 
 <section class="admin-card">
-  <table class="admin-table">
-    <thead>
-      <tr>
-        <th>Store</th>
-        <th>Slug</th>
-        <th>Staff</th>
-        <th>Orders</th>
-        <th>Products</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
+  <% if @stores.empty? %>
+    <p class="admin-empty"><%= t("platform_admin.no_workspaces") %></p>
+  <% else %>
+    <ul class="admin-mobile-list lg:hidden">
       <% @stores.each do |store| %>
-        <tr>
-          <td class="font-semibold"><%= store.name %></td>
-          <td class="admin-muted tabular-nums"><%= store.slug %></td>
-          <td class="tabular-nums"><%= store.users.count %></td>
-          <td class="tabular-nums"><%= store.orders.count %></td>
-          <td class="tabular-nums"><%= store.products.count %></td>
-          <td class="text-right">
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= store.name %></p>
+              <p class="admin-mobile-list__meta"><%= store.slug %></p>
+            </div>
+          </div>
+          <p class="admin-mobile-list__meta">
+            Staff <%= store.users.count %>
+            · Orders <%= store.orders.count %>
+            · Products <%= store.products.count %>
+          </p>
+          <div class="admin-mobile-list__actions">
             <%= link_to "Open admin", "#{store.origin}/admin", class: "admin-btn-secondary", target: "_top" %>
             <%= link_to "Storefront", store.origin, class: "admin-btn-plain", target: "_blank", rel: "noopener" %>
-          </td>
-        </tr>
+          </div>
+        </li>
       <% end %>
-    </tbody>
-  </table>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block" role="region" tabindex="0" aria-label="Stores">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Store</th>
+            <th>Slug</th>
+            <th>Staff</th>
+            <th>Orders</th>
+            <th>Products</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @stores.each do |store| %>
+            <tr>
+              <td class="font-semibold"><%= store.name %></td>
+              <td class="admin-muted tabular-nums"><%= store.slug %></td>
+              <td class="tabular-nums"><%= store.users.count %></td>
+              <td class="tabular-nums"><%= store.orders.count %></td>
+              <td class="tabular-nums"><%= store.products.count %></td>
+              <td class="text-right">
+                <%= link_to "Open admin", "#{store.origin}/admin", class: "admin-btn-secondary", target: "_top" %>
+                <%= link_to "Storefront", store.origin, class: "admin-btn-plain", target: "_blank", rel: "noopener" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </section>

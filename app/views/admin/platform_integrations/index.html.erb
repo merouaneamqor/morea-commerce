@@ -1,0 +1,139 @@
+<% content_for :title, t("platform_admin.integrations.title") %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("platform_admin.integrations.title") %></h1>
+    <p class="admin-page-header__meta"><%= t("platform_admin.integrations.description") %></p>
+  </div>
+  <div class="platform-toolbar">
+    <%= link_to t("platform_admin.integrations.seallo_link"), superadmin_seallo_connections_path, class: "admin-btn-secondary" %>
+    <%= link_to t("platform_admin.back"), admin_platform_path, class: "admin-btn-secondary" %>
+  </div>
+</div>
+
+<section class="admin-card mb-6">
+  <div class="px-5 pt-4 pb-2">
+    <h2 class="text-base font-semibold"><%= t("platform_admin.integrations.failing_title") %></h2>
+  </div>
+  <% if @failing.empty? %>
+    <p class="admin-muted px-5 pb-4"><%= t("platform_admin.integrations.failing_empty") %></p>
+  <% else %>
+    <ul class="admin-mobile-list lg:hidden">
+      <% @failing.each do |entry| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= link_to entry.store_name, admin_platform_integration_path(entry.store_id), class: "admin-link" %></p>
+              <p class="admin-mobile-list__meta"><%= entry.store_slug %></p>
+            </div>
+            <span class="admin-mobile-list__amount"><%= t("platform_admin.integrations.states.#{entry.connection_state}", default: entry.connection_state.humanize) %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <%= t("platform_admin.integrations.providers.#{entry.provider}", default: entry.provider.humanize) %>
+            · <%= entry.label %>
+            · <%= entry.error_code.presence || admin_blank %>
+          </p>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <%= link_to t("platform_admin.integrations.view"), admin_platform_integration_path(entry.store_id), class: "admin-btn-plain" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("platform_admin.integrations.columns.workspace") %></th>
+            <th><%= t("platform_admin.integrations.columns.provider") %></th>
+            <th><%= t("platform_admin.integrations.columns.state") %></th>
+            <th><%= t("platform_admin.integrations.columns.error") %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @failing.each do |entry| %>
+            <tr>
+              <td class="font-medium">
+                <%= link_to entry.store_name, admin_platform_integration_path(entry.store_id), class: "admin-link" %>
+                <span class="admin-muted block text-[13px]"><%= entry.store_slug %></span>
+              </td>
+              <td>
+                <%= t("platform_admin.integrations.providers.#{entry.provider}", default: entry.provider.humanize) %>
+                <span class="admin-muted block text-[13px]"><%= entry.label %></span>
+              </td>
+              <td><%= t("platform_admin.integrations.states.#{entry.connection_state}", default: entry.connection_state.humanize) %></td>
+              <td class="admin-muted"><%= entry.error_code.presence || admin_blank %></td>
+              <td class="text-right"><%= link_to t("platform_admin.integrations.view"), admin_platform_integration_path(entry.store_id), class: "admin-btn-plain" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>
+
+<section class="admin-card">
+  <div class="px-5 pt-4 pb-2">
+    <h2 class="text-base font-semibold"><%= t("platform_admin.integrations.workspaces_title") %></h2>
+  </div>
+  <% if @workspaces.empty? %>
+    <p class="admin-muted px-5 pb-4"><%= t("platform_admin.integrations.workspaces_empty") %></p>
+  <% else %>
+    <ul class="admin-mobile-list lg:hidden">
+      <% @workspaces.each do |workspace| %>
+        <li class="admin-mobile-list__card">
+          <div class="admin-mobile-list__top">
+            <div>
+              <p class="admin-mobile-list__name"><%= link_to workspace.store.name, admin_platform_integration_path(workspace.store), class: "admin-link" %></p>
+              <p class="admin-mobile-list__meta"><%= workspace.store.slug %></p>
+            </div>
+            <span class="admin-mobile-list__amount"><%= workspace.entries.size %></span>
+          </div>
+          <p class="admin-mobile-list__meta">
+            <% if workspace.failing? %>
+              <%= t("platform_admin.integrations.columns.attention") %>: <%= workspace.failing_entries.size %>
+            <% else %>
+              <%= admin_blank %>
+            <% end %>
+          </p>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <%= link_to t("platform_admin.integrations.view"), admin_platform_integration_path(workspace.store), class: "admin-btn-plain" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden lg:block">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t("platform_admin.integrations.columns.workspace") %></th>
+            <th><%= t("platform_admin.integrations.columns.connections") %></th>
+            <th><%= t("platform_admin.integrations.columns.attention") %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @workspaces.each do |workspace| %>
+            <tr>
+              <td class="font-medium">
+                <%= link_to workspace.store.name, admin_platform_integration_path(workspace.store), class: "admin-link" %>
+                <span class="admin-muted block text-[13px]"><%= workspace.store.slug %></span>
+              </td>
+              <td><%= workspace.entries.size %></td>
+              <td>
+                <% if workspace.failing? %>
+                  <%= admin_badge(:warning, label: workspace.failing_entries.size.to_s, tone: "warning") %>
+                <% else %>
+                  <span class="admin-muted"><%= admin_blank %></span>
+                <% end %>
+              </td>
+              <td class="text-right"><%= link_to t("platform_admin.integrations.view"), admin_platform_integration_path(workspace.store), class: "admin-btn-plain" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>

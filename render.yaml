@@ -14,12 +14,42 @@ services:
       - key: RAILS_ENV
         value: production
       - key: APP_HOST
-        value: ollazen.com
+        value: seallo.ma
       - key: APP_BASE_DOMAIN
+        value: seallo.ma
+      - key: LEGACY_BASE_DOMAIN
         value: ollazen.com
+      - key: ADDITIONAL_BASE_DOMAINS
+        value: seallo.ma
+      - key: MAIL_FROM
+        value: no-reply@seallo.ma
+      - key: SMTP_ADDRESS
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_DOMAIN
+        value: seallo.ma
+      - key: SMTP_AUTHENTICATION
+        value: plain
       - key: RAILS_MASTER_KEY
         sync: false
+      - key: SHOPIFY_CLIENT_ID
+        sync: false
+      - key: SHOPIFY_CLIENT_SECRET
+        sync: false
+      - key: SEALLO_SHOPIFY_CLIENT_SECRET
+        sync: false
+      - key: SEALLO_BRIDGE_SECRET
+        sync: false
+      - key: SEALLO_APP_URL
+        value: https://connect.seallo.ma
       - key: DISCORD_ORDERS_WEBHOOK_URL
+        sync: false
+      - key: PLATFORM_DISCORD_WEBHOOK_URL
         sync: false
       - key: ORDERS_JWT_SECRET
         sync: false
@@ -30,6 +60,20 @@ services:
       - key: SENDIT_SECRET_KEY
         sync: false
       - key: SENDIT_WEBHOOK_SECRET
+        sync: false
+      - key: META_APP_ID
+        sync: false
+      - key: META_APP_SECRET
+        sync: false
+      - key: META_LOGIN_CONFIG_ID
+        sync: false
+      - key: META_REDIRECT_URI
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
         sync: false
       - key: DATABASE_URL
         fromDatabase:

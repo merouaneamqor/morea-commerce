@@ -1,0 +1,31 @@
+<% ids = %w[demo features why ads contact] %>
+<header class="platform-header">
+  <div class="platform-container platform-header-inner">
+    <a href="#top" class="platform-brand" aria-label="seallo"><span dir="ltr">seallo</span></a>
+    <nav class="platform-nav" aria-label="<%= t("platform_home.refresh.navigation") %>">
+      <% t("platform_home.seallo.nav").each_with_index do |label, i| %><button type="button" data-open="<%= ids[i] %>"><%= label %></button><% end %>
+    </nav>
+    <div class="platform-header-actions">
+      <div class="platform-languages" dir="ltr" role="group" aria-label="<%= t("platform_home.language") %>">
+        <% Morea::Locales::AVAILABLE.each do |locale| %>
+          <%= link_to locale.to_s.upcase, platform_home_path(locale: locale), lang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
+        <% end %>
+      </div>
+      <% if current_admin_user %>
+        <%= link_to admin_entry_path, class: "platform-button platform-header-button", data: { platform_auth: "signed-in" } do %>
+          <span class="platform-sm-only"><%= t("platform_home.seallo.dash_short") %></span>
+          <span class="platform-lg-only"><%= t("platform_home.seallo.dash") %></span>
+        <% end %>
+      <% else %>
+        <%= link_to admin_login_path(locale: I18n.locale), class: "platform-login-nav", data: { platform_auth: "guest" } do %>
+          <span class="platform-sm-only"><%= t("platform_home.seallo.signin_short") %></span>
+          <span class="platform-lg-only"><%= t("platform_home.seallo.signin") %></span>
+        <% end %>
+        <%= link_to signup_path(locale: I18n.locale), class: "platform-button platform-header-button" do %>
+          <span class="platform-sm-only"><%= t("platform_home.seallo.signup_short") %></span>
+          <span class="platform-lg-only"><%= t("platform_home.seallo.signup") %></span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</header>

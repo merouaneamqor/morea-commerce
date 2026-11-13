@@ -1,10 +1,11 @@
 <% content_for :title, "#{@store&.name || "Morea"} — #{@store&.tagline.presence || t("store.tagline_fallback")}" %>
+<% hero = @sections.find { |section| section.kind == "hero" && section.image_src.present? } %>
 <% if @sections.first&.kind == "hero" %>
   <% content_for :hero_nav, "1" %>
-  <% if @sections.first.image_src.present? %>
-    <% content_for :head do %>
-      <%= preload_hero_image(@sections.first.image_src) %>
-    <% end %>
+<% end %>
+<% if hero %>
+  <% content_for :lcp do %>
+    <%= preload_hero_image(hero.image_src) %>
   <% end %>
 <% end %>
 

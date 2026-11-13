@@ -1,0 +1,82 @@
+# Strings for the animated preview panel beside the auth forms (same copy as the seallo sign-in page).
+fr:
+  auth_preview:
+    eyebrow: "Exemple, pas les chiffres d'une boutique"
+    headline: "Confirmez la commande."
+    headline_accent: "Comptez le bénéfice."
+    tagline: "Votre équipe confirme la commande. Seallo soustrait les coûts à la livraison et affiche le bénéfice."
+    live: "Exemple"
+    new_order: "Nouvelle commande, Shopify"
+    steps: ["Passée", "Confirmée", "Expédiée", "Livrée", "Payée"]
+    step_notes:
+      - "La boutique envoie la commande."
+      - "Votre agent confirme le client."
+      - "Seallo envoie le colis à la société de livraison."
+      - "La société de livraison remet le colis."
+      - "Seallo soustrait les coûts et affiche le bénéfice."
+    revenue: "Chiffre d'affaires"
+    profit: "Bénéfice net"
+    revenue_short: "Chiffre d'affaires"
+    profit_short: "Bénéfice"
+    days_30: "30 jours"
+    months: ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]
+    best_sellers: "Produits les plus vendus"
+    orders_abbr: "commandes"
+    partner_titles:
+      stores: "Boutiques"
+      delivery: "Livraison"
+      ads: "Publicité"
+en:
+  auth_preview:
+    eyebrow: "Example, not a store's numbers"
+    headline: "Confirm the order."
+    headline_accent: "Count the profit."
+    tagline: "Your team confirms the order. Seallo subtracts the costs on delivery and shows the profit."
+    live: "Example"
+    new_order: "New order, Shopify"
+    steps: ["Placed", "Confirmed", "Shipped", "Delivered", "Paid"]
+    step_notes:
+      - "The store sends the order."
+      - "Your agent confirms the customer."
+      - "Seallo sends the parcel to the delivery company."
+      - "The delivery company hands over the parcel."
+      - "Seallo subtracts the costs and shows the profit."
+    revenue: "Revenue"
+    profit: "Net profit"
+    revenue_short: "Revenue"
+    profit_short: "Profit"
+    days_30: "30 days"
+    months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    best_sellers: "Products with the most orders"
+    orders_abbr: "orders"
+    partner_titles:
+      stores: "Stores"
+      delivery: "Delivery"
+      ads: "Advertising"
+ar:
+  auth_preview:
+    eyebrow: "مثال، وليست أرقام متجر"
+    headline: "أكّد الطلب."
+    headline_accent: "ثم احسب الربح."
+    tagline: "يؤكد فريقك الطلب. يخصم seallo التكاليف عند التسليم ويعرض الربح."
+    live: "مثال"
+    new_order: "طلب جديد، Shopify"
+    steps: ["مُسجَّل", "مؤكَّد", "مشحون", "مُسلَّم", "مدفوع"]
+    step_notes:
+      - "يرسل المتجر الطلب."
+      - "يؤكد وكيلك الزبون."
+      - "يرسل seallo الطرد إلى شركة التوصيل."
+      - "تسلّم شركة التوصيل الطرد للزبون."
+      - "يخصم seallo التكاليف ويعرض الربح."
+    revenue: "رقم المعاملات"
+    profit: "صافي الربح"
+    revenue_short: "المعاملات"
+    profit_short: "الربح"
+    days_30: "30 يومًا"
+    months: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"]
+    best_sellers: "المنتجات الأكثر طلبًا"
+    orders_abbr: "طلب"
+    partner_titles:
+      stores: "المتاجر"
+      delivery: "شركات التوصيل"
+      ads: "الإعلانات"

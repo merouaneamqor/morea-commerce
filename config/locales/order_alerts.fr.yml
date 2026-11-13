@@ -1,0 +1,6 @@
+fr:
+  admin:
+    order_alerts:
+      "on": "Alertes de commande activées"
+      "off": "Alertes de commande"
+      blocked: "Les notifications sont bloquées dans ce navigateur"

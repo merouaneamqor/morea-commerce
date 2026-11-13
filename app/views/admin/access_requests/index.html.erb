@@ -1,0 +1,27 @@
+<% content_for :title, t("platform_admin.access_requests") %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("platform_admin.access_requests") %></h1>
+    <p class="admin-page-header__meta"><%= t("platform_admin.request_description") %></p>
+    <p class="admin-page-header__meta"><%= t("platform_admin.approve_flow_help") %></p>
+  </div>
+  <div class="platform-toolbar">
+    <%= link_to t("platform_admin.back"), admin_platform_path, class: "admin-btn-secondary" %>
+  </div>
+</div>
+
+<nav class="mb-4 flex flex-wrap gap-2" aria-label="<%= t("platform_admin.fields.status") %>">
+  <% AccessRequest::STATUSES.each do |status| %>
+    <%= link_to t("platform_admin.status_count", status: t("platform_admin.request_statuses.#{status}"), count: @counts[status].to_i), admin_access_requests_path(status: status),
+          class: (status == @status ? "admin-btn" : "admin-btn-secondary") %>
+  <% end %>
+</nav>
+
+<section class="admin-card">
+  <% if @requests.empty? %>
+    <p class="admin-muted p-4"><%= t("platform_admin.no_requests", status: t("platform_admin.request_statuses.#{@status}")) %></p>
+  <% else %>
+    <%= render "table", requests: @requests %>
+  <% end %>
+</section>

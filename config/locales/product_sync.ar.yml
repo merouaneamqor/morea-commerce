@@ -1,0 +1,37 @@
+ar:
+  products_page:
+    all: "الكل"
+    manual: "يدوي"
+    source: "المصدر"
+    switch: "المتجر"
+    imported_hint: "مستورد من المتجر: السعر والمخزون والصورة تتحدث عند كل مزامنة."
+  connections:
+    products:
+      title: "منتجات المتجر"
+      help: "تُقرأ منتجات هذا المتجر في كتالوجك: السعر والمخزون والمتغيرات والصورة تأتي من المتجر، وتكلفة الشراء تبقى لك."
+      state:
+        never: "لم تتم المزامنة بعد"
+        queued: "المزامنة في الانتظار…"
+        running: "المزامنة جارية…"
+        ok: "تمت المزامنة %{time}: %{total} منتج (%{created} جديد، %{updated} محدّث، %{archived} مؤرشف)"
+        failed: "فشلت آخر مزامنة: %{error}"
+      errors:
+        credentials_missing: "مفاتيح API غير موجودة"
+        invalid_credentials: "رفض المتجر مفاتيح API"
+        missing_scopes: "صلاحية قراءة المنتجات غير متوفرة"
+        disconnected: "المتجر غير متصل"
+        rate_limited: "طلبات كثيرة، حاول لاحقاً"
+        unavailable: "تعذّر الوصول إلى المتجر"
+        invalid_response: "ردّ غير متوقع من المتجر"
+        unsafe_domain: "عنوان المتجر غير مسموح"
+      sync: "مزامنة المنتجات"
+      queued: "بدأت المزامنة."
+      not_ready: "أضف مفاتيح API لهذا المتجر أولاً (أو أعد ربطه)."
+      credentials_saved: "تم حفظ مفاتيح API."
+      credentials_title: "مفاتيح API لقراءة المنتجات"
+      credentials_saved_hint: "محفوظ (غير معروض). اتركه فارغاً للإبقاء عليه."
+      consumer_key: "مفتاح العميل (consumer key)"
+      consumer_secret: "سرّ العميل (consumer secret)"
+      access_token: "رمز وصول YouCan"
+      save_credentials: "حفظ المفاتيح"
+      imported_count: "%{count} منتج مستورد"

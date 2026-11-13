@@ -1,0 +1,72 @@
+en:
+  shopify_sync:
+    button: "Sync Shopify"
+    sendit_button: "Sync Sendit"
+    title: "Shopify sync"
+    help: "Imports recent COD orders in the background."
+    summary:
+      one: "1 store"
+      other: "%{count} stores"
+    attention_count:
+      one: "1 needs attention"
+      other: "%{count} need attention"
+    checked_through: "Checked through"
+    not_synced: "Not synced yet"
+    receipt_attention: "Some orders need attention. Open the connection for details."
+    receipt_attention_short: "Needs attention"
+    connect_first: "Connect or reauthorize a Shopify store before syncing orders."
+    queued:
+      one: "Shopify sync queued for one store. Refresh for progress."
+      other: "Shopify sync queued for %{count} stores. Refresh for progress."
+fr:
+  shopify_sync:
+    button: "Sync Shopify"
+    sendit_button: "Sync Sendit"
+    title: "Sync Shopify"
+    help: "Importe les commandes COD récentes en arrière-plan."
+    summary:
+      one: "1 boutique"
+      other: "%{count} boutiques"
+    attention_count:
+      one: "1 à revoir"
+      other: "%{count} à revoir"
+    checked_through: "Vérifié jusqu’au"
+    not_synced: "Pas encore synchronisé"
+    receipt_attention: "Certaines commandes nécessitent votre attention. Ouvrez la connexion pour les détails."
+    receipt_attention_short: "À revoir"
+    connect_first: "Connectez ou autorisez à nouveau une boutique Shopify avant de synchroniser."
+    queued:
+      one: "Sync Shopify lancée pour une boutique. Actualisez pour voir la progression."
+      other: "Sync Shopify lancée pour %{count} boutiques. Actualisez pour voir la progression."
+ar:
+  shopify_sync:
+    button: "مزامنة Shopify"
+    sendit_button: "مزامنة Sendit"
+    title: "مزامنة Shopify"
+    help: "يستورد طلبات الدفع عند الاستلام الحديثة في الخلفية."
+    summary:
+      zero: "لا متاجر"
+      one: "متجر واحد"
+      two: "متجران"
+      few: "%{count} متاجر"
+      many: "%{count} متجرًا"
+      other: "%{count} متجر"
+    attention_count:
+      zero: ""
+      one: "يحتاج مراجعة"
+      two: "يحتاجان مراجعة"
+      few: "%{count} تحتاج مراجعة"
+      many: "%{count} تحتاج مراجعة"
+      other: "%{count} تحتاج مراجعة"
+    checked_through: "تم التحقق حتى"
+    not_synced: "لم تُزامَن بعد"
+    receipt_attention: "بعض الطلبات تحتاج مراجعة. افتح الاتصال للتفاصيل."
+    receipt_attention_short: "تحتاج مراجعة"
+    connect_first: "اربط متجر Shopify أو أعد تفويضه قبل المزامنة."
+    queued:
+      zero: "لم تتم إضافة أي متجر للمزامنة."
+      one: "تمت جدولة متجر واحد. حدّث الصفحة للتقدم."
+      two: "تمت جدولة متجرين. حدّث الصفحة للتقدم."
+      few: "تمت جدولة %{count} متاجر. حدّث الصفحة للتقدم."
+      many: "تمت جدولة %{count} متجرًا. حدّث الصفحة للتقدم."
+      other: "تمت جدولة %{count} متجر. حدّث الصفحة للتقدم."

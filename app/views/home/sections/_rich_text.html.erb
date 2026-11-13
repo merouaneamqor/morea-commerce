@@ -1,15 +1,21 @@
+<% lcp = local_assigns[:lcp] %>
 <% if section.body.present? %>
-  <section class="home-manifesto <%= "home-manifesto--plain" if section.image_src.blank? %>" data-controller="reveal">
+  <section class="home-manifesto <%= "home-manifesto--plain" if section.image_src.blank? %>" <%= 'data-controller="reveal" data-reveal-stagger-value="true"' unless lcp %>>
     <% if section.image_src.present? %>
-      <%= image_tag cdn_image_url(section.image_src, width: 1600), alt: "", class: "home-manifesto__media", loading: "lazy", decoding: "async" %>
+      <%= image_tag cdn_image_url(section.image_src, width: 1600),
+            alt: "",
+            class: "home-manifesto__media",
+            loading: (lcp ? "eager" : "lazy"),
+            decoding: (lcp ? "sync" : "async"),
+            fetchpriority: (lcp ? "high" : nil) %>
     <% end %>
     <div class="home-manifesto__copy">
       <% if section.subheading.present? %>
-        <p class="landing-eyebrow landing-eyebrow--light justify-center"><%= section.subheading %></p>
+        <p class="landing-eyebrow landing-eyebrow--light justify-center" data-reveal-item><%= section.subheading %></p>
       <% end %>
-      <blockquote class="home-manifesto__quote"><%= section.body %></blockquote>
+      <blockquote class="home-manifesto__quote" data-reveal-item><%= section.body %></blockquote>
       <% if section.button_label.present? && store_link_path(section.link) %>
-        <%= link_to section.button_label, store_link_path(section.link), class: "maison-cta maison-cta-light mt-12" %>
+        <%= link_to section.button_label, store_link_path(section.link), class: "maison-cta maison-cta-light mt-12", data: { reveal_item: true } %>
       <% end %>
     </div>
   </section>

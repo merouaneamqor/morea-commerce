@@ -1,6 +1,8 @@
-# Morea Commerce
+# Seallo
 
-Luxury modest sportswear storefront + COD admin for Morocco.
+The new public **Seallo Connect** app adds Shopify installation-to-workspace linking and Shopify-hosted subscription plans while preserving the existing standalone Shopify integration. See [Seallo Connect setup, billing, quotas and deployment](docs/features/seallo-connect.md) and [mandatory privacy workflows](docs/features/seallo-privacy.md).
+
+Multi-store cash-on-delivery commerce platform for Morocco. Morea is the reference store: luxury modest sportswear storefront + COD admin.
 
 **Storefront:** fashion-house UX (campaign homepage, editorial PDP, restrained blush).  
 **Store admin:** dense and operational — not luxurious.  
@@ -8,19 +10,34 @@ Luxury modest sportswear storefront + COD admin for Morocco.
 
 Stores are subdomain tenants. Each store has its own catalog, staff, orders, and Sendit/Discord credentials.
 
+Merchants create an account at `/signup` without administrator approval: enter a business name and email, follow a verification link, then choose a password. A verified account opens its workspace overview immediately. New workspaces begin unpublished and require an active subscription before operational pages, writes, agent APIs or connected-order intake can be used. Existing workspaces retain their access policy. Password recovery is available from sign-in. See [self-service signup and subscription setup](docs/features/self-service-subscriptions.md).
+
+Subscriptions currently use the existing manual-invoice workflow; online payment checkout needs a selected provider and configured prices. New verified workspaces are **not** given a paid trial or operational access by signup.
+
+**Sales channels → Connected stores → Shopify** connects the shared **Seallo** app through Shopify OAuth. Merchants enter their permanent shop domain, approve access in Shopify and return to API status, verified permissions and an explicit connection test. Shopify setup does not request webhook configuration or merchant app credentials. Configure the shared app before enabling installation; eligible COD orders import automatically, while order updates and product/stock sync remain separate work. See [Shopify API setup](docs/features/shopify-api-connection.md).
+
+The standalone Shopify App URL is `/admin/shopify`. Signed-out clients return there after signing in, then explicitly authorize a connection within their workspace. The app configuration template and development-store setup are in the [Seallo launch guide](docs/features/shopify-app-launch.md). Signed uninstall deliveries clear app credentials and stop imports while retaining existing orders. Public release still requires the privacy-request workflow, data-access approval and Shopify review.
+
+WooCommerce and YouCan retain signed order webhooks, source filters, receipt history and disconnect/resume. Intake supports unpaid Moroccan COD/MAD orders without tax, discounts or extra fees, preserving external line prices/options without local catalog setup or inventory changes. YouCan payload completeness still needs sandbox verification. See [provider setup and limitations](docs/features/connected-store-contracts.md).
+
+**Overview** is the merchant landing dashboard after sign-in, with 7/30-day comparison cards, daily order/delivered-value charts, order-status distribution, a confirmation queue and manual campaign performance. It adapts setup actions to a Seallo storefront, connected stores or both, with 7/30-day order metrics, source health, recent orders and direct links to confirmation, due callbacks and delivery issues. Local inventory appears only when the merchant tracks catalog stock; cart activity appears only for enabled storefronts. Order value preserves cents and separates currencies. See [dashboard metric definitions](docs/features/merchant-dashboard.md).
+
+**Delivery** now opens a shipment dashboard with date/search/status filters, courier performance, current shipment counts and links to existing order actions. **Advertising** opens a manual MAD performance dashboard with reporting accounts, campaigns, daily spend and delivered-sales figures, ROAS and contribution comparisons. **Meta Ads** (Integrations → Publicité, or `/admin/meta-ads`) connects a Facebook Login for Business read-only token, syncs campaign/ad structure and budgets, daily spend and ROAS, and maps campaigns/ads to catalog products for profit. Reporting controls do not pause ads or change budgets at Meta; delivery uses existing Sendit/manual workflows. See [delivery definitions](docs/features/delivery-dashboard.md), [advertising definitions](docs/features/advertising-dashboard.md) and [Meta Ads connection](docs/features/meta-ads-connection.md).
+
 ## Run
 
 ```bash
 docker compose up --build
 ```
 
-- Local storefront: http://morea.lvh.me:3010 (or http://localhost:3010)
+- Local: http://localhost:3010 is the platform landing page; stores open on subdomains, http://morea.localhost:3010 or http://morea.lvh.me:3010
 - Production: **ollazen.com**
   - Platform: https://ollazen.com/admin
   - Store example: https://morea.ollazen.com
   - New tenants: `https://{slug}.ollazen.com` (DNS wildcard already set)
-- Super admin: `admin@morea.website` / `morea123` → **/admin/platform**
-- Platform-only: `super@morea.website` / `morea123`
+- Super admin: `admin@morea.website` → **/admin/platform**
+- Platform-only: `super@morea.website`
+- Seeded accounts have no published password. Locally (`db:seed`) they use `morea-local-password-123`, or the value of `SEED_ADMIN_PASSWORD` (12+ characters). In production set `SEED_ADMIN_PASSWORD` before the first seed, or sign in through the password-reset email.
 
 ```bash
 docker compose exec web bin/rails db:migrate db:seed
@@ -28,7 +45,7 @@ docker compose exec web bin/rails db:migrate db:seed
 
 ### Create another tenant
 
-From the platform UI (**New store**), or:
+From the platform UI (**New workspace**), or:
 
 ```bash
 docker compose exec web env \
@@ -39,7 +56,21 @@ docker compose exec web env \
 
 Then open http://atelier.lvh.me:3010 (local). In production, add `{slug}.ollazen.com` as a Custom Domain on the Render `morea` service (or add `*.ollazen.com` + root if on a plan that supports wildcards).
 
-`APP_BASE_DOMAIN=ollazen.com` in production. Locally docker-compose uses `lvh.me`.
+`APP_BASE_DOMAIN=seallo.ma` in production. Email delivery requires `MAIL_FROM` and the `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and optional `SMTP_DOMAIN` / `SMTP_AUTHENTICATION` environment settings on `morea-web`, plus the Sidekiq process started by `bin/render-start.sh`. With Resend, use `SMTP_ADDRESS=smtp.resend.com`, `SMTP_USERNAME=resend`, and `SMTP_PASSWORD=<api key>`. Verification and recovery links use the configured platform domain, never the incoming request host. `SUBSCRIPTION_SUPPORT_EMAIL` enables the subscription-page contact action. Historical access requests remain reviewable by platform admins; public signup no longer enters that queue.
+
+### Workspace access and language
+
+Super admins can use **Platform → Workspaces → Open admin** to operate any workspace, including unpublished workspaces, on the platform host. Return to **Platform** to choose another workspace. Merchant sessions remain limited to their own workspace.
+
+Both platform and workspace admin headers provide **FR / EN / AR** language links. The selection is saved in the browser and Arabic uses right-to-left layout.
+
+### Install the admin app
+
+After signing in, the admin area offers **Install**. Android browsers that support installation open their native install dialog after the button is tapped. On iPhone/iPad, open the admin in Safari and choose **Share → Add to Home Screen** using the displayed steps. Other browsers show menu instructions. HTTPS is required outside localhost.
+
+The installed app opens `/admin` on the same host. Your normal sign-in and workspace permissions still apply. Installation is per host; using the platform host lets super admins switch workspaces within one app. The prompt stays hidden in standalone mode, and **Later** postpones it for seven days on that browser. Browser rules determine whether the native dialog is available.
+
+Admin operations require a connection. The service worker does not cache private pages, order data, API responses or writes; offline navigation displays a connection message. Installation and device-specific behavior still need a real iOS/Android check before claiming device verification.
 
 ### Platform billing
 
@@ -61,6 +92,26 @@ The token is shown once and selects the store. Send `Authorization: Bearer <toke
 
 Connected agents should read the MCP resource `morea://catalog` before writing. The same manual is the GraphQL query `{ guide }`. It covers prices (`priceDh` as whole units), fr/en/ar translations, deletes (`confirm: true`), and image uploads.
 
+## Tests
+
+Automated specs: run `bundle exec rspec` with `RAILS_ENV=test` and a dedicated test database. See [spec setup and coverage](spec/README.md). CI runs the specs alongside the existing smoke scripts, including concurrent workspace approval and rejection checks.
+
 ## Stack
 
 Rails 8 · Hotwire · Tailwind · PostgreSQL · Redis · Sidekiq
+
+## Tenant commerce stays public
+
+Every store continues to serve its own localized catalog, cart and COD checkout. New operational features live in authenticated admin or store-token APIs; the apex remains the platform administration surface.
+
+## COD operations foundation
+
+- **Admin → Confirmations** (`/admin/confirmations`): claim new orders, record confirmed/cancelled/no-answer outcomes, schedule callbacks and release claims. Confirmation reserves inventory without automatically dispatching to Sendit. Labels are available in EN/FR/AR.
+- **External order intake** (`POST /api/v1/order_imports`): existing store API/OAuth bearer tokens select the store. Repeated source/external IDs return the same order. New imports do not reserve stock, dispatch parcels or send notifications.
+- Repository agents can use the skills under `.agents/skills/` for tenant commerce, COD operations, feature delivery and writing cleanup. See `AGENTS.md` and `docs/implementation-workflow.md`.
+
+Feature contracts and test commands: [order intake](docs/features/order-intake.md) and [confirmation queue](docs/features/confirmation-queue.md). Provider webhooks, new carrier adapters, WhatsApp sending, automatic assignment and financial reports remain later phases.
+
+The additive migrations create import identities and confirmation/attempt history. No existing order or storefront data is backfilled or rewritten. A code rollback can leave these tables intact; rolling down their migrations deletes the new operational history and must be planned separately.
+
+Platform administrators can connect a separate authenticated [superadmin MCP](docs/features/superadmin-mcp.md) for tenant, staff lifecycle and subscription invoice operations.

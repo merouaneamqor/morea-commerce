@@ -14,6 +14,37 @@ class DiscordNotifier
     new.notify_delivery_update(order, status_text)
   end
 
+  def self.notify_access_request(access_request)
+    new.notify_access_request(access_request)
+  end
+
+  # Platform-level channel (not a store's): a visitor asked to open a store.
+  def notify_access_request(access_request)
+    url = ENV["PLATFORM_DISCORD_WEBHOOK_URL"].to_s.strip.presence
+    if url.blank?
+      Rails.logger.info("[DiscordNotifier] Skipping access request — PLATFORM_DISCORD_WEBHOOK_URL not set")
+      return false
+    end
+
+    post_json(url, {
+      username: "#{Store.platform_name} signups",
+      content: "New store request: **#{access_request.store_name.truncate(80)}**",
+      allowed_mentions: { parse: [] },
+      embeds: [ {
+        title: "Access request ##{access_request.id}",
+        url: "#{Store.platform_origin}/admin/access_requests",
+        color: 0x005bd3,
+        fields: [
+          { name: "Store", value: access_request.store_name.truncate(256), inline: true },
+          { name: "Email", value: access_request.email.truncate(256), inline: true },
+          { name: "Phone", value: access_request.phone.presence&.truncate(256) || "—", inline: true },
+          { name: "Language", value: access_request.locale.upcase, inline: true }
+        ],
+        timestamp: access_request.created_at&.iso8601
+      } ]
+    })
+  end
+
   # Sendit parcel needs attention (customer unreachable, postponed, refused) or came back
   def notify_delivery_update(order, status_text)
     url = webhook_url(order)

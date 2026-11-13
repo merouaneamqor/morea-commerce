@@ -26,11 +26,8 @@ class OnlineStoreDefaults
       section("hero", { image_url: store.campaign_image, link: featured_link }) do |loc, st|
         { subheading: [ st&.campaign_title.presence || t(loc, "store.default_campaign_title"), st&.campaign_season.presence || "SS / 26" ].join(" · "),
           heading: st&.tagline.presence || t(loc, "store.tagline_fallback"),
+          body: t(loc, "home.hero_support"),
           button_label: st&.campaign_cta.presence || t(loc, "store.default_campaign_cta") }
-      end,
-      section("ticker") do |loc, st|
-        { body: [ t(loc, "landing.trust.delivery"), t(loc, "landing.trust.returns"), t(loc, "store.footer_tagline"),
-                 st&.campaign_season.presence || "SS / 26" ].join("\n") }
       end,
       section("featured_collection", { collection_id: store.featured_collection_id&.to_s, limit: "4" }) do |loc, _|
         { heading: t(loc, "home.selection_title") }
@@ -58,11 +55,13 @@ class OnlineStoreDefaults
         "ar" => { title: "التوصيل والدفع", body: "نوصل إلى جميع أنحاء المغرب.\n\nالدفع عند الاستلام. #{store_text("ar", :cod_note)}" }
       }),
       page("returns", {
-        "fr" => { title: "Retours", body: "Vous disposez de 7 jours après réception pour nous retourner un article.\n\nContactez-nous au #{contact["fr"]} pour organiser le retour." },
-        "en" => { title: "Returns", body: "You have 7 days after delivery to return an item.\n\nContact us at #{contact["en"]} to arrange your return." },
-        "ar" => { title: "الإرجاع", body: "لديكم 7 أيام بعد الاستلام لإرجاع أي قطعة.\n\nتواصلوا معنا على #{contact["ar"]} لترتيب الإرجاع." }
+        "fr" => { title: "Retours & remboursements", body: "Vous disposez de 7 jours après réception pour nous retourner un article non porté, dans son état d’origine.\n\nContactez-nous au #{contact["fr"]} pour organiser le retour. Le remboursement (ou l’échange) est traité après inspection, sans frais cachés." },
+        "en" => { title: "Returns & refunds", body: "You have 7 days after delivery to return an unused item in its original condition.\n\nContact us at #{contact["en"]} to arrange your return. Refunds or exchanges are processed after inspection, with no hidden fees." },
+        "ar" => { title: "الإرجاع والاسترداد", body: "لديكم 7 أيام بعد الاستلام لإرجاع أي قطعة غير مستعملة وبحالتها الأصلية.\n\nتواصلوا معنا على #{contact["ar"]} لترتيب الإرجاع. يُعالَج الاسترداد أو الاستبدال بعد الفحص، دون رسوم مخفية." }
       }),
-      page("privacy", privacy_page_translations)
+      page("privacy", privacy_page_translations),
+      page("terms", terms_page_translations),
+      page("cookies", cookies_page_translations)
     ]
   end
 
@@ -75,8 +74,11 @@ class OnlineStoreDefaults
     ].compact
     footer = [
       [ "page:privacy", ->(loc) { Morea::PrivacyPolicy.menu_labels[loc] } ],
+      [ "page:terms", ->(loc) { Morea::TermsOfService.menu_labels[loc] } ],
+      [ "page:cookies", ->(loc) { Morea::CookiePolicy.menu_labels[loc] } ],
       [ "page:shipping", ->(loc) { { "fr" => "Livraison & paiement", "en" => "Shipping & payment", "ar" => "التوصيل والدفع" }[loc] } ],
-      [ "page:returns", ->(loc) { { "fr" => "Retours", "en" => "Returns", "ar" => "الإرجاع" }[loc] } ],
+      [ "page:returns", ->(loc) { { "fr" => "Retours & remboursements", "en" => "Returns & refunds", "ar" => "الإرجاع والاسترداد" }[loc] } ],
+      [ "privacy_rights", ->(loc) { { "fr" => "Vos droits", "en" => "Your data rights", "ar" => "حقوق بياناتك" }[loc] } ],
       [ "track", ->(loc) { t(loc, "nav.track_order") } ],
       [ "https://www.instagram.com/morea.style/", ->(_) { "Instagram" } ]
     ]
@@ -119,6 +121,24 @@ class OnlineStoreDefaults
       {
         title: Morea::PrivacyPolicy.titles[loc],
         body: Morea::PrivacyPolicy.body_for(store, locale: loc)
+      }
+    end
+  end
+
+  def terms_page_translations
+    LOCALES.index_with do |loc|
+      {
+        title: Morea::TermsOfService.titles[loc],
+        body: Morea::TermsOfService.body_for(store, locale: loc)
+      }
+    end
+  end
+
+  def cookies_page_translations
+    LOCALES.index_with do |loc|
+      {
+        title: Morea::CookiePolicy.titles[loc],
+        body: Morea::CookiePolicy.body_for(store, locale: loc)
       }
     end
   end

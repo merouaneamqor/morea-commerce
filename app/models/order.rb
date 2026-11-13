@@ -1,9 +1,17 @@
 class Order < ApplicationRecord
   belongs_to :store
-  belongs_to :customer
+  belongs_to :customer, optional: true
   has_many :order_items, dependent: :destroy
   has_many :inventory_movements, dependent: :nullify
   has_many :order_events, dependent: :destroy
+  has_one :external_order_receipt, dependent: :restrict_with_exception
+  has_one :store_connection, through: :external_order_receipt
+  has_many :order_imports, dependent: :destroy
+  has_one :order_confirmation, dependent: :destroy
+  has_many :agent_deductions, dependent: :destroy
+
+  # A new order from a blocked number never enters the confirmation queue.
+  after_create :screen_blocked_phone
 
   # Happy-path progression (Sendit advances through these)
   FLOW = %w[
@@ -65,9 +73,15 @@ class Order < ApplicationRecord
     "returned" => []
   }.freeze
 
-  validates :number, :status, :customer_name, :customer_phone, :customer_city, :customer_address, presence: true
+  IMPORT_CONTACT_FIELDS = %w[name phone city address].freeze
+
+  validates :number, :status, presence: true
+  validates :customer, :customer_name, :customer_phone, :customer_city, :customer_address, presence: true, unless: :contact_review_required?
+  validate :valid_import_contact_review
   validates :number, uniqueness: { scope: :store_id }
   validates :sendit_code, uniqueness: { scope: :store_id }, allow_nil: true
+  validates :ozon_code, uniqueness: { scope: :store_id }, allow_nil: true
+  validates :ameex_code, uniqueness: { scope: :store_id }, allow_nil: true
   validates :status, inclusion: { in: STATUSES }
   validates :total_cents, numericality: { greater_than_or_equal_to: 0 }
 
@@ -77,6 +91,17 @@ class Order < ApplicationRecord
   scope :by_status, ->(status) { where(status: status) if status.present? }
   scope :active, -> { where(archived_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
+  scope :collected, -> { where.not(collected_at: nil) }
+  # Delivered by the carrier but the cash has not reached the merchant yet
+  scope :awaiting_remittance, -> { where(status: "delivered", collected_at: nil) }
+
+  def contact_review_required?
+    import_contact_issues.is_a?(Array) && import_contact_issues.any?
+  end
+
+  def ensure_contact_complete!
+    raise ArgumentError, I18n.t("import_contact.blocked") if contact_review_required?
+  end
 
   # Street address with the quartier, as the courier needs it
   def delivery_address
@@ -99,22 +124,38 @@ class Order < ApplicationRecord
     self.tags = list.map { |t| t.to_s.strip.downcase }.compact_blank.uniq.join(", ").presence
   end
 
-  # Full commercial edit while unshipped and any Sendit parcel can still be changed
+  # Full commercial edit while unshipped and any courier parcel can still be changed
   def editable?
-    return false unless EDITABLE_STATUSES.include?(status)
-    return true if sendit_code.blank?
+    return false if external_order_receipt.present?
 
-    Sendit::Sync.new(self).cancellable?
+    return false unless EDITABLE_STATUSES.include?(status)
+    return true if sendit_code.blank? && ozon_code.blank? && ameex_code.blank?
+    return Sendit::Sync.new(self).cancellable? if sendit_code.present?
+    return Ozon::Sync.new(self).cancellable? if ozon_code.present?
+    return Ameex::Sync.new(self).cancellable? if ameex_code.present?
+
+    true
   end
 
   def edit_lock_reason
     return if editable?
+    return I18n.t("connections.external_order_locked") if external_order_receipt.present?
     return "Cancelled orders cannot be edited." if status == "cancelled"
     return "Returned orders cannot be edited." if status == "returned"
     return "Delivered orders cannot be edited." if status == "delivered"
-    return "Fix the address, then Save — or wait for Sendit." if status == "address_issue" && sendit_code.present? && !Sendit::Sync.new(self).cancellable?
+    if status == "address_issue" && sendit_code.present? && !Sendit::Sync.new(self).cancellable?
+      return "Fix the address, then Save — or wait for Sendit."
+    end
+    if status == "address_issue" && ozon_code.present? && !Ozon::Sync.new(self).cancellable?
+      return "Fix the address, then Save — or wait for Ozon Express."
+    end
+    if status == "address_issue" && ameex_code.present? && !Ameex::Sync.new(self).cancellable?
+      return "Fix the address, then Save — or wait for Ameex."
+    end
     return "This parcel is already with the courier." if RESERVED_STATUSES.include?(status) && !EDITABLE_STATUSES.include?(status)
     return "This Sendit parcel has already left the warehouse." if sendit_code.present?
+    return "This Ozon Express parcel has already left the warehouse." if ozon_code.present?
+    return "This Ameex parcel has already left the warehouse." if ameex_code.present?
 
     "This order cannot be edited."
   end
@@ -139,6 +180,35 @@ class Order < ApplicationRecord
     self
   end
 
+# Cash received by the merchant for a delivered COD order (carrier remittance).
+def record_collection!(cents: total_cents, user: nil)
+  with_lock do
+    raise ArgumentError, "Only delivered orders can be marked as collected." unless status == "delivered"
+    raise ArgumentError, "The COD payment is already recorded." if collected_at.present?
+    raise ArgumentError, "Enter an amount between 0 and the order total." unless cents.is_a?(Integer) && cents.between?(0, total_cents)
+
+    update!(collected_cents: cents, collected_at: Time.current)
+    record_event!("payment", body: "COD payment collected: #{(cents / 100.0).round(2)} #{currency}", user: user)
+  end
+  self
+end
+
+def record_refund!(cents:, user: nil)
+  with_lock do
+    raise ArgumentError, "Record the COD payment before a refund." if collected_at.blank?
+    raise ArgumentError, "Enter a positive amount." unless cents.is_a?(Integer) && cents.positive?
+    raise ArgumentError, "A refund cannot exceed the collected amount." if refunded_cents + cents > collected_cents
+
+    update!(refunded_cents: refunded_cents + cents)
+    record_event!("payment", body: "Refund recorded: #{(cents / 100.0).round(2)} #{currency}", user: user)
+  end
+  self
+end
+
+def net_collected_cents
+  collected_at.present? ? collected_cents - refunded_cents : 0
+end
+
   def record_event!(kind, body:, user: nil)
     order_events.create!(kind: kind, body: body, user: user)
   end
@@ -147,26 +217,44 @@ class Order < ApplicationRecord
     TRANSITIONS.fetch(status, []).include?(new_status.to_s)
   end
 
-  # Buttons staff may click. With Sendit on, delivery states are not listed.
+  # Buttons staff may click. With a default courier API on, delivery states are not listed.
   def staff_transitions
     allowed = TRANSITIONS.fetch(status, [])
-    return allowed unless store.sendit_configured?
+    return allowed unless store.default_shipping_provider.present?
 
     allowed.reject { |s| SENDIT_OWNED_STATUSES.include?(s) }
   end
 
   def sendit_owns_status?(new_status)
-    store.sendit_configured? && SENDIT_OWNED_STATUSES.include?(new_status.to_s)
+    store.ships_with?(:sendit) && SENDIT_OWNED_STATUSES.include?(new_status.to_s)
   end
 
-  def transition_to!(new_status, reason: nil, user: nil, source: :staff)
-    new_status = new_status.to_s
-    if source == :staff && sendit_owns_status?(new_status)
-      raise ArgumentError, "“#{STATUS_LABELS.fetch(new_status, new_status.humanize)}” is set by Sendit only. Use Refresh Sendit."
-    end
-    raise ArgumentError, "Invalid transition #{status} → #{new_status}" unless can_transition_to?(new_status)
+  def ozon_owns_status?(new_status)
+    store.ships_with?(:ozon) && SENDIT_OWNED_STATUSES.include?(new_status.to_s)
+  end
 
-    apply_status_change!(new_status, reason: reason, user: user)
+  def ameex_owns_status?(new_status)
+    store.ships_with?(:ameex) && SENDIT_OWNED_STATUSES.include?(new_status.to_s)
+  end
+
+  def transition_to!(new_status, reason: nil, user: nil, source: :staff, sync_delivery: true)
+    new_status = new_status.to_s
+    # Re-read under the same lock used by the confirmation queue. A legacy admin
+    # request may hold a stale instance after another actor reserves the stock.
+    with_lock do
+      if source == :staff && sendit_owns_status?(new_status)
+        raise ArgumentError, "“#{STATUS_LABELS.fetch(new_status, new_status.humanize)}” is set by Sendit only. Use Refresh Sendit."
+      end
+      if source == :staff && ozon_owns_status?(new_status)
+        raise ArgumentError, "“#{STATUS_LABELS.fetch(new_status, new_status.humanize)}” is set by Ozon Express only. Use Refresh Ozon."
+      end
+      if source == :staff && ameex_owns_status?(new_status)
+        raise ArgumentError, "“#{STATUS_LABELS.fetch(new_status, new_status.humanize)}” is set by Ameex only. Use Refresh Ameex."
+      end
+      raise ArgumentError, "Invalid transition #{status} → #{new_status}" unless can_transition_to?(new_status)
+
+      apply_status_change!(new_status, reason: reason, user: user, sync_delivery: sync_delivery)
+    end
   end
 
   # Step forward through FLOW until `target` (never backwards). Used by Sendit sync.
@@ -214,6 +302,14 @@ class Order < ApplicationRecord
     Sendit::Sync.label(sendit_status) if sendit_status.present?
   end
 
+  def ozon_label
+    Ozon::Sync.label(ozon_status) if ozon_status.present?
+  end
+
+  def ameex_label
+    Ameex::Sync.label(ameex_status, store: store) if ameex_status.present?
+  end
+
   def self.cancel_rate
     total = count
     return 0 if total.zero?
@@ -225,14 +321,48 @@ class Order < ApplicationRecord
     STATUS_LABELS.fetch(status, status.humanize)
   end
 
+  # What the carrier charges for this parcel, in whole centimes: the fee Sendit reported for it, else the default
+  # of the workspace's one active delivery account that has one. nil when it cannot be told for sure (several
+  # accounts with different fees, or none): accounting then counts 0 and warns, it never guesses.
+  def carrier_fee_cents(kind)
+    return (sendit_fee * 100).round(0, half: :up).to_i if sendit_fee.present?
+    return (ozon_fee * 100).round(0, half: :up).to_i if ozon_fee.present?
+    return (ameex_fee * 100).round(0, half: :up).to_i if ameex_fee.present?
+
+    column = kind == :return ? :return_fee : :delivery_fee
+    fees = store.delivery_accounts.where(is_active: true).where.not(column => nil).pluck(column).uniq
+    (fees.first * 100).round(0, half: :up).to_i if fees.one?
+  end
+
+  # Freezes the fee of the current outcome on the order (delivered: delivery fee, returned: return fee).
+  # Fills an empty value only; a value already frozen is never overwritten, so old months cannot change.
+  def freeze_fees!
+    values = {}
+    values[:delivery_fee_cents] = carrier_fee_cents(:delivery) if status == "delivered" && delivery_fee_cents.nil?
+    values[:return_fee_cents] = carrier_fee_cents(:return) if status == "returned" && return_fee_cents.nil?
+    values.compact!
+    update_columns(values) if values.any?
+  end
+
+  # What the customer still pays at delivery: the total minus the advance already paid.
+  def to_collect_cents = [ total_cents - advance_cents.to_i, 0 ].max
+
   def total_display
     "#{(total_cents / 100.0).to_i.to_fs(:delimited)} #{currency}"
   end
 
   private
 
-  def apply_status_change!(new_status, reason: nil, user: nil, force: false)
+  def screen_blocked_phone
+    return unless BlockedPhone.blocked?(store, customer_phone, second_phone)
+
+    OrderConfirmation.create!(store: store, order: self, disposition: "blocked")
+    record_event!("comment", body: "Number is on the store's blocked list: the order did not enter the queue")
+  end
+
+  def apply_status_change!(new_status, reason: nil, user: nil, force: false, sync_delivery: true)
     raise ArgumentError, "Invalid transition #{status} → #{new_status}" unless force || can_transition_to?(new_status)
+    ensure_contact_complete! unless %w[new cancelled].include?(new_status)
 
     from = status
     transaction do
@@ -244,6 +374,7 @@ class Order < ApplicationRecord
         self.shipped_at ||= Time.current
       when "delivered"
         self.delivered_at = Time.current
+        self.delivery_fee_cents ||= carrier_fee_cents(:delivery)
       when "cancelled"
         restore_inventory! if inventory_reserved? || RESERVED_STATUSES.include?(from)
         self.cancelled_at = Time.current
@@ -251,17 +382,19 @@ class Order < ApplicationRecord
       when "returned"
         restore_inventory!(reason: "order_returned") if inventory_reserved? || RESERVED_STATUSES.include?(from) || from == "delivered"
         self.returned_at = Time.current
+        self.return_fee_cents ||= carrier_fee_cents(:return)
         self.cancel_reason = reason
       end
 
       update!(status: new_status)
+      AgentDeduction.record_for!(self) if new_status == "returned"
       body = "Status changed from #{STATUS_LABELS.fetch(from, from.humanize)} to #{STATUS_LABELS.fetch(new_status, new_status.humanize)}"
       body = "#{body} — #{reason}" if reason.present?
       record_event!("status", body: body, user: user)
     end
 
     OrderStatusJob.perform_later(id)
-    enqueue_sendit_sync(new_status)
+    enqueue_courier_sync(new_status) if sync_delivery
     self
   end
 
@@ -284,15 +417,57 @@ class Order < ApplicationRecord
     end
   end
 
-  def enqueue_sendit_sync(new_status)
-    return unless store.sendit_configured?
-
-    if new_status == "confirmed" && sendit_code.blank?
-      SenditSyncJob.perform_later(id, "push")
-    elsif new_status == "cancelled" && sendit_code.present? && Sendit::Sync.normalize_status(sendit_status) != "CANCELED"
-      # Local cancel first; delete the Sendit parcel right after
-      Sendit::Sync.new(self).cancel!
+  def enqueue_courier_sync(new_status)
+    case store.default_shipping_provider
+    when "sendit" then enqueue_sendit_push(new_status)
+    when "ozon" then enqueue_ozon_push(new_status)
+    when "ameex" then enqueue_ameex_push(new_status)
     end
+    return unless new_status == "cancelled"
+
+    # Cancel an already-created parcel even if that courier is no longer the default.
+    enqueue_sendit_cancel
+    enqueue_ozon_cancel
+    enqueue_ameex_cancel
+  end
+
+  def enqueue_sendit_push(new_status)
+    return unless store.ships_with?(:sendit)
+    return unless new_status == "confirmed" && sendit_code.blank?
+
+    SenditSyncJob.perform_later(id, "push")
+  end
+
+  def enqueue_ozon_push(new_status)
+    return unless store.ships_with?(:ozon)
+    return unless new_status == "confirmed" && ozon_code.blank?
+
+    OzonSyncJob.perform_later(id, "push")
+  end
+
+  def enqueue_ameex_push(new_status)
+    return unless store.ships_with?(:ameex)
+    return unless new_status == "confirmed" && ameex_code.blank?
+
+    AmeexSyncJob.perform_later(id, "push")
+  end
+
+  def enqueue_sendit_cancel
+    return if sendit_code.blank? || Sendit::Sync.normalize_status(sendit_status) == "CANCELED"
+
+    Sendit::Sync.new(self).cancel!
+  end
+
+  def enqueue_ozon_cancel
+    return if ozon_code.blank? || Ozon::Sync.normalize_status(ozon_status) == "CANCELED"
+
+    Ozon::Sync.new(self).cancel!
+  end
+
+  def enqueue_ameex_cancel
+    return if ameex_code.blank? || Ameex::Sync.normalize_status(ameex_status) == "CANCELED"
+
+    Ameex::Sync.new(self).cancel!
   end
 
   def assign_number
@@ -304,9 +479,17 @@ class Order < ApplicationRecord
     end
   end
 
+  def valid_import_contact_review
+    unless import_contact_issues.is_a?(Array) && (import_contact_issues - IMPORT_CONTACT_FIELDS).empty?
+      errors.add(:import_contact_issues, :invalid)
+    end
+    errors.add(:base, I18n.t("import_contact.blocked")) if contact_review_required? && !%w[new cancelled].include?(status)
+    errors.add(:customer, :invalid) if customer && customer.store_id != store_id
+  end
+
   def reserve_inventory!
     order_items.includes(:product, :product_variant).each do |item|
-      next unless item.product.track_inventory
+      next unless item.product&.track_inventory
 
       Inventory::Adjuster.adjust!(
         product: item.product,
@@ -325,7 +508,7 @@ class Order < ApplicationRecord
 
   def restore_inventory!(reason: "order_cancelled")
     order_items.includes(:product, :product_variant).each do |item|
-      next unless item.product.track_inventory
+      next unless item.product&.track_inventory
 
       Inventory::Adjuster.adjust!(
         product: item.product,

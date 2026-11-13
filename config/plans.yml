@@ -1,0 +1,38 @@
+# Subscription plans, copied from the seallo platform (config/plans.php).
+# Base prices are in US dollars per month; annual billing pays `annual_months_paid` months.
+# Customers can view prices in their own currency (`currencies`, rate = units per 1 USD).
+# Rates are approximate and should be reviewed regularly.
+currency: USD
+trial_days: 7
+annual_months_paid: 10
+
+currencies:
+  USD: { name: "Dollar US", symbol: "$", rate: 1 }
+  EUR: { name: "Euro", symbol: "€", rate: 0.92 }
+  MAD: { name: "Dirham marocain", symbol: "MAD", rate: 10 }
+  DZD: { name: "Dinar algérien", symbol: "DZD", rate: 135 }
+  TND: { name: "Dinar tunisien", symbol: "TND", rate: 3.1 }
+  EGP: { name: "Livre égyptienne", symbol: "EGP", rate: 48 }
+  SAR: { name: "Riyal saoudien", symbol: "SAR", rate: 3.75 }
+  AED: { name: "Dirham émirati", symbol: "AED", rate: 3.67 }
+  XOF: { name: "Franc CFA (BCEAO)", symbol: "FCFA", rate: 600 }
+  GBP: { name: "Livre sterling", symbol: "£", rate: 0.79 }
+
+# Bank transfer details shown on the payment step. These are the placeholders from seallo;
+# set SEALLO_BANK_HOLDER / SEALLO_BANK_NAME / SEALLO_BANK_RIB / SEALLO_BANK_SWIFT to show the real account.
+bank:
+  holder: "SEALLO SARL"
+  bank: "Nom de la banque"
+  rib: "000 000 0000000000000000 00"
+  swift: "XXXXMAMC"
+
+# Card payment turns on once a provider (CMI, YouCan Pay…) is connected.
+card_enabled: false
+
+# orders / stores: null means unlimited
+list:
+  free: { name: "Gratuit", price: 0, orders: null, stores: null, popular: true }
+  starter: { name: "Starter", price: 19, orders: 300, stores: 1, popular: false }
+  intermediate: { name: "Intermediate", price: 39, orders: 800, stores: 3, popular: false }
+  professional: { name: "Professional", price: 79, orders: 3000, stores: 10, popular: false }
+  business: { name: "Business", price: 149, orders: 15000, stores: 20, popular: false }

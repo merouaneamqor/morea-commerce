@@ -1,4 +1,4 @@
-<% content_for :title, "Navigation — Online Store" %>
+<% content_for :title, "Navigation, Online Store" %>
 
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Navigation</h1>
@@ -13,7 +13,7 @@
       <div class="admin-card__header">
         <div>
           <h2 class="admin-card__title"><%= title %></h2>
-          <p class="admin-muted"><%= menu == "header" ? "Links in the storefront header" : "Links in the footer “Information” column" %></p>
+          <p class="admin-muted"><%= menu == "header" ? "Links in the storefront header" : "Links in the footer Information column" %></p>
         </div>
         <%= link_to "Add menu item", new_admin_menu_item_path(menu: menu), class: "admin-btn-secondary" %>
       </div>
@@ -26,8 +26,8 @@
               <p class="admin-muted truncate"><%= store_link_path(item.link, locale: :fr).to_s.sub(%r{\A/fr}, "") %></p>
             </div>
             <div class="flex items-center gap-1">
-              <%= button_to "↑", move_admin_menu_item_path(item, direction: "up"), method: :patch, class: "admin-btn-secondary !w-8 !px-0", disabled: i.zero?, "aria-label": "Move up" %>
-              <%= button_to "↓", move_admin_menu_item_path(item, direction: "down"), method: :patch, class: "admin-btn-secondary !w-8 !px-0", disabled: i == items.size - 1, "aria-label": "Move down" %>
+              <%= button_to "Up", move_admin_menu_item_path(item, direction: "up"), method: :patch, class: "admin-btn-secondary", disabled: i.zero?, "aria-label": "Move up" %>
+              <%= button_to "Down", move_admin_menu_item_path(item, direction: "down"), method: :patch, class: "admin-btn-secondary", disabled: i == items.size - 1, "aria-label": "Move down" %>
               <%= button_to "Remove", admin_menu_item_path(item), method: :delete, class: "admin-btn-plain admin-btn-plain--critical ms-2", form: { data: { turbo_confirm: "Remove this menu item?" } } %>
             </div>
           </li>

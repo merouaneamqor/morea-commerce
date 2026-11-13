@@ -2,8 +2,13 @@
 
 class ConsentsController < ApplicationController
   def tracking
-    cookies[DataProtectionHelper::COOKIE_NOTICE_COOKIE] = {
-      value: "1",
+    choice = params[:choice].to_s
+    unless [ DataProtectionHelper::GRANTED, DataProtectionHelper::DENIED ].include?(choice)
+      return head :unprocessable_entity
+    end
+
+    cookies[DataProtectionHelper::TRACKING_CONSENT_COOKIE] = {
+      value: choice,
       expires: 1.year.from_now,
       same_site: :lax,
       secure: !Rails.env.local?,
@@ -12,7 +17,10 @@ class ConsentsController < ApplicationController
 
     respond_to do |format|
       format.json { head :no_content }
-      format.html { redirect_back fallback_location: localized_root_path, allow_other_host: false }
+      format.html {
+        fallback = current_store ? localized_root_path : platform_home_path(locale: I18n.locale)
+        redirect_back fallback_location: fallback, allow_other_host: false
+      }
     end
   end
 end

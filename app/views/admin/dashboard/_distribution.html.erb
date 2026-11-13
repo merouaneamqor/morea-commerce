@@ -1,0 +1,58 @@
+<%# Distribution of the orders created in the period, two views (confirmation / shipping) as a ring and a list with bars.
+    Printing only: counts, shares and percents come from Seller::DashboardStats#distribution. locals: distribution %>
+<% views = {
+  "confirmation" => { title: sl("Confirmation"), data: distribution[:confirmation], colors: { "pending" => "#e0a52c", "confirmed" => "#3aa76d", "planned" => "#3b82c4", "cancelled" => "#d6455d", "wrong" => "#8e8e93" },
+                      labels: { "pending" => sl("En attente"), "confirmed" => sl("Confirmées"), "planned" => sl("Programmées"), "cancelled" => sl("Annulées"), "wrong" => sl("Faux numéros") } },
+  "shipping" => { title: sl("Expédition"), data: distribution[:shipping], colors: { "to_ship" => "#6b7a99", "in_transit" => "#3b82c4", "delivered" => "#3aa76d", "issue" => "#e08a2c", "returned" => "#d6455d" },
+                  labels: { "to_ship" => sl("À expédier"), "in_transit" => sl("En transit"), "delivered" => sl("Livrées"), "issue" => sl("Problème"), "returned" => sl("Retournées") } }
+} %>
+<% gap = 0.6 %>
+
+<div class="rounded-2xl border border-[#e0e0e5] bg-white p-5" data-controller="view-switch" data-distribution>
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Distribution des commandes") %></h2>
+      <p class="text-xs text-[#6e6e73]"><%= sl("Commandes de la période") %></p>
+    </div>
+    <div class="inline-flex rounded-full bg-[#efeff3] p-0.5 text-xs font-semibold" role="group">
+      <% views.each_with_index do |(key, view), index| %>
+        <button type="button" data-view-switch-target="button" data-key="<%= key %>" data-action="view-switch#show" data-view-switch-key-param="<%= key %>" aria-pressed="<%= index.zero? %>"
+                class="cursor-pointer rounded-full px-3 py-1 transition <%= index.zero? ? "bg-[#1c1c1e] text-white" : "text-[#6e6e73]" %>"><%= view[:title] %></button>
+      <% end %>
+    </div>
+  </div>
+
+  <% views.each_with_index do |(key, view), index| %>
+    <% data = view[:data] %>
+    <% shown = data[:segments].select { |segment| segment[:count].positive? } %>
+    <div class="mt-4 grid grid-cols-1 items-center gap-5 sm:grid-cols-[11rem_1fr]" data-view-switch-target="panel" data-key="<%= key %>" data-distribution-view="<%= key %>" data-total="<%= data[:total] %>" <%= "hidden" unless index.zero? %>>
+      <div class="relative mx-auto size-44">
+        <svg viewBox="0 0 42 42" class="size-full -rotate-90" role="img" aria-label="<%= view[:title] %>">
+          <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#efeff3" stroke-width="5.5"/>
+          <% offset = 0.0 %>
+          <% shown.each do |segment| %>
+            <% length = shown.size > 1 ? [ segment[:share] - gap, 0.2 ].max : segment[:share] %>
+            <circle class="donut-seg" cx="21" cy="21" r="15.9155" fill="none" stroke="<%= view[:colors][segment[:key]] %>" stroke-width="5.5" stroke-linecap="butt"
+                    style="--len: <%= length.round(3) %>; stroke-dashoffset: -<%= offset.round(3) %>" data-segment="<%= segment[:key] %>" data-count="<%= segment[:count] %>"/>
+            <% offset += segment[:share] %>
+          <% end %>
+        </svg>
+        <div class="absolute inset-0 grid place-content-center text-center">
+          <span class="text-2xl leading-none font-bold text-[#1c1c1e] tabular-nums" data-total-count><%= seller_number(data[:total]) %></span>
+          <span class="mt-1 text-[11px] text-[#6e6e73]"><%= sl("commandes") %></span>
+        </div>
+      </div>
+      <ul class="space-y-2.5">
+        <% data[:segments].each do |segment| %>
+          <li data-legend="<%= segment[:key] %>">
+            <div class="flex items-center justify-between gap-2 text-[13px]">
+              <span class="flex items-center gap-2 text-[#3a3a3c]"><span class="size-2.5 rounded-full" style="background: <%= view[:colors][segment[:key]] %>"></span><%= view[:labels][segment[:key]] %></span>
+              <span class="tabular-nums"><b class="font-semibold text-[#1c1c1e]" data-segment-count><%= seller_number(segment[:count]) %></b> <span class="text-xs text-[#8e8e93]" data-segment-percent><%= seller_number(segment[:percent]) %> %</span></span>
+            </div>
+            <div class="mt-1 h-1 rounded-full bg-[#efeff3]"><div class="h-full rounded-full" style="width: <%= segment[:share].round(2) %>%; background: <%= view[:colors][segment[:key]] %>"></div></div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</div>

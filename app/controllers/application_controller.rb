@@ -1,17 +1,26 @@
 class ApplicationController < ActionController::Base
   LOCALE_COOKIE = :morea_locale
+  # Default signed-in lifetime. "Remember me" stretches this on every cookie rewrite.
+  SESSION_TTL = 30.days
+  REMEMBER_TTL = 90.days
 
   allow_browser versions: :modern
   stale_when_importmap_changes
 
-  before_action :configure_session_domain
+  before_action :configure_session_cookie
   before_action :set_current_store
   before_action :set_locale
 
-  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :super_admin?, :store_billing_past_due?
+  helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :admin_entry_path, :super_admin?, :impersonating?, :store_billing_past_due?
+
+  def authenticate_super_admin!
+    return if current_admin_user&.super_admin?
+
+    redirect_to(current_admin_user ? admin_root_path : admin_login_path, alert: "Super admin access required.")
+  end
 
   def default_url_options
-    return {} if is_a?(Admin::BaseController) || controller_path.start_with?("admin")
+    return {} if is_a?(Admin::BaseController) || controller_path.start_with?("admin", "superadmin")
 
     { locale: current_locale }
   end
@@ -20,7 +29,9 @@ class ApplicationController < ActionController::Base
 
   # Share the session across store subdomains for super admins. Leave the cookie
   # host-only on localhost — browsers reject Domain=.lvh.me there and CSRF breaks.
-  def configure_session_domain
+  # Re-apply expire_after on every request so flash/session writes keep Max-Age
+  # instead of collapsing back to a browser-session cookie.
+  def configure_session_cookie
     base = Store.base_domain
     host = request.host
     if host == base || host == "www.#{base}" || host.end_with?(".#{base}")
@@ -28,34 +39,73 @@ class ApplicationController < ActionController::Base
     else
       request.session_options[:domain] = nil
     end
+    request.session_options[:expire_after] = session[:remember_admin] ? REMEMBER_TTL : SESSION_TTL
   end
 
   def set_current_store
     if Store.apex_host?(request.host)
-      Current.store = nil
+      # Merchants use their authenticated membership on the shared admin host.
+      # Super admins may select a workspace through the authorized enter action.
+      Current.store = apex_admin_workspace
       return if apex_request_allowed?
 
-      default = Store.find_by(slug: ENV.fetch("DEFAULT_STORE_SLUG", "morea"))
-      if default
-        return redirect_to("#{default.origin}#{request.fullpath}", allow_other_host: true, status: :moved_permanently)
-      end
-
+      # The apex never serves a storefront; stores live on their own subdomains.
       return render template: "stores/missing", layout: "bare", status: :not_found
     end
 
     Current.store = Store.find_by_host(request.host)
-    return if Current.store
+    if Current.store
+      return unless !Current.store.storefront_enabled? && storefront_request?
+
+      return render template: "stores/missing", layout: "bare", status: :not_found
+    end
 
     render template: "stores/missing", layout: "bare", status: :not_found
   end
 
-  # Apex (ollazen.com / www) hosts the SaaS platform, not a storefront.
+  def apex_admin_workspace
+    return unless (request.path.start_with?("/admin") || seller_path?) && session[:user_id]
+
+    user = User.active.find_by(id: session[:user_id])
+    return unless user && session[:session_version].to_i == user.session_version
+
+    if user.super_admin?
+      Store.find_by(id: session[:admin_store_id]) if session[:admin_mode] == "store"
+    elsif user.admin? || user.confirmation_agent?
+      user.store
+    end
+  end
+
+  # Seller workspace pages (as on seallo) are served on the shared admin host as well as on tenant hosts.
+  SELLER_PATHS = %w[/dashboard /commandes /confirmation /mes-statistiques /clients /livraison /produits /themes /publicites /equipe /integrations /comptabilite /settings].freeze
+
+  def seller_path?
+    SELLER_PATHS.any? { |path| request.path == path || request.path.start_with?("#{path}/") }
+  end
+
+  def storefront_request?
+    request.path == "/" || request.path == "/sitemap.xml" || request.path.match?(%r{\A/(?:fr|en|ar)(?:/|\z)}) || request.path == "/consent/tracking"
+  end
+
+  # Apex (seallo.ma / www) hosts the SaaS platform, not a storefront.
   def apex_request_allowed?
     path = request.path
-    path == "/up" ||
+    path == "/" ||
+      path == "/sitemap.xml" ||
+      path.start_with?("/signup") ||
+      path.start_with?("/auth/meta/") ||
+      path == "/abonnement" ||
+      path.start_with?("/paiement") ||
+      seller_path? ||
+      path == "/seallo-connect" ||
+      path.start_with?("/seallo-connect/") ||
+      path == "/consent/tracking" ||
+      path == "/up" ||
       path == "/graphql" ||
       path == "/mcp" ||
+      path.start_with?("/platform/oauth/") ||
       path.start_with?("/admin") ||
+      path.start_with?("/superadmin") ||
       path.start_with?("/oauth") ||
       path.start_with?("/.well-known") ||
       path.start_with?("/webhooks") ||
@@ -74,11 +124,9 @@ class ApplicationController < ActionController::Base
     I18n.locale = locale
   end
 
-  def self.browser_locale_from(request)
-    header = request.env["HTTP_ACCEPT_LANGUAGE"].to_s.downcase
-    return :ar if header.match?(/\bar(?:[-_;,]|$)/)
-    return :en if header.match?(/\ben(?:[-_;,]|$)/)
-
+  # French is the default for first-time visitors whatever the browser's language;
+  # an explicit ?locale= or the saved language cookie still wins.
+  def self.browser_locale_from(_request)
     Morea::Locales::DEFAULT
   end
 
@@ -115,20 +163,56 @@ class ApplicationController < ActionController::Base
   end
 
   # Store staff for this host, or a platform super admin (any host).
+  # On the apex marketing home, Current.store is unset, so staff are resolved from
+  # the session directly so the navbar can show signed-in actions.
   def current_admin_user
     return @current_admin_user if defined?(@current_admin_user)
     return @current_admin_user = nil unless session[:user_id]
+    return @current_admin_user = nil if session[:impersonator_id].present? && !impersonator_still_valid?
 
-    @current_admin_user = current_store&.users&.find_by(id: session[:user_id]) ||
-      User.super_admins.find_by(id: session[:user_id])
+    user = resolve_session_admin_user
+    @current_admin_user = user if user && session[:session_version].to_i == user.session_version
+  end
+
+  # Destination after landing-page "Dashboard" / post-login entry.
+  # Plain admin paths (no public locale query) so the navbar matches post-login redirects.
+  def admin_entry_path(user = current_admin_user)
+    return admin_login_path(locale: I18n.locale) unless user
+    return "/admin/platform" if user.super_admin?
+    return "/admin/confirmations/home" if user.confirmation_agent?
+
+    "/admin"
   end
 
   def super_admin?
     current_admin_user&.super_admin?
   end
 
+  def impersonating?
+    session[:impersonator_id].present? && current_admin_user.present?
+  end
+
+  def impersonator_still_valid?
+    impersonator = User.super_admins.active.find_by(id: session[:impersonator_id])
+    impersonator && session[:impersonator_session_version].to_i == impersonator.session_version
+  end
+
   def store_billing_past_due?
     current_store&.billing_past_due?
+  end
+
+  def resolve_session_admin_user
+    if current_store
+      return current_store.users.active.find_by(id: session[:user_id]) ||
+        User.super_admins.active.find_by(id: session[:user_id])
+    end
+
+    return unless Store.apex_host?(request.host)
+
+    user = User.active.find_by(id: session[:user_id])
+    return unless user&.can_sign_in?
+    return user if user.super_admin?
+    user if user.store_id.present? && (user.admin? || user.confirmation_agent?)
   end
 
   def normalize_locale(locale)

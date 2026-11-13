@@ -1,0 +1,95 @@
+<% content_for :title, "#{t('admin.my_stats.title')}, Admin" %>
+<% figures = @summary.figures %>
+<% name = current_user.name.presence || current_user.email %>
+<% pct = ->(part) { figures.confirmed.zero? ? 0 : (part * 100.0 / figures.confirmed).round } %>
+<% breakdown = [
+     [ t("admin.my_stats.delivered"), figures.delivered, "#2f6b3f" ],
+     [ t("admin.my_stats.in_delivery"), figures.in_delivery + figures.pickup, "#c98a2b" ],
+     [ t("admin.my_stats.postponed"), figures.postponed, "#7a6f67" ],
+     [ t("admin.my_stats.unreachable"), figures.unreachable, "#b0342a" ],
+     [ t("admin.my_stats.returned"), figures.returned, "#e07a5f" ]
+   ].select { |_, n, _| n.positive? } %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("admin.my_stats.title") %></h1>
+    <p class="admin-page-header__meta"><%= t("admin.my_stats.greeting", name: name) %></p>
+  </div>
+  <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_my_stats_path %>
+</div>
+
+<h2 class="seallo-section"><%= t("admin.my_stats.orders") %></h2>
+<div class="seallo-kpis">
+  <div class="seallo-kpi"><span class="seallo-dot" style="background:#2f6b3f"></span><span><%= t("admin.my_stats.confirmed") %></span><strong><%= figures.confirmed %></strong></div>
+  <div class="seallo-kpi"><span class="seallo-dot" style="background:#b0342a"></span><span><%= t("admin.my_stats.cancelled") %></span><strong><%= figures.cancelled %></strong></div>
+  <% { pickup: figures.pickup, in_delivery: figures.in_delivery }.each do |key, n| %>
+    <div class="seallo-kpi"><span class="seallo-dot" style="background:#c98a2b"></span><span><%= t("admin.my_stats.#{key}") %></span><strong><%= n %></strong><small><%= t("admin.my_stats.of_confirmed", percent: pct.(n)) %></small></div>
+  <% end %>
+  <% { delivered: figures.delivered, postponed: figures.postponed, unreachable: figures.unreachable, returned: figures.returned }.each do |key, n| %>
+    <div class="seallo-kpi"><span class="seallo-dot" style="background:<%= { delivered: '#2f6b3f', postponed: '#4b4b50', unreachable: '#7a6f67', returned: '#e07a5f' }[key] %>"></span><span><%= t("admin.my_stats.#{key}") %></span><strong><%= n %></strong><small><%= t("admin.my_stats.of_confirmed", percent: pct.(n)) %></small></div>
+  <% end %>
+</div>
+<p class="admin-muted my-3 text-xs"><%= t("admin.my_stats.courier_note") %></p>
+
+<section class="admin-card seallo-earnings">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= t("admin.my_stats.earnings") %></h2>
+    <span class="admin-muted text-xs"><%= t("admin.my_stats.per_order", amount: money(current_user.pay_per_delivery_cents)) %></span>
+  </div>
+  <div class="seallo-earnings__grid">
+    <div><span><%= t("admin.my_stats.gains") %></span><strong><%= money(@summary.earned_total) %></strong><small><%= t("admin.my_stats.gains_help", amount: money(@summary.earned_period)) %></small></div>
+    <div class="is-paid"><span><%= t("admin.my_stats.already_paid") %></span><strong><%= money(@summary.paid_total) %></strong><small><%= @summary.last_paid_at ? t("admin.my_stats.last_paid", date: @summary.last_paid_at.strftime("%d/%m/%Y")) : t("admin.my_stats.never_paid") %></small></div>
+    <div><span><%= t("admin.my_stats.unpaid") %></span><strong><%= money(@summary.unpaid) %></strong><small><%= t("admin.my_stats.remaining") %></small></div>
+  </div>
+</section>
+
+<div class="seallo-two mt-4">
+  <section class="admin-card admin-card__body">
+    <h2 class="admin-card__title"><%= t("admin.my_stats.distribution") %></h2>
+    <p class="admin-muted text-xs"><%= t("admin.my_stats.distribution_sub") %></p>
+    <% total = breakdown.sum { |_, n, _| n } %>
+    <% stops = []; at = 0.0
+       breakdown.each { |_, n, color| from = at; at += n * 100.0 / total; stops << "#{color} #{from.round(2)}% #{at.round(2)}%" } %>
+    <div class="seallo-donut-row">
+      <div class="seallo-donut" style="background: <%= total.zero? ? '#efe9e3' : "conic-gradient(#{stops.join(', ')})" %>">
+        <div><strong><%= total %></strong><span><%= t("admin.my_stats.order_count") %></span></div>
+      </div>
+      <ul class="seallo-legend">
+        <% breakdown.each do |label, n, color| %>
+          <li><i style="background:<%= color %>"></i><span><%= label %></span><b><%= n %></b><em><%= (n * 100.0 / total).round %> %</em></li>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+
+  <section class="admin-card admin-card__body">
+    <h2 class="admin-card__title"><%= t("admin.my_stats.per_day") %></h2>
+    <% max = [ @by_day.values.max.to_i, 1 ].max %>
+    <div class="seallo-bars">
+      <% @chart_days.each do |day| %>
+        <% n = @by_day.fetch(day, 0) %>
+        <div class="seallo-bars__col" title="<%= day %>, <%= n %>">
+          <span class="seallo-bars__bar" style="height: <%= n.zero? ? 3 : (n * 100.0 / max).round %>%"></span>
+          <small><%= day.strftime(@chart_days.length > 7 ? "%d" : "%a") %></small>
+        </div>
+      <% end %>
+    </div>
+  </section>
+</div>
+
+<div class="seallo-three mt-4">
+  <section class="admin-card admin-card__body seallo-ring">
+    <% conf_rate = (rate = Confirmations::AgentHome.new(store: current_store, user: current_user, range: @range).confirmation_rate) ? (rate * 100).round : 0 %>
+    <div class="seallo-ring__dial" style="--p: <%= conf_rate %>"><b><%= conf_rate %>%</b></div>
+    <strong><%= t("admin.my_stats.confirmation_rate") %></strong><small><%= t("admin.my_stats.confirmation_rate_sub") %></small>
+  </section>
+  <section class="admin-card admin-card__body seallo-ring">
+    <% del_rate = figures.delivery_rate ? (figures.delivery_rate * 100).round : 0 %>
+    <div class="seallo-ring__dial seallo-ring__dial--blue" style="--p: <%= del_rate %>"><b><%= del_rate %>%</b></div>
+    <strong><%= t("admin.my_stats.delivery_rate") %></strong><small><%= t("admin.my_stats.delivery_rate_sub") %></small>
+  </section>
+  <section class="admin-card admin-card__body">
+    <h2 class="admin-card__title"><%= t("admin.my_stats.cancel_reasons") %></h2>
+    <p class="admin-muted mt-2 text-sm"><%= t("admin.my_stats.no_cancellations") if figures.cancelled.zero? %></p>
+  </section>
+</div>

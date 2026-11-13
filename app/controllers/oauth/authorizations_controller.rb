@@ -3,6 +3,8 @@
 module Oauth
   class AuthorizationsController < ApplicationController
     layout "admin"
+    include SubscriptionAccess
+    before_action :require_subscription_access!, if: -> { current_admin_user && current_store }
 
     def show
       @query = resolve_query
@@ -68,7 +70,7 @@ module Oauth
     end
 
     def valid_query?
-      return false unless @query && oauth_client&.allows_redirect?(@query[:redirect_uri])
+      return false unless @query && !@query[:platform_oauth] && oauth_client&.allows_redirect?(@query[:redirect_uri])
 
       @query[:code_challenge_method] = "S256" if @query[:code_challenge_method].blank?
       @query[:code_challenge].present? && @query[:code_challenge_method] == "S256"

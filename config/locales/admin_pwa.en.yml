@@ -1,0 +1,14 @@
+en:
+  admin_pwa:
+    title: "Install %{app}"
+    description: "Open your workspace from your home screen, like an app."
+    install: "Install app"
+    later: "Later"
+    availability: "Installation options depend on your browser. An internet connection is required."
+    ios:
+      open_safari: "Open this page in Safari."
+      share: "Tap Share (the square with an upward arrow)."
+      add: "Choose Add to Home Screen, then tap Add."
+    other:
+      menu: "Open your browser menu (⋮ or ⋯)."
+      add: "Choose Install app or Add to Home screen, then confirm."

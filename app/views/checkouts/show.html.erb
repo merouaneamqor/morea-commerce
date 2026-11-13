@@ -193,10 +193,27 @@
           </div>
         </div>
 
-        <p class="checkout-legal-note">
-          <% privacy_link = privacy_page_path_for_store ? link_to(t("data_protection.privacy_policy"), privacy_page_path_for_store, class: "checkout-legal-note__link") : t("data_protection.privacy_policy") %>
-          <%= t("data_protection.checkout_submit_notice_html", privacy_link: privacy_link).html_safe %>
-        </p>
+        <p class="checkout-legal-note"><%= checkout_rights_notice %></p>
+
+        <label class="checkout-consent">
+          <%= f.check_box :privacy_accepted, class: "checkout-consent__input" %>
+          <span>
+            <% privacy_link = privacy_page_path_for_store ? link_to(t("data_protection.privacy_policy"), privacy_page_path_for_store, class: "checkout-legal-note__link") : t("data_protection.privacy_policy") %>
+            <% terms_link = terms_page_path_for_store ? link_to(t("data_protection.terms_of_service"), terms_page_path_for_store, class: "checkout-legal-note__link") : t("data_protection.terms_of_service") %>
+            <%= t("data_protection.checkout_consent_html", privacy_link: privacy_link, terms_link: terms_link).html_safe %>
+          </span>
+        </label>
+        <% if @checkout.errors[:privacy_accepted].any? %>
+          <p class="checkout-field-error" role="alert"><%= @checkout.errors[:privacy_accepted].to_sentence %></p>
+        <% end %>
+
+        <label class="checkout-consent">
+          <%= f.check_box :age_confirmed, class: "checkout-consent__input" %>
+          <span><%= t("data_protection.checkout_age_html", age: current_store.minimum_purchase_age) %></span>
+        </label>
+        <% if @checkout.errors[:age_confirmed].any? %>
+          <p class="checkout-field-error" role="alert"><%= @checkout.errors[:age_confirmed].to_sentence %></p>
+        <% end %>
 
         <div class="checkout-submit checkout-submit--desktop">
           <%= f.button type: "submit", class: "maison-button checkout-submit__button w-full cursor-pointer text-center", data: { turbo_submits_with: t("checkout.placing") } do %>

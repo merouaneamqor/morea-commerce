@@ -8,7 +8,7 @@
     <p class="admin-muted px-4 pb-4">Add your Sendit API keys in <%= link_to "Settings", edit_admin_store_path(anchor: "integrations"), class: "underline" %> to sync orders.</p>
   <% else %>
     <div class="space-y-3 px-4 pb-4">
-      <p class="admin-muted text-[12px]">Sendit owns delivery status. Confirm or cancel here; everything else follows the courier (auto every 15 min, or Refresh). “En attente” means the order is confirmed and the parcel is waiting on Sendit — not unconfirmed.</p>
+      <p class="admin-muted text-[12px]">Sendit sets the delivery status. Confirm or cancel the order here. Seallo refreshes the courier status every 15 minutes, or use Refresh. En attente means the order is confirmed and the parcel is waiting at Sendit.</p>
       <% if order.sendit_error.present? %>
         <div class="admin-banner admin-banner--critical !mb-0">
           <%= order.sendit_error %>
@@ -21,7 +21,7 @@
       <% if order.sendit_code.present? %>
         <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
           <dt class="admin-muted">Parcel</dt><dd class="font-semibold tabular-nums"><%= order.sendit_code %></dd>
-          <dt class="admin-muted">City</dt><dd><%= order.sendit_district_name || "—" %></dd>
+          <dt class="admin-muted">City</dt><dd><%= order.sendit_district_name || admin_blank %></dd>
           <% if order.sendit_fee.present? %><dt class="admin-muted">Fee</dt><dd><%= number_with_precision(order.sendit_fee, precision: 0) %> MAD</dd><% end %>
           <% if order.sendit_deliver_by.present? %><dt class="admin-muted">Next attempt</dt><dd><%= order.sendit_deliver_by.strftime("%b %-d, %Y") %></dd><% end %>
           <% if order.sendit_return_status.present? %><dt class="admin-muted">Return</dt><dd><%= admin_badge(:returned, label: Sendit::Sync.return_label(order.sendit_return_status), tone: (Sendit::Sync::RETURN_DONE.include?(order.sendit_return_status) ? "success" : "warning")) %></dd><% end %>
@@ -40,13 +40,13 @@
         <%= form_with url: sendit_admin_order_path(order), method: :post, class: "space-y-3" do %>
           <div>
             <%= label_tag :district_id, "Sendit city", class: "admin-label" %>
-            <%= select_tag :district_id, sendit_district_options(order), include_blank: "Match automatically from “#{order.customer_city}”", class: "admin-input" %>
-            <p class="admin-help">Sendit needs its own city/neighbourhood. Leave on automatic unless matching failed.</p>
+            <%= select_tag :district_id, sendit_district_options(order), include_blank: "Match automatically from #{order.customer_city}", class: "admin-input" %>
+            <p class="admin-help">Sendit needs its own city and neighbourhood. Leave the match on automatic unless it failed.</p>
           </div>
           <%= submit_tag (order.sendit_error.present? ? "Retry sending to Sendit" : "Send to Sendit"), class: "admin-btn w-full" %>
         <% end %>
       <% else %>
-        <p class="admin-muted">Not sent yet — the parcel is created on Sendit automatically when the order is confirmed.</p>
+        <p class="admin-muted">Not sent yet. Seallo creates the parcel on Sendit when the order is confirmed.</p>
         <% unless order.status.in?(%w[cancelled returned delivered]) %>
           <%= button_to "Send to Sendit now", sendit_admin_order_path(order), class: "admin-btn-secondary mt-3 w-full",
                 form: { data: { turbo_confirm: "Create the Sendit parcel before confirming the order?" } } %>

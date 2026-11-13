@@ -1,30 +1,23 @@
-<% content_for :title, "Discounts — Admin" %>
+<% content_for :title, "Discounts, Admin" %>
 
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Discounts</h1>
-  <%= link_to "Add discount", new_admin_discount_path, class: "admin-btn" %>
+  <%= link_to "Add discount", new_admin_discount_path, class: "admin-btn admin-page-header__primary" %>
 </div>
 
 <div class="admin-card">
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Type</th>
-          <th class="is-numeric">Value</th>
-          <th>Status</th>
-          <th>Window</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @discounts.each do |discount| %>
-          <tr>
-            <td class="font-medium"><%= link_to discount.code, edit_admin_discount_path(discount), class: "admin-link" %></td>
-            <td class="admin-muted"><%= discount.discount_type.humanize %></td>
-            <td class="is-numeric"><%= discount.label %></td>
-            <td>
+  <% if @discounts.empty? %>
+    <p class="admin-empty">Create a code customers can enter at checkout.</p>
+  <% else %>
+    <ul class="admin-mobile-list md:hidden">
+      <% @discounts.each do |discount| %>
+        <li>
+          <div class="admin-mobile-list__card">
+            <div class="admin-mobile-list__top">
+              <div class="min-w-0">
+                <%= link_to discount.code, edit_admin_discount_path(discount), class: "admin-mobile-list__title" %>
+                <p class="admin-mobile-list__meta"><%= discount.discount_type.humanize %> · <%= discount.label %></p>
+              </div>
               <% if discount.usable? %>
                 <%= admin_badge(:active, label: "Active", tone: "success") %>
               <% elsif discount.active? %>
@@ -32,27 +25,71 @@
               <% else %>
                 <%= admin_badge(:archived, label: "Off", tone: "neutral") %>
               <% end %>
-            </td>
-            <td class="admin-muted">
+            </div>
+            <p class="admin-mobile-list__meta">
               <% if discount.starts_at || discount.ends_at %>
                 <%= discount.starts_at&.strftime("%b %-d, %Y") || "…" %>
-                →
+                to
                 <%= discount.ends_at&.strftime("%b %-d, %Y") || "…" %>
               <% else %>
                 Always
               <% end %>
-            </td>
-            <td class="is-numeric">
+            </p>
+            <div class="admin-mobile-list__actions">
               <%= button_to "Delete", admin_discount_path(discount), method: :delete,
                     form: { data: { turbo_confirm: "Delete #{discount.code}?" } },
                     class: "admin-btn-plain admin-btn-plain--critical" %>
-            </td>
+            </div>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden md:block">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Type</th>
+            <th class="is-numeric">Value</th>
+            <th>Status</th>
+            <th>Window</th>
+            <th></th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <% if @discounts.empty? %>
-      <p class="admin-empty">Create a code customers can enter at checkout.</p>
-    <% end %>
-  </div>
+        </thead>
+        <tbody>
+          <% @discounts.each do |discount| %>
+            <tr>
+              <td class="font-medium"><%= link_to discount.code, edit_admin_discount_path(discount), class: "admin-link" %></td>
+              <td class="admin-muted"><%= discount.discount_type.humanize %></td>
+              <td class="is-numeric"><%= discount.label %></td>
+              <td>
+                <% if discount.usable? %>
+                  <%= admin_badge(:active, label: "Active", tone: "success") %>
+                <% elsif discount.active? %>
+                  <%= admin_badge(:pending, label: "Outside window", tone: "warning") %>
+                <% else %>
+                  <%= admin_badge(:archived, label: "Off", tone: "neutral") %>
+                <% end %>
+              </td>
+              <td class="admin-muted">
+                <% if discount.starts_at || discount.ends_at %>
+                  <%= discount.starts_at&.strftime("%b %-d, %Y") || "…" %>
+                  to
+                  <%= discount.ends_at&.strftime("%b %-d, %Y") || "…" %>
+                <% else %>
+                  Always
+                <% end %>
+              </td>
+              <td class="is-numeric">
+                <%= button_to "Delete", admin_discount_path(discount), method: :delete,
+                      form: { data: { turbo_confirm: "Delete #{discount.code}?" } },
+                      class: "admin-btn-plain admin-btn-plain--critical" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </div>

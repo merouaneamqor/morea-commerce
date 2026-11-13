@@ -5,11 +5,16 @@ module Orders
   class Editor
     class Error < StandardError; end
 
+    # ActiveModel::Errors#full_messages asks its owner for human attribute names; without this an error on a
+    # field (an invalid phone, say) raised NoMethodError instead of showing the message.
+    extend ActiveModel::Translation
+
     attr_reader :store, :user, :order, :errors
 
-    def initialize(store:, user: nil)
+    def initialize(store:, user: nil, external_effects: true)
       @store = store
       @user = user
+      @external_effects = external_effects
       @errors = ActiveModel::Errors.new(self)
     end
 
@@ -19,10 +24,18 @@ module Orders
       contact = normalize_contact(attrs)
       return failure unless valid_for_write?(contact, lines, attrs)
 
+      agent = assignable_agent(attrs[:agent_id])
+      if attrs[:agent_id].present? && agent.nil?
+        errors.add(:base, "Choose an active confirmation agent of this store.")
+        return failure
+      end
+
       ActiveRecord::Base.transaction do
         customer = find_or_create_customer!(contact)
         totals = compute_totals(lines, attrs)
 
+        # Never assigned to the person who typed the order: it waits in "Available now"
+        # unless an agent was picked explicitly.
         @order = store.orders.create!(
           customer: customer,
           customer_name: contact[:name],
@@ -30,22 +43,31 @@ module Orders
           customer_city: contact[:city],
           customer_district: contact[:district],
           customer_address: contact[:address],
+          second_phone: contact[:second_phone],
           notes: attrs[:notes].presence,
           tags: normalize_tags(attrs[:tags]),
           payment_method: "cod",
           status: "new",
           currency: store.currency,
           **totals,
+          **delivery_attributes(attrs),
           **sendit_district_for(contact)
         )
 
         write_lines!(@order, lines)
         customer.increment!(:orders_count)
         @order.record_event!("created", body: "Order created by staff", user: user)
+        if agent
+          OrderConfirmation.create!(store: store, order: @order, assigned_user: agent, claimed_at: Time.current)
+          @order.record_event!("comment", body: "Assigned to #{agent.name.presence || agent.email} at creation", user: user)
+        end
       end
 
-      OrderStatusJob.perform_later(@order.id)
-      DiscordOrderNotifyJob.perform_later(@order.id)
+      if @external_effects
+        OrderStatusJob.perform_later(@order.id)
+        DiscordOrderNotifyJob.perform_later(@order.id)
+        NewOrderAlertJob.perform_later(@order.id)
+      end
       success(@order)
     rescue ActiveRecord::RecordInvalid => e
       errors.add(:base, e.record.errors.full_messages.to_sentence.presence || e.message)
@@ -81,6 +103,8 @@ module Orders
           customer_city: contact[:city],
           customer_district: contact[:district],
           customer_address: contact[:address],
+          second_phone: attrs.key?(:second_phone) ? contact[:second_phone] : order.second_phone,
+          **delivery_attributes(attrs, current: order),
           notes: attrs.key?(:notes) ? attrs[:notes].presence : order.notes,
           tags: attrs.key?(:tags) ? normalize_tags(attrs[:tags]) : order.tags,
           **totals,
@@ -109,6 +133,11 @@ module Orders
     end
 
     def duplicate(order)
+      if order.external_order_receipt.present?
+        errors.add(:base, I18n.t("connections.external_order_locked"))
+        return failure
+      end
+
       attrs = {
         name: order.customer_name,
         phone: order.customer_phone,
@@ -167,6 +196,7 @@ module Orders
       {
         name: attrs[:name].to_s.strip,
         phone: attrs[:phone].to_s.strip,
+        second_phone: attrs[:second_phone].to_s.strip.presence,
         phone_country: attrs[:phone_country].presence || "MA",
         city: attrs[:city].to_s.strip,
         district: attrs[:district].to_s.strip.presence,
@@ -212,6 +242,12 @@ module Orders
       errors.add(:phone, "is invalid") if contact[:phone].present? && phone.blank?
       contact[:phone] = phone if phone.present?
 
+      if contact[:second_phone]
+        second = Checkout.normalize_phone(contact[:second_phone], country: contact[:phone_country])
+        errors.add(:second_phone, "is invalid") if second.blank?
+        contact[:second_phone] = second
+      end
+
       errors.add(:base, "Add at least one product.") if lines.empty?
 
       lines.each do |line|
@@ -233,7 +269,70 @@ module Orders
         errors.add(:discount_code, "is not valid") unless discount
       end
 
+      if errors.empty?
+        total = compute_totals(lines, attrs)[:total_cents]
+        errors.add(:base, "The order total must be above 0 #{store.currency}.") if total.zero?
+        validate_delivery_details(attrs, total)
+      end
+
       errors.empty?
+    end
+
+    # The delivery company, the wished day and the advance typed with the order. On an update only the keys given are written.
+    def delivery_attributes(attrs, current: nil)
+      result = {}
+      result[:delivery_provider] = attrs[:delivery_provider].to_s.strip.presence if current.nil? || attrs.key?(:delivery_provider)
+      result[:scheduled_for] = parse_schedule(attrs[:scheduled_for]) if current.nil? || attrs.key?(:scheduled_for)
+      result[:advance_cents] = advance_cents(attrs[:advance_dh]) if current.nil? || attrs.key?(:advance_dh)
+      result
+    end
+
+    def parse_schedule(value)
+      return if value.blank?
+
+      ActiveSupport::TimeZone[DateRange::ZONE].parse(value.to_s)
+    rescue ArgumentError
+      nil
+    end
+
+    # "50" or "50,5" MAD to whole centimes; never negative.
+    def advance_cents(value)
+      return 0 if value.blank?
+
+      [ (BigDecimal(value.to_s.tr(",", ".")) * 100).round(0).to_i, 0 ].max
+    rescue ArgumentError
+      0
+    end
+
+    # Only a delivery company the store is connected to through its API can be chosen; the wished day must be a real date;
+    # the advance cannot be more than the order's total.
+    def validate_delivery_details(attrs, total)
+      provider = attrs[:delivery_provider].to_s.strip
+      if provider.present? && !connected_providers.include?(provider)
+        errors.add(:delivery_provider, "must be a delivery company this store is connected to")
+      end
+      if attrs[:scheduled_for].present? && parse_schedule(attrs[:scheduled_for]).nil?
+        errors.add(:scheduled_for, "is not a valid date")
+      end
+      if attrs[:advance_dh].present?
+        begin
+          errors.add(:base, "The advance cannot be negative.") if BigDecimal(attrs[:advance_dh].to_s.tr(",", ".")).negative?
+        rescue ArgumentError
+          errors.add(:base, "The advance must be an amount.")
+        end
+        errors.add(:base, "The advance cannot be more than the total of the order.") if advance_cents(attrs[:advance_dh]) > total
+      end
+    end
+
+    def connected_providers
+      @connected_providers ||= store.delivery_accounts.where(is_active: true).where.not(connected_at: nil).pluck(:provider).uniq
+    end
+
+    # The optional "Assign to agent" choice: only an active confirmation agent of this store.
+    def assignable_agent(agent_id)
+      return if agent_id.blank?
+
+      store.users.active.where(confirmation_role: "agent").find_by(id: agent_id)
     end
 
     def find_or_create_customer!(contact)
@@ -279,7 +378,9 @@ module Orders
         discount_cents = 0 if discount_cents.negative?
       end
 
-      shipping_cents = if attrs.key?(:shipping_dh)
+      shipping_cents = if ActiveModel::Type::Boolean.new.cast(attrs[:shipping_excluded])
+        0   # "Exclus": the customer pays the products only
+      elsif attrs.key?(:shipping_dh)
         [ (attrs[:shipping_dh].to_f * 100).round, 0 ].max
       else
         0
@@ -304,6 +405,7 @@ module Orders
           variant_name: priced[:variant_name],
           quantity: priced[:quantity],
           unit_price_cents: priced[:unit_price_cents],
+          unit_cost_cents: priced[:product].cost_cents,
           total_cents: priced[:total_cents]
         )
       end
@@ -365,6 +467,8 @@ module Orders
     end
 
     def sendit_district_for(contact)
+      return {} unless @external_effects
+
       return {} unless Sendit::Client.configured?(store)
 
       match = if contact[:district].present?

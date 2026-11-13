@@ -92,13 +92,17 @@ jobs:
         with:
           bundler-cache: true
       - name: Build stylesheets for rendered page checks
-        run: bin/rails tailwindcss:build
+        run: |
+          bin/rails tailwindcss:build
+          bin/rails dartsass:build
       - name: Prepare isolated test database
         run: bin/rails db:prepare
       - name: Create isolated smoke-test store
         run: bin/rails runner 'Store.find_or_create_by!(slug:"morea") { |s| s.name = "CI Store"; s.currency = "MAD" }'
       - name: Check Rails autoloading
         run: bin/rails zeitwerk:check
+      - name: Run workspace approval and merchant dashboard specs
+        run: bundle exec rspec
       - name: Check catalog changesets and rollback
         run: bin/rails runner script/autonomy_smoke.rb morea
       - name: Check MCP tools and inventory lifecycle
@@ -112,10 +116,30 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Check admin PWA install flow and network-only service worker
+        run: |
+          node --test script/admin_pwa_test.mjs
+          node script/admin_service_worker_test.mjs
+      - name: Check dashboard Chart.js lifecycle
+        run: node script/dashboard_chart_test.mjs
       - name: Check product variant purchase interactions
         run: node script/variant_picker_smoke.mjs
+      - name: Check idempotent intake and confirmation queue
+        run: |
+          bin/rails runner script/order_intake_smoke.rb
+          bin/rails runner script/confirmation_queue_smoke.rb
+          bin/rails runner script/cod_foundation_requests_smoke.rb
       - name: Check MCP order management and tenant isolation
         run: bin/rails runner script/mcp_order_desk_smoke.rb
+      - name: Check platform landing page and signup requests
+        run: |
+          bin/rails runner script/platform_home_smoke.rb
+          bin/rails runner script/signup_request_smoke.rb
+      - name: Check optional storefronts and connected store orders
+        run: |
+          bin/rails runner script/optional_storefront_smoke.rb
+          bin/rails runner script/connected_store_intake_smoke.rb
+          bin/rails runner script/connected_store_admin_smoke.rb
       - name: Check MCP media library and transformation boundaries
         run: bin/rails runner script/mcp_media_smoke.rb
   reporting:
@@ -127,3 +151,31 @@ jobs:
           python-version: '3.12'
       - name: Check authenticated report failures and credential handling
         run: python -m unittest discover -s script -p 'test_*.py'
+
+  responsive:
+    # Playwright 1.58 supports Ubuntu 24.04; latest also includes unsupported 26.04.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      # apt mirrors used by --with-deps occasionally fail DNS on GitHub-hosted runners.
+      - name: Install Playwright Chromium
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if npx playwright install-deps chromium && npx playwright install chromium; then
+              exit 0
+            fi
+            echo "Playwright install attempt ${attempt} failed; retrying..."
+            sleep $((attempt * 20))
+          done
+          echo "Playwright Chromium install failed after retries"
+          exit 1
+      - run: npm run build:test-css
+      - run: npm run test:responsive
+      - run: npm run test:dark
+      - run: node --test script/tracking_consent_test.mjs

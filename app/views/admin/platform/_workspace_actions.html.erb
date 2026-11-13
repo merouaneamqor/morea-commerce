@@ -1,0 +1,12 @@
+<div class="platform-workspace-actions">
+  <%= link_to t("platform_admin.billing"), admin_tenant_path(store), class: "admin-btn-plain" %>
+  <%= link_to admin_tenant_invoices_path(store), class: "admin-btn-plain" do %>
+    <%= t("platform_admin.invoices") %><% if store.invoices.overdue.any? %> (<%= store.invoices.overdue.count %>)<% end %>
+  <% end %>
+  <button type="button" class="admin-btn-plain" popovertarget="impersonate-<%= store.id %>" aria-haspopup="dialog">
+    <%= t("platform_admin.open_admin") %>
+  </button>
+  <% if store.storefront_enabled? %>
+    <%= link_to t("platform_admin.view_storefront"), store.origin, class: "admin-btn-plain", target: "_blank", rel: "noopener" %>
+  <% end %>
+</div>

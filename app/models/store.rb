@@ -2,9 +2,13 @@ class Store < ApplicationRecord
   include Translatable
 
   RESERVED_SUBDOMAINS = %w[www app admin api].freeze
+  # Look of the merchant admin; "current" is the original grey interface.
+  ADMIN_THEMES = %w[seallo seallo_dark].freeze
   BILLING_INTERVALS = %w[monthly yearly].freeze
   BILLING_STATUSES = %w[trial active past_due canceled].freeze
 
+  # Meta rows reference products and each other through foreign keys, so they go first.
+  before_destroy -> { MetaAds.purge_store!(id) }, prepend: true
   has_many :products, dependent: :destroy
   has_many :collections, dependent: :destroy
   has_many :customers, dependent: :destroy
@@ -16,8 +20,17 @@ class Store < ApplicationRecord
   has_many :home_sections, dependent: :destroy
   has_many :pages, dependent: :destroy
   has_many :menu_items, dependent: :destroy
+  has_many :privacy_rights_requests, dependent: :destroy
   has_many :invoices, dependent: :destroy
+  has_many :payments, dependent: :destroy
+  has_many :delivery_accounts, dependent: :destroy
   has_many :agent_changesets, dependent: :destroy
+  has_many :store_connections, dependent: :destroy
+  has_many :seallo_connection_codes, dependent: :delete_all
+  has_many :meta_ads_ad_accounts, class_name: "MetaAds::AdAccount", dependent: :destroy
+  has_one :meta_ads_connection, class_name: "MetaAds::Connection", dependent: :destroy
+  has_many :store_expenses, dependent: :destroy
+  has_many :storefront_themes, dependent: :destroy
 
   accepts_nested_attributes_for :translations, allow_destroy: false
 
@@ -27,13 +40,17 @@ class Store < ApplicationRecord
   belongs_to :featured_collection, class_name: "Collection", optional: true
 
   validates :name, :slug, presence: true
+  validates :admin_theme, inclusion: { in: ADMIN_THEMES }
+  validates :storefront_enabled, inclusion: { in: [ true, false ] }
   validates :slug, uniqueness: true, format: { with: /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/, message: "must be lowercase letters, numbers, and hyphens" }
   validates :slug, exclusion: { in: RESERVED_SUBDOMAINS }
   validates :shipping_cents, :low_stock_threshold, numericality: { greater_than_or_equal_to: 0 }
+  validates :minimum_purchase_age, numericality: { only_integer: true, greater_than_or_equal_to: 13, less_than_or_equal_to: 21 }
   validates :free_shipping_threshold_cents, numericality: { greater_than: 0 }, allow_nil: true
   validates :billing_amount_cents, numericality: { greater_than_or_equal_to: 0 }
   validates :billing_interval, inclusion: { in: BILLING_INTERVALS }
   validates :billing_status, inclusion: { in: BILLING_STATUSES }
+  validates :plan, inclusion: { in: ->(_) { Plans.list.keys } }, allow_nil: true
   validates :meta_pixel_id, format: { with: /\A\d{5,20}\z/, message: "must be 5–20 digits" }, allow_blank: true
   validates :tiktok_pixel_id, format: { with: /\A[A-Za-z0-9]{10,40}\z/, message: "must be 10–40 letters or numbers" }, allow_blank: true
 
@@ -42,44 +59,70 @@ class Store < ApplicationRecord
   before_validation :assign_default_billing_period_end, on: :create
   after_save :sync_privacy_policy_page, if: :privacy_settings_changed?
 
-  PRIVACY_SYNC_ATTRIBUTES = %i[legal_entity_name cndp_authorization privacy_rights_contact name email phone].freeze
+  PRIVACY_SYNC_ATTRIBUTES = %i[
+    legal_entity_name cndp_authorization privacy_rights_contact
+    legal_registration_number legal_address minimum_purchase_age
+    name email phone
+  ].freeze
 
+  # Stores with Sendit keys, either in an active Sendit delivery account (encrypted) or in the older plain columns.
   scope :with_sendit, -> {
-    where.not(sendit_public_key: [ nil, "" ]).where.not(sendit_secret_key: [ nil, "" ])
+    legacy = where.not(sendit_public_key: [ nil, "" ]).where.not(sendit_secret_key: [ nil, "" ])
+    legacy.or(where(id: DeliveryAccount.where(provider: "sendit", is_active: true).where.not(credentials_ciphertext: nil).select(:store_id)))
   }
+
+  scope :with_ozon, -> {
+    where(id: DeliveryAccount.where(provider: "ozon", is_active: true).where.not(credentials_ciphertext: nil).select(:store_id))
+  }
+
+  scope :with_ameex, -> {
+    where(id: DeliveryAccount.where(provider: "ameex", is_active: true).where.not(credentials_ciphertext: nil).select(:store_id))
+  }
+
+  # Product name shown on the apex landing page and sign-in (not a tenant store name).
+  def self.platform_name
+    ENV.fetch("PLATFORM_NAME", "Seallo")
+  end
 
   def self.base_domain
     ENV.fetch("APP_BASE_DOMAIN") { Rails.env.local? ? "lvh.me" : "localhost" }
   end
 
+  def self.platform_origin
+    host = base_domain
+    port = ENV["APP_PORT"].presence
+    "#{Rails.env.local? ? "http" : "https"}://#{host}#{":#{port}" if port}"
+  end
+
+  # Local development also answers on *.localhost (browsers resolve it to loopback without DNS).
+  def self.base_domains
+    [ base_domain.downcase, ("localhost" if Rails.env.local?) ].compact.uniq
+  end
+
   def self.apex_host?(host)
     hostname = host.to_s.downcase.split(":").first
-    domain = base_domain.downcase
-    hostname == domain || hostname == "www.#{domain}"
+    base_domains.any? { |domain| hostname == domain || hostname == "www.#{domain}" }
   end
 
   def self.find_by_host(host)
     hostname = host.to_s.downcase.split(":").first
     return if hostname.blank?
 
-    # Local docker/dev without a subdomain still opens the default store
-    if Rails.env.local? && %w[localhost 127.0.0.1].include?(hostname)
-      return find_by(slug: ENV.fetch("DEFAULT_STORE_SLUG", "morea"))
-    end
-
-    domain = base_domain.downcase
+    # Direct loopback IP access opens the default store in local dev
+    return find_by(slug: ENV.fetch("DEFAULT_STORE_SLUG", "morea")) if Rails.env.local? && hostname == "127.0.0.1"
     return if apex_host?(hostname)
 
-    suffix = ".#{domain}"
-    return unless hostname.end_with?(suffix)
+    base_domains.each do |domain|
+      suffix = ".#{domain}"
+      next unless hostname.end_with?(suffix)
 
-    slug = hostname.delete_suffix(suffix)
-    return if slug.blank? || slug.include?(".") || RESERVED_SUBDOMAINS.include?(slug)
+      slug = hostname.delete_suffix(suffix)
+      next if slug.blank? || slug.include?(".") || RESERVED_SUBDOMAINS.include?(slug)
 
-    find_by(slug: slug)
+      return find_by(slug: slug)
+    end
+    nil
   end
-
-
 
   def pixels_configured?
     meta_pixel_id.present? || tiktok_pixel_id.present?
@@ -93,6 +136,10 @@ class Store < ApplicationRecord
     privacy_rights_contact.presence || email.presence || phone.presence || "—"
   end
 
+  def business_imprint?
+    legal_entity_name.present? || legal_registration_number.present? || legal_address.present?
+  end
+
   # Meta and TikTok expect ISO currency codes; storefront display uses DH.
   def pixel_currency
     case currency.to_s.upcase
@@ -101,8 +148,86 @@ class Store < ApplicationRecord
     end
   end
 
+  # The active Sendit account, whose keys are stored encrypted. It wins over the older plain columns.
+  def sendit_delivery_account
+    return @sendit_delivery_account if defined?(@sendit_delivery_account)
+
+    @sendit_delivery_account = delivery_accounts.where(provider: "sendit", is_active: true).where.not(credentials_ciphertext: nil).order(:id).first
+  end
+
+  def sendit_public_key
+    sendit_delivery_account&.credentials&.dig("api_key").presence || super
+  end
+
+  def sendit_secret_key
+    sendit_delivery_account&.credentials&.dig("api_secret").presence || super
+  end
+
+  def reload(*)
+    remove_instance_variable(:@sendit_delivery_account) if defined?(@sendit_delivery_account)
+    remove_instance_variable(:@ozon_delivery_account) if defined?(@ozon_delivery_account)
+    remove_instance_variable(:@ameex_delivery_account) if defined?(@ameex_delivery_account)
+    remove_instance_variable(:@default_shipping_account) if defined?(@default_shipping_account)
+    super
+  end
+
   def sendit_configured?
     sendit_public_key.present? && sendit_secret_key.present?
+  end
+
+  def ozon_delivery_account
+    return @ozon_delivery_account if defined?(@ozon_delivery_account)
+
+    @ozon_delivery_account = delivery_accounts.where(provider: "ozon", is_active: true).where.not(credentials_ciphertext: nil).order(:id).first
+  end
+
+  # Ozon Express: api_key = customer id, api_secret = API key (path credentials).
+  def ozon_customer_id
+    ozon_delivery_account&.credentials&.dig("api_key")
+  end
+
+  def ozon_api_key
+    ozon_delivery_account&.credentials&.dig("api_secret")
+  end
+
+  def ozon_configured?
+    ozon_customer_id.present? && ozon_api_key.present?
+  end
+
+  def ameex_delivery_account
+    return @ameex_delivery_account if defined?(@ameex_delivery_account)
+
+    @ameex_delivery_account = delivery_accounts.where(provider: "ameex", is_active: true).where.not(credentials_ciphertext: nil).order(:id).first
+  end
+
+  # Ameex: api_key = C-Api-Id, api_secret = C-Api-Key.
+  def ameex_api_id
+    ameex_delivery_account&.credentials&.dig("api_key")
+  end
+
+  def ameex_api_key
+    ameex_delivery_account&.credentials&.dig("api_secret")
+  end
+
+  def ameex_configured?
+    ameex_api_id.present? && ameex_api_key.present?
+  end
+
+  # Courier the merchant chose for automatic parcel creation. Explicit default wins;
+  # if only one shippable account exists, that one is used until they pick otherwise.
+  def default_shipping_account
+    return @default_shipping_account if defined?(@default_shipping_account)
+
+    shippable = delivery_accounts.select(&:shippable?)
+    @default_shipping_account = shippable.find(&:ships_by_default?) || (shippable.first if shippable.one?)
+  end
+
+  def default_shipping_provider
+    default_shipping_account&.provider
+  end
+
+  def ships_with?(provider)
+    default_shipping_provider == provider.to_s
   end
 
   def origin
@@ -135,6 +260,53 @@ class Store < ApplicationRecord
 
   def billing_amount_dh=(value)
     self.billing_amount_cents = value.to_i * 100
+  end
+
+  # Older workspaces retain their existing billing policy. Self-service accounts
+  # need a paid, current billing period before merchant operations are available.
+  def operational_access?
+    return true unless subscription_required?
+    return true if store_connections.where(shopify_app: "seallo_connect", active: true).where("shopify_entitled_until > ?", Time.current).exists?
+
+    return true if trial_active?
+
+    billing_status == "active" && billing_period_ends_on.present? && billing_period_ends_on >= Date.current
+  end
+
+  def trial_active?
+    billing_status == "trial" && trial_ends_at.present? && trial_ends_at.future?
+  end
+
+  # Workspaces created before plans existed have no plan and keep their billing policy.
+  def plan_selected?
+    plan.present?
+  end
+
+  def free_plan?
+    Plans.free?(plan)
+  end
+
+  # Amount to pay for the current plan and billing, in US dollars.
+  def amount_due
+    Plans.amount_due(plan, billing_interval == "yearly" ? "annual" : "monthly")
+  end
+
+  # Applies a plan chosen on the seallo plans page. The free trial of a paid plan starts at the
+  # first choice and is never restarted; a free plan needs no payment and no trial.
+  def choose_plan!(plan:, billing:, currency:)
+    paid_plan_active = billing_status == "active" && !free_plan? && billing_period_ends_on.present? && billing_period_ends_on >= Date.current
+    attributes = {
+      plan: plan, currency: currency,
+      billing_interval: billing == "annual" ? "yearly" : "monthly",
+      subscription_required: !Plans.free?(plan)
+    }
+    if Plans.free?(plan)
+      attributes[:billing_status] = "active"
+    else
+      attributes[:trial_ends_at] = trial_ends_at || Time.current + Plans.trial_days.days
+      attributes[:billing_status] = "trial" unless paid_plan_active
+    end
+    update!(attributes)
   end
 
   def billing_past_due?

@@ -1,0 +1,22 @@
+<% content_for :title, t("woocommerce_connect.title") %>
+<h1 class="admin-page-title"><%= t("woocommerce_connect.title") %></h1>
+<section class="admin-card p-5 space-y-4">
+  <p><%= t("woocommerce_connect.body") %></p>
+  <dl class="space-y-2">
+    <div>
+      <dt class="admin-label"><%= t("woocommerce_connect.workspace") %></dt>
+      <dd><%= current_store.name %></dd>
+    </div>
+    <div>
+      <dt class="admin-label"><%= t("woocommerce_connect.site") %></dt>
+      <dd dir="ltr"><%= @request_values[:site] %></dd>
+    </div>
+  </dl>
+  <p class="text-sm"><%= t("woocommerce_connect.warning") %></p>
+  <div class="flex flex-wrap gap-3">
+    <%= button_to t("woocommerce_connect.confirm"), admin_woocommerce_connect_path,
+      params: @request_values.slice(:site, :state, :code_challenge, :return_to),
+      form: { data: { turbo: false } }, class: "admin-btn" %>
+    <%= link_to t("woocommerce_connect.cancel"), admin_root_path, class: "admin-btn-secondary" %>
+  </div>
+</section>

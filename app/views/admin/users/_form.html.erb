@@ -33,7 +33,23 @@
           <%= f.password_field :password_confirmation, class: "admin-input", autocomplete: "new-password" %>
         </div>
       </div>
+      <div>
+        <%= f.label :confirmation_role, t("admin.confirmations.role_label"), class: "admin-label" %>
+        <%= f.select :confirmation_role, User::CONFIRMATION_ROLES.map { |role| [t("admin.confirmations.roles.#{role}"), role] }, {}, class: "admin-input" %>
+        <p class="admin-help"><%= t("admin.confirmations.agent_not_admin") %></p>
+      </div>
+      <div>
+        <%= f.label :pay_per_delivery, t("admin.team.rate_label"), class: "admin-label" %>
+        <%= text_field_tag "user[pay_per_delivery]",(@user.pay_per_delivery_cents.to_i / 100.0).then { |v| v == v.to_i ? v.to_i : v }, id: "user_pay_per_delivery", inputmode: "decimal", class: "admin-input" %>
+        <p class="admin-help"><%= t("admin.team.rate_help") %></p>
+      </div>
+      <div>
+        <%= f.label :return_penalty, "Pénalité par retour", class: "admin-label" %>
+        <%= text_field_tag "user[return_penalty]", (@user.return_penalty_cents.to_i / 100.0).then { |v| v == v.to_i ? v.to_i : v }, id: "user_return_penalty", inputmode: "decimal", class: "admin-input" %>
+        <p class="admin-help">Retirée de sa commission quand une commande qu’elle a confirmée est retournée. 0 = aucune pénalité.</p>
+      </div>
       <label class="admin-check"><%= f.check_box :admin %> Admin access</label>
+      <p class="admin-help">Supervisors need Admin access to sign in. Confirmation agents have access to the confirmation desk; selecting that role removes Admin access.</p>
     </div>
   </section>
 

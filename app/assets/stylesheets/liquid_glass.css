@@ -1,0 +1,195 @@
+/*
+  Liquid Glass: shared look for the seller app shell and floating surfaces.
+  Translucent white with strong blur and saturation, a bright top edge and a soft
+  shadow, so what is behind stays recognisable without hurting text contrast.
+  Flat dense tables stay opaque. Fallbacks: no backdrop-filter, or OS
+  "reduce transparency", give solid surfaces.
+*/
+
+:root {
+  --lg-fill-top: rgb(255 255 255 / .82);
+  --lg-fill-bottom: rgb(255 255 255 / .70);
+  --lg-edge: rgb(255 255 255 / .7);
+  --lg-ink: #1f2430;
+  --lg-muted: #8a8380;
+  --lg-shadow: 0 30px 80px -24px rgb(31 36 48 / .35), 0 2px 6px rgb(31 36 48 / .06);
+  --lg-inset: inset 0 1px 0 rgb(255 255 255 / .9), inset 0 -1px 0 rgb(31 36 48 / .04);
+  --lg-blur: blur(28px) saturate(1.6);
+}
+
+/* Atmospheric app background — warm wash, not a flat grey slab. */
+.lg-shell {
+  min-height: 100dvh;
+  color: #5e5a58;
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgb(244 228 222 / .9), transparent 55%),
+    radial-gradient(90% 70% at 100% 0%, rgb(255 255 255 / .75), transparent 50%),
+    linear-gradient(180deg, #f6f1ec 0%, #efe8e2 48%, #e8e2dc 100%);
+}
+
+.lg-shell.lg-shell--standalone {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* The scrim only tints. No backdrop-filter: a parent with one becomes the backdrop
+   root of its children, and the panel would then blur nothing of the page behind it. */
+.lg-scrim {
+  background: rgb(31 36 48 / .2);
+}
+
+.lg-panel,
+.lg-nav,
+.lg-chrome {
+  position: relative;
+  border: 1px solid var(--lg-edge);
+  background: linear-gradient(180deg, var(--lg-fill-top), var(--lg-fill-bottom));
+  -webkit-backdrop-filter: var(--lg-blur);
+  backdrop-filter: var(--lg-blur);
+  box-shadow: var(--lg-shadow), var(--lg-inset);
+}
+
+.lg-nav {
+  color: var(--lg-ink);
+}
+
+.lg-chrome {
+  box-shadow:
+    0 10px 30px -18px rgb(31 36 48 / .28),
+    0 1px 3px rgb(31 36 48 / .05),
+    var(--lg-inset);
+}
+
+.lg-nav__store {
+  border: 1px solid rgb(255 255 255 / .55);
+  background: rgb(255 255 255 / .45);
+}
+
+.lg-nav__active {
+  background: rgb(244 228 222 / .88);
+  font-weight: 600;
+  color: #a8432e;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lg-scrim { background: rgb(31 36 48 / .45); }
+  .lg-panel,
+  .lg-nav,
+  .lg-chrome,
+  .lg-bottom-nav__bar {
+    background: #fff;
+    border-color: #ece4dc;
+  }
+  .lg-shell {
+    background: #f3f1ef;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .lg-scrim { background: rgb(31 36 48 / .45); }
+  .lg-panel,
+  .lg-nav,
+  .lg-chrome,
+  .lg-bottom-nav__bar {
+    background: #fff;
+    border-color: #ece4dc;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .lg-shell {
+    background: #f3f1ef;
+  }
+}
+
+/* Phone bottom dock — glass bar above the home indicator, hidden from lg up. */
+.lg-bottom-nav {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 45;
+  padding: 0.4rem 0.75rem calc(0.4rem + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+}
+
+.lg-bottom-nav__bar {
+  pointer-events: auto;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0.15rem;
+  border-radius: 1.35rem;
+  padding: 0.3rem 0.35rem;
+}
+
+.lg-bottom-nav__item {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.12rem;
+  min-width: 0;
+  min-height: 2.85rem;
+  padding: 0.3rem 0.2rem;
+  border: 0;
+  border-radius: 1rem;
+  background: transparent;
+  color: var(--lg-muted);
+  font: inherit;
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lg-bottom-nav__item.is-active {
+  color: #a8432e;
+  background: rgb(244 228 222 / .9);
+}
+
+.lg-bottom-nav__icon {
+  position: relative;
+  display: inline-flex;
+}
+
+.lg-bottom-nav__label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lg-bottom-nav__badge {
+  position: absolute;
+  top: -0.35rem;
+  inset-inline-end: -0.55rem;
+  min-width: 1rem;
+  height: 1rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: #a8432e;
+  color: #fff;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  line-height: 1rem;
+  text-align: center;
+}
+
+/* Leave room so list content is not hidden behind the dock. */
+@media (max-width: 1023px) {
+  .lg-shell[data-seller-shell] {
+    padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Installed / standalone: hide browser-like chrome cues, tighten app frame. */
+@media (display-mode: standalone) {
+  .lg-shell {
+    overscroll-behavior: none;
+  }
+}

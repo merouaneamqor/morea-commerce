@@ -1,0 +1,42 @@
+<% state_badges = { "verified" => "success", "configured" => "attention", "disconnected" => "neutral" } %>
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("seallo_connect.title") %></h1>
+    <p class="admin-page-header__meta"><%= current_store.name %></p>
+  </div>
+  <%= link_to t("seallo_connect.privacy.link"), admin_shopify_privacy_requests_path, class: "admin-btn-secondary" %>
+</div>
+
+<section class="admin-card">
+  <div class="grid gap-6 p-5 md:grid-cols-2 md:gap-0 md:divide-x md:divide-[#ece4dc]">
+    <div class="flex items-start gap-4 md:pe-8">
+      <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#ead6cc] text-sm font-bold text-[#5a2a1c]" aria-hidden="true">1</span>
+      <p class="text-[15px] leading-6"><%= t("seallo_connect.instructions") %></p>
+    </div>
+    <div class="flex items-start gap-4 md:ps-8">
+      <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#ead6cc] text-sm font-bold text-[#5a2a1c]" aria-hidden="true">2</span>
+      <p class="admin-muted text-[15px] leading-6"><%= t("seallo_connect.import_help") %></p>
+    </div>
+  </div>
+</section>
+
+<% if @connections.any? %>
+  <section class="admin-card mt-4 divide-y divide-[#ece4dc]">
+    <% @connections.each do |connection| %>
+      <% sync_state = connection.shopify_sync_state || "waiting" %>
+      <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4">
+        <%= link_to connection.name, admin_store_connection_path(connection), class: "min-w-0 break-words font-semibold hover:underline" %>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="admin-muted text-[13px]"><%= t("seallo_connect.sync_states.#{sync_state}") %></span>
+          <span class="admin-badge admin-badge--<%= state_badges.fetch(connection.connection_state, "neutral") %>"><%= t("seallo_connect.connection_states.#{connection.connection_state}") %></span>
+          <%= link_to t("shopify_reconnect.manage"), admin_store_connection_path(connection), class: "admin-btn-secondary" %>
+          <% unless connection.active? %>
+            <%= button_to t("connections.delete"), admin_store_connection_path(connection), method: :delete,
+              form: { data: { turbo_confirm: t("connections.delete_confirm", name: connection.name) } },
+              class: "admin-btn-critical" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </section>
+<% end %>

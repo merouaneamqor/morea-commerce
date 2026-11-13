@@ -18,6 +18,10 @@ module Api
       token = bearer_token
       store = Store.find_by_api_token(token) || OauthAccessToken.authenticate(token)&.store
       if store
+        unless store.operational_access?
+          render json: { errors: [ { message: "An active subscription is required.", code: "subscription_required" } ] }, status: :payment_required
+          return
+        end
         @current_api_store = store
         Current.store = store
         return

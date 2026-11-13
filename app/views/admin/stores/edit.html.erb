@@ -1,4 +1,4 @@
-<% content_for :title, "Store settings — Admin" %>
+<% content_for :title, "Store settings, Admin" %>
 
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Settings</h1>
@@ -6,6 +6,23 @@
 </div>
 
 <%= form_with model: @store, url: admin_store_path, method: :patch, id: "store-form", class: "admin-stack" do |f| %>
+  <% if @store.errors.any? %>
+    <div role="alert" class="admin-banner admin-banner--critical"><%= @store.errors.full_messages.to_sentence %></div>
+  <% end %>
+  <section class="admin-card" id="storefront">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("onboarding.storefront_heading") %></h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <label class="admin-check"><%= f.check_box :storefront_enabled %> <%= t("onboarding.enable_storefront") %></label>
+      <p class="admin-help"><%= t("onboarding.settings_help") %></p>
+      <%= link_to t("connections.add"), new_admin_store_connection_path, class: "admin-link" %>
+    </div>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("admin_theme.heading") %></h2></div>
+    <div class="px-4 pb-4"><%= render "shared/theme_picker", form: f, legend: false %></div>
+  </section>
+
   <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">Store details</h2></div>
     <div class="space-y-4 px-4 pb-4">
@@ -37,15 +54,15 @@
   </section>
 
   <section class="admin-card" id="data-protection">
-    <div class="admin-card__header"><h2 class="admin-card__title">Data protection (Morocco Law 09-08 / CNDP)</h2></div>
+    <div class="admin-card__header"><h2 class="admin-card__title">Data protection, Morocco Law 09-08, CNDP</h2></div>
     <div class="space-y-4 px-4 pb-4">
       <p class="admin-help">
         Moroccan law requires notifying the CNDP before processing personal data on your storefront, and a transfer request if data is hosted outside Morocco.
-        Enter your CNDP receipt or authorization number once you receive it — it appears on checkout and in your privacy page.
+        Enter your CNDP receipt or authorization number once you receive it. It appears on checkout and on your privacy page.
       </p>
       <div class="admin-field-grid">
         <div class="md:col-span-2">
-          <%= f.label :legal_entity_name, "Data controller (legal name)", class: "admin-label" %>
+          <%= f.label :legal_entity_name, "Data controller, legal name", class: "admin-label" %>
           <%= f.text_field :legal_entity_name, class: "admin-input", placeholder: @store.name %>
           <p class="admin-help">Shown in your privacy policy. Leave blank to use the store name.</p>
         </div>
@@ -58,93 +75,48 @@
           <%= f.text_field :privacy_rights_contact, class: "admin-input", placeholder: @store.email.presence || "privacy@example.com" %>
           <p class="admin-help">Access, rectification and opposition requests (email or postal address).</p>
         </div>
+        <div>
+          <%= f.label :legal_registration_number, "Registration / ICE / RC", class: "admin-label" %>
+          <%= f.text_field :legal_registration_number, class: "admin-input", placeholder: "ICE / RC / patente" %>
+        </div>
+        <div class="md:col-span-2">
+          <%= f.label :legal_address, "Registered address", class: "admin-label" %>
+          <%= f.text_field :legal_address, class: "admin-input" %>
+        </div>
+        <div>
+          <%= f.label :minimum_purchase_age, "Minimum purchase age", class: "admin-label" %>
+          <%= f.number_field :minimum_purchase_age, class: "admin-input", min: 13, max: 21 %>
+          <p class="admin-help">Shown at checkout and in the footer. Buyers must confirm they meet this age.</p>
+        </div>
       </div>
-      <% privacy_page = @store.pages.find_by(slug: "privacy") %>
-      <% if privacy_page %>
-        <p class="admin-help">
-          Privacy page:
-          <%= link_to "Edit in Online Store → Pages", edit_admin_page_path(privacy_page), class: "admin-link" %>
-        </p>
-      <% end %>
+      <p class="admin-help">
+        <%= link_to "Buyer data-rights requests", admin_privacy_rights_requests_path, class: "admin-link" %>
+        . Legal pages sync from these fields:
+        <% %w[privacy terms cookies].each do |slug| %>
+          <% page = @store.pages.find_by(slug: slug) %>
+          <% if page %>
+            <%= link_to slug.capitalize, edit_admin_page_path(page), class: "admin-link" %>
+          <% end %>
+        <% end %>
+      </p>
     </div>
   </section>
 
   <section class="admin-card" id="integrations">
     <div class="admin-card__header"><h2 class="admin-card__title">Integrations</h2></div>
     <div class="space-y-4 px-4 pb-4">
-      <p class="admin-help">Keys belong to this store only. Leave a field blank to keep the saved value.</p>
+      <ul class="space-y-2 text-sm">
+        <li><%= link_to t("carrier_settings.title", carrier: "Sendit"), admin_sendit_settings_path, class: "admin-link" %></li>
+        <li><%= link_to t("carrier_settings.title", carrier: "Ozon Express"), admin_ozon_settings_path, class: "admin-link" %></li>
+        <li><%= link_to t("carrier_settings.title", carrier: "Ameex"), admin_ameex_settings_path, class: "admin-link" %></li>
+      </ul>
+      <p class="admin-help">Leave the field blank to keep the saved value.</p>
       <div class="admin-field-grid">
-        <div>
-          <%= f.label :sendit_public_key, "Sendit public key", class: "admin-label" %>
-          <%= f.password_field :sendit_public_key, class: "admin-input", autocomplete: "off", value: "", placeholder: (@store.sendit_public_key.present? ? "•••••••• (saved)" : "") %>
-        </div>
-        <div>
-          <%= f.label :sendit_secret_key, "Sendit secret key", class: "admin-label" %>
-          <%= f.password_field :sendit_secret_key, class: "admin-input", autocomplete: "off", value: "", placeholder: (@store.sendit_secret_key.present? ? "•••••••• (saved)" : "") %>
-        </div>
-        <div>
-          <%= f.label :sendit_webhook_secret, "Sendit webhook secret", class: "admin-label" %>
-          <%= f.password_field :sendit_webhook_secret, class: "admin-input", autocomplete: "off", value: "", placeholder: (@store.sendit_webhook_secret.present? ? "•••••••• (saved)" : "") %>
-          <p class="admin-help">Webhook URL: <code><%= "#{@store.origin}/webhooks/sendit/#{@store.slug}" %></code></p>
-        </div>
         <div class="md:col-span-2">
           <%= f.label :discord_orders_webhook_url, "Discord orders webhook URL", class: "admin-label" %>
           <%= f.password_field :discord_orders_webhook_url, class: "admin-input", autocomplete: "off", value: "", placeholder: (@store.discord_orders_webhook_url.present? ? "•••••••• (saved)" : "https://discord.com/api/webhooks/…") %>
         </div>
       </div>
-    </div>
-  </section>
-
-  <section class="admin-card" id="shipping">
-    <div class="admin-card__header"><h2 class="admin-card__title">Shipping · Sendit</h2></div>
-    <div class="space-y-4 px-4 pb-4">
-      <% if @store.sendit_configured? %>
-        <% rates = (Sendit::Districts.shipping_cents_by_city(store: @store) rescue {}) %>
-        <p class="admin-help">
-          Delivery fees come from Sendit by city (<%= rates.size %> cities cached).
-          Checkout updates the fee when the customer picks a city.
-        </p>
-        <% if rates.any? %>
-          <details class="admin-disclosure">
-            <summary class="admin-label cursor-pointer">View Sendit city rates</summary>
-            <ul class="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm text-[#616161]">
-              <% rates.sort_by(&:first).each do |city, cents| %>
-                <li class="flex justify-between gap-4 border-b border-[#ebebeb] py-1">
-                  <span><%= city %></span>
-                  <span class="tabular-nums"><%= money(cents, @store.currency) %></span>
-                </li>
-              <% end %>
-            </ul>
-          </details>
-        <% end %>
-
-        <% pickup = (Sendit::Districts.pickup_cities(store: @store) rescue []) %>
-        <%= f.label :sendit_pickup_district_id, "Pickup city", class: "admin-label" %>
-        <%= f.select :sendit_pickup_district_id, pickup.map { |d| [ d[:name], d[:id] ] }, { include_blank: "Choose where Sendit collects your parcels" }, class: "admin-input" %>
-        <p class="admin-help">Required by Sendit to create parcels. Confirmed orders are sent automatically and synced every 15 minutes.</p>
-        <div class="admin-field-grid">
-          <label class="admin-check"><%= f.check_box :sendit_allow_open %> Allow customer to open the parcel</label>
-          <label class="admin-check"><%= f.check_box :sendit_allow_try %> Allow customer to try on</label>
-        </div>
-        <div>
-          <%= f.label :free_shipping_threshold_dh, "Free shipping from (#{@store.currency})", class: "admin-label" %>
-          <%= f.number_field :free_shipping_threshold_dh, class: "admin-input", min: 1, placeholder: "Optional" %>
-          <p class="admin-help">Waives the Sendit city fee once the cart reaches this amount. Leave empty to always charge.</p>
-        </div>
-      <% else %>
-        <p class="admin-muted">Add Sendit API keys under Integrations to load city rates from Sendit.</p>
-        <div class="admin-field-grid">
-          <div>
-            <%= f.label :shipping_dh, "Fallback shipping fee (#{@store.currency})", class: "admin-label" %>
-            <%= f.number_field :shipping_dh, class: "admin-input", min: 0 %>
-            <p class="admin-help">Used only while Sendit is disconnected.</p>
-          </div>
-          <div>
-            <%= f.label :free_shipping_threshold_dh, "Free shipping from (#{@store.currency})", class: "admin-label" %>
-            <%= f.number_field :free_shipping_threshold_dh, class: "admin-input", min: 1, placeholder: "Optional" %>
-          </div>
-        </div>
-      <% end %>
     </div>
   </section>
 

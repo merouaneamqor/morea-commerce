@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 8.1.4"
+gem "rails", "~> 8.1.4", ">= 8.1.4.1"
 gem "propshaft"
 gem "pg", "~> 1.5"
 gem "puma", ">= 5.0"
@@ -23,6 +23,7 @@ gem "phonelib", "~> 0.10"
 gem "cloudinary", "~> 2.0"
 
 group :development, :test do
+  gem "rspec-rails", "~> 8.0"
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "bundler-audit", require: false
   gem "brakeman", require: false
@@ -36,3 +37,7 @@ end
 gem "jwt", "~> 2.10"
 gem "graphql", "~> 2.4"
 gem "mcp"
+
+gem "web-push", "~> 3.0"
+gem "activeadmin", "~> 3.4"
+gem "dartsass-rails", "~> 0.5"

@@ -1,0 +1,76 @@
+<% sendit_account = @store.sendit_delivery_account %>
+<% pickup_options = Array(@sendit_pickup_cities).map { |city| [city[:name] || city["name"], city[:id] || city["id"]] } %>
+<% saved_pickup = @store.sendit_pickup_district_id %>
+<% if saved_pickup.present? && pickup_options.none? { |_, id| id.to_s == saved_pickup.to_s } %>
+  <% pickup_options.unshift([t("sendit_settings.saved_pickup", id: saved_pickup), saved_pickup]) %>
+<% end %>
+<% rates = @sendit_city_rates || {} %>
+<div class="admin-card mt-4 min-w-0" id="sendit-settings" role="region" aria-labelledby="sendit-settings-title">
+  <div class="admin-card__header">
+    <h3 class="admin-card__title" id="sendit-settings-title"><%= t("sendit_settings.title") %></h3>
+    <p class="admin-help"><%= t("sendit_settings.description") %></p>
+  </div>
+  <div class="space-y-4 px-4 pb-4">
+    <% if @store.errors.any? %>
+      <div role="alert" class="admin-banner admin-banner--critical"><%= @store.errors.full_messages.to_sentence %></div>
+    <% end %>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <p class="admin-help"><%= t("sendit_settings.rates_help", count: rates.size) %></p>
+      <% if @store.sendit_configured? %>
+        <%= button_to t("sendit_settings.refresh_cities"), refresh_cities_admin_sendit_settings_path, method: :post, class: "admin-btn-secondary" %>
+      <% end %>
+    </div>
+    <% if rates.any? %>
+      <details class="admin-disclosure">
+        <summary class="admin-label cursor-pointer"><%= t("sendit_settings.view_rates") %></summary>
+        <ul class="mt-2 max-h-48 space-y-1 overflow-y-auto text-sm">
+          <% rates.sort_by { |city, _| city.to_s }.each do |city, cents| %>
+            <li class="flex flex-wrap justify-between gap-2 border-b border-[#ebebeb] py-1">
+              <span class="min-w-0 break-words" dir="auto"><%= city %></span>
+              <span class="shrink-0 tabular-nums"><%= money(cents, @store.currency) %></span>
+            </li>
+          <% end %>
+        </ul>
+      </details>
+    <% end %>
+    <% if @store.sendit_configured? && sendit_account.nil? %>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p class="admin-help"><%= t("sendit_settings.existing_connection") %></p>
+        <%= button_to t("sendit_settings.delete_connection"), admin_sendit_settings_path, method: :delete, class: "admin-btn-critical",
+              form: { onsubmit: "return confirm(#{t("sendit_settings.delete_confirm").to_json})" } %>
+      </div>
+    <% end %>
+    <%= form_with model: @store, scope: :store, url: admin_sendit_settings_path, method: :patch, class: "space-y-4" do |f| %>
+      <div>
+        <%= f.label :sendit_pickup_district_id, t("sendit_settings.pickup_city"), class: "admin-label" %>
+        <%= f.select :sendit_pickup_district_id, pickup_options, { include_blank: t("sendit_settings.choose_pickup") }, class: "admin-input" %>
+        <p class="admin-help"><%= t("sendit_settings.pickup_help") %></p>
+      </div>
+      <div class="admin-field-grid">
+        <label class="admin-check"><%= f.check_box :sendit_allow_open %> <%= t("sendit_settings.allow_open") %></label>
+        <label class="admin-check"><%= f.check_box :sendit_allow_try %> <%= t("sendit_settings.allow_try") %></label>
+      </div>
+      <div>
+        <% unless sendit_account %>
+          <%= f.label :sendit_webhook_secret, t("sendit_settings.webhook_secret"), class: "admin-label" %>
+          <%= f.password_field :sendit_webhook_secret, class: "admin-input", autocomplete: "new-password", value: "", placeholder: (@store.sendit_webhook_secret.present? ? t("sendit_settings.saved_secret") : "") %>
+          <p class="admin-help"><%= t("sendit_settings.secret_help") %></p>
+        <% end %>
+        <p class="admin-help break-all"><%= t("sendit_settings.webhook_url") %>: <code dir="ltr"><%= sendit_account&.webhook_url.presence || "#{@store.origin}/webhooks/sendit/#{@store.slug}" %></code></p>
+      </div>
+      <div class="admin-field-grid">
+        <div>
+          <%= f.label :shipping_dh, t("sendit_settings.fallback_fee", currency: @store.currency), class: "admin-label" %>
+          <%= f.number_field :shipping_dh, class: "admin-input", min: 0 %>
+          <p class="admin-help"><%= t("sendit_settings.fallback_help") %></p>
+        </div>
+        <div>
+          <%= f.label :free_shipping_threshold_dh, t("sendit_settings.free_shipping", currency: @store.currency), class: "admin-label" %>
+          <%= f.number_field :free_shipping_threshold_dh, class: "admin-input", min: 1, placeholder: t("sendit_settings.optional") %>
+          <p class="admin-help"><%= t("sendit_settings.free_shipping_help") %></p>
+        </div>
+      </div>
+      <%= f.submit t("sendit_settings.save"), class: "admin-btn" %>
+    <% end %>
+  </div>
+</div>

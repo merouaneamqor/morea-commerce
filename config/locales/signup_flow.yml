@@ -1,0 +1,34 @@
+# Strings of the seallo signup steps that exist only in Morea (the rest comes from config/seallo_auth_dictionary.json).
+fr:
+  signup_plans:
+    invalid: "Choisissez un plan valide."
+  signup_payment:
+    reference_required: "Indiquez la référence du virement."
+    reference_too_long: "La référence est trop longue (100 caractères maximum)."
+    declared: "Merci ! Nous vérifions votre virement et activons votre abonnement dès réception."
+  signup_flow:
+    password_hint: "%{count} caractères minimum"
+    workspace_label: "Adresse de l’espace"
+    workspace_help: "Votre e-mail est associé à plusieurs espaces : saisissez le sous-domaine de l’espace."
+en:
+  signup_plans:
+    invalid: "Choose a valid plan."
+  signup_payment:
+    reference_required: "Enter the transfer reference."
+    reference_too_long: "The reference is too long (100 characters maximum)."
+    declared: "Thank you! We are checking your transfer and will activate your subscription as soon as it arrives."
+  signup_flow:
+    password_hint: "%{count} characters minimum"
+    workspace_label: "Workspace address"
+    workspace_help: "Your email is linked to several workspaces: enter the workspace subdomain."
+ar:
+  signup_plans:
+    invalid: "اختر خطة صالحة."
+  signup_payment:
+    reference_required: "أدخل مرجع التحويل."
+    reference_too_long: "المرجع طويل جدًا (100 حرف كحد أقصى)."
+    declared: "شكرًا! نتحقق من تحويلك وسنفعّل اشتراكك فور وصوله."
+  signup_flow:
+    password_hint: "%{count} حرفًا على الأقل"
+    workspace_label: "عنوان مساحة العمل"
+    workspace_help: "بريدك الإلكتروني مرتبط بعدة مساحات عمل: أدخل النطاق الفرعي لمساحة العمل."

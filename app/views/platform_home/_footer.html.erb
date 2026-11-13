@@ -1,0 +1,19 @@
+<footer class="platform-footer-wrap">
+  <div class="platform-container platform-footer">
+    <a href="#top" class="platform-brand" aria-label="seallo"><span dir="ltr">seallo</span></a>
+    <p><%= t("platform_home.seallo.foot") %></p>
+    <div class="platform-languages" dir="ltr" role="group" aria-label="<%= t("platform_home.language") %>"><% Morea::Locales::AVAILABLE.each do |locale| %><%= link_to locale.to_s.upcase, platform_home_path(locale: locale), lang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %><% end %></div>
+    <nav class="platform-footer-connect" aria-label="<%= t("seallo_connect_pages.nav.label") %>">
+      <span class="platform-footer-connect-title"><%= t("seallo_connect_pages.nav.label") %></span>
+      <%= link_to t("seallo_connect_pages.nav.overview"), seallo_connect_page_path(locale: I18n.locale) %>
+      <%= link_to t("seallo_connect_pages.nav.pricing"), seallo_connect_pricing_path(locale: I18n.locale) %>
+      <%= link_to t("seallo_connect_pages.nav.privacy"), seallo_connect_privacy_path(locale: I18n.locale) %>
+      <%= link_to t("seallo_connect_pages.nav.terms"), seallo_connect_terms_path(locale: I18n.locale) %>
+      <%= link_to t("seallo_connect_pages.nav.cookies"), seallo_connect_cookies_path(locale: I18n.locale) %>
+      <%= link_to t("seallo_connect_pages.nav.refunds"), seallo_connect_refunds_path(locale: I18n.locale) %>
+      <%= link_to t("seallo_connect_pages.nav.privacy_rights"), seallo_connect_privacy_rights_path(locale: I18n.locale) %>
+      <%= link_to t("platform_home.footer.admin"), admin_login_path(locale: nil), class: "platform-admin-link" %>
+    </nav>
+    <p class="platform-footer-imprint"><%= t("platform_home.footer.imprint") %></p>
+  </div>
+</footer>

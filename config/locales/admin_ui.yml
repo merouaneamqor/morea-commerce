@@ -1,0 +1,12 @@
+en:
+  admin_ui:
+    blank: "Not set"
+    past_due: "The subscription payment is late. The storefront stays online. Pay the platform invoice to clear it."
+fr:
+  admin_ui:
+    blank: "Non indiqué"
+    past_due: "Le paiement de l'abonnement est en retard. La boutique reste en ligne. Réglez la facture de la plateforme pour le solder."
+ar:
+  admin_ui:
+    blank: "غير محدد"
+    past_due: "دفعة الاشتراك متأخرة. واجهة المتجر تبقى متاحة. سدد فاتورة المنصة لإغلاق المستحق."

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-puts "Seeding Morea Commerce..."
+puts "Seeding Seallo..."
 
 store = Store.find_or_initialize_by(slug: "morea")
 store.assign_attributes(
@@ -22,7 +22,14 @@ PageTranslation.where(page_id: store.pages.select(:id)).delete_all
 Page.where(store_id: store.id).delete_all
 HomeSectionTranslation.where(home_section_id: store.home_sections.select(:id)).delete_all
 HomeSection.where(store_id: store.id).delete_all
-OrderItem.where(order_id: store.orders.select(:id)).delete_all
+order_ids = store.orders.select(:id)
+confirmation_ids = OrderConfirmation.where(order_id: order_ids).select(:id)
+ConfirmationAttempt.where(order_confirmation_id: confirmation_ids).delete_all
+OrderConfirmation.where(id: confirmation_ids).delete_all
+OrderEvent.where(order_id: order_ids).delete_all
+OrderImport.where(order_id: order_ids).delete_all
+ExternalOrderReceipt.where(order_id: order_ids).delete_all
+OrderItem.where(order_id: order_ids).delete_all
 InventoryMovement.where(order_id: store.orders.select(:id)).or(
   InventoryMovement.where(product_id: store.products.select(:id))
 ).delete_all
@@ -42,12 +49,19 @@ CollectionTranslation.where(collection_id: store.collections.select(:id)).delete
 Collection.where(store_id: store.id).delete_all
 StoreTranslation.where(store_id: store.id).delete_all
 
+# Seeded accounts never get a published password (it must also satisfy the 12-character
+# staff policy). Set SEED_ADMIN_PASSWORD to choose one. Without it, development and test
+# use a fixed local-only value, and production gets a random one nobody knows, so those
+# accounts are reached through the password-reset email.
+seed_password = ENV["SEED_ADMIN_PASSWORD"].presence ||
+  (Rails.env.production? ? SecureRandom.alphanumeric(32) : "morea-local-password-123")
+
 user = store.users.find_or_initialize_by(email: "admin@morea.website")
 user.name = "Morea Admin"
 # Only set the default password when creating the admin — reseeding keeps a changed password
 if user.new_record?
-  user.password = "morea123"
-  user.password_confirmation = "morea123"
+  user.password = seed_password
+  user.password_confirmation = seed_password
 end
 user.admin = true
 user.super_admin = true
@@ -61,8 +75,8 @@ super_admin.admin = true
 super_admin.super_admin = true
 super_admin.store = nil
 if super_admin.new_record?
-  super_admin.password = "morea123"
-  super_admin.password_confirmation = "morea123"
+  super_admin.password = seed_password
+  super_admin.password_confirmation = seed_password
 end
 super_admin.save!
 
@@ -267,6 +281,10 @@ catalog = [
         origin: "Designed for Morocco",
         care: "Machine wash cold. Low iron if needed."
       }
+    },
+    variants: %w[S M L XL].map { |size|
+      { name: "#{size} / Taupe", option1_name: "Size", option1_value: size,
+        option2_name: "Color", option2_value: "Taupe", color_hex: "#9f8978", stock: 12 }
     }
   },
   {
@@ -340,6 +358,12 @@ catalog = [
         origin: "Designed for Morocco",
         care: "Wash cold inside out."
       }
+    },
+    variants: %w[S M L].flat_map { |size|
+      [ [ "Sand", "#c8b59b" ], [ "Ink", "#262832" ] ].map { |color, hex|
+        { name: "#{size} / #{color}", option1_name: "Size", option1_value: size,
+          option2_name: "Color", option2_value: color, color_hex: hex, stock: 8 }
+      }
     }
   },
   {
@@ -369,6 +393,12 @@ catalog = [
         dimensions: "Sizes S–L",
         origin: "Designed for Morocco",
         care: "Gentle wash. Reshape while damp."
+      }
+    },
+    variants: %w[S M L].flat_map { |size|
+      [ [ "Blush", "#d8aaa5" ], [ "Sage", "#9ca68f" ] ].map { |color, hex|
+        { name: "#{size} / #{color}", option1_name: "Size", option1_value: size,
+          option2_name: "Color", option2_value: color, color_hex: hex, stock: 10 }
       }
     }
   },
@@ -464,8 +494,13 @@ unless store.invoices.exists?
   end
 end
 
-puts "Admin: admin@morea.website / morea123"
-puts "Super: super@morea.website / morea123 (all stores)"
+if Rails.env.production?
+  puts "Seeded admin@morea.website and super@morea.website. Set SEED_ADMIN_PASSWORD before seeding, or use the password-reset email."
+else
+  puts "Admin: admin@morea.website / #{seed_password}"
+  puts "Super: super@morea.website / #{seed_password} (all stores)"
+end
 puts "Store: #{store.name} — #{store.origin} — #{store.products.count} products — locales fr/en/ar"
 puts "Invoices: #{store.invoices.count} (platform → store → Invoices)"
+load Rails.root.join("db/seeds/dashboard_demo.rb") if Rails.env.development?
 puts "Done."

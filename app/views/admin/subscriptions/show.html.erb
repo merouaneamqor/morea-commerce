@@ -1,0 +1,48 @@
+<% content_for :title, t("subscriptions.title") %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= t("subscriptions.title") %></h1>
+    <p class="admin-page-header__meta"><%= current_store.name %></p>
+  </div>
+  <%= link_to t("subscriptions.overview"), admin_root_path, class: "admin-btn-secondary" %>
+</div>
+
+<section class="admin-card p-5 sm:p-8" aria-labelledby="subscription-heading">
+  <h2 id="subscription-heading" class="text-xl font-semibold"><%= t(subscription_access? ? "subscriptions.active_heading" : "subscriptions.heading") %></h2>
+  <p class="mt-3 max-w-2xl text-sm leading-6 text-gray-600"><%= t(subscription_access? ? "subscriptions.active_body" : "subscriptions.body") %></p>
+  <% if subscription_access? && current_store.billing_period_ends_on.present? %>
+    <p class="mt-3 text-sm"><%= t("subscriptions.valid_until", date: l(current_store.billing_period_ends_on)) %></p>
+  <% elsif !subscription_access? %>
+    <p class="mt-3 max-w-2xl text-sm leading-6 text-gray-600"><%= t("subscriptions.manual_billing") %></p>
+    <% if @support_email.present? %>
+      <%= mail_to @support_email, t("subscriptions.contact"), class: "admin-btn mt-5" %>
+    <% end %>
+  <% end %>
+</section>
+
+<section class="admin-card mt-6" aria-labelledby="subscription-invoices-heading">
+  <div class="admin-card__header"><h2 id="subscription-invoices-heading" class="admin-card__title"><%= t("subscriptions.invoices") %></h2></div>
+  <% if @invoices.any? %>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="border-b text-start">
+          <th scope="col" class="p-4 text-start"><%= t("subscriptions.invoice") %></th>
+          <th scope="col" class="p-4 text-start"><%= t("subscriptions.amount") %></th>
+          <th scope="col" class="p-4 text-start"><%= t("subscriptions.status") %></th>
+          <th scope="col" class="p-4 text-start"><%= t("subscriptions.period") %></th>
+        </tr></thead>
+        <tbody><% @invoices.each do |invoice| %>
+          <tr class="border-b">
+            <th scope="row" class="p-4 text-start font-medium"><%= invoice.number %></th>
+            <td class="p-4 whitespace-nowrap"><%= money(invoice.amount_cents, "MAD") %></td>
+            <td class="p-4"><%= t("subscriptions.invoice_status.#{invoice.status}") %></td>
+            <td class="p-4 whitespace-nowrap"><%= l(invoice.period_starts_on) %> – <%= l(invoice.period_ends_on) %></td>
+          </tr>
+        <% end %></tbody>
+      </table>
+    </div>
+  <% else %>
+    <p class="p-5 text-sm text-gray-600"><%= t("subscriptions.no_invoices") %></p>
+  <% end %>
+</section>

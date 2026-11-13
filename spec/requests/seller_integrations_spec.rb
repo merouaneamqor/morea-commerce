@@ -1,0 +1,288 @@
+# frozen_string_literal: true
+
+require "rails_helper"
+
+RSpec.describe "Seller integrations page", type: :request do
+  let(:suffix) { SecureRandom.hex(5) }
+  let(:password) { "Synthetic-seller-#{suffix}-pw" }
+  let(:store) { Store.create!(name: "Boutique #{suffix}", slug: "shop-#{suffix}", currency: "MAD", storefront_enabled: false) }
+  let(:owner) { store.users.create!(email: "maker-#{suffix}@example.test", name: "Salma", password: password, admin: true) }
+
+  before do
+    host! "#{store.slug}.#{Store.base_domain}"
+    post "/admin/login", params: { email: owner.email, password: password }
+  end
+
+  def document
+    Nokogiri::HTML(response.body)
+  end
+
+  def connect(provider, domain, store: self.store, active: true, **extra)
+    store.store_connections.create!({ provider: provider, name: "#{provider} #{domain}", external_domain: domain, token: SecureRandom.hex(16),
+      webhook_secret: SecureRandom.hex(16), active: active, external_store_id: (provider == "youcan" ? SecureRandom.uuid : nil) }.merge(extra))
+  end
+
+  def stores
+    document.css("[data-connected-stores] li")
+  end
+
+  def chooser_rows
+    document.at_css("[data-modal=stores]").css("[data-connect]").to_h { |button| [ button["data-connect"], button.text.strip ] }
+  end
+
+  it "is served at the seallo URL with the integrations entry highlighted" do
+    get "/integrations"
+    expect(response).to have_http_status(:ok)
+    expect(document.at_css("h1").text).to eq("Intégrations API")
+    expect(document.at_css("aside nav ul a.font-semibold")["href"]).to eq("/integrations")
+  end
+
+  it "gives every dialog and the mobile drawer the shared Liquid Glass look, with solid fallbacks in the stylesheet" do
+    get "/integrations"
+    page = document
+    expect(page.at_css("link[href*='liquid_glass']")).to be_present
+    scrims = page.css(".lg-scrim")
+    expect(scrims.length).to eq(1 + 1 + 3 + 1) # drawer, store chooser, three platform dialogs... and the delivery dialog
+    expect(page.css("[data-modal] .lg-panel").length).to eq(4)
+    expect(page.css("[data-seller-drawer].lg-scrim, [data-delivery-modal].lg-scrim").length).to eq(2)
+    expect(response.body).to include("lg-panel flex max-h-[92dvh]")
+    expect(response.body).not_to match(/bg-white shadow-2xl/)
+    # Moved to the root of the body at load, so the panel can blur the page behind it.
+    expect(response.body).to include('document.querySelectorAll("[data-modal], [data-delivery-modal]").forEach(function (m) { document.body.appendChild(m); })')
+
+    css = Rails.root.join("app/assets/stylesheets/liquid_glass.css").read
+    expect(css).to include("backdrop-filter: var(--lg-blur)", "@supports not", "prefers-reduced-transparency: reduce", ".lg-shell", ".lg-nav", ".lg-bottom-nav")
+  end
+
+  describe "TikTok Ads button" do
+    it "names the missing TikTok settings, and never pretends to connect" do
+      post "/admin/tiktok-ads/connect"
+      expect(response).to redirect_to("/integrations")
+      expect(flash[:alert]).to eq("TikTok n’est pas encore configuré sur cette plateforme : il manque TIKTOK_APP_ID, TIKTOK_APP_SECRET, TIKTOK_REDIRECT_URI.")
+
+      allow(ENV).to receive(:[]).and_call_original
+      %w[TIKTOK_APP_ID TIKTOK_APP_SECRET TIKTOK_REDIRECT_URI].each { |name| allow(ENV).to receive(:[]).with(name).and_return("synthetic") }
+      post "/admin/tiktok-ads/connect"
+      expect(flash[:alert]).to eq(I18n.t("tiktok_ads.errors.not_ready"))
+    end
+
+    it "needs a signed-in operator" do
+      delete "/admin/logout"
+      post "/admin/tiktok-ads/connect"
+      expect(response).to redirect_to(%r{/admin/login})
+    end
+  end
+
+  it "shows online stores, delivery companies and ad networks as the same wide card" do
+    get "/integrations"
+    sections = document.css("main section")
+    expect(sections.map { |section| section.at_css("h2").text }).to eq([ "Boutique en ligne", "Sociétés de livraison", "Publicité" ])
+    summaries = sections.first(2).map { |section| section.at_css("span.font-semibold.block").text }
+    expect(summaries).to eq([ "Shopify, WooCommerce, YouCan", "Sendit, Ozon Express, Cathedis, Ameex et 4 autres" ])
+    expect(sections.first.at_css("span.-space-x-2").css("img").map { |img| img["alt"] }).to eq(%w[Shopify WooCommerce YouCan])
+    expect(sections.first(2).map { |section| section.at_css("span.-space-x-2").css("img").length }).to eq([ 3, 4 ])
+    # Meta Ads first, TikTok Ads behind it, each in its own card.
+    networks = sections.last.css("[data-ad-network]")
+    expect(networks.map { |card| card["data-ad-network"] }).to eq(%w[meta tiktok])
+    expect(networks.map { |card| card.at_css("span.font-semibold.block").text }).to eq([ "Meta Ads", "TikTok Ads" ])
+    expect(networks.map { |card| card.at_css("img")["alt"] }).to eq([ "Meta Ads", "TikTok Ads" ])
+    expect(networks.first.text).to include("Connecter Meta Ads")
+    expect(networks.last.text).to include("Connecter TikTok Ads")
+    expect(networks.last.at_css("form[action='/admin/tiktok-ads/connect'] button")["disabled"]).to be_nil
+    expect(sections.last.text).not_to include("Bientôt disponible")
+    expect(sections.first.at_css("[data-stores-open]").text).to include("Connecter une boutique")
+    expect(stores).to be_empty
+    carriers = sections[1].css("[data-carrier-settings] [data-carrier]")
+    expect(carriers.map { |card| card["data-carrier"] }).to eq(%w[sendit ozon ameex])
+    expect(carriers.map { |card| card.at_css("a")["href"] }).to eq(%w[/admin/sendit_settings /admin/ozon_settings /admin/ameex_settings])
+    expect(carriers.map { |card| card.text }).to all(include("Non connectée", "Paramètres"))
+  end
+
+  describe "delivery companies dialog" do
+    def catalog
+      JSON.parse(document.at_css("[data-delivery-modal]")["data-catalog"])
+    end
+
+    def add_account(**fields)
+      # Cathedis stays a manual (non-verified) connector; Sendit, Ozon and Ameex verify keys over the network.
+      post "/livraison/societes", params: { delivery_account: { provider: "cathedis", name: "Cathedis (WALKFIT)", account_type: "normal", allow_open: "true", is_active: "true" }.merge(fields) }
+    end
+
+    it "opens in place from the delivery card instead of leading to the Delivery page" do
+      get "/integrations"
+      card = document.at_css("[data-delivery-new]")
+      expect(card.name).to eq("button")
+      expect(card.text).to include("Gérer les sociétés de livraison")
+      expect(document.css("main a").map { |link| link["href"] }).not_to include("/livraison", "/admin/delivery")
+    end
+
+    it "carries the provider catalogue: 15 providers, regions, countries and the other-company entry" do
+      get "/integrations"
+      providers = catalog["providers"]
+      expect(providers.keys.length).to eq(16)
+      expect(providers.except("other").values.count { |p| p["region"] == "africa" }).to eq(14)
+      expect(providers.values.count { |p| p["region"] == "america" }).to eq(1)
+      expect(providers.values.count { |p| p["countries"].include?("MA") }).to eq(13)
+      expect(catalog["regions"]).to eq("africa" => "Afrique", "america" => "Amérique")
+      expect(catalog["countries"].keys).to eq(%w[MA TN CR PA])
+      expect(providers["sendit"]).to include("name" => "Sendit", "logo" => "/images/partners/sendit.png")
+    end
+
+    it "offers six Morocco carriers in order and flags the other seven as unavailable" do
+      get "/integrations"
+      providers = catalog["providers"]
+      offered = providers.reject { |key, p| key == "other" || p["unavailable"] }
+      expect(offered.select { |_, p| p["countries"].include?("MA") }.values.map { |p| p["name"] }).to eq([ "Sendit", "Ozon Express", "Ameex", "Cathedis", "Digylog", "Olivraison" ])
+      expect(providers.select { |_, p| p["unavailable"] }.keys).to match_array(%w[forcelog onesta kargo speedaf goldcolis expressrelais livo])
+      expect(response.body).to include('!catalog.providers[k].unavailable')
+    end
+
+    it "gives Digylog and Olivraison their real logos and falls back to a letter badge when an image fails" do
+      get "/integrations"
+      providers = catalog["providers"]
+      expect(providers["digylog"]["logo"]).to match(%r{\A/assets/carriers/digylog-\h+\.png\z})
+      expect(providers["olivraison"]["logo"]).to match(%r{\A/assets/carriers/olivraison-\h+\.png\z})
+      expect(providers["navex"]["logo"]).to match(%r{\A/assets/carriers/navex-\h+\.png\z})
+      expect(providers["hlexpress"]["logo"]).to match(%r{\A/assets/carriers/hlexpress-\h+\.png\z})
+      expect(providers.values_at("sendit", "ozon", "ameex", "cathedis").map { |p| p["logo"] }).to all(start_with("/images/partners/"))
+      expect(response.body).to include("data-logo-img", "rounded-full", 'addEventListener("error"')
+    end
+
+    it "keeps an account on a removed carrier working and marks it as currently unavailable" do
+      account = store.delivery_accounts.create!(provider: "forcelog", name: "ForceLog historique", account_type: "normal", is_active: true)
+      get "/integrations"
+      row = document.at_css("[data-account='#{account.id}']")
+      expect(row.text).to include("ForceLog", "Actuellement indisponible", "Connectée")
+      expect(account.reload.provider).to eq("forcelog")
+      patch "/livraison/societes/#{account.id}", params: { delivery_account: { name: "ForceLog renommé" } }
+      expect(account.reload.name).to eq("ForceLog renommé")
+    end
+
+    it "connects a provider with its API keys, keeps them encrypted, and shows it connected on the same page" do
+      add_account(api_key: "pub-123", api_secret: "secret-456", pickup_city: "Casablanca", delivery_fee: "25", return_fee: "12.5")
+      expect(response).to redirect_to(%r{/integrations})
+      account = store.delivery_accounts.sole
+      expect(account).to have_attributes(provider: "cathedis", name: "Cathedis (WALKFIT)", code: "CAT1", pickup_city: "Casablanca", is_active: true)
+      expect(account.delivery_fee).to eq(25)
+      expect(account.credentials).to eq("api_key" => "pub-123", "api_secret" => "secret-456")
+      expect(account.credentials_ciphertext).not_to include("secret-456")
+      expect(account.connected_at).to be_present
+
+      follow_redirect!
+      expect(response).to have_http_status(:ok)
+      row = document.at_css("[data-account='#{account.id}']")
+      expect(row.text).to include("Cathedis (WALKFIT)", "CAT1", "Connectée")
+      expect(response.body).not_to include("secret-456", "pub-123")
+    end
+
+    it "numbers the codes per company and supports several accounts at one company" do
+      add_account(name: "Cathedis 1")
+      add_account(name: "Cathedis 2")
+      add_account(provider: "digylog", name: "Digylog")
+      expect(store.delivery_accounts.order(:id).pluck(:code)).to eq(%w[CAT1 CAT2 DIG1])
+    end
+
+    it "does not feed Sendit's keys from other companies" do
+      add_account(api_key: "cath-pub", api_secret: "cath-secret")
+      expect(store.reload.sendit_configured?).to be(false)
+      expect(store.reload.ozon_configured?).to be(false)
+      expect(store.reload.ameex_configured?).to be(false)
+    end
+
+    it "adds another company without API keys in manual mode" do
+      add_account(provider: "other", name: "Ma société")
+      account = store.delivery_accounts.sole
+      expect(account).to have_attributes(provider: "other", code: "AUT1", connected_at: nil)
+      expect(account.credentials?).to be(false)
+    end
+
+    it "edits an account, keeps the saved keys when the fields are left empty, and can deactivate or delete it" do
+      add_account(api_key: "pub-1", api_secret: "sec-1")
+      account = store.delivery_accounts.sole
+      patch "/livraison/societes/#{account.id}", params: { delivery_account: { name: "Renamed", account_type: "premium", allow_open: "false", is_active: "false", api_key: "", api_secret: "" } }
+      expect(response).to redirect_to(%r{/integrations})
+      expect(account.reload).to have_attributes(name: "Renamed", account_type: "premium", allow_open: false, is_active: false)
+      expect(account.credentials).to eq("api_key" => "pub-1", "api_secret" => "sec-1")
+      get "/integrations"
+      expect(document.at_css("[data-account='#{account.id}']").text).to include("Non connectée")
+
+      expect { delete "/livraison/societes/#{account.id}" }.to change(DeliveryAccount, :count).by(-1)
+      expect(response).to redirect_to(%r{/integrations})
+    end
+
+    it "rejects invalid input without creating anything" do
+      [ { provider: "nope" }, { account_type: "gold" }, { delivery_fee: "-1" }, { name: "" } ].each do |invalid|
+        expect { add_account(**invalid) }.not_to change(DeliveryAccount, :count)
+        expect(response).to redirect_to(%r{/integrations})
+        expect(flash[:alert]).to be_present
+      end
+    end
+
+    it "does not let one workspace edit or delete another's account" do
+      other = Store.create!(name: "Autre #{suffix}", slug: "autre-#{suffix}", currency: "MAD")
+      foreign = other.delivery_accounts.create!(provider: "ozon", name: "Foreign")
+      patch "/livraison/societes/#{foreign.id}", params: { delivery_account: { name: "Hacked" } }
+      expect(response).to have_http_status(:not_found)
+      expect { delete "/livraison/societes/#{foreign.id}" }.not_to change(DeliveryAccount, :count)
+      get "/integrations"
+      expect(response.body).not_to include("Foreign")
+    end
+  end
+
+  it "shows which platforms are connected, with the domain, and only the workspace's own connections" do
+    connect("woocommerce", "boutique-#{suffix}.example.test")
+    connect("youcan", "old-#{suffix}.example.test", active: false)
+    other = Store.create!(name: "Autre #{suffix}", slug: "autre-#{suffix}", currency: "MAD")
+    connect("youcan", "foreign-#{suffix}.example.test", store: other)
+
+    get "/integrations"
+    expect(stores.length).to eq(1)
+    expect(stores.first.text).to include("boutique-#{suffix}.example.test", "WooCommerce", "Connectée")
+    expect(stores.first.text).not_to include("Non connectée")
+    expect(chooser_rows).to eq("shopify" => "Connecter", "woocommerce" => "+ Ajouter une autre boutique", "youcan" => "Connecter")
+    expect(response.body).not_to include("foreign-#{suffix}", "old-#{suffix}")
+  end
+
+  it "sends each platform's connect button to the existing connect flow" do
+    get "/integrations"
+    modals = document.css("[data-modal]").reject { |modal| modal["data-modal"] == "stores" }.to_h { |modal| [ modal["data-modal"], modal.at_css("a")["href"] ] }
+    expect(modals).to eq("shopify" => "/admin/seallo/connect", "woocommerce" => "/admin/woocommerce/connect",
+      "youcan" => "/admin/youcan/connect")
+    expect(document.css("[data-connect]").map { |button| button["data-connect"] }).to eq(%w[shopify woocommerce youcan])
+  end
+
+  it "disconnects a store without deleting its history" do
+    connection = connect("woocommerce", "boutique-#{suffix}.example.test")
+    get "/integrations"
+    form = document.css("form").find { |f| f.at_css("input[name=operation][value=disconnect]") }
+    expect(form["action"]).to eq("/admin/store_connections/#{connection.id}")
+    patch "/admin/store_connections/#{connection.id}", params: { operation: "disconnect" }
+    expect(connection.reload.active).to be(false)
+    get "/integrations"
+    expect(stores).to be_empty
+    expect(chooser_rows["woocommerce"]).to eq("Connecter")
+  end
+
+  it "does not let one workspace disconnect another's connection" do
+    other = Store.create!(name: "Autre #{suffix}", slug: "autre-#{suffix}", currency: "MAD")
+    foreign = connect("woocommerce", "foreign-#{suffix}.example.test", store: other)
+    patch "/admin/store_connections/#{foreign.id}", params: { operation: "disconnect" }
+    expect(response).to have_http_status(:not_found)
+    expect(foreign.reload.active).to be(true)
+  end
+
+  it "requires authentication" do
+    delete "/admin/logout"
+    get "/integrations"
+    expect(response).to redirect_to(%r{/admin/login})
+  end
+
+  %w[fr en ar].each do |locale|
+    it "renders in #{locale} without missing translations" do
+      get "/integrations", params: { locale: locale }
+      expect(response).to have_http_status(:ok)
+      expect(document.at_css("html")["dir"]).to eq(locale == "ar" ? "rtl" : "ltr")
+      expect(response.body).not_to match(/translation missing/i)
+    end
+  end
+end

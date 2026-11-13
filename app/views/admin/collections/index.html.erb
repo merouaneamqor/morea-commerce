@@ -1,31 +1,51 @@
-<% content_for :title, "Collections — Admin" %>
+<% content_for :title, "Collections, Admin" %>
 
 <div class="admin-page-header">
   <h1 class="admin-page-header__title">Collections</h1>
-  <%= link_to "Create collection", new_admin_collection_path, class: "admin-btn" %>
+  <%= link_to "Create collection", new_admin_collection_path, class: "admin-btn admin-page-header__primary" %>
 </div>
 
 <div class="admin-card">
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-      <thead><tr><th>Title</th><th>Status</th><th class="is-numeric">Products</th></tr></thead>
-      <tbody>
-        <% @collections.each do |collection| %>
-          <tr>
-            <td>
-              <%= link_to edit_admin_collection_path(collection), class: "flex items-center gap-3" do %>
+  <% if @collections.empty? %>
+    <p class="admin-empty">Group products into collections to make them easier to find.</p>
+  <% else %>
+    <ul class="admin-mobile-list md:hidden">
+      <% @collections.each do |collection| %>
+        <li>
+          <%= link_to edit_admin_collection_path(collection), class: "admin-mobile-list__item" do %>
+            <div class="admin-mobile-list__top">
+              <div class="admin-mobile-list__media">
                 <%= admin_thumb(collection_cover_url(collection)) %>
-                <span class="admin-link"><%= collection.name %></span>
-              <% end %>
-            </td>
-            <td><%= collection.published? ? admin_badge(:active, label: "Published") : admin_badge(:archived, label: "Hidden") %></td>
-            <td class="is-numeric"><%= collection.products.size %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-    <% if @collections.empty? %>
-      <p class="admin-empty">Group products into collections to make them easier to find.</p>
-    <% end %>
-  </div>
+                <div>
+                  <p class="admin-mobile-list__name" dir="auto"><%= collection.name %></p>
+                  <p class="admin-mobile-list__meta"><%= pluralize(collection.products.size, "product", locale: :en) %></p>
+                </div>
+              </div>
+              <%= collection.published? ? admin_badge(:active, label: "Published") : admin_badge(:archived, label: "Hidden") %>
+            </div>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="admin-table-wrap hidden md:block">
+      <table class="admin-table">
+        <thead><tr><th>Title</th><th>Status</th><th class="is-numeric">Products</th></tr></thead>
+        <tbody>
+          <% @collections.each do |collection| %>
+            <tr>
+              <td>
+                <%= link_to edit_admin_collection_path(collection), class: "flex items-center gap-3" do %>
+                  <%= admin_thumb(collection_cover_url(collection)) %>
+                  <span class="admin-link"><%= collection.name %></span>
+                <% end %>
+              </td>
+              <td><%= collection.published? ? admin_badge(:active, label: "Published") : admin_badge(:archived, label: "Hidden") %></td>
+              <td class="is-numeric"><%= collection.products.size %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </div>

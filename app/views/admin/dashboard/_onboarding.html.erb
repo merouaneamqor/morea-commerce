@@ -1,0 +1,73 @@
+<%# First-run checklist: guides merchants through source, carrier and first order work. %>
+<% onboarding = @onboarding %>
+<% if onboarding&.visible? %>
+<%
+  tour_steps = onboarding.steps.reject(&:done).filter_map do |step|
+    next if step.tour_target.blank?
+    { target: step.tour_target, title: t(step.title_key), body: t(step.help_key) }
+  end
+%>
+<section
+  class="rounded-2xl border border-[#e8e3df] bg-white p-5"
+  data-controller="onboarding-tour"
+  data-onboarding-tour-store-id-value="<%= current_store.id %>"
+  data-onboarding-tour-dismiss-label-value="<%= t("dashboard.onboarding.dismiss") %>"
+  data-onboarding-tour-next-label-value="<%= t("dashboard.onboarding.tour_next") %>"
+  data-onboarding-tour-done-label-value="<%= t("dashboard.onboarding.tour_done") %>"
+  data-onboarding-tour-steps-value="<%= tour_steps.to_json %>"
+  data-onboarding-tour-target="panel"
+>
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div class="min-w-0">
+      <h2 class="text-base font-semibold text-[#1f2430]"><%= t("dashboard.setup_heading") %></h2>
+      <p class="mt-1 text-sm text-[#8a8380]">
+        <%= t("dashboard.onboarding.progress", done: onboarding.done_count, total: onboarding.total_count) %>
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <% if tour_steps.any? %>
+        <button
+          type="button"
+          class="rounded-xl border border-[#e8e3df] bg-white px-3 py-2 text-sm font-semibold text-[#1f2430] hover:border-[#d6cfca]"
+          data-action="onboarding-tour#start"
+        ><%= t("dashboard.onboarding.tour") %></button>
+      <% end %>
+      <button
+        type="button"
+        class="rounded-xl px-3 py-2 text-sm text-[#8a8380] hover:text-[#1f2430]"
+        data-action="onboarding-tour#dismiss"
+      ><%= t("dashboard.onboarding.dismiss") %></button>
+    </div>
+  </div>
+
+  <div class="mt-4 h-2 overflow-hidden rounded-full bg-[#f0ebe7]" aria-hidden="true">
+    <div class="h-full rounded-full bg-[#a8432e] transition-[width] duration-500 ease-out" style="width: <%= onboarding.progress_percent %>%"></div>
+  </div>
+
+  <ol class="mt-4 space-y-3">
+    <% onboarding.steps.each_with_index do |step, index| %>
+      <li class="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-[#f0ebe7] px-3 py-3 <%= step.done ? "bg-[#f8f6f4]" : "bg-white" %>">
+        <div class="flex min-w-0 items-start gap-3">
+          <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold <%= step.done ? "bg-[#e3f3e8] text-[#2f7a4a]" : "bg-[#f4e4de] text-[#a8432e]" %>" aria-hidden="true">
+            <% if step.done %>✓<% else %><%= index + 1 %><% end %>
+          </span>
+          <div class="min-w-0">
+            <p class="font-medium text-[#1f2430] <%= "line-through decoration-[#cfc8c2]" if step.done %>"><%= t(step.title_key) %></p>
+            <p class="mt-0.5 text-sm text-[#8a8380]"><%= t(step.help_key) %></p>
+          </div>
+        </div>
+        <% unless step.done %>
+          <%= link_to t(step.cta_key), step.path, class: "shrink-0 rounded-xl bg-[#a8432e] px-3 py-2 text-sm font-semibold text-white hover:bg-[#8e3624]" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+
+  <% unless current_store.storefront_enabled? %>
+    <p class="mt-4 text-sm text-[#8a8380]">
+      <%= t("dashboard.setup.optional_storefront") %>
+      <%= link_to t("dashboard.storefront_settings"), edit_admin_store_path, class: "font-semibold text-[#a8432e] hover:underline" %>
+    </p>
+  <% end %>
+</section>
+<% end %>

@@ -2,8 +2,17 @@ module Admin
   class ProductsController < BaseController
     before_action :set_product, only: %i[show edit update destroy]
 
+    # The products of the workspace: those it made and those of its connected stores that are switched on. The store
+    # chooser narrows the list to one store (or to the manual ones); a switched-off store has no products here.
     def index
-      @products = current_store.products.includes(:translations, :product_variants, images_attachments: :blob).order(:position, :name)
+      @connections = current_store.store_connections.where(active: true).order(:name)
+      visible = current_store.products.visible
+      @counts = visible.group(:store_connection_id).count
+      @source = params[:source].to_s
+      scope = visible
+      scope = scope.native if @source == "manual"
+      scope = scope.where(store_connection_id: @connections.find(@source).id) if @source.match?(/\A\d+\z/)
+      @products = scope.includes(:translations, :product_variants, :store_connection, images_attachments: :blob).order(:position, :name)
     end
 
     def show
@@ -55,7 +64,7 @@ module Admin
 
     def product_params
       params.require(:product).permit(
-        :slug, :status, :price_dh, :compare_at_dh, :currency,
+        :slug, :status, :price_dh, :compare_at_dh, :cost_dh, :currency,
         :sku, :stock, :track_inventory, :featured, :position,
         collection_ids: [],
         translations_attributes: [

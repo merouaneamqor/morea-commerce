@@ -1,0 +1,609 @@
+# Strings for the Seallo-style apex landing page (generated from the seallo welcome page; JSON is valid YAML).
+{
+  "fr": {
+    "platform_home": {
+      "seallo": {
+        "nav": [
+          "Démo",
+          "Fonctionnalités",
+          "Pourquoi seallo",
+          "Publicité",
+          "Contact"
+        ],
+        "cta": "Demander un accès",
+        "signin": "Se connecter",
+        "signin_short": "Connexion",
+        "signup_short": "Inscription",
+        "signup": "Créer un compte",
+        "dash": "Tableau de bord",
+        "dash_short": "Espace",
+        "close": "Fermer",
+        "ads_title": "Dépenses publicitaires",
+        "ads_sub": "Seallo importe les dépenses Meta Ads et TikTok Ads et les rattache aux commandes.",
+        "ads": [
+          [
+            "Dépenses importées",
+            "Seallo importe les dépenses publicitaires depuis Meta et TikTok. Vous ne copiez pas les chiffres."
+          ],
+          [
+            "Commandes livrées",
+            "Seallo calcule le retour sur dépense publicitaire à partir des commandes livrées. Seallo ignore une commande tant qu'elle n'est pas livrée."
+          ],
+          [
+            "Par produit et campagne",
+            "Seallo affiche le bénéfice de chaque produit et de chaque campagne, y compris celles qui perdent de l'argent."
+          ]
+        ],
+        "contact_title": "Contact",
+        "contact_sub": "Écrivez pour une question ou pour demander une démo. Nous répondons sous 24 heures.",
+        "h1a": "Confirmez la commande.",
+        "h1b": "Comptez le bénéfice.",
+        "sub": "Votre équipe confirme chaque commande en paiement à la livraison dans seallo. Après confirmation, seallo envoie la commande à votre société de livraison. Le bénéfice et les dépenses publicitaires restent sur cette commande.",
+        "cta2": "Voir les étapes d'une commande",
+        "step_word": "Étape",
+        "of_word": "sur",
+        "flow": [
+          [
+            "Commande",
+            "Seallo l'enregistre",
+            "Quand un client commande sur Shopify, YouCan ou WooCommerce, seallo enregistre le produit, la quantité, l'adresse et le téléphone. Vous ne copiez pas la commande."
+          ],
+          [
+            "Confirmée",
+            "L'agent marque le résultat",
+            "Vos agents appellent le client depuis seallo. Ils marquent la commande confirmée, annulée, reportée ou injoignable. Vous payez chaque agent au mois ou par commande livrée. Seallo calcule cette paie."
+          ],
+          [
+            "Livreur",
+            "Seallo l'envoie",
+            "Après confirmation, seallo envoie la commande à votre société de livraison. Vous ne saisissez pas chaque colis."
+          ],
+          [
+            "Suivi",
+            "L'état du colis dans seallo",
+            "Seallo affiche l'état donné par la société de livraison. La société de livraison marque le colis ramassé, en cours, livré ou retourné. Vous n'appelez pas pour le demander."
+          ],
+          [
+            "Bénéfice",
+            "Seallo soustrait les coûts",
+            "Quand la société de livraison livre la commande, seallo soustrait le coût du produit, les frais de livraison, les dépenses publicitaires et les commissions. Le reste est le bénéfice de ce produit et de la boutique."
+          ]
+        ],
+        "demo_title": "Tableau de bord",
+        "demo_sub": "L'écran affiche les commandes, le taux de confirmation, le taux de livraison et le bénéfice net.",
+        "menu": [
+          "Tableau de bord",
+          "Commandes",
+          "Confirmation",
+          "Livraison",
+          "Produits",
+          "Publicité",
+          "Profits",
+          "Équipe"
+        ],
+        "kpis": [
+          "Commandes",
+          "Taux de confirmation",
+          "Taux de livraison",
+          "Bénéfice net"
+        ],
+        "chart": "Ventes livrées, 7 derniers jours",
+        "recent": "Dernières commandes",
+        "cols": [
+          "Client",
+          "Produit",
+          "Montant",
+          "Statut"
+        ],
+        "status": [
+          "Livrée",
+          "Confirmée",
+          "En cours",
+          "Annulée"
+        ],
+        "f_title": "Ce que seallo fait avec chaque commande",
+        "f_sub": "Seallo garde la confirmation, l'expédition, les dépenses publicitaires et le bénéfice sur la même commande.",
+        "feats": [
+          [
+            "Commandes",
+            "Seallo importe chaque commande depuis Shopify, YouCan ou WooCommerce, avec le client, le produit et l'adresse."
+          ],
+          [
+            "Confirmation",
+            "Vos agents confirment, annulent, reportent ou marquent le client injoignable. Vous payez chaque agent au mois ou par commande livrée."
+          ],
+          [
+            "Livraison",
+            "Seallo envoie chaque commande confirmée à votre société de livraison et affiche l'état du colis."
+          ],
+          [
+            "Publicité",
+            "Seallo importe les dépenses Meta Ads et TikTok Ads et calcule le retour sur dépense publicitaire à partir des commandes livrées."
+          ],
+          [
+            "Profits",
+            "À la livraison, seallo soustrait le coût du produit, les frais de livraison, les dépenses publicitaires et les commissions. Vous voyez le bénéfice par produit et pour la boutique."
+          ],
+          [
+            "Équipe",
+            "Ajoutez des managers et des agents avec des accès séparés. Seallo enregistre leurs résultats, et vous pouvez gérer plusieurs boutiques."
+          ]
+        ],
+        "why_title": "Le travail que les vendeurs font encore à la main",
+        "why_sub": "Chaque ligne montre l'étape manuelle, puis ce que fait seallo.",
+        "why_topics": [
+          "Commandes",
+          "Confirmation",
+          "Livraison",
+          "Suivi",
+          "Publicité",
+          "Profit"
+        ],
+        "why_result": "Après la livraison, seallo soustrait le coût du produit, les frais de livraison, les publicités et les commissions, puis affiche le bénéfice.",
+        "before": "Aujourd'hui",
+        "after": "Avec seallo",
+        "why": [
+          [
+            "Vous copiez chaque commande depuis votre boutique.",
+            "Seallo importe chaque commande. Vous ne la copiez pas."
+          ],
+          [
+            "Vos agents confirment dans WhatsApp ou Google Sheets, et personne n'enregistre le résultat dans seallo.",
+            "Les agents marquent le résultat dans seallo. Seallo calcule la paie de chaque agent."
+          ],
+          [
+            "Vous saisissez les colis un par un chez la société de livraison.",
+            "Seallo envoie le colis à votre société de livraison dès que la commande est confirmée."
+          ],
+          [
+            "Vous appelez pour savoir où est un colis, ou s'il est revenu.",
+            "Seallo indique si le colis est en cours, livré ou retourné."
+          ],
+          [
+            "Meta compte le retour sur les commandes passées. Vous encaissez l'argent des commandes livrées.",
+            "Seallo calcule le retour sur dépense publicitaire à partir des commandes livrées."
+          ],
+          [
+            "En fin de mois, vous n'avez pas encore soustrait le coût du produit, la livraison, les publicités et les commissions.",
+            "Seallo affiche le bénéfice par produit et pour la boutique après ces coûts."
+          ]
+        ],
+        "j_title": "Étapes d'une commande",
+        "steps": [
+          [
+            "Commande",
+            "Elle arrive de votre boutique"
+          ],
+          [
+            "Confirmée",
+            "Vous la confirmez ou l'annulez"
+          ],
+          [
+            "Livreur",
+            "Seallo l'envoie à la société de livraison"
+          ],
+          [
+            "Suivi",
+            "Seallo affiche l'état du colis"
+          ],
+          [
+            "Bénéfice",
+            "Seallo le calcule après la livraison"
+          ]
+        ],
+        "end_title": "Demandez un accès à seallo.",
+        "end_sub": "Demandez un compte. Vous pourrez confirmer des commandes et lire le bénéfice après livraison.",
+        "foot": "© 2026 seallo. Confirmez la commande, puis comptez le bénéfice.",
+        "partner_titles": {
+          "stores": "Boutiques",
+          "delivery": "Livraison",
+          "ads": "Publicité"
+        }
+      }
+    }
+  },
+  "en": {
+    "platform_home": {
+      "seallo": {
+        "nav": [
+          "Demo",
+          "Features",
+          "Why seallo",
+          "Advertising",
+          "Contact"
+        ],
+        "cta": "Request access",
+        "signin": "Sign in",
+        "signin_short": "Sign in",
+        "signup_short": "Sign up",
+        "signup": "Sign up",
+        "dash": "Dashboard",
+        "dash_short": "Dashboard",
+        "close": "Close",
+        "ads_title": "Ad spend in dirhams",
+        "ads_sub": "Seallo imports Meta Ads and TikTok Ads spend and matches it to orders.",
+        "ads": [
+          [
+            "Imported spend",
+            "Seallo imports ad spend from Meta and TikTok. You do not copy the numbers."
+          ],
+          [
+            "Delivered orders",
+            "Seallo calculates return on ad spend from delivered orders. Seallo skips an order until the carrier delivers it."
+          ],
+          [
+            "Per product and campaign",
+            "Seallo shows profit for each product and each campaign, including campaigns that lose money."
+          ]
+        ],
+        "contact_title": "Contact",
+        "contact_sub": "Write with a question, or ask for a demo. We reply within 24 hours.",
+        "h1a": "Confirm the order.",
+        "h1b": "Count the profit.",
+        "sub": "Your team confirms each cash-on-delivery order in seallo. After confirmation, seallo sends the order to your delivery company. Profit and ad spend stay on that order.",
+        "cta2": "See the steps for one order",
+        "step_word": "Step",
+        "of_word": "of",
+        "flow": [
+          [
+            "Order",
+            "Seallo records it",
+            "When a customer orders on Shopify, YouCan, or WooCommerce, seallo stores the product, quantity, address, and phone number. You do not copy the order."
+          ],
+          [
+            "Confirmed",
+            "The agent marks the outcome",
+            "Your agents call the customer from seallo. They mark the order confirmed, cancelled, postponed, or unreachable. You pay each agent a monthly amount or a fee per delivered order. Seallo calculates that pay."
+          ],
+          [
+            "Carrier",
+            "Seallo sends it",
+            "After confirmation, seallo sends the order to your delivery company. You do not type each parcel."
+          ],
+          [
+            "Tracking",
+            "Parcel status in seallo",
+            "Seallo shows the status from the delivery company. The delivery company marks it picked up, in transit, delivered, or returned. You do not call to ask."
+          ],
+          [
+            "Profit",
+            "Seallo subtracts the costs",
+            "When the delivery company delivers the order, seallo subtracts product cost, delivery fees, ad spend, and commissions. The remainder is profit for that product and for the store."
+          ]
+        ],
+        "demo_title": "Dashboard",
+        "demo_sub": "The screen lists orders, confirmation rate, delivery rate, and net profit.",
+        "menu": [
+          "Dashboard",
+          "Orders",
+          "Confirmation",
+          "Delivery",
+          "Products",
+          "Advertising",
+          "Profits",
+          "Team"
+        ],
+        "kpis": [
+          "Orders",
+          "Confirmation rate",
+          "Delivery rate",
+          "Net profit"
+        ],
+        "chart": "Delivered sales, last 7 days",
+        "recent": "Latest orders",
+        "cols": [
+          "Customer",
+          "Product",
+          "Amount",
+          "Status"
+        ],
+        "status": [
+          "Delivered",
+          "Confirmed",
+          "In transit",
+          "Cancelled"
+        ],
+        "f_title": "What seallo does with each order",
+        "f_sub": "Seallo keeps confirmation, shipping, ad spend, and profit on the same order.",
+        "feats": [
+          [
+            "Orders",
+            "Seallo imports each order from Shopify, YouCan, or WooCommerce, with the customer, the product, and the address."
+          ],
+          [
+            "Confirmation",
+            "Your agents confirm, cancel, postpone, or mark the customer unreachable. You pay each agent monthly or per delivered order."
+          ],
+          [
+            "Delivery",
+            "Seallo sends each confirmed order to your delivery company and shows the parcel status."
+          ],
+          [
+            "Advertising",
+            "Seallo imports Meta Ads and TikTok Ads spend and calculates return on ad spend from delivered orders."
+          ],
+          [
+            "Profits",
+            "On delivery, seallo subtracts product cost, delivery fees, ad spend, and commissions. You see profit per product and for the store."
+          ],
+          [
+            "Team",
+            "Add managers and agents with separate access. Seallo records their results, and you can run more than one store."
+          ]
+        ],
+        "why_title": "Work sellers still do by hand",
+        "why_sub": "Each row shows the manual step, then what seallo does.",
+        "why_topics": [
+          "Orders",
+          "Confirmation",
+          "Delivery",
+          "Tracking",
+          "Advertising",
+          "Profit"
+        ],
+        "why_result": "After delivery, seallo subtracts product cost, delivery fees, ads, and commissions, then shows the profit.",
+        "before": "Today",
+        "after": "With seallo",
+        "why": [
+          [
+            "You copy every order from your store.",
+            "Seallo imports each order. You do not copy it."
+          ],
+          [
+            "Your agents confirm in WhatsApp or Google Sheets, and nobody records the outcome in seallo.",
+            "Agents mark the outcome in seallo. Seallo calculates each agent's pay."
+          ],
+          [
+            "You enter parcels one by one at the delivery company.",
+            "Seallo sends the parcel to your delivery company when the order is confirmed."
+          ],
+          [
+            "You call to learn where a parcel is, or whether it came back.",
+            "Seallo shows whether the parcel is in transit, delivered, or returned."
+          ],
+          [
+            "Meta counts return on ad spend from placed orders. You receive money from delivered orders.",
+            "Seallo calculates return on ad spend from delivered orders."
+          ],
+          [
+            "At month end you still have not subtracted product cost, delivery fees, ads, and commissions.",
+            "Seallo shows profit per product and for the store after those costs."
+          ]
+        ],
+        "j_title": "Steps for one order",
+        "steps": [
+          [
+            "Order",
+            "It arrives from your store"
+          ],
+          [
+            "Confirmed",
+            "You confirm or cancel it"
+          ],
+          [
+            "Carrier",
+            "Seallo sends it to the delivery company"
+          ],
+          [
+            "Tracking",
+            "Seallo shows the parcel status"
+          ],
+          [
+            "Profit",
+            "Seallo calculates it after delivery"
+          ]
+        ],
+        "end_title": "Request access to seallo.",
+        "end_sub": "Ask for an account. You can confirm orders and read profit after delivery.",
+        "foot": "© 2026 seallo. Confirm the order, then count the profit.",
+        "partner_titles": {
+          "stores": "Stores",
+          "delivery": "Delivery",
+          "ads": "Advertising"
+        }
+      }
+    }
+  },
+  "ar": {
+    "platform_home": {
+      "seallo": {
+        "nav": [
+          "العرض",
+          "المميزات",
+          "لماذا seallo",
+          "الإعلانات",
+          "تواصل"
+        ],
+        "cta": "اطلب الوصول",
+        "signin": "تسجيل الدخول",
+        "signin_short": "دخول",
+        "signup_short": "حساب جديد",
+        "signup": "إنشاء حساب",
+        "dash": "لوحة التحكم",
+        "dash_short": "لوحة",
+        "close": "إغلاق",
+        "ads_title": "مصاريف الإعلان بالدرهم",
+        "ads_sub": "يستورد seallo مصاريف Meta Ads وTikTok Ads ويطابقها مع الطلبات.",
+        "ads": [
+          [
+            "مصاريف مستوردة",
+            "يستورد seallo مصاريف الإعلان من Meta وTikTok. لا تنسخ الأرقام."
+          ],
+          [
+            "طلبات مسلّمة",
+            "يحسب seallo العائد على الإنفاق الإعلاني من الطلبات المسلّمة. لا يحسب seallo الطلب قبل تسليمه."
+          ],
+          [
+            "لكل منتج وحملة",
+            "يعرض seallo الربح لكل منتج ولكل حملة، بما فيها الحملات التي تخسر المال."
+          ]
+        ],
+        "contact_title": "تواصل",
+        "contact_sub": "اكتب لنا سؤالاً، أو اطلب عرضاً. نرد خلال 24 ساعة.",
+        "h1a": "أكّد الطلب.",
+        "h1b": "ثم احسب الربح.",
+        "sub": "يؤكد فريقك كل طلب بالدفع عند الاستلام داخل seallo. بعد التأكيد، يرسل seallo الطلب إلى شركة التوصيل. يبقى الربح ومصاريف الإعلان على نفس الطلب.",
+        "cta2": "اطلع على خطوات الطلب",
+        "step_word": "الخطوة",
+        "of_word": "من",
+        "flow": [
+          [
+            "الطلب",
+            "يسجّله Seallo",
+            "عندما يطلب الزبون من Shopify أو YouCan أو WooCommerce، يحفظ seallo المنتج والكمية والعنوان ورقم الهاتف. لا تنسخ الطلب."
+          ],
+          [
+            "التأكيد",
+            "يسجّل الوكيل النتيجة",
+            "يتصل وكلاؤك بالزبون من seallo. يضعون على الطلب إحدى الحالات، مؤكّد أو ملغى أو مؤجّل أو لا يجيب. تدفع لكل وكيل مبلغاً شهرياً أو أجراً عن كل طلب مسلّم. يحسب seallo هذا الأجر."
+          ],
+          [
+            "التوصيل",
+            "يرسله Seallo",
+            "بعد التأكيد، يرسل seallo الطلب إلى شركة التوصيل. لا تدخل كل طرد بنفسك."
+          ],
+          [
+            "التتبّع",
+            "حالة الطرد داخل seallo",
+            "يعرض seallo الحالة التي ترسلها شركة التوصيل. شركة التوصيل ترسل إحدى الحالات، مستلم أو في الطريق أو مسلّم أو مرتجع. لا تتصل لتسأل عن الحالة."
+          ],
+          [
+            "الربح",
+            "يخصم Seallo التكاليف",
+            "عندما تسلّم شركة التوصيل الطلب، يخصم seallo تكلفة المنتج ومصاريف التوصيل ومصاريف الإعلان والعمولات. الباقي هو ربح هذا المنتج وربح المتجر."
+          ]
+        ],
+        "demo_title": "لوحة التحكم",
+        "demo_sub": "تعرض الشاشة الطلبات ونسبة التأكيد ونسبة التوصيل وصافي الربح.",
+        "menu": [
+          "لوحة التحكم",
+          "الطلبات",
+          "التأكيد",
+          "التوصيل",
+          "المنتجات",
+          "الإعلانات",
+          "الأرباح",
+          "الفريق"
+        ],
+        "kpis": [
+          "الطلبات",
+          "نسبة التأكيد",
+          "نسبة التوصيل",
+          "صافي الربح"
+        ],
+        "chart": "المبيعات المسلّمة، آخر 7 أيام",
+        "recent": "آخر الطلبات",
+        "cols": [
+          "الزبون",
+          "المنتج",
+          "المبلغ",
+          "الحالة"
+        ],
+        "status": [
+          "مسلّمة",
+          "مؤكّدة",
+          "قيد التوصيل",
+          "ملغاة"
+        ],
+        "f_title": "ماذا يفعل seallo بكل طلب",
+        "f_sub": "يبقي seallo التأكيد والشحن ومصاريف الإعلان والربح في سجل الطلب نفسه.",
+        "feats": [
+          [
+            "الطلبات",
+            "يستورد seallo كل طلب من Shopify أو YouCan أو WooCommerce، مع الزبون والمنتج والعنوان."
+          ],
+          [
+            "التأكيد",
+            "يؤكّد وكلاؤك الطلب أو يلغونه أو يؤجّلونه أو يضعون حالة لا يجيب. تدفع لكل وكيل مبلغاً شهرياً أو أجراً عن كل طلب مسلّم."
+          ],
+          [
+            "التوصيل",
+            "يرسل seallo كل طلب مؤكّد إلى شركة التوصيل ويعرض حالة الطرد."
+          ],
+          [
+            "الإعلانات",
+            "يستورد seallo مصاريف Meta Ads وTikTok Ads ويحسب العائد على الإنفاق الإعلاني من الطلبات المسلّمة."
+          ],
+          [
+            "الأرباح",
+            "عند التسليم، يخصم seallo تكلفة المنتج ومصاريف التوصيل ومصاريف الإعلان والعمولات. ترى الربح لكل منتج وللمتجر."
+          ],
+          [
+            "الفريق",
+            "أضف مسيّرين ووكلاء بصلاحيات منفصلة. يسجّل seallo نتائجهم، ويمكنك إدارة أكثر من متجر."
+          ]
+        ],
+        "why_title": "عمل ما زال البائعون ينجزونه يدوياً",
+        "why_sub": "كل سطر يعرض الخطوة اليدوية، ثم ما يفعله seallo.",
+        "why_topics": [
+          "الطلبات",
+          "التأكيد",
+          "التوصيل",
+          "التتبّع",
+          "الإعلانات",
+          "الربح"
+        ],
+        "why_result": "بعد التسليم، يخصم seallo تكلفة المنتج ومصاريف التوصيل والإعلانات والعمولات، ثم يعرض الربح.",
+        "before": "اليوم",
+        "after": "مع seallo",
+        "why": [
+          [
+            "تنسخ كل طلب من متجرك.",
+            "يستورد seallo كل طلب. لا تنسخه."
+          ],
+          [
+            "وكلاؤك يؤكّدون في واتساب أو Google Sheets، ولا أحد يسجّل النتيجة في seallo.",
+            "يسجّل الوكلاء النتيجة في seallo. يحسب seallo أجر كل وكيل."
+          ],
+          [
+            "تُدخل الطرود واحداً واحداً لدى شركة التوصيل.",
+            "يرسل seallo الطرد إلى شركة التوصيل عند تأكيد الطلب."
+          ],
+          [
+            "تتصل لتعرف أين الطرد، أو هل رجع.",
+            "يبيّن seallo إن كان الطرد في الطريق أو مسلّماً أو مرتجعاً."
+          ],
+          [
+            "يحسب Meta العائد من الطلبات المسجّلة. يصلك المال من الطلبات المسلّمة.",
+            "يحسب seallo العائد على الإنفاق الإعلاني من الطلبات المسلّمة."
+          ],
+          [
+            "في آخر الشهر لم تخصم بعد تكلفة المنتج والتوصيل والإعلانات والعمولات.",
+            "يعرض seallo الربح لكل منتج وللمتجر بعد هذه التكاليف."
+          ]
+        ],
+        "j_title": "خطوات طلب واحد",
+        "steps": [
+          [
+            "الطلب",
+            "يصل من متجرك"
+          ],
+          [
+            "التأكيد",
+            "تؤكّده أو تلغيه"
+          ],
+          [
+            "التوصيل",
+            "يرسله seallo إلى شركة التوصيل"
+          ],
+          [
+            "التتبّع",
+            "يعرض seallo حالة الطرد"
+          ],
+          [
+            "الربح",
+            "يحسبه seallo بعد التسليم"
+          ]
+        ],
+        "end_title": "اطلب الوصول إلى seallo.",
+        "end_sub": "اطلب حساباً. يمكنك تأكيد الطلبات وقراءة الربح بعد التسليم.",
+        "foot": "© 2026 seallo. أكّد الطلب، ثم احسب الربح.",
+        "partner_titles": {
+          "stores": "المتاجر",
+          "delivery": "شركات التوصيل",
+          "ads": "الإعلانات"
+        }
+      }
+    }
+  }
+}

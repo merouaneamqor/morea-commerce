@@ -1,0 +1,34 @@
+<% content_for :title, "Preview #{@theme.name}, Themes" %>
+
+<div class="admin-page-header">
+  <div>
+    <div class="mb-2"><%= link_to "← #{@theme.name}", admin_theme_path(@theme), class: "admin-link--blue" %></div>
+    <h1 class="admin-page-header__title">Theme preview</h1>
+    <p class="admin-page-header__meta">Admin-only snapshot rendered with the same home section partials as the public storefront. Nothing here is published.</p>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <% Morea::Locales::AVAILABLE.each do |locale| %>
+      <%= link_to Morea::Locales::CODES.fetch(locale),
+            preview_admin_theme_path(@theme, locale: locale),
+            class: "admin-btn-secondary #{'bg-stone-200' if @preview_locale.to_sym == locale}",
+            "aria-current": (@preview_locale.to_sym == locale ? "true" : nil) %>
+    <% end %>
+    <span class="admin-badge admin-badge--info">Preview</span>
+  </div>
+</div>
+
+<section class="admin-card overflow-hidden" data-theme-preview="<%= @theme.id %>">
+  <div class="flex items-center gap-2 border-b border-[#dedede] bg-[#f5f5f5] px-4 py-3" aria-hidden="true">
+    <span class="h-3 w-3 rounded-full bg-[#e36b62]"></span>
+    <span class="h-3 w-3 rounded-full bg-[#e6bd55]"></span>
+    <span class="h-3 w-3 rounded-full bg-[#65b66f]"></span>
+    <span class="ml-3 flex-1 rounded bg-white px-3 py-1 text-center text-xs text-stone-500"><%= current_store.slug %>.store / preview</span>
+  </div>
+  <div class="bg-white text-stone-900">
+    <header class="flex items-center justify-between border-b px-6 py-4">
+      <strong class="tracking-widest"><%= current_store.name %></strong>
+      <span class="text-xs uppercase tracking-wider">Catalog &nbsp; About &nbsp; Cart</span>
+    </header>
+    <%= render "admin/themes/preview_sections", sections: @sections, locale: @preview_locale %>
+  </div>
+</section>

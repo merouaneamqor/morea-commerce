@@ -1,13 +1,89 @@
 # sidekiq-cron jobs, loaded automatically when Sidekiq boots.
-# On Render the Sendit sync runs as a separate Cron Job (the free web service
-# sleeps), so SENDIT_EXTERNAL_CRON=1 turns the in-process schedule off there.
-<% if ENV["SENDIT_EXTERNAL_CRON"].present? %>
+# Each integration can use an external cron independently of the other.
+# Set its *_EXTERNAL_CRON flag only when that integration has an external runner.
+<% if ENV["SENDIT_EXTERNAL_CRON"].present? && ENV["OZON_EXTERNAL_CRON"].present? && ENV["AMEEX_EXTERNAL_CRON"].present? && ENV["SHOPIFY_EXTERNAL_CRON"].present? && ENV["SEALLO_RETENTION_EXTERNAL_CRON"].present? && ENV["META_ADS_EXTERNAL_CRON"].present? && ENV["CLAIM_EXPIRY_EXTERNAL_CRON"].present? && ENV["PRODUCTS_SYNC_EXTERNAL_CRON"].present? %>
 {}
-<% else %>
+<% end %>
+<% unless ENV["SENDIT_EXTERNAL_CRON"].present? %>
 sendit_poll:
   cron: "<%= ENV.fetch("SENDIT_POLL_CRON", "*/15 * * * *") %>"
   class: "SenditPollJob"
   queue: default
   active_job: true
   description: "Refresh Sendit parcels (shipped, unreachable, refused, returns)"
+sendit_cities_refresh:
+  cron: "<%= ENV.fetch("SENDIT_CITIES_CRON", "0 3 * * 1") %>"
+  class: "SenditCitiesRefreshJob"
+  queue: default
+  active_job: true
+  description: "Refresh the Sendit city list of every workspace with Sendit, weekly"
+<% end %>
+<% unless ENV["OZON_EXTERNAL_CRON"].present? %>
+ozon_poll:
+  cron: "<%= ENV.fetch("OZON_POLL_CRON", "*/15 * * * *") %>"
+  class: "OzonPollJob"
+  queue: default
+  active_job: true
+  description: "Refresh Ozon Express parcels still in transit"
+ozon_cities_refresh:
+  cron: "<%= ENV.fetch("OZON_CITIES_CRON", "15 3 * * 1") %>"
+  class: "OzonCitiesRefreshJob"
+  queue: default
+  active_job: true
+  description: "Refresh the Ozon Express city list weekly"
+<% end %>
+<% unless ENV["AMEEX_EXTERNAL_CRON"].present? %>
+ameex_poll:
+  cron: "<%= ENV.fetch("AMEEX_POLL_CRON", "*/15 * * * *") %>"
+  class: "AmeexPollJob"
+  queue: default
+  active_job: true
+  description: "Refresh Ameex parcels still in transit"
+ameex_cities_refresh:
+  cron: "<%= ENV.fetch("AMEEX_CITIES_CRON", "30 3 * * 1") %>"
+  class: "AmeexCitiesRefreshJob"
+  queue: default
+  active_job: true
+  description: "Refresh the Ameex city list weekly"
+<% end %>
+<% unless ENV["SHOPIFY_EXTERNAL_CRON"].present? %>
+shopify_orders_sync:
+  cron: "<%= ENV.fetch("SHOPIFY_SYNC_CRON", "*/10 * * * *") %>"
+  class: "ShopifyOrdersSyncJob"
+  queue: default
+  active_job: true
+  description: "Import Shopify COD orders missed by the webhook"
+<% end %>
+<% unless ENV["SEALLO_RETENTION_EXTERNAL_CRON"].present? %>
+seallo_retention:
+  cron: "<%= ENV.fetch("SEALLO_RETENTION_CRON", "17 3 * * *") %>"
+  class: "SealloRetentionJob"
+  queue: default
+  active_job: true
+  description: "Redact buyer contact details on completed Seallo Connect orders after 180 days"
+<% end %>
+<% unless ENV["META_ADS_EXTERNAL_CRON"].present? %>
+meta_ads_sync:
+  cron: "<%= ENV.fetch("META_ADS_SYNC_CRON", "5 * * * *") %>"
+  class: "MetaAdsSyncJob"
+  queue: default
+  active_job: true
+  description: "Sync Meta ad spend (campaign and ad level, yesterday and today) for every linked ad account, hourly"
+<% end %>
+<% unless ENV["CLAIM_EXPIRY_EXTERNAL_CRON"].present? %>
+release_idle_claims:
+  cron: "<%= ENV.fetch("CLAIM_EXPIRY_CRON", "*/5 * * * *") %>"
+  class: "ReleaseIdleClaimsJob"
+  queue: default
+  active_job: true
+  description: "Release confirmation claims with no activity for 15 minutes"
+<% end %>
+
+<% unless ENV["PRODUCTS_SYNC_EXTERNAL_CRON"].present? %>
+products_sync:
+  cron: "<%= ENV.fetch("PRODUCTS_SYNC_CRON", "17 */6 * * *") %>"
+  class: "ProductsSyncJob"
+  queue: default
+  active_job: true
+  description: "Read the catalog of every connected store (Shopify, WooCommerce, YouCan) into the products, every 6 hours"
 <% end %>

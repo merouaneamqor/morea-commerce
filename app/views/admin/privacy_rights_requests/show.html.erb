@@ -1,0 +1,22 @@
+<% content_for :title, "#{t("privacy_rights.admin.title")}, Admin" %>
+
+<div class="admin-page-header">
+  <%= link_to admin_privacy_rights_requests_path, class: "admin-back", "aria-label": t("privacy_rights.admin.back") do %><%= admin_icon(:back) %><% end %>
+  <h1 class="admin-page-header__title"><%= @request.requester_name %></h1>
+</div>
+
+<section class="admin-card space-y-3 px-5 py-4">
+  <p><span class="admin-muted"><%= t("privacy_rights.fields.type") %>:</span> <%= t("privacy_rights.types.#{@request.request_type}") %></p>
+  <p><span class="admin-muted"><%= t("privacy_rights.fields.contact") %>:</span> <%= @request.requester_contact %></p>
+  <% if @request.order_number.present? %>
+    <p><span class="admin-muted"><%= t("privacy_rights.fields.order_number") %>:</span> <%= @request.order_number %></p>
+  <% end %>
+  <% if @request.details.present? %>
+    <p class="whitespace-pre-wrap"><%= @request.details %></p>
+  <% end %>
+  <p class="admin-muted text-[13px]"><%= l(@request.created_at, format: :long) %>, <%= t("privacy_rights.statuses.#{@request.status}") %></p>
+
+  <% if @request.status != "resolved" %>
+    <%= button_to t("privacy_rights.admin.resolve"), resolve_admin_privacy_rights_request_path(@request), class: "admin-btn mt-4" %>
+  <% end %>
+</section>

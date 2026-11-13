@@ -1,0 +1,78 @@
+<ul class="admin-mobile-list lg:hidden">
+  <% requests.each do |request| %>
+    <li class="admin-mobile-list__card">
+      <div class="admin-mobile-list__top">
+        <div>
+          <p class="admin-mobile-list__name"><%= request.store_name %></p>
+          <p class="admin-mobile-list__meta"><%= request.email %></p>
+        </div>
+        <%= admin_badge(request.status.to_sym, label: t("platform_admin.request_statuses.#{request.status}"),
+              tone: { "pending" => "warning", "approved" => "success", "rejected" => "neutral" }[request.status]) %>
+      </div>
+      <p class="admin-mobile-list__meta">
+        <%= request.phone.presence || admin_blank %>
+        · <%= request.locale.upcase %>
+        · <%= t(request.storefront_enabled? ? "onboarding.with_storefront" : "onboarding.external_only") %>
+      </p>
+      <p class="admin-mobile-list__meta">
+        <%= time_tag request.created_at, l(request.created_at.in_time_zone("Africa/Casablanca"), format: "%d/%m/%Y %H:%M") %>
+      </p>
+      <div class="admin-mobile-list__actions">
+        <% if request.pending? %>
+          <%= button_to t("platform_admin.review_request"), approve_admin_access_request_path(request), method: :post, class: "admin-btn",
+                form: { class: "inline w-full sm:w-auto" },
+                title: t("platform_admin.approve_flow_help") %>
+          <%= button_to t("platform_admin.reject"), reject_admin_access_request_path(request), method: :post, class: "admin-btn-secondary",
+                form: { class: "inline w-full sm:w-auto", data: { turbo_confirm: t("platform_admin.reject_confirmation") } } %>
+        <% elsif request.store %>
+          <%= link_to request.store.name, admin_tenant_path(request.store), class: "admin-link" %>
+        <% end %>
+      </div>
+    </li>
+  <% end %>
+</ul>
+
+<div class="admin-table-wrap hidden lg:block">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th><%= t("platform_admin.fields.business") %></th>
+        <th><%= t("platform_admin.fields.email") %></th>
+        <th><%= t("platform_admin.fields.phone") %></th>
+        <th><%= t("platform_admin.fields.language") %></th>
+        <th><%= t("onboarding.mode_label") %></th>
+        <th><%= t("platform_admin.fields.requested") %></th>
+        <th><%= t("platform_admin.fields.status") %></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% requests.each do |request| %>
+        <tr>
+          <td class="font-medium"><%= request.store_name %></td>
+          <td><%= request.email %></td>
+          <td><%= request.phone.presence || admin_blank %></td>
+          <td><%= request.locale.upcase %></td>
+          <td><%= t(request.storefront_enabled? ? "onboarding.with_storefront" : "onboarding.external_only") %></td>
+          <td><%= time_tag request.created_at, l(request.created_at.in_time_zone("Africa/Casablanca"), format: "%d/%m/%Y %H:%M") %></td>
+          <td>
+            <%= admin_badge(request.status.to_sym, label: t("platform_admin.request_statuses.#{request.status}"),
+                  tone: { "pending" => "warning", "approved" => "success", "rejected" => "neutral" }[request.status]) %>
+          </td>
+          <td class="text-right">
+            <% if request.pending? %>
+              <div class="flex justify-end gap-2">
+                <%= button_to t("platform_admin.review_request"), approve_admin_access_request_path(request), method: :post, class: "admin-btn",
+                      title: t("platform_admin.approve_flow_help") %>
+                <%= button_to t("platform_admin.reject"), reject_admin_access_request_path(request), method: :post, class: "admin-btn-secondary",
+                      form: { data: { turbo_confirm: t("platform_admin.reject_confirmation") } } %>
+              </div>
+            <% elsif request.store %>
+              <%= link_to request.store.name, admin_tenant_path(request.store), class: "admin-link" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

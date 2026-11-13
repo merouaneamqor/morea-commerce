@@ -1,0 +1,30 @@
+# Copy to shopify.app.toml, replace client_id, and validate with Shopify CLI.
+# This template is for the existing standalone Rails OAuth implementation.
+# Public distribution is blocked until mandatory privacy webhooks are implemented.
+name = "Seallo"
+client_id = "REPLACE_WITH_SHOPIFY_CLIENT_ID"
+application_url = "https://ollazen.com/admin/shopify"
+embedded = false
+
+[build]
+automatically_update_urls_on_dev = false
+
+[access_scopes]
+# Keep aligned with Connections::ShopifyOauth::SCOPES and ShopifyApi verification.
+scopes = "write_orders,read_orders,read_customers,read_products"
+use_legacy_install_flow = true
+
+[auth]
+redirect_urls = ["https://ollazen.com/admin/shopify/callback"]
+
+[webhooks]
+api_version = "2026-10"
+
+[[webhooks.subscriptions]]
+topics = ["app/uninstalled"]
+uri = "/webhooks/shopify/uninstalled"
+
+# orders/create is registered per connection by ShopifyOrderSync, using its
+# existing tokenized URL. Do not add a duplicate app-wide order subscription.
+# Required before public review: real customers/data_request, customers/redact
+# and shop/redact handlers and their compliance_topics subscriptions.

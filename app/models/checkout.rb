@@ -3,13 +3,15 @@
 class Checkout
   include ActiveModel::Model
 
-  attr_accessor :name, :phone, :phone_country, :city, :district, :address, :notes, :discount_code, :cart, :store
+  attr_accessor :name, :phone, :phone_country, :city, :district, :address, :notes, :discount_code,
+                :privacy_accepted, :age_confirmed, :cart, :store
 
   validate :required_fields
   validate :phone_must_be_valid
   validate :cart_must_have_items
   validate :discount_must_be_valid
   validate :district_must_be_valid
+  validate :consents_must_be_accepted
 
   # [dial label, ISO country] — default Morocco; diaspora-friendly codes
   PHONE_COUNTRIES = [
@@ -160,6 +162,7 @@ class Checkout
           variant_name: item.product_variant&.display_name,
           quantity: item.quantity,
           unit_price_cents: item.unit_price_cents,
+          unit_cost_cents: item.product.cost_cents,
           total_cents: item.line_total_cents
         )
       end
@@ -170,6 +173,7 @@ class Checkout
 
     OrderStatusJob.perform_later(order.id)
     DiscordOrderNotifyJob.perform_later(order.id)
+    NewOrderAlertJob.perform_later(order.id)
     order
   end
 
@@ -222,5 +226,14 @@ class Checkout
     return if applied_discount
 
     errors.add(:discount_code, :invalid, message: I18n.t("checkout.errors.discount_code"))
+  end
+
+  def consents_must_be_accepted
+    unless ActiveModel::Type::Boolean.new.cast(privacy_accepted)
+      errors.add(:privacy_accepted, :accepted, message: I18n.t("checkout.errors.privacy_accepted"))
+    end
+    unless ActiveModel::Type::Boolean.new.cast(age_confirmed)
+      errors.add(:age_confirmed, :accepted, message: I18n.t("checkout.errors.age_confirmed", age: store&.minimum_purchase_age || 16))
+    end
   end
 end

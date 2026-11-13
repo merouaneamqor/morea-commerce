@@ -1,0 +1,37 @@
+<% page_key = local_assigns.fetch(:page) %>
+<% copy = t("seallo_connect_pages.#{page_key}") %>
+<% content_for :title, "#{copy[:title]} · Seallo Connect" %>
+<% content_for :head do %>
+  <meta name="description" content="<%= copy[:summary] %>">
+  <%= stylesheet_link_tag "seallo_connect_pages", "data-turbo-track": "reload" %>
+<% end %>
+<div class="sc-doc" dir="<%= rtl? ? "rtl" : "ltr" %>">
+  <%= render "seallo_connect_pages/header", page: page_key %>
+  <main id="main-content" class="sc-container sc-main" tabindex="-1">
+    <h1><%= copy[:title] %></h1>
+    <p class="sc-lead"><%= copy[:summary] %></p>
+    <% if page_key != "overview" %>
+      <% updated_on = page_key == "privacy" ? "2026-11-08" : "2026-11-06" %>
+      <p class="sc-updated"><%= t("seallo_connect_pages.nav.updated", date: updated_on) %></p>
+    <% end %>
+    <% copy[:sections].each do |section| %>
+      <section>
+        <h2><%= section[:heading] %></h2>
+        <% Array(section[:body]).each do |paragraph| %><p><%= paragraph %></p><% end %>
+        <% if section[:items].present? %>
+          <ul><% section[:items].each do |item| %><li><%= item %></li><% end %></ul>
+        <% end %>
+      </section>
+    <% end %>
+    <section>
+      <h2><%= t("seallo_connect_pages.contact.heading") %></h2>
+      <% if support_email %>
+        <p><%= t("seallo_connect_pages.contact.with_email") %> <%= mail_to support_email %></p>
+      <% else %>
+        <p><%= t("seallo_connect_pages.contact.without_email") %></p>
+      <% end %>
+      <p><%= link_to t("seallo_connect_pages.nav.privacy_rights"), seallo_connect_privacy_rights_path %></p>
+    </section>
+  </main>
+  <%= render "seallo_connect_pages/footer" %>
+</div>

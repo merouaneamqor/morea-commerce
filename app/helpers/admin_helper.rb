@@ -1,4 +1,28 @@
 module AdminHelper
+  def admin_language_switch_path(locale)
+    if controller_path == "platform_oauth/authorizations"
+      return platform_oauth_authorize_path(ticket: params[:ticket].presence || @ticket, locale: locale)
+    end
+
+    if controller_path == "admin/seallo_connections"
+      return "#{admin_seallo_connect_path}?#{ { locale: locale }.to_query}"
+    end
+
+    path = if !request.get? && action_name.in?(%w[create update])
+      target = if action_name == "create"
+        "new"
+      elsif controller_path == "admin/store_connections"
+        "show"
+      else
+        "edit"
+      end
+      url_for(action: target, only_path: true)
+    else
+      request.path
+    end
+    "#{path}?#{request.query_parameters.merge("locale" => locale).to_query}"
+  end
+
   BADGE_TONES = {
     "new" => "attention",
     "confirmed" => "info",
@@ -19,29 +43,41 @@ module AdminHelper
     "archived" => "neutral"
   }.freeze
 
+  # Admin icon names (menu entries and buttons) to Lucide icons.
   ICONS = {
-    home: '<path d="M3 10.5 10 4l7 6.5V17a1 1 0 0 1-1 1h-3.5v-5h-5v5H4a1 1 0 0 1-1-1z"/>',
-    orders: '<path d="M4 3h12l-1 14H5z"/><path d="M7.5 7a2.5 2.5 0 0 0 5 0"/>',
-    carts: '<path d="M3 5h2l1.2 9h9.6L17 7H6"/><circle cx="8" cy="16.5" r="1.2"/><circle cx="14" cy="16.5" r="1.2"/>',
-    products: '<path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="m3 6 7 3.5L17 6M10 9.5v8"/>',
-    collections: '<rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/>',
-    discounts: '<path d="M3.5 10.5 10.5 3.5l6 6-7 7z"/><circle cx="7.5" cy="7.5" r="1.2"/>',
-    customers: '<circle cx="10" cy="7" r="3.5"/><path d="M3.5 17.5a6.5 6.5 0 0 1 13 0"/>',
-    staff: '<circle cx="7" cy="7" r="2.5"/><circle cx="13" cy="7" r="2.5"/><path d="M2.5 16.5a4.5 4.5 0 0 1 9 0M8.5 16.5a4.5 4.5 0 0 1 9 0"/>',
-    settings: '<circle cx="10" cy="10" r="2.5"/><path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M4.7 15.3l1.4-1.4M13.9 6.1l1.4-1.4"/>',
-    store: '<path d="M3 8h14l-1-4H4z"/><path d="M4 8v9h12V8"/><path d="M8 17v-5h4v5"/>',
-    search: '<circle cx="9" cy="9" r="5.5"/><path d="m13 13 4 4"/>',
-    back: '<path d="M12 4 6 10l6 6"/>',
-    external: '<path d="M11 3h6v6M17 3l-8 8"/><path d="M15 12v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4"/>',
-    logout: '<path d="M8 3H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h4M13 14l4-4-4-4M17 10H8"/>',
-    menu: '<path d="M3 5h14M3 10h14M3 15h14"/>',
-    image: '<rect x="3" y="3" width="14" height="14" rx="2"/><circle cx="7.5" cy="7.5" r="1.5"/><path d="m17 13-4-4-8 8"/>'
+    home: "house", orders: "clipboard-list", carts: "shopping-cart", products: "package",
+    collections: "layout-grid", discounts: "badge-percent", customers: "user", staff: "users",
+    settings: "settings", store: "store", search: "search", back: "chevron-left", external: "plug",
+    logout: "log-out", menu: "menu", inventory: "warehouse", purchases: "shopping-basket", expenses: "wallet",
+    delivery: "truck", call_center: "phone-call", advertising: "megaphone", whatsapp: "message-circle",
+    analytics: "chart-line", accounting: "calculator", workflows: "workflow", billing: "credit-card",
+    app: "smartphone", ai_chat: "bot", help: "circle-question-mark", image: "image"
   }.freeze
 
+  # Lucide (ISC) icons vendored in vendor/icons/lucide; trusted static files, so the markup is html_safe.
+  LUCIDE_ICONS = Dir[Rails.root.join("vendor/icons/lucide/*.svg")].to_h do |file|
+    [ File.basename(file, ".svg"), File.read(file)[%r{<svg[^>]*>(.*)</svg>}m, 1].to_s.strip.html_safe ]
+  end.freeze
+
+  def lucide_icon(name, size: 20, **options)
+    tag.svg(LUCIDE_ICONS.fetch(name.to_s), width: size, height: size, viewBox: "0 0 24 24", fill: "none",
+            stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round",
+            "aria-hidden": true, class: [ "shrink-0", options[:class] ].compact.join(" "))
+  end
+
   def admin_icon(name, size: 20)
-    tag.svg(ICONS.fetch(name).html_safe, width: size, height: size, viewBox: "0 0 20 20", fill: "none",
-            stroke: "currentColor", "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round",
-            "aria-hidden": true, class: "shrink-0")
+    lucide_icon(ICONS.fetch(name), size: size)
+  end
+
+  def workspace_member_role(user)
+    return t("platform_admin.impersonate.roles.agent") if user.confirmation_agent?
+    return t("platform_admin.impersonate.roles.admin") if user.admin?
+
+    t("platform_admin.impersonate.roles.supervisor")
+  end
+
+  def impersonatable_staff(store)
+    store.users.select(&:impersonatable_by_super_admin?).sort_by { |user| [ user.name.to_s.downcase, user.email ] }
   end
 
   def admin_badge(status, label: nil, tone: nil)
@@ -78,6 +114,66 @@ module AdminHelper
     admin_badge(status, label: order.sendit_label, tone: SENDIT_TONES.fetch(status, "neutral"))
   end
 
+  OZON_TONES = {
+    "NEW_PARCEL" => "neutral",
+    "WAITING_PICKUP" => "warning",
+    "PRE_PICKED_UP" => "warning",
+    "PICKED_UP" => "info",
+    "SENT" => "info",
+    "ONV" => "info",
+    "RECEIVED" => "info",
+    "DISTRIBUTION" => "info",
+    "IN_PROGRESS" => "info",
+    "DELIVERED" => "success",
+    "RETURNED" => "critical",
+    "REFUSE" => "critical",
+    "DECLINED" => "critical",
+    "CANCELED" => "neutral",
+    "CANCELED_TEAM" => "neutral",
+    "POSTPONED" => "warning",
+    "UNREACHABLE" => "warning",
+    "NOANSWER" => "warning",
+    "OUT_OF_AREA" => "warning",
+    "SANS_ADRE" => "warning",
+    "EN" => "critical"
+  }.freeze
+
+  def ozon_badge(order)
+    return admin_badge(:error, label: "Sync error", tone: "critical") if order.ozon_error.present? && order.ozon_code.blank?
+    return if order.ozon_status.blank?
+
+    status = Ozon::Sync.normalize_status(order.ozon_status)
+    admin_badge(status, label: order.ozon_label, tone: OZON_TONES.fetch(status, "neutral"))
+  end
+
+  AMEEX_TONES = {
+    "NEW_PARCEL" => "neutral",
+    "WAITING_PICKUP" => "warning",
+    "PICKED_UP" => "info",
+    "IN_PROGRESS" => "info",
+    "DELIVERED" => "success",
+    "RETURNED" => "critical",
+    "REFUSED" => "critical",
+    "REFUSE" => "critical",
+    "CANCELED" => "neutral",
+    "POSTPONED" => "warning",
+    "UNREACHABLE" => "warning",
+    "NOANSWER" => "warning",
+    "OUT_OF_AREA" => "warning"
+  }.freeze
+
+  def ameex_badge(order)
+    return admin_badge(:error, label: "Sync error", tone: "critical") if order.ameex_error.present? && order.ameex_code.blank?
+    return if order.ameex_status.blank?
+
+    status = Ameex::Sync.normalize_status(order.ameex_status)
+    admin_badge(status, label: order.ameex_label, tone: AMEEX_TONES.fetch(status, "neutral"))
+  end
+
+  def courier_badge(order)
+    sendit_badge(order) || ozon_badge(order) || ameex_badge(order)
+  end
+
   # Sendit districts grouped by city for a <select>, the order's likely city first
   def sendit_district_options(order)
     districts = Sendit::Districts.all(store: order.store)
@@ -86,6 +182,28 @@ module AdminHelper
     groups.unshift([ "Suggested for “#{order.customer_city}”", likely.map { |d| [ d[:name], d[:id] ] } ]) if likely.any?
     grouped_options_for_select(groups, order.sendit_district_id)
   rescue Sendit::Client::Error
+    ""
+  end
+
+  def ozon_city_options(order)
+    cities = Ozon::Cities.all(store: order.store)
+    likely = Ozon::Cities.candidates(city: order.customer_city, cities: cities)
+    grouped = []
+    grouped << [ "Suggested for “#{order.customer_city}”", likely.map { |c| [ c[:name], c[:id] ] } ] if likely.any?
+    grouped << [ "All cities", cities.map { |c| [ c[:name], c[:id] ] } ]
+    grouped_options_for_select(grouped, order.ozon_city_id)
+  rescue Ozon::Client::Error
+    ""
+  end
+
+  def ameex_city_options(order)
+    cities = Ameex::Cities.all(store: order.store)
+    likely = Ameex::Cities.candidates(city: order.customer_city, cities: cities)
+    grouped = []
+    grouped << [ "Suggested for “#{order.customer_city}”", likely.map { |c| [ c[:name], c[:id] ] } ] if likely.any?
+    grouped << [ "All cities", cities.map { |c| [ c[:name], c[:id] ] } ]
+    grouped_options_for_select(grouped, order.ameex_city_id)
+  rescue Ameex::Client::Error
     ""
   end
 

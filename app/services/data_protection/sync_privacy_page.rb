@@ -2,6 +2,12 @@
 
 module DataProtection
   class SyncPrivacyPage
+    PAGE_MODULES = {
+      "privacy" => Morea::PrivacyPolicy,
+      "terms" => Morea::TermsOfService,
+      "cookies" => Morea::CookiePolicy
+    }.freeze
+
     def self.call(store)
       new(store).call
     end
@@ -11,14 +17,16 @@ module DataProtection
     end
 
     def call
-      page = store.pages.find_by(slug: "privacy")
-      return unless page
+      PAGE_MODULES.each do |slug, mod|
+        page = store.pages.find_by(slug: slug)
+        next unless page
 
-      Morea::PrivacyPolicy::LOCALES.each do |locale|
-        translation = page.translations.find_or_initialize_by(locale: locale)
-        translation.title = Morea::PrivacyPolicy.titles[locale]
-        translation.body = Morea::PrivacyPolicy.body_for(store, locale: locale)
-        translation.save!
+        mod::LOCALES.each do |locale|
+          translation = page.translations.find_or_initialize_by(locale: locale)
+          translation.title = mod.titles[locale]
+          translation.body = mod.body_for(store, locale: locale)
+          translation.save!
+        end
       end
     end
 

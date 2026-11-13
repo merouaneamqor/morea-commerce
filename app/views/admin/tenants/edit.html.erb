@@ -1,11 +1,11 @@
-<% content_for :title, "Billing — #{@store.name}" %>
+<% content_for :title, "Billing, #{@store.name}" %>
 
 <div class="admin-page-header">
   <div>
     <h1 class="admin-page-header__title">Billing</h1>
-    <p class="admin-page-header__meta"><%= @store.name %> · <%= @store.slug %>.<%= Store.base_domain %></p>
+    <p class="admin-page-header__meta"><%= @store.name %>, <%= @store.slug %>.<%= Store.base_domain %></p>
   </div>
-  <%= link_to "Back", admin_platform_path, class: "admin-btn-secondary" %>
+  <%= link_to "Back", admin_tenant_path(@store), class: "admin-btn-secondary" %>
 </div>
 
 <%= form_with model: @store, url: admin_tenant_path(@store), method: :patch, class: "admin-stack" do |f| %>
@@ -14,6 +14,14 @@
       <%= @store.errors.full_messages.to_sentence %>
     </div>
   <% end %>
+
+  <section class="admin-card">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("onboarding.storefront_heading") %></h2></div>
+    <div class="space-y-4 px-4 pb-4">
+      <label class="admin-check"><%= f.check_box :storefront_enabled %> <%= t("onboarding.enable_storefront") %></label>
+      <p class="admin-help"><%= t("onboarding.settings_help") %></p>
+    </div>
+  </section>
 
   <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">Subscription</h2></div>
@@ -27,3 +35,21 @@
     <%= f.submit "Save billing", class: "admin-btn" %>
   </div>
 <% end %>
+
+<section class="admin-card mt-4" id="reset-workspace">
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= t("platform_admin.reset.title") %></h2></div>
+  <%= form_with url: reset_admin_tenant_path(@store), method: :post, class: "space-y-4 px-4 pb-4", data: { turbo_confirm: t("platform_admin.reset.confirm_dialog", name: @store.name) } do |f| %>
+    <p class="admin-help"><%= t("platform_admin.reset.description") %></p>
+    <ul class="admin-help list-disc ps-5">
+      <li><%= t("platform_admin.reset.removes") %></li>
+      <li><%= t("platform_admin.reset.keeps") %></li>
+    </ul>
+    <div>
+      <%= f.label :confirmation, t("platform_admin.reset.confirm_label", slug: @store.slug), class: "admin-label" %>
+      <%= f.text_field :confirmation, value: nil, autocomplete: "off", required: true, class: "admin-input", placeholder: @store.slug %>
+    </div>
+    <div class="flex justify-end">
+      <%= f.submit t("platform_admin.reset.submit"), class: "admin-btn" %>
+    </div>
+  <% end %>
+</section>

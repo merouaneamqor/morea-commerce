@@ -8,3 +8,21 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/* Seallo platform branding; merchant storefront branding remains independent. */
+.seallo-brand-image {
+  display: block;
+  width: auto;
+  height: 44px;
+  max-width: min(198px, 44vw);
+  object-fit: contain;
+}
+
+.seallo-admin-icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  object-fit: contain;
+}

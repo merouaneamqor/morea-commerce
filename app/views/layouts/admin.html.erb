@@ -1,104 +1,204 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
-    <title><%= content_for?(:title) ? yield(:title) : "Admin — #{current_store&.name || "Store"}" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><%= content_for?(:title) ? yield(:title) : "#{Store.platform_name} — #{current_store&.name || "seallo"}" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <meta name="theme-color" content="<%= current_store&.admin_theme == "seallo_dark" ? "#15110f" : "#a8432e" %>">
+    <link rel="manifest" href="<%= admin_pwa_manifest_path %>">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="<%= Store.platform_name %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= render "shared/platform_icons" %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;800&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin_pwa" %>
+    <%= stylesheet_link_tag "liquid_glass" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin_responsive", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin_dark", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="admin-body">
+  <body class="admin-body" data-admin-theme="<%= current_store&.admin_theme || "seallo" %>" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
     <% if current_admin_user %>
-      <div class="admin-shell" data-controller="admin-menu">
-        <header class="admin-topbar">
-          <div class="flex items-center gap-2">
-            <button type="button" class="admin-topbar__menu md:hidden" data-action="admin-menu#toggle" aria-label="Menu">
-              <%= admin_icon(:menu) %>
+      <%# Restore the collapsed menu before the first paint, so it does not jump. %>
+      <script>try { if (localStorage.getItem("sellerSidebar") === "collapsed") document.documentElement.setAttribute("data-sidebar", "collapsed"); } catch (error) {}</script>
+      <% active = seller_active_key %>
+      <% agent = current_admin_user.confirmation_agent_view? %>
+      <% new_orders = current_store ? Seller::DashboardStats.new(store: current_store).new_orders_count : 0 %>
+      <% missing_costs = current_store && !agent ? Seller::DashboardStats.new(store: current_store).missing_costs : 0 %>
+      <%# Class strings are plain literals so Tailwind's scanner always generates them. %>
+      <% nav_on = "lg-nav__active font-semibold" %>
+      <% nav_off = "text-[#3a3a3c] hover:bg-[#e8e8ed] hover:text-[#1c1c1e]" %>
+      <% badge_on = "bg-white text-[#1d1d1f]" %>
+      <% badge_off = "bg-[#ececf0] text-[#1d1d1f]" %>
+      <% sidebar = capture do %>
+        <nav class="lg-nav flex h-full flex-col overflow-y-auto rounded-2xl p-2.5" data-sidebar-nav>
+          <div data-sidebar-head class="flex items-center justify-between px-3 pt-1 pb-3">
+            <%= link_to (agent ? "/confirmation" : "/dashboard"), "data-collapse-hide": true, class: "text-2xl font-extrabold tracking-tight text-[#1d1d1f]", dir: "ltr" do %>seallo<% end %>
+            <button type="button" data-seller-close class="text-[#6e6e73] lg:hidden" aria-label="<%= sl("Fermer") %>"><%= sl("Fermer") %></button>
+            <%# Desktop only: collapse the menu to its icons and open it again. The choice is remembered in this browser. %>
+            <button type="button" data-sidebar-toggle aria-expanded="true" title="<%= sl("Réduire le menu") %>" aria-label="<%= sl("Réduire le menu") %>" data-label-collapse="<%= sl("Réduire le menu") %>" data-label-expand="<%= sl("Agrandir le menu") %>"
+                    class="hidden size-8 cursor-pointer place-items-center rounded-lg text-[#6e6e73] hover:bg-[#efeff3] hover:text-[#1c1c1e] lg:grid">
+              <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round] transition-transform rtl:rotate-180" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
             </button>
-            <%= link_to admin_root_path, class: "admin-topbar__brand" do %>
-              <span class="admin-topbar__logo"><%= current_store&.name.to_s.first.presence || "M" %></span>
-              <span><%= current_store&.name || "Store" %></span>
-            <% end %>
           </div>
-
-          <%= form_with url: admin_orders_path, method: :get, class: "admin-topbar__search" do %>
-            <%= admin_icon(:search, size: 16) %>
-            <%= search_field_tag :q, params[:q], placeholder: "Search orders", "aria-label": "Search orders" %>
-          <% end %>
-
-          <div class="admin-topbar__account gap-3">
-            <% if super_admin? %>
-              <%= link_to "Platform", admin_platform_path, class: "admin-btn-plain hidden sm:inline" %>
+          <ul class="space-y-0.5">
+            <% seller_menu(current_admin_user).each do |key, icon, label, href| %>
+              <% on = key == active %>
+              <li>
+                <% if key == "confirmation" %>
+                  <%# "Centre d'appels": a group that opens on click and lists its pages; it stays open on any of them. %>
+                  <% sub_active = seller_call_center_active %>
+                  <details class="group" data-call-center-nav <%= "open" if on %>>
+                    <summary title="<%= sl(label) %>" class="flex cursor-pointer list-none items-center gap-3 rounded-xl px-3 py-2 text-sm [&::-webkit-details-marker]:hidden <%= on ? nav_on : nav_off %>" data-onboarding-nav="<%= key %>">
+                      <%= seller_icon(icon) %> <span data-label><%= sl(label) %></span>
+                      <svg data-label viewBox="0 0 24 24" class="ms-auto size-4 shrink-0 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round] transition-transform group-open:rotate-180" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    </summary>
+                    <ul class="mt-0.5 ms-5 space-y-0.5 border-s border-[#e0e0e5] ps-2" data-subnav>
+                      <% seller_call_center_menu(current_admin_user).each do |sub_key, sub_icon, sub_label, sub_href| %>
+                        <li>
+                          <% if sub_href.nil? %>
+                            <span class="flex cursor-not-allowed items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] text-[#8e8e93]" title="<%= sl(sub_label) %> · <%= sl("Bientôt disponible") %>" data-subnav-item="<%= sub_key %>"><%= seller_icon(sub_icon, size: 15) %> <span data-label><%= sl(sub_label) %></span></span>
+                          <% else %>
+                            <%= link_to sub_href, title: sl(sub_label), "data-subnav-item": sub_key, "aria-current": (sub_key == sub_active ? "page" : nil),
+                                  class: "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] #{sub_key == sub_active ? nav_on : nav_off}" do %>
+                              <%= seller_icon(sub_icon, size: 15) %> <span data-label><%= sl(sub_label) %></span>
+                            <% end %>
+                          <% end %>
+                        </li>
+                      <% end %>
+                    </ul>
+                  </details>
+                <% elsif href.nil? %>
+                  <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#8e8e93]" title="<%= sl(label) %> · <%= sl("Bientôt disponible") %>"><%= seller_icon(icon) %> <span data-label><%= sl(label) %></span></span>
+                <% else %>
+                  <%= link_to href, title: sl(label), class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm #{on ? nav_on : nav_off}", data: { onboarding_nav: key } do %>
+                    <%= seller_icon(icon) %> <span data-label><%= sl(label) %></span>
+                    <% if key == "orders" && new_orders.positive? %><span data-badge class="ms-auto rounded-full px-2 py-0.5 text-[11px] font-semibold <%= on ? badge_on : badge_off %>"><%= new_orders %></span><% end %>
+                    <% if key == "products" && missing_costs.positive? %><span data-badge class="ms-auto rounded-full bg-[#fbe7ea] px-2 py-0.5 text-[11px] font-semibold text-[#b4344e]" title="<%= sl("produits sans coût") %>"><%= missing_costs %></span><% end %>
+                  <% end %>
+                <% end %>
+              </li>
             <% end %>
-            <span class="admin-avatar"><%= current_store&.name.to_s.first.presence || "M" %></span>
-            <span class="hidden sm:inline"><%= current_store&.name || "Store" %></span>
-          </div>
-        </header>
-
-        <aside class="admin-sidebar" data-admin-menu-target="sidebar">
-          <nav class="admin-sidebar__nav">
-            <%= admin_nav_link "Home", admin_root_path, icon: :home, active: controller_name == "dashboard" %>
-            <%= admin_nav_link "Orders", admin_orders_path, icon: :orders, active: controller_name == "orders" %>
-            <%= admin_nav_link "Carts", admin_carts_path, icon: :carts, active: controller_name == "carts" %>
-            <%= admin_nav_link "Products", admin_products_path, icon: :products, active: controller_name.in?(%w[products variants inventory]) %>
-            <%= admin_nav_link "Collections", admin_collections_path, icon: :collections, active: controller_name == "collections" %>
-            <%= admin_nav_link "Discounts", admin_discounts_path, icon: :discounts, active: controller_name == "discounts" %>
-            <%= admin_nav_link "Media", admin_media_path, icon: :image, active: controller_name == "media" %>
-            <%= admin_nav_link "Customers", admin_customers_path, icon: :customers, active: controller_name == "customers" %>
-
-            <p class="admin-sidebar__heading">Sales channels</p>
-            <% online_store = controller_name.in?(%w[home_sections pages page_sections menu_items]) %>
-            <%= admin_nav_link "Online Store", admin_home_sections_path, icon: :store, active: online_store %>
-            <% if online_store %>
-              <div class="admin-subnav">
-                <%= link_to "Customize", admin_home_sections_path, class: "admin-subnav__item #{'is-active' if controller_name == 'home_sections'}" %>
-                <%= link_to "Pages", admin_pages_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pages'}" %>
-                <%= link_to "Navigation", admin_menu_items_path, class: "admin-subnav__item #{'is-active' if controller_name == 'menu_items'}" %>
+          </ul>
+          <div class="mt-auto space-y-0.5 border-t border-[#ececf0] pt-2">
+            <% if current_store && !agent %>
+              <div data-collapse-hide class="lg-nav__store mb-1.5 rounded-xl px-3 py-2">
+                <p data-seller-store class="truncate text-sm font-semibold text-[#1c1c1e]"><%= current_store.name %></p>
+                <% if seller_plan_label(current_store) %><p class="text-xs text-[#6e6e73]"><%= sl("Plan") %> <%= seller_plan_label(current_store) %></p><% end %>
               </div>
             <% end %>
-          </nav>
-
-          <div class="admin-sidebar__footer">
+            <%= render "admin/shared/order_alerts" %>
             <% if super_admin? %>
-              <%= admin_nav_link "Platform", admin_platform_path, icon: :external, active: false %>
+              <%= link_to admin_platform_path, class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#3a3a3c] hover:bg-[#e8e8ed] hover:text-[#1c1c1e]" do %><%= seller_icon(:plug) %> <span data-label><%= t("platform_admin.title") %></span><% end %>
             <% end %>
-            <% settings_open = controller_name.in?(%w[stores pixels agent_api]) %>
-            <%= admin_nav_link "Settings", edit_admin_store_path, icon: :settings, active: settings_open %>
-            <% if settings_open %>
-              <div class="admin-subnav">
-                <%= link_to "General", edit_admin_store_path, class: "admin-subnav__item #{'is-active' if controller_name == 'stores'}" %>
-                <%= link_to "Pixels", edit_admin_pixels_path, class: "admin-subnav__item #{'is-active' if controller_name == 'pixels'}" %>
-                <%= link_to "Agent API", admin_agent_api_path, class: "admin-subnav__item #{'is-active' if controller_name == 'agent_api'}" %>
-              </div>
-            <% end %>
-            <%= admin_nav_link "Staff", admin_users_path, icon: :staff, active: controller_name == "users" %>
-            <%= button_to admin_logout_path, method: :delete, class: "admin-nav-item w-full" do %>
-              <%= admin_icon(:logout) %><span>Sign out</span>
-            <% end %>
+            <%= link_to "/settings/profile", title: sl("Paramètres"), class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#3a3a3c] hover:bg-[#e8e8ed] hover:text-[#1c1c1e]" do %><%= seller_icon(:settings) %> <span data-label><%= sl("Paramètres") %></span><% end %>
+            <%= button_to admin_logout_path, method: :delete, title: sl("Se déconnecter"), class: "flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#3a3a3c] hover:bg-[#e8e8ed] hover:text-[#1c1c1e]" do %><%= seller_icon(:logout) %> <span data-label><%= sl("Se déconnecter") %></span><% end %>
           </div>
-        </aside>
-        <div class="admin-scrim md:hidden" data-action="click->admin-menu#close"></div>
+        </nav>
+      <% end %>
 
-        <main class="admin-main">
-          <div class="admin-page">
+      <div class="lg-shell min-h-dvh text-[#3a3a3c]" data-seller-shell>
+        <% if agent && current_store %>
+          <div hidden data-controller="desk-presence" data-desk-presence-url-value="<%= presence_admin_confirmations_path %>"></div>
+        <% end %>
+        <div class="mx-auto flex max-w-[1400px] gap-5 p-4 lg:p-5">
+          <aside class="sticky top-5 hidden h-[calc(100dvh-2.5rem)] w-56 shrink-0 lg:block"><%= sidebar %></aside>
+
+          <div data-seller-drawer hidden role="dialog" aria-modal="true" aria-label="<%= sl("Menu") %>" class="lg-scrim fixed inset-0 z-50 p-4 lg:hidden">
+            <div class="h-full w-64"><%= sidebar %></div>
+          </div>
+
+          <main class="min-w-0 flex-1 space-y-4">
+            <%= render "admin/shared/impersonation_banner" if impersonating? %>
+            <%= render "admin/shared/platform_workspace_banner" %>
+            <div class="lg-chrome flex items-center justify-between rounded-2xl px-3 py-2.5 lg:hidden">
+              <button type="button" data-seller-open aria-expanded="false" class="rounded-lg border border-[#e0e0e5] bg-white p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>
+              <span class="text-xl font-extrabold tracking-tight text-[#1d1d1f]" dir="ltr">seallo</span>
+              <span class="w-9"></span>
+            </div>
+            <%= render "admin/shared/pwa_install" %>
+            <% if current_store&.subscription_required? && !subscription_access? %>
+              <p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]">
+                <%= t("subscriptions.required") %>
+                <%= link_to t("subscriptions.title"), admin_subscription_path, class: "underline font-semibold" %>
+              </p>
+            <% end %>
             <% if store_billing_past_due? %>
-              <div class="admin-banner admin-banner--critical">
-                Subscription payment is overdue. Your storefront stays online, but renew with the platform owner to clear billing.
-              </div>
+              <p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= t("admin_ui.past_due") %></p>
             <% end %>
-            <% if notice.present? %><div class="admin-banner admin-banner--success"><%= notice %></div><% end %>
-            <% if alert.present? %><div class="admin-banner admin-banner--critical"><%= alert %></div><% end %>
-            <%= yield %>
-          </div>
-        </main>
+            <% if notice.present? %><p class="rounded-xl bg-[#e3f3e8] px-4 py-3 text-sm text-[#2f7a4a]"><%= notice %></p><% end %>
+            <% if alert.present? %><p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= alert %></p><% end %>
+            <%= render "admin/shared/meta_ads_notice" %>
+            <% unless content_for?(:seller_lang) %><div class="flex justify-end"><%= render "admin/shared/language_switcher" %></div><% end %>
+            <div class="admin-page <%= yield(:admin_page_class) %>"><%= yield %></div>
+          </main>
+        </div>
+        <%= render "admin/shared/bottom_nav", active: active, new_orders: new_orders %>
       </div>
+      <script>
+        (function () {
+          var root = document.documentElement;
+          function apply(collapsed) {
+            if (collapsed) root.setAttribute("data-sidebar", "collapsed"); else root.removeAttribute("data-sidebar");
+            document.querySelectorAll("[data-sidebar-toggle]").forEach(function (button) {
+              var label = collapsed ? button.dataset.labelExpand : button.dataset.labelCollapse;
+              button.setAttribute("aria-expanded", String(!collapsed));
+              button.setAttribute("title", label);
+              button.setAttribute("aria-label", label);
+            });
+          }
+          document.addEventListener("click", function (e) {
+            if (!e.target.closest("[data-sidebar-toggle]")) return;
+            var collapsed = root.getAttribute("data-sidebar") !== "collapsed";
+            apply(collapsed);
+            try { localStorage.setItem("sellerSidebar", collapsed ? "collapsed" : "expanded"); } catch (error) {}
+          });
+          apply(root.getAttribute("data-sidebar") === "collapsed");
+        })();
+        (function () {
+          var drawer = document.querySelector("[data-seller-drawer]");
+          if (!drawer) return;
+          var triggers = Array.prototype.slice.call(document.querySelectorAll("[data-seller-open]"));
+          var lastTrigger = triggers[0];
+          function setExpanded(value) {
+            triggers.forEach(function (el) { el.setAttribute("aria-expanded", value); });
+          }
+          function closeDrawer() {
+            drawer.hidden = true;
+            setExpanded("false");
+            if (lastTrigger) lastTrigger.focus();
+          }
+          triggers.forEach(function (trigger) {
+            trigger.addEventListener("click", function () {
+              lastTrigger = trigger;
+              drawer.hidden = false;
+              setExpanded("true");
+              drawer.querySelector("[data-seller-close]")?.focus();
+            });
+          });
+          drawer.addEventListener("click", function (e) { if (e.target === drawer || e.target.closest("[data-seller-close]")) closeDrawer(); });
+          drawer.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") closeDrawer();
+            if (e.key !== "Tab") return;
+            var items = drawer.querySelectorAll("a[href], button:not([disabled])");
+            var first = items[0], last = items[items.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+          });
+          // Standalone home-screen sessions get safe-area padding on the shell.
+          if (window.matchMedia("(display-mode: standalone)").matches || navigator.standalone) {
+            document.querySelector("[data-seller-shell]")?.classList.add("lg-shell--standalone");
+          }
+        })();
+      </script>
     <% else %>
-      <div class="flex min-h-screen items-center justify-center px-4">
+      <div class="lg-shell flex min-h-screen items-center justify-center px-4">
         <%= yield %>
       </div>
     <% end %>

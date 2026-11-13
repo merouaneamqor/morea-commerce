@@ -1,0 +1,28 @@
+<% status_badges = { "pending" => "attention", "needs_review" => "warning", "completed" => "success" } %>
+<div class="admin-page-header">
+  <h1 class="admin-page-header__title"><%= t("seallo_connect.privacy.title") %></h1>
+</div>
+<p class="admin-muted mb-4 max-w-3xl text-[14px] leading-6"><%= t("seallo_connect.privacy.instructions") %></p>
+
+<section class="admin-card">
+  <% if @requests.empty? %>
+    <p class="admin-empty"><%= t("seallo_connect.privacy.empty") %></p>
+  <% else %>
+    <div class="divide-y divide-[#ece4dc]">
+      <% @requests.each do |privacy_request| %>
+        <% due = (privacy_request.created_at + 30.days).to_date %>
+        <% overdue = privacy_request.status != "completed" && due < Date.current %>
+        <%= link_to admin_shopify_privacy_request_path(privacy_request), class: "flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-4 hover:bg-[#faf6f2]" do %>
+          <span class="min-w-0">
+            <span class="block font-semibold"><%= t("seallo_connect.privacy.request", id: privacy_request.id) %></span>
+            <span class="admin-muted block text-[13px]"><%= t("seallo_connect.privacy.topics.#{privacy_request.topic}") %></span>
+          </span>
+          <span class="flex flex-wrap items-center gap-3">
+            <span class="text-[13px] <%= overdue ? "font-semibold text-[#b0342a]" : "admin-muted" %>"><%= t("seallo_connect.privacy.due", date: l(due, format: "%d/%m/%Y")) %></span>
+            <span class="admin-badge admin-badge--<%= status_badges.fetch(privacy_request.status, "neutral") %>"><%= t("seallo_connect.privacy.statuses.#{privacy_request.status}") %></span>
+          </span>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</section>

@@ -1,18 +1,24 @@
-<section class="landing-story <%= "landing-story--reverse" if section.image_on_right? %>" data-controller="reveal">
-  <div class="landing-story__media object-frame">
+<% lcp = local_assigns[:lcp] %>
+<section class="landing-story <%= "landing-story--reverse" if section.image_on_right? %>" <%= 'data-controller="reveal" data-reveal-stagger-value="true"' unless lcp %>>
+  <div class="landing-story__media object-frame" data-reveal-item>
     <% if section.image_src.present? %>
-      <%= object_image_tag section.image_src, alt: section.heading.to_s, sizes: "(max-width: 768px) 100vw, 50vw", widths: [640, 960, 1280] %>
+      <%= object_image_tag section.image_src,
+            alt: section.heading.to_s,
+            sizes: "(max-width: 768px) 100vw, 50vw",
+            widths: [640, 960, 1280],
+            loading: (lcp ? "eager" : "lazy"),
+            fetchpriority: (lcp ? "high" : nil) %>
     <% else %>
-      <div class="h-full w-full bg-stone-deep"></div>
+      <div class="landing-story__placeholder" aria-hidden="true"></div>
     <% end %>
   </div>
 
   <div class="landing-story__copy">
-    <% if section.subheading.present? %><p class="landing-eyebrow"><%= section.subheading %></p><% end %>
-    <% if section.heading.present? %><h2 class="landing-story__title"><%= section.heading %></h2><% end %>
-    <% if section.body.present? %><div class="landing-story__body"><%= simple_format section.body %></div><% end %>
+    <% if section.subheading.present? %><p class="landing-eyebrow" data-reveal-item><%= section.subheading %></p><% end %>
+    <% if section.heading.present? %><h2 class="landing-story__title" data-reveal-item><%= section.heading %></h2><% end %>
+    <% if section.body.present? %><div class="landing-story__body" data-reveal-item><%= simple_format section.body %></div><% end %>
     <% if section.button_label.present? && store_link_path(section.link) %>
-      <%= link_to section.button_label, store_link_path(section.link), class: "maison-cta mt-10 md:mt-12" %>
+      <%= link_to section.button_label, store_link_path(section.link), class: "maison-cta mt-10 md:mt-12", data: { reveal_item: true } %>
     <% end %>
   </div>
 </section>

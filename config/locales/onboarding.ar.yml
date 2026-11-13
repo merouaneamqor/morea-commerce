@@ -1,0 +1,11 @@
+ar:
+  onboarding:
+    signup_lead: "اطلب مساحة لإدارة طلباتك. أنشئ متجر Seallo أو اربط متجرك على Shopify أو WooCommerce أو YouCan، أو استخدم الخيارين معاً."
+    business_name: "اسم النشاط التجاري"
+    mode_label: "كيف تريد أن تبدأ؟"
+    with_storefront: "إنشاء متجر Seallo"
+    external_only: "إدارة طلبات متجري الحالي"
+    mode_help: "يمكنك ربط متاجرك الحالية وتفعيل متجر Seallo لاحقاً."
+    storefront_heading: "متجر Seallo"
+    enable_storefront: "تفعيل متجر Seallo العام"
+    settings_help: "أوقف هذا الخيار لاستخدام Seallo لإدارة الطلبات فقط. تبقى لوحة الإدارة والاتصالات متاحة. يمكنك تفعيله لاحقاً مع الاحتفاظ بالمحتوى الحالي."

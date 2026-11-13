@@ -1,4 +1,7 @@
 en:
+  time:
+    formats:
+      short: "%m/%d/%Y %H:%M"
   store:
     preparing: "Store is being prepared."
     missing_eyebrow: "Multi-tenant storefront"
@@ -13,6 +16,7 @@ en:
     view_all: "View all"
     collections_title: "Train, move, unwind"
     explore: "Explore"
+    hero_support: "Shop the edit. Pay on delivery across Morocco."
   landing:
     eyebrow: "Activewear"
     hero_product: "The Essential Set"
@@ -44,9 +48,19 @@ en:
     menu: "Menu"
     main_menu: "Main menu"
     shop: "Shop"
+    search: "Search"
     bag: "Bag"
     track_order: "Track order"
   shop:
+    search_title: "Search"
+    search_placeholder: "Search products"
+    search_submit: "Search"
+    search_results: "Results for “%{query}”"
+    search_prompt: "Search by product name or description."
+    search_no_results: "No products match “%{query}”."
+    previous_page: "Previous"
+    next_page: "Next"
+    page_status: "Page %{page} of %{pages}"
     in_stock_only: "In stock only"
     product_count:
       one: "%{count} product"
@@ -168,6 +182,8 @@ en:
       district_invalid: "Choose a neighborhood from the list."
       empty_cart: "Your bag is empty."
       discount_code: "This discount code is invalid or expired."
+      privacy_accepted: "Please accept the privacy policy and terms to place your order."
+      age_confirmed: "Please confirm you are at least %{age} years old."
     form_errors: "Please fix"
     placeholders:
       name: "e.g. Sara Benali"
@@ -203,23 +219,33 @@ en:
   footer:
     information: "Information"
     customer_care: "Customer care"
+    registration: "Registration: %{number}"
+    age_note: "This storefront is intended for customers aged %{age} or older."
+    pricing_note: "Prices shown at checkout include shipping once your city is selected. You pay cash on delivery — no hidden fees."
   data_protection:
     privacy_policy: "privacy policy"
+    terms_of_service: "terms of service"
     cookie_title: "Cookies"
-    cookie_body: "We use cookies for your bag, site functionality and, where enabled, audience measurement (Meta, TikTok)."
-    cookie_policy_link: "Learn how we use your data"
+    cookie_body: "We use necessary cookies for your bag and site functionality. Audience measurement (Meta, TikTok) loads only if you accept."
+    cookie_body_platform: "We use a necessary cookie to remember your language. Optional measurement cookies are not used on these pages. Google Fonts may load from Google’s CDN."
+    cookie_policy_link: "Cookie policy"
     cookie_ok: "Got it"
+    cookie_accept: "Accept"
+    cookie_reject: "Reject measurement"
     checkout_notice: "Under Moroccan Law 09-08, you have the right to access, rectify and, on legitimate grounds, object to the processing of your personal data."
     checkout_notice_with_cndp: "Under Moroccan Law 09-08, you have the right to access, rectify and, on legitimate grounds, object to the processing of your personal data. This processing was notified to the CNDP under no. %{number}."
     checkout_submit_notice_html: "By placing your order, you accept our %{privacy_link}."
+    checkout_consent_html: "I have read and accept the %{privacy_link} and %{terms_link}."
+    checkout_age_html: "I confirm I am at least %{age} years old."
     track_notice: "We use your order number and phone only to look up your purchase."
+    skip_to_content: "Skip to content"
   privacy_policy:
     purposes: "order fulfilment and delivery, customer care (phone confirmation), order tracking and, where applicable, fraud prevention."
     cndp_authorized: "This processing was notified to and authorized by the CNDP under receipt or authorization no. %{number}."
     cndp_pending: "The data controller undertakes to notify this processing to Morocco’s CNDP (Commission Nationale de contrôle de la protection des données à caractère personnel) as required by Law 09-08."
-    cookies_section: "Strictly necessary cookies power your bag and session. Measurement cookies (Meta Pixel, TikTok Pixel) may also be used when the store has enabled them. An informational banner explains this on your visit."
+    cookies_section: "Strictly necessary cookies power your bag and session. Measurement cookies (Meta Pixel, TikTok Pixel) load only after you accept them in the cookie banner. You can reject measurement and keep shopping."
     retention: "Order-related data is kept only as long as needed for delivery, applicable legal and accounting obligations, then archived or deleted proportionately."
-    prospecting: "Your data is not used for direct marketing without your prior consent. You may object at any time by contacting the address below."
+    prospecting: "Your data is not used for direct marketing without your prior consent. You may object at any time by contacting the address below or using the data-rights form on this site."
     recipients:
       store_staff: "• The store team (order processing)"
       sendit: "• Sendit (shipping within Morocco)"
@@ -243,3 +269,148 @@ en:
       %{retention}
 
       %{prospecting}
+  terms_of_service:
+    body: |
+      These terms govern purchases on %{site}, operated by %{store}.
+
+      Orders are cash on delivery (%{currency}). The total shown at checkout (products, discounts and shipping once your city is selected) is the amount you pay the courier. There are no hidden online fees.
+
+      You must be at least %{age} years old to place an order. Product descriptions must not be treated as medical, investment or other regulated claims unless expressly stated and evidenced.
+
+      Returns and refunds follow the store’s returns page. For questions, contact %{contact}.
+  cookie_policy:
+    body: |
+      %{store} uses cookies on %{site}.
+
+      Necessary cookies keep your bag, locale and session working. They do not require consent.
+
+      Measurement cookies (Meta Pixel, TikTok Pixel) help understand visits and ads. They load only if you press Accept on the cookie banner. Reject measurement to browse without them.
+
+      See also the privacy page at %{privacy_path}. Contact: %{contact}.
+  privacy_rights:
+    eyebrow: "Personal data"
+    title: "Your data rights"
+    lead: "Request access, correction, objection or deletion of personal data held for your orders with this store."
+    unsubscribe_note: "This storefront does not send marketing email campaigns. Choose “Stop marketing” if you received a promotional message from the merchant by another channel, or to record your preference."
+    minimization: "We only ask for what we need to identify your request. Do not send payment card numbers."
+    submit: "Send request"
+    submitted: "Your request was recorded. The store will follow up using the contact you provided."
+    fields:
+      type: "Request type"
+      name: "Your name"
+      contact: "Email or phone"
+      contact_help: "How the store should reach you about this request."
+      order_number: "Order number (optional)"
+      details: "Details (optional)"
+    types:
+      access: "Access my data"
+      rectify: "Correct my data"
+      object: "Object to processing"
+      delete: "Delete my data"
+      unsubscribe: "Stop marketing"
+    statuses:
+      open: "Open"
+      in_progress: "In progress"
+      resolved: "Resolved"
+      rejected: "Rejected"
+    admin:
+      title: "Buyer data-rights requests"
+      instructions: "Requests submitted from the public storefront. Resolve them after you have answered the customer."
+      empty: "No requests yet."
+      back: "Back to requests"
+      resolve: "Mark resolved"
+      resolved: "Request marked resolved."
+  platform_home:
+    title: "Seallo, multi-store commerce platform"
+    language: "Language"
+    nav: { journey: "How it works", features: "Features", integrations: "Integrations", faq: "FAQ", sign_in: "Sign in", signup: "Create account" }
+    hero:
+      eyebrow: "Multi-store commerce platform"
+      headline: "Run cash-on-delivery stores from one platform."
+      lead: "Each store keeps its own storefront, catalog and checkout. Your team confirms orders, manages stock and ships from a single admin."
+      primary: "Create account"
+      secondary: "See how an order flows"
+      store_hint: "Looking for a store? Open it on its own address, for example your-store.%{domain}."
+      badges: [ "Separate storefronts", "Cash on delivery", "French · English · Arabic", "API and MCP" ]
+    journey:
+      title: "One order, from checkout to delivery"
+      lead: "The same record follows an order through every step, so nobody works from a spreadsheet."
+      steps:
+        - { title: "Order placed", body: "A customer checks out on the storefront, or a connected tool sends the order through the API." }
+        - { title: "Confirmation", body: "Staff claim the order from a queue, call the customer and record the outcome or a callback time." }
+        - { title: "Stock reserved", body: "When an order is confirmed, its items are reserved so the same unit is not sold twice." }
+        - { title: "Shipped", body: "The order is sent to the connected carrier, and the label and tracking come back to the admin." }
+        - { title: "Delivered or returned", body: "Carrier updates move the order to delivered or returned, with the history kept on the order." }
+    preview:
+      title: "Your day at a glance"
+      note: "Illustration of the admin overview. The figures are examples, not real data."
+      metrics: [ { label: "New orders", value: "42" }, { label: "Confirmed", value: "31" }, { label: "Shipped", value: "27" }, { label: "Delivered", value: "19" } ]
+    features:
+      title: "Everything a store team needs"
+      lead: "Built for stores that sell with cash on delivery."
+      items:
+        - { title: "Storefront per store", body: "Own address, catalog, collections, pages and cart. Stores are isolated from each other." }
+        - { title: "Order desk", body: "Create, edit, comment on, archive and duplicate orders, and print packing slips." }
+        - { title: "Confirmation queue", body: "Exclusive claims, callbacks, internal notes and clear outcomes for each order." }
+        - { title: "Products and stock", body: "Variants, colour galleries and a stock history for every movement." }
+        - { title: "Shipping", body: "Send orders to the connected carrier, print labels and sync delivery status." }
+        - { title: "Staff accounts", body: "Staff sign in to their own store, with expiring sessions and an audit trail." }
+        - { title: "Tracking pixels", body: "Add Meta and TikTok pixels per store." }
+        - { title: "API and automation", body: "Store tokens, GraphQL and MCP let connected tools read and manage a store." }
+    integrations:
+      title: "Connects to what you already use"
+      lead: "Carrier, ads and automation connections that exist today."
+      items: [ "Sendit shipping", "Meta Pixel", "TikTok Pixel", "Discord order alerts", "GraphQL API", "MCP", "OAuth" ]
+    faq:
+      title: "Questions"
+      items:
+        - { q: "Is this a marketplace?", a: "No. Every store has its own address and storefront. The platform is the admin behind them." }
+        - { q: "Which languages are supported?", a: "Storefronts support French, English and Arabic, including right-to-left layout." }
+        - { q: "Which carriers can I use?", a: "Sendit is connected today for shipping within Morocco." }
+        - { q: "Can my tools send orders?", a: "Yes. A store token lets a connected tool create orders through the API. Orders are never duplicated when a request is retried." }
+        - { q: "How do I open a store?", a: "Create your free account and verify your email. You can explore your workspace, then subscribe to start using its tools." }
+    cta:
+      headline: "Ready to run your store?"
+      body: "Create your free account, verify your email and choose a subscription when you are ready."
+      button: "Create account"
+    footer:
+      tagline: "Multi-store commerce platform"
+      admin: "Admin sign in"
+      imprint: "The Seallo Connect privacy and terms pages name the platform operator and the contracts. Each merchant store publishes its own legal entity, registration, and privacy page."
+    gate:
+      sign_in: "Sign in"
+      maintenance:
+        title: "Under maintenance — Seallo"
+        eyebrow: "Under maintenance"
+        heading: "We'll be back shortly."
+        body: "Seallo is briefly unavailable while we finish an update. Your stores, orders, and accounts are safe."
+        note: "If you already have a workspace, you can still sign in."
+      coming_soon:
+        title: "Coming soon — Seallo"
+        eyebrow: "Coming soon"
+        heading: "Seallo opens soon."
+        body: "One place to confirm cash-on-delivery orders, count the profit, and ship. We are putting the last pieces in place."
+        note: "Already have a workspace? Sign in to your admin."
+  signup:
+    title: "Request access — %{name}"
+    heading: "Request access"
+    lead: "Tell us about your store. A platform administrator reviews each request and creates your store. Nothing is created until it is approved."
+    store_name: "Store name"
+    email: "Email"
+    phone: "Phone (optional)"
+    submit: "Send request"
+    have_account: "Already have an account?"
+    sign_in: "Sign in"
+    fix_fields: "Please check the highlighted fields."
+    throttled: "Too many requests. Please try again later."
+    errors:
+      store_name: "Enter your store name (2 to 80 characters)."
+      email: "Enter a valid email address."
+      phone: "The phone number is too long."
+    aside:
+      chip: "Request access"
+      headline: "Open your cash-on-delivery store."
+      points: [ "Your own storefront and address", "Confirm, ship and track every order", "Separate, isolated data for every store" ]
+    thanks_title: "Request received"
+    thanks_body: "We will review it and contact you at the email you gave. Your store is created once the request is approved."
+    back: "Back to home"

@@ -1,56 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
-    <title><%= content_for?(:title) ? yield(:title) : "Platform — Morea" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><%= content_for?(:title) ? yield(:title) : t("platform_admin.document_title", name: Store.platform_name) %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <link rel="manifest" href="<%= admin_pwa_manifest_path %>">
+    <meta name="theme-color" content="#2e4dd5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="<%= Store.platform_name %>">
+    <%= yield :head %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= render "shared/platform_icons" %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin_pwa" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "admin_responsive", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="admin-body">
+  <body class="admin-body admin-body--platform">
     <% if current_admin_user %>
       <div class="admin-shell" data-controller="admin-menu">
         <header class="admin-topbar">
-          <div class="flex items-center gap-2">
-            <button type="button" class="admin-topbar__menu md:hidden" data-action="admin-menu#toggle" aria-label="Menu">
+          <div class="flex min-w-0 items-center gap-2">
+            <button type="button" class="admin-topbar__menu md:hidden" data-action="admin-menu#toggle" aria-label="Menu" aria-controls="platform-sidebar" aria-expanded="false" data-admin-menu-target="menuButton">
               <%= admin_icon(:menu) %>
             </button>
-            <%= link_to admin_platform_path, class: "admin-topbar__brand" do %>
-              <span class="admin-topbar__logo">P</span>
-              <span>Platform</span>
+            <%= link_to admin_platform_path, class: "admin-topbar__brand min-w-0", data: { action: "admin-menu#close" } do %>
+              <%= image_tag "/brand/seallo-icon.png", alt: "", width: 28, height: 28, class: "seallo-admin-icon" %>
+              <span class="truncate"><%= t("platform_admin.title") %></span>
             <% end %>
           </div>
 
-          <div class="admin-topbar__account">
-            <span class="admin-avatar"><%= current_admin_user.name.to_s.first.presence || "S" %></span>
-            <span class="hidden sm:inline"><%= current_admin_user.name.presence || current_admin_user.email %></span>
+          <div class="admin-topbar__account shrink-0 gap-2">
+            <%= form_with url: admin_platform_search_path, method: :get, local: true, class: "admin-topbar__search" do %>
+              <label class="sr-only" for="platform-search-q"><%= t("platform_admin.search.label") %></label>
+              <%= text_field_tag :q, params[:q], id: "platform-search-q", placeholder: t("platform_admin.search.placeholder"), autocomplete: "off", enterkeyhint: "search" %>
+            <% end %>
+            <%= render "admin/shared/language_switcher" %>
+            <span class="admin-avatar" aria-hidden="true"><%= current_admin_user.name.to_s.first.presence || "S" %></span>
+            <span class="hidden lg:inline truncate max-w-[10rem]"><%= current_admin_user.name.presence || current_admin_user.email %></span>
           </div>
         </header>
 
-        <aside class="admin-sidebar" data-admin-menu-target="sidebar">
-          <nav class="admin-sidebar__nav">
-            <%= admin_nav_link "Home", admin_platform_path, icon: :home, active: controller_name == "platform" %>
-            <%= admin_nav_link "Stores", admin_platform_path(anchor: "stores"), icon: :store, active: false %>
-            <%= admin_nav_link "New store", new_admin_tenant_path, icon: :products, active: controller_name == "tenants" %>
+        <form action="<%= admin_platform_search_path %>" method="get" class="platform-mobile-search md:hidden" role="search">
+          <label class="sr-only" for="platform-search-q-mobile"><%= t("platform_admin.search.label") %></label>
+          <input type="search" name="q" id="platform-search-q-mobile" value="<%= params[:q] %>" class="admin-input" placeholder="<%= t("platform_admin.search.placeholder") %>" autocomplete="off" enterkeyhint="search">
+        </form>
+
+        <aside id="platform-sidebar" class="admin-sidebar" data-admin-menu-target="sidebar">
+          <nav class="admin-sidebar__nav" data-action="click->admin-menu#closeOnNavigate">
+            <p class="admin-sidebar__heading"><%= t("platform_admin.nav_group_home") %></p>
+            <%= admin_nav_link t("platform_admin.overview"), admin_platform_path, icon: :home, active: controller_name == "platform" %>
+            <%= admin_nav_link t("platform_admin.workspaces"), admin_platform_path(anchor: "workspaces"), icon: :store, active: controller_name == "tenants" && action_name != "new" %>
+            <%= admin_nav_link t("platform_admin.new_workspace"), new_admin_tenant_path, icon: :products, active: controller_name == "tenants" && action_name == "new" %>
+
+            <p class="admin-sidebar__heading"><%= t("platform_admin.nav_group_people") %></p>
+            <%= admin_nav_link t("platform_admin.access_requests"), admin_access_requests_path, icon: :staff, active: controller_name == "access_requests" %>
+            <%= admin_nav_link t("platform_users.nav"), admin_platform_users_path, icon: :staff, active: controller_name == "platform_users" %>
+            <%= admin_nav_link t("platform_admin.privacy_nav"), admin_platform_privacy_rights_requests_path, icon: :help, active: controller_name == "platform_privacy_rights_requests" %>
+
+            <p class="admin-sidebar__heading"><%= t("platform_admin.nav_group_money") %></p>
+            <%= admin_nav_link t("platform_admin.billing_nav"), admin_platform_billing_path, icon: :billing, active: controller_name == "platform_billing" || controller_name == "invoices" %>
+
+            <p class="admin-sidebar__heading"><%= t("platform_admin.nav_group_ops") %></p>
+            <%= admin_nav_link t("platform_admin.integrations_nav"), admin_platform_integrations_path, icon: :external, active: controller_name == "platform_integrations" %>
+            <%= admin_nav_link t("platform_admin.features_nav"), admin_platform_features_path, icon: :settings, active: controller_name == "platform_features" %>
+            <%= admin_nav_link t("platform_admin.operations_nav"), admin_platform_operations_path, icon: :workflows, active: controller_name == "platform_operations" %>
+            <%= admin_nav_link t("platform_admin.audit_nav"), admin_platform_audit_events_path, icon: :analytics, active: controller_name == "platform_audit_events" %>
+            <%= admin_nav_link t("platform_admin.agent_nav"), admin_platform_agent_api_path, icon: :ai_chat, active: controller_name == "platform_agent_api" %>
           </nav>
 
           <div class="admin-sidebar__footer">
             <%= button_to admin_logout_path, method: :delete, class: "admin-nav-item w-full" do %>
-              <%= admin_icon(:logout) %><span>Sign out</span>
+              <%= admin_icon(:logout) %><span><%= t("platform_admin.sign_out") %></span>
             <% end %>
           </div>
         </aside>
         <div class="admin-scrim md:hidden" data-action="click->admin-menu#close"></div>
 
         <main class="admin-main">
-          <div class="admin-page">
+          <div class="admin-page admin-page--platform">
             <% if notice.present? %><div class="admin-banner admin-banner--success"><%= notice %></div><% end %>
             <% if alert.present? %><div class="admin-banner admin-banner--critical"><%= alert %></div><% end %>
+            <%= render "admin/shared/pwa_install" %>
             <%= yield %>
           </div>
         </main>

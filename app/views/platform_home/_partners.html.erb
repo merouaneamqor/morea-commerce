@@ -1,0 +1,16 @@
+<%# Integrations card: stores, delivery and advertising partners, as on the seallo landing page. %>
+<% titles = t("platform_home.seallo.partner_titles") %>
+<div class="platform-partner-wrap">
+  <div class="platform-partners" dir="ltr">
+    <% PlatformHomeHelper::PLATFORM_PARTNER_GROUPS.each do |key, partners| %>
+      <div>
+        <p dir="auto"><%= titles[key] %></p>
+        <ul>
+          <% partners.each do |name, file, height| %>
+            <li><img src="/images/partners/<%= file %>.png" alt="<%= name %>" title="<%= name %>" style="height: <%= height %>px" draggable="false" loading="lazy"></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+</div>

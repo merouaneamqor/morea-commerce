@@ -136,6 +136,7 @@ module Sendit
 
     # Create the parcel on Sendit (idempotent: skipped when the order already has one)
     def push!
+      return fail!(I18n.t("import_contact.blocked")) if order.reload.contact_review_required?
       return order if order.sendit_code.present?
       return order if order.status.in?(%w[cancelled returned delivered])
 
@@ -183,6 +184,7 @@ module Sendit
 
     # Push address / amount / products to a parcel that hasn't left the warehouse yet
     def update!
+      return fail!(I18n.t("import_contact.blocked")) if order.reload.contact_review_required?
       return order if order.sendit_code.blank?
       return fail!("Parcel #{order.sendit_code} is already #{self.class.label(order.sendit_status)} — update it from Sendit.") unless cancellable?
 
@@ -219,6 +221,8 @@ module Sendit
         sendit_error: nil,
         sendit_synced_at: Time.current
       )
+      # A fee that arrives after the parcel was delivered or returned is frozen as soon as it is known.
+      order.freeze_fees!
 
       target = ORDER_STATUS.fetch(status, :unknown)
       ret = order.sendit_return_status.to_s.upcase

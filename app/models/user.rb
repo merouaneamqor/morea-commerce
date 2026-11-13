@@ -24,6 +24,9 @@ class User < ApplicationRecord
   has_many :seallo_connection_codes, dependent: :delete_all
 
   STATUSES = %w[active suspended archived].freeze
+
+  # The team member who created this account (nil for the platform or accounts that predate the field).
+  belongs_to :created_by, class_name: "User", optional: true
   CONFIRMATION_ROLES = %w[agent supervisor].freeze
 
   scope :super_admins, -> { where(super_admin: true) }

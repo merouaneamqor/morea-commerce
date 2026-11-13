@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_13_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -1313,6 +1313,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_170000) do
     t.integer "pay_per_delivery_cents", default: 0, null: false
     t.integer "return_penalty_cents", default: 0, null: false
     t.boolean "show_milestones", default: true, null: false
+    t.bigint "created_by_id"
+    t.index ["created_by_id"], name: "index_users_on_created_by_id"
     t.index ["email"], name: "index_users_on_email_super_admin", unique: true, where: "(super_admin = true)"
     t.index ["status"], name: "index_users_on_status"
     t.index ["store_id", "email"], name: "index_users_on_store_id_and_email", unique: true
@@ -1495,6 +1497,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_170000) do
   add_foreign_key "store_translations", "stores"
   add_foreign_key "storefront_themes", "stores"
   add_foreign_key "users", "stores"
+  add_foreign_key "users", "users", column: "created_by_id", on_delete: :nullify
   add_foreign_key "whatsapp_accounts", "stores"
   add_foreign_key "whatsapp_messages", "orders", on_delete: :nullify
   add_foreign_key "whatsapp_messages", "stores"

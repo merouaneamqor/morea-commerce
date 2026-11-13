@@ -3,7 +3,16 @@ module Admin
     before_action :set_user, only: %i[edit update destroy pay]
 
     def index
-      @users = current_store.users.order(:email)
+      @tab = %w[roles permissions].include?(params[:tab]) ? params[:tab] : "users"
+      @query = params[:q].to_s.strip
+      @all_users = current_store.users.order(:email)
+      @users = @all_users
+      if @query.present?
+        like = "%#{ActiveRecord::Base.sanitize_sql_like(@query)}%"
+        @users = @users.where("users.name ILIKE :like OR users.email ILIKE :like", like: like)
+      end
+      @users = @users.includes(:created_by)
+      @permission_user = @all_users.reject(&:super_admin?).find { |user| user.id == params[:user_id].to_i } if @tab == "permissions"
       earnings = Team::AgentEarnings.new(store: current_store, range: Time.current.beginning_of_month..Time.current)
       @summaries = @users.to_h { |user| [ user.id, earnings.summary_for(user) ] }
     end
@@ -14,6 +23,7 @@ module Admin
 
     def create
       @user = current_store.users.new(user_params)
+      @user.created_by = current_user
       if @user.save
         redirect_to admin_users_path, notice: "Staff account created."
       else

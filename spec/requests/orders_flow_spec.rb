@@ -265,11 +265,10 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
     get "/admin/confirmations/home"
     expect(document.text).to match(/\b10\b/)
 
-    # "Confirmed this month" in Team went up, and the agent's own figure with it.
+    # The Team page shows the agent's confirmations of the month in their row.
     sign_in(owner)
     get "/admin/staff"
-    tile = document.css(".seallo-stat").find { |node| node.text.include?(I18n.t("admin.team.confirmed_month")) }
-    expect(tile.at_css("strong").text.squish).to eq("1")
+    expect(document.at_css("[data-member='#{agent.id}']").text.squish).to include("1 confirmées")
     expect(document.text).to include("Saida")
     month = Time.current.beginning_of_month..Time.current.end_of_month
     expect(Team::AgentEarnings.new(store: store, range: month).summary_for(agent).figures.confirmed).to eq(1)

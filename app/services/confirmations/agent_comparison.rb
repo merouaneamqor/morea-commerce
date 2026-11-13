@@ -7,7 +7,7 @@ module Confirmations
                   median_first_call: :lower, calls_per_order: nil, perseverance: :higher, short_calls: :lower, talk_median: :higher }.freeze
     METRICS = DIRECTION.keys.freeze
 
-    Row = Data.define(:user, :analytics, :metrics)
+    Row = Data.define(:user, :analytics, :metrics, :worked_seconds)
 
     def initialize(store:, from:, to:, range:, now: Time.current)
       @store, @from, @to, @range, @now = store, from, to, range, now
@@ -18,7 +18,7 @@ module Confirmations
     def rows
       @rows ||= people.map do |user|
         analytics = Analytics.new(store: @store, from: @from, to: @to, range: @range, agent: user, now: @now)
-        Row.new(user: user, analytics: analytics, metrics: analytics.metrics)
+        Row.new(user: user, analytics: analytics, metrics: analytics.metrics, worked_seconds: worked_seconds.fetch(user.id, 0).round)
       end.sort_by { |row| [ -row.analytics.assigned, row.user.id ] }
     end
 
@@ -37,6 +37,13 @@ module Confirmations
       return if value.nil? || reference.nil? || direction.nil? || value == reference
 
       (direction == :higher) == (value > reference) ? :good : :bad
+    end
+
+    # Seconds each person was clocked in during the range (a shift still open counts until now).
+    def worked_seconds
+      @worked_seconds ||= ConfirmationShift.where(store: @store).overlapping(@range).each_with_object(Hash.new(0)) do |shift, totals|
+        totals[shift.user_id] += shift.seconds_within(@range, now: @now)
+      end
     end
 
     private

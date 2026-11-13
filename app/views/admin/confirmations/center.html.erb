@@ -32,6 +32,7 @@
       <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: center_admin_confirmations_path, theme: "dark", size: "compact", extra: keep.slice("product", "source", "whatsapp", "missed", "q", "sort").merge("tab" => center.tab) %>
       <span class="inline-flex h-8 items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold"><%= current_user.name.presence || current_user.email %></span>
       <% if @open_shift %>
+        <span role="timer" class="inline-flex h-8 items-center gap-2 rounded-full bg-white/10 px-3.5 text-[13px] font-semibold tabular-nums" data-shift-running title="<%= t("admin.confirmations.on_shift_since", time: l(@open_shift.started_at, format: :short)) %>"><i class="size-2 rounded-full bg-[#34c759]"></i><span data-controller="shift-timer" data-shift-timer-started-at-value="<%= @open_shift.started_at.iso8601 %>"><%= shift_clock(Time.current - @open_shift.started_at) %></span></span>
         <%= button_to t("admin.confirmations.clock_out"), clock_out_admin_confirmations_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#ececf0]" %>
       <% elsif agent_view? %>
         <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-[#1d1d1f] px-3.5 text-[13px] font-semibold text-white hover:bg-[#3a3a3c]" %>

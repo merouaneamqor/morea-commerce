@@ -53,13 +53,14 @@
       <div><h2 class="<%= title %>"><%= sl("Les agents face à la médiane de l'équipe") %></h2><p class="<%= sub %>"><%= sl("Le vert est meilleur que la médiane de l'équipe et le rouge moins bon, quel que soit le sens de l'indicateur. Cliquez sur un agent pour ouvrir son profil.") %></p></div></div>
     <div class="mt-4 overflow-x-auto">
       <table class="w-full text-[12.5px]">
-        <thead class="text-[11px] text-[#6e6e73]"><tr><th class="px-2 py-2 text-start font-medium"><%= sl("Agent") %></th><th class="px-2 py-2 text-end font-medium"><%= sl("Assignées") %></th>
+        <thead class="text-[11px] text-[#6e6e73]"><tr><th class="px-2 py-2 text-start font-medium"><%= sl("Agent") %></th><th class="px-2 py-2 text-end font-medium"><%= sl("Assignées") %></th><th class="px-2 py-2 text-end font-medium" data-hours-head><%= sl("Temps travaillé") %></th>
           <% Confirmations::AgentComparison::METRICS.each do |metric| %><th class="px-2 py-2 text-center font-medium"><%= sl(ConfirmationsAnalyticsHelper::METRIC_LABELS[metric]) %></th><% end %></tr></thead>
         <tbody class="divide-y divide-[#f1f1f4]">
           <% rows.each do |row| %>
             <tr data-agent-row="<%= row.user.id %>">
               <td class="px-2 py-2 whitespace-nowrap"><%= link_to analytics_admin_confirmations_path(agent_id: row.user.id), class: "flex items-center gap-2 font-medium text-[#1c1c1e] hover:underline" do %><span class="grid size-7 place-items-center rounded-full bg-[#ececf0] text-[10px] font-bold text-[#1c1c1e]"><%= analytics_initials(row.user) %></span><span dir="auto"><%= row.user.name.presence || row.user.email %></span><% end %></td>
               <td class="px-2 py-2 text-end tabular-nums text-[#6e6e73]"><%= analytics_integer(row.analytics.assigned) %></td>
+              <td class="px-2 py-2 text-end tabular-nums text-[#1c1c1e]" data-worked="<%= row.worked_seconds %>"><%= row.worked_seconds.zero? ? "—" : "#{shift_hours(row.worked_seconds)} h" %></td>
               <% Confirmations::AgentComparison::METRICS.each do |metric| %>
                 <% verdict = comparison.verdict(metric, row.metrics[metric]) %>
                 <td class="px-1.5 py-2 text-center"><span class="inline-block min-w-14 rounded-full px-2.5 py-1 font-medium whitespace-nowrap tabular-nums <%= analytics_verdict_class(verdict) %>" data-cell="<%= metric %>" data-verdict="<%= verdict %>"><%= analytics_metric_value(metric, row.metrics[metric]) %></span></td>
@@ -67,7 +68,7 @@
             </tr>
           <% end %>
         </tbody>
-        <tfoot><tr class="border-t border-[#e0e0e5] text-[#6e6e73]" data-median-row><td class="px-2 py-2 font-medium" colspan="2"><%= sl("Médiane de l'équipe") %></td>
+        <tfoot><tr class="border-t border-[#e0e0e5] text-[#6e6e73]" data-median-row><td class="px-2 py-2 font-medium" colspan="3"><%= sl("Médiane de l'équipe") %></td>
           <% Confirmations::AgentComparison::METRICS.each do |metric| %><td class="px-1.5 py-2 text-center tabular-nums" data-median-cell="<%= metric %>"><%= analytics_metric_value(metric, comparison.median(metric)) %></td><% end %></tr></tfoot>
       </table>
     </div>

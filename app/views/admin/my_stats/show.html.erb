@@ -18,6 +18,43 @@
   <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_my_stats_path %>
 </div>
 
+<section class="admin-card admin-card__body mb-4" data-my-hours>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="admin-card__title"><%= sl("Temps de travail") %></h2>
+      <% if @open_shift %>
+        <p class="admin-muted mt-1 text-xs"><%= t("admin.confirmations.on_shift_since", time: l(@open_shift.started_at, format: :short)) %></p>
+        <p role="timer" class="admin-metric__value mt-1 tabular-nums" data-shift-running data-controller="shift-timer" data-shift-timer-started-at-value="<%= @open_shift.started_at.iso8601 %>"><%= shift_clock(Time.current - @open_shift.started_at) %></p>
+      <% else %>
+        <p class="admin-muted mt-1 text-xs"><%= t("admin.confirmations.off_shift") %></p>
+      <% end %>
+    </div>
+    <div class="text-end">
+      <p class="admin-muted text-xs"><%= sl("Total sur la période") %></p>
+      <p class="admin-metric__value tabular-nums" data-worked="<%= @worked_seconds %>"><%= shift_hours(@worked_seconds) %> h</p>
+    </div>
+    <% if @open_shift %>
+      <%= button_to t("admin.confirmations.clock_out"), clock_out_admin_confirmations_path, class: "admin-btn-secondary" %>
+    <% else %>
+      <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path, class: "admin-btn" %>
+    <% end %>
+  </div>
+  <% if @shifts.any? %>
+    <table class="mt-3 w-full text-sm" data-my-shifts>
+      <thead><tr class="text-xs text-[#6e6e73]"><th class="py-1.5 text-start font-medium"><%= sl("Arrivée") %></th><th class="py-1.5 text-start font-medium"><%= sl("Départ") %></th><th class="py-1.5 text-end font-medium"><%= sl("Durée") %></th></tr></thead>
+      <tbody>
+        <% @shifts.each do |shift| %>
+          <tr class="border-t border-[#e0e0e5]" data-shift>
+            <td class="py-1.5"><%= l(shift.started_at.in_time_zone(DateRange::ZONE), format: :short) %></td>
+            <td class="py-1.5"><%= shift.ended_at ? l(shift.ended_at.in_time_zone(DateRange::ZONE), format: :short) : sl("En cours") %></td>
+            <td class="py-1.5 text-end tabular-nums"><%= shift_hours(shift.seconds_within(@range)) %> h</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</section>
+
 <h2 class="seallo-section"><%= t("admin.my_stats.orders") %></h2>
 <div class="seallo-kpis">
   <div class="seallo-kpi"><span class="seallo-dot" style="background:#2f6b3f"></span><span><%= t("admin.my_stats.confirmed") %></span><strong><%= figures.confirmed %></strong></div>

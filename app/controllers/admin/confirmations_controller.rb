@@ -111,17 +111,23 @@ module Admin
 
     def clock_in
       Confirmations::Shifts.new(store: current_store, user: current_user).clock_in
-      redirect_to dashboard_admin_confirmations_path(period: period_param), notice: t("admin.confirmations.clocked_in")
+      back_to_where_it_was notice: t("admin.confirmations.clocked_in")
     rescue Confirmations::Shifts::Error => e
-      redirect_to dashboard_admin_confirmations_path(period: period_param), alert: e.message
+      back_to_where_it_was alert: e.message
     end
 
     def clock_out
       Confirmations::Shifts.new(store: current_store, user: current_user).clock_out
-      redirect_to dashboard_admin_confirmations_path(period: period_param), notice: t("admin.confirmations.clocked_out")
+      back_to_where_it_was notice: t("admin.confirmations.clocked_out")
     rescue Confirmations::Shifts::Error => e
-      redirect_to dashboard_admin_confirmations_path(period: period_param), alert: e.message
+      back_to_where_it_was alert: e.message
     end
+
+    # Clocking in or out keeps the person on the page they clicked from (call center, dashboard...): the button works in place.
+    def back_to_where_it_was(flash)
+      redirect_back_or_to dashboard_admin_confirmations_path(period: period_param), **flash
+    end
+    private :back_to_where_it_was
 
     def claim
       desk.claim(params[:order_id])

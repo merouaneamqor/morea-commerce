@@ -107,3 +107,27 @@
   en: "To be deducted from the next payment"
   ar: "تُخصم من الدفعة القادمة"
   es: "Se descontará en el próximo pago"
+"Temps travaillé":
+  en: "Time worked"
+  ar: "وقت العمل"
+  es: "Tiempo trabajado"
+"Temps de travail":
+  en: "Working time"
+  ar: "وقت العمل"
+  es: "Tiempo de trabajo"
+"Total sur la période":
+  en: "Total for the period"
+  ar: "الإجمالي خلال الفترة"
+  es: "Total del periodo"
+"Arrivée":
+  en: "Arrival"
+  ar: "الحضور"
+  es: "Entrada"
+"Départ":
+  en: "Departure"
+  ar: "الانصراف"
+  es: "Salida"
+"Durée":
+  en: "Duration"
+  ar: "المدة"
+  es: "Duración"

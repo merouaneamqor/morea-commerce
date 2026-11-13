@@ -15,6 +15,7 @@ RSpec.describe "Agent workspace", type: :request do
   end
 
   def page = Nokogiri::HTML(response.body)
+  def host = "#{store.slug}.#{Store.base_domain}"
 
   def make(number, attributed: nil)
     order = store.orders.create!(customer: customer, number: number, status: "new", currency: "MAD", customer_name: "Client #{number}", customer_phone: "0612345678",
@@ -77,5 +78,37 @@ RSpec.describe "Agent workspace", type: :request do
     expect(response).to have_http_status(:not_found)
     get admin_order_path(mine)
     expect(response).to have_http_status(:ok)
+  end
+  it "clocks in and out in place, and counts the time in the agent's own statistics" do
+    sign_in(saida)
+    get "/admin/confirmations/center"
+    expect(response).to have_http_status(:ok)
+
+    post clock_in_admin_confirmations_path, headers: { "HTTP_REFERER" => "http://#{host}/admin/confirmations/center" }
+    expect(response).to redirect_to("http://#{host}/admin/confirmations/center")
+    expect(ConfirmationShift.open.where(user: saida)).to exist
+    follow_redirect!
+    expect(page.at_css("[data-shift-running]")).to be_present
+
+    ConfirmationShift.open.find_by(user: saida).update_columns(started_at: 90.minutes.ago)
+    get admin_my_stats_path
+    expect(page.at_css("[data-my-hours] [data-worked]")["data-worked"].to_i).to be_between(5390, 5500)
+    expect(page.at_css("[data-my-hours]").text).to include("1:3")
+
+    post clock_out_admin_confirmations_path, headers: { "HTTP_REFERER" => "http://#{host}/admin/my_stats" }
+    expect(response).to redirect_to("http://#{host}/admin/my_stats")
+    expect(ConfirmationShift.open.where(user: saida)).not_to exist
+  end
+
+  it "shows the owner each agent's time worked next to the comparison" do
+    owner = store.users.create!(name: "Owner", email: "owner-#{SecureRandom.hex(4)}@example.test", password: password, admin: true)
+    ConfirmationShift.create!(store: store, user: saida, started_at: 2.hours.ago, ended_at: 30.minutes.ago)
+    sign_in(owner)
+    get "/admin/confirmations/analytics", params: { view: "agents" }
+
+    expect(response).to have_http_status(:ok)
+    expect(page.at_css("[data-hours-head]")).to be_present
+    expect(page.at_css("[data-agent-row='#{saida.id}'] [data-worked]")["data-worked"].to_i).to be_between(5390, 5410)
+    expect(page.at_css("[data-agent-row='#{omar.id}'] [data-worked]")["data-worked"]).to eq("0")
   end
 end

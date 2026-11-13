@@ -146,8 +146,7 @@
             <% if store_billing_past_due? %>
               <p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]">Subscription payment is overdue. Your storefront stays online, but renew with the platform owner to clear billing.</p>
             <% end %>
-            <% if notice.present? %><p class="rounded-xl bg-[#e3f3e8] px-4 py-3 text-sm text-[#2f7a4a]"><%= notice %></p><% end %>
-            <% if alert.present? %><p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= alert %></p><% end %>
+            <%= render "admin/shared/toasts" %>
             <%= render "admin/shared/meta_ads_notice" %>
             <% unless content_for?(:seller_lang) %><div class="flex justify-end"><%= render "admin/shared/language_switcher" %></div><% end %>
             <div class="admin-page <%= yield(:admin_page_class) %>"><%= yield %></div>

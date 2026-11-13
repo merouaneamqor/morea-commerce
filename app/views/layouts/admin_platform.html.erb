@@ -61,8 +61,7 @@
 
         <main class="admin-main">
           <div class="admin-page">
-            <% if notice.present? %><div class="admin-banner admin-banner--success"><%= notice %></div><% end %>
-            <% if alert.present? %><div class="admin-banner admin-banner--critical"><%= alert %></div><% end %>
+            <%= render "admin/shared/toasts" %>
             <%= render "admin/shared/pwa_install" %>
             <%= yield %>
           </div>

@@ -1,0 +1,15 @@
+<%# The notices of the page (notice / alert) as gray-glass windows in the middle of the screen that go away by themselves: a notice after one second, an error after four so it can be read. %>
+<% if notice.present? || alert.present? %>
+  <div class="pointer-events-none fixed inset-0 z-[70] flex flex-col items-center justify-center gap-2 px-4" data-turbo-temporary data-toasts>
+    <% if notice.present? %>
+      <div class="toast-glass pointer-events-auto flex max-w-md items-center gap-2.5 rounded-2xl px-4 py-2.5 text-sm font-medium" role="status" data-controller="toast" data-toast-duration-value="1000" data-toast-kind="notice">
+        <i class="size-2 shrink-0 rounded-full bg-[#2f9d5c]"></i><span><%= notice %></span>
+      </div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="toast-glass pointer-events-auto flex max-w-md items-center gap-2.5 rounded-2xl px-4 py-2.5 text-sm font-medium" role="alert" data-controller="toast" data-toast-duration-value="4000" data-toast-kind="alert">
+        <i class="size-2 shrink-0 rounded-full bg-[#d6455d]"></i><span><%= alert %></span>
+      </div>
+    <% end %>
+  </div>
+<% end %>

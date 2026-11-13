@@ -22,25 +22,25 @@
 <%# "Créer une commande" opens the same window as on the Orders page. %>
 <turbo-frame id="order-modal"></turbo-frame>
 
-<header class="flex flex-wrap items-start justify-between gap-3">
+<header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white" data-agent-header>
   <div>
-    <h1 class="text-2xl font-bold text-[#1c1c1e] sm:text-[28px]"><%= sl("Bonjour") %><%= first_name.present? ? ", #{first_name}" : "" %></h1>
+    <h1 class="text-2xl font-bold text-white sm:text-[26px]"><%= sl("Bonjour") %><%= first_name.present? ? ", #{first_name}" : "" %></h1>
   </div>
   <div class="flex flex-wrap items-center gap-2">
-    <%= form_with url: admin_my_stats_path(anchor: "my-orders"), method: :get, class: "hidden h-11 items-center gap-2 rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm sm:flex", data: { agent_search: true } do %>
-      <span class="text-[#6e6e73]"><%= seller_icon(:search) %></span>
-      <input name="q" value="<%= @q %>" placeholder="<%= sl("Rechercher une commande") %>" class="w-44 bg-transparent outline-none placeholder:text-[#8e8e93]">
+    <%= form_with url: admin_my_stats_path(anchor: "my-orders"), method: :get, class: "hidden h-11 items-center gap-2 rounded-xl bg-white/10 px-3 text-sm text-white sm:flex", data: { agent_search: true } do %>
+      <span class="text-white/65"><%= seller_icon(:search) %></span>
+      <input name="q" value="<%= @q %>" placeholder="<%= sl("Rechercher une commande") %>" class="w-44 bg-transparent text-white outline-none placeholder:text-white/55">
     <% end %>
 
-    <%= link_to new_admin_order_path, data: { turbo_frame: "order-modal" }, class: "flex h-11 items-center gap-1.5 rounded-xl bg-[#1d1d1f] px-4 text-sm font-semibold text-white hover:bg-[#3a3a3c]" do %>+ <%= t("call_center.create_order") %><% end %>
+    <%= link_to new_admin_order_path, data: { turbo_frame: "order-modal" }, class: "flex h-11 items-center gap-1.5 rounded-xl bg-white px-4 text-sm font-semibold text-[#1c1c1e] hover:bg-[#ececf0]" do %>+ <%= t("call_center.create_order") %><% end %>
 
     <%# Clock in / out: an icon; a click opens the window with the timer, the total and the button. A green dot says the agent is on shift. %>
     <div class="relative" data-controller="locale-switcher" data-my-hours>
       <button type="button" data-locale-switcher-target="button" data-action="locale-switcher#toggle" aria-haspopup="dialog" aria-expanded="false"
               title="<%= sl("Temps de travail") %>" aria-label="<%= sl("Temps de travail") %>"
-              class="relative grid size-11 cursor-pointer place-items-center rounded-xl border border-[#e0e0e5] bg-white text-[#1c1c1e] hover:bg-[#f5f5f7]">
+              class="relative grid size-11 cursor-pointer place-items-center rounded-xl bg-white/10 text-white hover:bg-white/20">
         <%= seller_icon(:clock, size: 20) %>
-        <% if @open_shift %><i class="absolute end-2 top-2 size-2.5 rounded-full border-2 border-white bg-[#2f9d5c]" data-on-shift-dot></i><% end %>
+        <% if @open_shift %><i class="absolute end-2 top-2 size-2.5 rounded-full border-2 border-[#1c1c1e] bg-[#34c759]" data-on-shift-dot></i><% end %>
       </button>
       <div role="dialog" data-locale-switcher-target="menu" hidden
            class="absolute end-0 z-50 mt-2 w-80 rounded-2xl border border-[#e0e0e5] bg-white p-4 text-start shadow-[0_12px_32px_-12px_rgba(0,0,0,0.25)]">
@@ -82,7 +82,7 @@
     </div>
 
     <%= render "admin/shared/language_switcher" %>
-    <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_my_stats_path %>
+    <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_my_stats_path, theme: "dark" %>
   </div>
 </header>
 
@@ -97,8 +97,8 @@
 </section>
 
 <section class="mt-2.5 grid grid-cols-2 gap-2.5 xl:grid-cols-4" data-kpis="row2">
-  <%= render "admin/dashboard/kpi", key: "unreachable", label: t("admin.my_stats.unreachable"), icon: :ban, tone: "bg-[#ececf0] text-[#1c1c1e]", value: figures.unreachable, sub: of_confirmed.(figures.unreachable) %>
-  <%= render "admin/dashboard/kpi", key: "returned", label: t("admin.my_stats.returned"), icon: :undo, tone: "bg-[#fdf0d9] text-[#d28a12]", value: figures.returned, sub: of_confirmed.(figures.returned) %>
+  <%= render "admin/dashboard/kpi", key: "unreachable", label: t("admin.my_stats.unreachable"), icon: :ban, tone: "bg-[#fdf0d9] text-[#d28a12]", value: figures.unreachable, sub: of_confirmed.(figures.unreachable) %>
+  <%= render "admin/dashboard/kpi", key: "returned", label: t("admin.my_stats.returned"), icon: :undo, tone: "bg-[#ececf0] text-[#1c1c1e]", value: figures.returned, sub: of_confirmed.(figures.returned) %>
   <%= render "admin/dashboard/kpi", key: "confirmation_rate", label: t("admin.my_stats.confirmation_rate"), icon: :check, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: "#{conf_rate} %", sub: t("admin.my_stats.confirmation_rate_sub") %>
   <%= render "admin/dashboard/kpi", key: "delivery_rate", label: t("admin.my_stats.delivery_rate"), icon: :truck, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: "#{del_rate} %", sub: t("admin.my_stats.delivery_rate_sub") %>
 </section>

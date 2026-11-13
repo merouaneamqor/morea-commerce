@@ -209,7 +209,7 @@ Rails.application.routes.draw do
     get "my_stats", to: "my_stats#show", as: :my_stats
     get "my_billing", to: "my_billing#show", as: :my_billing
     get "agent-billing", to: "agent_billing#show", as: :agent_billing
-    post "agent-billing/:user_id/pay", to: "agent_billing#pay", as: :agent_billing_pay
+    post "agent-billing/pay", to: "agent_billing#pay", as: :agent_billing_pay
     get "media", to: "media#index", as: :media
     post "media/upload", to: "media#upload", as: :media_upload
     post "media/edits", to: "media#edits", as: :media_edits

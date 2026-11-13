@@ -1,5 +1,6 @@
-<%# Facturation of the agents, for the owner: what each agent earned, was paid and is owed; the payout with how it was made (cash or bank transfer),
-    a reference and the proof; and the history with the proofs. Printing only: every figure comes from Team::AgentEarnings and Team::AgentPayout. %>
+<%# Facturation of the agents, for the owner: what each agent earned, was paid and is owed; the payout window (choose an agent, tick the delivered orders to
+    pay, cash or bank transfer, reference, optional proof); and the history with the proofs. Printing only: every figure comes from Team::AgentEarnings and
+    Team::AgentPayout. %>
 <% content_for :title, "#{sl("Facturation des agents")} — Admin" %>
 <% content_for :seller_lang, "1" %>
 <% content_for :admin_page_class, "seller-page" %>
@@ -13,127 +14,168 @@
 <% pending = @rows.sum { |row| row[:summary].pending_deductions } %>
 <% method_labels = { "cash" => sl("Espèces"), "bank_transfer" => sl("Virement bancaire") } %>
 <% method_tones = { "cash" => "bg-[#e3f3e8] text-[#2f7a4a]", "bank_transfer" => "bg-[#e6f0fd] text-[#2b5f9e]" } %>
+<% payable = @rows.select { |row| row[:orders].any? } %>
 
-<header class="flex flex-wrap items-start justify-between gap-3">
-  <div>
-    <h1 class="text-2xl font-bold text-[#1c1c1e] sm:text-[28px]"><%= sl("Facturation des agents") %></h1>
-    <p class="mt-1 text-sm text-[#6e6e73]"><%= sl("Payez vos agents et gardez la preuve de chaque paiement.") %></p>
-  </div>
-  <div class="flex flex-wrap items-center gap-2">
-    <%= render "admin/shared/language_switcher" %>
-    <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_agent_billing_path %>
-  </div>
-</header>
-
-<section class="mt-3 grid grid-cols-2 gap-2.5 xl:grid-cols-4" data-kpis="billing">
-  <%= render "admin/dashboard/kpi", key: "owed", label: sl("Reste à payer (équipe)"), icon: :wallet, value: amount.(owed), unit: currency, featured: true, sub: sl("Gains cumulés non payés") %>
-  <%= render "admin/dashboard/kpi", key: "earned", label: sl("Gagné sur la période"), icon: :calculator, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: amount.(earned), unit: currency, sub: sl("Commandes livrées") %>
-  <%= render "admin/dashboard/kpi", key: "paid", label: sl("Payé sur la période"), icon: :check, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: amount.(paid), unit: currency, sub: sl("Historique des paiements") %>
-  <%= render "admin/dashboard/kpi", key: "pending", label: sl("Retenues en attente"), icon: :undo, tone: "bg-[#fbe7ea] text-[#d6455d]", value: amount.(pending), unit: currency, sub: sl("Retenues pour retours") %>
-</section>
-
-<section class="<%= card %> mt-3" data-agents-billing>
-  <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Agents") %></h2>
-  <% if @rows.empty? %>
-    <p class="my-6 text-center text-sm text-[#6e6e73]" data-no-agents><%= sl("Aucun agent pour le moment.") %></p>
-  <% else %>
-    <div class="mt-3 overflow-x-auto">
-      <table class="w-full text-[13px]">
-        <thead class="text-[11px] text-[#6e6e73]"><tr>
-          <th class="px-2 py-2 text-start font-medium"><%= sl("Agent") %></th>
-          <th class="px-2 py-2 text-end font-medium"><%= sl("Gagné sur la période") %></th>
-          <th class="px-2 py-2 text-end font-medium"><%= sl("Gains cumulés") %></th>
-          <th class="px-2 py-2 text-end font-medium"><%= sl("Déjà payé") %></th>
-          <th class="px-2 py-2 text-end font-medium"><%= sl("Retenues en attente") %></th>
-          <th class="px-2 py-2 text-end font-medium"><%= sl("Reste à payer") %></th>
-          <th class="px-2 py-2 text-end font-medium"><%= sl("Paiement") %></th>
-        </tr></thead>
-        <tbody class="divide-y divide-[#f1f1f4]">
-          <% @rows.each do |row| %>
-            <% agent, summary, payout = row.values_at(:agent, :summary, :payout) %>
-            <tr data-agent-row="<%= agent.id %>" data-unpaid="<%= payout.unpaid_cents %>">
-              <td class="px-2 py-2.5 font-medium text-[#1c1c1e]" dir="auto"><%= agent.name.presence || agent.email %></td>
-              <td class="px-2 py-2.5 text-end tabular-nums"><%= amount.(summary.earned_period) %> <%= currency %></td>
-              <td class="px-2 py-2.5 text-end tabular-nums"><%= amount.(summary.earned_total) %> <%= currency %></td>
-              <td class="px-2 py-2.5 text-end tabular-nums"><%= amount.(summary.paid_total) %> <%= currency %></td>
-              <td class="px-2 py-2.5 text-end tabular-nums"><%= summary.pending_deductions.positive? ? "− #{amount.(summary.pending_deductions)} #{currency}" : "—" %></td>
-              <td class="px-2 py-2.5 text-end font-semibold tabular-nums"><%= amount.(payout.unpaid_cents) %> <%= currency %></td>
-              <td class="px-2 py-2.5 text-end">
-                <% if payout.unpaid_cents.zero? %>
-                  <span class="text-[12px] text-[#8e8e93]" data-nothing-to-pay><%= sl("Rien à payer") %></span>
-                <% else %>
-                  <div class="inline-block text-start" data-controller="dialog">
-                    <button type="button" data-action="dialog#open" class="inline-flex h-8 cursor-pointer items-center rounded-full bg-[#1d1d1f] px-3.5 text-[13px] font-semibold text-white hover:bg-[#3a3a3c]"><%= sl("Payer") %></button>
-                    <dialog data-dialog-target="dialog" data-action="click->dialog#backdrop" data-pay-form="<%= agent.id %>" class="m-auto w-[min(24rem,calc(100vw-2rem))] rounded-3xl border border-[#e0e0e5] bg-white p-0 text-[#1c1c1e] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.45)] backdrop:bg-[rgba(31,36,48,0.35)]">
-                    <%= form_with url: admin_agent_billing_pay_path(agent), method: :post, multipart: true, data: { turbo: false },
-                          class: "space-y-3 p-5" do %>
-                      <h3 class="text-base font-bold"><%= sl("Payer") %> · <span dir="auto"><%= agent.name.presence || agent.email %></span></h3>
-                      <div class="rounded-xl bg-[#f6f6f8] p-3 text-[13px]">
-                        <p class="flex justify-between"><span class="text-[#6e6e73]"><%= sl("Gains cumulés non payés") %></span><b class="tabular-nums"><%= amount.(payout.unpaid_cents) %> <%= currency %></b></p>
-                        <% if payout.deductions_cents.positive? %><p class="mt-1 flex justify-between"><span class="text-[#6e6e73]"><%= sl("Retenues déduites") %></span><b class="tabular-nums">− <%= amount.(payout.deductions_cents) %> <%= currency %></b></p><% end %>
-                        <p class="mt-1 flex justify-between border-t border-[#e0e0e5] pt-1"><span class="font-semibold"><%= sl("Montant à remettre") %></span><b class="tabular-nums" data-cash-due="<%= payout.cash_cents %>"><%= amount.(payout.cash_cents) %> <%= currency %></b></p>
-                      </div>
-                      <fieldset>
-                        <legend class="mb-1 text-xs font-medium text-[#6e6e73]"><%= sl("Mode de paiement") %></legend>
-                        <label class="mr-4 inline-flex items-center gap-1.5 text-[13px]"><%= radio_button_tag :payment_method, "cash", true, class: "accent-[#1d1d1f]" %><%= sl("Espèces") %></label>
-                        <label class="inline-flex items-center gap-1.5 text-[13px]"><%= radio_button_tag :payment_method, "bank_transfer", false, class: "accent-[#1d1d1f]" %><%= sl("Virement bancaire") %></label>
-                      </fieldset>
-                      <div>
-                        <label for="reference-<%= agent.id %>" class="mb-1 block text-xs font-medium text-[#6e6e73]"><%= sl("Référence (n° de virement, reçu…)") %></label>
-                        <%= text_field_tag :reference, nil, id: "reference-#{agent.id}", maxlength: 200, class: field %>
-                      </div>
-                      <div>
-                        <label for="proof-<%= agent.id %>" class="mb-1 block text-xs font-medium text-[#6e6e73]"><%= sl("Preuve de paiement (photo ou PDF)") %></label>
-                        <%= file_field_tag :proof, id: "proof-#{agent.id}", accept: AgentPayment::PROOF_TYPES.join(","), class: "block w-full text-[12px]" %>
-                        <p class="mt-1 text-[11px] text-[#8e8e93]"><%= sl("Obligatoire pour un virement bancaire.") %></p>
-                      </div>
-                      <div class="flex gap-2">
-                        <button type="button" data-action="dialog#close" class="h-10 flex-1 cursor-pointer rounded-xl border border-[#e0e0e5] text-sm font-semibold text-[#3a3a3c] hover:bg-[#f5f5f7]"><%= sl("Annuler") %></button>
-                        <%= submit_tag sl("Confirmer le paiement"), class: "h-10 flex-[2] cursor-pointer rounded-xl bg-[#1d1d1f] text-sm font-semibold text-white hover:bg-[#3a3a3c]" %>
-                      </div>
-                    <% end %>
-                    </dialog>
-                  </div>
-                <% end %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+<div data-controller="pay-dialog" data-pay-dialog-currency-value="<%= currency %>">
+  <header class="flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-bold text-[#1c1c1e] sm:text-[28px]"><%= sl("Facturation des agents") %></h1>
+      <p class="mt-1 text-sm text-[#6e6e73]"><%= sl("Payez vos agents et gardez la preuve de chaque paiement.") %></p>
     </div>
-  <% end %>
-</section>
-
-<section class="<%= card %> mt-3" data-payments-history>
-  <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Historique des paiements") %></h2>
-  <% if @payments.empty? %>
-    <p class="my-6 text-center text-sm text-[#6e6e73]" data-no-payments><%= sl("Aucun paiement sur cette période.") %></p>
-  <% else %>
-    <div class="mt-3 overflow-x-auto">
-      <table class="w-full text-[13px]">
-        <thead class="text-[11px] text-[#6e6e73]"><tr>
-          <th class="px-2 py-2 text-start font-medium"><%= sl("Date de paiement") %></th>
-          <th class="px-2 py-2 text-start font-medium"><%= sl("Agent") %></th>
-          <th class="px-2 py-2 text-end font-medium"><%= sl("Montant reçu") %></th>
-          <th class="px-2 py-2 text-start font-medium"><%= sl("Mode de paiement") %></th>
-          <th class="px-2 py-2 text-start font-medium"><%= sl("Référence") %></th>
-          <th class="px-2 py-2 text-start font-medium"><%= sl("Preuve") %></th>
-          <th class="px-2 py-2 text-start font-medium"><%= sl("Payé par") %></th>
-        </tr></thead>
-        <tbody class="divide-y divide-[#f1f1f4]">
-          <% @payments.each do |payment| %>
-            <tr data-payment="<%= payment.id %>" data-method="<%= payment.payment_method || "unknown" %>">
-              <td class="px-2 py-2.5 tabular-nums"><%= l(payment.paid_at.in_time_zone(DateRange::ZONE), format: :short) %></td>
-              <td class="px-2 py-2.5 font-medium text-[#1c1c1e]" dir="auto"><%= payment.user.name.presence || payment.user.email %></td>
-              <td class="px-2 py-2.5 text-end font-semibold tabular-nums"><%= amount.(payment.cash_cents) %> <%= currency %></td>
-              <td class="px-2 py-2.5"><% if payment.payment_method %><span class="inline-block rounded-full px-2.5 py-0.5 text-[12px] font-medium <%= method_tones[payment.payment_method] %>"><%= method_labels[payment.payment_method] %></span><% else %>—<% end %></td>
-              <td class="px-2 py-2.5 text-[#6e6e73]" dir="auto"><%= payment.reference.presence || "—" %></td>
-              <td class="px-2 py-2.5"><% if payment.proof.attached? %><%= link_to sl("Voir la preuve"), rails_blob_path(payment.proof, disposition: "inline"), target: "_blank", rel: "noopener", class: "font-medium text-[#2b5f9e] hover:underline", data: { proof_link: true } %><% else %><span class="text-[#8e8e93]">—</span><% end %></td>
-              <td class="px-2 py-2.5 text-[#6e6e73]" dir="auto"><%= payment.paid_by&.name.presence || payment.paid_by&.email || "—" %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+    <div class="flex flex-wrap items-center gap-2">
+      <button type="button" data-action="pay-dialog#open" data-pay-open title="<%= sl("Payer un agent") %>"
+              class="inline-flex h-11 cursor-pointer items-center gap-2 rounded-xl bg-[#1d1d1f] px-4 text-sm font-semibold text-white hover:bg-[#3a3a3c]"><%= seller_icon(:wallet, size: 18) %><%= sl("Payer un agent") %></button>
+      <%= render "admin/shared/language_switcher" %>
+      <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_agent_billing_path %>
     </div>
-  <% end %>
-</section>
+  </header>
+
+  <section class="mt-3 grid grid-cols-2 gap-2.5 xl:grid-cols-4" data-kpis="billing">
+    <%= render "admin/dashboard/kpi", key: "owed", label: sl("Reste à payer (équipe)"), icon: :wallet, value: amount.(owed), unit: currency, featured: true, sub: sl("Gains cumulés non payés") %>
+    <%= render "admin/dashboard/kpi", key: "earned", label: sl("Gagné sur la période"), icon: :calculator, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: amount.(earned), unit: currency, sub: sl("Commandes livrées") %>
+    <%= render "admin/dashboard/kpi", key: "paid", label: sl("Payé sur la période"), icon: :check, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: amount.(paid), unit: currency, sub: sl("Historique des paiements") %>
+    <%= render "admin/dashboard/kpi", key: "pending", label: sl("Retenues en attente"), icon: :undo, tone: "bg-[#fbe7ea] text-[#d6455d]", value: amount.(pending), unit: currency, sub: sl("Retenues pour retours") %>
+  </section>
+
+  <section class="<%= card %> mt-3" data-agents-billing>
+    <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Agents") %></h2>
+    <% if @rows.empty? %>
+      <p class="my-6 text-center text-sm text-[#6e6e73]" data-no-agents><%= sl("Aucun agent pour le moment.") %></p>
+    <% else %>
+      <div class="mt-3 overflow-x-auto">
+        <table class="w-full text-[13px]">
+          <thead class="text-[11px] text-[#6e6e73]"><tr>
+            <th class="px-2 py-2 text-start font-medium"><%= sl("Agent") %></th>
+            <th class="px-2 py-2 text-end font-medium"><%= sl("Gagné sur la période") %></th>
+            <th class="px-2 py-2 text-end font-medium"><%= sl("Gains cumulés") %></th>
+            <th class="px-2 py-2 text-end font-medium"><%= sl("Déjà payé") %></th>
+            <th class="px-2 py-2 text-end font-medium"><%= sl("Retenues en attente") %></th>
+            <th class="px-2 py-2 text-end font-medium"><%= sl("Reste à payer") %></th>
+            <th class="px-2 py-2 text-end font-medium"><%= sl("Paiement") %></th>
+          </tr></thead>
+          <tbody class="divide-y divide-[#f1f1f4]">
+            <% @rows.each do |row| %>
+              <% agent, summary, payout = row.values_at(:agent, :summary, :payout) %>
+              <tr data-agent-row="<%= agent.id %>" data-unpaid="<%= payout.unpaid_cents %>" data-payable-orders="<%= row[:orders].size %>">
+                <td class="px-2 py-2.5 font-medium text-[#1c1c1e]" dir="auto"><%= agent.name.presence || agent.email %></td>
+                <td class="px-2 py-2.5 text-end tabular-nums"><%= amount.(summary.earned_period) %> <%= currency %></td>
+                <td class="px-2 py-2.5 text-end tabular-nums"><%= amount.(summary.earned_total) %> <%= currency %></td>
+                <td class="px-2 py-2.5 text-end tabular-nums"><%= amount.(summary.paid_total) %> <%= currency %></td>
+                <td class="px-2 py-2.5 text-end tabular-nums"><%= summary.pending_deductions.positive? ? "− #{amount.(summary.pending_deductions)} #{currency}" : "—" %></td>
+                <td class="px-2 py-2.5 text-end font-semibold tabular-nums"><%= amount.(payout.unpaid_cents) %> <%= currency %></td>
+                <td class="px-2 py-2.5 text-end">
+                  <% if row[:orders].empty? %>
+                    <span class="text-[12px] text-[#8e8e93]" data-nothing-to-pay><%= sl("Rien à payer") %></span>
+                  <% else %>
+                    <button type="button" data-action="pay-dialog#open" data-pay-dialog-agent-param="<%= agent.id %>" class="inline-flex h-8 cursor-pointer items-center rounded-full bg-[#1d1d1f] px-3.5 text-[13px] font-semibold text-white hover:bg-[#3a3a3c]"><%= sl("Payer") %></button>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </section>
+
+  <%# The payout window, in the middle of the screen. %>
+  <dialog data-pay-dialog-target="dialog" data-action="click->pay-dialog#backdrop" data-pay-window
+          class="m-auto w-[min(30rem,calc(100vw-2rem))] rounded-3xl border border-[#e0e0e5] bg-white p-0 text-[#1c1c1e] shadow-[0_24px_60px_-20px_rgba(0,0,0,0.45)] backdrop:bg-[rgba(31,36,48,0.35)]">
+    <%= form_with url: admin_agent_billing_pay_path, method: :post, multipart: true, data: { turbo: false }, class: "space-y-4 p-5" do %>
+      <h3 class="flex items-center gap-2 text-base font-bold"><%= seller_icon(:wallet, size: 18) %><%= sl("Payer un agent") %></h3>
+
+      <div>
+        <label for="pay-agent" class="mb-1 block text-xs font-medium text-[#6e6e73]"><%= sl("Agent") %></label>
+        <select name="user_id" id="pay-agent" required data-pay-dialog-target="agent" data-action="pay-dialog#refresh" class="<%= field %>">
+          <option value=""><%= sl("Choisir un agent") %></option>
+          <% payable.each do |row| %>
+            <option value="<%= row[:agent].id %>"><%= row[:agent].name.presence || row[:agent].email %> · <%= amount.(row[:payout].unpaid_cents) %> <%= currency %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <% payable.each do |row| %>
+        <% agent = row[:agent] %>
+        <div hidden data-pay-dialog-target="section" data-agent-id="<%= agent.id %>" data-rate-cents="<%= row[:rate_cents] %>" data-agent-orders="<%= agent.id %>">
+          <div class="mb-1.5 flex items-center justify-between text-xs font-medium text-[#6e6e73]">
+            <label class="inline-flex cursor-pointer items-center gap-1.5"><input type="checkbox" data-action="pay-dialog#toggleAll" data-select-all class="accent-[#1d1d1f]" disabled><%= sl("Tout sélectionner") %></label>
+            <span><%= sl("Par commande livrée") %> : <%= amount.(row[:rate_cents]) %> <%= currency %></span>
+          </div>
+          <ul class="max-h-56 divide-y divide-[#f1f1f4] overflow-y-auto rounded-xl border border-[#e0e0e5]">
+            <% row[:orders].each do |order| %>
+              <li>
+                <label class="flex cursor-pointer items-center gap-3 px-3 py-2 text-[13px] hover:bg-[#f9f9fb]">
+                  <input type="checkbox" name="order_ids[]" value="<%= order.id %>" data-action="pay-dialog#recalc" class="accent-[#1d1d1f]" disabled>
+                  <span class="font-semibold" dir="ltr">#<%= order.number %></span>
+                  <span class="min-w-0 flex-1 truncate text-[#6e6e73]" dir="auto"><%= order.customer_name %></span>
+                  <span class="text-[11px] text-[#8e8e93] tabular-nums"><%= l(order.delivered_at.in_time_zone(DateRange::ZONE).to_date) %></span>
+                  <span class="tabular-nums"><%= amount.(row[:rate_cents]) %></span>
+                </label>
+              </li>
+            <% end %>
+          </ul>
+          <% if row[:summary].pending_deductions.positive? %><p class="mt-1.5 text-[11px] text-[#8a5a12]"><%= sl("Retenues en attente") %> : − <%= amount.(row[:summary].pending_deductions) %> <%= currency %></p><% end %>
+        </div>
+      <% end %>
+
+      <div class="flex items-center justify-between rounded-xl bg-[#f6f6f8] px-3 py-2.5 text-[13px]">
+        <span class="text-[#6e6e73]"><span data-pay-dialog-target="count">0</span> <%= sl("commandes sélectionnées") %></span>
+        <span class="font-semibold"><%= sl("Montant à payer") %> : <b class="tabular-nums" data-pay-dialog-target="amount">0 <%= currency %></b></span>
+      </div>
+
+      <fieldset>
+        <legend class="mb-1 text-xs font-medium text-[#6e6e73]"><%= sl("Mode de paiement") %></legend>
+        <label class="mr-4 inline-flex items-center gap-1.5 text-[13px]"><%= radio_button_tag :payment_method, "cash", true, class: "accent-[#1d1d1f]" %><%= sl("Espèces") %></label>
+        <label class="inline-flex items-center gap-1.5 text-[13px]"><%= radio_button_tag :payment_method, "bank_transfer", false, class: "accent-[#1d1d1f]" %><%= sl("Virement bancaire") %></label>
+      </fieldset>
+      <div>
+        <label for="pay-reference" class="mb-1 block text-xs font-medium text-[#6e6e73]"><%= sl("Référence (n° de virement, reçu…)") %></label>
+        <%= text_field_tag :reference, nil, id: "pay-reference", maxlength: 200, class: field %>
+      </div>
+      <div>
+        <label for="pay-proof" class="mb-1 block text-xs font-medium text-[#6e6e73]"><%= sl("Preuve de paiement (photo ou PDF)") %> · <span class="font-normal"><%= sl("Facultatif") %></span></label>
+        <%= file_field_tag :proof, id: "pay-proof", accept: AgentPayment::PROOF_TYPES.join(","), class: "block w-full text-[12px]" %>
+      </div>
+      <div class="flex gap-2">
+        <button type="button" data-action="pay-dialog#close" class="h-10 flex-1 cursor-pointer rounded-xl border border-[#e0e0e5] text-sm font-semibold text-[#3a3a3c] hover:bg-[#f5f5f7]"><%= sl("Annuler") %></button>
+        <%= submit_tag sl("Confirmer le paiement"), disabled: true, data: { pay_dialog_target: "submit" }, class: "h-10 flex-[2] cursor-pointer rounded-xl bg-[#1d1d1f] text-sm font-semibold text-white hover:bg-[#3a3a3c] disabled:cursor-not-allowed disabled:opacity-40" %>
+      </div>
+    <% end %>
+  </dialog>
+
+  <section class="<%= card %> mt-3" data-payments-history>
+    <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Historique des paiements") %></h2>
+    <% if @payments.empty? %>
+      <p class="my-6 text-center text-sm text-[#6e6e73]" data-no-payments><%= sl("Aucun paiement sur cette période.") %></p>
+    <% else %>
+      <div class="mt-3 overflow-x-auto">
+        <table class="w-full text-[13px]">
+          <thead class="text-[11px] text-[#6e6e73]"><tr>
+            <th class="px-2 py-2 text-start font-medium"><%= sl("Date de paiement") %></th>
+            <th class="px-2 py-2 text-start font-medium"><%= sl("Agent") %></th>
+            <th class="px-2 py-2 text-end font-medium"><%= sl("Commandes") %></th>
+            <th class="px-2 py-2 text-end font-medium"><%= sl("Montant reçu") %></th>
+            <th class="px-2 py-2 text-start font-medium"><%= sl("Mode de paiement") %></th>
+            <th class="px-2 py-2 text-start font-medium"><%= sl("Référence") %></th>
+            <th class="px-2 py-2 text-start font-medium"><%= sl("Preuve") %></th>
+            <th class="px-2 py-2 text-start font-medium"><%= sl("Payé par") %></th>
+          </tr></thead>
+          <tbody class="divide-y divide-[#f1f1f4]">
+            <% @payments.each do |payment| %>
+              <tr data-payment="<%= payment.id %>" data-method="<%= payment.payment_method || "unknown" %>">
+                <td class="px-2 py-2.5 tabular-nums"><%= l(payment.paid_at.in_time_zone(DateRange::ZONE), format: :short) %></td>
+                <td class="px-2 py-2.5 font-medium text-[#1c1c1e]" dir="auto"><%= payment.user.name.presence || payment.user.email %></td>
+                <td class="px-2 py-2.5 text-end tabular-nums"><%= payment.items.size.positive? ? payment.items.size : "—" %></td>
+                <td class="px-2 py-2.5 text-end font-semibold tabular-nums"><%= amount.(payment.cash_cents) %> <%= currency %></td>
+                <td class="px-2 py-2.5"><% if payment.payment_method %><span class="inline-block rounded-full px-2.5 py-0.5 text-[12px] font-medium <%= method_tones[payment.payment_method] %>"><%= method_labels[payment.payment_method] %></span><% else %>—<% end %></td>
+                <td class="px-2 py-2.5 text-[#6e6e73]" dir="auto"><%= payment.reference.presence || "—" %></td>
+                <td class="px-2 py-2.5"><% if payment.proof.attached? %><%= link_to sl("Voir la preuve"), rails_blob_path(payment.proof, disposition: "inline"), target: "_blank", rel: "noopener", class: "font-medium text-[#2b5f9e] hover:underline", data: { proof_link: true } %><% else %><span class="text-[#8e8e93]">—</span><% end %></td>
+                <td class="px-2 py-2.5 text-[#6e6e73]" dir="auto"><%= payment.paid_by&.name.presence || payment.paid_by&.email || "—" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </section>
+</div>

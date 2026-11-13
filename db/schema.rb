@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_13_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -168,6 +168,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_120000) do
     t.index ["user_id"], name: "index_agent_deductions_on_user_id"
     t.check_constraint "amount_cents > 0", name: "agent_deductions_amount_positive"
     t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'applied'::character varying]::text[])", name: "agent_deductions_status"
+  end
+
+  create_table "agent_payment_items", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "agent_payment_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "order_id", null: false
+    t.integer "amount_cents", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_payment_id"], name: "index_agent_payment_items_on_agent_payment_id"
+    t.index ["order_id"], name: "index_agent_payment_items_on_order_id", unique: true
+    t.index ["store_id"], name: "index_agent_payment_items_on_store_id"
+    t.index ["user_id"], name: "index_agent_payment_items_on_user_id"
+    t.check_constraint "amount_cents > 0", name: "agent_payment_items_amount_positive"
   end
 
   create_table "agent_payments", force: :cascade do |t|
@@ -1340,6 +1355,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_120000) do
   add_foreign_key "agent_deductions", "orders"
   add_foreign_key "agent_deductions", "stores"
   add_foreign_key "agent_deductions", "users"
+  add_foreign_key "agent_payment_items", "agent_payments", on_delete: :cascade
+  add_foreign_key "agent_payment_items", "orders", on_delete: :cascade
+  add_foreign_key "agent_payment_items", "stores"
+  add_foreign_key "agent_payment_items", "users"
   add_foreign_key "agent_payments", "stores"
   add_foreign_key "agent_payments", "users"
   add_foreign_key "agent_payments", "users", column: "paid_by_id"

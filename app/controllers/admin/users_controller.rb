@@ -56,7 +56,7 @@ module Admin
 
     # Records one payment covering everything earned and not yet paid (paid in cash; the Facturation page of the agents also records a bank transfer and a proof).
     def pay
-      Team::AgentPayout.new(store: current_store, agent: @user, paid_by: current_user).pay!(method: "cash")
+      Team::AgentPayout.new(store: current_store, agent: @user, paid_by: current_user).pay_all!(method: "cash")
       redirect_to admin_users_path, notice: t("admin.team.paid", name: @user.name.presence || @user.email)
     rescue Team::AgentPayout::Error => e
       redirect_to admin_users_path, alert: e.message == "Nothing to pay." ? t("admin.team.nothing_to_pay") : e.message

@@ -13,16 +13,18 @@ module Admin
       earnings = Team::AgentEarnings.new(store: current_store, range: range)
       @agents = current_store.users.active.where(confirmation_role: "agent").order(:name, :email).to_a
       @rows = @agents.map do |agent|
-        { agent: agent, summary: earnings.summary_for(agent), payout: Team::AgentPayout.new(store: current_store, agent: agent, paid_by: current_user).preview,
+        payout = Team::AgentPayout.new(store: current_store, agent: agent, paid_by: current_user)
+        orders = payout.eligible_orders
+        { agent: agent, summary: earnings.summary_for(agent), orders: orders.first(200), payout: payout.preview(orders), rate_cents: payout.rate_cents,
           paid_in_range: AgentPayment.where(store: current_store, user: agent, paid_at: range).sum(:amount_cents) }
       end
-      @payments = AgentPayment.where(store: current_store, paid_at: range).includes(:user, :paid_by, proof_attachment: :blob).order(paid_at: :desc).limit(100)
+      @payments = AgentPayment.where(store: current_store, paid_at: range).includes(:user, :paid_by, :items, proof_attachment: :blob).order(paid_at: :desc).limit(100)
     end
 
     def pay
       agent = current_store.users.where(confirmation_role: "agent").find(params[:user_id])
       payment = Team::AgentPayout.new(store: current_store, agent: agent, paid_by: current_user)
-        .pay!(method: params[:payment_method], reference: params[:reference], proof: params[:proof])
+        .pay!(order_ids: params[:order_ids], method: params[:payment_method], reference: params[:reference], proof: params[:proof])
       redirect_to admin_agent_billing_path, notice: t("admin.team.paid", name: payment.user.name.presence || payment.user.email)
     rescue Team::AgentPayout::Error => e
       redirect_to admin_agent_billing_path, alert: e.message == "Nothing to pay." ? t("admin.team.nothing_to_pay") : e.message

@@ -8,7 +8,8 @@ class AgentPayment < ApplicationRecord
   belongs_to :paid_by, class_name: "User", optional: true
 
   has_many :agent_deductions, dependent: :nullify
-  # The receipt or the bank transfer slip. Required for a bank transfer, optional for cash.
+  has_many :items, class_name: "AgentPaymentItem", dependent: :destroy
+  # The receipt or the bank transfer slip. Optional, for cash and for a bank transfer.
   has_one_attached :proof
 
   # What was handed over: the earnings settled by this payout minus the deductions it subtracted.
@@ -20,7 +21,6 @@ class AgentPayment < ApplicationRecord
   validates :reference, length: { maximum: 200 }
   validate :user_belongs_to_store
   validate :proof_is_a_small_image_or_pdf
-  validate :bank_transfer_has_a_proof, on: :create
 
   private
 
@@ -33,9 +33,5 @@ class AgentPayment < ApplicationRecord
 
     errors.add(:proof, "must be a PNG, JPEG, WebP image or a PDF") unless PROOF_TYPES.include?(proof.blob.content_type)
     errors.add(:proof, "must be 5 MB or less") if proof.blob.byte_size > PROOF_MAX_BYTES
-  end
-
-  def bank_transfer_has_a_proof
-    errors.add(:proof, "is required for a bank transfer") if payment_method == "bank_transfer" && !proof.attached?
   end
 end

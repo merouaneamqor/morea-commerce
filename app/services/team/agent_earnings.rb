@@ -37,6 +37,11 @@ module Team
       )
     end
 
+    # The delivered orders this agent is credited for, oldest delivery first (what a payout can settle).
+    def delivered_orders(user)
+      claims(user).where(status: "delivered").where.not(delivered_at: nil).order(:delivered_at, :id)
+    end
+
     # Confirmed orders per day inside the range, for the bar chart.
     def confirmed_by_day(user)
       confirmed_orders(user, @range, by: :confirmed_at).group_by { |o| o.confirmed_at.in_time_zone(DateRange::ZONE).to_date }.transform_values(&:size)

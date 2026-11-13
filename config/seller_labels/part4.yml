@@ -339,3 +339,27 @@
   en: "View the proof"
   ar: "عرض الإثبات"
   es: "Ver la prueba"
+"Payer un agent":
+  en: "Pay an agent"
+  ar: "دفع لوكيل"
+  es: "Pagar a un agente"
+"Choisir un agent":
+  en: "Choose an agent"
+  ar: "اختر وكيلًا"
+  es: "Elegir un agente"
+"Tout sélectionner":
+  en: "Select all"
+  ar: "تحديد الكل"
+  es: "Seleccionar todo"
+"commandes sélectionnées":
+  en: "orders selected"
+  ar: "طلبات محددة"
+  es: "pedidos seleccionados"
+"Facultatif":
+  en: "Optional"
+  ar: "اختياري"
+  es: "Opcional"
+"Montant à payer":
+  en: "Amount to pay"
+  ar: "المبلغ المستحق الدفع"
+  es: "Importe a pagar"

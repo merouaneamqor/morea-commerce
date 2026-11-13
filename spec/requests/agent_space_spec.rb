@@ -182,6 +182,8 @@ RSpec.describe "Agent workspace", type: :request do
       brand = page.at_css("[data-agent-brand]")
       expect(brand.text.squish).to eq("Walkfit")
       expect(page.at_css("[data-sidebar-nav]").text).not_to include("seallo")
+      expect(page.at_css("[data-agent-store-url]").text.squish).to eq(store.host_label)
+      expect(page.at_css("[data-agent-store-name]")).to be_nil # without a logo the name is the brand itself, shown once
 
       owner = store.users.create!(name: "Owner", email: "own-#{SecureRandom.hex(4)}@example.test", password: password, admin: true)
       delete admin_logout_path rescue nil
@@ -198,7 +200,31 @@ RSpec.describe "Agent workspace", type: :request do
       sign_in(saida)
       get admin_my_stats_path
       expect(page.at_css("[data-agent-brand] img")["alt"]).to eq("Walkfit")
+      expect(page.at_css("[data-agent-store-name]").text.squish).to eq("Walkfit")
+      expect(page.at_css("[data-agent-store-url]").text.squish).to eq(store.host_label)
       expect(page.at_css("[data-sidebar-nav]").text).not_to include("seallo")
+    end
+
+    it "gives the owner a Boutique entry that opens the logo card, and saves the logo as soon as it is chosen" do
+      owner = store.users.create!(name: "Owner", email: "own-#{SecureRandom.hex(4)}@example.test", password: password, admin: true)
+      sign_in(owner)
+      get admin_orders_path
+      boutique = page.css("[data-sidebar-nav] a").find { |link| link["href"] == "/boutique" }
+      expect(boutique.text.squish).to include("Boutique")
+      get "/boutique"
+      expect(response).to redirect_to("/admin/store/edit#logo")
+
+      get edit_admin_store_path
+      expect(page.at_css("#logo [data-store-logo-preview]").text).to include("Aucun logo")
+      patch logo_admin_store_path, params: { store: { logo: upload("logo.png", png, "image/png") } }
+      expect(response).to redirect_to("/admin/store/edit#logo")
+      expect(store.reload.logo).to be_attached
+      get edit_admin_store_path
+      expect(page.at_css("#logo [data-store-logo-preview] img")).to be_present
+
+      patch logo_admin_store_path, params: { store: { logo: upload("logo.txt", "nope", "text/plain") } }
+      expect(flash[:alert]).to be_present
+      expect { patch logo_admin_store_path, params: { store: { remove_logo: "1" } } }.to have_enqueued_job(ActiveStorage::PurgeJob)
     end
 
     it "refuses a logo that is not an image, and lets the owner remove it" do

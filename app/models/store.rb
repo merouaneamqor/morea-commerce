@@ -175,6 +175,9 @@ class Store < ApplicationRecord
     "#{protocol}://#{host}"
   end
 
+  # The address of the site without the protocol, to show it ("walkfit33.example.com").
+  def host_label = origin.sub(%r{Ahttps?://}, "")
+
   def shipping_dh
     shipping_cents.to_i / 100
   end

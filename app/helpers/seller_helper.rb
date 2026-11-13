@@ -35,7 +35,8 @@ module SellerHelper
     lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
     flag: '<path d="M5 21V4"/><path d="M5 5h11l-2 4 2 4H5"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
-    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>'
+    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+    shop: '<path d="M4 9 5.5 4h13L20 9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9"/><path d="M5 12v8h14v-8"/><path d="M10 20v-4h4v4"/>'
   }.freeze
 
   # [key, icon, label, link]; no link means "coming soon".
@@ -50,7 +51,8 @@ module SellerHelper
     [ "ads", :target, "Publicités", nil ],
     [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
-    [ "integrations", :plug, "Intégrations API", "/integrations" ]
+    [ "integrations", :plug, "Intégrations API", "/integrations" ],
+    [ "store", :shop, "Boutique", "/boutique" ]
   ].freeze
 
   # Which menu entry a controller belongs to, so the pages not yet ported still highlight their entry.
@@ -59,7 +61,7 @@ module SellerHelper
     "customers" => "clients", "delivery" => "delivery", "products" => "products", "variants" => "products",
     "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
     "seallo_connections" => "integrations", "woocommerce_connections" => "integrations", "meta_ads" => "integrations",
-    "accounting" => "accounting", "assignment_rules" => "confirmation"
+    "accounting" => "accounting", "assignment_rules" => "confirmation", "stores" => "store"
   }.freeze
 
   SELLER_STATUS_BADGES = {

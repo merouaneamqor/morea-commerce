@@ -16,6 +16,19 @@ module Admin
       end
     end
 
+    # The store's logo has its own small form (choose a file, it is saved; or remove it), apart from the long settings form.
+    def logo
+      @store = current_store
+      if params.dig(:store, :remove_logo) == "1"
+        @store.logo.purge_later
+        redirect_to edit_admin_store_path(anchor: "logo"), notice: "Logo removed."
+      elsif params.dig(:store, :logo).present? && @store.update(logo: params[:store][:logo])
+        redirect_to edit_admin_store_path(anchor: "logo"), notice: "Logo saved."
+      else
+        redirect_to edit_admin_store_path(anchor: "logo"), alert: @store.errors.full_messages.to_sentence.presence || "Choose an image first."
+      end
+    end
+
     private
 
     def require_workspace!

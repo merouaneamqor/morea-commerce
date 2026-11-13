@@ -86,7 +86,7 @@ Rails.application.routes.draw do
   {
     "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations/center", "/mes-statistiques" => "/admin/my_stats", "/facturation" => "/admin/my_billing",
     "/livraison" => "/admin/delivery", "/produits" => "/admin/products",
-    "/equipe" => "/admin/staff", "/settings/profile" => "/admin/store/edit"
+    "/equipe" => "/admin/staff", "/settings/profile" => "/admin/store/edit", "/boutique" => "/admin/store/edit#logo"
   }.each do |from, target|
     get from, to: redirect { |_params, request| [ target, request.query_string.presence ].compact.join("?") }
   end
@@ -184,7 +184,9 @@ Rails.application.routes.draw do
         end
       end
     end
-    resource :store, only: %i[edit update]
+    resource :store, only: %i[edit update] do
+      patch :logo
+    end
     resources :store_connections, only: %i[index new create show update destroy]
     resource :agent_api, only: :show, controller: "agent_api" do
       post :token, action: :generate_token

@@ -1,82 +1,113 @@
+<%# An agent's own dashboard, drawn like the owner's: same header (greeting, search, language, period), same figure cards and cards of charts.
+    Every figure is the agent's own (Team::AgentEarnings); nothing about the other agents or the store. The clock-in lives in a small window
+    opened from an icon, so it is not always on screen. %>
 <% content_for :title, "#{sl("Tableau de bord")} — Admin" %>
+<% content_for :seller_lang, "1" %>
+<% content_for :admin_page_class, "seller-page" %>
 <% figures = @summary.figures %>
-<% name = current_user.name.presence || current_user.email %>
+<% first_name = (current_user.name.presence || current_user.email).to_s.strip.split(/\s+/).first.to_s %>
 <% pct = ->(part) { figures.confirmed.zero? ? 0 : (part * 100.0 / figures.confirmed).round } %>
+<% of_confirmed = ->(part) { t("admin.my_stats.of_confirmed", percent: pct.(part)) } %>
+<% card = "rounded-2xl border border-[#e0e0e5] bg-white p-5" %>
 <% breakdown = [
-     [ t("admin.my_stats.delivered"), figures.delivered, "#2f6b3f" ],
-     [ t("admin.my_stats.in_delivery"), figures.in_delivery + figures.pickup, "#c98a2b" ],
-     [ t("admin.my_stats.postponed"), figures.postponed, "#7a6f67" ],
-     [ t("admin.my_stats.unreachable"), figures.unreachable, "#b0342a" ],
-     [ t("admin.my_stats.returned"), figures.returned, "#e07a5f" ]
+     [ t("admin.my_stats.delivered"), figures.delivered, "#2f9d5c" ],
+     [ t("admin.my_stats.in_delivery"), figures.in_delivery + figures.pickup, "#3b82c4" ],
+     [ t("admin.my_stats.postponed"), figures.postponed, "#e0a52c" ],
+     [ t("admin.my_stats.unreachable"), figures.unreachable, "#8e8e93" ],
+     [ t("admin.my_stats.returned"), figures.returned, "#d6455d" ]
    ].select { |_, n, _| n.positive? } %>
+<% conf_rate = (rate = Confirmations::AgentHome.new(store: current_store, user: current_user, range: @range).confirmation_rate) ? (rate * 100).round : 0 %>
+<% del_rate = figures.delivery_rate ? (figures.delivery_rate * 100).round : 0 %>
 
-<div class="admin-page-header">
+<header class="flex flex-wrap items-start justify-between gap-3">
   <div>
-    <h1 class="admin-page-header__title"><%= sl("Tableau de bord") %></h1>
-    <p class="admin-page-header__meta"><%= t("admin.my_stats.greeting", name: name) %></p>
+    <h1 class="text-2xl font-bold text-[#1c1c1e] sm:text-[28px]"><%= sl("Bonjour") %><%= first_name.present? ? ", #{first_name}" : "" %></h1>
   </div>
-  <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_my_stats_path %>
-</div>
-
-<section class="admin-card admin-card__body mb-4" data-my-hours>
-  <div class="flex flex-wrap items-center justify-between gap-3">
-    <div>
-      <h2 class="admin-card__title"><%= sl("Temps de travail") %></h2>
-      <% if @open_shift %>
-        <p class="admin-muted mt-1 text-xs"><%= t("admin.confirmations.on_shift_since", time: l(@open_shift.started_at, format: :short)) %></p>
-        <p role="timer" class="admin-metric__value mt-1 tabular-nums" data-shift-running data-controller="shift-timer" data-shift-timer-started-at-value="<%= @open_shift.started_at.iso8601 %>"><%= shift_clock(Time.current - @open_shift.started_at) %></p>
-      <% else %>
-        <p class="admin-muted mt-1 text-xs"><%= t("admin.confirmations.off_shift") %></p>
-      <% end %>
-    </div>
-    <div class="text-end">
-      <p class="admin-muted text-xs"><%= sl("Total sur la période") %></p>
-      <p class="admin-metric__value tabular-nums" data-worked="<%= @worked_seconds %>"><%= shift_hours(@worked_seconds) %> h</p>
-    </div>
-    <% if @open_shift %>
-      <%= button_to t("admin.confirmations.clock_out"), clock_out_admin_confirmations_path, class: "admin-btn-secondary" %>
-    <% else %>
-      <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path, class: "admin-btn" %>
+  <div class="flex flex-wrap items-center gap-2">
+    <%= form_with url: center_admin_confirmations_path, method: :get, class: "hidden h-11 items-center gap-2 rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm sm:flex", data: { agent_search: true } do %>
+      <span class="text-[#6e6e73]"><%= seller_icon(:search) %></span>
+      <input name="q" placeholder="<%= sl("Rechercher une commande") %>" class="w-44 bg-transparent outline-none placeholder:text-[#8e8e93]">
     <% end %>
-  </div>
-  <% if @shifts.any? %>
-    <table class="mt-3 w-full text-sm" data-my-shifts>
-      <thead><tr class="text-xs text-[#6e6e73]"><th class="py-1.5 text-start font-medium"><%= sl("Arrivée") %></th><th class="py-1.5 text-start font-medium"><%= sl("Départ") %></th><th class="py-1.5 text-end font-medium"><%= sl("Durée") %></th></tr></thead>
-      <tbody>
-        <% @shifts.each do |shift| %>
-          <tr class="border-t border-[#e0e0e5]" data-shift>
-            <td class="py-1.5"><%= l(shift.started_at.in_time_zone(DateRange::ZONE), format: :short) %></td>
-            <td class="py-1.5"><%= shift.ended_at ? l(shift.ended_at.in_time_zone(DateRange::ZONE), format: :short) : sl("En cours") %></td>
-            <td class="py-1.5 text-end tabular-nums"><%= shift_hours(shift.seconds_within(@range)) %> h</td>
-          </tr>
+
+    <%# Clock in / out: an icon; a click opens the window with the timer, the total and the button. A green dot says the agent is on shift. %>
+    <div class="relative" data-controller="locale-switcher" data-my-hours>
+      <button type="button" data-locale-switcher-target="button" data-action="locale-switcher#toggle" aria-haspopup="dialog" aria-expanded="false"
+              title="<%= sl("Temps de travail") %>" aria-label="<%= sl("Temps de travail") %>"
+              class="relative grid size-11 cursor-pointer place-items-center rounded-xl border border-[#e0e0e5] bg-white text-[#1c1c1e] hover:bg-[#f5f5f7]">
+        <%= seller_icon(:clock, size: 20) %>
+        <% if @open_shift %><i class="absolute end-2 top-2 size-2.5 rounded-full border-2 border-white bg-[#2f9d5c]" data-on-shift-dot></i><% end %>
+      </button>
+      <div role="dialog" data-locale-switcher-target="menu" hidden
+           class="absolute end-0 z-50 mt-2 w-80 rounded-2xl border border-[#e0e0e5] bg-white p-4 text-start shadow-[0_12px_32px_-12px_rgba(0,0,0,0.25)]">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h2 class="text-sm font-semibold text-[#1c1c1e]"><%= sl("Temps de travail") %></h2>
+            <% if @open_shift %>
+              <p class="mt-0.5 text-xs text-[#6e6e73]"><%= t("admin.confirmations.on_shift_since", time: l(@open_shift.started_at, format: :short)) %></p>
+              <p role="timer" class="mt-1 text-2xl font-bold tabular-nums text-[#1c1c1e]" data-shift-running data-controller="shift-timer" data-shift-timer-started-at-value="<%= @open_shift.started_at.iso8601 %>"><%= shift_clock(Time.current - @open_shift.started_at) %></p>
+            <% else %>
+              <p class="mt-0.5 text-xs text-[#6e6e73]"><%= t("admin.confirmations.off_shift") %></p>
+            <% end %>
+          </div>
+          <div class="text-end">
+            <p class="text-[11px] text-[#6e6e73]"><%= sl("Total sur la période") %></p>
+            <p class="text-lg font-bold tabular-nums text-[#1c1c1e]" data-worked="<%= @worked_seconds %>"><%= shift_hours(@worked_seconds) %> h</p>
+          </div>
+        </div>
+        <% if @open_shift %>
+          <%= button_to t("admin.confirmations.clock_out"), clock_out_admin_confirmations_path, class: "mt-3 flex h-10 w-full cursor-pointer items-center justify-center rounded-xl border border-[#e0e0e5] bg-white text-sm font-semibold text-[#1c1c1e] hover:bg-[#f5f5f7]", form_class: "w-full" %>
+        <% else %>
+          <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path, class: "mt-3 flex h-10 w-full cursor-pointer items-center justify-center rounded-xl bg-[#1d1d1f] text-sm font-semibold text-white hover:bg-[#3a3a3c]", form_class: "w-full" %>
         <% end %>
-      </tbody>
-    </table>
-  <% end %>
+        <% if @shifts.any? %>
+          <table class="mt-3 w-full text-xs" data-my-shifts>
+            <thead><tr class="text-[#6e6e73]"><th class="py-1 text-start font-medium"><%= sl("Arrivée") %></th><th class="py-1 text-start font-medium"><%= sl("Départ") %></th><th class="py-1 text-end font-medium"><%= sl("Durée") %></th></tr></thead>
+            <tbody>
+              <% @shifts.first(6).each do |shift| %>
+                <tr class="border-t border-[#eeeef1]" data-shift>
+                  <td class="py-1 tabular-nums"><%= l(shift.started_at.in_time_zone(DateRange::ZONE), format: :short) %></td>
+                  <td class="py-1 tabular-nums"><%= shift.ended_at ? l(shift.ended_at.in_time_zone(DateRange::ZONE), format: :short) : sl("En cours") %></td>
+                  <td class="py-1 text-end tabular-nums"><%= shift_hours(shift.seconds_within(@range)) %> h</td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% end %>
+      </div>
+    </div>
+
+    <%= render "admin/shared/language_switcher" %>
+    <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_my_stats_path %>
+  </div>
+</header>
+
+<%# Row 1: the confirmed orders (the gold card) and where they went. Row 2: the rest and the two rates. Same cards as the owner's dashboard. %>
+<section class="mt-3 grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6" data-kpis="row1">
+  <%= render "admin/dashboard/kpi", key: "confirmed", label: t("admin.my_stats.confirmed"), icon: :check, value: figures.confirmed, featured: true, sub: t("admin.my_stats.orders") %>
+  <%= render "admin/dashboard/kpi", key: "cancelled", label: t("admin.my_stats.cancelled"), icon: :cancel, tone: "bg-[#fbe7ea] text-[#d6455d]", value: figures.cancelled, sub: t("admin.my_stats.cancel_reasons") %>
+  <%= render "admin/dashboard/kpi", key: "pickup", label: t("admin.my_stats.pickup"), icon: :box, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: figures.pickup, sub: of_confirmed.(figures.pickup) %>
+  <%= render "admin/dashboard/kpi", key: "in_delivery", label: t("admin.my_stats.in_delivery"), icon: :truck, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: figures.in_delivery, sub: of_confirmed.(figures.in_delivery) %>
+  <%= render "admin/dashboard/kpi", key: "delivered", label: t("admin.my_stats.delivered"), icon: :box, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: figures.delivered, sub: of_confirmed.(figures.delivered) %>
+  <%= render "admin/dashboard/kpi", key: "postponed", label: t("admin.my_stats.postponed"), icon: :clock, tone: "bg-[#fdf0d9] text-[#d28a12]", value: figures.postponed, sub: of_confirmed.(figures.postponed) %>
 </section>
 
-<h2 class="seallo-section"><%= t("admin.my_stats.orders") %></h2>
-<div class="seallo-kpis">
-  <div class="seallo-kpi"><span class="seallo-dot" style="background:#2f6b3f"></span><span><%= t("admin.my_stats.confirmed") %></span><strong><%= figures.confirmed %></strong></div>
-  <div class="seallo-kpi"><span class="seallo-dot" style="background:#b0342a"></span><span><%= t("admin.my_stats.cancelled") %></span><strong><%= figures.cancelled %></strong></div>
-  <% { pickup: figures.pickup, in_delivery: figures.in_delivery }.each do |key, n| %>
-    <div class="seallo-kpi"><span class="seallo-dot" style="background:#c98a2b"></span><span><%= t("admin.my_stats.#{key}") %></span><strong><%= n %></strong><small><%= t("admin.my_stats.of_confirmed", percent: pct.(n)) %></small></div>
-  <% end %>
-  <% { delivered: figures.delivered, postponed: figures.postponed, unreachable: figures.unreachable, returned: figures.returned }.each do |key, n| %>
-    <div class="seallo-kpi"><span class="seallo-dot" style="background:<%= { delivered: '#2f6b3f', postponed: '#4b4b50', unreachable: '#7a6f67', returned: '#e07a5f' }[key] %>"></span><span><%= t("admin.my_stats.#{key}") %></span><strong><%= n %></strong><small><%= t("admin.my_stats.of_confirmed", percent: pct.(n)) %></small></div>
-  <% end %>
-</div>
-<p class="admin-muted my-3 text-xs"><%= t("admin.my_stats.courier_note") %></p>
+<section class="mt-2.5 grid grid-cols-2 gap-2.5 xl:grid-cols-4" data-kpis="row2">
+  <%= render "admin/dashboard/kpi", key: "unreachable", label: t("admin.my_stats.unreachable"), icon: :ban, tone: "bg-[#ececf0] text-[#1c1c1e]", value: figures.unreachable, sub: of_confirmed.(figures.unreachable) %>
+  <%= render "admin/dashboard/kpi", key: "returned", label: t("admin.my_stats.returned"), icon: :undo, tone: "bg-[#fdf0d9] text-[#d28a12]", value: figures.returned, sub: of_confirmed.(figures.returned) %>
+  <%= render "admin/dashboard/kpi", key: "confirmation_rate", label: t("admin.my_stats.confirmation_rate"), icon: :check, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: "#{conf_rate} %", sub: t("admin.my_stats.confirmation_rate_sub") %>
+  <%= render "admin/dashboard/kpi", key: "delivery_rate", label: t("admin.my_stats.delivery_rate"), icon: :truck, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: "#{del_rate} %", sub: t("admin.my_stats.delivery_rate_sub") %>
+</section>
+<p class="my-3 text-xs text-[#6e6e73]"><%= t("admin.my_stats.courier_note") %></p>
 
-<div class="seallo-two mt-4">
-  <section class="admin-card admin-card__body">
-    <h2 class="admin-card__title"><%= t("admin.my_stats.distribution") %></h2>
-    <p class="admin-muted text-xs"><%= t("admin.my_stats.distribution_sub") %></p>
+<section class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+  <div class="<%= card %>" data-distribution>
+    <h2 class="font-semibold text-[#1c1c1e]"><%= t("admin.my_stats.distribution") %></h2>
+    <p class="text-xs text-[#6e6e73]"><%= t("admin.my_stats.distribution_sub") %></p>
     <% total = breakdown.sum { |_, n, _| n } %>
     <% stops = []; at = 0.0
        breakdown.each { |_, n, color| from = at; at += n * 100.0 / total; stops << "#{color} #{from.round(2)}% #{at.round(2)}%" } %>
     <div class="seallo-donut-row">
-      <div class="seallo-donut" style="background: <%= total.zero? ? '#efe9e3' : "conic-gradient(#{stops.join(', ')})" %>">
+      <div class="seallo-donut" style="background: <%= total.zero? ? '#efeff3' : "conic-gradient(#{stops.join(', ')})" %>">
         <div><strong><%= total %></strong><span><%= t("admin.my_stats.order_count") %></span></div>
       </div>
       <ul class="seallo-legend">
@@ -85,36 +116,19 @@
         <% end %>
       </ul>
     </div>
-  </section>
+  </div>
 
-  <section class="admin-card admin-card__body">
-    <h2 class="admin-card__title"><%= t("admin.my_stats.per_day") %></h2>
+  <div class="<%= card %>">
+    <h2 class="font-semibold text-[#1c1c1e]"><%= t("admin.my_stats.per_day") %></h2>
     <% max = [ @by_day.values.max.to_i, 1 ].max %>
     <div class="seallo-bars">
       <% @chart_days.each do |day| %>
         <% n = @by_day.fetch(day, 0) %>
         <div class="seallo-bars__col" title="<%= day %> · <%= n %>">
-          <span class="seallo-bars__bar" style="height: <%= n.zero? ? 3 : (n * 100.0 / max).round %>%"></span>
+          <span class="seallo-bars__bar" style="height: <%= n.zero? ? 3 : (n * 100.0 / max).round %>%; background: #2f9d5c"></span>
           <small><%= day.strftime(@chart_days.length > 7 ? "%d" : "%a") %></small>
         </div>
       <% end %>
     </div>
-  </section>
-</div>
-
-<div class="seallo-three mt-4">
-  <section class="admin-card admin-card__body seallo-ring">
-    <% conf_rate = (rate = Confirmations::AgentHome.new(store: current_store, user: current_user, range: @range).confirmation_rate) ? (rate * 100).round : 0 %>
-    <div class="seallo-ring__dial" style="--p: <%= conf_rate %>"><b><%= conf_rate %>%</b></div>
-    <strong><%= t("admin.my_stats.confirmation_rate") %></strong><small><%= t("admin.my_stats.confirmation_rate_sub") %></small>
-  </section>
-  <section class="admin-card admin-card__body seallo-ring">
-    <% del_rate = figures.delivery_rate ? (figures.delivery_rate * 100).round : 0 %>
-    <div class="seallo-ring__dial seallo-ring__dial--blue" style="--p: <%= del_rate %>"><b><%= del_rate %>%</b></div>
-    <strong><%= t("admin.my_stats.delivery_rate") %></strong><small><%= t("admin.my_stats.delivery_rate_sub") %></small>
-  </section>
-  <section class="admin-card admin-card__body">
-    <h2 class="admin-card__title"><%= t("admin.my_stats.cancel_reasons") %></h2>
-    <p class="admin-muted mt-2 text-sm"><%= t("admin.my_stats.no_cancellations") if figures.cancelled.zero? %></p>
-  </section>
-</div>
+  </div>
+</section>

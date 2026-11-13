@@ -183,11 +183,15 @@ class ApplicationController < ActionController::Base
   end
 
   def persist_locale_cookie(locale)
+    base = Store.base_domain
+    shared = request.host == base || request.host.end_with?(".#{base}")
     cookies[LOCALE_COOKIE] = {
       value: locale.to_s,
       expires: 1.year.from_now,
       same_site: :lax,
-      secure: !Rails.env.local?
-    }
+      secure: !Rails.env.local?,
+      # Same language on the home page, the sign-in page and every workspace subdomain.
+      domain: (".#{base}" if shared)
+    }.compact
   end
 end

@@ -47,6 +47,18 @@
 @media (min-width: 640px) { .platform-languages { display: flex; } }
 .platform-footer .platform-languages { display: flex; }
 
+/* Language button with its list (header): one click opens the list, the choice is saved in a cookie */
+.platform-language-menu { position: relative; display: none; }
+@media (min-width: 640px) { .platform-language-menu { display: block; } }
+.platform-language-menu > button { display: inline-flex; align-items: center; gap: .4rem; height: 2.5rem; padding: 0 .85rem; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink); font-size: .8rem; font-weight: 600; cursor: pointer; }
+.platform-language-menu > button svg { width: 1rem; height: 1rem; color: var(--muted); }
+.platform-language-menu > button .platform-language-caret { width: .75rem; height: .75rem; }
+.platform-language-menu ul { position: absolute; right: 0; top: calc(100% + .5rem); z-index: 60; min-width: 10rem; margin: 0; padding: .25rem; list-style: none; border: 1px solid var(--line); border-radius: 1rem; background: #fff; box-shadow: 0 12px 32px -12px rgb(0 0 0 / .25); }
+.platform-language-menu ul[hidden] { display: none; }
+.platform-language-menu li a { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .5rem .75rem; border-radius: .75rem; font-size: .875rem; color: var(--ink); }
+.platform-language-menu li a:hover, .platform-language-menu li a[aria-current="true"] { background: #f5f5f7; }
+.platform-language-menu li a[aria-current="true"] { font-weight: 600; }
+
 /* Buttons */
 .platform-button { display: inline-flex; align-items: center; justify-content: center; padding: .875rem 1.5rem; border-radius: .75rem; background: var(--brand); color: #fff !important; font-size: .875rem; font-weight: 600; text-align: center; box-shadow: 0 12px 30px -12px rgb(168 67 46 / .8); transition: background .15s; }
 .platform-button:hover { background: var(--brand-dark); }

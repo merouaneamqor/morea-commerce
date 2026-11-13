@@ -6,10 +6,21 @@
       <% t("platform_home.seallo.nav").each_with_index do |label, i| %><button type="button" data-open="<%= ids[i] %>"><%= label %></button><% end %>
     </nav>
     <div class="platform-header-actions">
-      <div class="platform-languages" dir="ltr" role="group" aria-label="<%= t("platform_home.language") %>">
-        <% Morea::Locales::AVAILABLE.each do |locale| %>
-          <%= link_to locale.to_s.upcase, platform_home_path(locale: locale), lang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
-        <% end %>
+      <div class="platform-language-menu" dir="ltr" data-controller="locale-switcher">
+        <button type="button" data-locale-switcher-target="button" data-action="locale-switcher#toggle" aria-haspopup="listbox" aria-expanded="false" aria-label="<%= t("platform_home.language") %>">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>
+          <span><%= Morea::Locales.code_for(I18n.locale) %></span>
+          <svg class="platform-language-caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg>
+        </button>
+        <ul role="listbox" data-locale-switcher-target="menu" hidden>
+          <% Morea::Locales::AVAILABLE.each do |locale| %>
+            <li role="option" aria-selected="<%= locale.to_s == I18n.locale.to_s %>">
+              <%= link_to platform_home_path(locale: locale), lang: locale, hreflang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) do %>
+                <span><%= Morea::Locales.label_for(locale) %></span><% if locale.to_s == I18n.locale.to_s %><b aria-hidden="true">✓</b><% end %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
       </div>
       <%= link_to admin_login_path(locale: I18n.locale), class: "platform-login-nav" do %><span class="platform-sm-only"><%= t("platform_home.seallo.signin_short") %></span><span class="platform-lg-only"><%= t("platform_home.seallo.signin") %></span><% end %>
       <%= link_to signup_path(locale: I18n.locale), class: "platform-button platform-header-button" do %><span class="platform-sm-only"><%= t("platform_home.seallo.signup_short") %></span><span class="platform-lg-only"><%= t("platform_home.seallo.signup") %></span><% end %>

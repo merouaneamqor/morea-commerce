@@ -27,7 +27,7 @@ RSpec.describe "Admin language selection", type: :request do
     switcher = document.at_css("[data-admin-language-switcher]")
     expect(switcher["aria-label"]).to include("Language")
     expect(switcher["class"]).not_to match(/hidden/)
-    expect(switcher.css("a").map(&:text)).to eq(%w[FR EN ES AR])
+    expect(switcher.css("a").map { |link| link["hreflang"] }).to eq(%w[fr en es ar])
     expect(language_link("fr")["aria-current"]).to eq("true")
 
     %w[ar en fr].each do |locale|

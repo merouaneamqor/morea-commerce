@@ -215,3 +215,15 @@
   en: "Later"
   ar: "لاحقًا"
   es: "Más tarde"
+"Logo de la boutique":
+  en: "Store logo"
+  ar: "شعار المتجر"
+  es: "Logo de la tienda"
+"Retirer le logo":
+  en: "Remove the logo"
+  ar: "إزالة الشعار"
+  es: "Quitar el logo"
+"Votre agent le voit en haut de son espace, à la place de seallo. Un PNG sans fond (transparent) rend le mieux.":
+  en: "Your agent sees it at the top of their workspace, instead of seallo. A PNG without background (transparent) looks best."
+  ar: "يراه الوكيل أعلى مساحة عمله بدلًا من seallo. أفضل شكل هو صورة PNG بدون خلفية (شفافة)."
+  es: "Tu agente lo ve en la parte superior de su espacio, en lugar de seallo. Un PNG sin fondo (transparente) queda mejor."

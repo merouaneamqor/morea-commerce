@@ -25,6 +25,7 @@ module Admin
     def update_workspace
       @store.with_lock do
         was_enabled = @store.storefront_enabled?
+        @store.logo.purge_later if params.dig(:store, :remove_logo) == "1" && params.dig(:store, :logo).blank?
         @store.update!(store_params)
         @store.install_online_store_defaults! if !was_enabled && @store.storefront_enabled?
       end
@@ -35,7 +36,7 @@ module Admin
 
     def store_params
       attrs = params.require(:store).permit(
-        :name, :slug, :phone, :whatsapp, :email, :currency, :storefront_enabled, :admin_theme,
+        :name, :logo, :slug, :phone, :whatsapp, :email, :currency, :storefront_enabled, :admin_theme,
         :featured_product_id, :featured_collection_id,
         :campaign_image_url, :sendit_pickup_district_id,
         :shipping_dh, :free_shipping_threshold_dh,

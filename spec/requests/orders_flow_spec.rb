@@ -191,12 +191,13 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
       expect(response).to have_http_status(:not_found)
     end
 
-    it "lets agents look but not create or change orders" do
+    it "lets agents look and create orders (attributed to them), but not change existing ones" do
       sign_in(agent)
 
       get "/admin/orders/new"
-      expect(response).to redirect_to("/admin/orders")
-      expect { create_order }.not_to change { store.orders.count }
+      expect(response).to have_http_status(:ok)
+      expect { create_order }.to change { store.orders.count }.by(1)
+      expect(store.orders.order(:id).last.order_confirmation.attributed_user_id).to eq(agent.id)
       patch "/admin/orders/#{waiting.id}/transition", params: { to_status: "confirmed" }
       expect(waiting.reload.status).to eq("new")
     end

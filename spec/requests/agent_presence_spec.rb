@@ -59,22 +59,52 @@ RSpec.describe "Agent presence", type: :request do
     expect(shift.reload).to have_attributes(end_reason: "inactive", ended_at: be_within(1.second).of(40.minutes.ago))
   end
 
-  it "asks an agent who is not on shift to clock in when they open the site, and stops once they are on shift; never asks the owner" do
+  it "welcomes an agent by name with the word of the day, offers the clock-in only when they are not on shift, and never welcomes the owner" do
     sign_in(saida)
     get admin_my_stats_path
-    prompt = page.at_css("[data-clock-in-prompt]")
-    expect(prompt).to be_present
-    expect(prompt.at_css("form")["action"]).to eq(clock_in_admin_confirmations_path)
-    expect(prompt.at_css("[data-action='clock-in-prompt#dismiss']")).to be_present
+    welcome = page.at_css("[data-agent-welcome]")
+    expect(welcome).to be_present
+    expect(welcome.text).to include("Bienvenue, Saida")
+    expect(welcome.at_css("[data-word-of-the-day]").text).to include(I18n.t("agent_welcome.quotes")[DateRange.today.yday % I18n.t("agent_welcome.quotes").size])
+    expect(welcome.at_css("form")["action"]).to eq(clock_in_admin_confirmations_path)
+    expect(welcome.at_css("[data-agent-welcome-target=milestone]")).to be_nil
 
     post clock_in_admin_confirmations_path
     get admin_my_stats_path
-    expect(page.at_css("[data-clock-in-prompt]")).to be_nil
+    expect(page.at_css("[data-agent-welcome]")).to be_present
+    expect(page.at_css("[data-agent-welcome] form")).to be_nil
 
     delete admin_logout_path rescue nil
     sign_in(owner)
     get "/admin/orders"
-    expect(page.at_css("[data-clock-in-prompt]")).to be_nil
+    expect(page.at_css("[data-agent-welcome]")).to be_nil
+  end
+
+  it "congratulates an agent at every hundred orders handled today, with a message that changes from one hundred to the next" do
+    allow_any_instance_of(Confirmations::AgentWelcome).to receive(:handled_today).and_return(100)
+    sign_in(saida)
+    get admin_my_stats_path
+    first = page.at_css("[data-milestone-message]").text
+    expect(first).to include("100")
+    expect(page.at_css("[data-agent-welcome]")["data-agent-welcome-milestone-value"]).to eq("1")
+
+    allow_any_instance_of(Confirmations::AgentWelcome).to receive(:handled_today).and_return(250)
+    get admin_my_stats_path
+    second = page.at_css("[data-milestone-message]").text
+    expect(second).to include("200")
+    expect(second).not_to eq(first)
+  end
+
+  it "counts each handled order once for the day, for this agent only" do
+    customer = store.customers.create!(name: "Client", phone: "0612345678")
+    order = store.orders.create!(customer: customer, number: "W1", status: "new", currency: "MAD", customer_name: "Client", customer_phone: "0612345678",
+      customer_city: "Fès", customer_address: "Rue 1", subtotal_cents: 20_000, total_cents: 20_000)
+    confirmation = OrderConfirmation.create!(store: store, order: order, disposition: "pending")
+    2.times { ConfirmationAttempt.create!(store: store, order_confirmation: confirmation, user: saida, outcome: "no_answer") }
+    ConfirmationAttempt.create!(store: store, order_confirmation: confirmation, user: omar, outcome: "no_answer")
+
+    expect(Confirmations::AgentWelcome.new(store: store, user: saida).handled_today).to eq(1)
+    expect(Confirmations::AgentWelcome.new(store: store, user: omar).handled_today).to eq(1)
   end
 
   it "only puts the presence beat on the pages of an agent who is on shift" do

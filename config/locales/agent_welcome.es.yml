@@ -1,0 +1,26 @@
+es:
+  agent_welcome:
+    title: "Bienvenido, %{name}"
+    word_of_the_day: "Tu frase del día"
+    start: "Empecemos"
+    continue: "Sigue así"
+    milestone_title: "¡Bravo, %{name}!"
+    quotes:
+      - "Cada llamada es una oportunidad de marcar la diferencia."
+      - "Un cliente tranquilo es un pedido más."
+      - "La sonrisa se oye por teléfono: llama con la tuya."
+      - "Poco a poco se construyen los buenos resultados."
+      - "Tu perseverancia marca toda la diferencia."
+      - "Hoy es un gran día para batir tu récord."
+      - "Escuchar bien vale más que un largo discurso."
+      - "No cuentes las llamadas, haz que cada llamada cuente."
+      - "La constancia siempre gana al esfuerzo de un solo día."
+      - "Cada «sí» empieza con un saludo cálido."
+      - "Los grandes equipos se construyen con pequeñas victorias."
+      - "Respira hondo: estás listo."
+    milestones:
+      - "%{count} pedidos gestionados hoy: ¡qué gran racha!"
+      - "Ya van %{count} pedidos gestionados. ¡Tu energía es contagiosa!"
+      - "%{count} pedidos gestionados: eres una máquina. ¡Mantén ese ritmo!"
+      - "¡Vaya, %{count} pedidos gestionados hoy! ¡El equipo está orgulloso de ti!"
+      - "%{count} pedidos gestionados: todo un récord. Respira y seguimos."

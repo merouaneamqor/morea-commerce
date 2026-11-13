@@ -140,10 +140,10 @@ RSpec.describe "Call center page", type: :request do
       expect(first.text).to include("Appeler")
     end
 
-    it "keeps her out of the manager-only actions and the order-creation button" do
+    it "gives her the order-creation button, like the owner, but none of the manager-only actions" do
       get "/admin/confirmations/center"
-      expect(document.text).not_to include("Créer une commande")
-      expect(document.text).not_to include("Create order")
+      expect(document.at_css("a[href='/admin/orders/new']")).to be_present
+      expect(document.at_css("[data-auto-assign]")).to be_nil
     end
 
     it "filters by search, source and WhatsApp status" do

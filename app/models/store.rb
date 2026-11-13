@@ -17,6 +17,15 @@ class Store < ApplicationRecord
   has_many :discounts, dependent: :destroy
   has_many :assignment_rules, -> { ordered }, dependent: :destroy
 
+  # The store's logo (a PNG without background works best). A confirmation agent sees it in their workspace instead of the platform name.
+  LOGO_TYPES = %w[image/png image/jpeg image/webp].freeze
+  LOGO_MAX_BYTES = 2.megabytes
+  has_one_attached :logo
+  validate :logo_is_a_small_image
+
+  # A saved logo that can be shown: not one that was just uploaded and refused by the validation.
+  def logo_ready? = logo.attached? && logo.attachment.persisted? && logo.blob.persisted?
+
   # Once the owner has an active attribution rule, an agent works only the orders the rules gave them. Without one, agents share the open queue.
   def assignment_enforced? = assignment_rules.active.exists?
   has_many :users, dependent: :destroy
@@ -350,5 +359,12 @@ class Store < ApplicationRecord
       when "yearly" then Date.current + 1.year
       else Date.current + 1.month
       end
+  end
+
+  def logo_is_a_small_image
+    return unless logo.attached?
+
+    errors.add(:logo, "must be a PNG, JPEG or WebP image") unless LOGO_TYPES.include?(logo.blob.content_type)
+    errors.add(:logo, "must be 2 MB or less") if logo.blob.byte_size > LOGO_MAX_BYTES
   end
 end

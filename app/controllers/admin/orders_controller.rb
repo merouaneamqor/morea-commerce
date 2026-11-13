@@ -83,6 +83,7 @@ module Admin
       editor = Orders::Editor.new(store: current_store, user: current_user)
       @order = editor.create(editor_attrs)
       if @order
+        attribute_to_creator(@order) if agent_view?
         redirect_to admin_order_path(@order), notice: "Order created."
       else
         @order = current_store.orders.new(fallback_order_attrs)
@@ -373,14 +374,24 @@ end
       Confirmations::AgentOrders.new(store: current_store, user: current_user).scope
     end
 
+    # An order an agent types is theirs: it is attributed to them (not claimed), so it shows in their list and queue even when the owner's
+    # attribution rules decide who gets what.
+    def attribute_to_creator(order)
+      confirmation = OrderConfirmation.find_or_create_by!(order: order) { |row| row.store = current_store }
+      confirmation.update!(attributed_user: current_user, attributed_at: Time.current)
+      order.record_event!("comment", body: "Created by the agent and attributed to them", user: current_user)
+    end
+
     def agents_read_only!
       return unless agent_view?
-      return if %w[index show].include?(action_name)
+      return if %w[index show new create product_search].include?(action_name)
 
-      redirect_to admin_orders_path, alert: "Agents can look at orders but not change them here."
+      redirect_to admin_orders_path, alert: "Agents can look at orders and create new ones, but not change existing ones here."
     end
 
     def assignable_agents
+      return User.none if agent_view?
+
       current_store.users.active.where(confirmation_role: "agent").order(:name, :email)
     end
 
@@ -394,6 +405,7 @@ end
         :shipping_dh, :discount_code, :discount_dh, :agent_id, :second_phone, :delivery_provider, :scheduled_for, :advance_dh, :shipping_excluded,
         lines: [ :product_id, :product_variant_id, :quantity ]
       )
+      raw = raw.except(:agent_id) if agent_view? # an agent cannot hand the order to someone else
       lines = raw[:lines]
       lines = lines.values if lines.respond_to?(:values) && !lines.is_a?(Array)
       raw.to_h.symbolize_keys.merge(lines: Array(lines))

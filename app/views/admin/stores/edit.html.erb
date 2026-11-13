@@ -23,6 +23,18 @@
     <div class="px-4 pb-4"><%= render "shared/theme_picker", form: f, legend: false %></div>
   </section>
 
+  <section class="admin-card" id="logo">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= sl("Logo de la boutique") %></h2></div>
+    <div class="space-y-3 px-4 pb-4">
+      <p class="admin-help"><%= sl("Votre agent le voit en haut de son espace, à la place de seallo. Un PNG sans fond (transparent) rend le mieux.") %></p>
+      <% if @store.logo_ready? %>
+        <span class="inline-grid h-16 place-items-center rounded-xl border border-[#e0e0e5] bg-[#f6f6f8] px-4" data-store-logo-preview><%= image_tag MediaUrl.for(@store.logo, store: @store), alt: @store.name, class: "max-h-12 w-auto object-contain" %></span>
+        <label class="admin-check"><%= check_box_tag "store[remove_logo]", "1", false %> <%= sl("Retirer le logo") %></label>
+      <% end %>
+      <%= f.file_field :logo, accept: Store::LOGO_TYPES.join(","), class: "admin-input", data: { store_logo_input: true } %>
+    </div>
+  </section>
+
   <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title">Store details</h2></div>
     <div class="space-y-4 px-4 pb-4">

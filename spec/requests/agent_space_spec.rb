@@ -133,4 +133,84 @@ RSpec.describe "Agent workspace", type: :request do
     %w[en es ar].each { |locale| get admin_my_stats_path, params: { locale: locale } }
     expect(SellerHelper.untranslated.to_a).to eq([])
   end
+
+  it "lets an agent create an order by hand, like the owner, and the order is theirs" do
+    product = store.products.create!(name: "Survêtement", sku: "SURV-01", price_cents: 25_000, status: "active", track_inventory: true, stock: 10)
+    store.assignment_rules.new(name: "Règle", distribution: "equal").tap { |rule| [ saida, omar ].each { |agent| rule.assignment_rule_agents.build(user: agent) } }.save!
+    sign_in(saida)
+
+    get "/admin/confirmations/center"
+    expect(page.at_css("a[href='#{new_admin_order_path}']")).to be_present
+    get admin_my_stats_path
+    expect(page.at_css("a[href='#{new_admin_order_path}']")).to be_present
+
+    get new_admin_order_path
+    expect(response).to have_http_status(:ok)
+    expect(page.at_css("select[name='order[agent_id]']")).to be_nil
+    get "/admin/orders/product_search", params: { q: "Survêt" }
+    expect(response).to have_http_status(:ok)
+
+    expect {
+      post "/admin/orders", params: { order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", agent_id: omar.id, lines: [ { product_id: product.id, quantity: 1 } ] } }
+    }.to change(store.orders, :count).by(1)
+    order = store.orders.order(:id).last
+    expect(order.order_confirmation).to have_attributes(attributed_user_id: saida.id, assigned_user_id: nil)
+    expect(response).to redirect_to(admin_order_path(order))
+
+    get admin_my_stats_path
+    expect(page.css("[data-my-orders] [data-order-row]").map { |row| row["data-order-row"] }).to include(order.number)
+    get admin_order_path(order)
+    expect(response).to have_http_status(:ok)
+    patch admin_order_path(order), params: { order: { notes: "x" } }
+    expect(response).to redirect_to(admin_orders_path) # an existing order still cannot be changed by an agent
+  end
+
+  describe "the store's logo instead of the platform name" do
+    let(:png) { Base64.decode64("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==") }
+
+    def upload(name, content, type)
+      file = Tempfile.new([ "logo", File.extname(name) ])
+      file.binmode
+      file.write(content)
+      file.rewind
+      Rack::Test::UploadedFile.new(file.path, type, true, original_filename: name)
+    end
+
+    it "shows the agent the store name when there is no logo, and the logo once the owner uploaded one, never seallo" do
+      sign_in(saida)
+      get admin_my_stats_path
+      brand = page.at_css("[data-agent-brand]")
+      expect(brand.text.squish).to eq("Walkfit")
+      expect(page.at_css("[data-sidebar-nav]").text).not_to include("seallo")
+
+      owner = store.users.create!(name: "Owner", email: "own-#{SecureRandom.hex(4)}@example.test", password: password, admin: true)
+      delete admin_logout_path rescue nil
+      sign_in(owner)
+      patch admin_store_path, params: { store: { logo: upload("logo.png", png, "image/png") } }
+      expect(response).to redirect_to(edit_admin_store_path)
+      expect(store.reload.logo).to be_attached
+      get edit_admin_store_path
+      expect(page.at_css("[data-store-logo-preview] img")).to be_present
+      get admin_orders_path
+      expect(page.at_css("[data-sidebar-nav]").text).to include("seallo")  # the owner keeps the platform brand
+
+      delete admin_logout_path rescue nil
+      sign_in(saida)
+      get admin_my_stats_path
+      expect(page.at_css("[data-agent-brand] img")["alt"]).to eq("Walkfit")
+      expect(page.at_css("[data-sidebar-nav]").text).not_to include("seallo")
+    end
+
+    it "refuses a logo that is not an image, and lets the owner remove it" do
+      owner = store.users.create!(name: "Owner", email: "own-#{SecureRandom.hex(4)}@example.test", password: password, admin: true)
+      sign_in(owner)
+      patch admin_store_path, params: { store: { logo: upload("logo.txt", "not an image", "text/plain") } }
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(store.reload.logo).not_to be_attached
+
+      patch admin_store_path, params: { store: { logo: upload("logo.png", png, "image/png") } }
+      expect(store.reload.logo).to be_attached
+      expect { patch admin_store_path, params: { store: { remove_logo: "1" } } }.to have_enqueued_job(ActiveStorage::PurgeJob)
+    end
+  end
 end

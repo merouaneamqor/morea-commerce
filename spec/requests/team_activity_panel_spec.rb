@@ -25,6 +25,7 @@ RSpec.describe "Team activity panel", type: :request do
     get admin_users_path
     expect(response).to have_http_status(:ok)
     panel = page.at_css("[data-team-activity]")
+    expect(panel.at_css("[data-live-dot] .animate-ping")).to be_present # the live indicator is a blinking dot
     expect(panel.at_css("[data-kpi=presence] [data-value]").text.squish).to eq("1")
     expect(panel.at_css("[data-kpi=presence]").text).to include("3")
     expect(panel.at_css("[data-kpi=worked] [data-value]").text).to match(/1 h|\d+ min/)

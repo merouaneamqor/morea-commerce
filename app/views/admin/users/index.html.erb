@@ -69,10 +69,10 @@
           <tbody class="divide-y divide-[#f1f1f4]">
             <% role_rows.each do |role| %>
               <tr data-role="<%= role.key %>">
-                <td class="px-3 py-3"><span class="inline-flex items-center gap-2.5 font-semibold text-[#1c1c1e]"><span class="grid size-8 place-items-center rounded-lg <%= role.key == :owner ? "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e]" : "bg-[#d9f2e2] text-[#1f6b3f]" %>"><%= seller_icon(:lock, size: 15) %></span><%= sl(role.name) %></span></td>
+                <td class="px-3 py-3"><span class="inline-flex items-center gap-2.5 font-semibold text-[#1c1c1e]"><span class="grid size-8 place-items-center rounded-lg <%= { super_admin: "bg-[#eee8fb] text-[#5b3fb0]", owner: "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e]" }.fetch(role.key, "bg-[#d9f2e2] text-[#1f6b3f]") %>"><%= seller_icon(:lock, size: 15) %></span><%= sl(role.name) %></span></td>
                 <td class="max-w-md px-3 py-3 text-[#6e6e73]"><span class="line-clamp-2" title="<%= sl(role.description) %>"><%= sl(role.description) %></span></td>
                 <td class="px-3 py-3 tabular-nums"><span class="inline-flex items-center gap-1.5"><%= seller_icon(:check, size: 14) %><b data-permission-count><%= role.areas.size %></b></span></td>
-                <td class="px-3 py-3 tabular-nums"><span class="inline-flex items-center gap-1.5"><%= seller_icon(:clients, size: 14) %><b data-role-count><%= everyone.count { |user| Team::Roles.for_user(user) == role.key } %></b></span></td>
+                <td class="px-3 py-3 tabular-nums"><span class="inline-flex items-center gap-1.5"><%= seller_icon(:clients, size: 14) %><b data-role-count><%= @all_users.count { |user| Team::Roles.for_user(user) == role.key } %></b></span></td>
                 <td class="px-3 py-3"><span class="rounded-full border border-[#f3d9a8] px-2.5 py-0.5 text-[12px] font-medium text-[#a8690d]"><%= sl("Système") %></span></td>
                 <td class="px-3 py-3"><span class="rounded-full border border-[#bfe3cc] px-2.5 py-0.5 text-[12px] font-medium text-[#2f7a4a]"><%= sl("Actif") %></span></td>
               </tr>

@@ -16,7 +16,7 @@
       <p class="text-xs text-[#6e6e73]"><%= sl("Qui est en ligne, combien de temps chacun a travaillé et ce qu'il a fait") %></p>
     </div>
     <div class="flex items-center gap-2 text-[12px] font-semibold">
-      <span class="inline-flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-[#2f7a4a]"><i class="size-1.5 rounded-full bg-[#2f9d5c]"></i><%= sl("En direct") %></span>
+      <span class="relative flex size-3" role="img" aria-label="<%= sl("En direct") %>" title="<%= sl("En direct") %>" data-live-dot><span class="absolute inline-flex size-full animate-ping rounded-full bg-[#2f9d5c] opacity-60"></span><span class="relative inline-flex size-3 rounded-full bg-[#2f9d5c]"></span></span>
       <span class="rounded-full border border-[#e0e0e5] bg-white px-2.5 py-1 text-[#3a3a3c]" data-activity-day><%= l(DateRange.today, format: :long) %></span>
     </div>
   </div>

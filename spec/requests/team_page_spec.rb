@@ -43,9 +43,9 @@ RSpec.describe "Team page", type: :request do
     expect(page.at_css("[data-tab='users']").text).to include("(3)") # the search never changes the totals
 
     get admin_users_path, params: { tab: "roles" }
-    expect(page.css("[data-kpis=roles] [data-kpi]").to_h { |kpi| [ kpi["data-kpi"], kpi.at_css("[data-value]").text.squish ] }).to eq("roles_total" => "2", "roles_active" => "2", "roles_custom" => "0", "roles_system" => "2")
+    expect(page.css("[data-kpis=roles] [data-kpi]").to_h { |kpi| [ kpi["data-kpi"], kpi.at_css("[data-value]").text.squish ] }).to eq("roles_total" => "3", "roles_active" => "3", "roles_custom" => "0", "roles_system" => "3")
     counts = page.css("[data-team-roles] tr[data-role]").to_h { |role| [ role["data-role"], [ role.at_css("[data-role-count]").text.to_i, role.at_css("[data-permission-count]").text.to_i ] ] }
-    expect(counts).to eq("owner" => [ 1, Team::Roles::AREAS.count { |_, _, roles| roles.include?(:owner) } ], "agent" => [ 2, Team::Roles::AREAS.count { |_, _, roles| roles.include?(:agent) } ])
+    expect(counts).to eq("super_admin" => [ 0, Team::Roles::AREAS.size ], "owner" => [ 1, Team::Roles::AREAS.count { |_, _, roles| roles.include?(:owner) } ], "agent" => [ 2, Team::Roles::AREAS.count { |_, _, roles| roles.include?(:agent) } ])
     expect(page.at_css("[data-create-role-soon]")).to be_present
     get admin_users_path, params: { tab: "roles", q: "confirmation" }
     expect(page.css("tr[data-role]").map { |row| row["data-role"] }).to eq([ "agent" ])

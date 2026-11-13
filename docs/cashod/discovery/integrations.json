@@ -1,0 +1,254 @@
+[
+  {
+    "provider": "ameex",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/ameex",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "cathedis",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/cathedis",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "digylog",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/digylog",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "express-relais",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/express-relais",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "forcelog",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/forcelog",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "goldcolis",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/goldcolis",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "google-ads",
+    "category": "advertising",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/google-ads",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "google-sheets",
+    "category": "spreadsheet",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/google-sheets",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "hl-express",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/hl-express",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "kargoexpress",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/kargoexpress",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "lightfunnels",
+    "category": "commerce",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/lightfunnels",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "livo",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/livo",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "meta-ads",
+    "category": "advertising",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/meta-ads",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "navex",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/navex",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "olivraison",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/olivraison",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "onesta",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/onesta",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "ozonexpress",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/ozonexpress",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "sendit",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/sendit",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "shopify",
+    "category": "commerce",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/shopify",
+    "connected_in_supplied_account": true,
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "snapchat-ads",
+    "category": "advertising",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/snapchat-ads",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "speedaf-express",
+    "category": "carrier",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/speedaf-express",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "storeep",
+    "category": "commerce",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/storeep",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "tiktok-ads",
+    "category": "advertising",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/tiktok-ads",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "webhook",
+    "category": "webhook",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/webhook",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "whatsapp-business",
+    "category": "communication",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/whatsapp-business",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "woocommerce",
+    "category": "commerce",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/woocommerce",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "xpage",
+    "category": "commerce",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/xpage",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  },
+  {
+    "provider": "youcan",
+    "category": "commerce",
+    "evidence": "published",
+    "source": "https://cashod.ma/en/integrations/youcan",
+    "connected_in_supplied_account": "not established",
+    "authentication_contract": "not yet verified from provider setup",
+    "wire_contract": "not captured; public product page is not vendor API documentation"
+  }
+]

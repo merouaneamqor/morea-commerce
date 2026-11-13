@@ -1,0 +1,498 @@
+[
+  {
+    "method": "GET",
+    "path": "/analytics/advanced?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "cohortAnalysis": {
+        "cohorts": {
+          "type": "array",
+          "item": {
+            "cohort": "str",
+            "customers": "int",
+            "month0": "float",
+            "month1": "float",
+            "month2": "int",
+            "month3": "int",
+            "month4": "int",
+            "month5": "int",
+            "month6": "int",
+            "month7": "int",
+            "month8": "int",
+            "month9": "int",
+            "month10": "int",
+            "month11": "int"
+          }
+        }
+      },
+      "salesFunnel": {
+        "stages": {
+          "type": "array",
+          "item": {
+            "name": "str",
+            "value": "int",
+            "percentage": "int",
+            "color": "str"
+          }
+        },
+        "lost": {
+          "cancelled": "int",
+          "cancelledPercentage": "float"
+        },
+        "conversionRate": "float"
+      },
+      "rfmSegmentation": {
+        "segments": {
+          "type": "array",
+          "item": {
+            "name": "str",
+            "count": "int",
+            "percentage": "int",
+            "totalValue": "int",
+            "avgValue": "float"
+          }
+        },
+        "topCustomers": {
+          "type": "array",
+          "item": {
+            "customerId": "str",
+            "name": "str",
+            "recency": "int",
+            "frequency": "int",
+            "monetary": "int",
+            "rScore": "int",
+            "fScore": "int",
+            "mScore": "int",
+            "segment": "str"
+          }
+        }
+      },
+      "periodComparison": {
+        "current": {
+          "totalOrders": "int",
+          "deliveredOrders": "int",
+          "revenue": "int",
+          "avgOrderValue": "float",
+          "confirmationRate": "float",
+          "deliveryRate": "float"
+        },
+        "previous": {
+          "totalOrders": "int",
+          "deliveredOrders": "int",
+          "revenue": "int",
+          "avgOrderValue": "float",
+          "confirmationRate": "float",
+          "deliveryRate": "float"
+        },
+        "changes": {
+          "totalOrders": "float",
+          "deliveredOrders": "float",
+          "revenue": "float",
+          "avgOrderValue": "float",
+          "confirmationRate": "float",
+          "deliveryRate": "float"
+        }
+      },
+      "deliveryPerformance": {
+        "companies": {
+          "type": "array",
+          "item": {
+            "id": "str",
+            "name": "str",
+            "totalOrders": "int",
+            "delivered": "int",
+            "returned": "int",
+            "pending": "int",
+            "successRate": "float",
+            "returnRate": "float",
+            "revenue": "int",
+            "avgDeliveryDays": "float"
+          }
+        }
+      },
+      "trendForecast": {
+        "historical": {
+          "type": "array",
+          "item": {
+            "date": "str",
+            "revenue": "int",
+            "trendLine": "float"
+          }
+        },
+        "forecast": {
+          "type": "array",
+          "item": {
+            "date": "str",
+            "predictedRevenue": "float"
+          }
+        },
+        "trend": "str",
+        "metrics": {
+          "slope": "float",
+          "avgDailyRevenue": "float",
+          "projectedWeeklyRevenue": "float",
+          "growthRate": "float"
+        }
+      },
+      "timePatterns": {
+        "byDayOfWeek": {
+          "type": "array",
+          "item": {
+            "day": "str",
+            "dayIndex": "int",
+            "orders": "int",
+            "revenue": "int"
+          }
+        },
+        "byHour": {
+          "type": "array",
+          "item": {
+            "hour": "int",
+            "hourLabel": "str",
+            "orders": "int",
+            "revenue": "int"
+          }
+        },
+        "insights": {
+          "peakDay": "str",
+          "peakHour": "str",
+          "quietestDay": "str",
+          "quietestHour": "str"
+        }
+      },
+      "cancellationAnalysis": {
+        "summary": {
+          "totalOrders": "int",
+          "cancelled": "int",
+          "returned": "int",
+          "cancellationRate": "float",
+          "returnRate": "float",
+          "lostRevenue": "int"
+        },
+        "byCity": {
+          "type": "array",
+          "item": {
+            "city": "str",
+            "cancelled": "int",
+            "returned": "int",
+            "total": "int",
+            "failureRate": "int"
+          }
+        },
+        "byDeliveryCompany": {
+          "type": "array",
+          "item": {
+            "company": "str",
+            "cancelled": "int",
+            "returned": "int",
+            "total": "int",
+            "failureRate": "float"
+          }
+        },
+        "byDayOfWeek": {
+          "type": "array",
+          "item": {
+            "day": "str",
+            "cancelled": "int",
+            "returned": "int",
+            "total": "int",
+            "failureRate": "float"
+          }
+        }
+      },
+      "orderVelocity": {
+        "stages": {
+          "type": "array",
+          "item": {
+            "name": "str",
+            "avgHours": "float",
+            "medianHours": "float",
+            "count": "int"
+          }
+        },
+        "totalCycle": {
+          "avgDays": "float",
+          "medianDays": "float",
+          "count": "int"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/customers?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "newVsReturning": {
+        "new": "int",
+        "returning": "int"
+      },
+      "topCustomers": {
+        "type": "array",
+        "item": {
+          "id": "str",
+          "name": "str",
+          "phone": "str",
+          "totalOrders": "int",
+          "totalSpent": "int",
+          "city": "str"
+        }
+      },
+      "geographicDistribution": {
+        "type": "array",
+        "item": {
+          "city": "str",
+          "count": "int"
+        }
+      },
+      "customersWithoutCity": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/dashboard-kpis?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "period": {
+        "start": "str",
+        "end": "str"
+      },
+      "kpis": {
+        "totalRevenue": "int",
+        "totalOrders": "int",
+        "confirmedOrders": "int",
+        "cancelledOrders": "int",
+        "confirmationRate": "float",
+        "cancellationRate": "float",
+        "deliverySuccessRate": "float",
+        "returnRate": "float",
+        "averageOrderValue": "float",
+        "activeCustomers": "int",
+        "newCustomers": "int"
+      },
+      "revenueByDay": {
+        "type": "array",
+        "item": {
+          "date": "str",
+          "revenue": "int",
+          "orders": "int"
+        }
+      },
+      "ordersByStatus": {
+        "NOT_SHIPPED": "int",
+        "SHIPPED": "int",
+        "OUT_FOR_DELIVERY": "int",
+        "SCHEDULED": "int",
+        "DELIVERED": "int",
+        "RETURNED": "int",
+        "RETURN_IN_PROGRESS": "int"
+      },
+      "topProducts": {
+        "type": "array",
+        "item": {
+          "product": {
+            "id": "str",
+            "name": "str",
+            "sku": "str"
+          },
+          "totalSold": "int",
+          "revenue": "int"
+        }
+      },
+      "lowStockAlerts": "int",
+      "pendingConfirmations": "int"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/products?storeId={authorizedStoreId}",
+    "status": "200",
+    "store_scoped": true,
+    "response_shape": {
+      "topSelling": {
+        "type": "array",
+        "item": {
+          "product": {
+            "id": "str",
+            "name": "str",
+            "sku": "str",
+            "category": "str",
+            "retailPrice": "str"
+          },
+          "totalSold": "str",
+          "revenue": "int"
+        }
+      },
+      "topSellingVariants": {
+        "type": "array",
+        "item": {
+          "variant": {
+            "id": "str",
+            "sku": "str",
+            "name": "str",
+            "size": "str",
+            "color": "NoneType",
+            "price": "str"
+          },
+          "product": {
+            "id": "str",
+            "name": "str"
+          },
+          "totalSold": "str",
+          "revenue": "int"
+        }
+      },
+      "variantAnalytics": {
+        "sizeDistribution": {
+          "type": "array",
+          "item": {
+            "name": "str",
+            "count": "int",
+            "revenue": "int"
+          }
+        },
+        "colorDistribution": {
+          "type": "array",
+          "item": {
+            "name": "str",
+            "count": "int",
+            "revenue": "int"
+          }
+        },
+        "totalVariantsSold": "int",
+        "totalVariantsRevenue": "int"
+      },
+      "profitMargins": {
+        "products": {
+          "type": "array",
+          "item": {
+            "productId": "str",
+            "productName": "str",
+            "revenue": "int",
+            "totalCost": "int",
+            "grossProfit": "int",
+            "marginPct": "float"
+          }
+        },
+        "variants": {
+          "type": "array",
+          "item": {
+            "variantId": "str",
+            "productId": "str",
+            "variantName": "str",
+            "productName": "str",
+            "revenue": "int",
+            "totalCost": "int",
+            "grossProfit": "int",
+            "marginPct": "float"
+          }
+        },
+        "totals": {
+          "totalRevenue": "int",
+          "totalCost": "int",
+          "totalGrossProfit": "int",
+          "overallMarginPct": "float"
+        }
+      },
+      "confirmationReturnRates": {
+        "products": {
+          "type": "array",
+          "item": {
+            "productId": "str",
+            "productName": "str",
+            "totalOrders": "int",
+            "confirmed": "int",
+            "cancelled": "int",
+            "delivered": "int",
+            "returned": "int",
+            "confirmationRate": "float",
+            "cancellationRate": "float",
+            "deliveryRate": "float",
+            "returnRate": "float",
+            "flags": {
+              "type": "array",
+              "item": null
+            },
+            "isProblematic": "bool"
+          }
+        },
+        "baseline": {
+          "confirmationRate": "float",
+          "deliveryRate": "float",
+          "returnRate": "float"
+        }
+      },
+      "stockVelocity": {
+        "products": {
+          "type": "array",
+          "item": {
+            "productId": "str",
+            "productName": "str",
+            "totalStock": "int",
+            "totalSold": "int",
+            "dailySalesRate": "int",
+            "daysOfStockRemaining": "NoneType",
+            "riskLevel": "str"
+          }
+        },
+        "deadStock": {
+          "type": "array",
+          "item": {
+            "productId": "str",
+            "productName": "str",
+            "totalStock": "int",
+            "costPrice": "int"
+          }
+        },
+        "summary": {
+          "fastMoversAtRisk": "int",
+          "deadStockCount": "int",
+          "deadStockValue": "int",
+          "avgDaysOfStock": "float"
+        }
+      },
+      "upsellPerformance": {
+        "topUpsellProducts": {
+          "type": "array",
+          "item": {
+            "productId": "str",
+            "productName": "str",
+            "upsellQuantity": "int",
+            "upsellRevenue": "int"
+          }
+        },
+        "summary": {
+          "upsellRevenue": "int",
+          "baseRevenue": "int",
+          "upsellContributionPct": "float",
+          "upsellRate": "float"
+        }
+      },
+      "cityBreakdown": {
+        "cities": {
+          "type": "array",
+          "item": {
+            "city": "str",
+            "totalOrders": "int",
+            "confirmationRate": "float",
+            "deliveryRate": "float",
+            "returnRate": "float",
+            "isAggregate": "bool"
+          }
+        },
+        "totals": {
+          "city": "str",
+          "totalOrders": "int",
+          "confirmationRate": "float",
+          "deliveryRate": "float",
+          "returnRate": "float",
+          "isAggregate": "bool"
+        },
+        "ordersWithoutCity": "int"
+      }
+    }
+  }
+]

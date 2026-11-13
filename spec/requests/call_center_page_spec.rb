@@ -146,6 +146,16 @@ RSpec.describe "Call center page", type: :request do
       expect(document.at_css("[data-auto-assign]")).to be_nil
     end
 
+    it "applies a filter as soon as it changes, without a refresh button to click" do
+      get "/admin/confirmations/center"
+      form = document.at_css("[data-cc-filters]")
+      expect(form["data-controller"]).to eq("auto-submit")
+      expect(form.css("select").map { |select| select["data-action"] }.uniq).to eq([ "auto-submit#submit" ])
+      expect(form.at_css("input[name=missed]")["data-action"]).to eq("auto-submit#submit")
+      expect(form.at_css("input[name=q]")["data-action"]).to eq("input->auto-submit#debounce")
+      expect(form.at_css("input[type=submit]")["class"]).to include("sr-only")
+    end
+
     it "filters by search, source and WhatsApp status" do
       get "/admin/confirmations/center", params: { tab: "pending", q: "Queue 2" }
       expect(numbers).to eq([ "Q2" ])

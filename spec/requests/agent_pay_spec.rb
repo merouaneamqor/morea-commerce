@@ -72,7 +72,7 @@ RSpec.describe "Agent pay and statistics", type: :request do
     sign_in(agent)
 
     get admin_users_path
-    expect(response).to redirect_to(home_admin_confirmations_path)
+    expect(response).to redirect_to(admin_my_stats_path)
     post pay_admin_user_path(agent)
     expect(AgentPayment.count).to eq(0)
 

@@ -106,12 +106,12 @@ RSpec.describe "Confirmation dashboard", type: :request do
         customer_city: "Casablanca", customer_address: "Address", total_cents: 101, subtotal_cents: 101, currency: "MAD", status: "new")
     end
 
-    it "lands on the desk after sign-in and cannot open other admin pages" do
+    it "lands on the dashboard after sign-in and cannot open other admin pages" do
       sign_in(agent)
-      expect(response).to redirect_to("/admin/confirmations/home")
+      expect(response).to redirect_to("/admin/my_stats")
 
       get "/admin/products"
-      expect(response).to redirect_to("/admin/confirmations/home")
+      expect(response).to redirect_to("/admin/my_stats")
 
       get "/admin/orders" # agents can look at orders (read-only)
       expect(response).to have_http_status(:ok)

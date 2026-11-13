@@ -52,9 +52,9 @@ RSpec.describe "Agent workspace", type: :request do
   it "keeps the other pages of the store closed to an agent" do
     sign_in(saida)
     get admin_users_path
-    expect(response).to redirect_to(home_admin_confirmations_path)
+    expect(response).to redirect_to(admin_my_stats_path)
     get admin_accounting_path
-    expect(response).to redirect_to(home_admin_confirmations_path)
+    expect(response).to redirect_to(admin_my_stats_path)
   end
 
   it "follows the owner's attribution rules: with an active rule an agent sees only the orders given to them" do

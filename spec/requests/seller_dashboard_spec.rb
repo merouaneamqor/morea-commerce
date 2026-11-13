@@ -95,7 +95,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     agent = store.users.create!(email: "agent-#{suffix}@example.test", password: password, confirmation_role: "agent")
     sign_in(agent)
     get "/dashboard"
-    expect(response).to redirect_to(%r{/admin/confirmations})
+    expect(response).to redirect_to(%r{/admin/my_stats})
     get home_admin_confirmations_path
     expect(response).to have_http_status(:ok)
     expect(menu_links).to eq(%w[/mes-statistiques /confirmation /facturation])

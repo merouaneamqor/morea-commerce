@@ -41,7 +41,7 @@ end
       return unless current_user&.confirmation_agent? && !current_user.super_admin?
       return if AGENT_ALLOWED_CONTROLLERS.include?(controller_path)
 
-      redirect_to home_admin_confirmations_path
+      redirect_to admin_my_stats_path
     end
 
     def require_super_admin!

@@ -1,4 +1,4 @@
-<% content_for :title, "#{t('admin.my_stats.title')} — Admin" %>
+<% content_for :title, "#{sl("Tableau de bord")} — Admin" %>
 <% figures = @summary.figures %>
 <% name = current_user.name.presence || current_user.email %>
 <% pct = ->(part) { figures.confirmed.zero? ? 0 : (part * 100.0 / figures.confirmed).round } %>
@@ -12,7 +12,7 @@
 
 <div class="admin-page-header">
   <div>
-    <h1 class="admin-page-header__title"><%= t("admin.my_stats.title") %></h1>
+    <h1 class="admin-page-header__title"><%= sl("Tableau de bord") %></h1>
     <p class="admin-page-header__meta"><%= t("admin.my_stats.greeting", name: name) %></p>
   </div>
   <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_my_stats_path %>
@@ -30,18 +30,6 @@
   <% end %>
 </div>
 <p class="admin-muted my-3 text-xs"><%= t("admin.my_stats.courier_note") %></p>
-
-<section class="admin-card seallo-earnings">
-  <div class="admin-card__header">
-    <h2 class="admin-card__title"><%= t("admin.my_stats.earnings") %></h2>
-    <span class="admin-muted text-xs"><%= t("admin.my_stats.per_order", amount: money(current_user.pay_per_delivery_cents)) %></span>
-  </div>
-  <div class="seallo-earnings__grid">
-    <div><span><%= t("admin.my_stats.gains") %></span><strong><%= money(@summary.earned_total) %></strong><small><%= t("admin.my_stats.gains_help", amount: money(@summary.earned_period)) %></small></div>
-    <div class="is-paid"><span><%= t("admin.my_stats.already_paid") %></span><strong><%= money(@summary.paid_total) %></strong><small><%= @summary.last_paid_at ? t("admin.my_stats.last_paid", date: @summary.last_paid_at.strftime("%d/%m/%Y")) : t("admin.my_stats.never_paid") %></small></div>
-    <div><span><%= t("admin.my_stats.unpaid") %></span><strong><%= money(@summary.unpaid) %></strong><small><%= t("admin.my_stats.remaining") %></small></div>
-  </div>
-</section>
 
 <div class="seallo-two mt-4">
   <section class="admin-card admin-card__body">

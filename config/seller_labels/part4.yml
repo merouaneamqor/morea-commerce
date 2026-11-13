@@ -15,3 +15,95 @@
   en: "Panama"
   ar: "بنما"
   es: "Panamá"
+"Tes gains, tes paiements et tes retenues.":
+  en: "Your earnings, payments and deductions."
+  ar: "أرباحك ومدفوعاتك والخصومات."
+  es: "Tus ganancias, pagos y retenciones."
+"Mes gains":
+  en: "My earnings"
+  ar: "أرباحي"
+  es: "Mis ganancias"
+"Par commande livrée":
+  en: "Per delivered order"
+  ar: "لكل طلب مُسلَّم"
+  es: "Por pedido entregado"
+"Gains cumulés":
+  en: "Total earnings"
+  ar: "إجمالي الأرباح"
+  es: "Ganancias acumuladas"
+"Gagné ce mois-ci":
+  en: "Earned this month"
+  ar: "المكتسب هذا الشهر"
+  es: "Ganado este mes"
+"Déjà payé":
+  en: "Already paid"
+  ar: "تم دفعه"
+  es: "Ya pagado"
+"Reste à payer":
+  en: "Left to pay"
+  ar: "المتبقي للدفع"
+  es: "Pendiente de pago"
+"Dernier paiement le":
+  en: "Last payment on"
+  ar: "آخر دفعة بتاريخ"
+  es: "Último pago el"
+"Aucun paiement pour le moment.":
+  en: "No payment yet."
+  ar: "لا توجد دفعات حتى الآن."
+  es: "Aún no hay pagos."
+"Retenues en attente":
+  en: "Pending deductions"
+  ar: "خصومات قيد الانتظار"
+  es: "Retenciones pendientes"
+"Historique des paiements":
+  en: "Payment history"
+  ar: "سجل المدفوعات"
+  es: "Historial de pagos"
+"Date de paiement":
+  en: "Payment date"
+  ar: "تاريخ الدفع"
+  es: "Fecha de pago"
+"Gains réglés":
+  en: "Earnings settled"
+  ar: "الأرباح المسوّاة"
+  es: "Ganancias liquidadas"
+"Retenues":
+  en: "Deductions"
+  ar: "الخصومات"
+  es: "Retenciones"
+"Montant reçu":
+  en: "Amount received"
+  ar: "المبلغ المستلم"
+  es: "Importe recibido"
+"Retenues pour retours":
+  en: "Deductions for returns"
+  ar: "خصومات المرتجعات"
+  es: "Retenciones por devoluciones"
+"Une retenue est prélevée sur ton prochain paiement quand une commande que tu as confirmée est retournée.":
+  en: "A deduction is taken from your next payment when an order you confirmed is returned."
+  ar: "يُخصم مبلغ من دفعتك القادمة عندما يُرجَع طلب قمت بتأكيده."
+  es: "Se descuenta una retención de tu próximo pago cuando se devuelve un pedido que confirmaste."
+"Aucune retenue.":
+  en: "No deductions."
+  ar: "لا توجد خصومات."
+  es: "Sin retenciones."
+"Commande retournée":
+  en: "Returned order"
+  ar: "الطلب المرتجع"
+  es: "Pedido devuelto"
+"Montant retenu":
+  en: "Amount deducted"
+  ar: "المبلغ المخصوم"
+  es: "Importe retenido"
+"État de la retenue":
+  en: "Deduction status"
+  ar: "حالة الخصم"
+  es: "Estado de la retención"
+"Déjà déduite":
+  en: "Already deducted"
+  ar: "تم خصمها"
+  es: "Ya descontada"
+"À déduire au prochain paiement":
+  en: "To be deducted from the next payment"
+  ar: "تُخصم من الدفعة القادمة"
+  es: "Se descontará en el próximo pago"

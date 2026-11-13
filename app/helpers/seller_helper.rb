@@ -55,7 +55,7 @@ module SellerHelper
 
   # Which menu entry a controller belongs to, so the pages not yet ported still highlight their entry.
   SELLER_ACTIVE_BY_CONTROLLER = {
-    "dashboard" => "dashboard", "orders" => "orders", "confirmations" => "confirmation", "my_stats" => "stats",
+    "dashboard" => "dashboard", "orders" => "orders", "confirmations" => "confirmation", "my_stats" => "stats", "my_billing" => "billing",
     "customers" => "clients", "delivery" => "delivery", "products" => "products", "variants" => "products",
     "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
     "seallo_connections" => "integrations", "woocommerce_connections" => "integrations", "meta_ads" => "integrations",
@@ -129,9 +129,17 @@ module SellerHelper
     end
   end
 
+  # An agent's menu: their own dashboard, their call center and their own billing, nothing about the rest of the store.
+  SELLER_AGENT_MENU = [
+    [ "stats", :home, "Tableau de bord", "/mes-statistiques" ],
+    [ "confirmation", :phone, "Centre d'appels", "/confirmation" ],
+    [ "billing", :wallet, "Facturation", "/facturation" ]
+  ].freeze
+
   def seller_menu(user)
-    agent = user&.confirmation_agent_view?
-    SELLER_MENU.select { |key, *| agent ? %w[confirmation stats orders].include?(key) : key != "stats" }
+    return SELLER_AGENT_MENU if user&.confirmation_agent_view?
+
+    SELLER_MENU.reject { |key, *| key == "stats" }
   end
 
   def seller_active_key

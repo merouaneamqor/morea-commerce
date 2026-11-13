@@ -215,6 +215,9 @@ module Confirmations
       if @user.confirmation_agent_view? && confirmation.attributed_user_id && confirmation.attributed_user_id != @user.id
         raise Error, "This order is assigned to another agent."
       end
+      if @user.confirmation_agent_view? && confirmation.attributed_user_id.nil? && confirmation.assigned_user_id != @user.id && @store.assignment_enforced?
+        raise Error, "This order has not been assigned to you by the attribution rules."
+      end
       if confirmation.assigned_user_id && confirmation.assigned_user_id != @user.id
         raise Error, "Another agent has claimed this order."
       end

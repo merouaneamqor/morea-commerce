@@ -1,0 +1,76 @@
+<% content_for :title, "#{sl("Facturation")} — Admin" %>
+<% name = current_user.name.presence || current_user.email %>
+
+<div class="admin-page-header">
+  <div>
+    <h1 class="admin-page-header__title"><%= sl("Facturation") %></h1>
+    <p class="admin-page-header__meta"><%= name %> · <%= sl("Tes gains, tes paiements et tes retenues.") %></p>
+  </div>
+</div>
+
+<section class="admin-card seallo-earnings" data-my-billing-summary>
+  <div class="admin-card__header">
+    <h2 class="admin-card__title"><%= sl("Mes gains") %></h2>
+    <span class="admin-muted text-xs"><%= sl("Par commande livrée") %> : <%= money(current_user.pay_per_delivery_cents) %></span>
+  </div>
+  <div class="seallo-earnings__grid">
+    <div><span><%= sl("Gains cumulés") %></span><strong><%= money(@summary.earned_total) %></strong><small><%= sl("Gagné ce mois-ci") %> : <%= money(@summary.earned_period) %></small></div>
+    <div class="is-paid"><span><%= sl("Déjà payé") %></span><strong><%= money(@summary.paid_total) %></strong><small><%= @summary.last_paid_at ? "#{sl("Dernier paiement le")} #{l(@summary.last_paid_at.to_date)}" : sl("Aucun paiement pour le moment.") %></small></div>
+    <div><span><%= sl("Reste à payer") %></span><strong><%= money(@summary.unpaid) %></strong><small><%= sl("Retenues en attente") %> : <%= money(@summary.pending_deductions) %></small></div>
+  </div>
+</section>
+
+<section class="admin-card admin-card__body mt-4" data-my-payments>
+  <h2 class="admin-card__title"><%= sl("Historique des paiements") %></h2>
+  <% if @payments.empty? %>
+    <p class="admin-muted mt-2 text-sm"><%= sl("Aucun paiement pour le moment.") %></p>
+  <% else %>
+    <div class="mt-3 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="text-start text-xs text-[#6e6e73]">
+          <th class="py-2 text-start font-medium"><%= sl("Date de paiement") %></th>
+          <th class="py-2 text-start font-medium"><%= sl("Gains réglés") %></th>
+          <th class="py-2 text-start font-medium"><%= sl("Retenues") %></th>
+          <th class="py-2 text-start font-medium"><%= sl("Montant reçu") %></th>
+        </tr></thead>
+        <tbody>
+          <% @payments.each do |payment| %>
+            <tr class="border-t border-[#e0e0e5]" data-payment>
+              <td class="py-2"><%= l(payment.paid_at.in_time_zone(DateRange::ZONE).to_date) %></td>
+              <td class="py-2"><%= money(payment.amount_cents) %></td>
+              <td class="py-2"><%= payment.deductions_cents.positive? ? "− #{money(payment.deductions_cents)}" : "—" %></td>
+              <td class="py-2 font-semibold"><%= money(payment.cash_cents) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>
+
+<section class="admin-card admin-card__body mt-4" data-my-deductions>
+  <h2 class="admin-card__title"><%= sl("Retenues pour retours") %></h2>
+  <p class="admin-muted mt-1 text-xs"><%= sl("Une retenue est prélevée sur ton prochain paiement quand une commande que tu as confirmée est retournée.") %></p>
+  <% if @deductions.empty? %>
+    <p class="admin-muted mt-2 text-sm"><%= sl("Aucune retenue.") %></p>
+  <% else %>
+    <div class="mt-3 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr>
+          <th class="py-2 text-start font-medium text-xs text-[#6e6e73]"><%= sl("Commande retournée") %></th>
+          <th class="py-2 text-start font-medium text-xs text-[#6e6e73]"><%= sl("Montant retenu") %></th>
+          <th class="py-2 text-start font-medium text-xs text-[#6e6e73]"><%= sl("État de la retenue") %></th>
+        </tr></thead>
+        <tbody>
+          <% @deductions.each do |deduction| %>
+            <tr class="border-t border-[#e0e0e5]" data-deduction>
+              <td class="py-2" dir="ltr">#<%= deduction.order.number %></td>
+              <td class="py-2"><%= money(deduction.amount_cents) %></td>
+              <td class="py-2"><%= deduction.status == "applied" ? sl("Déjà déduite") : sl("À déduire au prochain paiement") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</section>

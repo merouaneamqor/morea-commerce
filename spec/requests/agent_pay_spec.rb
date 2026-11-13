@@ -78,6 +78,8 @@ RSpec.describe "Agent pay and statistics", type: :request do
 
     get admin_my_stats_path
     expect(response).to have_http_status(:ok)
+    get admin_my_billing_path
+    expect(response).to have_http_status(:ok)
     expect(response.body).to include("8 MAD")
   end
 

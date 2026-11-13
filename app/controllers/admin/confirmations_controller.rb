@@ -36,7 +36,7 @@ module Admin
           .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
           .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
         # An agent does not see what is attributed to a colleague; owners and supervisors see everything.
-        orders = orders.where("order_confirmations.attributed_user_id IS NULL OR order_confirmations.attributed_user_id = ?", current_user.id) if agent_view?
+        orders = orders.where(agent_queue_condition, current_user.id) if agent_view?
       end
       @orders = orders.includes(:order_items).order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC"))
         .offset((@page - 1) * 50).limit(51).to_a
@@ -238,10 +238,19 @@ module Admin
       current_store.orders.active.where(status: "new", sendit_code: [ nil, "" ]).where.not(id: excluding)
         .joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")
         .where("order_confirmations.assigned_user_id IS NULL")
-        .where("order_confirmations.attributed_user_id IS NULL OR order_confirmations.attributed_user_id = ?", current_user.id)
+        .where(agent_queue_condition, current_user.id)
         .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition NOT IN ('wrong_number', 'blocked')")
         .where("order_confirmations.callback_at IS NULL OR order_confirmations.callback_at <= ?", Time.current)
         .order(Arel.sql("order_confirmations.callback_at ASC NULLS LAST, orders.created_at ASC, orders.id ASC")).pick("orders.id")
+    end
+
+    # Which waiting orders an agent may take: with an active attribution rule only the ones given to them, otherwise the open pool too.
+    def agent_queue_condition
+      if current_store.assignment_enforced?
+        "order_confirmations.attributed_user_id = ?"
+      else
+        "order_confirmations.attributed_user_id IS NULL OR order_confirmations.attributed_user_id = ?"
+      end
     end
 
     def require_store_context!

@@ -91,14 +91,14 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     expect(body).not_to include("FOREIGN-#{suffix}", "999 MAD")
   end
 
-  it "limits a confirmation agent to confirmation, statistics and orders, and keeps them off the dashboard" do
+  it "limits a confirmation agent to their dashboard, call center and billing, and keeps them off the store dashboard" do
     agent = store.users.create!(email: "agent-#{suffix}@example.test", password: password, confirmation_role: "agent")
     sign_in(agent)
     get "/dashboard"
     expect(response).to redirect_to(%r{/admin/confirmations})
     get home_admin_confirmations_path
     expect(response).to have_http_status(:ok)
-    expect(menu_links).to eq(%w[/commandes /confirmation /mes-statistiques])
+    expect(menu_links).to eq(%w[/mes-statistiques /confirmation /facturation])
     expect(response.body).not_to include("Plan · ")
   end
 

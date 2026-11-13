@@ -35,7 +35,7 @@ end
 
     # Confirmation agents are not admins: they reach the desk, its performance page
     # and the billing page (needed when a subscription blocks the store).
-    AGENT_ALLOWED_CONTROLLERS = %w[admin/confirmations admin/orders admin/my_stats admin/subscriptions admin/push_subscriptions].freeze
+    AGENT_ALLOWED_CONTROLLERS = %w[admin/confirmations admin/orders admin/my_stats admin/my_billing admin/subscriptions admin/push_subscriptions].freeze
 
     def confine_confirmation_agents!
       return unless current_user&.confirmation_agent? && !current_user.super_admin?

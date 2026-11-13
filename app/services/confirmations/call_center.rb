@@ -86,7 +86,13 @@ module Confirmations
 
       held_by_others = OrderConfirmation.where(store: @store).where.not(assigned_user_id: [ nil, @user.id ]).select(:order_id)
       attributed_to_others = OrderConfirmation.where(store: @store).where.not(attributed_user_id: [ nil, @user.id ]).select(:order_id)
-      scope.where.not(id: held_by_others).where.not(id: attributed_to_others)
+      scope = scope.where.not(id: held_by_others).where.not(id: attributed_to_others)
+      return scope unless @store.assignment_enforced?
+
+      # The owner's attribution rules decide: only what was given to this agent, or what they already hold or confirmed.
+      given = OrderConfirmation.where(store: @store).where("attributed_user_id = :user OR assigned_user_id = :user", user: @user.id).select(:order_id)
+      confirmed = ConfirmationAttempt.joins(:order_confirmation).where(store: @store, user: @user, outcome: "confirmed").select("order_confirmations.order_id")
+      scope.where(id: given).or(scope.where(id: confirmed))
     end
 
     def with_confirmation = base.joins("LEFT JOIN order_confirmations ON order_confirmations.order_id = orders.id")

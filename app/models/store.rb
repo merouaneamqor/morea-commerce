@@ -16,6 +16,9 @@ class Store < ApplicationRecord
   has_many :carts, dependent: :destroy
   has_many :discounts, dependent: :destroy
   has_many :assignment_rules, -> { ordered }, dependent: :destroy
+
+  # Once the owner has an active attribution rule, an agent works only the orders the rules gave them. Without one, agents share the open queue.
+  def assignment_enforced? = assignment_rules.active.exists?
   has_many :users, dependent: :destroy
   has_many :translations, class_name: "StoreTranslation", dependent: :destroy, inverse_of: :store
   has_many :home_sections, dependent: :destroy

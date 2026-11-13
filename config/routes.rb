@@ -84,7 +84,7 @@ Rails.application.routes.draw do
   patch "/livraison/societes/:id", to: "admin/delivery_accounts#update", as: :seller_delivery_account
   delete "/livraison/societes/:id", to: "admin/delivery_accounts#destroy"
   {
-    "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations/center", "/mes-statistiques" => "/admin/my_stats",
+    "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations/center", "/mes-statistiques" => "/admin/my_stats", "/facturation" => "/admin/my_billing",
     "/livraison" => "/admin/delivery", "/produits" => "/admin/products",
     "/equipe" => "/admin/staff", "/settings/profile" => "/admin/store/edit"
   }.each do |from, target|
@@ -205,6 +205,7 @@ Rails.application.routes.draw do
       member { post :pay }
     end
     get "my_stats", to: "my_stats#show", as: :my_stats
+    get "my_billing", to: "my_billing#show", as: :my_billing
     get "media", to: "media#index", as: :media
     post "media/upload", to: "media#upload", as: :media_upload
     post "media/edits", to: "media#edits", as: :media_edits

@@ -9,7 +9,7 @@
 <% card = "rounded-2xl border border-[#e0e0e5] bg-white p-5" %>
 <% status_tones = { "active" => "bg-[#e3f3e8] text-[#2f7a4a]", "suspended" => "bg-[#fdf0d9] text-[#8a5a12]", "archived" => "bg-[#efeff3] text-[#6e6e73]" } %>
 <% status_labels = { "active" => sl("Actif"), "suspended" => sl("Suspendu"), "archived" => sl("Archivé") } %>
-<% role_of = ->(user) { user.admin? ? [ t("admin.team.owner"), "bg-[#1d1d1f] text-white", :owner ] : (user.confirmation_agent? ? [ t("admin.team.role_agent"), "bg-[#e6f0fd] text-[#2b5f9e]", :agent ] : [ t("admin.team.role_supervisor"), "bg-[#eee8fb] text-[#5b3fb0]", :supervisor ]) } %>
+<% role_of = ->(user) { user.admin? ? [ t("admin.team.owner"), "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e]", :owner ] : (user.confirmation_agent? ? [ t("admin.team.role_agent"), "bg-[#d9f2e2] text-[#1f6b3f]", :agent ] : [ t("admin.team.role_supervisor"), "bg-[#eee8fb] text-[#5b3fb0]", :supervisor ]) } %>
 <% initials = ->(user) { (user.name.presence || user.email).to_s.strip.split(/\s+/).first(2).map { |part| part[0] }.join.upcase } %>
 
 <header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white" data-team-header>
@@ -69,7 +69,7 @@
           <tbody class="divide-y divide-[#f1f1f4]">
             <% role_rows.each do |role| %>
               <tr data-role="<%= role.key %>">
-                <td class="px-3 py-3"><span class="inline-flex items-center gap-2.5 font-semibold text-[#1c1c1e]"><span class="grid size-8 place-items-center rounded-lg bg-[#fdf0d9] text-[#d28a12]"><%= seller_icon(:lock, size: 15) %></span><%= sl(role.name) %></span></td>
+                <td class="px-3 py-3"><span class="inline-flex items-center gap-2.5 font-semibold text-[#1c1c1e]"><span class="grid size-8 place-items-center rounded-lg <%= role.key == :owner ? "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e]" : "bg-[#d9f2e2] text-[#1f6b3f]" %>"><%= seller_icon(:lock, size: 15) %></span><%= sl(role.name) %></span></td>
                 <td class="max-w-md px-3 py-3 text-[#6e6e73]"><span class="line-clamp-2" title="<%= sl(role.description) %>"><%= sl(role.description) %></span></td>
                 <td class="px-3 py-3 tabular-nums"><span class="inline-flex items-center gap-1.5"><%= seller_icon(:check, size: 14) %><b data-permission-count><%= role.areas.size %></b></span></td>
                 <td class="px-3 py-3 tabular-nums"><span class="inline-flex items-center gap-1.5"><%= seller_icon(:clients, size: 14) %><b data-role-count><%= everyone.count { |user| Team::Roles.for_user(user) == role.key } %></b></span></td>
@@ -118,6 +118,8 @@
     <%= render "admin/dashboard/kpi", key: "inactive", label: sl("Utilisateurs inactifs"), icon: :ban, tone: "bg-[#fdf0d9] text-[#d28a12]", value: everyone.size - active_count, sub: sl("Suspendus ou archivés") %>
     <%= render "admin/dashboard/kpi", key: "owners", label: sl("Propriétaires"), icon: :lock, tone: "bg-[#eee8fb] text-[#5b3fb0]", value: everyone.count(&:admin?), sub: sl("Accès complet") %>
   </section>
+
+  <%= render "activity", activity: @activity, rows: @activity_rows %>
 
   <section class="rounded-2xl border border-[#e0e0e5] bg-white p-4 mt-3" data-team-members>
     <div>

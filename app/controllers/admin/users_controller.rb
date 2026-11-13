@@ -13,6 +13,10 @@ module Admin
       end
       @users = @users.includes(:created_by)
       @permission_user = @all_users.reject(&:super_admin?).find { |user| user.id == params[:user_id].to_i } if @tab == "permissions"
+      if @tab == "users"
+        @activity = Team::Activity.new(store: current_store, users: @all_users.reject(&:super_admin?))
+        @activity_rows = @activity.filtered(presence: params[:presence], role: params[:role], query: params[:aq])
+      end
       earnings = Team::AgentEarnings.new(store: current_store, range: Time.current.beginning_of_month..Time.current)
       @summaries = @users.to_h { |user| [ user.id, earnings.summary_for(user) ] }
     end

@@ -743,3 +743,71 @@
   en: "Stores"
   ar: "المتاجر"
   es: "Tiendas"
+"Activité de l'équipe":
+  en: "Team activity"
+  ar: "نشاط الفريق"
+  es: "Actividad del equipo"
+"Qui est en ligne, combien de temps chacun a travaillé et ce qu'il a fait":
+  en: "Who is online, how long each person worked and what they did"
+  ar: "من هو متصل، وكم عمل كل شخص، وماذا فعل"
+  es: "Quién está en línea, cuánto ha trabajado cada uno y qué ha hecho"
+"En direct":
+  en: "Live"
+  ar: "مباشر"
+  es: "En directo"
+"Présence de l'équipe":
+  en: "Team presence"
+  ar: "حضور الفريق"
+  es: "Presencia del equipo"
+"en ligne":
+  en: "online"
+  ar: "متصل"
+  es: "en línea"
+"Hors ligne":
+  en: "Offline"
+  ar: "غير متصل"
+  es: "Desconectado"
+"Temps travaillé par l'équipe":
+  en: "Time worked by the team"
+  ar: "وقت عمل الفريق"
+  es: "Tiempo trabajado por el equipo"
+"Moyenne par personne ayant travaillé":
+  en: "Average per person who worked"
+  ar: "المتوسط لكل شخص عمل"
+  es: "Media por persona que ha trabajado"
+"personnes ont appelé":
+  en: "people made calls"
+  ar: "أشخاص أجروا مكالمات"
+  es: "personas han llamado"
+"Rechercher une personne":
+  en: "Search a person"
+  ar: "ابحث عن شخص"
+  es: "Buscar una persona"
+"Tous les rôles":
+  en: "All roles"
+  ar: "كل الأدوار"
+  es: "Todos los roles"
+"Personne":
+  en: "Person"
+  ar: "الشخص"
+  es: "Persona"
+"Première / dernière activité":
+  en: "First / last activity"
+  ar: "أول / آخر نشاط"
+  es: "Primera / última actividad"
+"Ce qui a été fait":
+  en: "What was done"
+  ar: "ما تم إنجازه"
+  es: "Lo que se ha hecho"
+"Dernière action":
+  en: "Last action"
+  ar: "آخر إجراء"
+  es: "Última acción"
+"Vu pour la dernière fois":
+  en: "Last seen"
+  ar: "شوهد آخر مرة"
+  es: "Visto por última vez"
+"Aucune personne ne correspond à ces filtres.":
+  en: "No one matches these filters."
+  ar: "لا أحد يطابق هذه التصفية."
+  es: "Nadie coincide con estos filtros."

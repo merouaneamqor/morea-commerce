@@ -1,0 +1,101 @@
+<%# "Activité de l'équipe", in the Utilisateurs tab: who is online today, the time each person worked, what they did, with four figure cards and filters. Printing only: every figure
+    comes from Team::Activity (presence = an open shift kept alive by the page heartbeat). locals: activity, rows %>
+<% card = "rounded-2xl border border-[#e0e0e5] bg-white p-4" %>
+<% field = "h-10 rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm text-[#1c1c1e] focus:border-[#1d1d1f] focus:outline-none" %>
+<% duration = ->(seconds) { seconds.to_i < 60 ? "0 min" : (seconds.to_i < 3600 ? "#{seconds.to_i / 60} min" : format("%d h %02d", seconds.to_i / 3600, seconds.to_i % 3600 / 60)) } %>
+<% clock = ->(time) { time ? l(time.in_time_zone(DateRange::ZONE), format: "%H:%M") : "—" } %>
+<% offline_count = activity.total - activity.online_count %>
+<% online_percent = activity.total.zero? ? 0 : (activity.online_count * 100.0 / activity.total).round %>
+<% role_tones = { owner: "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e]", agent: "bg-[#d9f2e2] text-[#1f6b3f]" } %>
+<% role_names = { owner: t("admin.team.owner"), agent: sl("Agent") } %>
+
+<section class="mt-3" data-team-activity>
+  <div class="flex flex-wrap items-center justify-between gap-2 px-1">
+    <div>
+      <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Activité de l'équipe") %></h2>
+      <p class="text-xs text-[#6e6e73]"><%= sl("Qui est en ligne, combien de temps chacun a travaillé et ce qu'il a fait") %></p>
+    </div>
+    <div class="flex items-center gap-2 text-[12px] font-semibold">
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2.5 py-1 text-[#2f7a4a]"><i class="size-1.5 rounded-full bg-[#2f9d5c]"></i><%= sl("En direct") %></span>
+      <span class="rounded-full border border-[#e0e0e5] bg-white px-2.5 py-1 text-[#3a3a3c]" data-activity-day><%= l(DateRange.today, format: :long) %></span>
+    </div>
+  </div>
+
+  <div class="mt-2 grid grid-cols-2 gap-2.5 xl:grid-cols-4" data-kpis="activity">
+    <div class="flex min-h-[110px] min-w-0 flex-col justify-between rounded-xl border border-[#e0e0e5] bg-white px-3.5 py-3" data-kpi="presence">
+      <p class="flex items-center gap-1.5 text-xs font-medium text-[#3a3a3c]"><span class="grid size-6 place-items-center rounded-lg bg-[#e3f3e8] text-[#2f9d5c]"><%= seller_icon(:team, size: 14) %></span><%= sl("Présence de l'équipe") %></p>
+      <p class="flex items-baseline gap-1.5 leading-none"><b class="text-[22px] text-[#1c1c1e]" data-value><%= activity.online_count %></b><span class="text-xs text-[#6e6e73]"><%= sl("sur") %> <%= activity.total %> <%= sl("en ligne") %></span></p>
+      <div>
+        <div class="h-1.5 overflow-hidden rounded-full bg-[#e3e6ec]"><span class="block h-full rounded-full bg-[#2f9d5c]" style="width: <%= online_percent %>%"></span></div>
+        <p class="mt-1.5 flex gap-3 text-[11px] text-[#6e6e73]"><span><i class="mr-1 inline-block size-1.5 rounded-full bg-[#2f9d5c]"></i><%= sl("Actif") %> <b class="text-[#1c1c1e]" data-online-count><%= activity.online_count %></b></span><span><i class="mr-1 inline-block size-1.5 rounded-full bg-[#b9bcc4]"></i><%= sl("Hors ligne") %> <b class="text-[#1c1c1e]"><%= offline_count %></b></span></p>
+      </div>
+    </div>
+    <%= render "admin/dashboard/kpi", key: "worked", label: sl("Temps travaillé par l'équipe"), icon: :clock, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: duration.(activity.worked_total), sub: "#{sl("Moyenne par personne ayant travaillé")} : #{duration.(activity.worked_average)}" %>
+    <%= render "admin/dashboard/kpi", key: "actions", label: sl("Actions"), icon: :profit, tone: "bg-[#eee8fb] text-[#5b3fb0]", value: activity.actions_total, sub: "#{activity.confirmed_total} #{sl("Confirmées")} · #{activity.delivered_total} #{sl("Livrées")}" %>
+    <%= render "admin/dashboard/kpi", key: "calls", label: sl("Appels"), icon: :phone, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: activity.calls_total, sub: "#{activity.callers} #{sl("personnes ont appelé")}" %>
+  </div>
+
+  <div class="<%= card %> mt-3">
+    <%= form_with url: admin_users_path, method: :get, class: "flex flex-wrap items-center gap-2", data: { controller: "auto-submit", activity_filters: true } do %>
+      <label class="flex h-10 min-w-56 flex-1 items-center gap-2 rounded-xl border border-[#e0e0e5] bg-[#fafafc] px-3 text-sm">
+        <span class="text-[#6e6e73]"><%= seller_icon(:search, size: 16) %></span>
+        <input name="aq" value="<%= params[:aq] %>" placeholder="<%= sl("Rechercher une personne") %>" class="w-full bg-transparent outline-none placeholder:text-[#8e8e93]" data-action="input->auto-submit#debounce" data-auto-submit-restore="<%= params[:aq].present? %>">
+      </label>
+      <%= select_tag :presence, options_for_select([ [ sl("Actif"), "online" ], [ sl("Hors ligne"), "offline" ] ], params[:presence]), include_blank: sl("Tous les statuts"), class: field, data: { action: "auto-submit#submit" } %>
+      <%= select_tag :role, options_for_select([ [ role_names[:owner], "owner" ], [ role_names[:agent], "agent" ] ], params[:role]), include_blank: sl("Tous les rôles"), class: field, data: { action: "auto-submit#submit" } %>
+    <% end %>
+
+    <% if rows.empty? %>
+      <p class="my-8 text-center text-sm text-[#6e6e73]" data-no-activity><%= sl("Aucune personne ne correspond à ces filtres.") %></p>
+    <% else %>
+      <div class="mt-3 overflow-x-auto">
+        <table class="w-full text-[12px]">
+          <thead class="text-[11px] text-[#6e6e73]"><tr>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium"><%= sl("Personne") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium"><%= sl("Statut") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium"><%= sl("Temps travaillé") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium"><%= sl("Première / dernière activité") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium"><%= sl("Ce qui a été fait") %></th>
+          </tr></thead>
+          <tbody class="divide-y divide-[#f1f1f4]">
+            <% rows.each do |row| %>
+              <tr data-activity-row="<%= row.user.id %>" data-online="<%= row.online %>" data-worked="<%= row.worked_seconds %>">
+                <td class="whitespace-nowrap px-1.5 py-2.5">
+                  <div class="flex items-center gap-2.5">
+                    <span class="relative grid size-8 shrink-0 place-items-center rounded-full bg-[#f0f0f3] text-[10px] font-bold text-[#3a3a3c]"><%= (row.user.name.presence || row.user.email).to_s.strip.split(/\s+/).first(2).map { |part| part[0] }.join.upcase %><i class="absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full border-2 border-white <%= row.online ? "bg-[#2f9d5c]" : "bg-[#b9bcc4]" %>"></i></span>
+                    <div class="min-w-0">
+                      <p class="max-w-[9rem] truncate font-semibold text-[#1c1c1e]" dir="auto"><%= row.user.name.presence || row.user.email %></p>
+                      <span class="inline-block rounded-full px-1.5 text-[10px] font-medium <%= role_tones[row.role] %>"><%= role_names[row.role] %></span>
+                    </div>
+                  </div>
+                </td>
+                <td class="whitespace-nowrap px-1.5 py-2.5">
+                  <% if row.online %>
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-[#e3f3e8] px-2 py-0.5 text-[11px] font-medium text-[#2f7a4a]"><i class="size-1.5 rounded-full bg-[#2f9d5c]"></i><%= sl("Actif") %></span>
+                    <p class="mt-0.5 text-[10px] text-[#8e8e93]"><%= sl("Dernière action") %> <%= clock.(row.last_seen_at) %></p>
+                  <% else %>
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-[#efeff3] px-2 py-0.5 text-[11px] font-medium text-[#6e6e73]"><i class="size-1.5 rounded-full bg-[#b9bcc4]"></i><%= sl("Hors ligne") %></span>
+                    <p class="mt-0.5 text-[10px] text-[#8e8e93]"><%= row.last_seen_at ? "#{sl("Vu pour la dernière fois")} #{clock.(row.last_seen_at)}" : "—" %></p>
+                  <% end %>
+                </td>
+                <td class="whitespace-nowrap px-1.5 py-2.5 font-semibold tabular-nums text-[#1c1c1e]"><%= duration.(row.worked_seconds) %></td>
+                <td class="whitespace-nowrap px-1.5 py-2.5 tabular-nums text-[#3a3a3c]"><%= row.first_at ? "#{clock.(row.first_at)} – #{clock.(row.last_at)}" : "—" %></td>
+                <td class="whitespace-nowrap px-1.5 py-2.5">
+                  <% if (row.confirmed + row.calls + row.delivered).zero? %>
+                    <span class="text-[#8e8e93]">—</span>
+                  <% else %>
+                    <span class="flex flex-wrap gap-1">
+                      <% if row.confirmed.positive? %><span class="rounded-full bg-[#eee8fb] px-2 py-0.5 text-[11px] font-medium text-[#5b3fb0]" data-done="confirmed"><%= row.confirmed %> <%= sl("Confirmées") %></span><% end %>
+                      <% if row.calls.positive? %><span class="rounded-full bg-[#e6f0fd] px-2 py-0.5 text-[11px] font-medium text-[#2b5f9e]" data-done="calls"><%= row.calls %> <%= sl("Appels") %></span><% end %>
+                      <% if row.delivered.positive? %><span class="rounded-full bg-[#fdeadb] px-2 py-0.5 text-[11px] font-medium text-[#b4560f]" data-done="delivered"><%= row.delivered %> <%= sl("Livrées") %></span><% end %>
+                    </span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </div>
+</section>

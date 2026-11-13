@@ -28,6 +28,7 @@ module Morea
       {
         "fr" => "Protection des données personnelles",
         "en" => "Personal data protection",
+        "es" => "Protección de datos personales",
         "ar" => "حماية المعطيات الشخصية"
       }
     end
@@ -36,6 +37,7 @@ module Morea
       {
         "fr" => "Données personnelles",
         "en" => "Privacy",
+        "es" => "Datos personales",
         "ar" => "الخصوصية"
       }
     end

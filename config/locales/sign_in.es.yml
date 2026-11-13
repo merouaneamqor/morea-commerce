@@ -1,0 +1,24 @@
+es:
+  sign_in:
+    page_title: "Iniciar sesión — %{name}"
+    heading: "Iniciar sesión"
+    workspace_subtitle: "Inicia sesión en tu espacio Codify"
+    tenant_subtitle: "Accede a la administración del espacio %{name}"
+    back: "Volver al inicio"
+    language: "Idioma"
+    email: "Email"
+    password: "Contraseña"
+    workspace: "Dirección del espacio (opcional)"
+    workspace_help: "Si tu email está asociado a varios espacios, escribe el subdominio del espacio."
+    submit: "Iniciar sesión"
+    approval_note: "Tu cuenta estará accesible tras su aprobación. Usa la contraseña definida para tu cuenta en este espacio."
+    invalid: "Email o contraseña incorrectos."
+    welcome: "Bienvenido."
+    signed_out: "Has cerrado sesión."
+    aside:
+      chip: "Espacio seguro"
+      headline: "Gestiona todos tus pedidos desde una sola interfaz."
+      points:
+        - "Confirma, envía y sigue los pedidos con pago contra reembolso"
+        - "Stock, catálogo y equipo en un mismo lugar"
+        - "Datos separados y aislados para cada espacio"

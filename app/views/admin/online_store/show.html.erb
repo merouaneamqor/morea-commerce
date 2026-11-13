@@ -94,8 +94,8 @@
       <section class="admin-card">
         <div class="admin-card__header"><h2 class="admin-card__title">Preview storefront</h2></div>
         <div class="space-y-2 p-4">
-          <% { fr: "Français", en: "English", ar: "العربية" }.each do |locale, label| %>
-            <%= link_to "#{label} ↗", "#{@store.origin}/#{locale}", class: "admin-btn-secondary w-full", target: "_blank", rel: "noopener", data: { storefront_preview: locale } %>
+          <% Morea::Locales::AVAILABLE.each do |locale| %>
+            <%= link_to "#{Morea::Locales.label_for(locale)} ↗", "#{@store.origin}/#{locale}", class: "admin-btn-secondary w-full", target: "_blank", rel: "noopener", data: { storefront_preview: locale } %>
           <% end %>
         </div>
       </section>

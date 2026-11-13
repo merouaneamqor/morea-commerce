@@ -1,0 +1,646 @@
+# Texts of the seller workspace pages: the key is the French text, with its English, Arabic and Spanish translation.
+# sl() reads every file of this folder. spec/i18n_coverage_spec.rb fails when a text lacks a translation.
+Entonnoir par agent:
+  en: "Funnel by agent"
+  ar: "قمع التحويل حسب الوكيل"
+  es: "Embudo por agente"
+Essayez d'autres filtres.:
+  en: "Try other filters."
+  ar: "جرّب مرشحات أخرى."
+  es: "Prueba con otros filtros."
+Express international:
+  en: International express
+  ar: شحن دولي سريع
+  es: "Exprés internacional"
+Expédition:
+  en: Shipping
+  ar: الشحن
+  es: "Envío"
+Expédiées:
+  en: "Shipped"
+  ar: "مشحونة"
+  es: "Enviados"
+Face à la médiane de l'équipe:
+  en: "Versus the team median"
+  ar: "مقارنةً بوسيط الفريق"
+  es: "Frente a la mediana del equipo"
+Facturation:
+  en: Billing
+  ar: الفوترة
+  es: "Facturación"
+Faux numéro:
+  en: "Wrong number"
+  ar: "رقم خاطئ"
+  es: "Número falso"
+Faux numéros:
+  en: Wrong numbers
+  ar: أرقام خاطئة
+  es: "Números falsos"
+Fermer:
+  en: "Close"
+  ar: "إغلاق"
+  es: "Cerrar"
+Fidèles:
+  en: Loyal
+  ar: أوفياء
+  es: "Fieles"
+File d'attente:
+  en: Queue
+  ar: قائمة الانتظار
+  es: "Cola de espera"
+'File d''attente : depuis combien de temps ?':
+  en: "Queue: how long have they been waiting?"
+  ar: "قائمة الانتظار: منذ متى؟"
+  es: "Cola de espera: ¿desde hace cuánto tiempo?"
+Fournisseur:
+  en: Provider
+  ar: المزوّد
+  es: "Proveedor"
+Fournisseurs disponibles:
+  en: Available providers
+  ar: المزوّدون المتاحون
+  es: "Proveedores disponibles"
+Frais par colis livré:
+  en: Fee per delivered parcel
+  ar: الرسوم عن كل طرد مُسلَّم
+  es: "Tarifa por paquete entregado"
+Frais par colis retourné:
+  en: Fee per returned parcel
+  ar: الرسوم عن كل طرد مرتجَع
+  es: "Tarifa por paquete devuelto"
+Fulfillment, entrepôt et livraison:
+  en: Fulfillment, warehouse and delivery
+  ar: تخزين وتجهيز وتوصيل
+  es: "Fulfillment, almacén y entrega"
+Gratuit:
+  en: Free
+  ar: مجاني
+  es: "Gratis"
+Gérer les sociétés de livraison:
+  en: Manage delivery companies
+  ar: إدارة شركات التوصيل
+  es: "Gestionar las empresas de transporte"
+Gérez vos partenaires de livraison et leurs tarifs d'expédition.:
+  en: Manage your delivery partners and their shipping rates.
+  ar: أدِر شركاء التوصيل وأسعار الشحن.
+  es: "Gestiona tus socios de entrega y sus tarifas de envío."
+Inactif:
+  en: Inactive
+  ar: غير نشط
+  es: "Inactivo"
+Inactive:
+  en: "Inactive"
+  ar: "غير نشطة"
+  es: "Inactiva"
+Inactives:
+  en: Inactive
+  ar: غير نشطة
+  es: "Inactivas"
+Informations de base:
+  en: "Basic information"
+  ar: "المعلومات الأساسية"
+  es: "Información básica"
+Injoignable:
+  en: Unreachable
+  ar: لا يجيب
+  es: "No localizable"
+Interdit:
+  en: Not allowed
+  ar: ممنوع
+  es: "Prohibido"
+Intégrations API:
+  en: API integrations
+  ar: تكاملات API
+  es: "Integraciones API"
+J'ai déjà mes clés API:
+  en: I already have my API keys
+  ar: لديّ مفاتيح API
+  es: "Ya tengo mis claves API"
+Je continue jusqu'à:
+  en: I keep going to
+  ar: أواصل حتى
+  es: "Sigo hasta"
+Je suis ici:
+  en: I'm here
+  ar: أنا هنا
+  es: "Estoy aquí"
+Jointes par téléphone:
+  en: "Reached by phone"
+  ar: "تم الوصول إليهم هاتفيًا"
+  es: "Localizados por teléfono"
+Jour:
+  en: "Day"
+  ar: "اليوم"
+  es: "Día"
+L'app Shopify de seallo n'est pas encore configurée (clés dans le fichier .env).:
+  en: seallo's Shopify app is not configured yet (keys in the .env file).
+  ar: تطبيق Shopify الخاص بـ seallo غير مُعدّ بعد (المفاتيح في ملف ‎.env).
+  es: "La app Shopify de seallo aún no está configurada (claves en el archivo .env)."
+L'app YouCan de seallo n'est pas encore configurée (clés dans le fichier .env).:
+  en: seallo's YouCan app is not configured yet (keys in the .env file).
+  ar: تطبيق seallo على YouCan غير مُعَدّ بعد (المفاتيح في ملف .env).
+  es: "La app YouCan de seallo aún no está configurada (claves en el archivo .env)."
+L'application seallo n'est pas encore configurée pour cette plateforme (clés dans le fichier .env).:
+  en: seallo's app is not configured yet for this platform (keys in the .env file).
+  ar: تطبيق seallo غير مُعَدّ بعد لهذه المنصة (المفاتيح في ملف .env).
+  es: "La aplicación seallo aún no está configurada para esta plataforma (claves en el archivo .env)."
+La connexion de la boutique a été annulée.:
+  en: The store connection was cancelled.
+  ar: تم إلغاء ربط المتجر.
+  es: "Se canceló la conexión de la tienda."
+Le bénéfice par produit apparaît dès les premières livraisons.:
+  en: Profit by product appears with the first deliveries.
+  ar: يظهر الربح حسب المنتج مع أولى عمليات التسليم.
+  es: "El beneficio por producto aparece desde las primeras entregas."
+Le client peut ouvrir le colis avant de payer.:
+  en: The customer can open the parcel before paying.
+  ar: يمكن للزبون فتح الطرد قبل الدفع.
+  es: "El cliente puede abrir el paquete antes de pagar."
+Le pourcentage est la part qui passe à l'étape suivante.:
+  en: "The percentage is the share that moves on to the next step."
+  ar: "النسبة المئوية هي الحصة التي تنتقل إلى المرحلة التالية."
+  es: "El porcentaje es la parte que pasa al paso siguiente."
+? Le vert est meilleur que la médiane de l'équipe et le rouge moins bon, quel que soit le sens de l'indicateur. Cliquez sur un agent pour ouvrir son profil.
+: en: "Green is better than the team median and red is worse, whatever the direction of the indicator. Click an agent to open their profile."
+  ar: "الأخضر أفضل من وسيط الفريق والأحمر أسوأ منه، مهما كان اتجاه المؤشر. انقر على وكيل لفتح ملفه."
+  es: "El verde es mejor que la mediana del equipo y el rojo peor, sea cual sea el sentido del indicador. Haz clic en un agente para abrir su perfil."
+Leader:
+  en: Leader
+  ar: قائد
+  es: "Líder"
+Les agents face à la médiane de l'équipe:
+  en: "Agents versus the team median"
+  ar: "الوكلاء مقارنةً بوسيط الفريق"
+  es: "Los agentes frente a la mediana del equipo"
+? 'Les chiffres de l''agent à côté de la médiane de toute l''équipe, et l''écart entre les deux. Un bon écart est en vert et un mauvais en rouge, quel que soit le sens de l''indicateur : un délai plus court avant le premier appel est une bonne chose.'
+: en: "The agent's figures next to the median of the whole team, and the gap between the two. A good gap is green and a bad one is red, whatever the direction of the indicator: a shorter delay before the first call is a good thing."
+  ar: "أرقام الوكيل إلى جانب وسيط الفريق كله، والفارق بينهما. الفارق الجيد بالأخضر والسيئ بالأحمر، مهما كان اتجاه المؤشر: فمهلة أقصر قبل المكالمة الأولى أمر جيد."
+  es: "Las cifras del agente junto a la mediana de todo el equipo, y la diferencia entre ambas. Una buena diferencia aparece en verde y una mala en rojo, sea cual sea el sentido del indicador: un plazo más corto antes de la primera llamada es algo bueno."
+Les clients répondent le plus:
+  en: "When customers answer most"
+  ar: "متى يردّ الزبائن أكثر"
+  es: "Cuándo responden más los clientes"
+Les commandes confirmées, réparties selon où elles en sont. Les jours récents sont encore en route.:
+  en: "Confirmed orders, broken down by where they stand. Recent days are still on their way."
+  ar: "الطلبات المؤكدة، موزعة حسب مرحلتها. الأيام الأخيرة ما زالت في الطريق."
+  es: "Los pedidos confirmados, repartidos según su situación. Los días recientes aún están en camino."
+Les compléter:
+  en: Fill them in
+  ar: أكمِلها
+  es: "Completarlos"
+Les règles sont exécutées par ordre de priorité. Utilisez les flèches pour les réorganiser.:
+  en: "Rules are run in priority order. Use the arrows to reorder them."
+  ar: "تُنفَّذ القواعد حسب ترتيب الأولوية. استخدم الأسهم لإعادة ترتيبها."
+  es: "Las reglas se ejecutan por orden de prioridad. Usa las flechas para reordenarlas."
+? 'Les règles sont lues de haut en bas, par ordre de priorité. Quand une commande arrive, la première règle active dont les conditions correspondent choisit l''agent : parmi ses agents qui sont actifs et en ligne (leur pointage est ouvert), en parts égales (50/50 avec deux agents) ou selon le pourcentage de chacun, sur la journée de la boutique.'
+: en: "Rules are read from top to bottom, in priority order. When an order comes in, the first active rule whose conditions match picks the agent: among its agents who are active and online (their check-in is open), in equal shares (50/50 with two agents) or according to each one's percentage, over the store's day."
+  ar: "تُقرأ القواعد من الأعلى إلى الأسفل حسب الأولوية. عند وصول طلب، تختار أول قاعدة نشطة تنطبق شروطها الوكيل: من بين وكلائها النشطين والمتصلين (تسجيل حضورهم مفتوح)، بحصص متساوية (50/50 مع وكيلين) أو حسب نسبة كل منهم، خلال يوم المتجر."
+  es: "Las reglas se leen de arriba abajo, por orden de prioridad. Cuando llega un pedido, la primera regla activa cuyas condiciones coincidan elige al agente: entre sus agentes que están activos y en línea (su fichaje está abierto), a partes iguales (50/50 con dos agentes) o según el porcentaje de cada uno, durante la jornada de la tienda."
+Livraison:
+  en: Delivery
+  ar: التوصيل
+  es: "Entrega"
+Livraison au Maroc:
+  en: Delivery in Morocco
+  ar: توصيل في المغرب
+  es: "Entrega en Marruecos"
+Livraison contre remboursement en Tunisie:
+  en: Cash on delivery in Tunisia
+  ar: الدفع عند الاستلام في تونس
+  es: "Pago contra reembolso en Túnez"
+Livraison express:
+  en: Express delivery
+  ar: توصيل سريع
+  es: "Entrega exprés"
+Livraison fiable:
+  en: Reliable delivery
+  ar: توصيل موثوق
+  es: "Entrega fiable"
+Livraison moderne partout au Maroc:
+  en: Modern delivery across Morocco
+  ar: توصيل عصري في كل المغرب
+  es: "Entrega moderna en todo Marruecos"
+Livraison professionnelle:
+  en: Professional delivery
+  ar: توصيل احترافي
+  es: "Entrega profesional"
+Livraison rapide et fiable:
+  en: Fast and reliable delivery
+  ar: توصيل سريع وموثوق
+  es: "Entrega rápida y fiable"
+Livraison reportée:
+  en: "Postponed delivery"
+  ar: "توصيل مؤجَّل"
+  es: "Entrega aplazada"
+Livraison spécialisée e-commerce:
+  en: E-commerce delivery
+  ar: توصيل متخصص في التجارة الإلكترونية
+  es: "Entrega especializada en e-commerce"
+Livré depuis le début:
+  en: Delivered since the start
+  ar: المسلَّم منذ البداية
+  es: "Entregado desde el inicio"
+Livrée:
+  en: Delivered
+  ar: مُسلَّم
+  es: "Entregado"
+Livrées:
+  en: Delivered
+  ar: مُسلَّمة
+  es: "Entregados"
+Livrées pour 100 commandes:
+  en: "Delivered per 100 orders"
+  ar: "المسلَّم لكل 100 طلب"
+  es: "Entregados por cada 100 pedidos"
+Livrées sur confirmées:
+  en: "Delivered out of confirmed"
+  ar: "المسلَّم من المؤكَّد"
+  es: "Entregados sobre confirmados"
+Légende:
+  en: Legend
+  ar: أسطورة
+  es: "Leyenda"
+Manuelle:
+  en: "Manual"
+  ar: "يدوية"
+  es: "Manual"
+Maroc:
+  en: Morocco
+  ar: المغرب
+  es: "Marruecos"
+Masquer les paliers:
+  en: Hide the milestones
+  ar: إخفاء المراحل
+  es: "Ocultar los hitos"
+Maître:
+  en: Master
+  ar: أستاذ
+  es: "Maestro"
+Meilleure performance:
+  en: "Best performance"
+  ar: "أفضل أداء"
+  es: "Mejor rendimiento"
+Meilleurs produits:
+  en: Best products
+  ar: أفضل المنتجات
+  es: "Mejores productos"
+Mes statistiques:
+  en: My statistics
+  ar: إحصائياتي
+  es: "Mis estadísticas"
+Modifier:
+  en: Edit
+  ar: تعديل
+  es: "Editar"
+Modifier la règle:
+  en: "Edit rule"
+  ar: "تعديل القاعدة"
+  es: "Editar la regla"
+Moins d'1 h:
+  en: "Under 1 h"
+  ar: "أقل من ساعة"
+  es: "Menos de 1 h"
+Montant:
+  en: "Amount"
+  ar: "المبلغ"
+  es: "Importe"
+Montant maximum:
+  en: "Maximum amount"
+  ar: "المبلغ الأقصى"
+  es: "Importe máximo"
+Montant minimum:
+  en: "Minimum amount"
+  ar: "المبلغ الأدنى"
+  es: "Importe mínimo"
+Monter:
+  en: "Move up"
+  ar: "نقل لأعلى"
+  es: "Subir"
+Motifs écrits par les agents sur les commandes annulées.:
+  en: "Reasons written by agents on cancelled orders."
+  ar: "الأسباب التي دوّنها الوكلاء على الطلبات الملغاة."
+  es: "Motivos escritos por los agentes en los pedidos cancelados."
+Médiane:
+  en: "Median"
+  ar: "الوسيط"
+  es: "Mediana"
+Médiane de l'équipe:
+  en: "Team median"
+  ar: "وسيط الفريق"
+  es: "Mediana del equipo"
+Nom de la règle:
+  en: "Rule name"
+  ar: "اسم القاعدة"
+  es: "Nombre de la regla"
+Nom de la société:
+  en: Company name
+  ar: اسم الشركة
+  es: "Nombre de la empresa"
+Nom du compte:
+  en: Account name
+  ar: اسم الحساب
+  es: "Nombre de la cuenta"
+Nom, téléphone ou ville:
+  en: Name, phone or city
+  ar: الاسم أو الهاتف أو المدينة
+  es: "Nombre, teléfono o ciudad"
+Non attribuées:
+  en: "Unassigned"
+  ar: "غير معيَّنة"
+  es: "Sin asignar"
+Non confirmées:
+  en: "Unconfirmed"
+  ar: "غير مؤكدة"
+  es: "Sin confirmar"
+Non connectée:
+  en: Not connected
+  ar: غير مربوط
+  es: "No conectada"
+Non jointes:
+  en: "Not reached"
+  ar: "لم يتم الوصول إليهم"
+  es: "No localizados"
+Normal:
+  en: Normal
+  ar: عادي
+  es: "Normal"
+Nouveau:
+  en: New
+  ar: جديد
+  es: "Nuevo"
+Nouveaux:
+  en: New
+  ar: جدد
+  es: "Nuevos"
+Nouvelle:
+  en: New
+  ar: جديد
+  es: "Nueva"
+Nouvelles commandes:
+  en: "New orders"
+  ar: "طلبات جديدة"
+  es: "Pedidos nuevos"
+Nouvelles commandes et appels passés, par heure de la journée (heure de la boutique).:
+  en: "New orders and calls made, by hour of the day (store time)."
+  ar: "الطلبات الجديدة والمكالمات المنجزة، حسب ساعة اليوم (توقيت المتجر)."
+  es: "Pedidos nuevos y llamadas realizadas, por hora del día (hora de la tienda)."
+Ouvrir colis:
+  en: Open parcel
+  ar: فتح الطرد
+  es: "Abrir paquete"
+Ouvrir le colis:
+  en: Open the parcel
+  ar: فتح الطرد
+  es: "Abrir el paquete"
+Où en sont les commandes:
+  en: "Where orders stand"
+  ar: "أين وصلت الطلبات"
+  es: "En qué punto están los pedidos"
+Où en sont les commandes confirmées, de l'entrepôt au client.:
+  en: "Where confirmed orders stand, from the warehouse to the customer."
+  ar: "أين وصلت الطلبات المؤكدة، من المستودع إلى الزبون."
+  es: "En qué punto están los pedidos confirmados, del almacén al cliente."
+Où en sont les commandes de chaque agent:
+  en: "Where each agent's orders stand"
+  ar: "أين وصلت طلبات كل وكيل"
+  es: "En qué punto están los pedidos de cada agente"
+Où les commandes se perdent:
+  en: "Where orders are lost"
+  ar: "أين تضيع الطلبات"
+  es: "Dónde se pierden los pedidos"
+Palier maximal atteint:
+  en: Top tier reached
+  ar: تم بلوغ أعلى مرحلة
+  es: "Hito máximo alcanzado"
+Paliers de chiffre d'affaires:
+  en: Revenue milestones
+  ar: مراحل رقم المعاملات
+  es: "Hitos de facturación"
+Panier moyen:
+  en: Average basket
+  ar: متوسط السلة
+  es: "Carrito medio"
+Par pourcentage:
+  en: "By percentage"
+  ar: "حسب النسبة المئوية"
+  es: "Por porcentaje"
+Paramètres:
+  en: Settings
+  ar: الإعدادات
+  es: "Ajustes"
+'Part des appels décrochés à chaque heure : plus la courbe est haute, plus les clients répondent.':
+  en: "Share of calls answered at each hour: the higher the curve, the more customers answer."
+  ar: "حصة المكالمات المُجابة في كل ساعة: كلما ارتفع المنحنى، زاد ردّ الزبائن."
+  es: "Porcentaje de llamadas contestadas a cada hora: cuanto más alta es la curva, más responden los clientes."
+Part des appels décrochés, par jour et par heure (heure de la boutique). Plus c'est foncé, plus ils répondent.:
+  en: "Share of calls answered, by day and hour (store time). The darker it is, the more they answer."
+  ar: "حصة المكالمات المُجابة، حسب اليوم والساعة (توقيت المتجر). كلما كان اللون أغمق، زاد ردّهم."
+  es: "Porcentaje de llamadas contestadas, por día y hora (hora de la tienda). Cuanto más oscuro, más responden."
+Pas de transfert:
+  en: "No transfer"
+  ar: "بلا تحويل"
+  es: "Sin traspaso"
+Pas encore de ventes livrées sur cette période.:
+  en: No delivered sales in this period yet.
+  ar: لا توجد مبيعات مُسلَّمة في هذه الفترة بعد.
+  es: "Aún no hay ventas entregadas en este período."
+Pas encore expédiée:
+  en: "Not shipped yet"
+  ar: "لم تُشحن بعد"
+  es: "Aún sin enviar"
+Pas encore expédiées:
+  en: "Not shipped yet"
+  ar: "لم تُشحن بعد"
+  es: "Aún sin enviar"
+Pas ramassée:
+  en: "Not picked up"
+  ar: "لم تُستلم من المتجر"
+  es: "Sin recoger"
+Passer la commande à un autre agent actif et en ligne:
+  en: "Pass the order to another active, online agent"
+  ar: "تحويل الطلب إلى وكيل آخر نشط ومتصل"
+  es: "Pasar el pedido a otro agente activo y en línea"
+Pays pris en charge:
+  en: Supported countries
+  ar: الدول المدعومة
+  es: "Países admitidos"
+Performance:
+  en: "Performance"
+  ar: "الأداء"
+  es: "Rendimiento"
+Pionnier:
+  en: Pioneer
+  ar: رائد
+  es: "Pionero"
+Plan:
+  en: Plan
+  ar: الخطة
+  es: "Plan"
+Planifiez les rappels sur les meilleurs créneaux.:
+  en: "Schedule callbacks at the best time slots."
+  ar: "خطّط للمكالمات المعاد جدولتها في أفضل الأوقات."
+  es: "Planifica las rellamadas en las mejores franjas horarias."
+Planifiée:
+  en: "Scheduled"
+  ar: "مجدولة"
+  es: "Planificada"
+Plus anciennes:
+  en: "Oldest"
+  ar: "الأقدم"
+  es: "Más antiguos"
+Plus d'un jour:
+  en: "More than a day"
+  ar: "أكثر من يوم"
+  es: "Más de un día"
+Plus on appelle vite, plus on confirme:
+  en: "The faster you call, the more you confirm"
+  ar: "كلما اتصلت أسرع، أكّدت أكثر"
+  es: "Cuanto más rápido llamas, más confirmas"
+Plus récentes:
+  en: "Most recent"
+  ar: "الأحدث"
+  es: "Más recientes"
+Point relais et livraison à domicile:
+  en: Pickup point and home delivery
+  ar: نقطة استلام وتوصيل للمنزل
+  es: "Punto de recogida y entrega a domicilio"
+Pourquoi les clients annulent:
+  en: "Why customers cancel"
+  ar: "لماذا يلغي الزبائن"
+  es: "Por qué cancelan los clientes"
+Premier appel (médiane):
+  en: "First call (median)"
+  ar: "المكالمة الأولى (الوسيط)"
+  es: "Primera llamada (mediana)"
+Premium:
+  en: Premium
+  ar: مميّز
+  es: "Premium"
+Priorité:
+  en: "Priority"
+  ar: "الأولوية"
+  es: "Prioridad"
+Privilégier l'agent au meilleur taux de réussite.:
+  en: "Favour the agent with the best success rate."
+  ar: "تفضيل الوكيل صاحب أفضل نسبة نجاح."
+  es: "Dar preferencia al agente con la mejor tasa de éxito."
+Problème:
+  en: Problem
+  ar: مشكلة
+  es: "Problema"
+Prochain palier:
+  en: Next tier
+  ar: المرحلة التالية
+  es: "Siguiente hito"
+Produits:
+  en: Products
+  ar: المنتجات
+  es: "Productos"
+Profil:
+  en: Profile
+  ar: التصنيف
+  es: "Perfil"
+Profit:
+  en: Profit
+  ar: الربح
+  es: "Beneficio"
+Profit net:
+  en: Net profit
+  ar: صافي الربح
+  es: "Beneficio neto"
+Profit par produit:
+  en: Profit by product
+  ar: الربح حسب المنتج
+  es: "Beneficio por producto"
+Programmées:
+  en: Scheduled
+  ar: مجدولة
+  es: "Programadas"
+Précédent:
+  en: Previous
+  ar: السابق
+  es: "Anterior"
+Publicité:
+  en: Advertising
+  ar: الإعلانات
+  es: "Publicidad"
+Publicités:
+  en: Ads
+  ar: الإعلانات
+  es: "Publicidad"
+Période:
+  en: Period
+  ar: الفترة
+  es: "Período"
+Quand les clients répondent:
+  en: "When customers answer"
+  ar: "متى يردّ الزبائن"
+  es: "Cuándo responden los clientes"
+Rappel programmé:
+  en: "Scheduled callback"
+  ar: "مكالمة معاد جدولتها"
+  es: "Rellamada programada"
+Rechercher par ID de commande, nom client ou téléphone…:
+  en: "Search by order ID, customer name or phone…"
+  ar: "ابحث برقم الطلب أو اسم الزبون أو الهاتف…"
+  es: "Busca por ID de pedido, nombre del cliente o teléfono…"
+Rechercher par nom, code ou contact:
+  en: Search by name, code or contact
+  ar: ابحث بالاسم أو الرمز أو جهة الاتصال
+  es: "Busca por nombre, código o contacto"
+Rechercher un fournisseur…:
+  en: Search a provider…
+  ar: ابحث عن مزوّد…
+  es: "Busca un proveedor…"
+Rechercher une commande:
+  en: Search an order
+  ar: ابحث عن طلب
+  es: "Busca un pedido"
+Refusées:
+  en: Refused
+  ar: مرفوضة
+  es: "Rechazados"
+'Reliez vos outils à seallo : les commandes arrivent toutes seules, et le tableau de bord se remplit en temps réel.':
+  en: 'Connect your tools to seallo: orders arrive on their own and the dashboard fills in real time.'
+  ar: 'اربط أدواتك بـ seallo: تصل الطلبات وحدها وتمتلئ لوحة التحكم مباشرة.'
+  es: "Conecta tus herramientas a seallo: los pedidos llegan solos y el panel se actualiza en tiempo real."
+Reportée:
+  en: Postponed
+  ar: مؤجَّلة
+  es: "Aplazada"
+Retour:
+  en: Returned
+  ar: مرتجَع
+  es: "Devuelto"
+Retournée:
+  en: Returned
+  ar: مُرتجَعة
+  es: "Devuelta"
+Retournées:
+  en: "Returned"
+  ar: "مرتجَعة"
+  es: "Devueltos"
+Retours:
+  en: Returns
+  ar: المرتجَعات
+  es: "Devoluciones"
+Reçues:
+  en: "Received"
+  ar: "مستلمة"
+  es: "Recibidos"
+Rupture:
+  en: Out of stock
+  ar: نفد المخزون
+  es: "Sin stock"
+Règle active:
+  en: "Active rule"
+  ar: "قاعدة نشطة"
+  es: "Regla activa"
+Règles actives:
+  en: "Active rules"
+  ar: "قواعد نشطة"
+  es: "Reglas activas"
+Règles d'attribution:
+  en: Assignment rules
+  ar: قواعد التعيين
+  es: "Reglas de asignación"

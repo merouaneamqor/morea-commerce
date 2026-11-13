@@ -6,7 +6,7 @@
 <% currency = current_store.currency.to_s.upcase == "DH" ? "MAD" : current_store.currency.to_s.upcase %>
 <% tags = { "loyal" => [ "Client fidèle", "bg-[#e3f3e8] text-[#2f7a4a]" ], "at_risk" => [ "À risque", "bg-[#fbe7ea] text-[#b4344e]" ], "new" => [ "Nouveau", "bg-[#ebe9fb] text-[#4b4b50]" ] } %>
 <% tabs = [ [ "all", nil, "Tous", "text-[#1c1c1e]" ], [ "loyal", "loyal", "Fidèles", "text-[#2f7a4a]" ], [ "at_risk", "risky", "À risque", "text-[#b4344e]" ], [ "new", "new", "Nouveaux", "text-[#4b4b50]" ] ] %>
-<% locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>
+<% locale_tag = { "ar" => "ar-MA", "en" => "en-GB", "es" => "es-ES" }.fetch(I18n.locale.to_s, "fr-FR") %>
 <% first_row = (@page - 1) * Admin::CustomersController::PER_PAGE + 1 %>
 <% page_path = ->(page) { admin_customers_path(segment: (@segment == "at_risk" ? "risky" : @segment), q: params[:q].presence, page: (page > 1 ? page : nil)) } %>
 

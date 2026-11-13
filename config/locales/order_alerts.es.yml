@@ -1,0 +1,6 @@
+es:
+  admin:
+    order_alerts:
+      "on": "Alertas de pedidos activadas"
+      "off": "Alertas de pedidos"
+      blocked: "Las notificaciones están bloqueadas en este navegador"

@@ -8,12 +8,13 @@
 <% usd_note = ->(usd) { cur == Plans.reference_currency ? "" : " (#{Plans.money(usd, Plans.reference_currency)})" } %>
 <% trial_date = tag.time(@store.trial_ends_at.to_date.iso8601, datetime: @store.trial_ends_at.to_date.iso8601, data: { long_date: true }) %>
 <% methods = [["transfer", "Virement bancaire", "Activation sous 24 h"], ["card", "Carte bancaire", Plans.card_enabled? ? "Visa, Mastercard, CMI" : "Bientôt disponible"]] %>
-<main class="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-16 sm:px-6" data-payment data-locale="<%= { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>"
+<main class="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-16 sm:px-6" data-payment data-locale="<%= { "ar" => "ar-MA", "en" => "en-GB", "es" => "es-ES" }.fetch(I18n.locale.to_s, "fr-FR") %>"
       data-copied="<%= st("Copié ✓") %>" data-copy="<%= st("Copier") %>">
   <%= render "signups/steps", current: 3, links: { 2 => plans_path } %>
 
   <h1 class="mt-8 text-4xl font-extrabold tracking-tight text-[#1c1c1e] sm:text-5xl">
     <% if I18n.locale.to_s == "en" %>Complete your <span class="text-[#1d1d1f]">subscription.</span>
+    <% elsif I18n.locale.to_s == "es" %>Finaliza tu <span class="text-[#1d1d1f]">suscripción.</span>
     <% elsif I18n.locale.to_s == "ar" %>أكمل <span class="text-[#1d1d1f]">اشتراكك.</span>
     <% else %>Finalisez votre <span class="text-[#1d1d1f]">abonnement.</span>
     <% end %>

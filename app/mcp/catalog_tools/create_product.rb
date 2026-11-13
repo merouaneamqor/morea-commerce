@@ -11,7 +11,7 @@ module CatalogTools
           items: {
             type: "object",
             properties: {
-              locale: { type: "string", enum: %w[fr en ar] },
+              locale: { type: "string", enum: Morea::Locales::AVAILABLE.map(&:to_s) },
               name: { type: "string" },
               shortDescription: { type: "string" },
               story: { type: "string" },

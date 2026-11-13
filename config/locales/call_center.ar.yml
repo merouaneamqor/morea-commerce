@@ -7,6 +7,7 @@ ar:
       assigned: "إجمالي المسندة"
       assigned_hint: "طلبات بيدك أو اتصلت بها"
       pending: "في الانتظار"
+      unreachable: "لا يجيبون"
       pending_hint: "بانتظار التأكيد"
       failed: "توصيلات فاشلة"
       failed_hint: "فشل التوصيل"

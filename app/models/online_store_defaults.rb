@@ -48,18 +48,20 @@ class OnlineStoreDefaults
   def pages
     phone = store.phone.presence
     email = store.email.presence
-    contact = { "fr" => [ phone, email ].compact.join(" ou "), "en" => [ phone, email ].compact.join(" or "), "ar" => [ phone, email ].compact.join(" أو ") }
+    contact = { "fr" => [ phone, email ].compact.join(" ou "), "en" => [ phone, email ].compact.join(" or "), "es" => [ phone, email ].compact.join(" o "), "ar" => [ phone, email ].compact.join(" أو ") }
 
     [
       page("about", LOCALES.index_with { |loc| { title: Morea::OurStory::TITLES[loc], body: Morea::OurStory::BODIES[loc] } }),
       page("shipping", {
         "fr" => { title: "Livraison & paiement", body: "Nous livrons partout au Maroc.\n\nLe paiement se fait à la livraison. #{store_text("fr", :cod_note)}" },
         "en" => { title: "Shipping & payment", body: "We deliver across Morocco.\n\nYou pay on delivery. #{store_text("en", :cod_note)}" },
+        "es" => { title: "Entrega y pago", body: "Entregamos en todo Marruecos.\n\nEl pago se realiza en el momento de la entrega. #{store_text("es", :cod_note)}" },
         "ar" => { title: "التوصيل والدفع", body: "نوصل إلى جميع أنحاء المغرب.\n\nالدفع عند الاستلام. #{store_text("ar", :cod_note)}" }
       }),
       page("returns", {
         "fr" => { title: "Retours", body: "Vous disposez de 7 jours après réception pour nous retourner un article.\n\nContactez-nous au #{contact["fr"]} pour organiser le retour." },
         "en" => { title: "Returns", body: "You have 7 days after delivery to return an item.\n\nContact us at #{contact["en"]} to arrange your return." },
+        "es" => { title: "Devoluciones", body: "Dispones de 7 días desde la recepción para devolvernos un artículo.\n\nContáctanos en #{contact["es"]} para organizar la devolución." },
         "ar" => { title: "الإرجاع", body: "لديكم 7 أيام بعد الاستلام لإرجاع أي قطعة.\n\nتواصلوا معنا على #{contact["ar"]} لترتيب الإرجاع." }
       }),
       page("privacy", privacy_page_translations)
@@ -71,12 +73,12 @@ class OnlineStoreDefaults
     header = [
       [ "collections", ->(loc) { t(loc, "nav.shop") } ],
       ([ "collection:#{collection.slug}", ->(loc) { collection.translation_for(loc)&.name.presence || collection.name } ] if collection),
-      [ "page:about", ->(loc) { { "fr" => "Notre histoire", "en" => "Our story", "ar" => "قصتنا" }[loc] } ]
+      [ "page:about", ->(loc) { { "fr" => "Notre histoire", "en" => "Our story", "es" => "Nuestra historia", "ar" => "قصتنا" }[loc] } ]
     ].compact
     footer = [
       [ "page:privacy", ->(loc) { Morea::PrivacyPolicy.menu_labels[loc] } ],
-      [ "page:shipping", ->(loc) { { "fr" => "Livraison & paiement", "en" => "Shipping & payment", "ar" => "التوصيل والدفع" }[loc] } ],
-      [ "page:returns", ->(loc) { { "fr" => "Retours", "en" => "Returns", "ar" => "الإرجاع" }[loc] } ],
+      [ "page:shipping", ->(loc) { { "fr" => "Livraison & paiement", "en" => "Shipping & payment", "es" => "Entrega y pago", "ar" => "التوصيل والدفع" }[loc] } ],
+      [ "page:returns", ->(loc) { { "fr" => "Retours", "en" => "Returns", "es" => "Devoluciones", "ar" => "الإرجاع" }[loc] } ],
       [ "track", ->(loc) { t(loc, "nav.track_order") } ],
       [ "https://www.instagram.com/morea.style/", ->(_) { "Instagram" } ]
     ]

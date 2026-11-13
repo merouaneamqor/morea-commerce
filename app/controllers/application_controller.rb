@@ -78,7 +78,7 @@ class ApplicationController < ActionController::Base
   end
 
   def storefront_request?
-    request.path == "/" || request.path == "/sitemap.xml" || request.path.match?(%r{\A/(?:fr|en|ar)(?:/|\z)}) || request.path == "/consent/tracking"
+    request.path == "/" || request.path == "/sitemap.xml" || request.path.match?(%r{\A/(?:fr|en|es|ar)(?:/|\z)}) || request.path == "/consent/tracking"
   end
 
   # Apex (ollazen.com / www) hosts the SaaS platform, not a storefront.

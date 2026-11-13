@@ -41,3 +41,5 @@ gem "mcp"
 gem "web-push", "~> 3.0"
 gem "activeadmin", "~> 3.4"
 gem "dartsass-rails", "~> 0.5"
+
+gem "rails-i18n", "~> 8.0"

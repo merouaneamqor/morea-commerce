@@ -3,65 +3,11 @@
 # The seller workspace shell (sidebar, header) and the copy of its pages, ported from seallo.
 # Strings are written in French, as on seallo, and translated through the same dictionary.
 module SellerHelper
-  SELLER_DICTIONARY = JSON.parse(Rails.root.join("config/seller_dictionary.json").read).freeze
+  # Every text of the seller pages, written in French (the key), with its English, Arabic and Spanish translation: config/seller_labels/*.yml.
+  SELLER_LABELS = Dir[Rails.root.join("config/seller_labels/*.yml")].sort.each_with_object({}) { |file, labels| labels.merge!(YAML.safe_load_file(file)) }.freeze
 
-  # Words that exist only in Morea (seallo has no such page): [English, Arabic].
-  SELLER_EXTRA = {
-    "Comptabilité" => [ "Accounting", "المحاسبة" ],
-    "Paliers de chiffre d'affaires" => [ "Revenue milestones", "مراحل رقم المعاملات" ],
-    "Livré depuis le début" => [ "Delivered since the start", "المسلَّم منذ البداية" ],
-    "Débutant" => [ "Beginner", "مبتدئ" ],
-    "Distribution des commandes" => [ "Order distribution", "توزيع الطلبات" ],
-    "Commandes de la période" => [ "Orders of the period", "طلبات الفترة" ],
-    "Confirmation" => [ "Confirmation", "التأكيد" ],
-    "Centre d'appels" => [ "Call center", "مركز الاتصال" ],
-    "File d'attente" => [ "Queue", "قائمة الانتظار" ],
-    "Analyses" => [ "Analytics", "التحليلات" ],
-    "Attributions" => [ "Assignments", "التعيينات" ],
-    "Règles d'attribution" => [ "Assignment rules", "قواعد التعيين" ],
-    "Facturation" => [ "Billing", "الفوترة" ],
-    "Expédition" => [ "Shipping", "الشحن" ],
-    "Programmées" => [ "Scheduled", "مجدولة" ],
-    "Faux numéros" => [ "Wrong numbers", "أرقام خاطئة" ],
-    "À expédier" => [ "To ship", "للشحن" ],
-    "En transit" => [ "In transit", "في الطريق" ],
-    "Problème" => [ "Problem", "مشكلة" ],
-    "Meilleurs produits" => [ "Best products", "أفضل المنتجات" ],
-    "Ventes livrées par produit, hors livraison" => [ "Delivered sales by product, delivery excluded", "المبيعات المسلّمة لكل منتج دون التوصيل" ],
-    "Aucune vente livrée sur la période." => [ "No delivered sale in the period.", "لا مبيعات مسلّمة في الفترة." ],
-    "commandes" => [ "orders", "طلبات" ],
-    "commande" => [ "order", "طلب" ],
-    "Réduire le menu" => [ "Collapse the menu", "طيّ القائمة" ],
-    "Agrandir le menu" => [ "Expand the menu", "توسيع القائمة" ],
-    "Je suis ici" => [ "I'm here", "أنا هنا" ],
-    "Je continue jusqu'à" => [ "I keep going to", "أواصل حتى" ],
-    "Masquer les paliers" => [ "Hide the milestones", "إخفاء المراحل" ],
-    "Afficher les paliers" => [ "Show the milestones", "إظهار المراحل" ],
-    "Prochain palier" => [ "Next tier", "المرحلة التالية" ],
-    "Palier maximal atteint" => [ "Top tier reached", "تم بلوغ أعلى مرحلة" ],
-    "avant" => [ "to", "قبل" ],
-    "Pionnier" => [ "Pioneer", "رائد" ],
-    "Doyen" => [ "Veteran", "عميد" ],
-    "Leader" => [ "Leader", "قائد" ],
-    "Maître" => [ "Master", "أستاذ" ],
-    "Légende" => [ "Legend", "أسطورة" ],
-    "Titan" => [ "Titan", "عملاق" ],
-    "Taux de confirmation" => [ "Confirmation rate", "نسبة التأكيد" ],
-    "Panier moyen" => [ "Average basket", "متوسط السلة" ],
-    "Taux de retour" => [ "Return rate", "نسبة الإرجاع" ],
-    "retournées" => [ "returned", "مرتجعة" ],
-    "Commandes livrées" => [ "Delivered orders", "الطلبات المسلّمة" ],
-    "commandes livrées" => [ "delivered orders", "طلبات مسلّمة" ],
-    "Toutes les commandes" => [ "All orders", "كل الطلبات" ],
-    "Stock faible" => [ "Low stock", "مخزون منخفض" ],
-    "Rupture" => [ "Out of stock", "نفد المخزون" ],
-    "pcs" => [ "pcs", "قطعة" ],
-    "Voir les produits" => [ "See products", "عرض المنتجات" ],
-    "Aucun article sous le seuil." => [ "No article below the threshold.", "لا توجد منتجات تحت الحد." ],
-    "Articles à" => [ "Articles at", "منتجات عند" ],
-    "pièces ou moins" => [ "pieces or fewer", "قطع أو أقل" ],
-    "confirmées" => [ "confirmed", "مؤكدة" ]
-  }.freeze
+  # The French texts asked for in another language that have no translation (filled in tests only, to catch a forgotten text).
+  def self.untranslated = (@untranslated ||= Set.new)
 
   SELLER_ICONS = {
     home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
@@ -136,10 +82,9 @@ module SellerHelper
   def sl(french)
     return french if I18n.locale == :fr
 
-    pair = SELLER_DICTIONARY[french] || SELLER_EXTRA[french]
-    return french unless pair
-
-    I18n.locale == :en ? pair[0] : pair[1]
+    text = SELLER_LABELS.dig(french, I18n.locale.to_s).presence
+    SellerHelper.untranslated << [ I18n.locale, french ] if text.nil? && Rails.env.test?
+    text || french
   end
 
   def seller_icon(name, size: 18)

@@ -113,7 +113,7 @@ Rails.application.routes.draw do
     "/#{locale}"
   }
 
-  scope "/:locale", locale: /fr|en|ar/ do
+  scope "/:locale", locale: /fr|en|es|ar/ do
     get "/", to: "home#index", as: :localized_root
     resources :collections, only: %i[index show], param: :slug
     resources :products, only: %i[show], param: :slug

@@ -1,0 +1,646 @@
+# Texts of the seller workspace pages: the key is the French text, with its English, Arabic and Spanish translation.
+# sl() reads every file of this folder. spec/i18n_coverage_spec.rb fails when a text lacks a translation.
+1 à 6 h:
+  en: "1 to 6 h"
+  ar: "من 1 إلى 6 ساعات"
+  es: "De 1 a 6 h"
+15–60 min:
+  en: "15–60 min"
+  ar: "15–60 دقيقة"
+  es: "15–60 min"
+1–3 h:
+  en: "1–3 h"
+  ar: "1–3 ساعات"
+  es: "1–3 h"
+30 derniers jours:
+  en: Last 30 days
+  ar: آخر 30 يومًا
+  es: "Últimos 30 días"
+3–24 h:
+  en: "3–24 h"
+  ar: "3–24 ساعة"
+  es: "3–24 h"
+6 à 24 h:
+  en: "6 to 24 h"
+  ar: "من 6 إلى 24 ساعة"
+  es: "De 6 a 24 h"
+7 derniers jours:
+  en: Last 7 days
+  ar: آخر 7 أيام
+  es: "Últimos 7 días"
+"< 15 min":
+  en: "< 15 min"
+  ar: "أقل من 15 دقيقة"
+  es: "< 15 min"
+"> 1 jour":
+  en: "More than 1 day"
+  ar: "أكثر من يوم"
+  es: "Más de 1 día"
+API connectée:
+  en: API connected
+  ar: API مربوط
+  es: "API conectada"
+Actif:
+  en: Active
+  ar: نشط
+  es: "Activo"
+Actions:
+  en: Actions
+  ar: إجراءات
+  es: "Acciones"
+Active:
+  en: "Active"
+  ar: "نشطة"
+  es: "Activa"
+Actives:
+  en: Active
+  ar: نشطة
+  es: "Activas"
+Adresse de votre boutique Shopify:
+  en: Your Shopify store address
+  ar: عنوان متجرك على Shopify
+  es: "Dirección de tu tienda Shopify"
+Adresse de votre site WooCommerce:
+  en: Your WooCommerce site address
+  ar: عنوان موقعك على WooCommerce
+  es: "Dirección de tu sitio WooCommerce"
+Affichage de:
+  en: Showing
+  ar: عرض
+  es: "Mostrando"
+Afficher les paliers:
+  en: Show the milestones
+  ar: إظهار المراحل
+  es: "Mostrar los niveles"
+Afrique:
+  en: Africa
+  ar: إفريقيا
+  es: "África"
+Agent:
+  en: "Agent"
+  ar: "الوكيل"
+  es: "Agente"
+Agents:
+  en: Agents
+  ar: الوكلاء
+  es: "Agentes"
+Agrandir le menu:
+  en: Expand the menu
+  ar: توسيع القائمة
+  es: "Ampliar el menú"
+Ajouter la société:
+  en: Add the company
+  ar: إضافة الشركة
+  es: "Añadir la empresa"
+Ajouter une société:
+  en: Add a company
+  ar: إضافة شركة
+  es: "Añadir una empresa"
+Ajoutez vos comptes de livraison, leurs tarifs et leur ville de ramassage.:
+  en: Add your delivery accounts, their rates and pickup city.
+  ar: أضف حسابات التوصيل وأسعارها ومدينة الاستلام.
+  es: "Añade tus cuentas de entrega, sus tarifas y su ciudad de recogida."
+Ajoutez votre compte Sendit, Ozon Express, Cathedis… pour envoyer vos colis et suivre leur livraison.:
+  en: Add your Sendit, Ozon Express, Cathedis… account to ship your parcels and track their delivery.
+  ar: أضف حسابك في Sendit أو Ozon Express أو Cathedis… لإرسال طرودك وتتبّعها.
+  es: "Añade tu cuenta de Sendit, Ozon Express, Cathedis… para enviar tus paquetes y seguir su entrega."
+Aléatoire:
+  en: "Random"
+  ar: "عشوائي"
+  es: "Aleatorio"
+Amérique:
+  en: America
+  ar: أمريكا
+  es: "América"
+Analyses:
+  en: Analytics
+  ar: التحليلات
+  es: "Análisis"
+Annuler:
+  en: "Cancel"
+  ar: "إلغاء"
+  es: "Cancelar"
+Annulée:
+  en: Cancelled
+  ar: ملغاة
+  es: "Cancelada"
+Annulée après confirmation:
+  en: "Cancelled after confirmation"
+  ar: "ملغاة بعد التأكيد"
+  es: "Cancelada tras la confirmación"
+Annulées:
+  en: Cancelled
+  ar: ملغاة
+  es: "Canceladas"
+Aperçu des agents:
+  en: "Agents overview"
+  ar: "نظرة عامة على الوكلاء"
+  es: "Resumen de los agentes"
+Appel:
+  en: "Call"
+  ar: "مكالمة"
+  es: "Llamada"
+Appel 5 ou plus:
+  en: "Call 5 or more"
+  ar: "المكالمة 5 فأكثر"
+  es: "Llamada 5 o más"
+Appel abandonné:
+  en: "Abandoned call"
+  ar: "مكالمة متروكة"
+  es: "Llamada abandonada"
+Appelez-les en premier.:
+  en: "Call them first."
+  ar: "اتصل بهم أولًا."
+  es: "Llámalos primero."
+Appels:
+  en: "Calls"
+  ar: "المكالمات"
+  es: "Llamadas"
+Appels manqués:
+  en: "Missed calls"
+  ar: "مكالمات فائتة"
+  es: "Llamadas perdidas"
+Appelées en:
+  en: "Called in"
+  ar: "تم الاتصال بها في"
+  es: "Llamados en"
+Articles à:
+  en: Articles at
+  ar: منتجات عند
+  es: "Productos con"
+Assignées:
+  en: "Assigned"
+  ar: "معيّنة"
+  es: "Asignados"
+Attribuer au hasard parmi les agents qualifiés.:
+  en: "Assign at random among qualified agents."
+  ar: "عيّن عشوائيًا بين الوكلاء المؤهلين."
+  es: "Asigna al azar entre los agentes cualificados."
+Attribuer à:
+  en: "Assign to"
+  ar: "تعيين إلى"
+  es: "Asignar a"
+Attribuer à l'agent qui a le moins de commandes en attente.:
+  en: "Assign to the agent with the fewest pending orders."
+  ar: "عيّن للوكيل الذي لديه أقل عدد من الطلبات المعلّقة."
+  es: "Asigna al agente con menos pedidos pendientes."
+Attribution automatique chaque minute:
+  en: "Automatic assignment every minute"
+  ar: "تعيين تلقائي كل دقيقة"
+  es: "Asignación automática cada minuto"
+Attributions:
+  en: Assignments
+  ar: التعيينات
+  es: "Asignaciones"
+Aucun agent de confirmation. Ajoutez-en dans Équipe.:
+  en: "No confirmation agent. Add some in Team."
+  ar: "لا يوجد وكيل تأكيد. أضف وكلاء من قسم الفريق."
+  es: "Ningún agente de confirmación. Añade alguno en Equipo."
+Aucun agent n'a eu de commande sur cette période.:
+  en: "No agent had an order in this period."
+  ar: "لم يحصل أي وكيل على طلب في هذه الفترة."
+  es: "Ningún agente ha tenido pedidos en este periodo."
+Aucun agent pour cette boutique.:
+  en: "No agent for this store."
+  ar: "لا يوجد وكيل لهذا المتجر."
+  es: "Ningún agente para esta tienda."
+Aucun article sous le seuil.:
+  en: No article below the threshold.
+  ar: لا توجد منتجات تحت الحد.
+  es: "Ningún producto por debajo del umbral."
+Aucun client ne correspond.:
+  en: No customer matches.
+  ar: لا يوجد زبون مطابق.
+  es: "Ningún cliente coincide."
+Aucun client pour le moment.:
+  en: No customers yet.
+  ar: لا يوجد زبائن حتى الآن.
+  es: "Todavía no hay clientes."
+Aucun maximum:
+  en: "No maximum"
+  ar: "بلا حد أقصى"
+  es: "Sin máximo"
+Aucun minimum:
+  en: "No minimum"
+  ar: "بلا حد أدنى"
+  es: "Sin mínimo"
+Aucun échec de livraison sur cette période.:
+  en: "No delivery failure in this period."
+  ar: "لا يوجد فشل في التوصيل خلال هذه الفترة."
+  es: "Ningún fallo de entrega en este periodo."
+Aucune commande annulée sur cette période.:
+  en: "No cancelled order in this period."
+  ar: "لا توجد طلبات ملغاة خلال هذه الفترة."
+  es: "Ningún pedido cancelado en este periodo."
+Aucune commande en attente de confirmation.:
+  en: No orders waiting for confirmation.
+  ar: لا توجد طلبات في انتظار التأكيد.
+  es: "Ningún pedido pendiente de confirmación."
+Aucune commande en attente non attribuée.:
+  en: "No pending unassigned order."
+  ar: "لا توجد طلبات معلّقة غير معيّنة."
+  es: "Ningún pedido pendiente sin asignar."
+Aucune commande ne correspond à ces filtres:
+  en: "No order matches these filters"
+  ar: "لا يوجد طلب مطابق لهذه المرشحات"
+  es: "Ningún pedido coincide con estos filtros"
+Aucune règle pour l'instant. Créez-en une pour répartir automatiquement les commandes entre vos agents.:
+  en: "No rule yet. Create one to automatically distribute orders among your agents."
+  ar: "لا توجد قواعد حاليًا. أنشئ قاعدة لتوزيع الطلبات تلقائيًا بين وكلائك."
+  es: "Aún no hay reglas. Crea una para repartir automáticamente los pedidos entre tus agentes."
+Aucune société de livraison pour le moment.:
+  en: No delivery company yet.
+  ar: لا توجد شركة توصيل حتى الآن.
+  es: "Todavía no hay ninguna empresa de transporte."
+Aucune vente livrée sur la période.:
+  en: No delivered sale in the period.
+  ar: لا مبيعات مسلّمة في الفترة.
+  es: "Ninguna venta entregada en el periodo."
+Aujourd'hui:
+  en: Today
+  ar: اليوم
+  es: "Hoy"
+Auto-attribuer tout:
+  en: "Auto-assign all"
+  ar: "تعيين الكل تلقائيًا"
+  es: "Autoasignar todo"
+Automatisation:
+  en: "Automation"
+  ar: "الأتمتة"
+  es: "Automatización"
+Autorisé:
+  en: Allowed
+  ar: مسموح
+  es: "Permitido"
+Autre société:
+  en: Other company
+  ar: شركة أخرى
+  es: "Otra empresa"
+Autres motifs:
+  en: "Other reasons"
+  ar: "أسباب أخرى"
+  es: "Otros motivos"
+Bientôt disponible:
+  en: Coming soon
+  ar: قريبًا
+  es: "Próximamente"
+Bonjour:
+  en: Hello
+  ar: مرحبًا
+  es: "Hola"
+Boutique Shopify connectée. Import des produits et commandes en cours…:
+  en: Shopify store connected. Importing products and orders…
+  ar: تمّ ربط متجر Shopify. جارٍ استيراد المنتجات والطلبات…
+  es: "Tienda Shopify conectada. Importando productos y pedidos…"
+Boutique connectée. Import des produits et commandes en cours…:
+  en: Store connected. Importing products and orders…
+  ar: تم ربط المتجر. جارٍ استيراد المنتجات والطلبات…
+  es: "Tienda conectada. Importando productos y pedidos…"
+Boutique déconnectée. Vos commandes déjà reçues sont gardées.:
+  en: Store disconnected. Orders already received are kept.
+  ar: تم فصل المتجر. الطلبات التي وصلت تبقى محفوظة.
+  es: "Tienda desconectada. Los pedidos ya recibidos se conservan."
+Boutique en ligne:
+  en: Online store
+  ar: المتجر الإلكتروني
+  es: "Tienda online"
+Ce qui s'est passé lors des appels passés sur la période.:
+  en: "What happened during the calls made in the period."
+  ar: "ما حدث في المكالمات التي أُجريت خلال الفترة."
+  es: "Lo que ocurrió en las llamadas realizadas durante el periodo."
+Centre d'appels:
+  en: Call center
+  ar: مركز الاتصال
+  es: "Centro de llamadas"
+Cette boutique Shopify est déjà reliée à un autre compte seallo.:
+  en: This Shopify store is already linked to another seallo account.
+  ar: هذا المتجر مرتبط بحساب seallo آخر.
+  es: "Esta tienda Shopify ya está vinculada a otra cuenta de seallo."
+Cette boutique est déjà reliée à un autre compte seallo.:
+  en: This store is already linked to another seallo account.
+  ar: هذا المتجر مربوط بحساب seallo آخر.
+  es: "Esta tienda ya está vinculada a otra cuenta de seallo."
+'Chaque barre est un jour : la partie verte est confirmée.':
+  en: "Each bar is a day: the green part is confirmed."
+  ar: "كل شريط يمثل يومًا: الجزء الأخضر هو المؤكَّد."
+  es: "Cada barra es un día: la parte verde es la confirmada."
+'Chaque barre est une part des commandes assignées à l''agent : les formes se comparent même quand les volumes diffèrent.':
+  en: "Each bar is a share of the orders assigned to the agent: shapes can be compared even when volumes differ."
+  ar: "كل شريط يمثل حصة من الطلبات المعيّنة للوكيل: يمكن مقارنة الأشكال حتى عندما تختلف الأحجام."
+  es: "Cada barra es una parte de los pedidos asignados al agente: las formas se pueden comparar aunque los volúmenes difieran."
+Chaque commande appelée sur la période, selon ce qu'elle est devenue.:
+  en: "Every order called in the period, by what it became."
+  ar: "كل طلب تم الاتصال به خلال الفترة، حسب ما آل إليه."
+  es: "Cada pedido llamado en el periodo, según en qué se convirtió."
+Chaque commande reçue sur la période, selon ce qu'elle est devenue.:
+  en: "Every order received in the period, by what it became."
+  ar: "كل طلب وصل خلال الفترة، حسب ما آل إليه."
+  es: "Cada pedido recibido en el periodo, según en qué se convirtió."
+Chaque numéro de téléphone est un client. La liste se remplit toute seule avec vos commandes.:
+  en: Each phone number is a customer. The list fills itself from your orders.
+  ar: كل رقم هاتف زبون. تمتلئ القائمة وحدها من طلباتك.
+  es: "Cada número de teléfono es un cliente. La lista se rellena sola con tus pedidos."
+Charge:
+  en: "Workload"
+  ar: "عبء العمل"
+  es: "Carga"
+? Charge de travail et statut actuels. Actif = l'agent a pointé son arrivée. La charge est le nombre de commandes en attente qui lui sont attribuées, sur une capacité de
+: en: "Current workload and status. Active = the agent has checked in. The workload is the number of pending orders assigned to them, out of a capacity of"
+  ar: "عبء العمل والحالة الحالية. نشط = الوكيل سجّل حضوره. عبء العمل هو عدد الطلبات المعلّقة المعيّنة له، من أصل سعة قدرها"
+  es: "Carga de trabajo y estado actuales. Activo = el agente ha fichado la entrada. La carga es el número de pedidos pendientes que tiene asignados, sobre una capacidad de"
+Charge et appels par heure:
+  en: "Workload and calls per hour"
+  ar: "عبء العمل والمكالمات في الساعة"
+  es: "Carga y llamadas por hora"
+Charge la plus faible:
+  en: "Lowest workload"
+  ar: "أقل عبء عمل"
+  es: "Menor carga"
+Chiffre d'affaires:
+  en: Revenue
+  ar: رقم المعاملات
+  es: "Ingresos"
+? Chiffres calculés sur les commandes créées pendant la période (reçues, jointes, confirmées, expédiées, livrées) et sur les appels passés pendant la période. Les jours récents sont provisoires. Le taux d'upsell n'est pas encore calculé.
+: en: "Figures computed on orders created during the period (received, reached, confirmed, shipped, delivered) and on calls made during the period. Recent days are provisional. The upsell rate is not calculated yet."
+  ar: "أرقام محسوبة على الطلبات المنشأة خلال الفترة (الواردة، التي تم الوصول إليها، المؤكَّدة، المشحونة، المسلّمة) وعلى المكالمات التي أُجريت خلال الفترة. الأيام الأخيرة مؤقتة. لم يُحسب معدل البيع الإضافي (upsell) بعد."
+  es: "Cifras calculadas sobre los pedidos creados durante el periodo (recibidos, localizados, confirmados, enviados, entregados) y sobre las llamadas realizadas durante el periodo. Los días recientes son provisionales. La tasa de upsell aún no está calculada."
+Choisissez un agent:
+  en: "Choose an agent"
+  ar: "اختر وكيلًا"
+  es: "Elige un agente"
+Choisissez une région:
+  en: Choose a region
+  ar: اختر منطقة
+  es: "Elige una región"
+Choisissez votre société de livraison pour commencer.:
+  en: Choose your delivery company to start.
+  ar: اختر شركة التوصيل للبدء.
+  es: "Elige tu empresa de transporte para empezar."
+Client:
+  en: Customer
+  ar: الزبون
+  es: "Cliente"
+Client fidèle:
+  en: Loyal customer
+  ar: زبون وفي
+  es: "Cliente fiel"
+Clients:
+  en: Customers
+  ar: الزبائن
+  es: "Clientes"
+Cliquez sur un agent pour voir ses chiffres face à la médiane de l'équipe et le détail de ses commandes.:
+  en: "Click an agent to see their figures against the team median and the detail of their orders."
+  ar: "انقر على وكيل لترى أرقامه مقارنةً بوسيط الفريق وتفاصيل طلباته."
+  es: "Haz clic en un agente para ver sus cifras frente a la mediana del equipo y el detalle de sus pedidos."
+Clé enregistrée (laisser vide pour garder):
+  en: Key saved (leave empty to keep)
+  ar: المفتاح محفوظ (اتركه فارغًا للإبقاء عليه)
+  es: "Clave guardada (déjalo vacío para conservarla)"
+Clé publique / identifiant:
+  en: Public key / ID
+  ar: المفتاح العام / المعرّف
+  es: "Clave pública / identificador"
+Clé secrète / token:
+  en: Secret key / token
+  ar: المفتاح السري / token
+  es: "Clave secreta / token"
+Clés enregistrées:
+  en: Keys saved
+  ar: المفاتيح محفوظة
+  es: "Claves guardadas"
+Clés fournies par:
+  en: Keys provided by
+  ar: المفاتيح التي تقدّمها
+  es: "Claves proporcionadas por"
+Commande:
+  en: Order
+  ar: الطلب
+  es: "Pedido"
+Commandes:
+  en: Orders
+  ar: الطلبات
+  es: "Pedidos"
+Commandes de la période:
+  en: Orders of the period
+  ar: طلبات الفترة
+  es: "Pedidos del periodo"
+Commandes et produits en direct, dès leur création.:
+  en: Orders and products live, as soon as they are created.
+  ar: الطلبات والمنتجات مباشرة فور إنشائها.
+  es: "Pedidos y productos en directo, desde su creación."
+Commandes livrées:
+  en: Delivered orders
+  ar: الطلبات المسلّمة
+  es: "Pedidos entregados"
+Commandes par jour:
+  en: "Orders per day"
+  ar: "الطلبات في اليوم"
+  es: "Pedidos por día"
+Commandes passées par un échec de livraison (injoignable ou problème d'adresse), et ce qu'elles sont devenues.:
+  en: "Orders that went through a delivery failure (unreachable or address problem), and what they became."
+  ar: "الطلبات التي مرّت بفشل في التوصيل (تعذّر الوصول إلى الزبون أو مشكلة في العنوان)، وما آلت إليه."
+  es: "Pedidos que pasaron por un fallo de entrega (no localizable o problema de dirección) y en qué se convirtieron."
+Commandes passées par un échec de livraison, et ce qu'elles sont devenues, par agent.:
+  en: "Orders that went through a delivery failure, and what they became, by agent."
+  ar: "الطلبات التي مرّت بفشل في التوصيل، وما آلت إليه، حسب الوكيل."
+  es: "Pedidos que pasaron por un fallo de entrega y en qué se convirtieron, por agente."
+Commandes récupérées:
+  en: "Recovered orders"
+  ar: "الطلبات المستردّة"
+  es: "Pedidos recuperados"
+Comment fonctionnent les règles d'attribution:
+  en: "How assignment rules work"
+  ar: "كيف تعمل قواعد التعيين"
+  es: "Cómo funcionan las reglas de asignación"
+Comparer les agents:
+  en: "Compare agents"
+  ar: "مقارنة الوكلاء"
+  es: "Comparar agentes"
+Comptabilité:
+  en: Accounting
+  ar: المحاسبة
+  es: "Contabilidad"
+Compte actif:
+  en: Active account
+  ar: حساب نشط
+  es: "Cuenta activa"
+Conditions:
+  en: "Conditions"
+  ar: "الشروط"
+  es: "Condiciones"
+Configurer:
+  en: Configure
+  ar: إعداد
+  es: "Configurar"
+Configurez l'attribution automatique des commandes:
+  en: "Configure automatic order assignment"
+  ar: "اضبط التعيين التلقائي للطلبات"
+  es: "Configura la asignación automática de pedidos"
+Confirmation:
+  en: Confirmation
+  ar: التأكيد
+  es: "Confirmación"
+Confirmation et livraison, jour par jour:
+  en: "Confirmation and delivery, day by day"
+  ar: "التأكيد والتوصيل، يومًا بيوم"
+  es: "Confirmación y entrega, día a día"
+Confirmer les commandes:
+  en: Confirm orders
+  ar: تأكيد الطلبات
+  es: "Confirmar pedidos"
+Confirmée:
+  en: Confirmed
+  ar: مؤكَّد
+  es: "Confirmada"
+Confirmées:
+  en: "Confirmed"
+  ar: "مؤكَّدة"
+  es: "Confirmadas"
+Confirmées à quel appel ?:
+  en: "Confirmed on which call?"
+  ar: "مؤكَّدة في أي مكالمة؟"
+  es: "¿En qué llamada se confirman?"
+Connecter:
+  en: Connect
+  ar: ربط
+  es: "Conectar"
+Connectée:
+  en: Connected
+  ar: مربوط
+  es: "Conectada"
+Connectées (API):
+  en: Connected (API)
+  ar: مربوطة (API)
+  es: "Conectadas (API)"
+Connexion API:
+  en: API connection
+  ar: الربط عبر API
+  es: "Conexión API"
+Contact:
+  en: Contact
+  ar: جهة الاتصال
+  es: "Contacto"
+Continuer avec YouCan:
+  en: Continue with YouCan
+  ar: المتابعة مع YouCan
+  es: "Continuar con YouCan"
+Coût des produits:
+  en: Product cost
+  ar: تكلفة المنتجات
+  es: "Coste de los productos"
+Critère d'agent:
+  en: "Agent criterion"
+  ar: "معيار الوكيل"
+  es: "Criterio de agente"
+Créer la règle:
+  en: "Create the rule"
+  ar: "إنشاء القاعدة"
+  es: "Crear la regla"
+Créer une règle:
+  en: "Create a rule"
+  ar: "إنشاء قاعدة"
+  es: "Crear una regla"
+Créer une règle d'attribution:
+  en: "Create an assignment rule"
+  ar: "إنشاء قاعدة تعيين"
+  es: "Crear una regla de asignación"
+Demandez aux agents d'écrire le motif quand ils annulent.:
+  en: "Ask agents to write the reason when they cancel."
+  ar: "اطلب من الوكلاء كتابة السبب عند الإلغاء."
+  es: "Pide a los agentes que escriban el motivo cuando cancelen."
+Dernière commande:
+  en: Last order
+  ar: آخر طلب
+  es: "Último pedido"
+Dernière synchronisation:
+  en: Last sync
+  ar: آخر مزامنة
+  es: "Última sincronización"
+Dernières commandes:
+  en: Latest orders
+  ar: آخر الطلبات
+  es: "Últimos pedidos"
+Descendre:
+  en: "Move down"
+  ar: "إنزال"
+  es: "Bajar"
+Description:
+  en: "Description"
+  ar: "الوصف"
+  es: "Descripción"
+Distribution des commandes:
+  en: Order distribution
+  ar: توزيع الطلبات
+  es: "Distribución de pedidos"
+Doyen:
+  en: Veteran
+  ar: عميد
+  es: "Veterano"
+Débutant:
+  en: Beginner
+  ar: مبتدئ
+  es: "Principiante"
+Déconnecter:
+  en: Disconnect
+  ar: فصل
+  es: "Desconectar"
+Déconnecter cette boutique ? Les nouvelles commandes n'arriveront plus dans seallo.:
+  en: Disconnect this store? New orders will no longer reach seallo.
+  ar: فصل هذا المتجر؟ لن تصل الطلبات الجديدة إلى seallo.
+  es: "¿Desconectar esta tienda? Los nuevos pedidos ya no llegarán a seallo."
+Décrivez ce que fait cette règle…:
+  en: "Describe what this rule does…"
+  ar: "صف ما تفعله هذه القاعدة…"
+  es: "Describe lo que hace esta regla…"
+Définissez quand cette règle s'applique et quels agents reçoivent les commandes correspondantes.:
+  en: "Define when this rule applies and which agents receive the matching orders."
+  ar: "حدّد متى تُطبَّق هذه القاعدة وأي الوكلاء يستلمون الطلبات المطابقة."
+  es: "Define cuándo se aplica esta regla y qué agentes reciben los pedidos correspondientes."
+Délai:
+  en: "Delay"
+  ar: "المهلة"
+  es: "Plazo"
+Détails:
+  en: Details
+  ar: التفاصيل
+  es: "Detalles"
+Effacer:
+  en: "Clear"
+  ar: "مسح"
+  es: "Borrar"
+En attente:
+  en: "Pending"
+  ar: "قيد الانتظار"
+  es: "Pendiente"
+En attente d'appel:
+  en: "Awaiting call"
+  ar: "في انتظار المكالمة"
+  es: "Pendiente de llamada"
+En attente de confirmation:
+  en: Awaiting confirmation
+  ar: في انتظار التأكيد
+  es: "Pendiente de confirmación"
+En cours:
+  en: In transit
+  ar: قيد التوصيل
+  es: "En curso"
+En cours de livraison:
+  en: Out for delivery
+  ar: قيد التوصيل
+  es: "En reparto"
+En route:
+  en: "On the way"
+  ar: "في الطريق"
+  es: "En camino"
+En transit:
+  en: In transit
+  ar: في الطريق
+  es: "En tránsito"
+Enregistrer:
+  en: Save
+  ar: حفظ
+  es: "Guardar"
+Enregistrer la règle:
+  en: "Save the rule"
+  ar: "حفظ القاعدة"
+  es: "Guardar la regla"

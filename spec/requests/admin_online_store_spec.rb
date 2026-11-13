@@ -73,14 +73,14 @@ RSpec.describe "Admin online store builder", type: :request do
     expect(document.at_css("[data-online-store-readiness]")).to be_present
   end
 
-  it "offers external FR, EN and AR previews for a published storefront" do
+  it "offers external FR, EN, ES and AR previews for a published storefront" do
     sign_in
 
     get "/admin/online_store", params: { locale: "en" }
 
     preview_links = document.css('a[data-storefront-preview][target="_blank"]')
     expect(preview_links.map { |link| link["href"] }).to contain_exactly(
-      "#{store.origin}/fr", "#{store.origin}/en", "#{store.origin}/ar"
+      "#{store.origin}/fr", "#{store.origin}/en", "#{store.origin}/es", "#{store.origin}/ar"
     )
   end
 

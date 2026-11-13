@@ -22,3 +22,11 @@ ar:
     manage: "إدارة الاتصال"
     approval: "تحقق من مساحة العمل أعلاه، ثم اربط متجرك ووافق على الوصول في Shopify. إذا كان متجرك مدرجًا أدناه، افتح الاتصال لإدارته أو إعادة ربطه."
     empty: "لم يتم العثور على اتصال Shopify هنا. اربط متجرك للبدء."
+es:
+  shopify_app:
+    title: "Seallo para Shopify"
+    intro: "Conecta tu tienda Shopify a tu espacio Morea para gestionar los pedidos elegibles para pago contra reembolso."
+    workspace: "Espacio de trabajo: %{name}"
+    manage: "Gestionar la conexión"
+    approval: "Comprueba el espacio de arriba, después conecta tu tienda y autoriza el acceso en Shopify. Si tu tienda ya aparece más abajo, abre su conexión para gestionarla o reconectarla."
+    empty: "No se ha encontrado ninguna conexión Shopify aquí. Conecta tu tienda para empezar."

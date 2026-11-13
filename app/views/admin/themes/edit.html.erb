@@ -12,7 +12,7 @@
   <div class="flex flex-wrap items-center gap-2">
     <label class="sr-only" for="theme-editor-locale">Preview language</label>
     <select id="theme-editor-locale" class="admin-input py-2" data-theme-editor-target="locale" data-action="change->theme-editor#changeLocale">
-      <option value="fr">FR</option><option value="en">EN</option><option value="ar">AR</option>
+      <% Morea::Locales::AVAILABLE.each do |locale| %><option value="<%= locale %>"><%= Morea::Locales.code_for(locale) %></option><% end %>
     </select>
     <div class="flex rounded-md border border-[#dedede] bg-white p-1" aria-label="Preview size">
       <button type="button" class="rounded px-3 py-1.5 text-sm" data-theme-editor-target="desktopButton" data-action="theme-editor#setDesktop" aria-pressed="true">Desktop</button>

@@ -38,3 +38,15 @@ ar:
       few: "تمت إضافة %{count} متاجر لمزامنة طلبات Shopify. حدّث الصفحة لعرض التقدم."
       many: "تمت إضافة %{count} متجرًا لمزامنة طلبات Shopify. حدّث الصفحة لعرض التقدم."
       other: "تمت إضافة %{count} متجر لمزامنة طلبات Shopify. حدّث الصفحة لعرض التقدم."
+es:
+  shopify_sync:
+    button: "Sincronizar los pedidos de Shopify"
+    title: "Sincronización de Shopify"
+    help: "Importa los pedidos recientes elegibles para pago contra reembolso desde tus tiendas Shopify conectadas. La sincronización se ejecuta en segundo plano; actualiza esta página para ver el progreso."
+    checked_through: "Pedidos verificados hasta el"
+    not_synced: "Ninguna sincronización terminada."
+    receipt_attention: "Algunos pedidos requieren tu atención. Abre la conexión para consultar los detalles."
+    connect_first: "Conecta o autoriza de nuevo una tienda Shopify antes de sincronizar los pedidos."
+    queued:
+      one: "Sincronización de Shopify iniciada para una tienda. Actualiza esta página para ver el progreso."
+      other: "Sincronización de Shopify iniciada para %{count} tiendas. Actualiza esta página para ver el progreso."

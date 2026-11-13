@@ -32,3 +32,14 @@ ar:
     password_hint: "%{count} حرفًا على الأقل"
     workspace_label: "عنوان مساحة العمل"
     workspace_help: "بريدك الإلكتروني مرتبط بعدة مساحات عمل: أدخل النطاق الفرعي لمساحة العمل."
+es:
+  signup_plans:
+    invalid: "Elige un plan válido."
+  signup_payment:
+    reference_required: "Indica la referencia de la transferencia."
+    reference_too_long: "La referencia es demasiado larga (100 caracteres como máximo)."
+    declared: "¡Gracias! Estamos verificando tu transferencia y activaremos tu suscripción en cuanto la recibamos."
+  signup_flow:
+    password_hint: "%{count} caracteres como mínimo"
+    workspace_label: "Dirección del espacio"
+    workspace_help: "Tu email está asociado a varios espacios: introduce el subdominio del espacio."

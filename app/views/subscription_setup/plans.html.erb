@@ -1,10 +1,10 @@
 <% content_for :title, st("Choisissez votre plan") %>
-<% included = ["Commandes automatiques", "Confirmation par équipe", "Envoi à la livraison", "Suivi des colis", "Pubs Meta et TikTok", "Bénéfice réel", "FR · AR · EN", "Support WhatsApp"] %>
+<% included = ["Commandes automatiques", "Confirmation par équipe", "Envoi à la livraison", "Suivi des colis", "Pubs Meta et TikTok", "Bénéfice réel", "FR · EN · ES · AR", "Support WhatsApp"] %>
 <% config = Plans.config.slice("currency", "currencies", "trial_days", "annual_months_paid", "list") %>
 <main class="mx-auto w-full max-w-6xl flex-1 px-4 pb-8 sm:px-6" data-plans
       data-config="<%= config.to_json %>" data-strings="<%= plans_page_strings.to_json %>"
       data-current="<%= @current %>" data-billing="<%= @current_billing %>" data-currency="<%= @current_currency %>" data-guest="<%= @guest %>"
-      data-locale="<%= { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>">
+      data-locale="<%= { "ar" => "ar-MA", "en" => "en-GB", "es" => "es-ES" }.fetch(I18n.locale.to_s, "fr-FR") %>">
   <%= render "signups/steps", current: 2, done_until: (@guest ? 0 : 1), links: (@guest ? { 1 => signup_path } : (@current ? { 3 => payment_path } : {})) %>
 
   <% if alert.present? %><div role="alert" class="mt-4 rounded-lg bg-[#f8dcd9] px-4 py-3 text-sm text-[#b0342a]"><%= alert %></div><% end %>
@@ -13,6 +13,7 @@
     <div>
       <h1 class="text-3xl font-extrabold tracking-tight text-[#1c1c1e] sm:text-4xl">
         <% if I18n.locale.to_s == "en" %>Choose your <span class="text-[#1d1d1f]">plan.</span>
+        <% elsif I18n.locale.to_s == "es" %>Elige tu <span class="text-[#1d1d1f]">plan.</span>
         <% elsif I18n.locale.to_s == "ar" %>اختر <span class="text-[#1d1d1f]">خطتك.</span>
         <% else %>Choisissez votre <span class="text-[#1d1d1f]">plan.</span>
         <% end %>

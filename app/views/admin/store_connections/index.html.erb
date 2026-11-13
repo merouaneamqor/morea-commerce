@@ -8,7 +8,7 @@
      { key: "youcan", name: "YouCan", logo: "/images/partners/youcan.png", desc: "Votre boutique YouCan reliée en quelques secondes.", steps: t("seller_integrations.youcan_steps"), href: new_admin_store_connection_path(provider: "youcan") }
    ] %>
 <% linked_by_provider = @connections.select(&:active?).group_by(&:provider) %>
-<% locale_tag = { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>
+<% locale_tag = { "ar" => "ar-MA", "en" => "en-GB", "es" => "es-ES" }.fetch(I18n.locale.to_s, "fr-FR") %>
 <% currency = current_store.currency.to_s.upcase == "DH" ? "MAD" : current_store.currency.to_s.upcase %>
 <%
   catalog = {

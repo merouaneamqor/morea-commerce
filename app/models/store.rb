@@ -16,12 +16,27 @@ class Store < ApplicationRecord
   has_many :carts, dependent: :destroy
   has_many :discounts, dependent: :destroy
   has_many :assignment_rules, -> { ordered }, dependent: :destroy
+  has_many :whatsapp_accounts, dependent: :destroy
+  has_many :whatsapp_messages, dependent: :delete_all
 
   # The store's logo (a PNG without background works best). A confirmation agent sees it in their workspace instead of the platform name.
   LOGO_TYPES = %w[image/png image/jpeg image/webp].freeze
   LOGO_MAX_BYTES = 2.megabytes
   has_one_attached :logo
   validate :logo_is_a_small_image
+
+  # The merchant's own site, shown to the agents. "walkfit33.com" is stored as "https://walkfit33.com"; only http(s) addresses are accepted.
+  validates :website_url, length: { maximum: 200 }
+  validate :website_url_is_a_web_address
+
+  def website_url=(value)
+    text = value.to_s.strip
+    text = "https://#{text}" if text.present? && !text.downcase.start_with?("http://", "https://")
+    super(text.presence)
+  end
+
+  # "https://www.walkfit33.com/" -> "walkfit33.com", to show it.
+  def website_label = website_url&.delete_prefix("https://")&.delete_prefix("http://")&.delete_prefix("www.")&.chomp("/")
 
   # A saved logo that can be shown: not one that was just uploaded and refused by the validation.
   def logo_ready? = logo.attached? && logo.attachment.persisted? && logo.blob.persisted?
@@ -362,6 +377,15 @@ class Store < ApplicationRecord
       when "yearly" then Date.current + 1.year
       else Date.current + 1.month
       end
+  end
+
+  def website_url_is_a_web_address
+    return if website_url.blank?
+
+    uri = URI.parse(website_url)
+    errors.add(:website_url, "must be a web address such as https://mysite.com") unless uri.is_a?(URI::HTTP) && uri.host.present? && uri.host.include?(".")
+  rescue URI::InvalidURIError
+    errors.add(:website_url, "must be a web address such as https://mysite.com")
   end
 
   def logo_is_a_small_image

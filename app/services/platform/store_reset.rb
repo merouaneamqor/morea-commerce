@@ -17,7 +17,7 @@ module Platform
       confirmation_shifts customers delivery_accounts discounts home_sections menu_items meta_ads_ad_accounts
       meta_ads_ad_sets meta_ads_ads meta_ads_campaigns meta_ads_connections meta_ads_daily_insights
       meta_ads_product_links oauth_access_tokens order_confirmations order_imports orders pages products push_subscriptions
-      seallo_connection_codes store_connections store_expenses store_translations storefront_themes
+      seallo_connection_codes store_connections whatsapp_accounts whatsapp_messages store_expenses store_translations storefront_themes
       woocommerce_connection_codes
     ].freeze
     KEPT_TABLES = %w[access_requests admin_sessions audit_events invoices payments users].freeze
@@ -150,6 +150,8 @@ module Platform
     end
 
     def clear_operations
+      WhatsappMessage.where(store_id: @store.id).delete_all
+      WhatsappAccount.where(store_id: @store.id).delete_all
       AgentPaymentItem.where(store_id: @store.id).delete_all
       AgentPayment.where(store_id: @store.id).delete_all
       ConfirmationShift.where(store_id: @store.id).delete_all

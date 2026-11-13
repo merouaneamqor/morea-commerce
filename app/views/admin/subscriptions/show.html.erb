@@ -5,7 +5,10 @@
     <h1 class="admin-page-header__title"><%= t("subscriptions.title") %></h1>
     <p class="admin-page-header__meta"><%= current_store.name %></p>
   </div>
-  <%= link_to t("subscriptions.overview"), admin_root_path, class: "admin-btn-secondary" %>
+  <div class="flex flex-wrap gap-2">
+    <%= link_to sl("Changer de plan"), seller_plans_url, class: "admin-btn", data: { change_plan: true } %>
+    <%= link_to t("subscriptions.overview"), admin_root_path, class: "admin-btn-secondary" %>
+  </div>
 </div>
 
 <section class="admin-card p-5 sm:p-8" aria-labelledby="subscription-heading">

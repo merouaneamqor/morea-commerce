@@ -363,3 +363,135 @@
   en: "Amount to pay"
   ar: "المبلغ المستحق الدفع"
   es: "Importe a pagar"
+"Paramètres WhatsApp":
+  en: "WhatsApp settings"
+  ar: "إعدادات واتساب"
+  es: "Ajustes de WhatsApp"
+"Gérez vos comptes WhatsApp Business et le message automatique des nouvelles commandes":
+  en: "Manage your WhatsApp Business accounts and the automatic new-order message"
+  ar: "أدِر حسابات واتساب للأعمال ورسالة الطلبات الجديدة التلقائية"
+  es: "Gestiona tus cuentas de WhatsApp Business y el mensaje automático de los pedidos nuevos"
+"Comptes connectés":
+  en: "Connected accounts"
+  ar: "الحسابات المتصلة"
+  es: "Cuentas conectadas"
+"Quand une commande arrive d'une boutique, le client reçoit automatiquement le message ci-dessous.":
+  en: "When an order arrives from a store, the customer automatically receives the message below."
+  ar: "عند وصول طلب من متجر، يتلقى العميل الرسالة أدناه تلقائيًا."
+  es: "Cuando llega un pedido de una tienda, el cliente recibe automáticamente el mensaje de abajo."
+"Aucun compte WhatsApp connecté pour le moment.":
+  en: "No WhatsApp account connected yet."
+  ar: "لا يوجد حساب واتساب متصل حتى الآن."
+  es: "Aún no hay ninguna cuenta de WhatsApp conectada."
+"Supprimer ce compte WhatsApp ?":
+  en: "Delete this WhatsApp account?"
+  ar: "حذف حساب واتساب هذا؟"
+  es: "¿Eliminar esta cuenta de WhatsApp?"
+"ID du numéro de téléphone":
+  en: "Phone number ID"
+  ar: "معرّف رقم الهاتف"
+  es: "ID del número de teléfono"
+"ID du compte Business":
+  en: "Business account ID"
+  ar: "معرّف حساب الأعمال"
+  es: "ID de la cuenta Business"
+"Jeton d'accès":
+  en: "Access token"
+  ar: "رمز الوصول"
+  es: "Token de acceso"
+"Envoyer un message automatique à chaque nouvelle commande":
+  en: "Send an automatic message for every new order"
+  ar: "إرسال رسالة تلقائية لكل طلب جديد"
+  es: "Enviar un mensaje automático por cada pedido nuevo"
+"Les commandes saisies à la main ne sont pas concernées.":
+  en: "Orders typed by hand are not affected."
+  ar: "لا تشمل الطلبات المُدخلة يدويًا."
+  es: "Los pedidos introducidos a mano no se ven afectados."
+"Message au client":
+  en: "Message to the customer"
+  ar: "الرسالة إلى العميل"
+  es: "Mensaje al cliente"
+"Mots-clés":
+  en: "Keywords"
+  ar: "الكلمات المفتاحية"
+  es: "Palabras clave"
+"Accusés de lecture":
+  en: "Read receipts"
+  ar: "إشعارات القراءة"
+  es: "Confirmaciones de lectura"
+"Nouveau jeton d'accès (laisser vide pour garder l'actuel)":
+  en: "New access token (leave empty to keep the current one)"
+  ar: "رمز وصول جديد (اتركه فارغًا للإبقاء على الحالي)"
+  es: "Nuevo token de acceso (déjalo vacío para conservar el actual)"
+"Numéro pour un test (06 12 34 56 78)":
+  en: "Number for a test (06 12 34 56 78)"
+  ar: "رقم للاختبار (06 12 34 56 78)"
+  es: "Número para una prueba (06 12 34 56 78)"
+"Envoyer un test":
+  en: "Send a test"
+  ar: "إرسال اختبار"
+  es: "Enviar una prueba"
+"Configuration manuelle":
+  en: "Manual setup"
+  ar: "إعداد يدوي"
+  es: "Configuración manual"
+"Dans Meta Business Manager, ouvrez WhatsApp > Configuration de l'API, puis copiez l'ID du numéro de téléphone et un jeton d'accès permanent.":
+  en: "In Meta Business Manager, open WhatsApp > API setup, then copy the phone number ID and a permanent access token."
+  ar: "في Meta Business Manager افتح واتساب > إعداد API ثم انسخ معرّف رقم الهاتف ورمز وصول دائم."
+  es: "En Meta Business Manager abre WhatsApp > Configuración de la API y copia el ID del número de teléfono y un token de acceso permanente."
+"Numéro affiché":
+  en: "Displayed number"
+  ar: "الرقم المعروض"
+  es: "Número mostrado"
+"Ajouter le compte":
+  en: "Add the account"
+  ar: "إضافة الحساب"
+  es: "Añadir la cuenta"
+"Important : WhatsApp n'autorise un texte libre qu'aux clients qui ont écrit à votre numéro dans les dernières 24 heures. Pour écrire en premier à un nouveau client, Meta exige un template approuvé (bientôt disponible ici).":
+  en: "Important: WhatsApp only allows free text to customers who wrote to your number in the last 24 hours. To write first to a new customer, Meta requires an approved template (coming soon here)."
+  ar: "مهم: يسمح واتساب بالنص الحر فقط للعملاء الذين راسلوا رقمك خلال آخر 24 ساعة. للكتابة أولًا إلى عميل جديد تشترط Meta قالبًا معتمدًا (قريبًا هنا)."
+  es: "Importante: WhatsApp solo permite texto libre a los clientes que escribieron a tu número en las últimas 24 horas. Para escribir primero a un cliente nuevo, Meta exige una plantilla aprobada (próximamente aquí)."
+"Derniers messages":
+  en: "Latest messages"
+  ar: "آخر الرسائل"
+  es: "Últimos mensajes"
+"Aucun message envoyé pour le moment.":
+  en: "No message sent yet."
+  ar: "لم تُرسل أي رسالة حتى الآن."
+  es: "Aún no se ha enviado ningún mensaje."
+"Destinataire":
+  en: "Recipient"
+  ar: "المستلم"
+  es: "Destinatario"
+"Message":
+  en: "Message"
+  ar: "الرسالة"
+  es: "Mensaje"
+"Test":
+  en: "Test"
+  ar: "اختبار"
+  es: "Prueba"
+"Envoyé":
+  en: "Sent"
+  ar: "تم الإرسال"
+  es: "Enviado"
+"Échec":
+  en: "Failed"
+  ar: "فشل"
+  es: "Error"
+"WhatsApp":
+  en: "WhatsApp"
+  ar: "واتساب"
+  es: "WhatsApp"
+"Adresse du site":
+  en: "Website address"
+  ar: "عنوان الموقع"
+  es: "Dirección del sitio"
+"Vos agents la voient sous le logo et peuvent cliquer dessus pour ouvrir la boutique.":
+  en: "Your agents see it under the logo and can click it to open the store."
+  ar: "يراه وكلاؤك تحت الشعار ويمكنهم النقر عليه لفتح المتجر."
+  es: "Tus agentes lo ven bajo el logo y pueden hacer clic para abrir la tienda."
+"Changer de plan":
+  en: "Change plan"
+  ar: "تغيير الخطة"
+  es: "Cambiar de plan"

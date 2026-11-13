@@ -38,7 +38,9 @@
                 <%= link_to "/mes-statistiques", data: { agent_brand: true }, class: "block max-w-[5rem] shrink-0", dir: "ltr" do %><% if current_store.logo_ready? %><%= image_tag MediaUrl.for(current_store.logo, store: current_store), alt: current_store.name, class: "max-h-14 w-auto max-w-[5rem] object-contain" %><% else %><span class="block max-w-[6.5rem] truncate text-lg font-extrabold tracking-tight text-[#1d1d1f]"><%= current_store.name %></span><% end %><% end %>
                 <div class="min-w-0">
                   <% if current_store.logo_ready? %><p class="truncate text-[13px] leading-tight font-semibold text-[#1d1d1f]" title="<%= current_store.name %>" data-agent-store-name><%= current_store.name %></p><% end %>
-                  <% if current_store.storefront_enabled? %>
+                  <% if current_store.website_url.present? %>
+                    <%= link_to current_store.website_label, current_store.website_url, target: "_blank", rel: "noopener noreferrer", title: current_store.website_url, class: "block text-[10px] leading-tight break-all text-[#6e6e73] hover:text-[#1d1d1f] hover:underline", dir: "ltr", data: { agent_store_url: true } %>
+                  <% elsif current_store.storefront_enabled? %>
                     <%= link_to current_store.host_label, current_store.origin, target: "_blank", rel: "noopener", title: current_store.host_label, class: "block text-[10px] leading-tight break-all text-[#6e6e73] hover:text-[#1d1d1f] hover:underline", dir: "ltr", data: { agent_store_url: true } %>
                   <% else %>
                     <p class="text-[10px] leading-tight break-all text-[#6e6e73]" dir="ltr" title="<%= current_store.host_label %>" data-agent-store-url><%= current_store.host_label %></p>
@@ -96,10 +98,12 @@
           </ul>
           <div class="mt-auto space-y-0.5 border-t border-[#ececf0] pt-2">
             <% if current_store && !agent %>
-              <div data-collapse-hide class="mb-1.5 rounded-xl bg-[#e8e8ed] px-3 py-2">
+              <%# The plan card opens the plans page, where the owner changes the subscription (the plans live on the shared host). %>
+              <%= link_to seller_plans_url, data: { collapse_hide: true, plan_card: true }, title: sl("Changer de plan"), class: "group mb-1.5 block rounded-xl bg-[#e8e8ed] px-3 py-2 transition hover:bg-[#dedee4]" do %>
                 <p data-seller-store class="truncate text-sm font-semibold text-[#1c1c1e]"><%= current_store.name %></p>
                 <% if seller_plan_label(current_store) %><p class="text-xs text-[#6e6e73]">Plan · <%= seller_plan_label(current_store) %></p><% end %>
-              </div>
+                <p class="mt-0.5 text-[11px] font-semibold text-[#1c1c1e] underline-offset-2 group-hover:underline"><%= sl("Changer de plan") %> →</p>
+              <% end %>
             <% end %>
             <% if super_admin? %>
               <%= link_to admin_platform_path, class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#3a3a3c] hover:bg-[#e8e8ed] hover:text-[#1c1c1e]" do %><%= seller_icon(:plug) %> <span data-label>Platform</span><% end %>

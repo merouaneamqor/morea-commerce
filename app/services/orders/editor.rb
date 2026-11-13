@@ -37,6 +37,7 @@ module Orders
         # Never assigned to the person who typed the order: it waits in "Available now"
         # unless an agent was picked explicitly.
         @order = store.orders.create!(
+          skip_auto_whatsapp: true,
           customer: customer,
           customer_name: contact[:name],
           customer_phone: contact[:phone],

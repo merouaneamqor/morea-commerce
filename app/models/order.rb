@@ -12,6 +12,9 @@ class Order < ApplicationRecord
 
   # A new order from a blocked number never enters the confirmation queue.
   after_create :screen_blocked_phone
+  # Set by the staff form: an order someone types by hand is not announced to the customer by WhatsApp.
+  attr_accessor :skip_auto_whatsapp
+  after_create_commit :enqueue_auto_whatsapp
 
   # Happy-path progression (Sendit advances through these)
   FLOW = %w[
@@ -301,6 +304,14 @@ end
   end
 
   private
+
+  # The store's automatic WhatsApp message for a new order (only when the store has an active account with it switched on).
+  def enqueue_auto_whatsapp
+    return if skip_auto_whatsapp || customer_phone.blank?
+    return unless store.whatsapp_accounts.auto.exists?
+
+    WhatsappOrderMessageJob.perform_later(id)
+  end
 
   def screen_blocked_phone
     return unless BlockedPhone.blocked?(store, customer_phone, second_phone)

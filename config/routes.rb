@@ -210,6 +210,11 @@ Rails.application.routes.draw do
     get "my_billing", to: "my_billing#show", as: :my_billing
     get "agent-billing", to: "agent_billing#show", as: :agent_billing
     post "agent-billing/pay", to: "agent_billing#pay", as: :agent_billing_pay
+    get "whatsapp", to: "whatsapp#show", as: :whatsapp
+    post "whatsapp/accounts", to: "whatsapp#create", as: :whatsapp_accounts
+    patch "whatsapp/accounts/:id", to: "whatsapp#update", as: :whatsapp_account
+    delete "whatsapp/accounts/:id", to: "whatsapp#destroy"
+    post "whatsapp/accounts/:id/test", to: "whatsapp#test", as: :test_whatsapp_account
     get "media", to: "media#index", as: :media
     post "media/upload", to: "media#upload", as: :media_upload
     post "media/edits", to: "media#edits", as: :media_edits
@@ -298,7 +303,7 @@ Rails.application.routes.draw do
     # Store-manager menu entries whose feature is not built yet (empty pages)
     {
       inventory: "inventory", purchases: "purchases",
-      whatsapp: "whatsapp", analytics: "analytics", accounting: "accounting", workflows: "workflows",
+      analytics: "analytics", accounting: "accounting", workflows: "workflows",
       billing: "billing", app: "app", ai_chat: "ai-chat", help: "help"
     }.each do |feature, path|
       get path, to: "coming_soon#show", defaults: { feature: feature.to_s }, as: feature

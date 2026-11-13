@@ -227,6 +227,30 @@ RSpec.describe "Agent workspace", type: :request do
       expect { patch logo_admin_store_path, params: { store: { remove_logo: "1" } } }.to have_enqueued_job(ActiveStorage::PurgeJob)
     end
 
+    it "shows the agents the site address the owner typed, as a link that opens the site, and refuses anything that is not a web address" do
+      owner = store.users.create!(name: "Owner", email: "own-#{SecureRandom.hex(4)}@example.test", password: password, admin: true)
+      sign_in(owner)
+      patch admin_store_path, params: { store: { website_url: "walkfit33.com" } }
+      expect(store.reload.website_url).to eq("https://walkfit33.com")
+      get edit_admin_store_path
+      expect(page.at_css("[data-store-website-form] input[name='store[website_url]']")["value"]).to eq("https://walkfit33.com")
+
+      %w[javascript:alert(1) ftp://files.example.com not-a-site].each do |bad|
+        patch admin_store_path, params: { store: { website_url: bad } }
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(store.reload.website_url).to eq("https://walkfit33.com")
+      end
+
+      delete admin_logout_path rescue nil
+      sign_in(saida)
+      get admin_my_stats_path
+      link = page.at_css("a[data-agent-store-url]")
+      expect(link["href"]).to eq("https://walkfit33.com")
+      expect(link["target"]).to eq("_blank")
+      expect(link["rel"]).to include("noopener")
+      expect(link.text.squish).to eq("walkfit33.com")
+    end
+
     it "refuses a logo that is not an image, and lets the owner remove it" do
       owner = store.users.create!(name: "Owner", email: "own-#{SecureRandom.hex(4)}@example.test", password: password, admin: true)
       sign_in(owner)

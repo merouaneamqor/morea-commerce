@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_13_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -1287,12 +1287,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_140000) do
     t.boolean "storefront_theme_editor_enabled", default: false, null: false
     t.string "plan"
     t.datetime "trial_ends_at"
+    t.string "website_url"
     t.index ["api_token_digest"], name: "index_stores_on_api_token_digest", unique: true
     t.index ["billing_interval"], name: "index_stores_on_billing_interval"
     t.index ["billing_status"], name: "index_stores_on_billing_status"
     t.index ["slug"], name: "index_stores_on_slug", unique: true
     t.check_constraint "admin_theme::text = ANY (ARRAY['seallo'::character varying, 'seallo_dark'::character varying]::text[])", name: "stores_admin_theme"
     t.check_constraint "plan IS NULL OR (plan::text = ANY (ARRAY['free'::character varying, 'starter'::character varying, 'intermediate'::character varying, 'professional'::character varying, 'business'::character varying]::text[]))", name: "stores_plan_known"
+    t.check_constraint "website_url IS NULL OR char_length(website_url::text) <= 200", name: "stores_website_url_length"
   end
 
   create_table "users", force: :cascade do |t|
@@ -1321,6 +1323,46 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_140000) do
     t.check_constraint "return_penalty_cents >= 0", name: "users_return_penalty_nonnegative"
     t.check_constraint "session_version >= 0", name: "users_session_version_nonnegative"
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying::text, 'suspended'::character varying::text, 'archived'::character varying::text])", name: "users_status_check"
+  end
+
+  create_table "whatsapp_accounts", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "name", null: false
+    t.string "display_phone"
+    t.string "phone_number_id", null: false
+    t.string "business_account_id"
+    t.text "access_token_ciphertext", null: false
+    t.string "api_version", default: "v21.0", null: false
+    t.boolean "read_receipts", default: true, null: false
+    t.boolean "auto_send_new_orders", default: false, null: false
+    t.text "new_order_message"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id", "phone_number_id"], name: "index_whatsapp_accounts_on_store_id_and_phone_number_id", unique: true
+    t.index ["store_id"], name: "index_whatsapp_accounts_on_store_id"
+    t.check_constraint "new_order_message IS NULL OR char_length(new_order_message) <= 1000", name: "whatsapp_accounts_message_length"
+  end
+
+  create_table "whatsapp_messages", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "whatsapp_account_id", null: false
+    t.bigint "order_id"
+    t.string "kind", null: false
+    t.string "to_phone", null: false
+    t.text "body", null: false
+    t.string "status", default: "queued", null: false
+    t.string "wa_message_id"
+    t.text "error"
+    t.datetime "sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id", "kind"], name: "index_whatsapp_messages_one_new_order_message", unique: true, where: "(((kind)::text = 'new_order'::text) AND (order_id IS NOT NULL))"
+    t.index ["order_id"], name: "index_whatsapp_messages_on_order_id"
+    t.index ["store_id"], name: "index_whatsapp_messages_on_store_id"
+    t.index ["whatsapp_account_id"], name: "index_whatsapp_messages_on_whatsapp_account_id"
+    t.check_constraint "kind::text = ANY (ARRAY['new_order'::character varying, 'test'::character varying]::text[])", name: "whatsapp_messages_kind"
+    t.check_constraint "status::text = ANY (ARRAY['queued'::character varying, 'sent'::character varying, 'failed'::character varying]::text[])", name: "whatsapp_messages_status"
   end
 
   create_table "woocommerce_connection_codes", force: :cascade do |t|
@@ -1453,6 +1495,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_140000) do
   add_foreign_key "store_translations", "stores"
   add_foreign_key "storefront_themes", "stores"
   add_foreign_key "users", "stores"
+  add_foreign_key "whatsapp_accounts", "stores"
+  add_foreign_key "whatsapp_messages", "orders", on_delete: :nullify
+  add_foreign_key "whatsapp_messages", "stores"
+  add_foreign_key "whatsapp_messages", "whatsapp_accounts", on_delete: :cascade
   add_foreign_key "woocommerce_connection_codes", "stores"
   add_foreign_key "woocommerce_connection_codes", "users"
 end

@@ -1,0 +1,8 @@
+ar:
+  admin:
+    whatsapp:
+      account_added: "تمت إضافة حساب واتساب."
+      saved: "تم حفظ إعدادات واتساب."
+      removed: "تم حذف حساب واتساب."
+      test_sent: "تم إرسال رسالة الاختبار."
+      test_failed: "تعذّر إرسال رسالة الاختبار: %{error}"

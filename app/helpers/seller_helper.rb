@@ -171,6 +171,11 @@ module SellerHelper
     SELLER_STATUS_BADGES[SELLER_BADGE_FOR_STATUS.fetch(status, status)] || [ status.to_s.humanize, "bg-[#efeff3] text-[#6e6e73]" ]
   end
 
+  # The plans page, where the owner changes the subscription. It lives on the shared host, which a workspace subdomain shares its sign-in with.
+  def seller_plans_url
+    plans_url(host: Store.base_domain, port: request.optional_port, locale: I18n.locale)
+  end
+
   def seller_plan_label(store)
     return if store&.plan.blank?
 

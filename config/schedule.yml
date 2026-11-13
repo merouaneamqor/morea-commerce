@@ -49,6 +49,12 @@ release_idle_claims:
   queue: default
   active_job: true
   description: "Release confirmation claims with no activity for 15 minutes"
+close_stale_shifts:
+  cron: "<%= ENV.fetch("CLOSE_STALE_SHIFTS_CRON", "* * * * *") %>"
+  class: "CloseStaleShiftsJob"
+  queue: default
+  active_job: true
+  description: "Close the shifts of agents who left the page or the phone (no sign of life for 3 minutes), at the last time they were seen"
 assignment_rules:
   cron: "<%= ENV.fetch("ASSIGNMENT_RULES_CRON", "* * * * *") %>"
   class: "AssignmentRulesJob"

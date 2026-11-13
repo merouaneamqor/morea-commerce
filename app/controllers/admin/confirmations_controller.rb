@@ -109,6 +109,22 @@ module Admin
       @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
     end
 
+    # "Pointages": who was on shift and when. Owners and supervisors only.
+    def attendance
+      return head(:forbidden) if agent_view?
+
+      @date_range = selected_date_range(scope: "attendance", default: "last_7")
+      @attendance = Confirmations::Attendance.new(store: current_store, range: @date_range.time_range, agent_id: params[:agent_id])
+    end
+
+    # Sent by the page every 30 seconds while an agent is on shift and the page is visible. The answer says whether the shift is still open.
+    def heartbeat
+      open = Confirmations::Shifts.new(store: current_store, user: current_user).heartbeat
+      render json: { open: open }
+    rescue Confirmations::Shifts::Error
+      render json: { open: false }
+    end
+
     def clock_in
       Confirmations::Shifts.new(store: current_store, user: current_user).clock_in
       back_to_where_it_was notice: t("admin.confirmations.clocked_in")

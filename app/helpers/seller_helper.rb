@@ -109,6 +109,7 @@ module SellerHelper
     [ "analytics", :chart, "Analyses", "/admin/confirmations/analytics" ],
     [ "assignments", :team, "Attributions", "/admin/confirmations/assignments" ],
     [ "rules", :settings, "Règles d'attribution", "/admin/confirmations/rules" ],
+    [ "attendance", :clock, "Pointages", "/admin/confirmations/attendance" ],
     [ "billing", :wallet, "Facturation", nil ]
   ].freeze
 
@@ -124,6 +125,7 @@ module SellerHelper
     case action_name
     when "dashboard", "analytics" then "analytics"
     when "assignments", "assign", "auto_assign" then "assignments"
+    when "attendance" then "attendance"
     when "index" then params[:filter] == "all" ? "assignments" : "queue"
     else "queue"
     end

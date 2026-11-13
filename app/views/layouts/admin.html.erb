@@ -103,6 +103,10 @@
             <div class="h-full w-64"><%= sidebar %></div>
           </div>
 
+          <%# An agent on shift: this page tells the server every 30 s that they are still here (see presence_controller.js). %>
+          <% if agent && current_store && ConfirmationShift.open.exists?(store: current_store, user: current_admin_user) %>
+            <span hidden data-presence data-controller="presence" data-presence-url-value="<%= heartbeat_admin_confirmations_path %>"></span>
+          <% end %>
           <main class="min-w-0 flex-1 space-y-4">
             <div class="flex items-center justify-between lg:hidden">
               <button type="button" data-seller-open class="rounded-lg border border-[#e0e0e5] bg-white p-2" aria-label="Menu"><%= seller_icon(:menu) %></button>

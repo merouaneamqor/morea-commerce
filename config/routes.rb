@@ -216,6 +216,8 @@ Rails.application.routes.draw do
         get :dashboard
         get :analytics
         get :assignments
+        get :attendance
+        post :heartbeat
         post :auto_assign
         post :clock_in
         post :clock_out

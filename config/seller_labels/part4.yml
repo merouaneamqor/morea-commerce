@@ -131,3 +131,67 @@
   en: "Duration"
   ar: "المدة"
   es: "Duración"
+"Pointages":
+  en: "Attendance"
+  ar: "سجل الحضور"
+  es: "Fichajes"
+"Quand chaque agent est arrivé et parti":
+  en: "When each agent arrived and left"
+  ar: "متى حضر كل وكيل ومتى انصرف"
+  es: "Cuándo entró y salió cada agente"
+"Temps de présence par agent":
+  en: "Time on shift per agent"
+  ar: "وقت الحضور لكل وكيل"
+  es: "Tiempo de presencia por agente"
+"Total de l'équipe":
+  en: "Team total"
+  ar: "إجمالي الفريق"
+  es: "Total del equipo"
+"Un agent qui quitte la page ou le téléphone est pointé « parti » automatiquement après 3 minutes, à sa dernière présence.":
+  en: "An agent who leaves the page or the phone is clocked out automatically after 3 minutes, at their last sign of presence."
+  ar: "الوكيل الذي يغادر الصفحة أو الهاتف يُسجَّل انصرافه تلقائيًا بعد 3 دقائق، عند آخر ظهور له."
+  es: "Un agente que sale de la página o del teléfono se ficha como «salida» automáticamente a los 3 minutos, en su última presencia."
+"État":
+  en: "Status"
+  ar: "الحالة"
+  es: "Estado"
+"Première arrivée":
+  en: "First arrival"
+  ar: "أول حضور"
+  es: "Primera entrada"
+"Dernier départ":
+  en: "Last departure"
+  ar: "آخر انصراف"
+  es: "Última salida"
+"En poste depuis":
+  en: "On shift since"
+  ar: "في الخدمة منذ"
+  es: "En turno desde"
+"Hors poste":
+  en: "Off shift"
+  ar: "خارج الخدمة"
+  es: "Fuera de turno"
+"Journal des pointages":
+  en: "Attendance log"
+  ar: "سجل التسجيلات"
+  es: "Registro de fichajes"
+"Tous les agents":
+  en: "All agents"
+  ar: "جميع الوكلاء"
+  es: "Todos los agentes"
+"Aucun pointage sur cette période.":
+  en: "No attendance record in this period."
+  ar: "لا توجد تسجيلات حضور في هذه الفترة."
+  es: "No hay fichajes en este periodo."
+"Fin du pointage":
+  en: "How it ended"
+  ar: "نهاية التسجيل"
+  es: "Cómo terminó"
+"Départ pointé par l'agent":
+  en: "Clocked out by the agent"
+  ar: "سجّل الوكيل انصرافه"
+  es: "Salida fichada por el agente"
+"Automatique : page quittée":
+  en: "Automatic: page left"
+  ar: "تلقائي: تمت مغادرة الصفحة"
+  es: "Automático: página abandonada"

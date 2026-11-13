@@ -1,0 +1,87 @@
+<%# Pointages: when each agent arrived and left, and how long they worked. Printing only: every figure comes from @attendance (Confirmations::Attendance). Owners and supervisors only. %>
+<% content_for :title, "#{sl("Pointages")} — Admin" %>
+<% content_for :admin_page_class, "admin-page--dashboard" %>
+<% a = @attendance %>
+<% card = "rounded-2xl border border-[#e0e0e5] bg-white" %>
+<% field = "h-9 rounded-full border border-[#e0e0e5] bg-white px-3 text-[13px] text-[#1c1c1e] focus:border-[#1d1d1f] focus:outline-none" %>
+<% at = ->(time) { time ? l(time.in_time_zone(DateRange::ZONE), format: :short) : "—" } %>
+
+<div class="space-y-3" data-attendance>
+  <header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white">
+    <div class="flex items-center gap-3">
+      <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:clock, size: 20) %></span>
+      <div>
+        <h1 class="text-xl leading-tight font-bold"><%= sl("Pointages") %></h1>
+        <p class="text-[13px] leading-tight text-white/65"><%= sl("Centre d'appels") %> · <%= sl("Quand chaque agent est arrivé et parti") %></p>
+      </div>
+    </div>
+    <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: attendance_admin_confirmations_path, theme: "dark", size: "compact", extra: { "agent_id" => params[:agent_id].presence }.compact %>
+  </header>
+
+  <section class="<%= card %> p-4" data-attendance-summary>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-[15px] font-bold text-[#1c1c1e]"><%= sl("Temps de présence par agent") %></h2>
+      <p class="text-[13px] text-[#6e6e73]"><%= sl("Total de l'équipe") %> : <b class="text-[#1c1c1e] tabular-nums" data-total="<%= a.total_seconds %>"><%= shift_hours(a.total_seconds) %> h</b></p>
+    </div>
+    <p class="mt-1 text-xs text-[#8e8e93]"><%= sl("Un agent qui quitte la page ou le téléphone est pointé « parti » automatiquement après 3 minutes, à sa dernière présence.") %></p>
+    <div class="mt-3 overflow-x-auto">
+      <table class="w-full text-[13px]">
+        <thead class="text-[11px] text-[#6e6e73]"><tr>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Agent") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("État") %></th>
+          <th class="px-2 py-2 text-end font-medium"><%= sl("Pointages") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Première arrivée") %></th>
+          <th class="px-2 py-2 text-start font-medium"><%= sl("Dernier départ") %></th>
+          <th class="px-2 py-2 text-end font-medium"><%= sl("Temps travaillé") %></th>
+        </tr></thead>
+        <tbody class="divide-y divide-[#f1f1f4]">
+          <% a.summaries.each do |row| %>
+            <tr data-agent-row="<%= row.user.id %>" data-worked="<%= row.worked_seconds %>">
+              <td class="px-2 py-2 font-medium text-[#1c1c1e]" dir="auto"><%= link_to (row.user.name.presence || row.user.email), attendance_admin_confirmations_path(agent_id: row.user.id), class: "hover:underline" %></td>
+              <td class="px-2 py-2"><% if row.open_since %><span class="inline-flex items-center gap-1.5 rounded-full bg-[#e7f6ed] px-2.5 py-0.5 text-[12px] font-medium text-[#136b3d]" data-on-shift><i class="size-1.5 rounded-full bg-[#2f9d5c]"></i><%= sl("En poste depuis") %> <%= l(row.open_since.in_time_zone(DateRange::ZONE), format: :short) %></span><% else %><span class="text-[#8e8e93]" data-off-shift><%= sl("Hors poste") %></span><% end %></td>
+              <td class="px-2 py-2 text-end tabular-nums"><%= row.shifts_count %></td>
+              <td class="px-2 py-2 tabular-nums"><%= at.(row.first_in) %></td>
+              <td class="px-2 py-2 tabular-nums"><%= at.(row.last_out) %></td>
+              <td class="px-2 py-2 text-end font-semibold tabular-nums"><%= row.worked_seconds.zero? ? "—" : "#{shift_hours(row.worked_seconds)} h" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="<%= card %> p-4" data-attendance-log>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-[15px] font-bold text-[#1c1c1e]"><%= sl("Journal des pointages") %></h2>
+      <%= form_with url: attendance_admin_confirmations_path, method: :get, data: { controller: "auto-submit" } do %>
+        <%= select_tag :agent_id, options_for_select(a.agents.map { |user| [ user.name.presence || user.email, user.id ] }, params[:agent_id]), include_blank: sl("Tous les agents"), class: field, data: { action: "auto-submit#submit" } %>
+      <% end %>
+    </div>
+    <% if a.shifts.empty? %>
+      <p class="my-6 text-center text-sm text-[#6e6e73]" data-no-shifts><%= sl("Aucun pointage sur cette période.") %></p>
+    <% else %>
+      <div class="mt-3 overflow-x-auto">
+        <table class="w-full text-[13px]">
+          <thead class="text-[11px] text-[#6e6e73]"><tr>
+            <th class="px-2 py-2 text-start font-medium"><%= sl("Agent") %></th>
+            <th class="px-2 py-2 text-start font-medium"><%= sl("Arrivée") %></th>
+            <th class="px-2 py-2 text-start font-medium"><%= sl("Départ") %></th>
+            <th class="px-2 py-2 text-end font-medium"><%= sl("Durée") %></th>
+            <th class="px-2 py-2 text-start font-medium"><%= sl("Fin du pointage") %></th>
+          </tr></thead>
+          <tbody class="divide-y divide-[#f1f1f4]">
+            <% a.shifts.each do |shift| %>
+              <tr data-shift="<%= shift.id %>" data-ended="<%= shift.end_reason || "open" %>">
+                <td class="px-2 py-2 font-medium text-[#1c1c1e]" dir="auto"><%= shift.actor_label %></td>
+                <td class="px-2 py-2 tabular-nums"><%= at.(shift.started_at) %></td>
+                <td class="px-2 py-2 tabular-nums"><%= shift.ended_at ? at.(shift.ended_at) : sl("En cours") %></td>
+                <td class="px-2 py-2 text-end tabular-nums"><%= shift_hours(shift.seconds_within(@date_range.time_range)) %> h</td>
+                <td class="px-2 py-2 text-[#6e6e73]"><%= { "manual" => sl("Départ pointé par l'agent"), "inactive" => sl("Automatique : page quittée") }.fetch(shift.end_reason.to_s, shift.ended_at ? "—" : sl("En cours")) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </section>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -341,10 +341,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_140000) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "last_seen_at"
+    t.string "end_reason"
     t.index ["store_id", "started_at"], name: "index_confirmation_shifts_on_store_id_and_started_at"
     t.index ["store_id"], name: "index_confirmation_shifts_on_store_id"
     t.index ["user_id"], name: "index_confirmation_shifts_on_user_id"
     t.index ["user_id"], name: "index_confirmation_shifts_one_open_per_user", unique: true, where: "(ended_at IS NULL)"
+    t.check_constraint "end_reason IS NULL OR (end_reason::text = ANY (ARRAY['manual'::character varying, 'inactive'::character varying]::text[]))", name: "confirmation_shifts_end_reason"
     t.check_constraint "ended_at IS NULL OR ended_at > started_at", name: "confirmation_shift_order"
   end
 

@@ -1,0 +1,6 @@
+es:
+  admin:
+    permissions:
+      denied: "No tienes acceso a esta parte de la tienda."
+      saved: "Permisos de %{name} guardados."
+      not_editable: "No puedes cambiar tus propios permisos ni los de un superadministrador."

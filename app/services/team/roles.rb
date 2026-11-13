@@ -34,7 +34,47 @@ module Team
       Role.new(key: :agent, name: "Agent de confirmation", description: "Son propre tableau de bord, sa file d'attente selon les règles d'attribution, la création de commandes, son pointage et sa facturation.", areas: AREAS.select { |_, _, roles| roles.include?(:agent) }.map(&:first))
     ].freeze
 
+    # The applications the permissions screen shows: [key, label, the areas it holds].
+    GROUPS = [
+      [ "dashboard", "Tableau de bord", %w[dashboard] ],
+      [ "orders", "Commandes", %w[orders create_orders] ],
+      [ "call_center", "Centre d'appels", %w[queue analytics clock_in assignments attendance agent_billing own_billing] ],
+      [ "customers", "Clients", %w[customers] ],
+      [ "delivery", "Livraison", %w[delivery] ],
+      [ "products", "Produits", %w[products] ],
+      [ "accounting", "Comptabilité", %w[accounting] ],
+      [ "team", "Équipe", %w[team] ],
+      [ "integrations", "Intégrations API", %w[integrations] ],
+      [ "whatsapp", "WhatsApp", %w[whatsapp] ],
+      [ "store", "Boutique et abonnement", %w[store subscription] ]
+    ].freeze
+
+    # Which area a page belongs to: the controller, and for two controllers the action. A controller that is not listed is open to everyone who can sign in.
+    CONTROLLER_AREAS = {
+      "admin/dashboard" => "dashboard", "admin/my_stats" => "dashboard",
+      "admin/customers" => "customers", "admin/delivery" => "delivery", "admin/delivery_accounts" => "delivery",
+      "admin/products" => "products", "admin/variants" => "products", "admin/inventory" => "products", "admin/collections" => "products", "admin/discounts" => "products", "admin/media" => "products",
+      "admin/accounting" => "accounting", "admin/users" => "team",
+      "admin/store_connections" => "integrations", "admin/seallo_connections" => "integrations", "admin/woocommerce_connections" => "integrations", "admin/agent_api" => "integrations",
+      "admin/meta_ads" => "integrations", "admin/advertising" => "integrations", "admin/pixels" => "integrations",
+      "admin/whatsapp" => "whatsapp", "admin/stores" => "store", "admin/subscriptions" => "subscription",
+      "admin/agent_billing" => "agent_billing", "admin/my_billing" => "own_billing", "admin/assignment_rules" => "assignments"
+    }.freeze
+    ORDER_CREATION_ACTIONS = %w[new create product_search quick_product].freeze
+    CONFIRMATION_ACTIONS = { "analytics" => "analytics", "dashboard" => "analytics", "assignments" => "assignments", "assign" => "assignments", "auto_assign" => "assignments",
+                             "attendance" => "attendance", "clock_in" => "clock_in", "clock_out" => "clock_in", "heartbeat" => "clock_in" }.freeze
+
     module_function
+
+    def area_for(controller_path, action)
+      case controller_path
+      when "admin/orders" then ORDER_CREATION_ACTIONS.include?(action.to_s) ? "create_orders" : "orders"
+      when "admin/confirmations" then CONFIRMATION_ACTIONS.fetch(action.to_s, "queue")
+      else CONTROLLER_AREAS[controller_path]
+      end
+    end
+
+    def areas_of(user) = find(for_user(user)).areas
 
     def for_user(user) = user.super_admin? ? :super_admin : (user.admin? ? :owner : :agent)
 

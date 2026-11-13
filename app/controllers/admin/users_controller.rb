@@ -1,6 +1,6 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: %i[edit update destroy pay]
+    before_action :set_user, only: %i[edit update destroy pay permissions]
 
     def index
       @tab = %w[roles permissions].include?(params[:tab]) ? params[:tab] : "users"
@@ -12,11 +12,9 @@ module Admin
         @users = @users.where("users.name ILIKE :like OR users.email ILIKE :like", like: like)
       end
       @users = @users.includes(:created_by)
-      @permission_user = @all_users.reject(&:super_admin?).find { |user| user.id == params[:user_id].to_i } if @tab == "permissions"
-      if @tab == "users"
-        @activity = Team::Activity.new(store: current_store, users: @all_users.reject(&:super_admin?))
-        @activity_rows = @activity.filtered(presence: params[:presence], role: params[:role], query: params[:aq])
-      end
+      @permission_user = @all_users.reject(&:super_admin?).find { |user| user.id == params[:user_id].to_i }
+      @activity = Team::Activity.new(store: current_store, users: @all_users.reject(&:super_admin?))
+      @activity_rows = @activity.filtered(presence: params[:presence], role: params[:role], query: params[:aq])
       earnings = Team::AgentEarnings.new(store: current_store, range: Time.current.beginning_of_month..Time.current)
       @summaries = @users.to_h { |user| [ user.id, earnings.summary_for(user) ] }
     end
@@ -74,6 +72,23 @@ module Admin
       redirect_to admin_users_path, notice: t("admin.team.paid", name: @user.name.presence || @user.email)
     rescue Team::AgentPayout::Error => e
       redirect_to admin_users_path, alert: e.message == "Nothing to pay." ? t("admin.team.nothing_to_pay") : e.message
+    end
+
+    # Saves which areas of the store this person may open. It can only narrow what their role gives; the same list as the role's means "no custom list".
+    # You cannot change your own, nor a platform super administrator's.
+    def permissions
+      back = admin_users_path(tab: "permissions", user_id: @user.id)
+      return redirect_to(back, alert: t("admin.permissions.not_editable")) if @user == current_user || @user.super_admin?
+
+      if params[:reset].present?
+        @user.update!(custom_permissions: nil)
+      else
+        areas = Array(params[:areas]).map(&:to_s).reject(&:blank?) & @user.role_areas
+        @user.update!(custom_permissions: areas.sort == @user.role_areas.sort ? nil : areas)
+      end
+      redirect_to back, notice: t("admin.permissions.saved", name: @user.name.presence || @user.email)
+    rescue ActiveRecord::RecordInvalid => e
+      redirect_to back, alert: e.message
     end
 
     private

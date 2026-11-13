@@ -25,6 +25,19 @@ class User < ApplicationRecord
 
   STATUSES = %w[active suspended archived].freeze
 
+  # The areas of the store this person may open: what their role gives, or the shorter list the owner chose (custom_permissions). Super administrators open everything.
+  validate :custom_permissions_only_narrow_the_role
+
+  def role_areas = Team::Roles.areas_of(self)
+
+  def allowed_areas
+    return Team::Roles::AREAS.map(&:first) if super_admin?
+
+    custom_permissions.nil? ? role_areas : (Array(custom_permissions) & role_areas)
+  end
+
+  def area_allowed?(area) = allowed_areas.include?(area)
+
   # The team member who created this account (nil for the platform or accounts that predate the field).
   belongs_to :created_by, class_name: "User", optional: true
   CONFIRMATION_ROLES = %w[agent supervisor].freeze
@@ -89,5 +102,11 @@ class User < ApplicationRecord
 
   def agents_are_not_admins
     self.admin = false if confirmation_agent?
+  end
+
+  def custom_permissions_only_narrow_the_role
+    return if custom_permissions.nil?
+
+    errors.add(:custom_permissions, "must be a list of areas of the role") unless custom_permissions.is_a?(Array) && (custom_permissions - role_areas).empty?
   end
 end

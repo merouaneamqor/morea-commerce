@@ -117,7 +117,10 @@ module SellerHelper
 
   # An agent sees the queue and their own analytics only; assignments, rules and billing are the owner's.
   def seller_call_center_menu(user)
-    user&.confirmation_agent_view? ? SELLER_CALL_CENTER_MENU.first(2) : SELLER_CALL_CENTER_MENU
+    entries = user&.confirmation_agent_view? ? SELLER_CALL_CENTER_MENU.first(2) : SELLER_CALL_CENTER_MENU
+    return entries unless user
+
+    entries.select { |key, *| (area = SELLER_CALL_CENTER_AREAS[key]).nil? || user.area_allowed?(area) }
   end
 
   def seller_call_center_active
@@ -141,10 +144,19 @@ module SellerHelper
     [ "billing", :wallet, "Facturation", "/facturation" ]
   ].freeze
 
-  def seller_menu(user)
-    return SELLER_AGENT_MENU if user&.confirmation_agent_view?
+  # The areas a menu entry leads to: it shows when the person may open at least one of them (the owner can close parts of the store to a person).
+  SELLER_MENU_AREAS = {
+    "dashboard" => %w[dashboard], "stats" => %w[dashboard], "orders" => %w[orders], "confirmation" => %w[queue analytics assignments attendance clock_in agent_billing],
+    "clients" => %w[customers], "delivery" => %w[delivery], "products" => %w[products], "accounting" => %w[accounting], "team" => %w[team],
+    "integrations" => %w[integrations], "store" => %w[store subscription], "billing" => %w[own_billing]
+  }.freeze
+  SELLER_CALL_CENTER_AREAS = { "queue" => "queue", "analytics" => "analytics", "assignments" => "assignments", "rules" => "assignments", "attendance" => "attendance", "billing" => "agent_billing" }.freeze
 
-    SELLER_MENU.reject { |key, *| key == "stats" }
+  def seller_menu(user)
+    entries = user&.confirmation_agent_view? ? SELLER_AGENT_MENU : SELLER_MENU.reject { |key, *| key == "stats" }
+    return entries unless user
+
+    entries.select { |key, *| (areas = SELLER_MENU_AREAS[key]).nil? || areas.any? { |area| user.area_allowed?(area) } }
   end
 
   def seller_active_key

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_13_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -1314,6 +1314,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_180000) do
     t.integer "return_penalty_cents", default: 0, null: false
     t.boolean "show_milestones", default: true, null: false
     t.bigint "created_by_id"
+    t.jsonb "custom_permissions"
     t.index ["created_by_id"], name: "index_users_on_created_by_id"
     t.index ["email"], name: "index_users_on_email_super_admin", unique: true, where: "(super_admin = true)"
     t.index ["status"], name: "index_users_on_status"

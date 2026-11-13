@@ -3731,3 +3731,9 @@ main {
 
 /* The attribution rule window is narrower than the new-order window */
 [data-seller-shell] [data-order-modal-panel][data-narrow][role="dialog"] { width: min(40rem, 100%); zoom: 0.85; max-height: calc((100dvh - 1.5rem) / 0.85); }
+
+/* Glass segmented switch (team tabs): a frosted pill and a translucent white thumb that slides under the chosen tab. */
+.glass-switch { background: rgba(255, 255, 255, 0.45); border: 1px solid rgba(255, 255, 255, 0.75); box-shadow: 0 10px 30px -18px rgba(31, 36, 48, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9); -webkit-backdrop-filter: blur(18px) saturate(1.6); backdrop-filter: blur(18px) saturate(1.6); }
+.glass-switch .ios-thumb { background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.72)); box-shadow: 0 6px 16px -8px rgba(31, 36, 48, 0.45), inset 0 1px 0 #fff; }
+.glass-switch button.text-white { color: #1c1c1e; }
+@media (prefers-reduced-transparency: reduce) { .glass-switch { background: #efeff3; -webkit-backdrop-filter: none; backdrop-filter: none; } }

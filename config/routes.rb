@@ -204,7 +204,10 @@ Rails.application.routes.draw do
     resources :collections
     resources :discounts, except: %i[show]
     resources :users, path: "staff", except: %i[show] do
-      member { post :pay }
+      member do
+        post :pay
+        patch :permissions
+      end
     end
     get "my_stats", to: "my_stats#show", as: :my_stats
     get "my_billing", to: "my_billing#show", as: :my_billing

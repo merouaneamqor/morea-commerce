@@ -1,0 +1,6 @@
+en:
+  admin:
+    permissions:
+      denied: "You do not have access to this part of the store."
+      saved: "Permissions of %{name} saved."
+      not_editable: "You cannot change your own permissions, nor those of a super administrator."

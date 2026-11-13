@@ -48,7 +48,7 @@ RSpec.describe "Team page", type: :request do
     expect(counts).to eq("super_admin" => [ 0, Team::Roles::AREAS.size ], "owner" => [ 1, Team::Roles::AREAS.count { |_, _, roles| roles.include?(:owner) } ], "agent" => [ 2, Team::Roles::AREAS.count { |_, _, roles| roles.include?(:agent) } ])
     expect(page.at_css("[data-create-role-soon]")).to be_present
     get admin_users_path, params: { tab: "roles", q: "confirmation" }
-    expect(page.css("tr[data-role]").map { |row| row["data-role"] }).to eq([ "agent" ])
+    expect(page.css("[data-team-roles] tr[data-role]").map { |row| row["data-role"] }).to eq([ "agent" ])
   end
 
   it "shows what each user can open, by role, and nothing for nobody" do
@@ -58,13 +58,13 @@ RSpec.describe "Team page", type: :request do
     expect(page.at_css("[data-permission-list]")).to be_nil
 
     get admin_users_path, params: { tab: "permissions", user_id: saida.id }
-    granted = page.css("[data-permission-list] [data-area]").select { |item| item["data-granted"] == "true" }.map { |item| item["data-area"] }
+    granted = page.css("[data-permissions-form-edit] input[name='areas[]']").select { |box| box["checked"] }.map { |box| box["value"] }
     expect(granted).to contain_exactly(*Team::Roles::AREAS.select { |_, _, roles| roles.include?(:agent) }.map(&:first))
-    expect(page.at_css("[data-area=accounting]")["data-granted"]).to eq("false")
+    expect(page.at_css("[data-permissions-form-edit] input[value=accounting]")).to be_nil # the agent role does not have it
 
     get admin_users_path, params: { tab: "permissions", user_id: owner.id }
-    expect(page.css("[data-permission-list] [data-area]").all? { |item| item["data-granted"] == "true" }).to be(false) # the agent-only entry is not the owner's
-    expect(page.at_css("[data-area=agent_billing]")["data-granted"]).to eq("true")
+    expect(page.at_css("[data-area=agent_billing]")["data-granted"]).to eq("true") # your own permissions are shown, read-only
+    expect(page.at_css("[data-area=own_billing]")["data-granted"]).to eq("false") # the agent-only entry is not the owner's
   end
 
   it "records who created an account" do

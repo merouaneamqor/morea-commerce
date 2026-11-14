@@ -1,6 +1,7 @@
 <% content_for :title, "#{@collection.name} — #{current_store.name}" %>
 <% content_for :meta_description, @collection.description.presence || @collection.subtitle %>
 <% cover_url = collection_cover_url(@collection) %>
+<%= pixel_event_tag "ViewCategory", collection_pixel_payload(@collection, products: @products) %>
 
 <section class="collection-page">
   <header class="collection-page__head" data-controller="reveal">

@@ -11,7 +11,7 @@ ar:
       title: "Meta Events Manager"
       label: "معرّف Events Manager"
       help: "Events Manager ← مصادر البيانات ← البكسل ← المعرّف. أرقام فقط. اتركي الحقل فارغًا للفصل."
-      events: "تُرسل PageView وViewContent وAddToCart وInitiateCheckout وPurchase على الواجهة."
+      events: "تُرسل PageView وViewContent وViewCategory وSearch وAddToCart وInitiateCheckout وPurchase مع معرّفات المنتج والقيمة والعملة وcontents."
     tiktok:
       title: "بكسل TikTok"
       label: "معرّف البكسل"

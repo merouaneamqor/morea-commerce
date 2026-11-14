@@ -28,6 +28,11 @@
 threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
 threads threads_count, threads_count
 
+# Cluster mode with a single worker keeps a master + child and nearly doubles RSS.
+# morea-web co-hosts Sidekiq on the free 512Mi plan, so only fork when asked for 2+.
+web_concurrency = Integer(ENV.fetch("WEB_CONCURRENCY", "0"))
+workers(web_concurrency >= 2 ? web_concurrency : 0)
+
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 port ENV.fetch("PORT", 3000)
 

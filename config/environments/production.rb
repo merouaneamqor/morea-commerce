@@ -47,6 +47,10 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
+  # Rails 8 turns YJIT on by default. Each process pays for it; free-tier
+  # bin/render-start.sh sets RUBY_YJIT_ENABLE=0 while Puma and Sidekiq share 512Mi.
+  config.yjit = ActiveModel::Type::Boolean.new.cast(ENV.fetch("RUBY_YJIT_ENABLE", "1"))
+
   # Redis-backed cache on Render (Key Value).
   config.cache_store = :redis_cache_store, { url: ENV.fetch("REDIS_URL", "redis://localhost:6379/0") }
 

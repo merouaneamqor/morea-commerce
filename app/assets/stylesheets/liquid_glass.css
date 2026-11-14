@@ -70,7 +70,7 @@
 .lg-nav__active {
   background: rgb(244 228 222 / .88);
   font-weight: 600;
-  color: #a8432e;
+  color: #1d1d1f;
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -148,7 +148,7 @@
 }
 
 .lg-bottom-nav__item.is-active {
-  color: #a8432e;
+  color: #1d1d1f;
   background: rgb(244 228 222 / .9);
 }
 
@@ -172,7 +172,7 @@
   height: 1rem;
   padding: 0 0.25rem;
   border-radius: 999px;
-  background: #a8432e;
+  background: #1d1d1f;
   color: #fff;
   font-size: 0.5625rem;
   font-weight: 700;

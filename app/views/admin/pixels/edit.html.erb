@@ -36,7 +36,7 @@
     </div>
     <div>
       <%= f.label :meta_pixel_id, t("pixels.meta.label"), class: "mb-1.5 block text-sm font-medium text-[#1f2430]" %>
-      <%= f.text_field :meta_pixel_id, class: "h-11 w-full rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#a8432e]",
+      <%= f.text_field :meta_pixel_id, class: "h-11 w-full rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#008060]",
             placeholder: "123456789012345", autocomplete: "off", inputmode: "numeric", dir: "ltr" %>
     </div>
     <% if @store.meta_pixel_id.present? %>
@@ -57,7 +57,7 @@
     </div>
     <div>
       <%= f.label :tiktok_pixel_id, t("pixels.tiktok.label"), class: "mb-1.5 block text-sm font-medium text-[#1f2430]" %>
-      <%= f.text_field :tiktok_pixel_id, class: "h-11 w-full rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#a8432e]",
+      <%= f.text_field :tiktok_pixel_id, class: "h-11 w-full rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#008060]",
             placeholder: "CXXXXXXXXXXXXXXXXXX", autocomplete: "off", dir: "ltr" %>
     </div>
     <% if @store.tiktok_pixel_id.present? %>
@@ -78,7 +78,7 @@
     </div>
     <div>
       <%= f.label :google_analytics_id, t("pixels.analytics.label"), class: "mb-1.5 block text-sm font-medium text-[#1f2430]" %>
-      <%= f.text_field :google_analytics_id, class: "h-11 w-full rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#a8432e]",
+      <%= f.text_field :google_analytics_id, class: "h-11 w-full rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#008060]",
             placeholder: "G-XXXXXXXXXX", autocomplete: "off", dir: "ltr" %>
     </div>
     <% if @store.google_analytics_id.present? %>
@@ -87,6 +87,6 @@
   </section>
 
   <div class="flex justify-end">
-    <%= f.submit t("pixels.save"), class: "h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624]" %>
+    <%= f.submit t("pixels.save"), class: "h-11 rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c]" %>
   </div>
 <% end %>

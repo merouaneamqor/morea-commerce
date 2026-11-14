@@ -3457,7 +3457,7 @@ main {
   .seallo-auth .sa-form-wrap .fx-label { color: #1c1c1e; font-size: .875rem; font-weight: 500; letter-spacing: 0; }
   .seallo-auth .sa-form-wrap .fx-input { min-height: 2.75rem; border: 1px solid #e0e0e5; border-radius: .5rem; background: #fdfcfb; color: #1c1c1e; }
   .seallo-auth .sa-form-wrap .fx-input::placeholder { color: #6e6e73; }
-  .seallo-auth .sa-form-wrap .fx-input:focus { border-color: #1d1d1f; box-shadow: 0 0 0 3px rgb(168 67 46 / .15); outline: none; }
+  .seallo-auth .sa-form-wrap .fx-input:focus { border-color: #1d1d1f; box-shadow: 0 0 0 3px rgb(0 128 96 / .18); outline: none; }
   .seallo-auth .sa-form-wrap .fx-btn { min-height: 2.75rem; border: 0; border-radius: .5rem; background: #1d1d1f; font-weight: 600; }
   .seallo-auth .sa-form-wrap .fx-btn:hover { background: #3a3a3c; }
   .seallo-auth .sa-form-wrap .fx-link { color: #1c1c1e; }

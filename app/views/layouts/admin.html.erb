@@ -4,7 +4,7 @@
     <%= render "shared/favicon" %>
     <title><%= content_for?(:title) ? yield(:title) : "#{Store.platform_name} — #{current_store&.name || "seallo"}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-    <meta name="theme-color" content="<%= current_store&.admin_theme == "seallo_dark" ? "#15110f" : "#a8432e" %>">
+    <meta name="theme-color" content="<%= current_store&.admin_theme == "seallo_dark" ? "#15110f" : "#1d1d1f" %>">
     <link rel="manifest" href="<%= admin_pwa_manifest_path %>">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">

@@ -1,8 +1,8 @@
 /* Platform landing page (apex). Light, warm layout ported from the seallo landing page. */
 .platform-landing {
-  --brand: #a8432e;
-  --brand-dark: #8e3624;
-  --brand-tint: #f4e4de;
+  --brand: #1d1d1f;
+  --brand-dark: #3a3a3c;
+  --brand-tint: #ececf0;
   --ink: #1f2430;
   --warm: #f3f1ef;
   --cream: #f6efea;
@@ -25,7 +25,7 @@
 .platform-landing :where(ul, ol) { list-style: none; }
 .platform-landing a { color: inherit; text-decoration: none; }
 .platform-landing a:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 6px; }
-.platform-landing ::selection { background: rgb(168 67 46 / .2); }
+.platform-landing ::selection { background: rgb(29 29 31 / .2); }
 .platform-container { width: 100%; max-width: 72rem; margin-inline: auto; padding-inline: 1rem; }
 @media (min-width: 640px) { .platform-container { padding-inline: 1.5rem; } }
 
@@ -48,7 +48,7 @@
 .platform-footer .platform-languages { display: flex; }
 
 /* Buttons */
-.platform-button { display: inline-flex; align-items: center; justify-content: center; padding: .875rem 1.5rem; border-radius: .75rem; background: var(--brand); color: #fff !important; font-size: .875rem; font-weight: 600; text-align: center; box-shadow: 0 12px 30px -12px rgb(168 67 46 / .8); transition: background .15s; }
+.platform-button { display: inline-flex; align-items: center; justify-content: center; padding: .875rem 1.5rem; border-radius: .75rem; background: var(--brand); color: #fff !important; font-size: .875rem; font-weight: 600; text-align: center; box-shadow: 0 12px 30px -12px rgb(29 29 31 / .8); transition: background .15s; }
 .platform-button:hover { background: var(--brand-dark); }
 .platform-button-secondary { border: 1px solid var(--line); background: #fff; color: var(--ink) !important; box-shadow: none; }
 .platform-button-secondary:hover { background: #fff; border-color: rgb(31 36 48 / .3); }
@@ -106,7 +106,7 @@
 .platform-demo-chart, .platform-demo-table { padding: 1rem; border: 1px solid var(--line); border-radius: .75rem; background: #fff; }
 .platform-demo-chart p, .platform-demo-table p { color: var(--ink); font-size: .875rem; font-weight: 600; }
 .platform-demo-chart > div { display: flex; align-items: flex-end; gap: .5rem; height: 10rem; margin-top: 1rem; }
-.platform-demo-chart > div span { flex: 1; border-radius: .375rem; background: rgb(168 67 46 / .25); }
+.platform-demo-chart > div span { flex: 1; border-radius: .375rem; background: rgb(29 29 31 / .25); }
 .platform-demo-chart > div span.is-last { background: var(--brand); }
 .platform-demo-table table { width: 100%; margin-top: .75rem; border-collapse: collapse; font-size: .75rem; }
 @media (min-width: 640px) { .platform-demo-table table { font-size: .875rem; } }
@@ -170,12 +170,12 @@
 .platform-flow-link { position: absolute; top: 1.5rem; inset-inline-start: calc(50% + 24px); width: calc(100% - 48px); height: 2px; overflow: hidden; border-radius: 999px; background: var(--line); }
 .platform-flow-link span { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0; background: var(--brand); transition: width .7s; }
 .platform-flow-steps li button { display: flex; flex-direction: column; align-items: center; width: 100%; padding: .25rem; border: 0; border-radius: .75rem; background: none; color: inherit; font: inherit; text-align: center; cursor: pointer; }
-.platform-flow-steps li button:focus-visible { outline: 2px solid rgb(168 67 46 / .4); }
+.platform-flow-steps li button:focus-visible { outline: 2px solid rgb(0 128 96 / .55); }
 .platform-flow-icon { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border: 1px solid var(--line); border-radius: 1rem; background: #fff; color: #b3aca8; transition: all .5s; }
 .platform-flow-icon svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-.platform-flow-steps li button:hover .platform-flow-icon { border-color: rgb(168 67 46 / .5); color: var(--brand); }
-.platform-flow-steps li button.is-passed .platform-flow-icon { border-color: rgb(168 67 46 / .4); color: var(--brand); }
-.platform-flow-steps li button.is-active .platform-flow-icon { transform: scale(1.1); border-color: var(--brand); background: var(--brand); color: #fff; box-shadow: 0 10px 24px -10px rgb(168 67 46 / .9); }
+.platform-flow-steps li button:hover .platform-flow-icon { border-color: rgb(29 29 31 / .5); color: var(--brand); }
+.platform-flow-steps li button.is-passed .platform-flow-icon { border-color: rgb(29 29 31 / .4); color: var(--brand); }
+.platform-flow-steps li button.is-active .platform-flow-icon { transform: scale(1.1); border-color: var(--brand); background: var(--brand); color: #fff; box-shadow: 0 10px 24px -10px rgb(29 29 31 / .9); }
 .platform-flow-steps strong { margin-top: .5rem; color: var(--ink); font-size: .6875rem; font-weight: 600; line-height: 1.2; transition: color .2s; }
 .platform-flow-steps button.is-active strong { color: var(--brand); }
 .platform-flow-steps small { display: none; margin-top: .125rem; padding-inline: .25rem; color: var(--muted); font-size: .75rem; line-height: 1.35; }
@@ -194,7 +194,7 @@
 .platform-flow-detail > p { margin-top: .375rem; font-size: .875rem; line-height: 1.65; }
 .platform-flow-dots { display: flex; flex: none; gap: .25rem; }
 .platform-flow-dots button { width: .375rem; height: .375rem; padding: 0; border: 0; border-radius: 999px; background: #ddd6d1; cursor: pointer; transition: all .2s; }
-.platform-flow-dots button:hover { background: rgb(168 67 46 / .5); }
+.platform-flow-dots button:hover { background: rgb(29 29 31 / .5); }
 .platform-flow-dots button.is-active { width: 1.25rem; background: var(--brand); }
 
 /* Partners: one light card, three groups */
@@ -231,7 +231,7 @@
 @media (min-width: 640px) { .platform-feats { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1024px) { .platform-feats { grid-template-columns: repeat(6, 1fr); } }
 .platform-feats li { padding: .875rem; border: 1px solid rgb(255 255 255 / .8); border-radius: 1rem; background: rgb(255 255 255 / .65); transition: all .15s; }
-.platform-feats li:hover { border-color: rgb(168 67 46 / .4); background: rgb(255 255 255 / .9); }
+.platform-feats li:hover { border-color: rgb(29 29 31 / .4); background: rgb(255 255 255 / .9); }
 .platform-feats li > div { display: flex; align-items: center; gap: .5rem; }
 .platform-feats .platform-icon { width: 2.25rem; height: 2.25rem; border-radius: .75rem; }
 .platform-feats .platform-icon svg { width: 1.125rem; height: 1.125rem; }
@@ -261,7 +261,7 @@
 .platform-why-row p span { display: flex; flex: none; align-items: center; justify-content: center; width: 1.25rem; height: 1.25rem; border-radius: 50%; color: #fff; font-size: .625rem; font-weight: 700; }
 .platform-why-row .is-pain { border: 1px dashed #d9d2cd; background: rgb(255 255 255 / .4); color: var(--muted); }
 .platform-why-row .is-pain span { background: #ef4444; }
-.platform-why-row .is-fix { border: 1px solid rgb(255 255 255 / .8); background: rgb(255 255 255 / .75); color: var(--ink); font-weight: 500; box-shadow: 0 10px 30px -24px rgb(168 67 46 / .8); }
+.platform-why-row .is-fix { border: 1px solid rgb(255 255 255 / .8); background: rgb(255 255 255 / .75); color: var(--ink); font-weight: 500; box-shadow: 0 10px 30px -24px rgb(29 29 31 / .8); }
 .platform-why-row .is-fix span { background: #10b981; }
 .platform-why-topic { display: flex; align-items: center; gap: .5rem; }
 .platform-why-topic .platform-icon { width: 2rem; height: 2rem; }
@@ -537,3 +537,28 @@
 .platform-hero-cta { display: flex; gap: .75rem; margin-top: 1.1rem; justify-content: center; }
 @media (min-width: 1024px) { .platform-hero-cta { justify-content: flex-start; } }
 .platform-hero-cta .platform-button { padding: .7rem 1.25rem; box-shadow: 0 14px 30px -16px rgb(29 29 31 / .7); }
+
+/* The "break anywhere" rule above squeezed the language button into a column and split "PUBLICITÉ": these keep their words whole. */
+.platform-language-menu > button, .platform-nav button, .platform-button, .platform-login-nav, .platform-header-button { white-space: nowrap; overflow-wrap: normal; flex-shrink: 0; }
+.platform-language-menu > button svg { flex: none; }
+.platform-partners p, .platform-eyebrow, .platform-live, .platform-live-card { overflow-wrap: normal; white-space: nowrap; }
+.platform-hero-cta .platform-button span { margin-inline-start: .35rem; }
+
+/* Language dropdown of the header (these base rules were dropped by the stack: the header markup kept the dropdown). */
+.platform-language-menu { position: relative; display: none; }
+@media (min-width: 640px) { .platform-language-menu { display: block; } }
+.platform-language-menu > button { display: inline-flex; align-items: center; gap: .4rem; height: 2.5rem; padding: 0 .85rem; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink); font-size: .8rem; font-weight: 600; cursor: pointer; }
+.platform-language-menu > button svg { width: 1rem; height: 1rem; color: var(--muted); }
+.platform-language-menu > button .platform-language-caret { width: .75rem; height: .75rem; }
+.platform-language-menu ul { position: absolute; right: 0; top: calc(100% + .5rem); z-index: 60; min-width: 10rem; margin: 0; padding: .25rem; list-style: none; border: 1px solid var(--line); border-radius: 1rem; background: #fff; box-shadow: 0 12px 32px -12px rgb(0 0 0 / .25); }
+.platform-language-menu ul[hidden] { display: none; }
+.platform-language-menu li a { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .5rem .75rem; border-radius: .75rem; font-size: .875rem; color: var(--ink); }
+.platform-language-menu li a:hover, .platform-language-menu li a[aria-current="true"] { background: #f5f5f7; }
+.platform-language-menu li a[aria-current="true"] { font-weight: 600; }
+@media (max-width: 639px) {
+  .platform-language-menu { display: block; }
+  .platform-language-menu > button { height: 2.25rem; padding: 0 .6rem; gap: .25rem; }
+  .platform-language-menu > button > svg:first-child { display: none; }
+  .platform-language-menu ul { right: auto; left: 0; }
+}
+.platform-language-menu > button { white-space: nowrap; flex-shrink: 0; }

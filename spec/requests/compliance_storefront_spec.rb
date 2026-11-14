@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rails_helper"
+require "nokogiri"
 
 RSpec.describe "Compliance storefront", type: :request do
   let(:store) do
@@ -93,6 +94,12 @@ RSpec.describe "Compliance storefront", type: :request do
   it "requires checkout consents before placing an order" do
     product = store.products.create!(name: "Item", slug: "item", status: "active", price_cents: 1000, stock: 5)
     post "/en/cart/add_item", params: { product_id: product.id, quantity: 1 }
+
+    get "/en/checkout"
+    expect(response).to have_http_status(:ok)
+    doc = Nokogiri::HTML(response.body)
+    expect(doc.at_css("#checkout_privacy_accepted")["checked"]).to be_present
+    expect(doc.at_css("#checkout_age_confirmed")["checked"]).to be_present
 
     post "/en/checkout", params: {
       checkout: {

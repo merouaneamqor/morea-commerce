@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rails_helper"
+require "nokogiri"
 
 RSpec.describe "Storefront COD checkout", type: :request do
   include ActiveJob::TestHelper
@@ -109,5 +110,35 @@ RSpec.describe "Storefront COD checkout", type: :request do
   it "redirects empty checkout to the cart" do
     get "/en/checkout"
     expect(response).to redirect_to("/en/cart")
+  end
+
+  it "pre-checks privacy and age acceptance on the order form" do
+    add_to_cart
+    get "/en/checkout"
+    expect(response).to have_http_status(:ok)
+    doc = Nokogiri::HTML(response.body)
+    privacy = doc.at_css("#checkout_privacy_accepted")
+    age = doc.at_css("#checkout_age_confirmed")
+    expect(privacy).to be_present
+    expect(age).to be_present
+    expect(privacy["checked"]).to be_present
+    expect(age["checked"]).to be_present
+  end
+
+  it "still rejects an order when acceptance is unchecked" do
+    add_to_cart
+    expect {
+      post "/en/checkout", params: {
+        checkout: {
+          name: "Buyer",
+          phone: "0612345678",
+          city: "Casablanca",
+          address: "Rue 1",
+          privacy_accepted: "0",
+          age_confirmed: "0"
+        }
+      }
+    }.not_to change { store.orders.count }
+    expect(response).to have_http_status(:unprocessable_content)
   end
 end

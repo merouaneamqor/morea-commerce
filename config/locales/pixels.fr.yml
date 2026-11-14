@@ -1,7 +1,8 @@
 fr:
   pixels:
     title: "Pixels"
-    lead: "Ajoutez les identifiants Meta, TikTok et Google Analytics. Ils se chargent sur la vitrine uniquement après acceptation de la mesure dans le bandeau cookies."
+    lead: "Ajoutez les identifiants Meta, TikTok et Google Analytics. Dans l’UE, au Royaume-Uni et en Suisse, ils se chargent seulement après acceptation dans le bandeau. Dans les autres pays, y compris en Afrique, ils se chargent sans bandeau."
+
     back: "Retour"
     save: "Enregistrer"
     saved: "Paramètres des pixels enregistrés."

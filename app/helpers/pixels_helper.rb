@@ -2,8 +2,9 @@
 
 module PixelsHelper
   def pixels_enabled?
-    current_store&.pixels_configured? && tracking_consent_granted?
+    current_store&.pixels_configured? && measurement_allowed?
   end
+
 
   def pixel_value(cents)
     (cents.to_i / 100.0).round(2)

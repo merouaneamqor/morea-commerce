@@ -1,7 +1,8 @@
 en:
   pixels:
     title: "Pixels"
-    lead: "Add Meta, TikTok and Google Analytics measurement IDs. They load on the storefront only after a visitor accepts measurement in the cookie banner."
+    lead: "Add Meta, TikTok and Google Analytics measurement IDs. In the EU, UK and Switzerland they load only after the visitor accepts the cookie banner. In other countries, including Africa, they load without a banner."
+
     back: "Back"
     save: "Save"
     saved: "Pixel settings saved."

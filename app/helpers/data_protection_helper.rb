@@ -45,11 +45,28 @@ module DataProtectionHelper
     tracking_consent_granted? || tracking_consent_denied?
   end
 
+  def visitor_country_code
+    Morea::TrackingConsentJurisdiction.country_from_request(request)
+  end
+
+  def cookie_consent_required?
+    Morea::TrackingConsentJurisdiction.required?(visitor_country_code)
+  end
+
+  def measurement_allowed?
+    return false if tracking_consent_denied?
+    return true unless cookie_consent_required?
+
+    tracking_consent_granted?
+  end
+
   def cookie_notice_pending?
+    return false unless cookie_consent_required?
     return false if tracking_consent_decided?
 
     current_store.present? || Store.apex_host?(request.host)
   end
+
 
   def checkout_rights_notice
     number = current_store&.cndp_authorization.to_s.strip

@@ -120,7 +120,7 @@ RSpec.describe "Admin theme editor", type: :request do
     expect(document.at_css("[data-theme-preview='#{theme.id}']")).to be_present
     expect(document.at_css("[data-preview-section='hero']")).to be_present
     expect(response.body).to include("campaign-hero")
-    expect(response.body).to include("The essentials, held")
+    expect(response.body).to include("The catalog")
   end
 
   it "updates section order and translated text in one snapshot save" do

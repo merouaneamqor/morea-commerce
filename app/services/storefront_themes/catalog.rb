@@ -11,34 +11,34 @@ module StorefrontThemes
             "translations" => {
               "fr" => {
                 "subheading" => "Nouvelle saison",
-                "heading" => "Des pièces faites pour bouger",
-                "body" => "Coupe nette, matière tenue, rythme du quotidien.",
-                "button_label" => "Découvrir la collection"
+                "heading" => "Toute la sélection",
+                "body" => "Coupe nette, matière tenue. Parcourez le catalogue.",
+                "button_label" => "Voir les pièces"
               },
               "en" => {
                 "subheading" => "New season",
-                "heading" => "Pieces cut for movement",
-                "body" => "Clean lines, held fabric, made for the day ahead.",
-                "button_label" => "Discover the collection"
+                "heading" => "Shop the full edit",
+                "body" => "Clean cuts, held fabric. Browse the catalog.",
+                "button_label" => "Shop all"
               },
               "es" => {
                 "subheading" => "Nueva temporada",
-                "heading" => "Piezas hechas para moverse",
-                "body" => "Líneas limpias, tejido firme, para el ritmo del día.",
-                "button_label" => "Descubrir la colección"
+                "heading" => "Toda la selección",
+                "body" => "Cortes limpios, tejido firme. Recorre el catálogo.",
+                "button_label" => "Ver todo"
               },
               "ar" => {
                 "subheading" => "موسم جديد",
-                "heading" => "قطع صُممت للحركة",
-                "body" => "خطوط واضحة، قماش متماسك، لإيقاع اليوم.",
-                "button_label" => "اكتشف المجموعة"
+                "heading" => "تسوق كل المختارات",
+                "body" => "قصّات واضحة وقماش متماسك. تصفّح الكتالوج.",
+                "button_label" => "عرض الكل"
               }
             } },
-          { "kind" => "featured_collection", "visible" => true, "settings" => { "limit" => "4" }, "translations" => {
-            "fr" => { "subheading" => "À regarder d’abord", "heading" => "Pièces signatures" },
-            "en" => { "subheading" => "Start here", "heading" => "Signature pieces" },
-            "es" => { "subheading" => "Empieza aquí", "heading" => "Piezas insignia" },
-            "ar" => { "subheading" => "ابدأ من هنا", "heading" => "قطع مميزة" }
+          { "kind" => "featured_collection", "visible" => true, "settings" => { "limit" => "12" }, "translations" => {
+            "fr" => { "subheading" => "Catalogue", "heading" => "Tout voir" },
+            "en" => { "subheading" => "Catalog", "heading" => "Shop all" },
+            "es" => { "subheading" => "Catálogo", "heading" => "Ver todo" },
+            "ar" => { "subheading" => "الكتالوج", "heading" => "عرض الكل" }
           } },
           { "kind" => "image_with_text", "visible" => true, "settings" => { "link" => "page:about", "image_position" => "left" }, "translations" => {
             "fr" => {
@@ -101,32 +101,35 @@ module StorefrontThemes
         "sections" => [
           { "kind" => "hero", "visible" => true, "settings" => { "link" => "collections" }, "translations" => {
             "fr" => {
-              "subheading" => "Essentiel",
-              "heading" => "L'essentiel, tenu",
-              "body" => "Peu de pièces, chacune utile et claire.",
+              "subheading" => "Boutique",
+              "heading" => "Le catalogue",
+              "body" => "Peu de pièces. Tout le stock, en grille.",
               "button_label" => "Voir la boutique"
             },
             "en" => {
-              "subheading" => "Essential",
-              "heading" => "The essentials, held",
-              "body" => "Few pieces, each useful and clear.",
+              "subheading" => "Store",
+              "heading" => "The catalog",
+              "body" => "Few pieces. The full stock, in grid.",
               "button_label" => "Shop now"
             },
             "es" => {
-              "subheading" => "Esencial",
-              "heading" => "Lo esencial, claro",
-              "body" => "Pocas piezas, cada una útil y clara.",
+              "subheading" => "Tienda",
+              "heading" => "El catálogo",
+              "body" => "Pocas piezas. Todo el stock, en rejilla.",
               "button_label" => "Ver la tienda"
             },
             "ar" => {
-              "subheading" => "أساسي",
-              "heading" => "الأساسيات، بوضوح",
-              "body" => "قطع قليلة، كل واحدة مفيدة وواضحة.",
+              "subheading" => "المتجر",
+              "heading" => "الكتالوج",
+              "body" => "قطع قليلة. كامل المخزون في شبكة.",
               "button_label" => "تسوق الآن"
             }
           } },
-          { "kind" => "featured_collection", "visible" => true, "settings" => { "limit" => "8" }, "translations" => {
-            "fr" => { "heading" => "Sélection" }, "en" => { "heading" => "Featured" }, "es" => { "heading" => "Selección" }, "ar" => { "heading" => "مختارات" }
+          { "kind" => "featured_collection", "visible" => true, "settings" => { "limit" => "12" }, "translations" => {
+            "fr" => { "heading" => "Tout voir" },
+            "en" => { "heading" => "Shop all" },
+            "es" => { "heading" => "Ver todo" },
+            "ar" => { "heading" => "عرض الكل" }
           } },
           { "kind" => "rich_text", "visible" => true, "settings" => { "link" => "page:about" }, "translations" => {
             "fr" => { "body" => "Des pièces utiles, faites pour durer.", "button_label" => "En savoir plus" },

@@ -1,6 +1,7 @@
 <%# Product card used on the home page, collections and related products %>
 <% alt_url = product_alt_image_url(product) %>
-<%= link_to product_path(product), class: "home-card" do %>
+<% catalog = local_assigns[:catalog] %>
+<%= link_to product_path(product), class: "home-card#{" home-card--catalog" if catalog}" do %>
   <div class="home-card__media object-frame aspect-[3/4]">
     <%= product_image_tag product,
           sizes: local_assigns.fetch(:sizes, "(max-width: 768px) 50vw, 25vw"),
@@ -14,10 +15,12 @@
     <% elsif product.compare_at_cents.to_i > product.price_cents %>
       <span class="home-card__badge home-card__badge--sale"><%= t("product.sale") %></span>
     <% end %>
-    <span class="home-card__view"><%= t("product.view") %></span>
+    <% unless catalog %>
+      <span class="home-card__view"><%= t("product.view") %></span>
+    <% end %>
   </div>
   <div class="home-card__meta">
-    <% if local_assigns[:index] %>
+    <% if local_assigns[:index] && !catalog %>
       <span class="home-card__index"><%= format("%02d", index + 1) %></span>
     <% end %>
     <p class="home-card__name"><%= product.name %></p>

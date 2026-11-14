@@ -26,8 +26,8 @@ RSpec.describe "Storefront theme lifecycle" do
       expect(theme.snapshot.fetch("sections").map { |section| section.fetch("kind") }).to eq(
         %w[hero featured_collection image_with_text collection_list rich_text]
       )
-      expect(theme.snapshot.dig("sections", 0, "translations", "en", "heading")).to eq("Pieces cut for movement")
-      expect(theme.snapshot.dig("sections", 0, "translations", "en", "body")).to include("Clean lines")
+      expect(theme.snapshot.dig("sections", 0, "translations", "en", "heading")).to eq("Shop the full edit")
+      expect(theme.snapshot.dig("sections", 0, "translations", "en", "body")).to include("Browse the catalog")
       expect(store.home_sections.reload).to contain_exactly(live_section)
       expect(live_section.reload.translations.find_by!(locale: "en").heading).to eq("Existing home page")
     end
@@ -60,11 +60,11 @@ RSpec.describe "Storefront theme lifecycle" do
       expect(hero.position).to eq(0)
       expect(hero.settings).to include("link" => "collections")
       expect(hero.translations.order(:locale).pluck(:locale)).to contain_exactly("ar", "en", "es", "fr")
-      expect(hero.translations.find_by!(locale: "en").heading).to eq("The essentials, held")
-      expect(hero.translations.find_by!(locale: "fr").heading).to eq("L'essentiel, tenu")
-      expect(hero.translations.find_by!(locale: "es").heading).to eq("Lo esencial, claro")
-      expect(hero.translations.find_by!(locale: "ar").heading).to eq("الأساسيات، بوضوح")
-      expect(hero.translations.find_by!(locale: "en").body).to eq("Few pieces, each useful and clear.")
+      expect(hero.translations.find_by!(locale: "en").heading).to eq("The catalog")
+      expect(hero.translations.find_by!(locale: "fr").heading).to eq("Le catalogue")
+      expect(hero.translations.find_by!(locale: "es").heading).to eq("El catálogo")
+      expect(hero.translations.find_by!(locale: "ar").heading).to eq("الكتالوج")
+      expect(hero.translations.find_by!(locale: "en").body).to eq("Few pieces. The full stock, in grid.")
 
       expect(replacement.reload).to be_published
       expect(replacement.published_at).to be_present

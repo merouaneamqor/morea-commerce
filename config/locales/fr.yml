@@ -12,11 +12,11 @@ fr:
     tagline_fallback: "Sportswear pudique de luxe pour femmes actives."
     footer_tagline: "Activewear pudique moderne"
   home:
-    selection_title: "La sélection"
+    selection_title: "Tout voir"
     view_all: "Tout voir"
-    collections_title: "S'entraîner, se déplacer, se poser"
+    collections_title: "Collections"
     explore: "Explorer"
-    hero_support: "Parcourez la sélection. Payez à la livraison partout au Maroc."
+    hero_support: "Parcourez le catalogue. Payez à la livraison partout au Maroc."
   landing:
     eyebrow: "Activewear"
     hero_product: "L'Essentiel Set"

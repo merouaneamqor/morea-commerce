@@ -29,7 +29,7 @@ class OnlineStoreDefaults
           body: t(loc, "home.hero_support"),
           button_label: st&.campaign_cta.presence || t(loc, "store.default_campaign_cta") }
       end,
-      section("featured_collection", { collection_id: store.featured_collection_id&.to_s, limit: "4" }) do |loc, _|
+      section("featured_collection", { collection_id: store.featured_collection_id&.to_s, limit: "12" }) do |loc, _|
         { heading: t(loc, "home.selection_title") }
       end,
       section("collection_list", { limit: "3" }) do |loc, _|

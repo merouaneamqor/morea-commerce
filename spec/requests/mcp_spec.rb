@@ -31,9 +31,15 @@ RSpec.describe "Merchant MCP", type: :request do
     get "/mcp"
     expect(response).to have_http_status(:unauthorized)
     expect(response.headers["WWW-Authenticate"]).to include("/.well-known/oauth-protected-resource/mcp")
+    expect(response.parsed_body.dig("error", "code")).to eq(-32001)
 
-    post_mcp({ jsonrpc: "2.0", id: 1, method: "tools/list" }, headers: { "Accept" => "application/json", "Content-Type" => "application/json" })
+    post_mcp({ jsonrpc: "2.0", id: 7, method: "tools/list" }, headers: { "Accept" => "application/json", "Content-Type" => "application/json" })
     expect(response).to have_http_status(:unauthorized)
+    expect(response.parsed_body).to include(
+      "jsonrpc" => "2.0",
+      "id" => 7,
+      "error" => hash_including("code" => -32001, "message" => "Unauthorized")
+    )
   end
 
   it "rejects authenticated GET with Allow POST" do
@@ -74,9 +80,11 @@ RSpec.describe "Merchant MCP", type: :request do
 
   it "blocks past-due workspaces with 402" do
     store.update!(subscription_required: true, billing_status: "canceled", trial_ends_at: 1.day.ago)
-    post_mcp({ jsonrpc: "2.0", id: 1, method: "tools/list" })
+    post_mcp({ jsonrpc: "2.0", id: 9, method: "tools/list" })
     expect(response).to have_http_status(:payment_required)
-    expect(response.parsed_body.dig("errors", 0, "code")).to eq("subscription_required")
+    expect(response.parsed_body.dig("error", "code")).to eq(-32003)
+    expect(response.parsed_body.dig("error", "data", "code")).to eq("subscription_required")
+    expect(response.parsed_body["id"]).to eq(9)
   end
 
   it "rejects platform tokens on the merchant endpoint" do
@@ -89,6 +97,7 @@ RSpec.describe "Merchant MCP", type: :request do
     secret = PlatformApiToken.issue!(user: owner)
     post_mcp({ jsonrpc: "2.0", id: 1, method: "tools/list" }, headers: mcp_headers(secret))
     expect(response).to have_http_status(:unauthorized)
+    expect(response.parsed_body.dig("error", "code")).to eq(-32001)
   end
 
   it "answers GET on the token endpoint with Allow POST instead of a routing miss" do
@@ -96,5 +105,42 @@ RSpec.describe "Merchant MCP", type: :request do
     expect(response).to have_http_status(:method_not_allowed)
     expect(response.headers["Allow"]).to include("POST")
     expect(response.parsed_body.fetch("error")).to eq("invalid_request")
+  end
+
+  it "reads get_product, list_products and store_stats without JSON-RPC internal errors" do
+    product = store.products.create!(
+      slug: "basic-tracksuit",
+      name: "Basic Tracksuit Morea",
+      price_cents: 0,
+      stock: 0,
+      status: "active",
+      track_inventory: true
+    )
+    product.product_variants.create!(option1_value: "M", option2_value: "Noir", stock: 2, active: true)
+
+    call_tool = lambda do |name, arguments = {}|
+      post_mcp({
+        jsonrpc: "2.0",
+        id: name,
+        method: "tools/call",
+        params: { name: name, arguments: arguments }
+      })
+      expect(response).to have_http_status(:ok), -> { response.body }
+      body = response.parsed_body
+      expect(body.dig("error", "code")).not_to eq(-32603)
+      expect(body.dig("result", "isError")).not_to eq(true)
+      body
+    end
+
+    listed = call_tool.call("list_products", { "limit" => 10 })
+    expect(listed.dig("result", "content", 0, "text")).to include("basic-tracksuit")
+
+    shown = call_tool.call("get_product", { "slug" => "basic-tracksuit" })
+    expect(shown.dig("result", "content", 0, "text")).to include("Basic Tracksuit")
+
+    stats = call_tool.call("store_stats", {})
+    text = stats.dig("result", "content", 0, "text")
+    expect(text).to include("placedCount")
+    expect(text).to include("pipeline")
   end
 end

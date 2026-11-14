@@ -10,16 +10,19 @@ module CatalogTools
       }
     )
 
-    def self.call(server_context:, since: nil, until: nil)
-      finish = binding.local_variable_get(:until)
+    def self.call(server_context:, **arguments)
       CatalogExecutor.call(
-        store: server_context.fetch(:store),
+        store: CatalogExecutor.store_from(server_context),
         query: <<~GQL,
           query($since: ISO8601Date, $until: ISO8601Date) {
             stats(since: $since, until: $until) { #{CatalogExecutor::STATS_FIELDS} }
           }
         GQL
-        variables: { since: since, until: finish }.compact
+        variables: {
+          since: arguments[:since],
+          until: arguments[:until]
+        }.compact,
+        include_covers: false
       )
     end
   end

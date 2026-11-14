@@ -43,3 +43,4 @@ __pycache__/
 
 # Browser regression tooling
 /node_modules/
+/vendor/bundle/

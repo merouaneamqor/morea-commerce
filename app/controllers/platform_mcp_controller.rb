@@ -5,8 +5,8 @@ class PlatformMcpController < ActionController::API
 
   before_action :authenticate_platform_token!
   rescue_from PlatformTools::Unauthorized do
-    response.set_header("Cache-Control", "no-store")
-    render json: { error: "Unauthorized" }, status: :unauthorized
+    response.set_header("WWW-Authenticate", %(Bearer realm="morea-platform", resource_metadata="#{request.base_url}/.well-known/oauth-protected-resource/platform/mcp"))
+    render_mcp_unauthorized!
   end
 
   def handle
@@ -27,7 +27,6 @@ class PlatformMcpController < ActionController::API
     end
 
     response.set_header("WWW-Authenticate", %(Bearer realm="morea-platform", resource_metadata="#{request.base_url}/.well-known/oauth-protected-resource/platform/mcp"))
-    response.set_header("Cache-Control", "no-store")
-    render json: { error: "Unauthorized" }, status: :unauthorized
+    render_mcp_unauthorized!
   end
 end

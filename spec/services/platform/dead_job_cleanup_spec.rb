@@ -13,7 +13,7 @@ RSpec.describe Platform::DeadJobCleanup do
   end
 
   describe ".clear_runtime_orphans!" do
-    it "removes missing-class jobs from retry, schedule, dead, and queues" do
+    it "removes missing-class jobs from retry, schedule, and dead sets" do
       orphan = double("orphan-job", display_class: "RebuildBusinessSearchIndexJob")
       keep = double("keep-job", display_class: "SenditCitiesRefreshJob")
       allow(orphan).to receive(:delete)
@@ -22,22 +22,17 @@ RSpec.describe Platform::DeadJobCleanup do
       retry_set = double("retry-set")
       scheduled_set = double("scheduled-set")
       dead_set = double("dead-set")
-      queue = double("queue")
 
       allow(retry_set).to receive(:each).and_yield(orphan).and_yield(keep)
       allow(scheduled_set).to receive(:each)
       allow(dead_set).to receive(:each)
-      allow(queue).to receive(:each)
 
       stub_const("Sidekiq::RetrySet", Class.new)
       stub_const("Sidekiq::ScheduledSet", Class.new)
       stub_const("Sidekiq::DeadSet", Class.new)
-      stub_const("Sidekiq::Queue", Class.new)
       allow(Sidekiq::RetrySet).to receive(:new).and_return(retry_set)
       allow(Sidekiq::ScheduledSet).to receive(:new).and_return(scheduled_set)
       allow(Sidekiq::DeadSet).to receive(:new).and_return(dead_set)
-      allow(Sidekiq::Queue).to receive(:new).with("default").and_return(queue)
-      allow(Sidekiq).to receive(:redis).and_yield(double("redis", smembers: [ "default" ]))
 
       result = described_class.clear_runtime_orphans!
 

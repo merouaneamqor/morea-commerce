@@ -19,18 +19,15 @@ module Platform
       Result.new(removed: removed, mode: "orphans")
     end
 
-    # Drop missing-class jobs from retry/schedule/dead/queues so a shared Redis
-    # leftover (RebuildBusinessSearchIndexJob, BookingMailer, …) cannot keep
-    # failing and inflating RSS on the free web+Sidekiq box.
+    # Drop missing-class jobs from retry/schedule/dead so a shared Redis leftover
+    # (RebuildBusinessSearchIndexJob, BookingMailer, …) cannot keep failing and
+    # inflating RSS on the free web+Sidekiq box.
     def self.clear_runtime_orphans!
       require "sidekiq/api"
       removed = 0
       removed += delete_orphans_from!(Sidekiq::RetrySet.new)
       removed += delete_orphans_from!(Sidekiq::ScheduledSet.new)
       removed += delete_orphans_from!(Sidekiq::DeadSet.new)
-      queue_names.each do |name|
-        removed += delete_orphans_from!(Sidekiq::Queue.new(name))
-      end
       Result.new(removed: removed, mode: "runtime_orphans")
     end
 
@@ -62,11 +59,5 @@ module Platform
       removed
     end
     private_class_method :delete_orphans_from!
-
-    # Sidekiq 8 has no Queue.all; queue names live in the Redis "queues" set.
-    def self.queue_names
-      Sidekiq.redis { |conn| conn.smembers("queues") }.sort
-    end
-    private_class_method :queue_names
   end
 end

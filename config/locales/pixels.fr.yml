@@ -11,7 +11,7 @@ fr:
       title: "Meta Events Manager"
       label: "ID Events Manager"
       help: "Events Manager → Sources de données → votre pixel → ID. Chiffres uniquement. Laissez vide pour déconnecter."
-      events: "PageView, ViewContent, AddToCart, InitiateCheckout et Purchase partent sur la vitrine."
+      events: "PageView, ViewContent, ViewCategory, Search, AddToCart, InitiateCheckout et Purchase partent avec ids produit, valeur, devise et contents."
     tiktok:
       title: "Pixel TikTok"
       label: "ID pixel"

@@ -1,22 +1,34 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Loads once in the layout. Fires PageView / page / page_view on every Turbo visit.
+// Loads once in the layout. Fires PageView on every Turbo visit and drains
+// events queued while this controller was still lazy-loading.
 export default class extends Controller {
   static values = {
     metaId: String,
     tiktokId: String,
-    analyticsId: String
+    analyticsId: String,
+    userData: { type: Object, default: {} }
   }
 
   connect() {
     this.onLoad = () => this.trackPageView()
     document.addEventListener("turbo:load", this.onLoad)
     window.MoreaPixels = this
+    this.flushQueue()
   }
 
   disconnect() {
     document.removeEventListener("turbo:load", this.onLoad)
     if (window.MoreaPixels === this) window.MoreaPixels = null
+  }
+
+  flushQueue() {
+    const queue = window.MoreaPixelQueue || []
+    window.MoreaPixelQueue = []
+    queue.forEach((entry) => {
+      if (!entry || !entry.name) return
+      this.track(entry.name, entry.payload || {})
+    })
   }
 
   trackPageView() {
@@ -28,16 +40,64 @@ export default class extends Controller {
   track(name, payload = {}) {
     const metaName = name === "CompletePayment" ? "Purchase" : name
     const tiktokName = name === "Purchase" ? "CompletePayment" : name
+    const data = this.normalizePayload(payload)
 
-    this.meta(metaName, payload)
-    this.tiktok(tiktokName, payload)
-    this.analytics(metaName, payload)
+    this.meta(metaName, data)
+    this.tiktok(tiktokName, data)
+    this.analytics(metaName, data)
+  }
+
+  normalizePayload(payload) {
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) return {}
+    const data = { ...payload }
+    if (data.content_ids && !Array.isArray(data.content_ids)) {
+      data.content_ids = [ String(data.content_ids) ]
+    }
+    if (Array.isArray(data.content_ids)) {
+      data.content_ids = data.content_ids.map((id) => String(id))
+    }
+    if (Array.isArray(data.contents)) {
+      data.contents = data.contents.map((row) => {
+        if (!row || typeof row !== "object") return row
+        return {
+          ...row,
+          id: row.id != null ? String(row.id) : row.id,
+          quantity: row.quantity != null ? Number(row.quantity) : row.quantity,
+          item_price: row.item_price != null ? Number(row.item_price) : row.item_price
+        }
+      })
+    }
+    return data
   }
 
   meta(eventName, payload = {}) {
     if (!this.metaIdValue || typeof window.fbq !== "function") return
-    if (payload && Object.keys(payload).length) {
-      window.fbq("track", eventName, payload)
+
+    const data = { ...payload }
+    const eventID = data.event_id || data.eventID
+    delete data.event_id
+    delete data.eventID
+    delete data.user_data
+
+    if (!data.contents && Array.isArray(data.content_ids)) {
+      data.contents = data.content_ids.map((id) => ({
+        id: String(id),
+        quantity: Number(data.quantity || data.num_items || 1),
+        item_price: data.value != null && (data.quantity || data.num_items)
+          ? Number((Number(data.value) / Number(data.quantity || data.num_items || 1)).toFixed(2))
+          : data.value
+      }))
+    }
+
+    const options = {}
+    if (eventID) options.eventID = String(eventID)
+
+    if (Object.keys(data).length && Object.keys(options).length) {
+      window.fbq("track", eventName, data, options)
+    } else if (Object.keys(data).length) {
+      window.fbq("track", eventName, data)
+    } else if (Object.keys(options).length) {
+      window.fbq("track", eventName, {}, options)
     } else {
       window.fbq("track", eventName)
     }
@@ -50,7 +110,7 @@ export default class extends Controller {
 
   tiktok(eventName, payload = {}) {
     if (!this.tiktokIdValue || !window.ttq || typeof window.ttq.track !== "function") return
-    if (eventName === "page") {
+    if (eventName === "page" || eventName === "PageView") {
       this.tiktokPage()
       return
     }
@@ -63,8 +123,16 @@ export default class extends Controller {
 
   tiktokPayload(payload) {
     const mapped = { ...payload }
-    if (mapped.content_ids) {
-      mapped.contents = mapped.content_ids.map((id) => ({ content_id: String(id), content_type: mapped.content_type || "product" }))
+    delete mapped.event_id
+    delete mapped.eventID
+    delete mapped.user_data
+    if (!mapped.contents && Array.isArray(mapped.content_ids)) {
+      mapped.contents = mapped.content_ids.map((id) => ({
+        content_id: String(id),
+        content_type: mapped.content_type || "product",
+        quantity: Number(mapped.quantity || mapped.num_items || 1),
+        price: mapped.value != null ? Number(mapped.value) : undefined
+      }))
     }
     return mapped
   }
@@ -73,7 +141,8 @@ export default class extends Controller {
     if (!this.analyticsIdValue || typeof window.gtag !== "function") return
     window.gtag("event", "page_view", {
       page_location: window.location.href,
-      page_path: window.location.pathname + window.location.search
+      page_path: window.location.pathname + window.location.search,
+      page_title: document.title
     })
   }
 
@@ -87,15 +156,28 @@ export default class extends Controller {
     const params = {}
     if (payload.value != null) params.value = payload.value
     if (payload.currency) params.currency = payload.currency
+    if (payload.search_string) params.search_term = payload.search_string
+    if (payload.content_name) params.item_list_name = payload.content_name
+    if (payload.content_category) params.item_category = payload.content_category
     if (payload.content_ids) {
-      params.items = payload.content_ids.map((id) => ({ item_id: String(id) }))
+      params.items = payload.content_ids.map((id, index) => {
+        const row = Array.isArray(payload.contents) ? payload.contents[index] : null
+        return {
+          item_id: String(id),
+          item_name: payload.content_name,
+          quantity: row?.quantity || payload.quantity || 1,
+          price: row?.item_price
+        }
+      })
     }
 
     const map = {
       ViewContent: "view_item",
       AddToCart: "add_to_cart",
       InitiateCheckout: "begin_checkout",
-      Purchase: "purchase"
+      Purchase: "purchase",
+      Search: "search",
+      ViewCategory: "view_item_list"
     }
     window.gtag("event", map[eventName] || eventName, params)
   }

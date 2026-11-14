@@ -1,8 +1,7 @@
 class OrdersController < ApplicationController
   def show
     @order = current_store.orders.includes(order_items: { product: { images_attachments: :blob } }).find_by!(number: params[:number])
-    @pixel_purchase = session[:pixel_purchase_order_id].to_i == @order.id
-    session.delete(:pixel_purchase_order_id) if @pixel_purchase
+    @pixel_purchase = flash[:pixel_purchase_order_id].to_i == @order.id
   end
 
   def track

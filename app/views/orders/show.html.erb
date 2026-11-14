@@ -1,5 +1,5 @@
 <% content_for :title, "#{t("orders.order")} #{@order.number} — #{current_store.name}" %>
-<% if @pixel_purchase %>
+<% if @pixel_purchase && pixels_enabled? %>
   <%= pixel_event_tag "Purchase", order_pixel_payload(@order) %>
 <% end %>
 

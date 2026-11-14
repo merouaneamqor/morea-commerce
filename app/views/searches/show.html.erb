@@ -1,4 +1,7 @@
 <% content_for :title, "#{t("shop.search_title")} — #{current_store.name}" %>
+<% if @query.present? %>
+  <%= pixel_event_tag "Search", search_pixel_payload(@query, products: @products, total_count: @total_count) %>
+<% end %>
 
 <section class="collection-page">
   <header class="collection-page__head" data-controller="reveal">

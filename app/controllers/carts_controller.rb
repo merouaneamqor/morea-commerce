@@ -17,14 +17,7 @@ class CartsController < ApplicationController
     pixel_event = if helpers.pixels_enabled?
       {
         name: "AddToCart",
-        payload: {
-          content_ids: [ product.id.to_s ],
-          content_type: "product",
-          content_name: product.name,
-          value: (product.price_cents.to_i / 100.0 * quantity).round(2),
-          currency: current_store.pixel_currency,
-          quantity: quantity
-        }
+        payload: helpers.product_pixel_payload(product, quantity: quantity, variant: variant)
       }
     end
 

@@ -29,7 +29,8 @@ class CheckoutsController < ApplicationController
       order = @checkout.place_order!
       remember_delivery_from_checkout!(@checkout)
       session.delete(:cart_token)
-      session[:pixel_purchase_order_id] = order.id
+      # Flash survives the checkout redirect once; session keys were unreliable for the pixel.
+      flash[:pixel_purchase_order_id] = order.id
       redirect_to order_path(order.number), notice: t("checkout.placed")
     else
       render :show, status: :unprocessable_entity

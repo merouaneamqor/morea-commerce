@@ -3745,3 +3745,7 @@ main {
 .toast-overlay.is-pre .toast-card { transform: scale(0.94); }
 @media (prefers-reduced-transparency: reduce) { .toast-overlay .toast-card { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; } }
 @media (prefers-reduced-motion: reduce) { .toast-overlay, .toast-overlay .toast-card { transition: none; } }
+
+/* A gray-glass bar (section headers): frosted gray with a bright edge, dark text. */
+.glass-bar { background: rgba(126, 132, 146, 0.2); border: 1px solid rgba(255, 255, 255, 0.65); box-shadow: 0 12px 30px -20px rgba(31, 36, 48, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.75); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); }
+@media (prefers-reduced-transparency: reduce) { .glass-bar { background: #e3e5ea; -webkit-backdrop-filter: none; backdrop-filter: none; } }

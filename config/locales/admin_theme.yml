@@ -28,3 +28,13 @@ ar:
     descriptions:
       seallo: "صفحات بلون الكريم ولمسات قرميدية"
       seallo_dark: "فحمي دافئ، مريح للعين ليلاً"
+es:
+  admin_theme:
+    heading: "Elige tu tema"
+    help: "Elige el aspecto de tu espacio. Podrás cambiarlo más tarde en Ajustes."
+    names:
+      seallo: "Seallo"
+      seallo_dark: "Seallo oscuro"
+    descriptions:
+      seallo: "Páginas color crema, acentos color óxido"
+      seallo_dark: "Antracita cálido, descansado para la vista por la noche"

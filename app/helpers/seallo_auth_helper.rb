@@ -8,10 +8,11 @@ module SealloAuthHelper
   def st(french)
     return french if I18n.locale == :fr
 
-    pair = SEALLO_DICTIONARY[french]
-    return french unless pair
+    texts = SEALLO_DICTIONARY[french]
+    return french unless texts
 
-    I18n.locale == :en ? pair[0] : pair[1]
+    # Each entry is [English, Arabic, Spanish].
+    texts[{ en: 0, ar: 1, es: 2 }.fetch(I18n.locale, 0)] || french
   end
 
   def plan_amount(number)

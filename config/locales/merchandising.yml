@@ -46,3 +46,19 @@ ar:
       payment_body: "ادفعي عند استلام طلبك، دون دفع إلكتروني."
       returns_body: "اطّلعي على شروط وخطوات ترتيب الإرجاع."
       conditions: "اطّلعي على الشروط"
+es:
+  merchandising:
+    breadcrumb: "Migas de pan"
+    discover_collection: "Descubrir la colección"
+    available: "Disponible"
+    explore_details: "Explorar el tejido, el corte y los detalles"
+    origin: "Origen"
+    services:
+      title: "A tu lado, en cada paso"
+      intro: "Elegir una prenda continúa con la atención a los detalles de tu pedido."
+      advice: "Un consejo para elegir"
+      advice_body: "¿Tienes una pregunta sobre el corte, la talla o los detalles de una prenda? Habla con nuestro equipo."
+      contact: "Escríbenos por WhatsApp"
+      payment_body: "Paga tu pedido al recibirlo, sin pago en línea."
+      returns_body: "Consulta las condiciones y los pasos para organizar una devolución."
+      conditions: "Consultar las condiciones"

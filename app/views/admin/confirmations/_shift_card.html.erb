@@ -1,0 +1,16 @@
+<section class="admin-card p-4 mb-5 flex flex-wrap items-center justify-between gap-4" aria-labelledby="my-shift-title">
+  <div>
+    <h2 id="my-shift-title" class="admin-card__title"><%= t("admin.confirmations.my_shift") %></h2>
+    <% if open_shift %>
+      <p class="admin-muted mt-1"><%= t("admin.confirmations.on_shift_since", time: l(open_shift.started_at, format: :short)) %></p>
+      <p role="timer" class="admin-metric__value mt-2 tabular-nums" data-controller="shift-timer" data-shift-timer-started-at-value="<%= open_shift.started_at.iso8601 %>"><%= shift_clock(Time.current - open_shift.started_at) %></p>
+    <% else %>
+      <p class="admin-muted mt-1"><%= t("admin.confirmations.off_shift") %></p>
+    <% end %>
+  </div>
+  <% if open_shift %>
+    <%= button_to t("admin.confirmations.clock_out"), clock_out_admin_confirmations_path(period: period), class: "admin-btn-secondary" %>
+  <% else %>
+    <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path(period: period), class: "admin-btn" %>
+  <% end %>
+</section>

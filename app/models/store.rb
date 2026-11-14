@@ -15,6 +15,34 @@ class Store < ApplicationRecord
   has_many :orders, dependent: :destroy
   has_many :carts, dependent: :destroy
   has_many :discounts, dependent: :destroy
+  has_many :assignment_rules, -> { ordered }, dependent: :destroy
+  has_many :whatsapp_accounts, dependent: :destroy
+  has_many :whatsapp_messages, dependent: :delete_all
+
+  # The store's logo (a PNG without background works best). A confirmation agent sees it in their workspace instead of the platform name.
+  LOGO_TYPES = %w[image/png image/jpeg image/webp].freeze
+  LOGO_MAX_BYTES = 2.megabytes
+  has_one_attached :logo
+  validate :logo_is_a_small_image
+
+  # The merchant's own site, shown to the agents. "walkfit33.com" is stored as "https://walkfit33.com"; only http(s) addresses are accepted.
+  validates :website_url, length: { maximum: 200 }
+  validate :website_url_is_a_web_address
+
+  def website_url=(value)
+    text = value.to_s.strip
+    text = "https://#{text}" if text.present? && !text.downcase.start_with?("http://", "https://")
+    super(text.presence)
+  end
+
+  # "https://www.walkfit33.com/" -> "walkfit33.com", to show it.
+  def website_label = website_url&.delete_prefix("https://")&.delete_prefix("http://")&.delete_prefix("www.")&.chomp("/")
+
+  # A saved logo that can be shown: not one that was just uploaded and refused by the validation.
+  def logo_ready? = logo.attached? && logo.attachment.persisted? && logo.blob.persisted?
+
+  # Once the owner has an active attribution rule, an agent works only the orders the rules gave them. Without one, agents share the open queue.
+  def assignment_enforced? = assignment_rules.active.exists?
   has_many :users, dependent: :destroy
   has_many :translations, class_name: "StoreTranslation", dependent: :destroy, inverse_of: :store
   has_many :home_sections, dependent: :destroy
@@ -239,6 +267,9 @@ class Store < ApplicationRecord
     "#{protocol}://#{host}"
   end
 
+  # The address of the site without the protocol, to show it ("walkfit33.example.com").
+  def host_label = origin.delete_prefix("https://").delete_prefix("http://")
+
   def shipping_dh
     shipping_cents.to_i / 100
   end
@@ -308,6 +339,11 @@ class Store < ApplicationRecord
       attributes[:billing_status] = "trial" unless paid_plan_active
     end
     update!(attributes)
+  end
+
+  # The plan is active for a full period without a payment having been made (see Plans.skip_payment?).
+  def activate_plan_without_payment!
+    update!(billing_status: "active", billing_period_ends_on: billing_interval == "yearly" ? Date.current + 1.year : Date.current + 1.month)
   end
 
   def billing_past_due?
@@ -424,5 +460,21 @@ class Store < ApplicationRecord
       when "yearly" then Date.current + 1.year
       else Date.current + 1.month
       end
+  end
+
+  def website_url_is_a_web_address
+    return if website_url.blank?
+
+    uri = URI.parse(website_url)
+    errors.add(:website_url, "must be a web address such as https://mysite.com") unless uri.is_a?(URI::HTTP) && uri.host.present? && uri.host.include?(".")
+  rescue URI::InvalidURIError
+    errors.add(:website_url, "must be a web address such as https://mysite.com")
+  end
+
+  def logo_is_a_small_image
+    return unless logo.attached?
+
+    errors.add(:logo, "must be a PNG, JPEG or WebP image") unless LOGO_TYPES.include?(logo.blob.content_type)
+    errors.add(:logo, "must be 2 MB or less") if logo.blob.byte_size > LOGO_MAX_BYTES
   end
 end

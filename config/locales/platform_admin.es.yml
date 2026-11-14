@@ -1,0 +1,359 @@
+es:
+  platform_admin:
+    request_rejected: Solicitud rechazada.
+    request_already_reviewed: Esta solicitud ya se ha tramitado.
+    title: Plataforma
+    overview: Visión general
+    overview_description: Gestiona los espacios de comerciantes y la actividad de la plataforma.
+    workspaces: Espacios de comerciantes
+    new_workspace: Nuevo espacio
+    access_requests: Solicitudes de acceso
+    requests_count: Solicitudes de acceso (%{count})
+    workspace_created: El espacio %{name} se ha creado. Accede a él en %{origin}/admin
+    no_workspaces: Todavía no hay ningún espacio de comerciante.
+    storefront: Tienda Codify
+    storefront_enabled: Activada
+    storefront_disabled: No activada
+    view_storefront: Ver la tienda
+    open_admin: Abrir la administración
+    billing: Facturación
+    invoices: Facturas
+    orders: Pedidos
+    orders_today: Pedidos del día
+    order_value: Valor de los pedidos
+    staff: Equipo
+    slug: Identificador
+    amount: Importe
+    status: Estado
+    period_ends: Fin del periodo
+    sign_out: Cerrar sesión
+    request_description: Comerciantes que solicitan acceso a Codify para gestionar los pedidos de Shopify, WooCommerce o YouCan,
+      con una tienda Codify opcional. El espacio se crea solo tras la aprobación.
+    request_statuses:
+      pending: Pendiente
+      approved: Aprobada
+      rejected: Rechazada
+    fields:
+      business: Empresa
+      email: Correo electrónico
+      phone: Teléfono
+      language: Idioma
+      requested: Fecha de solicitud
+      status: Estado
+      subdomain: Subdominio del espacio
+      currency: Moneda
+      password: Contraseña
+    review_request: Revisar la solicitud
+    reject: Rechazar
+    reject_confirmation: ¿Rechazar esta solicitud?
+    back: Volver
+    no_requests: 'No hay ninguna solicitud con el estado: %{status}.'
+    status_count: '%{status} (%{count})'
+    request_review_description: Revisa el espacio solicitado por %{email}. Al validar este formulario se aprueba la solicitud
+      y se crea su espacio.
+    workspace: Espacio de comerciante
+    workspace_description: Un espacio permite gestionar los pedidos de Shopify, WooCommerce o YouCan. La tienda pública Codify
+      es opcional y solo se publica si la activas más abajo.
+    subdomain_help: 'Administración del espacio: %{domain}/admin'
+    first_admin: Primer administrador
+    approve_and_create_workspace: Aprobar y crear el espacio
+    create_workspace: Crear el espacio
+    reset:
+      title: Restablecer el espacio
+      description: Deja este espacio como nuevo. Acción irreversible, pensada para espacios de prueba.
+      removes: Elimina todos los pedidos, clientes, productos, colecciones, descuentos, páginas, menús, conexiones, datos
+        de publicidad, gastos, pagos de agentes y tokens, y restablece todos los ajustes de la tienda.
+      keeps: Conserva el nombre, el subdominio, los datos de contacto, la facturación, las facturas y las cuentas del personal.
+        El contenido predeterminado de la tienda en línea se reinstala si el escaparate está activado.
+      confirm_label: Escribe %{slug} para confirmar
+      confirm_dialog: ¿Borrar definitivamente todos los datos de %{name}?
+      submit: Restablecer el espacio
+      done: '%{name} se ha dejado como nuevo.'
+      denied:
+        confirmation_mismatch: El texto introducido no coincide con el subdominio del espacio. No se ha modificado nada.
+        not_super_admin: Se requiere acceso de superadministrador.
+    document_title: Platform, %{name}
+    nav_group_home: Home
+    nav_group_people: People
+    nav_group_money: Billing
+    nav_group_ops: Operations
+    agent_nav: Platform agent
+    features_nav: Features
+    billing_nav: Billing
+    integrations_nav: Integrations
+    operations_nav: Operations
+    audit_nav: Audit
+    privacy_nav: Privacy
+    search:
+      label: Search workspaces
+      placeholder: Name, slug, domain, or shop
+      title: Workspace search
+      empty: No workspaces matched that search.
+      results: Results for %{query}
+    queue:
+      title: Needs attention
+      empty: Nothing waiting right now.
+      overdue: Overdue invoices
+      access: Access requests
+      integrations: Integration failures
+      privacy: Privacy requests
+    billing_console:
+      title: Subscription billing
+      description: Platform subscription invoices in MAD. Merchant sales are separate.
+      overdue: Overdue
+      issued: Issued
+      renewals: Upcoming renewals
+      payment_reference: Payment reference
+      mark_paid: Record payment
+      mark_paid_confirm: Record this payment and activate the subscription?
+    billing_page:
+      description: Plans, renewals, issued invoices, and overdue balances across workspaces.
+      merchant_sales_note: These totals are platform subscription revenue only. Merchant sales stay separate.
+      summary: Summary
+      paid_this_month: Paid this month
+      outstanding: Outstanding issued
+      overdue: Overdue (%{count})
+      overdue_list: Overdue invoices
+      issued_list: Issued invoices
+      renewals_list: Upcoming renewals
+      plans_list: Workspace plans
+      due: Due
+      open_invoice: Open invoice
+      no_overdue: No overdue invoices.
+      no_issued: No issued invoices.
+      no_renewals: No renewals in the next 30 days.
+    invoice_ui:
+      number: Invoice
+      payment_reference: Payment reference
+      payment_reference_help: Bank transfer or receipt reference for the verified payment.
+      mark_paid: Record payment
+      mark_paid_confirm: Record this payment and activate the subscription?
+      void_confirm: Void this invoice?
+      subscription_status: Subscription
+      merchant_sales_note: Platform subscription invoice. Merchant sales are not included.
+    integrations:
+      title: Integration diagnostics
+      description: Authorization and sync health by workspace. Rechecks do not import orders.
+      recheck: Recheck
+      recheck_confirm: Run a safe recheck for this integration?
+      seallo_link: Seallo connections
+      failing_title: Needs attention
+      failing_empty: No failing integrations right now.
+      workspaces_title: Workspaces with connections
+      workspaces_empty: No connected workspaces yet.
+      workspace_empty: This workspace has no stored connections.
+      view: Open
+      columns:
+        workspace: Workspace
+        provider: Provider
+        state: State
+        error: Error code
+        connections: Connections
+        attention: Attention
+        verified_at: Last verified
+        last_sync: Last sync
+      providers:
+        shopify: Shopify
+        woocommerce: WooCommerce
+        youcan: YouCan
+        meta_ads: Meta Ads
+        sendit: Sendit
+      states:
+        verified: Verified
+        configured: Configured
+        disconnected: Disconnected
+        needs_reauthorization: Needs reauthorization
+      outcomes:
+        verified: Connection verified.
+        entitlement_verified: Plan verified. The merchant can retry connecting from Seallo Connect.
+        disconnected: This connection is disconnected. The merchant must reconnect.
+        not_entitled: No active plan was returned. Check the plan before retrying.
+        unsupported: This integration cannot be rechecked here.
+        unsupported_connection: Only Seallo Connect Shopify connections use the Shopify recheck.
+        credentials_missing: Stored credentials are missing. Ask the merchant to reconnect.
+        invalid_credentials: Authorization is no longer valid. Ask the merchant to reconnect.
+        shop_not_permitted: The shop has not permitted this connection.
+        missing_scopes: Required access is missing. Ask the merchant to reauthorize.
+        source_mismatch: Stored identity could not be verified.
+        rate_limited: The provider rate-limited this check. Retry later.
+        unavailable: The provider could not be reached. Retry later.
+        invalid_response: The provider returned an incomplete response. Retry later.
+        config_missing: Platform configuration for this provider needs attention.
+        needs_reauthorization: Meta authorization must be renewed by the merchant.
+        invalid_token: Meta authorization is no longer valid. Ask the merchant to reconnect.
+        permission_denied: Meta permissions are missing. Ask the merchant to reconnect.
+        invalid_keys: Sendit refused these API keys.
+        blocked: Sendit could not be reached through its edge protection. Retry later.
+        network: Sendit could not be reached. Retry later.
+        unexpected: Sendit returned an unexpected answer.
+        rejected: Sendit refused the credential check.
+        sync_attention: Order sync needs attention.
+        credentials_unverified: Credentials are saved but not yet verified.
+    features_console:
+      title: Feature rollout
+      description: Global and workspace flags. Changes are audited.
+      history: Recent flag changes
+    features:
+      title: Feature rollout
+      description: Turn home-page gates and the storefront theme editor on or off. Every change is audited.
+      legacy_link: ActiveAdmin flags
+      home_title: Public home page
+      home_description: Choose what visitors see on the platform home page. Store admin, signup, and each storefront stay
+        available. When both flags are on, visitors see Under maintenance.
+      home_effective: 'Visitors currently see: %{state}.'
+      home_states:
+        live: Live home page
+        maintenance: Under maintenance
+        coming_soon: Coming soon
+      flags:
+        home_maintenance: Under maintenance
+        home_coming_soon: Coming soon
+      theme_editor_title: Storefront theme editor
+      theme_editor_description: Enable theme installation, preview, editing and publishing for selected workspaces. Disable
+        a workspace to hide draft install and publish while keeping the Themes tab visible.
+      enable: Enable
+      disable: Disable
+      enabled: Enabled
+      disabled: Disabled
+      published: Published
+      unpublished: Unpublished
+      confirm_home: Change the %{flag} flag for the public home page?
+      confirm_theme_editor: Change the theme editor for %{name}?
+      updated_home: '%{flag} is now %{status}. Visitors see: %{state}.'
+      updated_store: Theme editor for %{name} is now %{status}.
+      unknown_flag: Unknown home page flag.
+      store_missing: Workspace not found.
+      history_title: Recent flag changes
+      history_empty: No feature flag changes recorded yet.
+      columns:
+        page: Page
+        status: Status
+        workspace: Workspace
+        storefront: Storefront
+        theme_editor: Theme editor
+        when: When
+        action: Action
+        flag: Flag
+        enabled: State
+        actor: Actor
+    operations:
+      title: Platform operations
+      description: Failed jobs and integration errors with workspace attribution when known.
+      failed_jobs: Failed jobs
+      empty_jobs: No failed jobs in the dead set.
+      retry_jobs: Jobs waiting to retry
+      empty_retry: No jobs waiting to retry.
+      redis_unavailable: Job queues are unavailable right now. Connection and webhook errors below still load from the database.
+      webhook_failures: Connection and webhook errors
+      empty_webhooks: No recent connection or webhook error codes.
+      unknown_workspace: 'Workspace #%{id}'
+      orphan_badge: Missing class
+      orphan_help:
+        one: '%{count} failed job references a class that is no longer in this app (often leftover from an older Redis share).
+          Remove orphans, or clear the whole dead set.'
+        other: '%{count} failed jobs reference classes that are no longer in this app (often leftover from an older Redis
+          share). Remove orphans, or clear the whole dead set.'
+      clear_orphans:
+        one: Remove %{count} orphan
+        other: Remove %{count} orphans
+      clear_orphans_confirm:
+        one: Delete %{count} dead job whose class no longer exists?
+        other: Delete %{count} dead jobs whose classes no longer exist?
+      clear_dead: Clear all dead jobs
+      clear_dead_confirm: Delete every job in the Sidekiq dead set? This cannot be undone.
+      delete_job: Remove
+      delete_job_confirm: Remove this dead job?
+      cleared_orphans:
+        one: Removed %{count} orphan dead job.
+        other: Removed %{count} orphan dead jobs.
+      cleared_dead:
+        one: Cleared %{count} dead job.
+        other: Cleared %{count} dead jobs.
+      cleared_one: Removed the dead job.
+      mail_title: Outbound email
+      mail_ready: SMTP is configured. Mail sends from %{from} via %{address}.
+      mail_missing: 'Outbound email is not configured. Missing: %{keys}.'
+      mail_help: On the morea-web Render service, set MAIL_FROM, SMTP_ADDRESS, SMTP_PORT, SMTP_USERNAME, and SMTP_PASSWORD.
+        Resend SMTP uses smtp.resend.com, user resend, and your API key as the password.
+      mail_from: From
+      mail_host: SMTP host
+      columns:
+        job: Job
+        queue: Queue
+        error: Error
+        workspace: Workspace
+        when: When
+        connection: Connection
+        code: Error code
+    audit:
+      title: Audit trail
+      description: Privileged platform actions. Personal-data reads stay in the same log.
+      empty: No audit events matched.
+      filters: Search
+      action: Action
+      store_id: Workspace ID
+      actor: Actor
+      search: Search
+      when: When
+      source: Source
+      open: Open
+      detail: Event
+      subject: Subject
+      ip: IP
+      metadata: Metadata
+      metadata_note: Only known non-secret fields are shown.
+    privacy_resolve_confirm: Mark this privacy request as resolved?
+    no_date: None
+    orders_30_days: Orders in 30 days
+    paid_this_month: Paid this month
+    outstanding: Outstanding
+    impersonate:
+      title: Open %{name} as
+      description: Choose a member of this workspace. You will use their account until you return to the platform.
+      direct_access: Enter as super admin
+      close: Close
+      empty: This workspace has no active member to open.
+      invalid: Choose an active member of this workspace.
+      banner: You are using %{name}'s account in %{workspace}.
+      stop: Return to platform
+      stopped: You are back on the platform.
+      roles:
+        admin: Workspace administrator
+        agent: Confirmation agent
+        supervisor: Supervisor
+    approve_flow_help: Review opens the workspace form. Saving that form approves the request, creates the workspace, and
+      grants the merchant admin access.
+    workspace_detail:
+      title: Workspace
+      document_title: '%{name}'
+      identity: Identity
+      host: Host
+      origin: Origin
+      plan_billing: Plan and billing
+      plan: Plan
+      interval: Interval
+      edit_billing: Edit billing
+      no_staff: No staff accounts yet.
+      connections: Connections
+      no_connections: No store connections.
+      meta_ads: Meta Ads
+      sendit: Sendit
+      configured: Configured
+      not_configured: Not configured
+      shortcuts: Direct access
+      shortcuts_help: Open admin first, then use the merchant navigation. Deep links below work only after you enter the workspace.
+      confirmations: Confirmations
+      customers: Customers
+      catalog: Catalog / products
+      shipping: Shipping / Sendit
+      ads: Ads
+      accounting: Accounting
+      configuration: Configuration
+      configuration_help: Billing, storefront and workspace reset live on the edit page.
+      return_banner: Platform session in %{name}.
+      return_workspace: Workspace record
+      return_platform: Platform overview
+    workspace_banner:
+      working_in: You are working in %{name}.
+      workspace_detail: Workspace detail
+      platform: Platform

@@ -20,12 +20,7 @@ RSpec.describe "Call center rules", type: :request do
     post "/admin/login", params: { email: user.email, password: password }
   end
 
-  # Presence needs a fresh last_seen_at heartbeat, not a legacy clock-in row.
-  def clock_in(user) = ConfirmationShift.create!(store: store, user: user, started_at: 1.hour.ago, last_seen_at: Time.current)
-  # Simulate the desk-presence heartbeat so long travel_to jumps do not close the session.
-  def keep_present(user)
-    ConfirmationShift.open.where(store: store, user: user).update_all(last_seen_at: Time.current)
-  end
+  def clock_in(user) = ConfirmationShift.create!(store: store, user: user, started_at: 1.hour.ago)
   def document = Nokogiri::HTML(response.body)
   def confirmation_of(order) = order.reload.order_confirmation
   def json = JSON.parse(response.body)
@@ -53,13 +48,10 @@ RSpec.describe "Call center rules", type: :request do
     it "keeps a claim alive while the call panel pings" do
       sign_in(agent)
       travel_to(Time.zone.local(2026, 11, 5, 10, 0)) do
-        post "/admin/confirmations/#{order.id}/call"
-        # Panel touch + presence heartbeat must stay inside the 45s grace window.
-        40.times do
-          travel 30.seconds
-          keep_present(agent)
-          post "/admin/confirmations/#{order.id}/touch_call"
-        end
+        post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
+        travel 10.minutes
+        post "/admin/confirmations/#{order.id}/touch_call", headers: { "ACCEPT" => "application/json" }
+        travel 10.minutes
         Confirmations::ClaimExpiry.release_idle!(store)
         expect(confirmation_of(order).assigned_user_id).to eq(agent.id)
       end
@@ -68,34 +60,24 @@ RSpec.describe "Call center rules", type: :request do
     it "makes an agent who comes back after 15 minutes find the order released, not act on a stale claim" do
       sign_in(agent)
       travel_to(Time.zone.local(2026, 11, 5, 10, 0)) do
-        post "/admin/confirmations/#{order.id}/call"
-        expect(confirmation_of(order)).to have_attributes(assigned_user_id: agent.id, call_started_at: be_present)
-
+        post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
         travel 16.minutes
-        Confirmations::ClaimExpiry.release_idle!(store)
-        expect(confirmation_of(order).assigned_user_id).to be_nil
-
-        # Presence went stale with the idle claim; restore a heartbeat without re-claiming,
-        # then assert the desk refuses to finish a released claim.
-        Confirmations::Presence.new(store: store, user: agent).ping!
-        expect {
-          Confirmations::Desk.new(store: store, user: agent).finish_call(order.id, outcome: "confirmed")
-        }.to raise_error(Confirmations::Desk::Error, /claim/i)
-
+        post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed" }
+        expect(response).to have_http_status(:unprocessable_content)
         expect(order.reload.status).to eq("new")
         expect(confirmation_of(order).assigned_user_id).to be_nil
       end
     end
 
-    it "releases what the agent holds when she leaves the desk" do
+    it "releases what the agent holds when she clocks out" do
       sign_in(agent)
       post "/admin/confirmations/#{order.id}/claim"
       expect(confirmation_of(order).assigned_user_id).to eq(agent.id)
 
-      Confirmations::Presence.new(store: store, user: agent).leave!
+      post "/admin/confirmations/clock_out"
 
       expect(confirmation_of(order).assigned_user_id).to be_nil
-      expect(order.order_events.pluck(:body)).to include("Claim released: the agent left the confirmation desk")
+      expect(order.order_events.pluck(:body)).to include("Claim released: the agent clocked out")
     end
 
     it "lets an owner release it by hand, but not an agent" do
@@ -117,8 +99,8 @@ RSpec.describe "Call center rules", type: :request do
     def flag_wrong_number
       clock_in(agent)
       sign_in(agent)
-      post "/admin/confirmations/#{order.id}/call"
-      post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "wrong_number" }
+      post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
+      post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "wrong_number" }
       sign_in(owner)
     end
 
@@ -161,8 +143,8 @@ RSpec.describe "Call center rules", type: :request do
       other = make_order(phone: "0611111111")
       clock_in(agent) unless ConfirmationShift.open.exists?(user: agent)
       sign_in(agent)
-      post "/admin/confirmations/#{other.id}/call"
-      post "/admin/confirmations/#{other.id}/finish_call", params: { outcome: "wrong_number" }
+      post "/admin/confirmations/#{other.id}/call", headers: { "ACCEPT" => "application/json" }
+      post "/admin/confirmations/#{other.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "wrong_number" }
       post "/admin/confirmations/#{other.id}/requeue", params: { phone: "0698765432" }
       expect(confirmation_of(other).disposition).to eq("wrong_number")
     end
@@ -223,9 +205,12 @@ RSpec.describe "Call center rules", type: :request do
   describe "WhatsApp" do
     let!(:order) { make_order }
 
-    it "logs who and when and opens WhatsApp with a ready message while present" do
-      # Page requests already record presence; WhatsApp only needs an open desk session.
+    it "needs a shift, then logs who and when and opens WhatsApp with a ready message" do
       sign_in(agent)
+      post "/admin/confirmations/#{order.id}/whatsapp"
+      expect(order.order_events.where(kind: "whatsapp").count).to eq(0)
+
+      clock_in(agent)
       post "/admin/confirmations/#{order.id}/whatsapp"
 
       expect(response).to have_http_status(:redirect)
@@ -241,8 +226,8 @@ RSpec.describe "Call center rules", type: :request do
     def confirm_as_agent(order)
       clock_in(agent) unless ConfirmationShift.open.exists?(user: agent)
       sign_in(agent)
-      post "/admin/confirmations/#{order.id}/call"
-      post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "confirmed" }
+      post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
+      post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed" }
     end
 
     it "creates one pending deduction frozen at the agent's penalty when a confirmed order is returned" do

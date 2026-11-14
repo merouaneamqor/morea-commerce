@@ -1,0 +1,40 @@
+es:
+  meta_ads:
+    back_home: "Volver al inicio"
+    valid_until: "Acceso válido hasta el %{date}"
+    permissions: "Autorizaciones:"
+    missing_business_management: "No se ha concedido la autorización business_management: solo se ven las cuentas publicitarias de tu perfil, no las de una cartera Business. Vuelve a conectarte para concederla."
+    not_selectable: "no seleccionable"
+    disconnected_revoked: "Meta está desconectado y las autorizaciones se han retirado en Meta."
+    notice:
+      expires_soon: "Tu conexión con Meta Ads caduca el %{date}. Vuelve a conectarte antes de esa fecha para no interrumpir la sincronización del gasto."
+      needs_reconnect: "Tu conexión con Meta Ads debe renovarse: la sincronización del gasto está en pausa."
+    account_status:
+      active: "Activa"
+      disabled: "Desactivada"
+      unsettled: "Pago pendiente"
+      pending_risk_review: "En proceso de verificación"
+      pending_settlement: "Liquidación pendiente"
+      grace_period: "Período de gracia"
+      pending_closure: "Cierre en curso"
+      closed: "Cerrada"
+      unknown: "Estado desconocido"
+    products_title: "Anuncios y productos"
+    products_lead: "Asocia cada anuncio con el producto que hace vender: el gasto se cuenta entonces en el beneficio de ese producto. Las asociaciones automáticas se obtienen del nombre del anuncio (SKU o nombre del producto); una asociación manual las sustituye."
+    no_product: "Ningún producto"
+    save_links: "Guardar las asociaciones"
+    links_saved: "Asociaciones guardadas."
+    link_source:
+      manual: "Manual"
+      auto: "Automática"
+    errors:
+      account_not_selectable: "Esta cuenta publicitaria está desactivada o pendiente de liquidación: no se puede vincular."
+    deletion:
+      title: "Eliminación de tus datos de Meta"
+      code: "Código de confirmación:"
+      not_found: "No se encuentra esta solicitud de eliminación."
+      status:
+        pending: "Tu solicitud se está procesando."
+        completed: "Tus accesos a Meta se han eliminado de seallo."
+    manage: "Gestionar Meta Ads"
+    back_button: "Volver"

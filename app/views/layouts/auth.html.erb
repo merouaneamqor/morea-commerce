@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="<%= localized ? I18n.locale : "en" %>" dir="<%= localized && rtl? ? "rtl" : "ltr" %>">
   <head>
+    <%= render "shared/favicon" %>
     <meta charset="utf-8">
     <title><%= content_for?(:title) ? yield(:title) : "Sign in" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">

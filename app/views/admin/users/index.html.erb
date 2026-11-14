@@ -1,72 +1,375 @@
-<% content_for :title, "#{t('admin.team.title')}, Admin" %>
+<%# Team management: a black header bar, the Utilisateurs / Rôles tabs, four figure cards, and the members in a table (name, role, status, the month's figures and what is
+    owed for agents, store access, who created the account and when, actions). Printing only: figures come from Team::AgentEarnings. %>
+<% content_for :title, "#{t('admin.team.title')} — Admin" %>
+<% content_for :seller_lang, "1" %>
+<% content_for :admin_page_class, "seller-page" %>
 <% members = @users.reject(&:super_admin?) %>
-<% totals = @summaries.values %>
+<% everyone = @all_users.reject(&:super_admin?) %>
+<% active_count = everyone.count(&:active?) %>
+<% card = "rounded-2xl border border-[#e0e0e5] bg-white p-5" %>
+<% status_tones = { "active" => "bg-[#e3f3e8] text-[#2f7a4a]", "suspended" => "bg-[#fdf0d9] text-[#8a5a12]", "archived" => "bg-[#efeff3] text-[#6e6e73]" } %>
+<% status_labels = { "active" => sl("Actif"), "suspended" => sl("Suspendu"), "archived" => sl("Archivé") } %>
+<% role_of = ->(user) { user.admin? ? [ t("admin.team.owner"), "bg-[#1c1c1e] text-white", :owner ] : (user.confirmation_agent? ? [ t("admin.team.role_agent"), "bg-[#e8e8ed] text-[#3a3a3c]", :agent ] : [ t("admin.team.role_supervisor"), "bg-[#efeff3] text-[#3a3a3c]", :supervisor ]) } %>
+<% initials = ->(user) { (user.name.presence || user.email).to_s.strip.split(/\s+/).first(2).map { |part| part[0] }.join.upcase } %>
 
-<div class="admin-page-header">
-  <div class="min-w-0">
-    <h1 class="admin-page-header__title"><%= t("admin.team.title") %></h1>
-    <p class="admin-page-header__meta max-w-xl"><%= t("admin.team.subtitle") %></p>
+<header class="relative z-30 flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white" data-team-header>
+  <div class="flex items-center gap-3">
+    <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:team, size: 20) %></span>
+    <div>
+      <h1 class="text-xl leading-tight font-bold"><%= sl("Gestion de l'équipe") %></h1>
+      <p class="text-[13px] leading-tight text-white/65"><%= sl("Gérez les utilisateurs et les rôles de votre boutique") %></p>
+    </div>
   </div>
-  <%= link_to t("admin.team.add_member"), new_admin_user_path, class: "admin-btn admin-page-header__primary" %>
-</div>
+  <div class="flex flex-wrap items-center gap-2"><%= render "admin/shared/language_switcher", size: "sm" %></div>
+</header>
 
-<div class="seallo-stats mb-4">
-  <div class="seallo-stat"><span><%= t("admin.team.members") %></span><strong><%= members.size %></strong></div>
-  <div class="seallo-stat seallo-stat--blue"><span><%= t("admin.team.confirmed_month") %></span><strong><%= totals.sum { |s| s.figures.confirmed } %></strong></div>
-  <div class="seallo-stat seallo-stat--green"><span><%= t("admin.team.delivered_month") %></span><strong><%= totals.sum { |s| s.figures.delivered } %></strong></div>
-  <div class="seallo-stat seallo-stat--rose"><span><%= t("admin.team.payroll_month") %></span><strong><%= money(totals.sum(&:earned_period)) %></strong></div>
-</div>
+<div data-controller="view-switch" data-view-switch-param-value="tab" data-team-switch>
+<nav class="glass-switch relative mt-3 inline-flex rounded-full p-1 text-[12px] font-semibold" data-team-tabs role="group" aria-label="<%= sl("Gestion de l'équipe") %>">
+    <span class="ios-thumb pointer-events-none absolute start-0 top-1 bottom-1 rounded-full" data-view-switch-target="thumb" aria-hidden="true"></span>
+    <button type="button" data-tab="users" data-view-switch-target="button" data-key="users" data-action="view-switch#show" data-view-switch-key-param="users" aria-pressed="<%= @tab == "users" %>" class="relative z-10 inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full px-3.5 <%= @tab == "users" ? "text-white" : "text-[#6e6e73]" %>"><%= seller_icon(:clients, size: 13) %><%= sl("Utilisateurs") %> (<%= everyone.size %>)</button>
+    <button type="button" data-tab="roles" data-view-switch-target="button" data-key="roles" data-action="view-switch#show" data-view-switch-key-param="roles" aria-pressed="<%= @tab == "roles" %>" class="relative z-10 inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full px-3.5 <%= @tab == "roles" ? "text-white" : "text-[#6e6e73]" %>"><%= seller_icon(:lock, size: 13) %><%= sl("Rôles") %> (<%= Team::Roles::ALL.size %>)</button>
+    <button type="button" data-tab="permissions" data-view-switch-target="button" data-key="permissions" data-action="view-switch#show" data-view-switch-key-param="permissions" aria-pressed="<%= @tab == "permissions" %>" class="relative z-10 inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full px-3.5 <%= @tab == "permissions" ? "text-white" : "text-[#6e6e73]" %>"><%= seller_icon(:settings, size: 13) %><%= sl("Permissions d'applications") %> (<%= everyone.size %>)</button>
+  </nav>
 
-<div class="seallo-member-grid">
-  <% members.each do |user| %>
-    <% summary = @summaries.fetch(user.id) %>
-    <% figures = summary.figures %>
-    <% agent = user.confirmation_agent? %>
-    <section class="seallo-member">
-      <header class="seallo-member__head">
-        <span class="seallo-member__avatar"><%= (user.name.presence || user.email).first.upcase %></span>
+<div data-view-switch-target="panel" data-key="roles" <%= "hidden" unless @tab == "roles" %>>
+  <% role_rows = Team::Roles::ALL.select { |role| @query.blank? || sl(role.name).downcase.include?(@query.downcase) || sl(role.description).downcase.include?(@query.downcase) } %>
+  <section class="mt-3 grid grid-cols-2 gap-2.5 xl:grid-cols-4" data-kpis="roles">
+    <%= render "admin/dashboard/kpi", key: "roles_total", label: sl("Rôles totaux"), icon: :lock, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: Team::Roles::ALL.size, sub: sl("Rôles de la boutique") %>
+    <%= render "admin/dashboard/kpi", key: "roles_active", label: sl("Rôles actifs"), icon: :check, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: Team::Roles::ALL.size, sub: sl("Utilisables maintenant") %>
+    <%= render "admin/dashboard/kpi", key: "roles_custom", label: sl("Rôles personnalisés"), icon: :settings, tone: "bg-[#efeff3] text-[#3a3a3c]", value: 0, sub: sl("Bientôt disponible") %>
+    <%= render "admin/dashboard/kpi", key: "roles_system", label: sl("Rôles système"), icon: :lock, tone: "bg-[#fdf0d9] text-[#d28a12]", value: Team::Roles::ALL.size, sub: sl("Fournis par seallo") %>
+  </section>
+
+  <section class="<%= card %> mt-3" data-team-roles>
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Rôles") %></h2>
+        <p class="text-xs text-[#6e6e73]"><%= sl("Voyez les rôles de votre boutique et ce que chacun peut ouvrir") %></p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <%= form_with url: admin_users_path, method: :get, class: "flex h-10 min-w-56 items-center gap-2 rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm", data: { controller: "auto-submit", roles_search: true } do %>
+          <%= hidden_field_tag :tab, "roles" %>
+          <span class="text-[#6e6e73]"><%= seller_icon(:search, size: 16) %></span>
+          <input name="q" value="<%= @query %>" placeholder="<%= sl("Rechercher des rôles…") %>" class="w-full bg-transparent outline-none placeholder:text-[#8e8e93]" data-action="input->auto-submit#debounce" data-auto-submit-restore="<%= @query.present? %>">
+        <% end %>
+        <span class="inline-flex h-10 cursor-not-allowed items-center gap-2 rounded-xl bg-[#efeff3] px-4 text-sm font-semibold text-[#8e8e93]" title="<%= sl("Bientôt disponible") %>" data-create-role-soon><%= seller_icon(:lock, size: 16) %><%= sl("Créer un rôle") %></span>
+      </div>
+    </div>
+    <% if role_rows.empty? %>
+      <p class="my-8 text-center text-sm text-[#6e6e73]" data-no-roles><%= sl("Aucun rôle ne correspond à cette recherche.") %></p>
+    <% else %>
+      <div class="mt-3 overflow-x-auto">
+        <table class="w-full text-[13px]">
+          <thead class="bg-[#f8f8fa] text-[11px] text-[#6e6e73]"><tr>
+            <th class="px-3 py-2.5 text-start font-medium"><%= sl("Nom") %></th>
+            <th class="px-3 py-2.5 text-start font-medium"><%= sl("Description") %></th>
+            <th class="px-3 py-2.5 text-start font-medium"><%= sl("Permissions") %></th>
+            <th class="px-3 py-2.5 text-start font-medium"><%= sl("Utilisateurs") %></th>
+            <th class="px-3 py-2.5 text-start font-medium"><%= sl("Type") %></th>
+            <th class="px-3 py-2.5 text-start font-medium"><%= sl("Statut") %></th>
+          </tr></thead>
+          <tbody class="divide-y divide-[#f1f1f4]">
+            <% role_rows.each do |role| %>
+              <tr data-role="<%= role.key %>">
+                <td class="px-3 py-3"><span class="inline-flex items-center gap-2.5 font-semibold text-[#1c1c1e]"><span class="grid size-8 place-items-center rounded-lg <%= { super_admin: "bg-[#efeff3] text-[#3a3a3c]", owner: "bg-[#1c1c1e] text-white" }.fetch(role.key, "bg-[#e8e8ed] text-[#3a3a3c]") %>"><%= seller_icon(:lock, size: 15) %></span><%= sl(role.name) %></span></td>
+                <td class="max-w-md px-3 py-3 text-[#6e6e73]"><span class="line-clamp-2" title="<%= sl(role.description) %>"><%= sl(role.description) %></span></td>
+                <td class="px-3 py-3 tabular-nums"><span class="inline-flex items-center gap-1.5"><%= seller_icon(:check, size: 14) %><b data-permission-count><%= role.areas.size %></b></span></td>
+                <td class="px-3 py-3 tabular-nums"><span class="inline-flex items-center gap-1.5"><%= seller_icon(:clients, size: 14) %><b data-role-count><%= @all_users.count { |user| Team::Roles.for_user(user) == role.key } %></b></span></td>
+                <td class="px-3 py-3"><span class="rounded-full border border-[#f3d9a8] px-2.5 py-0.5 text-[12px] font-medium text-[#a8690d]"><%= sl("Système") %></span></td>
+                <td class="px-3 py-3"><span class="rounded-full border border-[#bfe3cc] px-2.5 py-0.5 text-[12px] font-medium text-[#2f7a4a]"><%= sl("Actif") %></span></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </section>
+</div>
+<div data-view-switch-target="panel" data-key="permissions" <%= "hidden" unless @tab == "permissions" %>>
+  <section class="<%= card %> mt-3" data-team-permissions>
+    <h2 class="flex items-center gap-2 font-semibold text-[#1c1c1e]"><%= seller_icon(:settings, size: 18) %><%= sl("Permissions d'applications des utilisateurs") %></h2>
+    <p class="text-xs text-[#6e6e73]"><%= sl("Par défaut, chaque utilisateur accède aux parties de la boutique selon son rôle. Les permissions que vous choisissez remplacent ces valeurs.") %></p>
+    <%= form_with url: admin_users_path, method: :get, class: "mt-4", data: { controller: "auto-submit", permissions_form: true } do %>
+      <%= hidden_field_tag :tab, "permissions" %>
+      <label for="permission-user" class="mb-1 block text-sm font-medium text-[#1c1c1e]"><%= sl("Sélectionner un utilisateur") %></label>
+      <select name="user_id" id="permission-user" class="h-10 w-full rounded-lg border border-[#e0e0e5] bg-white px-3 text-sm focus:border-[#1d1d1f] focus:outline-none" data-action="auto-submit#submit">
+        <option value=""><%= sl("-- Sélectionnez un utilisateur --") %></option>
+        <% everyone.each do |user| %>
+          <option value="<%= user.id %>" <%= "selected" if @permission_user == user %>><%= user.name.presence || user.email %> (<%= user.email %>) - <%= sl(Team::Roles.find(Team::Roles.for_user(user)).name) %></option>
+        <% end %>
+      </select>
+    <% end %>
+
+    <% if @permission_user %>
+      <% target = @permission_user %>
+      <% role = Team::Roles.find(Team::Roles.for_user(target)) %>
+      <% granted = target.allowed_areas %>
+      <% editable = target != current_user && !target.super_admin? %>
+      <% area_labels = Team::Roles::AREAS.to_h { |key, label, _roles| [ key, label ] } %>
+      <div class="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-[#d8e6f6] bg-[#f2f7fd] p-3" data-permission-user="<%= target.id %>">
+        <span class="grid size-9 shrink-0 place-items-center rounded-full bg-[#e6f0fd] text-[11px] font-bold text-[#2b5f9e]"><%= initials.(target) %></span>
         <div class="min-w-0">
-          <div class="flex flex-wrap items-center gap-2">
-            <strong class="truncate"><%= user.name.presence || user.email %></strong>
-            <% if user == current_user %><span class="admin-muted">, <%= t("admin.team.you") %></span><% end %>
-            <% if user.admin? %>
-              <span class="seallo-chip seallo-chip--dark"><%= t("admin.team.owner") %></span>
-            <% else %>
-              <span class="seallo-chip seallo-chip--rose"><%= agent ? t("admin.team.role_agent") : t("admin.team.role_supervisor") %></span>
+          <p class="font-semibold text-[#1c1c1e]" dir="auto"><%= target.name.presence || target.email %></p>
+          <p class="text-xs text-[#6e6e73]" dir="ltr"><%= target.email %></p>
+        </div>
+        <span class="rounded-full px-2.5 py-0.5 text-[11px] font-medium <%= role_of.(target)[1] %>"><%= sl(role.name) %></span>
+        <% unless target.custom_permissions.nil? %><span class="rounded-full border border-[#f3d9a8] px-2.5 py-0.5 text-[11px] font-medium text-[#a8690d]" data-custom-badge><%= sl("Personnalisé") %></span><% end %>
+      </div>
+
+      <% if editable %>
+        <%= form_with url: permissions_admin_user_path(target), method: :patch, class: "mt-4", data: { controller: "permissions-form", permissions_form_edit: true } do %>
+          <p class="text-xs text-[#6e6e73]"><%= sl("Une personne ne peut avoir que moins d'accès que son rôle : cochez ce qu'elle peut ouvrir.") %></p>
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <label class="flex h-10 min-w-56 flex-1 items-center gap-2 rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm">
+              <span class="text-[#6e6e73]"><%= seller_icon(:search, size: 16) %></span>
+              <input type="search" placeholder="<%= sl("Rechercher des applications…") %>" class="w-full bg-transparent outline-none placeholder:text-[#8e8e93]" data-permissions-form-target="search" data-action="input->permissions-form#filter">
+            </label>
+            <button type="button" data-action="permissions-form#clear" class="inline-flex h-10 cursor-pointer items-center rounded-xl px-3 text-[13px] font-semibold text-[#6e6e73] hover:bg-[#f5f5f7]" data-clear><%= sl("Effacer") %></button>
+            <button type="button" data-action="permissions-form#selectAll" class="inline-flex h-10 cursor-pointer items-center rounded-xl border border-[#cfe0f5] bg-[#f2f7fd] px-3 text-[13px] font-semibold text-[#2b5f9e] hover:bg-[#e6f0fd]" data-select-all><%= sl("Tout sélectionner") %></button>
+          </div>
+          <p class="mt-3 text-xs"><span class="rounded-full bg-[#e6f0fd] px-2.5 py-1 font-medium text-[#2b5f9e]"><b data-permissions-form-target="apps" data-apps-count>0</b> <%= sl("application(s) sélectionnée(s)") %></span> <span class="text-[#8e8e93]">(<b data-permissions-form-target="areas" data-areas-count>0</b> <%= sl("permission(s) au total") %>)</span></p>
+
+          <div class="mt-3 space-y-1.5" data-permission-groups>
+            <% Team::Roles::GROUPS.each do |group_key, group_label, group_areas| %>
+              <% areas = group_areas & role.areas %>
+              <% next if areas.empty? %>
+              <% on = areas.any? { |area| granted.include?(area) } %>
+              <div data-card data-permissions-form-target="card" data-group="<%= group_key %>" data-search="<%= ([ sl(group_label) ] + areas.map { |area| sl(area_labels[area]) }).join(" ").downcase %>"
+                   class="rounded-xl border border-[#e0e0e5] bg-white <%= "is-on" if on %> [&.is-on]:border-[#93a8dd]">
+                <div class="flex items-center gap-2.5 px-3 py-1.5">
+                  <input type="checkbox" data-group-box data-permissions-form-target="group" data-action="permissions-form#toggleGroup" class="size-4 accent-[#1e3a8a]" aria-label="<%= sl(group_label) %>">
+                  <span class="text-[13px] font-semibold text-[#1c1c1e]"><%= sl(group_label) %></span>
+                  <span class="rounded-full bg-[#efeff3] px-2 py-0.5 text-[11px] text-[#6e6e73]" data-card-count><%= areas.count { |area| granted.include?(area) } %>/<%= areas.size %></span>
+                  <button type="button" data-action="permissions-form#openDetails" aria-haspopup="dialog" aria-label="<%= sl("Détails") %> : <%= sl(group_label) %>" title="<%= sl("Détails") %>" data-card-details class="ms-auto grid size-6 shrink-0 cursor-pointer place-items-center rounded-full text-[#6e6e73] hover:bg-[#efeff3] hover:text-[#1c1c1e]">
+                    <svg viewBox="0 0 24 24" class="size-3.5 fill-none stroke-current [stroke-width:2.4] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                </div>
+                <%# The details of this application, in a small window in the middle of the screen. Its boxes belong to the form, so they are saved with it. %>
+                <dialog data-card-dialog data-action="click->permissions-form#backdropDetails" class="m-auto w-[min(22rem,calc(100vw-2rem))] rounded-3xl border border-white/70 bg-white/80 p-0 text-start text-[#1c1c1e] shadow-[0_30px_80px_-24px_rgba(31,36,48,0.45)] backdrop-blur-2xl backdrop:bg-[rgba(31,36,48,0.28)]">
+                  <div class="p-5">
+                    <div class="flex items-center justify-between gap-3">
+                      <h3 class="text-base font-bold"><%= sl(group_label) %></h3>
+                      <span class="rounded-full bg-[#efeff3] px-2 py-0.5 text-[11px] text-[#6e6e73]" data-dialog-count><%= areas.count { |area| granted.include?(area) } %>/<%= areas.size %></span>
+                    </div>
+                    <ul class="mt-3 space-y-1">
+                      <% areas.each do |area| %>
+                        <li><label class="flex cursor-pointer items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] hover:bg-[#f5f5f7]"><input type="checkbox" name="areas[]" value="<%= area %>" data-area-box data-area="<%= area %>" data-permissions-form-target="area" data-action="permissions-form#recalc" class="size-4 accent-[#1e3a8a]" <%= "checked" if granted.include?(area) %>><%= sl(area_labels[area]) %></label></li>
+                      <% end %>
+                    </ul>
+                    <div class="mt-4 flex justify-end"><button type="button" data-action="permissions-form#closeDetails" class="inline-flex h-9 cursor-pointer items-center rounded-xl bg-[#1d1d1f] px-5 text-[13px] font-semibold text-white hover:bg-[#3a3a3c]">OK</button></div>
+                  </div>
+                </dialog>
+              </div>
             <% end %>
           </div>
-          <p class="admin-muted truncate"><%= user.email %></p>
-        </div>
-      </header>
 
-      <% if agent %>
-        <p class="seallo-member__pay"><%= t("admin.team.pay_rate", amount: money(user.pay_per_delivery_cents)) %></p>
-        <dl class="seallo-member__figures">
-          <div><dt><%= t("admin.team.confirmed") %></dt><dd><%= figures.confirmed %></dd></div>
-          <div><dt><%= t("admin.team.cancelled") %></dt><dd><%= figures.cancelled %></dd></div>
-          <div><dt><%= t("admin.team.delivered") %></dt><dd><%= figures.delivered %></dd></div>
-          <div><dt><%= t("admin.team.rate") %></dt><dd><%= figures.delivery_rate ? "#{(figures.delivery_rate * 100).round} %" : admin_blank %></dd></div>
-        </dl>
-        <dl class="seallo-member__money">
-          <div><dt><%= t("admin.team.earnings") %></dt><dd><%= money(summary.earned_total) %></dd></div>
-          <div><dt><%= t("admin.team.already_paid") %></dt><dd><%= money(summary.paid_total) %></dd></div>
-          <div><dt><%= t("admin.team.unpaid") %></dt><dd><%= money(summary.unpaid) %></dd></div>
-        </dl>
+          <div class="mt-4 flex flex-wrap items-center justify-end gap-2">
+            <%= link_to sl("Annuler"), admin_users_path(tab: "permissions"), class: "inline-flex h-10 items-center rounded-xl border border-[#e0e0e5] px-4 text-sm font-semibold text-[#3a3a3c] hover:bg-[#f5f5f7]" %>
+            <% unless target.custom_permissions.nil? %><button type="submit" name="reset" value="1" class="inline-flex h-10 cursor-pointer items-center rounded-xl px-4 text-sm font-semibold text-[#8a5a12] hover:bg-[#fdf0d9]" data-reset><%= sl("Rétablir les valeurs du rôle") %></button><% end %>
+            <button type="submit" class="inline-flex h-10 cursor-pointer items-center rounded-xl bg-[#1d1d1f] px-4 text-sm font-semibold text-white hover:bg-[#3a3a3c]" data-save-permissions><%= sl("Enregistrer les permissions") %></button>
+          </div>
+        <% end %>
       <% else %>
-        <p class="admin-muted"><%= t("admin.team.owner_access") %></p>
+        <p class="mt-4 text-sm text-[#8a5a12]" data-not-editable><%= sl("Vous ne pouvez pas modifier les permissions de cette personne.") %></p>
+        <p class="mt-3 text-sm text-[#3a3a3c]"><span data-granted-count><%= granted.size %></span> / <%= Team::Roles::AREAS.size %> <%= sl("accès") %></p>
+        <ul class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2" data-permission-list>
+          <% Team::Roles::AREAS.each do |key, label, _roles| %>
+            <% allowed = granted.include?(key) %>
+            <li class="flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-[13px] <%= allowed ? "border-[#d4eedd] bg-[#f6fcf8] text-[#1c1c1e]" : "border-[#e0e0e5] bg-[#fafafc] text-[#8e8e93]" %>" data-area="<%= key %>" data-granted="<%= allowed %>">
+              <span><%= sl(label) %></span>
+              <span class="text-[12px] font-semibold <%= allowed ? "text-[#2f7a4a]" : "text-[#b0b0b8]" %>"><%= allowed ? sl("Autorisé") : sl("Non autorisé") %></span>
+            </li>
+          <% end %>
+        </ul>
       <% end %>
+    <% end %>
+  </section>
+</div>
+<div data-view-switch-target="panel" data-key="users" <%= "hidden" unless @tab == "users" %>>
+  <section class="mt-3 grid grid-cols-2 gap-2.5 xl:grid-cols-4" data-kpis="team">
+    <%= render "admin/dashboard/kpi", key: "total", label: sl("Utilisateurs totaux"), icon: :team, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: everyone.size, sub: sl("Membres de l'équipe") %>
+    <%= render "admin/dashboard/kpi", key: "active", label: sl("Utilisateurs actifs"), icon: :check, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: active_count, sub: sl("Peuvent se connecter") %>
+    <%= render "admin/dashboard/kpi", key: "inactive", label: sl("Utilisateurs inactifs"), icon: :ban, tone: "bg-[#fdf0d9] text-[#d28a12]", value: everyone.size - active_count, sub: sl("Suspendus ou archivés") %>
+    <%= render "admin/dashboard/kpi", key: "owners", label: sl("Propriétaires"), icon: :lock, tone: "bg-[#efeff3] text-[#3a3a3c]", value: everyone.count(&:admin?), sub: sl("Accès complet") %>
+  </section>
 
-      <footer class="seallo-member__actions">
-        <% if agent %>
-          <%= button_to t("admin.team.pay"), pay_admin_user_path(user), method: :post, class: "admin-btn seallo-btn-green", disabled: summary.unpaid.zero? %>
-        <% end %>
-        <%= link_to t("admin.team.edit"), edit_admin_user_path(user), class: "admin-btn-secondary" %>
-        <% unless user == current_user %>
-          <%= button_to t("admin.team.remove"), admin_user_path(user), method: :delete,
-                form: { data: { turbo_confirm: t("admin.team.remove_confirm", name: user.name.presence || user.email) } },
-                class: "admin-btn-plain admin-btn-plain--critical" %>
-        <% end %>
-      </footer>
-    </section>
-  <% end %>
+  <%= render "activity", activity: @activity, rows: @activity_rows %>
+
+  <section class="rounded-2xl border border-[#e0e0e5] bg-white p-4 mt-3" data-team-members>
+    <div>
+      <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Membres de l'équipe") %></h2>
+      <p class="text-xs text-[#6e6e73]"><%= sl("Voyez et gérez tous les utilisateurs de votre boutique") %></p>
+    </div>
+
+    <div class="mt-3 flex flex-wrap items-center gap-2">
+      <%= form_with url: admin_users_path, method: :get, class: "flex h-10 min-w-64 flex-1 items-center gap-2 rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm", data: { controller: "auto-submit", team_search: true } do %>
+        <span class="text-[#6e6e73]"><%= seller_icon(:search, size: 16) %></span>
+        <input name="q" value="<%= @query %>" placeholder="<%= sl("Rechercher des utilisateurs…") %>" class="w-full bg-transparent outline-none placeholder:text-[#8e8e93]" data-action="input->auto-submit#debounce" data-auto-submit-restore="<%= @query.present? %>">
+      <% end %>
+      <%= link_to new_admin_user_path, class: "inline-flex h-10 items-center gap-2 rounded-xl bg-[#1d1d1f] px-4 text-sm font-semibold text-white hover:bg-[#3a3a3c]", data: { add_user: true } do %><%= seller_icon(:clients, size: 16) %><%= sl("Ajouter un utilisateur") %><% end %>
+    </div>
+
+    <% if members.empty? %>
+      <p class="my-8 text-center text-sm text-[#6e6e73]" data-no-members><%= sl("Aucun utilisateur ne correspond à cette recherche.") %></p>
+    <% else %>
+      <div class="mt-3 overflow-x-auto">
+        <table class="w-full text-[12px]">
+          <thead class="text-[11px] text-[#6e6e73]"><tr>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium"><%= sl("Nom") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium"><%= sl("Rôle") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium"><%= sl("Statut") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium first-letter:uppercase" title="<%= sl("Ce mois-ci") %>"><%= sl("confirmées") %> / <%= sl("livrées") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-end font-medium"><%= sl("Reste à payer") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium" title="<%= sl("Accès aux boutiques") %>"><%= sl("Boutiques") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium"><%= sl("Créé par") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-start font-medium"><%= sl("Créé le") %></th>
+            <th class="whitespace-nowrap px-1.5 py-2 text-end font-medium"><%= sl("Actions") %></th>
+          </tr></thead>
+          <tbody class="divide-y divide-[#f1f1f4]">
+            <% members.each do |user| %>
+              <% summary = @summaries.fetch(user.id) %>
+              <% figures = summary.figures %>
+              <% role_label, role_tone, role_key = role_of.(user) %>
+              <% role_label = sl("Agent") if role_key == :agent %>
+              <tr data-member="<%= user.id %>" data-role="<%= role_key %>">
+                <td class="whitespace-nowrap px-1.5 py-2.5">
+                  <div class="flex items-center gap-3">
+                    <span class="grid size-8 shrink-0 place-items-center rounded-full bg-[#e6f0fd] text-[10px] font-bold text-[#2b5f9e]"><%= initials.(user) %></span>
+                    <div class="min-w-0">
+                      <p class="flex items-center gap-1.5 font-semibold text-[#1c1c1e]"><span class="max-w-[8.5rem] truncate" dir="auto"><%= user.name.presence || user.email %></span><% if user == current_user %><span class="shrink-0 rounded-full border border-[#e0e0e5] px-1.5 py-0 text-[10px] font-medium text-[#6e6e73]"><%= t("admin.team.you") %></span><% end %></p>
+                      <p class="max-w-[10rem] truncate text-[11px] text-[#8e8e93]" dir="ltr" title="<%= user.email %>"><%= user.email %></p>
+                    </div>
+                  </div>
+                </td>
+                <td class="whitespace-nowrap px-1.5 py-2.5"><span class="inline-block rounded-full px-2 py-0.5 text-[11px] whitespace-nowrap font-medium <%= role_tone %>"><%= role_label %></span></td>
+                <td class="whitespace-nowrap px-1.5 py-2.5"><span class="inline-block rounded-full px-2 py-0.5 text-[11px] whitespace-nowrap font-medium <%= status_tones[user.status] %>"><%= status_labels[user.status] %></span></td>
+                <td class="whitespace-nowrap px-1.5 py-2.5 text-[#3a3a3c]">
+                  <% if role_key == :agent %><span class="tabular-nums" title="<%= sl("Ce mois-ci") %>"><%= figures.confirmed %> / <%= figures.delivered %></span><% else %>—<% end %>
+                </td>
+                <td class="whitespace-nowrap px-1.5 py-2.5 text-end tabular-nums"><%= role_key == :agent ? money(summary.unpaid) : "—" %></td>
+                <td class="whitespace-nowrap px-1.5 py-2.5"><span class="inline-block rounded-full bg-[#efeff3] px-2 py-0.5 text-[11px] whitespace-nowrap text-[#3a3a3c]">1 <%= sl("boutique") %></span></td>
+                <td class="whitespace-nowrap px-1.5 py-2.5">
+                  <% if user.created_by %>
+                    <span class="block max-w-[7.5rem] truncate font-medium text-[#1c1c1e]" dir="auto" title="<%= user.created_by.email %>"><%= user.created_by.name.presence || user.created_by.email %></span>
+                  <% else %>
+                    <span class="rounded-full border border-[#e0e0e5] px-2 py-0.5 text-[12px] text-[#6e6e73]"><%= sl("Système") %></span>
+                  <% end %>
+                </td>
+                <td class="whitespace-nowrap px-1.5 py-2.5 whitespace-nowrap tabular-nums text-[#6e6e73]"><%= l(user.created_at.in_time_zone(DateRange::ZONE).to_date) %></td>
+                <td class="whitespace-nowrap px-1.5 py-2.5">
+                  <div class="flex items-center justify-end" data-controller="member-menu">
+                    <button type="button" data-action="member-menu#toggle" aria-haspopup="menu" aria-label="<%= sl("Plus d'actions") %>" title="<%= sl("Plus d'actions") %>" data-member-menu class="grid size-8 cursor-pointer place-items-center rounded-full text-[#6e6e73] hover:bg-[#efeff3] hover:text-[#1c1c1e]">
+                      <svg viewBox="0 0 24 24" class="size-5 fill-current" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+                    </button>
+
+                    <%# The dropdown: a popover in the top layer (the table never clips it). Each entry opens a window on this page, or acts at once. %>
+                    <div popover data-member-menu-target="menu" role="menu" data-member-actions="<%= user.id %>" class="m-0 w-64 overflow-hidden rounded-2xl border border-[#e0e0e5] bg-white p-0 text-start shadow-[0_20px_50px_-20px_rgba(0,0,0,0.4)]">
+                      <p class="border-b border-[#eeeef1] px-3 py-2.5 text-[13px] font-bold"><%= sl("Actions") %></p>
+                      <div class="py-1 whitespace-normal">
+                        <button type="button" role="menuitem" data-action="member-menu#open" data-member-menu-dialog-param="details" data-menu-details class="flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-start text-[13px] text-[#1c1c1e] hover:bg-[#f5f5f7]"><%= seller_icon(:clients, size: 16) %><%= sl("Voir les détails") %></button>
+                        <button type="button" role="menuitem" data-action="member-menu#open" data-member-menu-dialog-param="edit" data-menu-edit class="flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-start text-[13px] text-[#1c1c1e] hover:bg-[#f5f5f7]"><%= seller_icon(:settings, size: 16) %><%= sl("Modifier l'utilisateur") %></button>
+                        <% unless user == current_user %>
+                          <button type="button" role="menuitem" data-action="member-menu#open" data-member-menu-dialog-param="role" data-menu-role class="flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-start text-[13px] text-[#1c1c1e] hover:bg-[#f5f5f7]"><%= seller_icon(:lock, size: 16) %><%= sl("Attribuer des rôles") %></button>
+                        <% end %>
+                        <%= link_to admin_users_path(tab: "permissions", user_id: user.id), role: "menuitem", class: "flex w-full items-center gap-3 px-3 py-2 text-[13px] text-[#1c1c1e] hover:bg-[#f5f5f7]", data: { menu_permissions: true } do %><%= seller_icon(:check, size: 16) %><%= sl("Personnalisation des permissions") %><% end %>
+                        <% if role_key == :agent && summary.unpaid.positive? %>
+                          <%= link_to admin_agent_billing_path, role: "menuitem", class: "flex w-full items-center gap-3 px-3 py-2 text-[13px] text-[#2f7a4a] hover:bg-[#f1faf5]", data: { pay_link: true } do %><%= seller_icon(:wallet, size: 16) %><%= sl("Payer") %><% end %>
+                        <% end %>
+                        <% unless user == current_user %>
+                          <%= button_to status_admin_user_path(user), method: :patch, form: { class: "contents" }, role: "menuitem", data: { menu_status: user.active? ? "deactivate" : "reactivate" }, class: "flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-start text-[13px] text-[#1c1c1e] hover:bg-[#f5f5f7]" do %><%= seller_icon(:ban, size: 16) %><%= user.active? ? sl("Désactiver") : sl("Réactiver") %><% end %>
+                          <div class="my-1 border-t border-[#eeeef1]"></div>
+                          <%= button_to admin_user_path(user), method: :delete, form: { class: "contents", data: { turbo_confirm: t("admin.team.remove_confirm", name: user.name.presence || user.email) } }, role: "menuitem", data: { menu_remove: true }, class: "flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-start text-[13px] font-medium text-[#b4344e] hover:bg-[#fbe7ea]" do %><%= seller_icon(:cancel, size: 16) %><%= sl("Supprimer l'utilisateur") %><% end %>
+                        <% end %>
+                      </div>
+                    </div>
+
+                    <dialog data-member-menu-target="dialog" data-name="details" data-action="click->member-menu#backdrop" data-member-details="<%= user.id %>" class="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-3xl border border-white/70 bg-white/80 p-0 text-start text-[#1c1c1e] shadow-[0_30px_80px_-24px_rgba(31,36,48,0.45)] backdrop-blur-2xl backdrop:bg-[rgba(31,36,48,0.28)]">
+                      <div class="p-5 whitespace-normal">
+                        <div class="flex items-start gap-3">
+                          <span class="grid size-11 shrink-0 place-items-center rounded-full bg-[#e6f0fd] text-[12px] font-bold text-[#2b5f9e]"><%= initials.(user) %></span>
+                          <div class="min-w-0 flex-1">
+                            <p class="flex flex-wrap items-center gap-2 text-base font-bold" dir="auto"><%= user.name.presence || user.email %><% if user == current_user %><span class="rounded-full border border-[#e0e0e5] px-1.5 text-[10px] font-medium text-[#6e6e73]"><%= t("admin.team.you") %></span><% end %></p>
+                            <p class="truncate text-xs text-[#6e6e73]" dir="ltr"><%= user.email %></p>
+                          </div>
+                          <button type="button" data-action="member-menu#close" aria-label="<%= sl("Fermer") %>" class="grid size-8 cursor-pointer place-items-center rounded-full text-[#6e6e73] hover:bg-[#efeff3]">✕</button>
+                        </div>
+                        <div class="mt-3 flex flex-wrap gap-1.5">
+                          <span class="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium <%= role_tone %>"><%= role_key == :agent ? t("admin.team.role_agent") : role_label %></span>
+                          <span class="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium <%= status_tones[user.status] %>"><%= status_labels[user.status] %></span>
+                        </div>
+                        <dl class="mt-4 divide-y divide-[#eeeef1] rounded-2xl border border-[#e8e8ec] bg-white/70 text-[13px]">
+                          <div class="flex justify-between gap-3 px-3 py-2"><dt class="text-[#6e6e73]"><%= sl("Accès aux boutiques") %></dt><dd class="font-medium">1 <%= sl("boutique") %></dd></div>
+                          <div class="flex justify-between gap-3 px-3 py-2"><dt class="text-[#6e6e73]"><%= sl("Créé par") %></dt><dd class="font-medium" dir="auto"><%= user.created_by ? (user.created_by.name.presence || user.created_by.email) : sl("Système") %></dd></div>
+                          <div class="flex justify-between gap-3 px-3 py-2"><dt class="text-[#6e6e73]"><%= sl("Créé le") %></dt><dd class="font-medium tabular-nums"><%= l(user.created_at.in_time_zone(DateRange::ZONE).to_date) %></dd></div>
+                          <% if role_key == :agent %>
+                            <div class="flex justify-between gap-3 px-3 py-2"><dt class="text-[#6e6e73]"><%= sl("Ce mois-ci") %> · <%= sl("confirmées") %> / <%= sl("livrées") %></dt><dd class="font-medium tabular-nums"><%= figures.confirmed %> / <%= figures.delivered %></dd></div>
+                            <div class="flex justify-between gap-3 px-3 py-2"><dt class="text-[#6e6e73]"><%= sl("Tarif par livraison") %></dt><dd class="font-medium tabular-nums"><%= money(user.pay_per_delivery_cents) %></dd></div>
+                            <div class="flex justify-between gap-3 px-3 py-2"><dt class="text-[#6e6e73]"><%= sl("Pénalité pour retour") %></dt><dd class="font-medium tabular-nums"><%= money(user.return_penalty_cents) %></dd></div>
+                            <div class="flex justify-between gap-3 px-3 py-2"><dt class="text-[#6e6e73]"><%= sl("Reste à payer") %></dt><dd class="font-semibold tabular-nums"><%= money(summary.unpaid) %></dd></div>
+                          <% end %>
+                        </dl>
+                        <div class="mt-4 flex flex-wrap items-center justify-end gap-2" data-details-actions>
+                          <% if role_key == :agent && summary.unpaid.positive? %>
+                            <%= link_to sl("Payer"), admin_agent_billing_path, class: "inline-flex h-9 items-center rounded-xl bg-[#e3f3e8] px-4 text-[13px] font-semibold text-[#2f7a4a] hover:bg-[#d4eedd]" %>
+                          <% end %>
+                          <button type="button" data-action="member-menu#open" data-member-menu-dialog-param="edit" data-open-edit class="inline-flex h-9 cursor-pointer items-center rounded-xl border border-[#e0e0e5] bg-white px-4 text-[13px] font-semibold hover:bg-[#f5f5f7]"><%= t("admin.team.edit") %></button>
+                          <% unless user == current_user %>
+                            <%= button_to (user.active? ? sl("Désactiver le compte") : sl("Réactiver le compte")), status_admin_user_path(user), method: :patch, form: { class: "inline" }, data: { details_status: user.active? ? "deactivate" : "reactivate" },
+                                  class: "inline-flex h-9 cursor-pointer items-center rounded-xl bg-[#fdf0d9] px-4 text-[13px] font-semibold text-[#8a5a12] hover:bg-[#fbe6bf]" %>
+                            <%= button_to t("admin.team.remove"), admin_user_path(user), method: :delete,
+                                  form: { class: "inline", data: { turbo_confirm: t("admin.team.remove_confirm", name: user.name.presence || user.email) } }, data: { details_remove: true },
+                                  class: "inline-flex h-9 cursor-pointer items-center rounded-xl px-4 text-[13px] font-semibold text-[#b4344e] hover:bg-[#fbe7ea]" %>
+                          <% end %>
+                          <button type="button" data-action="member-menu#close" class="inline-flex h-9 cursor-pointer items-center rounded-xl px-3 text-[13px] font-semibold text-[#6e6e73] hover:bg-[#efeff3]"><%= sl("Fermer") %></button>
+                        </div>
+                      </div>
+                    </dialog>
+
+                    <%# Edit in place: the same fields as the edit page, saved from here (a refused value comes back as a notice on this page). %>
+                    <dialog data-member-menu-target="dialog" data-name="edit" data-action="click->member-menu#backdrop" data-member-edit="<%= user.id %>" class="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-3xl border border-white/70 bg-white/80 p-0 text-start text-[#1c1c1e] shadow-[0_30px_80px_-24px_rgba(31,36,48,0.45)] backdrop-blur-2xl backdrop:bg-[rgba(31,36,48,0.28)]">
+                      <%= form_with url: admin_user_path(user), method: :patch, class: "space-y-3 p-5 whitespace-normal", data: { turbo: false } do %>
+                        <%= hidden_field_tag :inline, "1" %>
+                        <h3 class="text-base font-bold"><%= sl("Modifier l'utilisateur") %></h3>
+                        <div><label class="mb-1 block text-xs font-medium text-[#6e6e73]"><%= sl("Nom") %></label><%= text_field_tag "user[name]", user.name, maxlength: 120, class: "h-10 w-full rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm focus:border-[#1d1d1f] focus:outline-none" %></div>
+                        <div><label class="mb-1 block text-xs font-medium text-[#6e6e73]">E-mail</label><%= email_field_tag "user[email]", user.email, required: true, dir: "ltr", class: "h-10 w-full rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm focus:border-[#1d1d1f] focus:outline-none" %></div>
+                        <div><label class="mb-1 block text-xs font-medium text-[#6e6e73]"><%= sl("Nouveau mot de passe (laisser vide pour garder l'actuel)") %></label><%= password_field_tag "user[password]", nil, autocomplete: "new-password", class: "h-10 w-full rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm focus:border-[#1d1d1f] focus:outline-none" %></div>
+                        <% if role_key == :agent %>
+                          <div class="grid grid-cols-2 gap-3">
+                            <div><label class="mb-1 block text-xs font-medium text-[#6e6e73]"><%= sl("Tarif par livraison") %> (MAD)</label><%= text_field_tag "user[pay_per_delivery]", (user.pay_per_delivery_cents.to_i / 100.0).then { |amount| amount == amount.to_i ? amount.to_i : amount }, inputmode: "decimal", class: "h-10 w-full rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm focus:border-[#1d1d1f] focus:outline-none" %></div>
+                            <div><label class="mb-1 block text-xs font-medium text-[#6e6e73]"><%= sl("Pénalité pour retour") %> (MAD)</label><%= text_field_tag "user[return_penalty]", (user.return_penalty_cents.to_i / 100.0).then { |amount| amount == amount.to_i ? amount.to_i : amount }, inputmode: "decimal", class: "h-10 w-full rounded-xl border border-[#e0e0e5] bg-white px-3 text-sm focus:border-[#1d1d1f] focus:outline-none" %></div>
+                          </div>
+                        <% end %>
+                        <div class="flex justify-end gap-2 pt-1">
+                          <button type="button" data-action="member-menu#close" class="h-10 cursor-pointer rounded-xl border border-[#e0e0e5] bg-white px-4 text-sm font-semibold hover:bg-[#f5f5f7]"><%= sl("Annuler") %></button>
+                          <button type="submit" class="h-10 cursor-pointer rounded-xl bg-[#1d1d1f] px-4 text-sm font-semibold text-white hover:bg-[#3a3a3c]" data-save-member><%= sl("Enregistrer") %></button>
+                        </div>
+                      <% end %>
+                    </dialog>
+
+                    <%# The role, in place: owner or agent. %>
+                    <% unless user == current_user %>
+                      <dialog data-member-menu-target="dialog" data-name="role" data-action="click->member-menu#backdrop" data-member-role="<%= user.id %>" class="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-3xl border border-white/70 bg-white/80 p-0 text-start text-[#1c1c1e] shadow-[0_30px_80px_-24px_rgba(31,36,48,0.45)] backdrop-blur-2xl backdrop:bg-[rgba(31,36,48,0.28)]">
+                        <%= form_with url: role_admin_user_path(user), method: :patch, class: "space-y-3 p-5 whitespace-normal", data: { turbo: false } do %>
+                          <h3 class="text-base font-bold"><%= sl("Attribuer des rôles") %></h3>
+                          <p class="text-xs text-[#6e6e73]"><%= sl("Choisissez le rôle de cette personne. Ses permissions personnalisées sont remises à zéro.") %></p>
+                          <% [ [ "owner", t("admin.team.owner") ], [ "agent", t("admin.team.role_agent") ] ].each do |value, name| %>
+                            <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-[#e0e0e5] bg-white px-3 py-2.5 text-sm hover:bg-[#f9f9fb]"><%= radio_button_tag :role, value, role_key == (value == "owner" ? :owner : :agent), class: "accent-[#1d1d1f]" %><%= name %></label>
+                          <% end %>
+                          <div class="flex justify-end gap-2 pt-1">
+                            <button type="button" data-action="member-menu#close" class="h-10 cursor-pointer rounded-xl border border-[#e0e0e5] bg-white px-4 text-sm font-semibold hover:bg-[#f5f5f7]"><%= sl("Annuler") %></button>
+                            <button type="submit" class="h-10 cursor-pointer rounded-xl bg-[#1d1d1f] px-4 text-sm font-semibold text-white hover:bg-[#3a3a3c]" data-save-role><%= sl("Enregistrer") %></button>
+                          </div>
+                        <% end %>
+                      </dialog>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </section>
+</div>
 </div>

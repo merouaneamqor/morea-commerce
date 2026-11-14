@@ -213,6 +213,12 @@ module Confirmations
     # Claim for this user unless it is already theirs; refuses an order another agent holds.
     def take!(order, confirmation)
       raise Error, "This callback is not due yet." unless confirmation.due?
+      if @user.confirmation_agent_view? && confirmation.attributed_user_id && confirmation.attributed_user_id != @user.id
+        raise Error, "This order is assigned to another agent."
+      end
+      if @user.confirmation_agent_view? && confirmation.attributed_user_id.nil? && confirmation.assigned_user_id != @user.id && @store.assignment_enforced?
+        raise Error, "This order has not been assigned to you by the attribution rules."
+      end
       if confirmation.assigned_user_id && confirmation.assigned_user_id != @user.id
         raise Error, "Another agent has claimed this order."
       end
@@ -279,11 +285,11 @@ module Confirmations
       raise Error, "Store administration access required."
     end
 
-    # Agents must be present (confirmation page open / fresh heartbeat) to claim or handle
-    # orders. Looking needs no presence. Checked here so a crafted request cannot skip it.
+    # Agents must be clocked in to claim or handle orders (looking needs no shift). Checked
+    # here so a crafted request cannot skip the disabled buttons.
     def require_shift!
       return unless @user.confirmation_agent_view?
-      return if Presence.new(store: @store, user: @user).present?
+      return if ConfirmationShift.open.exists?(store: @store, user: @user)
 
       raise Error, I18n.t("admin.confirmations.clock_in_required")
     end

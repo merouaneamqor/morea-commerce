@@ -1,0 +1,646 @@
+# Texts of the seller workspace pages: the key is the French text, with its English, Arabic and Spanish translation.
+# sl() reads every file of this folder. spec/i18n_coverage_spec.rb fails when a text lacks a translation.
+Règles inactives:
+  en: "Inactive rules"
+  ar: "القواعد غير المفعّلة"
+  es: "Reglas inactivas"
+Récupération des livraisons:
+  en: "Delivery recovery"
+  ar: "استرجاع التوصيلات"
+  es: "Recuperación de entregas"
+Récupérées:
+  en: "Recovered"
+  ar: "المُسترجَعة"
+  es: "Recuperadas"
+Réduire le menu:
+  en: Collapse the menu
+  ar: طيّ القائمة
+  es: "Contraer el menú"
+'Répartir équitablement : la même part pour chaque agent (50/50 avec deux agents, 33/33/33 avec trois).':
+  en: "Split evenly: the same share for each agent (50/50 with two agents, 33/33/33 with three)."
+  ar: "توزيع بالتساوي: الحصة نفسها لكل وكيل (50/50 مع وكيلين، 33/33/33 مع ثلاثة)."
+  es: "Repartir a partes iguales: la misma parte para cada agente (50/50 con dos agentes, 33/33/33 con tres)."
+Répartissez les commandes entre vos agents:
+  en: "Distribute orders among your agents"
+  ar: "وزّع الطلبات بين وكلائك"
+  es: "Reparte los pedidos entre tus agentes"
+Répartition:
+  en: "Distribution"
+  ar: "التوزيع"
+  es: "Reparto"
+Répartition entre les agents:
+  en: "Distribution among agents"
+  ar: "التوزيع بين الوكلاء"
+  es: "Reparto entre los agentes"
+Résultat des appels:
+  en: "Call results"
+  ar: "نتيجة المكالمات"
+  es: "Resultado de las llamadas"
+Réussite:
+  en: "Success"
+  ar: "النجاح"
+  es: "Éxito"
+Sans motif:
+  en: "No reason"
+  ar: "بدون سبب"
+  es: "Sin motivo"
+Sans réponse:
+  en: "No answer"
+  ar: "بدون رد"
+  es: "Sin respuesta"
+Se déconnecter:
+  en: Sign out
+  ar: تسجيل الخروج
+  es: "Cerrar sesión"
+Sendit, Ozon Express, Cathedis, Ameex et 10 autres:
+  en: Sendit, Ozon Express, Cathedis, Ameex and 10 more
+  ar: Sendit وOzon Express وCathedis وAmeex و10 أخرى
+  es: "Sendit, Ozon Express, Cathedis, Ameex y 10 más"
+Service de livraison:
+  en: Delivery service
+  ar: خدمة توصيل
+  es: "Servicio de entrega"
+Service de livraison rapide:
+  en: Fast delivery service
+  ar: خدمة توصيل سريعة
+  es: "Servicio de entrega rápida"
+Seules les commandes avec un appel enregistré sont comptées.:
+  en: "Only orders with a recorded call are counted."
+  ar: "تُحتسب فقط الطلبات التي لها مكالمة مسجّلة."
+  es: "Solo se cuentan los pedidos con una llamada registrada."
+? Seuls les agents dont le taux de réussite (30 derniers jours) est au moins égal reçoivent les commandes. Un agent sans appel reste éligible.
+: en: "Only agents whose success rate (last 30 days) is at least equal receive orders. An agent with no calls remains eligible."
+  ar: "لا يتلقى الطلبات إلا الوكلاء الذين تساوي نسبة نجاحهم (آخر 30 يومًا) هذه النسبة على الأقل. ويبقى الوكيل الذي لم يُجرِ أي مكالمة مؤهَّلًا."
+  es: "Solo los agentes cuya tasa de éxito (últimos 30 días) sea al menos igual reciben los pedidos. Un agente sin llamadas sigue siendo elegible."
+Si l'agent est trop lent:
+  en: "If the agent is too slow"
+  ar: "إذا كان الوكيل بطيئًا جدًا"
+  es: "Si el agente es demasiado lento"
+? Si l'agent n'a pas confirmé la commande dans le délai de la règle (30 minutes par défaut), elle passe automatiquement à un autre agent actif et en ligne. Sans règle qui correspond, ou si personne n'est en ligne, la commande reste ouverte à tous les agents.
+: en: "If the agent has not confirmed the order within the rule's time limit (30 minutes by default), it automatically moves to another active, online agent. With no matching rule, or if nobody is online, the order stays open to all agents."
+  ar: "إذا لم يؤكد الوكيل الطلب خلال مهلة القاعدة (30 دقيقة افتراضيًا)، ينتقل تلقائيًا إلى وكيل آخر نشط ومتصل. وإذا لم توجد قاعدة مطابقة، أو لم يكن أحد متصلًا، يبقى الطلب متاحًا لجميع الوكلاء."
+  es: "Si el agente no ha confirmado el pedido dentro del plazo de la regla (30 minutos por defecto), pasa automáticamente a otro agente activo y en línea. Si ninguna regla coincide, o si nadie está en línea, el pedido queda abierto a todos los agentes."
+Société:
+  en: Company
+  ar: الشركة
+  es: "Empresa"
+Société ajoutée.:
+  en: Company added.
+  ar: تمت إضافة الشركة.
+  es: "Empresa añadida."
+Société modifiée.:
+  en: Company updated.
+  ar: تم تعديل الشركة.
+  es: "Empresa editada."
+Société supprimée.:
+  en: Company deleted.
+  ar: تم حذف الشركة.
+  es: "Empresa eliminada."
+Sociétés de livraison:
+  en: Delivery companies
+  ar: شركات التوصيل
+  es: "Empresas de transporte"
+Sources choisies:
+  en: "Selected sources"
+  ar: "المصادر المختارة"
+  es: "Fuentes elegidas"
+Statut:
+  en: Status
+  ar: الحالة
+  es: "Estado"
+Statut de livraison:
+  en: "Delivery status"
+  ar: "حالة التوصيل"
+  es: "Estado de entrega"
+Statut de livraison par jour de commande:
+  en: "Delivery status by order day"
+  ar: "حالة التوصيل حسب يوم الطلب"
+  es: "Estado de entrega por día del pedido"
+Stock faible:
+  en: Low stock
+  ar: مخزون منخفض
+  es: "Stock bajo"
+Suivant:
+  en: Next
+  ar: التالي
+  es: "Siguiente"
+Suivi manuel:
+  en: Manual tracking
+  ar: تتبّع يدوي
+  es: "Seguimiento manual"
+Supprimer:
+  en: Delete
+  ar: حذف
+  es: "Eliminar"
+Supprimer ce compte de livraison ?:
+  en: Delete this delivery account?
+  ar: حذف حساب التوصيل هذا؟
+  es: "¿Eliminar esta cuenta de entrega?"
+Supprimer cette règle ? Les commandes déjà attribuées gardent leur agent.:
+  en: "Delete this rule? Orders already assigned keep their agent."
+  ar: "حذف هذه القاعدة؟ الطلبات المُسندة سابقًا تحتفظ بوكيلها."
+  es: "¿Eliminar esta regla? Los pedidos ya asignados conservan su agente."
+Sur quoi agir:
+  en: "What to act on"
+  ar: "على ماذا تعمل"
+  es: "Dónde actuar"
+Synchronisation lancée. Actualisez dans un instant.:
+  en: Sync started. Refresh in a moment.
+  ar: بدأت المزامنة. حدّث الصفحة بعد لحظة.
+  es: "Sincronización iniciada. Actualiza en un momento."
+Synchroniser:
+  en: Sync
+  ar: مزامنة
+  es: "Sincronizar"
+Sélectionner le fournisseur de livraison:
+  en: Select the delivery provider
+  ar: اختر مزوّد التوصيل
+  es: "Selecciona el proveedor de entrega"
+Tableau de bord:
+  en: Dashboard
+  ar: لوحة التحكم
+  es: "Panel"
+Taux d'upsell, rappels à l'heure et finances ne sont pas encore calculés.:
+  en: "Upsell rate, on-time callbacks and finances are not calculated yet."
+  ar: "نسبة البيع الإضافي والمكالمات المتابعة في وقتها والمالية لم تُحتسب بعد."
+  es: "La tasa de upsell, las rellamadas a tiempo y las finanzas aún no se calculan."
+Taux de confirmation:
+  en: Confirmation rate
+  ar: نسبة التأكيد
+  es: "Tasa de confirmación"
+Taux de confirmation selon le temps d'attente avant le premier appel.:
+  en: "Confirmation rate by waiting time before the first call."
+  ar: "نسبة التأكيد حسب مدة الانتظار قبل أول مكالمة."
+  es: "Tasa de confirmación según el tiempo de espera antes de la primera llamada."
+Taux de livraison:
+  en: Delivery rate
+  ar: نسبة التوصيل
+  es: "Tasa de entrega"
+Taux de retour:
+  en: Return rate
+  ar: نسبة الإرجاع
+  es: "Tasa de devolución"
+Taux de réponse par heure:
+  en: "Answer rate by hour"
+  ar: "نسبة الرد حسب الساعة"
+  es: "Tasa de respuesta por hora"
+Taux de réussite minimum (%):
+  en: "Minimum success rate (%)"
+  ar: "الحد الأدنى لنسبة النجاح (%)"
+  es: "Tasa de éxito mínima (%)"
+Titan:
+  en: Titan
+  ar: عملاق
+  es: "Titan"
+Total:
+  en: Total
+  ar: المجموع
+  es: "Total"
+Total de sociétés:
+  en: Total companies
+  ar: مجموع الشركات
+  es: "Total de empresas"
+Total des règles:
+  en: "Total rules"
+  ar: "مجموع القواعد"
+  es: "Total de reglas"
+Total livré:
+  en: Total delivered
+  ar: مجموع المُسلَّم
+  es: "Total entregado"
+Tour de rôle:
+  en: "Round robin"
+  ar: "التناوب"
+  es: "Por turnos"
+Tous:
+  en: All
+  ar: الكل
+  es: "Todos"
+Tous les appels:
+  en: "All calls"
+  ar: "كل المكالمات"
+  es: "Todas las llamadas"
+Tous les fournisseurs:
+  en: All providers
+  ar: كل المزوّدين
+  es: "Todos los proveedores"
+Tous les produits:
+  en: "All products"
+  ar: "كل المنتجات"
+  es: "Todos los productos"
+Tous les statuts:
+  en: All statuses
+  ar: كل الحالات
+  es: "Todos los estados"
+Tout est confirmé:
+  en: All confirmed
+  ar: كل شيء مؤكَّد
+  es: "Todo confirmado"
+Toutes les commandes:
+  en: All orders
+  ar: كل الطلبات
+  es: "Todos los pedidos"
+Toutes les commandes en attente:
+  en: "All pending orders"
+  ar: "كل الطلبات قيد الانتظار"
+  es: "Todos los pedidos pendientes"
+Toutes les commandes sont attribuées !:
+  en: "All orders are assigned!"
+  ar: "كل الطلبات مُسندة!"
+  es: "¡Todos los pedidos están asignados!"
+Toutes les régions:
+  en: All regions
+  ar: كل المناطق
+  es: "Todas las regiones"
+Toutes les sources:
+  en: "All sources"
+  ar: "كل المصادر"
+  es: "Todas las fuentes"
+Transporteur:
+  en: "Carrier"
+  ar: "شركة النقل"
+  es: "Transportista"
+Tunisie:
+  en: Tunisia
+  ar: تونس
+  es: "Túnez"
+Type de compte:
+  en: Account type
+  ar: نوع الحساب
+  es: "Tipo de cuenta"
+Téléphone du contact:
+  en: Contact phone
+  ar: هاتف جهة الاتصال
+  es: "Teléfono del contacto"
+Ventes livrées:
+  en: Delivered sales
+  ar: المبيعات المُسلَّمة
+  es: "Ventas entregadas"
+Ventes livrées par produit, hors livraison:
+  en: Delivered sales by product, delivery excluded
+  ar: المبيعات المسلّمة لكل منتج دون التوصيل
+  es: "Ventas entregadas por producto, sin contar la entrega"
+Ventes livrées vs publicité:
+  en: Delivered sales vs ads
+  ar: المبيعات المُسلَّمة مقابل الإعلانات
+  es: "Ventas entregadas frente a publicidad"
+Ville:
+  en: City
+  ar: المدينة
+  es: "Ciudad"
+Ville de ramassage:
+  en: Pickup city
+  ar: مدينة الاستلام
+  es: "Ciudad de recogida"
+Voir les chiffres jour par jour (tableau):
+  en: "See the figures day by day (table)"
+  ar: "عرض الأرقام يومًا بيوم (جدول)"
+  es: "Ver las cifras día a día (tabla)"
+Voir les commandes:
+  en: View orders
+  ar: عرض الطلبات
+  es: "Ver los pedidos"
+Voir les produits:
+  en: See products
+  ar: عرض المنتجات
+  es: "Ver los productos"
+Voir ses commandes:
+  en: View their orders
+  ar: عرض طلباته
+  es: "Ver sus pedidos"
+Vos clients apparaissent ici dès leur première commande.:
+  en: Your customers appear here from their first order.
+  ar: يظهر زبائنك هنا منذ أول طلب.
+  es: "Tus clientes aparecen aquí desde su primer pedido."
+Vos commandes apparaîtront ici dès que votre boutique sera connectée.:
+  en: Your orders will appear here once your store is connected.
+  ar: ستظهر طلباتك هنا بمجرّد ربط متجرك.
+  es: "Tus pedidos aparecerán aquí en cuanto tu tienda esté conectada."
+Votre boutique YouCan reliée en quelques secondes.:
+  en: Your YouCan store connected in seconds.
+  ar: متجرك على YouCan مربوط في ثوانٍ.
+  es: "Tu tienda YouCan conectada en unos segundos."
+'Votre site WordPress : autorisation en un clic ou clés API.':
+  en: 'Your WordPress site: one-click approval or API keys.'
+  ar: 'موقعك على WordPress: موافقة بضغطة أو مفاتيح API.'
+  es: "Tu sitio WordPress: autorización con un clic o claves API."
+Votre société n'est pas dans la liste:
+  en: Your company isn't listed
+  ar: شركتك غير موجودة في القائمة
+  es: "Tu empresa no está en la lista"
+'Votre société n''est pas dans la liste : suivi des colis à la main en attendant son intégration.':
+  en: 'Your company isn''t listed: track parcels by hand until it is integrated.'
+  ar: 'شركتك غير موجودة: تتبّع الطرود يدويًا إلى أن تُربط.'
+  es: "Tu empresa no está en la lista: seguimiento manual de los paquetes hasta que se integre."
+Vous donnez à chaque agent sa part, le total fait 100 %.:
+  en: "You give each agent their share; the total is 100%."
+  ar: "تحدّد لكل وكيل حصته، والمجموع 100%."
+  es: "Das a cada agente su parte; el total suma 100 %."
+Vous serez redirigé vers Shopify pour autoriser seallo.:
+  en: You will be sent to Shopify to approve seallo.
+  ar: سيتم توجيهك إلى Shopify للموافقة على seallo.
+  es: "Se te redirigirá a Shopify para autorizar seallo."
+Vous serez redirigé vers YouCan pour autoriser seallo.:
+  en: You will be sent to YouCan to approve seallo.
+  ar: سيتم توجيهك إلى YouCan للموافقة على seallo.
+  es: "Se te redirigirá a YouCan para autorizar seallo."
+Vous serez redirigé vers votre site pour autoriser seallo.:
+  en: You will be sent to your site to approve seallo.
+  ar: سيتم توجيهك إلى موقعك للموافقة على seallo.
+  es: "Se te redirigirá a tu sitio para autorizar seallo."
+Vue d'ensemble:
+  en: "Overview"
+  ar: "نظرة عامة"
+  es: "Visión general"
+WooCommerce › Réglages › Avancé › API REST › Ajouter une clé (droits Lecture/Écriture).:
+  en: WooCommerce › Settings › Advanced › REST API › Add key (Read/Write).
+  ar: WooCommerce › الإعدادات › متقدم › REST API › إضافة مفتاح (قراءة/كتابة).
+  es: "WooCommerce › Ajustes › Avanzado › API REST › Añadir clave (permisos de lectura/escritura)."
+'Zone grise : jours récents, des colis sont encore en route.':
+  en: "Grey area: recent days, some parcels are still on the way."
+  ar: "المنطقة الرمادية: أيام حديثة، ولا تزال بعض الطرود في الطريق."
+  es: "Zona gris: días recientes, aún hay paquetes en camino."
+activer:
+  en: "enable"
+  ar: "تفعيل"
+  es: "activar"
+actuellement activées:
+  en: "currently enabled"
+  ar: "مفعّلة حاليًا"
+  es: "activadas actualmente"
+actuellement désactivées:
+  en: "currently disabled"
+  ar: "معطّلة حاليًا"
+  es: "desactivadas actualmente"
+appels:
+  en: "calls"
+  ar: "مكالمات"
+  es: "llamadas"
+après la commande:
+  en: "after the order"
+  ar: "بعد الطلب"
+  es: "después del pedido"
+après produits, pub, livraison et agents:
+  en: after products, ads, delivery and agents
+  ar: بعد المنتجات والإعلانات والتوصيل والوكلاء
+  es: "tras productos, publicidad, entrega y agentes"
+assignées:
+  en: "assigned"
+  ar: "مُسندة"
+  es: "asignados"
+aucun appel:
+  en: "no calls"
+  ar: "لا مكالمات"
+  es: "ninguna llamada"
+avant:
+  en: to
+  ar: قبل
+  es: "antes de"
+commande:
+  en: order
+  ar: طلب
+  es: "pedido"
+commandes:
+  en: orders
+  ar: طلبًا
+  es: "pedidos"
+commandes attendent un appel depuis plus d'un jour.:
+  en: "orders have been waiting for a call for more than a day."
+  ar: "طلبات تنتظر مكالمة منذ أكثر من يوم."
+  es: "pedidos llevan más de un día esperando una llamada."
+commandes attendent un premier appel:
+  en: "orders are waiting for a first call"
+  ar: "طلبات تنتظر أول مكالمة"
+  es: "pedidos esperan una primera llamada"
+commandes confirmées:
+  en: "confirmed orders"
+  ar: "طلبات مؤكدة"
+  es: "pedidos confirmados"
+commandes livrées:
+  en: delivered orders
+  ar: طلبات مسلّمة
+  es: "pedidos entregados"
+commandes reçues:
+  en: "orders received"
+  ar: "طلبات مستلمة"
+  es: "pedidos recibidos"
+commandes sans aucun appel:
+  en: "orders with no call at all"
+  ar: "طلبات بلا أي مكالمة"
+  es: "pedidos sin ninguna llamada"
+confirmation:
+  en: "confirmation"
+  ar: "التأكيد"
+  es: "confirmación"
+confirmées:
+  en: confirmed
+  ar: مؤكدة
+  es: "confirmados"
+confirmées sur:
+  en: "confirmed out of"
+  ar: "مؤكدة من أصل"
+  es: "confirmados de"
+contre:
+  en: "vs"
+  ar: "مقابل"
+  es: "frente a"
+? dans votre espace client. Elles sont gardées chiffrées ; l'envoi automatique des colis sera activé dès que le connecteur sera disponible.
+: en: in your customer area. They are stored encrypted; automatic parcel sending will be enabled as soon as the connector is available.
+  ar: في فضاء الزبون. تُحفظ مشفّرة، وسيُفعَّل الإرسال الآلي للطرود فور توفّر الموصّل.
+  es: "en tu área de cliente. Se guardan cifradas; el envío automático de los paquetes se activará en cuanto el conector esté disponible."
+de l'étape précédente:
+  en: "from the previous step"
+  ar: "من الخطوة السابقة"
+  es: "del paso anterior"
+des annulations:
+  en: "of cancellations"
+  ar: "من الإلغاءات"
+  es: "de las cancelaciones"
+des colis:
+  en: "of parcels"
+  ar: "من الطرود"
+  es: "de los paquetes"
+des commandes:
+  en: "of orders"
+  ar: "من الطلبات"
+  es: "de los pedidos"
+décrochés:
+  en: "answered"
+  ar: "تم الرد عليها"
+  es: "contestadas"
+désactiver:
+  en: "disable"
+  ar: "تعطيل"
+  es: "desactivar"
+en:
+  en: "in"
+  ar: "في"
+  es: "en"
+en cours:
+  en: in progress
+  ar: قيد المعالجة
+  es: "en curso"
+et le moins:
+  en: "and the least"
+  ar: "والأقل"
+  es: "y el que menos"
+'ex : Grosses commandes aux meilleurs agents':
+  en: "e.g. Big orders to the best agents"
+  ar: "مثال: الطلبات الكبيرة للوكلاء الأفضل"
+  es: "p. ej.: Pedidos grandes para los mejores agentes"
+fournisseurs:
+  en: providers
+  ar: مزوّدين
+  es: "proveedores"
+'jour récent : provisoire':
+  en: "recent day: provisional"
+  ar: "يوم حديث: مؤقت"
+  es: "día reciente: provisional"
+jours:
+  en: "days"
+  ar: "أيام"
+  es: "días"
+la plus ancienne:
+  en: "the oldest"
+  ar: "الأقدم"
+  es: "la más antigua"
+le jour même:
+  en: "the same day"
+  ar: "في اليوم نفسه"
+  es: "el mismo día"
+le lendemain:
+  en: "the next day"
+  ar: "في اليوم التالي"
+  es: "al día siguiente"
+le profit est faux tant que le coût n'est pas saisi (le produit est compté comme gratuit).:
+  en: profit is wrong until the cost is entered (the product is counted as free).
+  ar: الربح غير صحيح ما دامت التكلفة غير مُدخَلة (يُحسب المنتج وكأنه مجاني).
+  es: "el beneficio es incorrecto mientras no se introduzca el coste (el producto cuenta como gratuito)."
+livraison:
+  en: "delivery"
+  ar: "التوصيل"
+  es: "entrega"
+livrées:
+  en: delivered
+  ar: مُسلَّمة
+  es: "entregados"
+livrées sur:
+  en: "delivered out of"
+  ar: "مُسلَّمة من أصل"
+  es: "entregados de"
+nouvelles commandes:
+  en: "new orders"
+  ar: "طلبات جديدة"
+  es: "pedidos nuevos"
+page:
+  en: "page"
+  ar: "الصفحة"
+  es: "página"
+pcs:
+  en: pcs
+  ar: قطعة
+  es: "uds."
+pièces ou moins:
+  en: pieces or fewer
+  ar: قطع أو أقل
+  es: "unidades o menos"
+produits sans coût:
+  en: products without a cost
+  ar: منتجات بدون تكلفة
+  es: "productos sin coste"
+provisoire:
+  en: "provisional"
+  ar: "مؤقت"
+  es: "provisional"
+quand cette règle s'applique:
+  en: "when this rule applies"
+  ar: "عند تطبيق هذه القاعدة"
+  es: "cuándo se aplica esta regla"
+retournées:
+  en: returned
+  ar: مرتجعة
+  es: "devueltos"
+retours:
+  en: returns
+  ar: مرتجَعات
+  es: "devoluciones"
+règles configurées:
+  en: "configured rules"
+  ar: "قواعد مُعدّة"
+  es: "reglas configuradas"
+récupérées:
+  en: "recovered"
+  ar: "مُسترجَعة"
+  es: "recuperados"
+résultats:
+  en: results
+  ar: نتيجة
+  es: "resultados"
+si elle n'est pas confirmée en (minutes):
+  en: "if it is not confirmed within (minutes)"
+  ar: "إذا لم يُؤكَّد خلال (دقائق)"
+  es: "si no se confirma en (minutos)"
+sociétés:
+  en: companies
+  ar: شركات
+  es: "empresas"
+sont confirmées dès le 1er appel.:
+  en: "are confirmed on the 1st call."
+  ar: "تُؤكَّد منذ المكالمة الأولى."
+  es: "se confirman en la 1.ª llamada."
+sur:
+  en: of
+  ar: من
+  es: "de"
+sur la période:
+  en: in this period
+  ar: خلال الفترة
+  es: "en el período"
+sur la route:
+  en: "on the way"
+  ar: "في الطريق"
+  es: "en camino"
+vs période précédente:
+  en: "vs previous period"
+  ar: "مقابل الفترة السابقة"
+  es: "frente al período anterior"
+À expédier:
+  en: To ship
+  ar: للشحن
+  es: "Por enviar"
+À risque:
+  en: At risk
+  ar: مُخاطِر
+  es: "En riesgo"
+Échec de livraison:
+  en: "Delivery failure"
+  ar: "فشل التوصيل"
+  es: "Entrega fallida"
+Échec ou reportée:
+  en: "Failed or postponed"
+  ar: "فاشلة أو مؤجّلة"
+  es: "Fallida o aplazada"
+Échec → Livraison:
+  en: "Failure → Delivery"
+  ar: "فشل ← توصيل"
+  es: "Fallida → Entrega"
+Équipe:
+  en: Team
+  ar: الفريق
+  es: "Equipo"
+à confirmer:
+  en: "to confirm"
+  ar: "للتأكيد"
+  es: "por confirmar"
+échecs:
+  en: "failures"
+  ar: "إخفاقات"
+  es: "fallos"
+échecs de livraison ont finalement été livrés:
+  en: "failed deliveries were finally delivered"
+  ar: "توصيلات فاشلة تم تسليمها في النهاية"
+  es: "entregas fallidas se entregaron finalmente"
+"— Non attribuée":
+  en: "— Unassigned"
+  ar: "— غير مُسندة"
+  es: "— Sin asignar"

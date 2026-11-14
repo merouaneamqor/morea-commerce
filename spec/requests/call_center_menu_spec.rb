@@ -15,17 +15,18 @@ RSpec.describe "Call center menu", type: :request do
   def menu = Nokogiri::HTML(response.body).at_css("[data-call-center-nav]")
   def items = menu.css("[data-subnav-item]").to_h { |item| [ item["data-subnav-item"], item ] }
 
-  it "replaces Confirmation by a Centre d'appels group with its five pages for the owner" do
+  it "replaces Confirmation by a Centre d'appels group with its six pages for the owner" do
     sign_in(owner)
     get "/dashboard"
 
     expect(menu.at_css("summary").text.squish).to eq("Centre d'appels")
-    expect(items.keys).to eq(%w[queue analytics assignments rules billing])
+    expect(items.keys).to eq(%w[queue analytics assignments rules attendance billing])
     expect(items["queue"]["href"]).to eq("/confirmation")
-    expect(items["analytics"]["href"]).to eq("/admin/confirmations/dashboard")
-    expect(items["assignments"]["href"]).to eq("/admin/confirmations?filter=all")
-    expect(items["rules"].name).to eq("span")                                     # no page yet: shown, not clickable
-    expect(items["billing"].name).to eq("span")
+    expect(items["analytics"]["href"]).to eq("/admin/confirmations/analytics")
+    expect(items["assignments"]["href"]).to eq("/admin/confirmations/assignments")
+    expect(items["rules"]["href"]).to eq("/admin/confirmations/rules")
+    expect(items["attendance"]["href"]).to eq("/admin/confirmations/attendance")
+    expect(items["billing"]["href"]).to eq("/admin/agent-billing")
     expect(menu.has_attribute?("open")).to be(false)                           # closed away from the call center
   end
 

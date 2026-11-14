@@ -1,0 +1,8 @@
+<%# Slim bar at the very top of every page of the read-only demo workspace. %>
+<div class="demo-banner" role="note">
+  <span class="demo-banner-text"><i aria-hidden="true"></i><%= t("demo.banner") %></span>
+  <span class="demo-banner-actions">
+    <%= link_to t("demo.create"), signup_path(locale: I18n.locale), class: "demo-banner-cta" %>
+    <%= button_to t("demo.leave"), admin_logout_path, method: :delete, class: "demo-banner-leave", form: { data: { turbo: false } } %>
+  </span>
+</div>

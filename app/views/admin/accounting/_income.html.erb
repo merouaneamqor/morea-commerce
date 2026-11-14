@@ -7,44 +7,44 @@
 <% loss = totals.net.negative? %>
 <% row = "flex h-9 items-center justify-between gap-3 text-[13px]" %>
 <% detail = "border-s-2 border-[#e1dbd6] ps-3" %>
-<% total_row = "#{row} border-t border-dashed border-[#e1dbd6] font-bold text-[#1f2430]" %>
+<% total_row = "#{row} border-t border-dashed border-[#e1dbd6] font-bold text-[#1c1c1e]" %>
 
-<section class="max-w-[900px] rounded-xl border border-[#e8e3df] bg-white p-3" data-income>
-  <h2 class="mb-2 flex items-center gap-2 text-sm font-bold text-[#1f2430]"><%= seller_icon(:orders, size: 15) %><%= t("accounting.income.title") %></h2>
+<section class="max-w-[900px] rounded-xl border border-[#e0e0e5] bg-white p-3" data-income>
+  <h2 class="mb-2 flex items-center gap-2 text-sm font-bold text-[#1c1c1e]"><%= seller_icon(:orders, size: 15) %><%= t("accounting.income.title") %></h2>
 
   <div class="space-y-2">
-    <div class="rounded-lg bg-[#f7f5f2] px-3" data-block="revenue">
+    <div class="rounded-lg bg-[#f5f5f7] px-3" data-block="revenue">
       <p class="flex h-8 items-center gap-2 text-[13px] font-semibold text-[#2f7a4a]"><span class="size-1.5 rounded-full bg-[#2f7a4a]"></span><%= t("accounting.income.revenue_title") %></p>
       <div class="<%= row %> <%= detail %>"><span><%= t("accounting.income.product_sales") %></span><span data-amount="product_sales"><%= acc_exact(totals.revenue) %> <%= cur %></span></div>
       <div class="<%= total_row %>"><span><%= t("accounting.income.revenue_total") %></span><span class="text-[#2f7a4a]" data-amount="revenue"><%= acc_exact(totals.revenue) %> <%= cur %></span></div>
     </div>
 
-    <div class="rounded-lg bg-[#f7f5f2] px-3" data-block="goods">
+    <div class="rounded-lg bg-[#f5f5f7] px-3" data-block="goods">
       <div class="flex h-8 items-center justify-between gap-2">
         <p class="flex items-center gap-2 text-[13px] font-semibold text-[#d08a1f]"><span class="size-1.5 rounded-full bg-[#d08a1f]"></span><%= t("accounting.income.cogs_title") %></p>
         <span class="rounded bg-[#fcf0dc] px-1.5 py-0.5 text-[11px] font-medium text-[#9a6412]"><%= t("accounting.income.based_#{stats.basis}") %></span>
       </div>
       <div class="<%= row %> <%= detail %>"><span><%= t("accounting.income.product_costs") %></span><span data-amount="product_costs"><%= acc_exact(totals.goods) %> <%= cur %></span></div>
       <% stats.goods_breakdown.each do |product| %>
-        <div class="<%= detail %> text-xs text-[#6f6967]" data-product="<%= product[:name] %>">
+        <div class="<%= detail %> text-xs text-[#6e6e73]" data-product="<%= product[:name] %>">
           <div class="flex min-h-8 items-center justify-between gap-3">
             <span class="min-w-0 truncate" dir="auto"><%= product[:name] %></span>
             <span class="flex shrink-0 items-baseline gap-4">
-              <span class="text-[#8a8380]" dir="ltr"><%= product[:unit_cost_cents] ? "#{product[:quantity]} × #{acc_exact(product[:unit_cost_cents])} #{cur}" : "#{product[:quantity]} #{t("accounting.income.units")}" %></span>
-              <span class="w-24 text-end text-[#1f2430]" data-amount="product"><%= acc_exact(product[:cents]) %></span>
+              <span class="text-[#6e6e73]" dir="ltr"><%= product[:unit_cost_cents] ? "#{product[:quantity]} × #{acc_exact(product[:unit_cost_cents])} #{cur}" : "#{product[:quantity]} #{t("accounting.income.units")}" %></span>
+              <span class="w-24 text-end text-[#1c1c1e]" data-amount="product"><%= acc_exact(product[:cents]) %></span>
             </span>
           </div>
           <% variants = product[:variants].reject { |variant| variant[:name].blank? } %>
           <% if variants.any? %>
             <details class="pb-1">
-              <summary class="cursor-pointer text-[#3d63b8] select-none"><%= t("accounting.income.detail", count: variants.length) %></summary>
+              <summary class="cursor-pointer text-[#4b4b50] select-none"><%= t("accounting.income.detail", count: variants.length) %></summary>
               <ul class="mt-0.5 space-y-0.5 ps-3">
                 <% product[:variants].each do |variant| %>
                   <li class="flex min-h-7 items-center justify-between gap-3" data-variant>
                     <span dir="auto"><%= variant[:name].presence || t("accounting.income.no_variant") %></span>
                     <span class="flex shrink-0 items-baseline gap-4">
-                      <span class="text-[#8a8380]" dir="ltr"><%= variant[:unit_cost_cents] ? "#{variant[:quantity]} × #{acc_exact(variant[:unit_cost_cents])} #{cur}" : "#{variant[:quantity]} #{t("accounting.income.units")}" %></span>
-                      <span class="w-24 text-end text-[#1f2430]"><%= acc_exact(variant[:cents]) %></span>
+                      <span class="text-[#6e6e73]" dir="ltr"><%= variant[:unit_cost_cents] ? "#{variant[:quantity]} × #{acc_exact(variant[:unit_cost_cents])} #{cur}" : "#{variant[:quantity]} #{t("accounting.income.units")}" %></span>
+                      <span class="w-24 text-end text-[#1c1c1e]"><%= acc_exact(variant[:cents]) %></span>
                     </span>
                   </li>
                 <% end %>
@@ -56,35 +56,35 @@
       <div class="<%= total_row %>"><span><%= t("accounting.income.cogs_total") %></span><span class="text-[#d08a1f]" data-amount="goods"><%= acc_expense(totals.goods, cur) %></span></div>
     </div>
 
-    <div class="flex h-9 items-center justify-between gap-3 rounded-lg border border-[#cbd9f3] bg-[#eef3fc] px-3 text-[13px] font-bold" data-block="gross_margin">
-      <span class="text-[#1f2430]"><%= t("accounting.income.gross") %></span>
-      <span class="text-[#3d63b8]"><span data-amount="gross_margin"><%= acc_exact(totals.gross_margin) %> <%= cur %></span><% if gross_share %> <span class="text-xs font-medium" data-share="gross"><%= acc_percent(gross_share) %> %</span><% end %></span>
+    <div class="flex h-9 items-center justify-between gap-3 rounded-lg border border-[#d8d8de] bg-[#f0f0f3] px-3 text-[13px] font-bold" data-block="gross_margin">
+      <span class="text-[#1c1c1e]"><%= t("accounting.income.gross") %></span>
+      <span class="text-[#4b4b50]"><span data-amount="gross_margin"><%= acc_exact(totals.gross_margin) %> <%= cur %></span><% if gross_share %> <span class="text-xs font-medium" data-share="gross"><%= acc_percent(gross_share) %> %</span><% end %></span>
     </div>
 
-    <div class="rounded-lg bg-[#f7f5f2] px-3" data-block="ads">
-      <p class="flex h-8 items-center gap-2 text-[13px] font-semibold text-[#8f6bc1]"><span class="size-1.5 rounded-full bg-[#8f6bc1]"></span><%= t("accounting.income.ads_title") %></p>
+    <div class="rounded-lg bg-[#f5f5f7] px-3" data-block="ads">
+      <p class="flex h-8 items-center gap-2 text-[13px] font-semibold text-[#8e8e93]"><span class="size-1.5 rounded-full bg-[#8e8e93]"></span><%= t("accounting.income.ads_title") %></p>
       <div class="<%= row %> <%= detail %>"><span><%= t("accounting.income.ad_spend") %></span><span><%= acc_exact(totals.ads) %> <%= cur %></span></div>
-      <div class="<%= total_row %>"><span><%= t("accounting.income.ads_total") %></span><span class="text-[#8f6bc1]" data-amount="ads"><%= acc_expense(totals.ads, cur) %></span></div>
+      <div class="<%= total_row %>"><span><%= t("accounting.income.ads_total") %></span><span class="text-[#8e8e93]" data-amount="ads"><%= acc_expense(totals.ads, cur) %></span></div>
     </div>
 
-    <div class="rounded-lg bg-[#f7f5f2] px-3" data-block="delivery">
+    <div class="rounded-lg bg-[#f5f5f7] px-3" data-block="delivery">
       <p class="flex h-8 items-center gap-2 text-[13px] font-semibold text-[#b4344e]"><span class="size-1.5 rounded-full bg-[#b4344e]"></span><%= t("accounting.income.delivery_title") %></p>
       <div class="<%= row %> <%= detail %>"><span><%= t("accounting.income.delivery_delivered") %></span><span data-amount="delivery_delivered"><%= acc_exact(split[:delivered]) %> <%= cur %></span></div>
       <div class="<%= row %> <%= detail %>"><span><%= t("accounting.income.delivery_returned") %></span><span data-amount="delivery_returned"><%= acc_exact(split[:returned]) %> <%= cur %></span></div>
       <div class="<%= total_row %>"><span><%= t("accounting.income.delivery_total") %></span><span class="text-[#b4344e]" data-amount="delivery"><%= acc_expense(totals.delivery, cur) %></span></div>
     </div>
 
-    <div class="rounded-lg bg-[#f7f5f2] px-3" data-block="operating">
+    <div class="rounded-lg bg-[#f5f5f7] px-3" data-block="operating">
       <p class="flex h-8 items-center gap-2 text-[13px] font-semibold text-[#b4344e]"><span class="size-1.5 rounded-full bg-[#b4344e]"></span><%= t("accounting.income.opex_title") %></p>
-      <p class="flex h-8 items-center border-s-2 border-[#e1dbd6] ps-3 text-xs text-[#8a8380]"><%= t("accounting.income.opex_note") %></p>
+      <p class="flex h-8 items-center border-s-2 border-[#e1dbd6] ps-3 text-xs text-[#6e6e73]"><%= t("accounting.income.opex_note") %></p>
       <div class="<%= total_row %>"><span><%= t("accounting.income.opex_total") %></span><span class="text-[#b4344e]" data-amount="operating"><%= acc_expense(0, cur) %></span></div>
     </div>
 
     <div class="flex h-9 items-center justify-between gap-3 rounded-lg border px-3 text-[13px] font-bold <%= loss ? "border-[#f0c6cd] bg-[#fdeff1]" : "border-[#bfe0c9] bg-[#eaf6ee]" %>" data-block="net">
-      <span class="text-[#1f2430]"><%= t(loss ? "accounting.income.loss" : "accounting.income.net") %></span>
+      <span class="text-[#1c1c1e]"><%= t(loss ? "accounting.income.loss" : "accounting.income.net") %></span>
       <span class="<%= loss ? "text-[#b4344e]" : "text-[#2f7a4a]" %>"><span data-amount="net"><%= acc_exact(totals.net) %> <%= cur %></span><% if net_share %> <span class="text-xs font-medium" data-share="net"><%= acc_percent(net_share) %> %</span><% end %></span>
     </div>
   </div>
 
-  <% if totals.orders.zero? && stats.lines.empty? %><p class="mt-2 text-center text-xs text-[#8a8380]"><%= t("accounting.income.empty") %></p><% end %>
+  <% if totals.orders.zero? && stats.lines.empty? %><p class="mt-2 text-center text-xs text-[#6e6e73]"><%= t("accounting.income.empty") %></p><% end %>
 </section>

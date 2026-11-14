@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="<%= I18n.locale %>" dir="<%= rtl? ? "rtl" : "ltr" %>">
+<html lang="<%= I18n.locale %>">
   <head>
+    <%= render "shared/favicon" %>
     <meta charset="utf-8">
     <title><%= content_for?(:title) ? yield(:title) : "seallo" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -13,32 +14,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag "auth_responsive", "data-turbo-track": "reload" %>
   </head>
   <body class="seallo-flow" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
-    <div dir="<%= rtl? ? "rtl" : "ltr" %>" class="flex min-h-dvh flex-col bg-[#f3f1ef] text-[#5e5a58]">
+    <div dir="<%= rtl? ? "rtl" : "ltr" %>" class="flex min-h-dvh flex-col bg-white text-[#3a3a3c]">
       <header class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 <%= content_for?(:tall_header) ? "py-6" : "py-4" %> sm:px-6">
-        <a href="/" class="text-2xl font-extrabold tracking-tight text-[#a8432e]"><span dir="ltr">seallo</span></a>
+        <a href="/" class="text-2xl font-extrabold tracking-tight text-[#1d1d1f]"><span dir="ltr">seallo</span></a>
         <div class="flex items-center gap-3">
-          <div class="sa-lang">
-            <nav aria-label="<%= t("platform_home.language") %>" dir="ltr">
-              <% Morea::Locales::AVAILABLE.each do |locale| %>
-                <%= link_to locale.to_s.upcase, url_for(request.query_parameters.merge(locale: locale, only_path: true)), "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
-              <% end %>
-            </nav>
-          </div>
+          <div class="sa-lang"><%= render "shared/language_menu" %></div>
           <% if @guest %>
             <p class="hidden text-sm sm:block">
               <%= st("Vous avez déjà un compte ?") %>
-              <%= link_to st("Se connecter →"), admin_login_path(locale: I18n.locale), class: "font-semibold text-[#a8432e] hover:underline" %>
+              <%= link_to st("Se connecter →"), admin_login_path(locale: I18n.locale), class: "font-semibold text-[#1d1d1f] hover:underline" %>
             </p>
           <% elsif @guest == false %>
             <div class="flex items-center gap-4">
-              <%= button_to st("Se déconnecter"), admin_logout_path, method: :delete, class: "text-sm font-medium hover:text-[#1f2430]" %>
-              <%= link_to st("Tableau de bord →"), admin_root_path, class: "rounded-lg bg-[#1f2430] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1f2430]/85" %>
+              <%= button_to st("Se déconnecter"), admin_logout_path, method: :delete, class: "text-sm font-medium hover:text-[#1c1c1e]" %>
+              <%= link_to st("Tableau de bord →"), admin_root_path, class: "rounded-lg bg-[#1c1c1e] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1c1c1e]/85" %>
             </div>
           <% else %>
-            <%= button_to st("Se déconnecter"), admin_logout_path, method: :delete, class: "text-sm font-medium hover:text-[#1f2430]" %>
+            <%= button_to st("Se déconnecter"), admin_logout_path, method: :delete, class: "text-sm font-medium hover:text-[#1c1c1e]" %>
           <% end %>
         </div>
       </header>

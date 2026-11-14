@@ -1,0 +1,11 @@
+en:
+  call_assignments:
+    assigned: "Order assigned to %{name}."
+    unassigned: "Assignment removed: the order is open to every agent."
+    auto_done:
+      zero: "No order assigned."
+      one: "1 order assigned automatically."
+      other: "%{count} orders assigned automatically."
+    auto_left:
+      one: "1 order is still without an agent (the active agents are at capacity)."
+      other: "%{count} orders are still without an agent (the active agents are at capacity)."

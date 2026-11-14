@@ -68,6 +68,8 @@ Rails.application.routes.draw do
   end
 
   get "/", to: "platform_home#show", as: :platform_home, constraints: ->(request) { Store.apex_host?(request.host) }
+  # Read-only demo of the seller platform (fictitious workspace), opened from the landing page.
+  get "/demo", to: "demo#show", as: :demo, constraints: ->(request) { Store.apex_host?(request.host) }
   # Public Seallo Connect pages linked from the Shopify app listing; apex only, never tenant hosts.
   constraints ->(request) { Store.apex_host?(request.host) } do
     get "/seallo-connect", to: "seallo_connect_pages#show", as: :seallo_connect_page
@@ -94,9 +96,9 @@ Rails.application.routes.draw do
   post "/livraison/societes/:id/default", to: "admin/delivery_accounts#make_default", as: :seller_delivery_account_default
   delete "/livraison/societes/:id", to: "admin/delivery_accounts#destroy"
   {
-    "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations/center", "/mes-statistiques" => "/admin/my_stats",
+    "/commandes" => "/admin/orders", "/confirmation" => "/admin/confirmations/center", "/mes-statistiques" => "/admin/my_stats", "/facturation" => "/admin/my_billing",
     "/livraison" => "/admin/delivery", "/produits" => "/admin/products",
-    "/equipe" => "/admin/staff", "/settings/profile" => "/admin/store/edit"
+    "/equipe" => "/admin/staff", "/settings/profile" => "/admin/store/edit", "/boutique" => "/admin/store/edit#logo"
   }.each do |from, target|
     get from, to: redirect { |_params, request| [ target, request.query_string.presence ].compact.join("?") }
   end
@@ -123,7 +125,7 @@ Rails.application.routes.draw do
     "/#{locale}"
   }
 
-  scope "/:locale", locale: /fr|en|ar/ do
+  scope "/:locale", locale: /fr|en|es|ar/ do
     get "/", to: "home#index", as: :localized_root
     resources :collections, only: %i[index show], param: :slug
     resources :products, only: %i[show], param: :slug
@@ -228,7 +230,9 @@ Rails.application.routes.draw do
         end
       end
     end
-    resource :store, only: %i[edit update]
+    resource :store, only: %i[edit update] do
+      patch :logo
+    end
     resource :sendit_settings, only: %i[show update destroy] do
       post :refresh_cities
     end
@@ -255,9 +259,22 @@ Rails.application.routes.draw do
     resources :collections
     resources :discounts, except: %i[show]
     resources :users, path: "staff", except: %i[show] do
-      member { post :pay }
+      member do
+        post :pay
+        patch :permissions
+        patch :role
+        patch :status
+      end
     end
     get "my_stats", to: "my_stats#show", as: :my_stats
+    get "my_billing", to: "my_billing#show", as: :my_billing
+    get "agent-billing", to: "agent_billing#show", as: :agent_billing
+    post "agent-billing/pay", to: "agent_billing#pay", as: :agent_billing_pay
+    get "whatsapp", to: "whatsapp#show", as: :whatsapp
+    post "whatsapp/accounts", to: "whatsapp#create", as: :whatsapp_accounts
+    patch "whatsapp/accounts/:id", to: "whatsapp#update", as: :whatsapp_account
+    delete "whatsapp/accounts/:id", to: "whatsapp#destroy"
+    post "whatsapp/accounts/:id/test", to: "whatsapp#test", as: :test_whatsapp_account
     get "media", to: "media#index", as: :media
     post "media/upload", to: "media#upload", as: :media_upload
     post "media/edits", to: "media#edits", as: :media_edits
@@ -267,11 +284,19 @@ Rails.application.routes.draw do
         get :center
         get :dashboard
         post :presence
+        get :analytics
+        get :assignments
+        get :attendance
+        post :heartbeat
+        post :auto_assign
+        post :clock_in
+        post :clock_out
       end
       member do
         post :claim
         get :panel
         post :call
+        patch :assign
         post :touch_call
         post :whatsapp
         post :block_number
@@ -285,11 +310,21 @@ Rails.application.routes.draw do
       end
     end
 
+    # Attribution rules (the "Règles d'attribution" page): who gets the orders that come in, and what happens when an agent is too slow
+    resources :assignment_rules, path: "confirmations/rules", except: %i[show] do
+      member do
+        patch :toggle
+        patch :move
+      end
+    end
+
     resources :orders, only: %i[index show new create edit update] do
       collection do
         post :sendit_sync_all
         post :ozon_sync_all
         post :ameex_sync_all
+        get :ship_review
+        post :ship_confirmed
         post :shopify_sync_all
         get :product_search
         post :quick_product
@@ -337,7 +372,7 @@ Rails.application.routes.draw do
     # Store-manager menu entries whose feature is not built yet (empty pages)
     {
       inventory: "inventory", purchases: "purchases",
-      whatsapp: "whatsapp", analytics: "analytics", accounting: "accounting", workflows: "workflows",
+      analytics: "analytics", accounting: "accounting", workflows: "workflows",
       billing: "billing", app: "app", ai_chat: "ai-chat", help: "help"
     }.each do |feature, path|
       get path, to: "coming_soon#show", defaults: { feature: feature.to_s }, as: feature

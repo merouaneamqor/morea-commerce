@@ -1,0 +1,8 @@
+es:
+  admin:
+    whatsapp:
+      account_added: "Cuenta de WhatsApp añadida."
+      saved: "Ajustes de WhatsApp guardados."
+      removed: "Cuenta de WhatsApp eliminada."
+      test_sent: "Mensaje de prueba enviado."
+      test_failed: "No se pudo enviar el mensaje de prueba: %{error}"

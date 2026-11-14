@@ -3,21 +3,25 @@
   <meta name="color-scheme" content="light">
   <%= render "shared/platform_icons" %>
   <%= stylesheet_link_tag "platform_home", "data-turbo-track": "reload" %>
+  <script src="/globe.js" defer></script>
 <% end %>
 <% s = ->(key) { t("platform_home.seallo.#{key}") } %>
 <div class="platform-landing" dir="<%= rtl? ? "rtl" : "ltr" %>">
   <%= render "platform_home/header" %>
+  <div class="platform-map platform-map-desktop" dir="ltr"><%= render "platform_home/network_map", uid: "d" %></div>
   <main id="main-content" tabindex="-1">
     <span id="top"></span>
     <section class="platform-container platform-hero" aria-labelledby="platform-title">
       <div class="platform-hero-copy">
+        <% pill_before, pill_after = s.("pill").split("COD", 2) %>
+        <p class="platform-eyebrow"><% if pill_after %><%= pill_before %><b class="platform-cod">COD</b><%= pill_after %><% else %><%= s.("pill") %><% end %></p>
         <h1 id="platform-title"><span class="nowrap"><%= s.("h1a") %></span><br><span><%= s.("h1b") %></span></h1>
-        <div class="platform-map platform-map-mobile" dir="ltr" aria-hidden="true"><%= render "platform_home/network_map", uid: "m" %></div>
+        <div class="platform-map platform-map-mobile" dir="ltr"><%= render "platform_home/network_map", uid: "m" %></div>
         <p class="platform-lead"><%= s.("sub") %></p>
+        <div class="platform-hero-cta"><a href="<%= demo_path %>" class="platform-button" data-turbo="false"><%= s.("demo_cta") %> <span aria-hidden="true">→</span></a></div>
         <%= render "platform_home/flow_steps" %>
       </div>
       <div class="platform-hero-side">
-        <div class="platform-map platform-map-desktop" dir="ltr" aria-hidden="true"><%= render "platform_home/network_map", uid: "d" %></div>
         <%= render "platform_home/partners" %>
       </div>
     </section>
@@ -56,7 +60,19 @@
       var pick = function (i) { clearInterval(timer); show(i); };
       steps.forEach(function (b, n) { b.addEventListener("click", function () { pick(n); }); });
       dots.forEach(function (d, n) { d.addEventListener("click", function () { pick(n); }); });
+      // keep the box (and so the title above it) from moving: size it for the longest step text
+      var box = flow.querySelector(".platform-flow-detail");
+      var fit = function () {
+        box.style.minHeight = "";
+        var tallest = 0, keep = active;
+        steps.forEach(function (b, n) { show(n); tallest = Math.max(tallest, box.offsetHeight); });
+        box.style.minHeight = tallest + "px";
+        show(keep);
+      };
       show(0);
+      fit();
+      window.addEventListener("resize", fit);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
       if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         timer = setInterval(function () { show((active + 1) % steps.length); }, 3500);
       }

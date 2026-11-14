@@ -42,7 +42,7 @@ module Morea
     config.active_job.queue_adapter = :sidekiq
 
     config.i18n.default_locale = :fr
-    config.i18n.available_locales = %i[fr en ar]
+    config.i18n.available_locales = %i[fr en es ar]
     config.i18n.fallbacks = true
 
     # Retired ollazen.com hosts permanently redirect onto APP_BASE_DOMAIN (seallo.ma).

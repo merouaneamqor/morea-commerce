@@ -63,7 +63,7 @@
           <p role="timer" class="tabular-nums text-sm" data-controller="shift-timer" data-shift-timer-started-at-value="<%= focus_confirmation.call_started_at.iso8601 %>"><%= shift_clock(Time.current - focus_confirmation.call_started_at) %></p>
           <%= button_to t("admin.confirmations.abandon_call"), abandon_call_admin_confirmation_path(focus), class: "admin-btn-secondary" %>
         <% elsif mine || focus_confirmation.nil? || focus_confirmation.due? %>
-          <%= button_to t("admin.confirmations.call_customer", name: focus.customer_name), call_admin_confirmation_path(focus), class: "confirm-call" %>
+          <%= button_to t("admin.confirmations.call_customer", name: focus.customer_name), call_admin_confirmation_path(focus), class: "confirm-call disabled:cursor-not-allowed disabled:opacity-50", disabled: @needs_clock_in, title: (t("admin.confirmations.clock_in_required") if @needs_clock_in) %>
           <% if mine %>
             <%= button_to t("admin.confirmations.release"), release_admin_confirmation_path(focus), class: "admin-btn-secondary" %>
           <% end %>
@@ -136,7 +136,7 @@
               <% elsif confirmation&.assigned_user_id && !order_mine %>
                 <span class="admin-muted text-sm"><%= t("admin.confirmations.claimed_elsewhere") %></span>
               <% elsif confirmation.nil? || confirmation.due? || order_mine %>
-                <%= button_to t("admin.confirmations.call_customer", name: order.customer_name), call_admin_confirmation_path(order), class: "admin-btn" %>
+                <%= button_to t("admin.confirmations.call_customer", name: order.customer_name), call_admin_confirmation_path(order), class: "admin-btn disabled:cursor-not-allowed disabled:opacity-50", disabled: @needs_clock_in, title: (t("admin.confirmations.clock_in_required") if @needs_clock_in) %>
               <% else %>
                 <span class="admin-muted text-sm"><%= t("admin.confirmations.not_due") %></span>
               <% end %>

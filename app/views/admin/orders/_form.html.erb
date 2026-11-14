@@ -163,7 +163,7 @@ end %>
         <%= label_tag "order[notes]", "Notes", class: "admin-label" %>
         <%= text_area_tag "order[notes]", @order.notes, rows: 3, class: "admin-input" %>
       </div>
-      <% unless @order.persisted? %>
+      <% unless @order.persisted? || agent_view? %>
         <div>
           <%= label_tag "order[agent_id]", "Assign to agent (optional)", class: "admin-label" %>
           <%= select_tag "order[agent_id]", options_from_collection_for_select(local_assigns.fetch(:assignable_agents, []), :id, ->(a) { a.name.presence || a.email }, params.dig(:order, :agent_id)),

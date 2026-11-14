@@ -191,38 +191,40 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
       expect(response).to have_http_status(:not_found)
     end
 
-    it "lets agents look but not create or change orders" do
+    it "lets agents look and create orders (attributed to them), but not change existing ones" do
       sign_in(agent)
 
       get "/admin/orders/new"
-      expect(response).to redirect_to("/admin/orders")
-      expect { create_order }.not_to change { store.orders.count }
+      expect(response).to have_http_status(:ok)
+      expect { create_order }.to change { store.orders.count }.by(1)
+      expect(store.orders.order(:id).last.order_confirmation.attributed_user_id).to eq(agent.id)
       patch "/admin/orders/#{waiting.id}/transition", params: { to_status: "confirmed" }
       expect(waiting.reload.status).to eq("new")
     end
 
-    it "shows the next order and lets the agent claim it without clocking in" do
+    it "needs a shift to claim: disabled buttons and a message, and the server refuses too" do
       sign_in(agent)
       get "/admin/confirmations"
 
-      expect(document.at_css("[data-agent-desk]")).to be_present
-      expect(document.at_css("[data-clock-in-required]")).to be_nil
-      expect(document.text).to include(I18n.t("admin.confirmations.step_call"))
-      expect(document.text).to include(I18n.t("admin.confirmations.presence_not_pay"))
+      expect(document.at_css("[data-clock-in-required]").text).to include(I18n.t("admin.confirmations.clock_in_required"))
+      expect(document.css("form[action$='/call'] button[disabled], form[action$='/call'] input[disabled]").size).to be >= 1
 
       post "/admin/confirmations/#{waiting.id}/claim"
 
-      expect(waiting.reload.order_confirmation.assigned_user).to eq(agent)
+      expect(flash[:alert]).to eq(I18n.t("admin.confirmations.clock_in_required"))
+      expect(waiting.reload.order_confirmation&.assigned_user_id).to be_nil
     end
 
-    it "records an outcome without a clock-in" do
+    it "refuses an outcome from an agent who clocked out, even when they hold the order" do
       sign_in(agent)
+      post "/admin/confirmations/clock_in"
       post "/admin/confirmations/#{waiting.id}/claim"
+      post "/admin/confirmations/clock_out"
 
       post "/admin/confirmations/#{waiting.id}/outcome", params: { outcome: "confirmed" }
 
-      expect(flash[:alert]).to be_nil
-      expect(waiting.reload.status).to eq("confirmed")
+      expect(flash[:alert]).to eq(I18n.t("admin.confirmations.clock_in_required"))
+      expect(waiting.reload.status).to eq("new")
     end
   end
 
@@ -239,7 +241,9 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
     get "/admin/confirmations", params: { filter: "available" }
     expect(document.text).to include("##{order.number}", "Survêtement Été")
 
-    # Claim and confirm. Pay stays on the delivered order, not on time spent.
+    # Clock in, claim, confirm.
+    post "/admin/confirmations/clock_in"
+    expect(ConfirmationShift.open.where(store: store, user: agent).count).to eq(1)
     post "/admin/confirmations/#{order.id}/claim"
     expect(order.reload.order_confirmation.assigned_user).to eq(agent)
     post "/admin/confirmations/#{order.id}/outcome", params: { outcome: "confirmed", notes: "Customer agreed" }
@@ -261,11 +265,10 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
     get "/admin/confirmations/home"
     expect(document.text).to match(/\b10\b/)
 
-    # "Confirmed this month" in Team went up, and the agent's own figure with it.
+    # The Team page shows the agent's confirmations of the month in their row.
     sign_in(owner)
     get "/admin/staff"
-    tile = document.css(".seallo-stat").find { |node| node.text.include?(I18n.t("admin.team.confirmed_month")) }
-    expect(tile.at_css("strong").text.squish).to eq("1")
+    expect(document.at_css("[data-member='#{agent.id}']").text.squish).to include("1 / 0")
     expect(document.text).to include("Saida")
     month = Time.current.beginning_of_month..Time.current.end_of_month
     expect(Team::AgentEarnings.new(store: store, range: month).summary_for(agent).figures.confirmed).to eq(1)

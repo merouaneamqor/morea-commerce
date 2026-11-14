@@ -1,0 +1,278 @@
+es:
+  seallo_connect_pages:
+    nav:
+      label: Seallo Connect
+      overview: Presentación y asistencia
+      pricing: Tarifas
+      privacy: Política de privacidad
+      terms: Condiciones de uso
+      language: Idioma
+      home: Inicio de Seallo
+      updated: 'Última actualización: %{date}'
+      cookies: Cookie policy
+      refunds: Refunds
+      privacy_rights: Your data rights
+    contact:
+      heading: Contacto
+      with_email: Para cualquier solicitud de asistencia, duda sobre privacidad o solicitud relacionada con los datos, escribe
+        a
+      without_email: Para cualquier solicitud de asistencia, duda sobre privacidad o solicitud relacionada con los datos,
+        contacta con el equipo de Seallo desde tu espacio Seallo.
+    overview:
+      title: Seallo Connect
+      summary: Seallo Connect conecta tu tienda Shopify con tu espacio Seallo para que tu equipo confirme y envíe los pedidos
+        con pago contra reembolso.
+      sections:
+      - heading: Qué hace la aplicación
+        body:
+        - Seallo Connect importa los pedidos elegibles con pago contra reembolso de tu tienda Shopify a tu espacio Seallo.
+          Tu equipo confirma allí cada pedido por teléfono, gestiona el stock y prepara la entrega con tu transportista.
+        - Los pedidos llegan con el estado Nuevo. La confirmación, el stock y el envío siguen bajo el control de tu equipo
+          en Seallo.
+      - heading: Cómo conectarla
+        items:
+        - Instala Seallo Connect desde el Shopify App Store y acepta los accesos solicitados.
+        - Elige un plan en la página de tarifas de Shopify.
+        - En tu espacio Seallo, abre la página de conexión de Seallo y genera un código de conexión de un solo uso. Solo una
+          persona autorizada en ese espacio puede hacerlo.
+        - Pega el código en la aplicación, desde tu administración de Shopify, en un plazo de 10 minutos.
+      - heading: Pedidos importados
+        body:
+        - Pedidos con pago contra reembolso, sin pagar y sin enviar, en MAD, con entrega en Marruecos, sin impuestos ni descuentos.
+          Los webhooks transmiten los pedidos nuevos y una sincronización de recuperación obtiene los que se hayan podido
+          perder. Un mismo pedido nunca se importa dos veces. Los demás pedidos no se importan y aparecen en Seallo como rechazados,
+          con el motivo.
+      - heading: Lo que la aplicación no hace
+        items:
+        - No modifica ni los pedidos, ni los productos, ni los clientes, ni el stock en Shopify.
+        - No lee ni las direcciones de correo electrónico de los clientes ni los medios de pago.
+      - heading: Planes
+        body:
+        - 'Los planes los gestiona Shopify: Starter cuesta 19 $ al mes, Intermediate cuesta 39 $ al mes, Profesional cuesta
+          59 $ al mes y Business cuesta 129 $ al mes, con pedidos importados ilimitados. Los precios vigentes se muestran
+          en la página de tarifas de Shopify. Los pedidos reenviados o rechazados no consumen tu cuota, y las importaciones
+          bloqueadas por el límite se reanudan al pasar a un plan superior.'
+      - heading: Desconexión
+        body:
+        - Puedes desconectarte desde la aplicación o desinstalarla desde Shopify en cualquier momento. La importación se detiene
+          y las credenciales de conexión se eliminan. Los pedidos ya importados permanecen en tu espacio.
+    pricing:
+      title: Tarifas
+      summary: Planes mensuales de pago sencillos, gestionados a través de Shopify.
+      sections:
+      - heading: 'Seallo Starter: 19 $ al mes'
+      - heading: 'Seallo Intermediate: 39 $ al mes'
+      - heading: 'Seallo Profesional: 59 $ al mes'
+      - heading: 'Seallo Business: 129 $ al mes'
+        body:
+        - Pedidos importados ilimitados.
+      - heading: Incluido en cada plan
+        items:
+        - 7 días de prueba gratuita para los planes de pago.
+        - Importación automática de los pedidos elegibles con pago contra reembolso y sincronización de recuperación para
+          los que se hayan podido perder.
+        - Herramientas de confirmación, stock y entrega en tu espacio Seallo conectado, sin necesidad de una segunda compra
+          para esta conexión.
+        - Acceso de solo lectura a tus pedidos de Shopify.
+      - heading: Cómo funciona la cuota de pedidos
+        body:
+        - Solo cuentan para tu cuota los pedidos importados correctamente. Los pedidos rechazados o ya importados no la consumen.
+          Cuando se alcanza el límite, la importación se suspende hasta el próximo ciclo de facturación o hasta pasar a un
+          plan superior, y no se elimina nada de lo que ya se ha importado.
+      - heading: Facturación
+        body:
+        - Los precios están en dólares estadounidenses y Shopify los factura cada mes; los cargos aparecen en tu factura de
+          Shopify. Elige, modifica o cancela tu plan desde la aplicación en tu administración de Shopify. Las tiendas de desarrollo
+          no se facturan. La página de tarifas de Shopify muestra siempre el precio vigente.
+    privacy:
+      title: Política de privacidad
+      summary: Cómo trata Seallo Connect los datos de tienda y de pedidos por cuenta de los comerciantes.
+      sections:
+      - heading: Ámbito de aplicación
+        body:
+        - Seallo Connect es una aplicación de Shopify que conecta la tienda Shopify de un comerciante con el espacio Seallo
+          de ese comerciante. El comerciante decide el tratamiento de sus pedidos. Seallo trata los datos de los pedidos por
+          su cuenta, con el fin de prestar el servicio.
+      - heading: Datos a los que accedemos
+        body:
+        - 'Con el permiso read_orders, de cada pedido elegible con pago contra reembolso leemos:'
+        items:
+        - 'Los datos de contacto del comprador que figuran en el pedido: nombre de entrega, número de teléfono y dirección
+          de entrega (calle, ciudad, país).'
+        - 'La información del pedido: número, fecha, moneda, importes, artículos, cantidades, estados de pago y de cumplimiento.'
+        - 'La identidad de la tienda: su dominio myshopify.com, así como el estado de instalación y de suscripción de la aplicación.'
+      - heading: Datos a los que no accedemos
+        body:
+        - No leemos ni las direcciones de correo electrónico de los compradores, ni las tarjetas de pago, ni las cuentas de
+          clientes, ni los datos de marketing. La aplicación no solicita ningún permiso sobre el directorio de clientes ni
+          sobre los productos y no escribe nada en tu tienda Shopify.
+      - heading: Uso
+        body:
+        - Únicamente para presentar el pedido al equipo del comerciante en Seallo, permitirle confirmarlo con el comprador,
+          gestionar el stock y preparar la entrega con el transportista elegido por el comerciante. No vendemos los datos,
+          no los usamos con fines publicitarios y no elaboramos perfiles de los compradores.
+      - heading: Almacenamiento y acceso
+        body:
+        - Los pedidos importados se almacenan en el espacio Seallo del comerciante y solo son visibles para las personas que
+          este haya autorizado. Los espacios están aislados unos de otros. Las credenciales de acceso de Shopify de la aplicación
+          se conservan en una base de datos de acceso controlado, operada por nuestro proveedor de alojamiento, y se eliminan
+          al desinstalar. Todas las comunicaciones usan HTTPS, y las solicitudes entre Shopify, la aplicación y Seallo se
+          firman y se verifican criptográficamente.
+      - heading: Destinatarios
+        body:
+        - Únicamente el transportista que el comerciante conecta, para que los paquetes se entreguen, y los proveedores de
+          infraestructura necesarios para alojar el servicio. Ningún otro destinatario, salvo obligación legal.
+      - heading: Conservación y eliminación
+        items:
+        - Mientras la aplicación esté conectada, los pedidos se importan y se conservan en el espacio del comerciante como
+          sus documentos comerciales.
+        - Al desinstalar o desconectar, la importación se detiene y las credenciales de conexión se eliminan. Los datos de
+          sesión de Shopify de la tienda se borran. Los pedidos ya importados permanecen en el espacio del comerciante hasta
+          que este los elimine o se aplique una solicitud de privacidad de Shopify.
+        - Cuando Shopify envía una solicitud de eliminación de datos de un cliente o de una tienda, borramos los datos de
+          contacto del comprador, las notas y los eventos de los pedidos afectados una vez que estos han finalizado. Los pedidos
+          en curso de entrega se conservan y se señalan al comerciante para su revisión hasta su cierre, para no comprometer
+          las entregas. Se conservan los importes, estados e identificadores necesarios para la contabilidad y para evitar
+          una nueva importación.
+      - heading: Solicitudes de privacidad de los compradores
+        body:
+        - Los compradores deben dirigirse al comerciante al que compraron. Cuando Shopify transmite una solicitud de acceso
+          a los datos de un cliente, preparamos una exportación de los datos de pedidos importados que le conciernen, que
+          el comerciante revisa y entrega. Compradores y comerciantes también pueden escribirnos a la dirección que aparece
+          abajo.
+      - heading: Seguridad
+        body:
+        - Las solicitudes de Shopify se verifican con la firma de Shopify, y las solicitudes de servidor a servidor usan una
+          clave de firma distinta con una ventana de validez corta contra la falsificación y la repetición. El acceso a los
+          datos de un espacio se limita a los miembros autorizados de ese espacio.
+      - heading: Modificaciones
+        body:
+        - Actualizaremos esta página y su fecha cuando cambien nuestras prácticas.
+    terms:
+      title: Condiciones de uso
+      summary: Las condiciones de uso de Seallo Connect con tu tienda Shopify.
+      sections:
+      - heading: El servicio
+        body:
+        - Seallo Connect importa los pedidos elegibles con pago contra reembolso de tu tienda Shopify a tu espacio Seallo.
+          Al instalar o usar la aplicación, aceptas estas condiciones y la política de privacidad.
+      - heading: Tu cuenta y tus derechos
+        body:
+        - 'Debes estar autorizado para instalar aplicaciones en la tienda Shopify y para conectarla al espacio Seallo elegido.
+          Una tienda solo puede estar vinculada a un único espacio a la vez. Mantén confidenciales tus códigos de conexión:
+          son de un solo uso y caducan.'
+      - heading: Suscripción y facturación
+        body:
+        - Seallo Connect se ofrece mediante planes de pago gestionados por Shopify, con un periodo de prueba para los planes
+          de pago. La facturación, los cambios de plan y la cancelación los gestiona Shopify según sus condiciones. Cada plan
+          incluye un número de pedidos importados por ciclo de facturación. Una vez alcanzado, la importación se suspende
+          hasta el ciclo siguiente o hasta pasar a un plan superior. Los pedidos ya importados se conservan.
+      - heading: Tus responsabilidades
+        items:
+        - Usar el servicio de forma lícita y únicamente para los pedidos de tu propia tienda.
+        - Informar a tus compradores del uso de sus datos y tratarlos de forma lícita, incluidas las llamadas de confirmación
+          y las entregas.
+        - Revisar los pedidos importados. Sigues siendo responsable de su confirmación, de su envío y de su cumplimiento.
+      - heading: Disponibilidad
+        body:
+        - Velamos por la fiabilidad de las importaciones, mediante webhooks y una sincronización de recuperación, pero no
+          podemos garantizar un servicio ininterrumpido. Las incidencias en Shopify o en los transportistas pueden retrasar
+          las importaciones. Consulta el estado de la conexión en la aplicación y en Seallo.
+      - heading: Fin del servicio
+        body:
+        - Puedes desconectarte o desinstalar en cualquier momento. Podemos suspender una conexión que incumpla estas condiciones
+          o ponga en peligro la plataforma. Los pedidos importados permanecen en tu espacio, sin perjuicio de la política
+          de privacidad.
+      - heading: Responsabilidad
+        body:
+        - El servicio se presta tal cual, en la medida permitida por la ley. No respondemos de los daños indirectos, como
+          las ventas perdidas, ni de los retrasos o fallos causados por Shopify, los transportistas u otros terceros.
+      - heading: Modificaciones
+        body:
+        - Podemos actualizar estas condiciones. La fecha en la parte superior de la página indica la última versión. Seguir
+          usando el servicio supone su aceptación.
+    footer:
+      registration: 'Registration: %{number}'
+      age_note: Seallo Connect is intended for business users aged 18 or older.
+      pricing_note: Plan prices are shown on the pricing page and billed by Shopify. There are no hidden app fees beyond your
+        chosen plan.
+    cookie_policy:
+      title: Cookie policy
+      summary: How Seallo Connect public pages use cookies and similar technologies.
+      sections:
+      - heading: Necessary cookies
+        body:
+        - A language cookie remembers the FR, EN or AR choice you make on these pages so the next visit stays in that language.
+          It is required for the site to work as you configured it.
+      - heading: Measurement cookies
+        body:
+        - These Seallo Connect pages do not load Meta Pixel, TikTok Pixel or other audience-measurement scripts. If you later
+          visit a merchant storefront on this platform, that storefront has its own cookie banner and may load measurement
+          only after you accept.
+      - heading: Fonts and third parties
+        body:
+        - Page fonts may be loaded from Google Fonts. That request goes to Google’s servers. See also our privacy policy and
+          the third-party inventory in the product documentation.
+      - heading: Your choices
+        body:
+        - Use Accept or Reject measurement on the banner. Necessary cookies still work if you reject. You can clear site cookies
+          in your browser at any time.
+    refunds:
+      title: Refunds and cancellations
+      summary: How billing, cancellations and refunds work for Seallo Connect plans.
+      sections:
+      - heading: Who bills you
+        body:
+        - Seallo Connect plans are sold and billed by Shopify on your Shopify invoice. Charges appear in US dollars under
+          Shopify’s billing terms.
+      - heading: Cancelling
+        body:
+        - Change or cancel your plan from the Seallo Connect app in your Shopify admin. Cancelling stops future charges at
+          the end of the current Shopify billing period for that subscription. Orders already imported stay in your Seallo
+          workspace.
+      - heading: Refunds
+        body:
+        - Refunds for Shopify app charges follow Shopify’s refund policies and processes. Contact Shopify billing support
+          for charge disputes on your Shopify invoice. For questions about the Seallo Connect service itself, use the contact
+          details on these pages or the data-rights form.
+      - heading: Trials
+        body:
+        - Paid plans include a 7-day free trial where Shopify offers it. Development stores are not charged.
+      - heading: No hidden fees
+        body:
+        - There are no additional Seallo Connect fees beyond the plan price shown on the pricing page and charged by Shopify.
+          Carrier, Shopify or other third-party fees are separate.
+    privacy_rights:
+      title: Your data rights
+      summary: Request access, correction, objection, deletion or a marketing opt-out related to Seallo Connect or the platform
+        operator.
+      unsubscribe_note: Seallo Connect does not send marketing email campaigns from these pages. Choose “Stop marketing” to
+        record a preference or if you received a promotional message about the app by another channel.
+      minimization: Provide only what we need to identify your request. Do not send passwords or payment card numbers.
+      submit: Send request
+      submitted: Your request was recorded. We will follow up using the contact you provided.
+      fields:
+        type: Request type
+        name: Your name
+        contact: Email or phone
+        contact_help: How we should reach you about this request.
+        shop_domain: Shopify shop domain (optional)
+        details: Details (optional)
+      types:
+        access: Access my data
+        rectify: Correct my data
+        object: Object to processing
+        delete: Delete my data
+        unsubscribe: Stop marketing
+      statuses:
+        open: Open
+        in_progress: In progress
+        resolved: Resolved
+        rejected: Rejected
+      admin:
+        title: Platform data-rights requests
+        instructions: Requests from Seallo Connect public pages. Resolve them after you have answered the requester.
+        empty: No requests yet.
+        back: Back to requests
+        resolve: Mark resolved
+        resolved: Request marked resolved.

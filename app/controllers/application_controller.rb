@@ -84,13 +84,14 @@ class ApplicationController < ActionController::Base
   end
 
   def storefront_request?
-    request.path == "/" || request.path == "/sitemap.xml" || request.path.match?(%r{\A/(?:fr|en|ar)(?:/|\z)}) || request.path == "/consent/tracking"
+    request.path == "/" || request.path == "/sitemap.xml" || request.path.match?(%r{\A/(?:fr|en|es|ar)(?:/|\z)}) || request.path == "/consent/tracking"
   end
 
   # Apex (seallo.ma / www) hosts the SaaS platform, not a storefront.
   def apex_request_allowed?
     path = request.path
     path == "/" ||
+      path == "/demo" ||
       path == "/sitemap.xml" ||
       path.start_with?("/signup") ||
       path.start_with?("/auth/meta/") ||
@@ -225,11 +226,15 @@ class ApplicationController < ActionController::Base
   end
 
   def persist_locale_cookie(locale)
+    base = Store.base_domain
+    shared = request.host == base || request.host.end_with?(".#{base}")
     cookies[LOCALE_COOKIE] = {
       value: locale.to_s,
       expires: 1.year.from_now,
       same_site: :lax,
-      secure: !Rails.env.local?
-    }
+      secure: !Rails.env.local?,
+      # Same language on the home page, the sign-in page and every workspace subdomain.
+      domain: (".#{base}" if shared)
+    }.compact
   end
 end

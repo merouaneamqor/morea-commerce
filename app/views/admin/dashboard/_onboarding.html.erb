@@ -41,14 +41,14 @@
   </div>
 
   <div class="mt-4 h-2 overflow-hidden rounded-full bg-[#f0ebe7]" aria-hidden="true">
-    <div class="h-full rounded-full bg-[#a8432e] transition-[width] duration-500 ease-out" style="width: <%= onboarding.progress_percent %>%"></div>
+    <div class="h-full rounded-full bg-[#1d1d1f] transition-[width] duration-500 ease-out" style="width: <%= onboarding.progress_percent %>%"></div>
   </div>
 
   <ol class="mt-4 space-y-3">
     <% onboarding.steps.each_with_index do |step, index| %>
       <li class="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-[#f0ebe7] px-3 py-3 <%= step.done ? "bg-[#f8f6f4]" : "bg-white" %>">
         <div class="flex min-w-0 items-start gap-3">
-          <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold <%= step.done ? "bg-[#e3f3e8] text-[#2f7a4a]" : "bg-[#f4e4de] text-[#a8432e]" %>" aria-hidden="true">
+          <span class="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold <%= step.done ? "bg-[#e3f3e8] text-[#2f7a4a]" : "bg-[#ececf0] text-[#1d1d1f]" %>" aria-hidden="true">
             <% if step.done %>✓<% else %><%= index + 1 %><% end %>
           </span>
           <div class="min-w-0">
@@ -57,7 +57,7 @@
           </div>
         </div>
         <% unless step.done %>
-          <%= link_to t(step.cta_key), step.path, class: "shrink-0 rounded-xl bg-[#a8432e] px-3 py-2 text-sm font-semibold text-white hover:bg-[#8e3624]" %>
+          <%= link_to t(step.cta_key), step.path, class: "shrink-0 rounded-xl bg-[#1d1d1f] px-3 py-2 text-sm font-semibold text-white hover:bg-[#3a3a3c]" %>
         <% end %>
       </li>
     <% end %>
@@ -66,7 +66,7 @@
   <% unless current_store.storefront_enabled? %>
     <p class="mt-4 text-sm text-[#8a8380]">
       <%= t("dashboard.setup.optional_storefront") %>
-      <%= link_to t("dashboard.storefront_settings"), edit_admin_store_path, class: "font-semibold text-[#a8432e] hover:underline" %>
+      <%= link_to t("dashboard.storefront_settings"), edit_admin_store_path, class: "font-semibold text-[#1d1d1f] hover:underline" %>
     </p>
   <% end %>
 </section>

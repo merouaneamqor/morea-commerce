@@ -1,0 +1,8 @@
+en:
+  admin:
+    team_actions:
+      role_changed: "Role of %{name} changed."
+      deactivated: "%{name} is deactivated: they can no longer sign in."
+      reactivated: "%{name} is active again."
+      last_owner: "Keep at least one active owner."
+      unknown_role: "Choose a valid role."

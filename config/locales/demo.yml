@@ -1,0 +1,7 @@
+# The read-only seller demo (banner and the message shown when a visitor tries to change something).
+{
+  "fr": { "demo": { "banner": "Démo seallo · données fictives, lecture seule", "create": "Créer mon compte", "leave": "Quitter la démo", "read_only": "Mode démo : cette action est désactivée. Créez votre compte pour l'essayer." } },
+  "en": { "demo": { "banner": "seallo demo · sample data, read-only", "create": "Create my account", "leave": "Leave the demo", "read_only": "Demo mode: this action is disabled. Create your account to try it." } },
+  "es": { "demo": { "banner": "Demo de seallo · datos de ejemplo, solo lectura", "create": "Crear mi cuenta", "leave": "Salir de la demo", "read_only": "Modo demo: esta acción está desactivada. Crea tu cuenta para probarla." } },
+  "ar": { "demo": { "banner": "عرض seallo التجريبي · بيانات تجريبية، للقراءة فقط", "create": "إنشاء حسابي", "leave": "مغادرة العرض", "read_only": "وضع العرض التجريبي: هذا الإجراء معطّل. أنشئ حسابك لتجربته." } }
+}

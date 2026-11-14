@@ -1,0 +1,8 @@
+en:
+  admin:
+    whatsapp:
+      account_added: "WhatsApp account added."
+      saved: "WhatsApp settings saved."
+      removed: "WhatsApp account removed."
+      test_sent: "Test message sent."
+      test_failed: "The test message could not be sent: %{error}"

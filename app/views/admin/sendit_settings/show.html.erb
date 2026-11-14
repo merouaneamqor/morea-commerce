@@ -31,9 +31,9 @@
       <% end %>
     </div>
     <% if sendit_account %>
-      <%= link_to t("sendit_settings.manage_connection"), seller_integrations_path(edit_account: sendit_account.id), class: "text-sm font-semibold text-[#a8432e]" %>
+      <%= link_to t("sendit_settings.manage_connection"), seller_integrations_path(edit_account: sendit_account.id), class: "text-sm font-semibold text-[#1d1d1f]" %>
     <% else %>
-      <%= link_to t("sendit_settings.connect"), seller_integrations_path(connect: "sendit"), class: "text-sm font-semibold text-[#a8432e]" %>
+      <%= link_to t("sendit_settings.connect"), seller_integrations_path(connect: "sendit"), class: "text-sm font-semibold text-[#1d1d1f]" %>
     <% end %>
   </div>
 </section>

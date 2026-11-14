@@ -125,10 +125,10 @@ RSpec.describe "Sendit settings page", type: :request do
     sign_in(agent)
     original = store.reload.shipping_cents
     save_settings(shipping_dh: "99")
-    expect(response).to redirect_to(home_admin_confirmations_path)
+    expect(response).to redirect_to(admin_my_stats_path)
     expect(store.reload.shipping_cents).to eq(original)
     get admin_sendit_settings_path
-    expect(response).to redirect_to(home_admin_confirmations_path)
+    expect(response).to redirect_to(admin_my_stats_path)
   end
 
   it "renders connected settings with a cold cache without contacting Sendit" do

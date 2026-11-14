@@ -78,8 +78,10 @@ module Confirmations
     end
 
     def open_user_ids
+      # Fresh Presence heartbeats count; open clock-in shifts with no heartbeat yet also count.
+      grace = @now - ConfirmationShift::PRESENCE_GRACE
       @open_user_ids ||= ConfirmationShift.open.where(store: @store)
-        .where("last_seen_at >= ?", @now - ConfirmationShift::PRESENCE_GRACE).pluck(:user_id)
+        .where("last_seen_at IS NULL OR last_seen_at >= ?", grace).pluck(:user_id)
     end
   end
 end

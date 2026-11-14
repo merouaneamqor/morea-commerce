@@ -156,7 +156,7 @@
   gap: 0.4rem;
   min-width: 0;
   font-weight: 650;
-  color: #a8432e;
+  color: #1d1d1f;
 }
 .admin-mobile-list__alert {
   display: inline-flex;
@@ -376,7 +376,7 @@
   font-size: 0.75rem;
   color: #8a8a8a;
 }
-.admin-sync-status__attention { color: #a8432e; font-weight: 600; }
+.admin-sync-status__attention { color: #1d1d1f; font-weight: 600; }
 
 @media (max-width: 767px) {
   /* Dense seller screens: less shell chrome, tighter stacks, no header essays. */
@@ -530,7 +530,7 @@ button.admin-btn-plain {
   gap: 0.4rem 0.65rem;
   padding: 0.35rem 0.65rem;
   border-radius: 0.65rem;
-  background: #f4e4de;
+  background: #ececf0;
   color: #1f2430;
 }
 .admin-impersonation p {
@@ -607,7 +607,7 @@ button.admin-btn-plain {
 .onboarding-tour__spot {
   position: fixed;
   border-radius: 1rem;
-  box-shadow: 0 0 0 9999px rgb(31 36 48 / 0.45), 0 0 0 2px #a8432e;
+  box-shadow: 0 0 0 9999px rgb(31 36 48 / 0.45), 0 0 0 2px #1d1d1f;
   background: transparent;
   pointer-events: none;
   transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
@@ -658,7 +658,7 @@ button.admin-btn-plain {
 }
 .onboarding-tour__primary {
   border: 0;
-  background: #a8432e;
+  background: #1d1d1f;
   color: #fff;
   font-size: 0.875rem;
   font-weight: 600;
@@ -698,8 +698,8 @@ button.admin-btn-plain {
   text-align: center;
 }
 .confirm-steps li.is-current {
-  background: #f4e4de;
-  color: #a8432e;
+  background: #ececf0;
+  color: #1d1d1f;
 }
 .confirm-next {
   border: 1px solid #ebe4de;
@@ -708,7 +708,7 @@ button.admin-btn-plain {
   padding: 1.25rem;
 }
 .confirm-step {
-  color: #a8432e;
+  color: #1d1d1f;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -729,7 +729,7 @@ button.admin-btn-plain {
   min-height: 2.75rem;
   border: 0;
   border-radius: 0.75rem;
-  background: #a8432e;
+  background: #1d1d1f;
   color: #fff;
   cursor: pointer;
   font-size: 0.9375rem;
@@ -772,7 +772,7 @@ button.admin-btn-plain {
 .confirm-choice--confirmed:has(:checked) { background: #0c5132; border-color: #0c5132; }
 .confirm-choice--cancelled:has(:checked),
 .confirm-choice--wrong_number:has(:checked) { background: #8e0b21; border-color: #8e0b21; }
-.confirm-choice:focus-within { outline: 2px solid #a8432e; outline-offset: 2px; }
+.confirm-choice:focus-within { outline: 2px solid #1d1d1f; outline-offset: 2px; }
 
 /* Platform Super Admin: mobile-first shell and dense ops pages. */
 .admin-body--platform .platform-mobile-search {

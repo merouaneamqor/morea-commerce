@@ -1,0 +1,16 @@
+<%# Ranked rows drawn like "Meilleurs produits" of the dashboard: the name and the figure on one line, a thin rounded bar under them on a
+    light track, black by default; red only for "waiting too long". Printing only.
+    locals: rows ([{ label:, count:, percent:, key:, danger: }]), data (name of the data-* key of a row), top (the count that fills the bar) %>
+<% top = [ local_assigns.fetch(:top, rows.map { |row| row[:count] }.max.to_i), 1 ].max %>
+<ul class="space-y-3">
+  <% rows.each do |row| %>
+    <% share = row[:count].zero? ? 0 : [ row[:count] * 100.0 / top, 2 ].max %>
+    <li data-tip="<%= row[:label] %> : <%= analytics_integer(row[:count]) %><%= " (#{row[:percent].round} %)" if row[:percent] %>" <%= local_assigns.fetch(:data, "row") %>="<%= row[:key] %>" data-count="<%= row[:count] %>">
+      <div class="flex items-baseline justify-between gap-3 text-[13px]">
+        <span class="min-w-0 truncate text-[#3a3a3c]" dir="auto" title="<%= row[:label] %>"><%= row[:label] %></span>
+        <span class="shrink-0 tabular-nums"><b class="font-semibold text-[#1c1c1e]"><%= analytics_integer(row[:count]) %></b><span class="ms-1.5 text-[11px] text-[#8e8e93]"><%= row[:percent] ? "#{row[:percent].round} %" : "—" %></span></span>
+      </div>
+      <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-[#efeff3]"><div data-grow class="h-full rounded-full <%= row[:danger] ? "bg-[#d6455d]" : "bg-[#1c1c1e]" %>" style="width: <%= share.round(1) %>%"></div></div>
+    </li>
+  <% end %>
+</ul>

@@ -1,0 +1,47 @@
+es:
+  seallo_connect:
+    title: "Seallo Connect"
+    instructions: "Instala Seallo Connect desde la App Store de Shopify, elige un plan y aprueba la conexión. Shopify te devuelve aquí para confirmar. No hay nada que copiar."
+    authorize:
+      title: "Conectar la tienda Shopify"
+      body: "Confirma que esta tienda Shopify debe enviar sus pedidos a este espacio de trabajo. Puedes desconectarla en cualquier momento desde Tiendas conectadas."
+      workspace: "Espacio de trabajo"
+      shop: "Tienda Shopify"
+      confirm: "Conectar la tienda"
+      cancel: "Cancelar"
+    import_help: "Los pedidos marroquíes elegibles, en MAD y pagaderos en la entrega, llegan como pedidos nuevos. La confirmación, el stock y el envío siguen las reglas existentes de tu espacio de trabajo."
+    connection_states:
+      configured: "Pendiente de verificación"
+      verified: "Conectada"
+      disconnected: "Desconectada"
+    sync_states:
+      waiting: "Pendiente de sincronización"
+      queued: "Sincronización en cola"
+      running: "Sincronización en curso"
+      complete: "Sincronización completada"
+      catching_up: "Recuperación en curso"
+      failed: "Error de sincronización"
+    privacy:
+      link: "Solicitudes de privacidad"
+      title: "Solicitudes de privacidad de Shopify"
+      instructions: "Tramita las solicitudes en un plazo de 30 días. Las exportaciones de datos de clientes deben transmitirse de forma segura al comerciante solicitante. Cualquier conservación de datos requiere una decisión jurídica documentada."
+      empty: "No hay solicitudes de privacidad."
+      request: "Solicitud n.º %{id}"
+      request_title: "Solicitud de privacidad n.º %{id}"
+      due: "Vencimiento: %{date}"
+      secure_response: "Descarga la exportación y transmítela de forma segura al comerciante solicitante. Marca la solicitud como completada solo después de transmitirla."
+      retained_records: "Hay que revisar los pedidos en curso o las fichas de clientes compartidas. Resuelve las obligaciones operativas y evalúa los requisitos de conservación, y vuelve a intentarlo. Los datos financieros y los estados de los pedidos se conservan."
+      download: "Descargar la exportación confidencial"
+      confirm_delivery: "Confirmar la transmisión segura"
+      retry_redaction: "Reintentar el borrado"
+      completed_notice: "La solicitud se ha marcado como completada."
+      retained_alert: "Trata los datos comerciales conservados antes de completar esta solicitud."
+      queued_notice: "El procesamiento se ha puesto en cola."
+      topics:
+        customers/data_request: "Solicitud de datos de cliente"
+        customers/redact: "Borrado de datos de cliente"
+        shop/redact: "Borrado de datos de la tienda"
+      statuses:
+        pending: "Pendiente"
+        needs_review: "Por revisar"
+        completed: "Completada"

@@ -37,7 +37,7 @@ RSpec.describe "Date range picker", type: :request do
   end
 
   def revenue = clean(document.at_css("[data-card=revenue] [data-value]").text)
-  def orders_tile = clean(document.at_css("[data-kpi=orders] [data-value]").text)
+  def orders_tile = clean(document.at_css("[data-kpi=orders]").css("p")[1].text)
 
   describe "the component" do
     before { sign_in }
@@ -261,14 +261,33 @@ RSpec.describe "Date range picker", type: :request do
     it "compares with the same number of days just before" do
       get "/dashboard", params: { from: "2026-11-01", to: "2026-11-02" }
       expect(orders_tile).to eq("3")
-      # the 2 days before (30 and 31 October) hold 1 order → +200 %
-      expect(clean(document.at_css("[data-kpi=orders]").text)).to include("+200 %", "vs période précédente")
+      expect(clean(document.at_css("[data-kpi=orders]").text)).to include("+200 %", "vs période précédente") # the 2 days before (30 and 31 October) hold 1 order
     end
 
     it "opens an older ?period= link and keeps working" do
       get "/dashboard", params: { period: "7d" }
       expect(range_of_page).to eq("2026-10-30/2026-11-05")
       expect(label).to eq("7 derniers jours")
+    end
+  end
+
+  describe "opening the picker inside the glass layout" do
+    before { sign_in }
+
+    # Found in a real browser: backdrop-filter on the header or form holding the picker made it the containing block of
+    # the fixed bottom sheet and a stacking context, so the panel jumped out of place and slid under the cards after it.
+    it "keeps whatever contains a picker free of backdrop-filter, and its panel opaque" do
+      css = Rails.root.join("app/assets/tailwind/application.css").read
+      expect(css).to include(':has([data-controller~="date-range-picker"])')
+      expect(css).to match(/:has\(\[data-controller~="date-range-picker"\]\)\s*\{[^}]*backdrop-filter: none/m)
+      expect(css).to match(/\[role="dialog"\][^{]*\{[^}]*backdrop-filter: none/m)
+    end
+
+    it "opens the call center picker, now in the dark header on the right, towards the left so the panel stays on screen" do
+      get "/admin/confirmations/center"
+      panel = document.at_css("[data-date-range-picker-target=panel]")
+      expect(panel["class"]).to include("md:end-0")
+      expect(panel["class"]).not_to include("md:start-0")
     end
   end
 

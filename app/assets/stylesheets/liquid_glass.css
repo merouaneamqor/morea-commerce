@@ -22,9 +22,9 @@
   min-height: 100dvh;
   color: #5e5a58;
   background:
-    radial-gradient(120% 80% at 0% 0%, rgb(244 228 222 / .9), transparent 55%),
+    radial-gradient(120% 80% at 0% 0%, rgb(236 236 240 / .9), transparent 55%),
     radial-gradient(90% 70% at 100% 0%, rgb(255 255 255 / .75), transparent 50%),
-    linear-gradient(180deg, #f6f1ec 0%, #efe8e2 48%, #e8e2dc 100%);
+    linear-gradient(180deg, #f5f5f7 0%, #eeeef1 48%, #e8e8ec 100%);
 }
 
 .lg-shell.lg-shell--standalone {
@@ -68,9 +68,9 @@
 }
 
 .lg-nav__active {
-  background: rgb(244 228 222 / .88);
+  background: rgb(29 29 31 / .08);
   font-weight: 600;
-  color: #a8432e;
+  color: #1d1d1f;
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -80,7 +80,7 @@
   .lg-chrome,
   .lg-bottom-nav__bar {
     background: #fff;
-    border-color: #ece4dc;
+    border-color: #e0e0e5;
   }
   .lg-shell {
     background: #f3f1ef;
@@ -94,7 +94,7 @@
   .lg-chrome,
   .lg-bottom-nav__bar {
     background: #fff;
-    border-color: #ece4dc;
+    border-color: #e0e0e5;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -148,8 +148,8 @@
 }
 
 .lg-bottom-nav__item.is-active {
-  color: #a8432e;
-  background: rgb(244 228 222 / .9);
+  color: #1d1d1f;
+  background: rgb(29 29 31 / .08);
 }
 
 .lg-bottom-nav__icon {
@@ -172,7 +172,7 @@
   height: 1rem;
   padding: 0 0.25rem;
   border-radius: 999px;
-  background: #a8432e;
+  background: #1d1d1f;
   color: #fff;
   font-size: 0.5625rem;
   font-weight: 700;

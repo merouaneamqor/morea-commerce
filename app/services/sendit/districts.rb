@@ -88,6 +88,16 @@ module Sendit
       { districts: all(store: store, client: client).size, pickup_cities: pickup_cities(store: store, client: client).size }
     end
 
+    # Drops the cached lists and fetches them again from Sendit (used right after connecting and by the weekly refresh).
+    def self.refresh!(store:, client: nil)
+      raise ArgumentError, "Store is required" unless store
+
+      Rails.cache.delete(cache_key(store))
+      Rails.cache.delete("#{cache_key(store)}:pickup")
+      client ||= Client.new(store)
+      { districts: all(store: store, client: client).size, pickup_cities: pickup_cities(store: store, client: client).size }
+    end
+
     def self.find(id, store:)
       all(store: store).find { |d| d[:id] == id.to_i }
     end

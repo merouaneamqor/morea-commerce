@@ -14,6 +14,11 @@ module Admin
       earnings = Team::AgentEarnings.new(store: current_store, range: @range)
       @summary = earnings.summary_for(current_user)
       @by_day = earnings.confirmed_by_day(current_user)
+      @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
+      @shifts = ConfirmationShift.where(store: current_store, user: current_user).overlapping(@range).order(started_at: :desc).limit(31).to_a
+      @worked_seconds = ConfirmationShift.where(store: current_store, user: current_user).overlapping(@range).sum { |shift| shift.seconds_within(@range) }.round
+      @q = params[:q].to_s.strip
+      @my_orders = Confirmations::AgentOrders.new(store: current_store, user: current_user).search(@q)
       @chart_days = @date_range.dates.to_a.last(31) # one bar per day, the last 31 at most
     end
 

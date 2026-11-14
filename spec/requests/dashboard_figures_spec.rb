@@ -65,18 +65,17 @@ RSpec.describe "Dashboard figures", type: :request do
     expect(document.css("[data-kpis=row2] [data-kpi]").map { |card| card["data-kpi"] }).to eq(%w[confirmation_rate taux-de-livraison taux-de-retour])
   end
 
-  it "draws the cards like Comptabilité: gold revenue card, white bordered cards, no tints; only the symbol is coloured" do
+  it "draws the cards like Comptabilité: graphite revenue card, white bordered cards, no tints; only the symbol sits in a gray chip" do
     get "/dashboard", params: { from: Date.current.iso8601, to: Date.current.iso8601, locale: "fr" }
 
     cards = document.css("[data-kpis] [data-kpi]")
     expect(cards.size).to eq(9)
     expect(cards.map { |card| card["class"][/h-\[\d+px\]/] }.uniq).to eq([ "h-[110px]" ])
-    gold, others = cards.partition { |card| card["class"].include?("from-[#f7d9a4]") }
-    expect(gold.map { |card| card["data-kpi"] }).to eq([ "revenue" ])
+    featured, others = cards.partition { |card| card["class"].include?("from-[#2c2c2e]") }
+    expect(featured.map { |card| card["data-kpi"] }).to eq([ "revenue" ])
     expect(others).to all(satisfy { |card| card["class"].include?("border border-[#e0e0e5] bg-white") })
     chips = others.map { |card| card.at_css("p span")["class"] }
-    expect(chips).to all(include("grid size-6 shrink-0 place-items-center rounded-lg bg-[#"))                  # the colour is on the symbol chip only
-    expect(chips.uniq.size).to be > 3                                                                          # one colour per kind of figure
+    expect(chips).to all(satisfy { |classes| classes.start_with?("grid size-6 shrink-0 place-items-center rounded-lg") && classes.match?(/bg-\[#(efeff3|ececf0)\]/) })   # the symbol chip is gray
     expect(response.body).not_to match(/bg-\[#(f1faf5|f2f7fd|fff8ea|fef2f3)\]/)                             # the old tints are gone
   end
 
@@ -214,5 +213,16 @@ RSpec.describe "Dashboard figures", type: :request do
       expect(document.at_css("[data-low-stock]").text).to include("Aucun article sous le seuil.")
       expect(response.body).not_to include("Secret low")
     end
+  end
+  it "draws the Confirmation / Expédition switch as an iOS-style control: a thumb under the chosen side, text only on the buttons" do
+    get "/dashboard", params: { locale: "fr" }
+
+    switch = document.at_css("[data-distribution] [data-ios-switch]")
+    expect(switch.at_css("[data-view-switch-target=thumb].ios-thumb")).to be_present
+    buttons = switch.css("button[data-view-switch-target=button]")
+    expect(buttons.map { |button| button.text.squish }).to eq([ "Confirmation", "Expédition" ])
+    expect(buttons.map { |button| button["aria-pressed"] }).to eq(%w[true false])
+    expect(buttons.first["class"]).to include("text-white")
+    expect(buttons.map { |button| button["class"] }.join).not_to include("bg-[#1c1c1e]")                  # the dark background is the thumb's, not the button's
   end
 end

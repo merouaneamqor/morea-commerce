@@ -117,16 +117,20 @@ RSpec.describe "Call center page", type: :request do
       expect(alert.at_css("a")["href"]).to include("tab=failed")
     end
 
-    it "keeps Appeler, WhatsApp and Bloquer available while she is present on the desk" do
-      # Presence is recorded on each agent request (page open / heartbeat), so the call actions stay usable.
+    it "disables Appeler, WhatsApp and Bloquer until she clocks in, then enables them" do
+      get "/admin/confirmations/center"
+      expect(document.at_css("[data-clock-in-required]")).to be_present
+      expect(document.css("span[data-call].cursor-not-allowed").size).to eq(3)                    # a plain, greyed label: nothing to open yet
+      expect(document.css("a[data-call]")).to be_empty
+
+      ConfirmationShift.create!(store: store, user: agent, started_at: 1.hour.ago)
       get "/admin/confirmations/center"
       expect(document.at_css("[data-clock-in-required]")).to be_nil
       expect(document.css("a[data-call][data-turbo-frame=order-modal]").size).to eq(3)
-      expect(Confirmations::Presence.new(store: store, user: agent)).to be_present
     end
 
     it "puts the green Appeler button first (on the left) in the actions of each order" do
-      ConfirmationShift.create!(store: store, user: agent, started_at: 1.hour.ago, last_seen_at: Time.current)
+      ConfirmationShift.create!(store: store, user: agent, started_at: 1.hour.ago)
       get "/admin/confirmations/center"
 
       cell = document.at_css("[data-order-row=Q1] td:last-child > div")
@@ -136,10 +140,20 @@ RSpec.describe "Call center page", type: :request do
       expect(first.text).to include("Appeler")
     end
 
-    it "keeps her out of the manager-only actions and the order-creation button" do
+    it "gives her the order-creation button, like the owner, but none of the manager-only actions" do
       get "/admin/confirmations/center"
-      expect(document.text).not_to include("Créer une commande")
-      expect(document.text).not_to include("Create order")
+      expect(document.at_css("a[href='/admin/orders/new']")).to be_present
+      expect(document.at_css("[data-auto-assign]")).to be_nil
+    end
+
+    it "applies a filter as soon as it changes, without a refresh button to click" do
+      get "/admin/confirmations/center"
+      form = document.at_css("[data-cc-filters]")
+      expect(form["data-controller"]).to eq("auto-submit")
+      expect(form.css("select").map { |select| select["data-action"] }.uniq).to eq([ "auto-submit#submit" ])
+      expect(form.at_css("input[name=missed]")["data-action"]).to eq("auto-submit#submit")
+      expect(form.at_css("input[name=q]")["data-action"]).to eq("input->auto-submit#debounce")
+      expect(form.at_css("input[type=submit]")["class"]).to include("sr-only")
     end
 
     it "filters by search, source and WhatsApp status" do
@@ -217,6 +231,32 @@ RSpec.describe "Call center page", type: :request do
         expect(document.at_css("[data-tab=#{tab}]")["aria-current"]).to eq("page")
         expect(document.css("[data-tab]:not([aria-current])").map { |other| other["class"] }.join).not_to include(colour)
       end
+    end
+  end
+
+  describe "the reasons of the cancelled orders" do
+    it "shows, in the Annulée tab, what the agent typed, who cancelled and when; an order cancelled outside a call says so" do
+      called = order(status: "cancelled", by: agent, outcome: "cancelled", number: "CAN1", name: "Hind", phone: "0677777771")
+      called.update_columns(cancel_reason: "Le client a changé d'avis")
+      called.order_confirmation.confirmation_attempts.where(outcome: "cancelled").update_all(notes: "Le client a changé d'avis")
+      other = order(status: "cancelled", number: "CAN2", name: "Omar", phone: "0677777772")
+      other.update_columns(cancelled_at: Time.current, cancel_reason: "Doublon")
+      sign_in(owner)
+
+      get "/admin/confirmations/center", params: { tab: "cancelled" }
+
+      expect(document.css("th").map { |th| th.text.squish }).to include("Raison d’annulation")
+      reason = ->(number) { document.at_css("[data-order-row=#{number}] [data-cancel-reason]").text.squish }
+      expect(reason.call("CAN1")).to include("Le client a changé d'avis", "par Saida")
+      expect(reason.call("CAN2")).to include("Doublon", "Annulée hors appel")
+    end
+
+    it "does not add the column to the other tabs" do
+      sign_in(owner)
+      get "/admin/confirmations/center", params: { tab: "pending" }
+
+      expect(document.css("[data-cancel-reason]")).to be_empty
+      expect(document.css("th").map { |th| th.text.squish }).not_to include("Raison d’annulation")
     end
   end
 

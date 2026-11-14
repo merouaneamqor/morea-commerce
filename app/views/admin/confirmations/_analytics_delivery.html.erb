@@ -1,0 +1,128 @@
+<%# Where the orders ended up and how the deliveries went: the ring of outcomes, the delivery status of the confirmed orders, the status per
+    day, and the recovery of the failed deliveries. Printing only: every number comes from Confirmations::Analytics.
+    locals: a (the analytics), card, title, sub, chip, tones, days (the range days of a.daily), stage (colour of each order stage) %>
+<% delivery_colors = { not_shipped: "#e0a52c", not_picked: "#c4b5fd", in_transit: "#8b5cf6", out_for_delivery: "#6d4bd1", postponed: "#f6b26b", delivered: "#136b3d", failed: "#f2742a", returned: "#d6455d", cancelled_after: "#b6b9c2" } %>
+<% delivery_labels = { not_shipped: sl("Pas encore expédiée"), not_picked: sl("Pas ramassée"), in_transit: sl("En transit"), out_for_delivery: sl("En cours de livraison"), postponed: sl("Livraison reportée"), delivered: sl("Livrée"), failed: sl("Échec de livraison"), returned: sl("Retournée"), cancelled_after: sl("Annulée après confirmation") } %>
+<% outcome_colors = { delivered: "#136b3d", returned: "#d6455d", cancelled: "#8e8e93", in_progress: "#8b5cf6", fake: "#1c1c1e", not_reached: "#e0a52c" } %>
+<% outcome_labels = { delivered: sl("Livrées"), returned: sl("Retournées"), cancelled: sl("Annulées"), in_progress: sl("En cours"), fake: sl("Faux numéros"), not_reached: sl("Non jointes") } %>
+<% outcomes = a.order_outcomes %>
+<% status = a.delivery_status %>
+<% by_day = a.delivery_by_day %>
+<% recovery = a.recovery %>
+<% day_series = [ [ :delivered, delivery_colors[:delivered], sl("Livrées") ], [ :en_route, delivery_colors[:in_transit], sl("En route") ], [ :not_shipped, delivery_colors[:not_shipped], sl("Pas encore expédiées") ],
+                  [ :problem, delivery_colors[:failed], sl("Échec ou reportée") ], [ :returned, delivery_colors[:returned], sl("Retournées") ] ] %>
+
+<section class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+  <div class="<%= card %>" data-order-outcomes>
+    <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:blue] %>"><%= seller_icon(:orders, size: 16) %></span>
+      <div><h2 class="<%= title %>"><%= sl("Où en sont les commandes") %></h2>
+        <p class="<%= sub %>"><%= sl("Chaque commande reçue sur la période, selon ce qu'elle est devenue.") %></p></div></div>
+    <div class="mt-4 flex flex-wrap items-center gap-5">
+      <div class="relative mx-auto shrink-0 sm:mx-0">
+        <%= analytics_donut(outcomes[:rows].map { |row| { count: row[:count], color: outcome_colors[row[:key]] } }) %>
+        <div class="absolute inset-0 grid place-content-center text-center"><span class="text-xl leading-none font-bold text-[#1c1c1e]" data-delivered-share><%= analytics_percent(outcomes[:rows].first[:percent]).sub(",0", "") %></span><span class="mt-1 text-[11px] text-[#6e6e73]"><%= sl("Livrées") %></span></div>
+      </div>
+      <ul class="min-w-[12rem] flex-1 space-y-2">
+        <% outcomes[:rows].each do |row| %>
+          <li class="flex items-center justify-between gap-2 text-[13px]" data-outcome-row="<%= row[:key] %>" data-count="<%= row[:count] %>" data-tip="<%= outcome_labels[row[:key]] %> : <%= row[:count] %>">
+            <span class="flex items-center gap-2 text-[#3a3a3c]"><i class="size-2.5 rounded-full" style="background: <%= outcome_colors[row[:key]] %>"></i><%= outcome_labels[row[:key]] %></span>
+            <span class="tabular-nums"><b class="font-semibold text-[#1c1c1e]"><%= analytics_integer(row[:count]) %></b> <span class="ms-2 text-xs text-[#8e8e93]"><%= row[:percent] ? "#{row[:percent].round} %" : "—" %></span></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+  <div class="<%= card %>" data-delivery-status>
+    <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:green] %>"><%= seller_icon(:truck, size: 16) %></span>
+      <div><h2 class="<%= title %>"><%= sl("Statut de livraison") %></h2>
+        <p class="<%= sub %>"><%= sl("Où en sont les commandes confirmées, de l'entrepôt au client.") %></p></div></div>
+    <div class="mt-4 grid grid-cols-3 gap-3">
+      <div><p class="text-[11px] text-[#6e6e73]"><%= sl("Livrées") %></p><p class="text-xl font-bold text-[#1c1c1e] tabular-nums" data-status-delivered><%= analytics_percent(status[:delivered_percent]) %></p></div>
+      <div><p class="text-[11px] text-[#6e6e73]"><%= sl("En route") %></p><p class="text-xl font-bold text-[#1c1c1e] tabular-nums" data-status-en-route><%= analytics_integer(status[:en_route]) %></p></div>
+      <div><p class="text-[11px] text-[#6e6e73]"><%= sl("Retournées") %></p><p class="text-xl font-bold text-[#1c1c1e] tabular-nums" data-status-returned><%= analytics_percent(status[:returned_percent]) %></p></div>
+    </div>
+    <p class="mt-0.5 text-[11px] text-[#8e8e93]"><%= sl("sur") %> <%= analytics_integer(status[:total]) %> <%= sl("commandes confirmées") %></p>
+    <div class="mt-3 space-y-2">
+      <% status[:rows].each do |row| %>
+        <div data-status-row="<%= row[:key] %>" data-count="<%= row[:count] %>" data-tip="<%= delivery_labels[row[:key]] %> : <%= row[:count] %>">
+          <div class="flex items-baseline justify-between gap-3 text-[12.5px]"><span class="flex items-center gap-2 text-[#3a3a3c]"><i class="size-2 rounded-full" style="background: <%= delivery_colors[row[:key]] %>"></i><%= delivery_labels[row[:key]] %></span><span class="tabular-nums"><b class="font-semibold text-[#1c1c1e]"><%= analytics_integer(row[:count]) %></b><span class="ms-2 text-[11px] text-[#8e8e93]"><%= row[:percent] ? "#{row[:percent].round} %" : "—" %></span></span></div>
+          <div class="mt-0.5 h-1 overflow-hidden rounded-full bg-[#efeff3]"><div data-grow class="h-full rounded-full" style="width: <%= row[:percent].to_f.round(1) %>%; background: <%= delivery_colors[row[:key]] %>"></div></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="<%= card %>" data-delivery-by-day>
+  <div class="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+    <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:blue] %>"><%= seller_icon(:chart, size: 16) %></span>
+      <div><h2 class="<%= title %>"><%= sl("Statut de livraison par jour de commande") %></h2>
+        <p class="<%= sub %>"><%= sl("Les commandes confirmées, réparties selon où elles en sont. Les jours récents sont encore en route.") %></p></div></div>
+    <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#3a3a3c]"><% day_series.each do |_key, color, label| %><span class="flex items-center gap-1.5"><i class="size-2 rounded-[2px]" style="background: <%= color %>"></i><%= label %></span><% end %></p>
+  </div>
+  <% tallest = [ by_day.map { |day| day[:total] }.max.to_i, 1 ].max %>
+  <div class="mt-4 flex gap-2">
+    <div class="flex h-36 w-6 shrink-0 flex-col justify-between text-end text-[10px] text-[#8e8e93] tabular-nums" aria-hidden="true"><span><%= tallest %></span><span>0</span></div>
+    <div class="min-w-0 flex-1">
+      <div class="flex h-36 items-end justify-between gap-[2px] border-b border-[#d9dce2]" role="img" aria-label="<%= sl("Statut de livraison par jour de commande") %>">
+        <% by_day.each do |day| %>
+          <div class="flex h-full min-w-0 max-w-6 flex-1 flex-col-reverse justify-start gap-[2px]" tabindex="0" data-by-day="<%= day[:date].iso8601 %>" data-total="<%= day[:total] %>"
+               data-tip="<%= l(day[:date], format: "%d/%m") %> : <%= day_series.map { |key, _color, label| "#{day[key]} #{label.downcase}" }.reject { |text| text.start_with?("0 ") }.join(", ").presence || "0" %>">
+            <% day_series.each do |key, color, _label| %>
+              <% if day[key].positive? %><span data-rise class="block w-full" style="height: <%= (day[key] * 100.0 / tallest).round(1) %>%; background: <%= color %>"></span><% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+      <p class="mt-1 flex justify-between text-[10.5px] text-[#8e8e93]"><span><%= l(days.first[:date], format: "%d/%m") %></span><span><%= l(days.last[:date], format: "%d/%m") %></span></p>
+    </div>
+  </div>
+</section>
+
+<section class="<%= card %>" data-recovery>
+  <div class="flex items-start gap-3"><span class="<%= chip %> <%= tones[:amber] %>"><%= seller_icon(:undo, size: 16) %></span>
+    <div><h2 class="<%= title %>"><%= sl("Récupération des livraisons") %></h2>
+      <p class="<%= sub %>"><%= sl("Commandes passées par un échec de livraison (injoignable ou problème d'adresse), et ce qu'elles sont devenues.") %></p></div></div>
+  <% if recovery[:total].zero? %>
+    <p class="mt-6 mb-2 text-center text-sm text-[#6e6e73]"><%= sl("Aucun échec de livraison sur cette période.") %></p>
+  <% else %>
+    <div class="mt-4 flex flex-wrap items-center gap-x-8 gap-y-3">
+      <div><p class="text-4xl leading-none font-bold text-[#1c1c1e] tabular-nums" data-recovery-rate><%= analytics_percent(recovery[:rate]) %></p><p class="mt-1 text-[11px] text-[#6e6e73]"><%= sl("récupérées") %></p></div>
+      <div class="min-w-[16rem] flex-1">
+        <p class="text-xs text-[#6e6e73]"><b class="text-[#1c1c1e]"><%= analytics_integer(recovery[:recovered]) %></b> <%= sl("sur") %> <b class="text-[#1c1c1e]"><%= analytics_integer(recovery[:total]) %></b> <%= sl("échecs de livraison ont finalement été livrés") %></p>
+        <div class="mt-2 flex h-2.5 gap-[2px] overflow-hidden rounded-full bg-[#efeff3]">
+          <% [ [ :recovered, delivery_colors[:delivered] ], [ :returned, delivery_colors[:returned] ], [ :in_progress, delivery_colors[:not_shipped] ] ].each do |key, color| %>
+            <% if recovery[key].positive? %><span data-grow style="width: <%= (recovery[key] * 100.0 / recovery[:total]).round(2) %>%; background: <%= color %>" data-recovery-part="<%= key %>" data-count="<%= recovery[key] %>"></span><% end %>
+          <% end %>
+        </div>
+        <p class="mt-2 flex flex-wrap items-center gap-x-4 text-[12.5px] text-[#3a3a3c]">
+          <span class="flex items-center gap-1.5"><i class="size-2 rounded-full" style="background: <%= delivery_colors[:delivered] %>"></i><%= sl("Récupérées") %> <b><%= recovery[:recovered] %></b></span>
+          <span class="flex items-center gap-1.5"><i class="size-2 rounded-full" style="background: <%= delivery_colors[:returned] %>"></i><%= sl("Retournées") %> <b><%= recovery[:returned] %></b></span>
+          <span class="flex items-center gap-1.5"><i class="size-2 rounded-full" style="background: <%= delivery_colors[:not_shipped] %>"></i><%= sl("En cours") %> <b><%= recovery[:in_progress] %></b></span>
+        </p>
+      </div>
+    </div>
+    <% if recovery[:list].any? %>
+      <h3 class="mt-5 text-[13px] font-semibold text-[#1c1c1e]"><%= sl("Commandes récupérées") %></h3>
+      <div class="mt-2 overflow-x-auto rounded-xl border border-[#ececf0]">
+        <table class="w-full text-[12.5px]">
+          <thead class="bg-[#f7f8fa] text-[11px] text-[#6e6e73]"><tr><% [ "Commande", "Client", "Transporteur", "Montant", "Échec → Livraison" ].each_with_index do |heading, i| %><th class="px-3 py-2 <%= i == 3 ? "text-end" : "text-start" %> font-medium whitespace-nowrap"><%= sl(heading) %></th><% end %></tr></thead>
+          <tbody class="divide-y divide-[#f1f1f4]">
+            <% recovery[:list].each do |order| %>
+              <tr data-recovered="<%= order[:number] %>">
+                <td class="px-3 py-2 font-semibold whitespace-nowrap text-[#1c1c1e]"><%= order[:number] %></td>
+                <td class="px-3 py-2"><p class="font-medium text-[#1c1c1e]" dir="auto"><%= order[:name] %></p><p class="text-[11px] text-[#8e8e93]" dir="auto"><%= order[:city] %></p></td>
+                <td class="px-3 py-2 text-[#6e6e73]"><%= order[:carrier] || "—" %></td>
+                <td class="px-3 py-2 text-end tabular-nums whitespace-nowrap"><%= money(order[:total_cents], order[:currency]) %></td>
+                <td class="px-3 py-2 whitespace-nowrap"><span class="text-[#d6455d]"><%= l(order[:failed_at].in_time_zone(DateRange::ZONE), format: "%d/%m, %H:%M") %></span>
+                  <span class="mx-2 text-[#8e8e93]">→ <%= order[:days].zero? ? sl("le jour même") : (order[:days] == 1 ? sl("le lendemain") : "#{order[:days]} #{sl("jours")}") %> →</span>
+                  <span class="text-[#136b3d]"><%= l(order[:delivered_at].in_time_zone(DateRange::ZONE), format: "%d/%m, %H:%M") %></span></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  <% end %>
+</section>

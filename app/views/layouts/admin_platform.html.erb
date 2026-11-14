@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
+    <%= render "shared/favicon" %>
     <title><%= content_for?(:title) ? yield(:title) : t("platform_admin.document_title", name: Store.platform_name) %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link rel="manifest" href="<%= admin_pwa_manifest_path %>">
-    <meta name="theme-color" content="#2e4dd5">
+    <meta name="theme-color" content="#1d1d1f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -85,8 +86,7 @@
 
         <main class="admin-main">
           <div class="admin-page admin-page--platform">
-            <% if notice.present? %><div class="admin-banner admin-banner--success"><%= notice %></div><% end %>
-            <% if alert.present? %><div class="admin-banner admin-banner--critical"><%= alert %></div><% end %>
+            <%= render "admin/shared/toasts" %>
             <%= render "admin/shared/pwa_install" %>
             <%= yield %>
           </div>

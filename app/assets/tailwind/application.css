@@ -3457,7 +3457,7 @@ main {
   .seallo-auth .sa-form-wrap .fx-label { color: #1c1c1e; font-size: .875rem; font-weight: 500; letter-spacing: 0; }
   .seallo-auth .sa-form-wrap .fx-input { min-height: 2.75rem; border: 1px solid #e0e0e5; border-radius: .5rem; background: #fdfcfb; color: #1c1c1e; }
   .seallo-auth .sa-form-wrap .fx-input::placeholder { color: #6e6e73; }
-  .seallo-auth .sa-form-wrap .fx-input:focus { border-color: #1d1d1f; box-shadow: 0 0 0 3px rgb(168 67 46 / .15); outline: none; }
+  .seallo-auth .sa-form-wrap .fx-input:focus { border-color: #1d1d1f; box-shadow: 0 0 0 3px rgb(29 29 31 / .12); outline: none; }
   .seallo-auth .sa-form-wrap .fx-btn { min-height: 2.75rem; border: 0; border-radius: .5rem; background: #1d1d1f; font-weight: 600; }
   .seallo-auth .sa-form-wrap .fx-btn:hover { background: #3a3a3c; }
   .seallo-auth .sa-form-wrap .fx-link { color: #1c1c1e; }
@@ -3565,7 +3565,7 @@ main {
     --s-ink: #f2ebe5;
     --s-ink-2: #e2d8d0;
     --s-muted: #a39890;
-    --s-rust: #e07a5f;
+    --s-rust: #d1d1d6;
     --s-rust-deep: #c9654a;
     --s-pill: #3b2620;
     --s-pill-text: #f3d4c8;
@@ -3841,3 +3841,112 @@ main {
   html[data-sidebar="collapsed"] [data-seller-shell] aside summary { justify-content: center; padding-inline: 0; }
 }
 [data-call-center-nav] > summary::-webkit-details-marker { display: none; }
+
+/* Analyses: bars and columns grow in, like the milestones bar and the distribution ring; none of it with reduced motion */
+@keyframes an-grow { from { width: 0; } }
+@keyframes an-rise { from { height: 0; } }
+[data-call-analytics] [data-grow] { animation: an-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+[data-call-analytics] [data-rise] { animation: an-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) { [data-call-analytics] [data-grow], [data-call-analytics] [data-rise] { animation: none; } }
+
+/* Analyses: the switch between the views is an iOS-style segmented control on frosted glass: a dark glass thumb slides under the chosen
+   segment (the segmented controller moves it), and only the body below changes (a Turbo frame). The row of agents is frosted too.
+   Nothing inside opens a floating panel, so the blur is safe here. */
+[data-call-analytics] [data-analytics-tabs], [data-call-analytics] [data-agent-switch] {
+  background: rgba(255, 255, 255, 0.55); border: 1px solid rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 12px 30px -16px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(28, 28, 30, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+[data-call-analytics] [data-analytics-tabs] a, [data-call-analytics] [data-agent-switch] a { color: #3a3a3c; transition: color 0.25s ease; }
+[data-call-analytics] [data-analytics-tabs] a[aria-current="page"], [data-call-analytics] [data-agent-switch] a[aria-current="page"] { color: #fff; }
+[data-call-analytics] [data-agent-switch] a[aria-current="page"] [data-initials] { background: rgba(255, 255, 255, 0.22); color: #fff; }
+[data-call-analytics] [data-segmented-target="thumb"] {
+  width: 0; background: rgba(28, 28, 30, 0.92);
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+[data-call-analytics] [data-segmented-target="thumb"].is-ready { transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), width 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
+[data-call-analytics] [data-agent-switch][hidden] { display: none; }
+[data-call-analytics] turbo-frame[busy] { opacity: 0.55; transition: opacity 0.2s ease; }
+@media (prefers-reduced-motion: reduce) { [data-call-analytics] [data-segmented-target="thumb"].is-ready { transition: none; } }
+@media (prefers-reduced-transparency: reduce) {
+  [data-call-analytics] [data-analytics-tabs], [data-call-analytics] [data-agent-switch] { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+/* The dashboard's Confirmation | Expédition switch: the same iOS-style control, a dark thumb sliding under the chosen side */
+.ios-switch { background: rgba(239, 239, 243, 0.9); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08); }
+.ios-switch button { transition: color 0.25s ease; }
+.ios-thumb { width: 0; background: rgba(28, 28, 30, 0.92); box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.22); }
+.ios-thumb.is-ready { transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), width 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
+@media (prefers-reduced-motion: reduce) { .ios-thumb.is-ready { transition: none; } }
+
+/* Attributions: the load bars of the agent cards grow in, like the other bars */
+[data-assignments] [data-grow] { animation: an-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) { [data-assignments] [data-grow] { animation: none; } }
+
+/* The attribution rule window is narrower than the new-order window */
+[data-seller-shell] [data-order-modal-panel][data-narrow][role="dialog"] { width: min(40rem, 100%); zoom: 0.85; max-height: calc((100dvh - 1.5rem) / 0.85); }
+
+/* Glass segmented switch (team tabs): a frosted pill and a translucent white thumb that slides under the chosen tab. */
+.glass-switch { background: rgba(255, 255, 255, 0.45); border: 1px solid rgba(255, 255, 255, 0.75); box-shadow: 0 10px 30px -18px rgba(31, 36, 48, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.9); -webkit-backdrop-filter: blur(18px) saturate(1.6); backdrop-filter: blur(18px) saturate(1.6); }
+.glass-switch .ios-thumb { background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.72)); box-shadow: 0 6px 16px -8px rgba(31, 36, 48, 0.45), inset 0 1px 0 #fff; }
+.glass-switch button.text-white { color: #1c1c1e; }
+@media (prefers-reduced-transparency: reduce) { .glass-switch { background: #efeff3; -webkit-backdrop-filter: none; backdrop-filter: none; } }
+
+/* Notices: a window in the middle of the screen, like the agent's welcome window (white glass card over a light veil). It fades in and goes away by itself (toast_controller.js). */
+.toast-overlay { background: rgba(31, 36, 48, 0.18); transition: opacity 0.28s ease; }
+.toast-overlay .toast-card { transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+.toast-overlay.is-pre { opacity: 0; }
+.toast-overlay.is-pre .toast-card { transform: scale(0.94); }
+@media (prefers-reduced-transparency: reduce) { .toast-overlay .toast-card { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; } }
+@media (prefers-reduced-motion: reduce) { .toast-overlay, .toast-overlay .toast-card { transition: none; } }
+
+/* A gray-glass bar (section headers): frosted gray with a bright edge, dark text. */
+.glass-bar { background: rgba(126, 132, 146, 0.2); border: 1px solid rgba(255, 255, 255, 0.65); box-shadow: 0 12px 30px -20px rgba(31, 36, 48, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.75); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); }
+@media (prefers-reduced-transparency: reduce) { .glass-bar { background: #e3e5ea; -webkit-backdrop-filter: none; backdrop-filter: none; } }
+
+/* Auth / signup: same look as the landing page (balanced panel, full-width partners card, header row aligned) */
+.sa-panel { overflow-y: auto; scrollbar-width: none; }
+.sa-panel::-webkit-scrollbar { display: none; }
+.sa-panel .sa-intro { margin-top: auto; padding-top: 1.5rem; }
+.sa-panel .sa-partners { margin-bottom: auto; }
+.sa-partners { display: flex; align-self: stretch; justify-content: space-between; margin-top: 1rem; padding: .85rem 0; border-color: rgb(255 255 255 / .9); background: rgb(255 255 255 / .7); -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%); box-shadow: 0 1px 0 rgb(255 255 255 / .9) inset, 0 12px 30px -20px rgb(31 36 48 / .35), 0 0 0 1px rgb(29 29 31 / .07); }
+.sa-partners > div { flex: 1; align-items: center; }
+.sa-partners p { text-align: center; }
+.sa-partners ul { justify-content: center; }
+.sa-card { box-shadow: 0 1px 0 rgb(255 255 255 / .9) inset, 0 12px 30px -22px rgb(31 36 48 / .3), 0 0 0 1px rgb(29 29 31 / .05); border-color: transparent; }
+.sa-lang nav { border-color: rgb(255 255 255 / .9); background: rgb(255 255 255 / .6); -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%); box-shadow: 0 1px 0 rgb(255 255 255 / .9) inset, 0 6px 18px -10px rgb(29 29 31 / .35), 0 0 0 1px rgb(29 29 31 / .07); }
+@media (min-width: 1024px) {
+  .sa-form-col { position: relative; }
+  .sa-form-top { position: absolute; inset-block-start: 2rem; inset-inline: 1.5rem; height: 2rem; margin: 0; justify-content: flex-end; }
+  .sa-form-wrap { padding-block: 5rem 2rem; }
+}
+@media (min-width: 1024px) and (max-height: 800px) {
+  .sa-panel { padding-block: 1.25rem; }
+  .sa-panel .sa-eyebrow, .sa-panel .sa-tagline { display: none; }
+  .sa-panel .sa-intro { padding-top: .75rem; }
+  .sa-panel .sa-chart { margin-top: .75rem; }
+  .sa-panel .sa-chart-plot svg { height: 3.5rem; }
+  .sa-panel .sa-order-steps { margin-top: .6rem; }
+  .sa-form-top { inset-block-start: 1.25rem; }
+}
+
+/* Language dropdown (auth, sign-up, sign-in): same as the landing page */
+.lang-menu { position: relative; z-index: 40; }
+.lang-menu > button { display: inline-flex; align-items: center; gap: .4rem; height: 2.5rem; padding: 0 .85rem; border: 1px solid rgb(255 255 255 / .9); border-radius: 999px; background: rgb(255 255 255 / .6); -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%); box-shadow: 0 1px 0 rgb(255 255 255 / .9) inset, 0 6px 18px -10px rgb(29 29 31 / .35), 0 0 0 1px rgb(29 29 31 / .07); color: #1c1c1e; font-size: .8rem; font-weight: 600; cursor: pointer; }
+.lang-menu > button svg { width: 1rem; height: 1rem; color: #6e6e73; }
+.lang-menu > button .lang-menu-caret { width: .75rem; height: .75rem; }
+.lang-menu ul { position: absolute; right: 0; top: calc(100% + .5rem); z-index: 60; min-width: 10rem; margin: 0; padding: .25rem; list-style: none; border: 1px solid #e0e0e5; border-radius: 1rem; background: #fff; box-shadow: 0 12px 32px -12px rgb(0 0 0 / .25); }
+.lang-menu ul[hidden] { display: none; }
+.lang-menu li a { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .5rem .75rem; border-radius: .75rem; color: #1c1c1e; font-size: .875rem; text-decoration: none; }
+.lang-menu li a:hover, .lang-menu li a[aria-current="true"] { background: #f5f5f7; }
+@media (min-width: 1024px) { .sa-form-top { z-index: 40; } }
+
+/* Read-only demo workspace bar */
+.demo-banner { position: sticky; top: 0; z-index: 80; display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .4rem 1rem; background: linear-gradient(90deg, #1d1d1f, #2c2c2e); color: #fff; font-size: .8125rem; }
+.demo-banner-text { display: inline-flex; align-items: center; gap: .5rem; font-weight: 600; }
+.demo-banner-text i { width: .5rem; height: .5rem; border-radius: 50%; background: #95bf47; box-shadow: 0 0 0 3px rgb(149 191 71 / .25); }
+.demo-banner-actions { display: inline-flex; align-items: center; gap: .5rem; }
+.demo-banner-actions form { margin: 0; }
+.demo-banner-cta { padding: .25rem .75rem; border-radius: 999px; background: #fff; color: #1d1d1f !important; font-weight: 700; text-decoration: none; }
+.demo-banner-leave { padding: .25rem .6rem; border: 0; background: none; color: rgb(255 255 255 / .75); font-size: .8125rem; cursor: pointer; }
+.demo-banner-leave:hover { color: #fff; }

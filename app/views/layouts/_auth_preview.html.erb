@@ -29,7 +29,7 @@
   today = Date.current
   day_label = ->(n) { date = today - (last - n); "#{date.day} #{a.("months")[date.month - 1]}" }
   best = [["Chemise en lin", 498, 124_002], ["Survêtement Basic", 252, 97_768], ["Pack 3 T-shirts", 237, 31_173], ["Sac en cuir", 124, 18_947]]
-  medals = %w[#8a8380 #8a8380 #8a8380 #8a8380]
+  medals = %w[#f59e0b #94a3b8 #c2410c #cfc7c1]
   partners = [[:stores, [["Shopify", "shopify", 24], ["YouCan", "youcan", 24], ["WooCommerce", "woocommerce", 24]]],
               [:delivery, [["Sendit", "sendit", 24], ["Ozon Express", "ozon", 24], ["Cathedis", "cathedis", 15], ["Ameex", "ameex", 13]]],
               [:ads, [["Meta Ads", "meta", 15], ["TikTok Ads", "tiktok", 24]]]]
@@ -47,26 +47,26 @@
   <div class="sa-chart-head">
     <div>
       <p class="sa-metric-label"><i class="is-brand"></i><%= a.("revenue") %></p>
-      <p class="sa-metric"><%= money.(revenue_days.sum) %></p>
+      <p class="sa-metric"><%= money.(revenue_days.sum) %> <small>↑ 14 %</small></p>
     </div>
     <div>
       <p class="sa-metric-label"><i class="is-green"></i><%= a.("profit") %></p>
-      <p class="sa-metric is-green"><%= money.(profit_days.sum) %></p>
+      <p class="sa-metric is-green"><%= money.(profit_days.sum) %> <small>↑ 9 %</small></p>
     </div>
     <span class="sa-pill"><%= a.("days_30") %></span>
   </div>
   <div class="sa-chart-plot" dir="ltr">
     <svg viewBox="0 0 <%= width.to_i %> <%= height.to_i %>" preserveAspectRatio="none" aria-hidden="true">
       <defs>
-        <linearGradient id="sa-ca" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8432e" stop-opacity=".22"/><stop offset="1" stop-color="#a8432e" stop-opacity="0"/></linearGradient>
+        <linearGradient id="sa-ca" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d1d1f" stop-opacity=".22"/><stop offset="1" stop-color="#1d1d1f" stop-opacity="0"/></linearGradient>
         <linearGradient id="sa-pr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#10b981" stop-opacity=".25"/><stop offset="1" stop-color="#10b981" stop-opacity="0"/></linearGradient>
       </defs>
       <% [0.25, 0.5, 0.75].each do |g| %><line x1="0" x2="<%= width.to_i %>" y1="<%= height * g %>" y2="<%= height * g %>" stroke="#ece6e2" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/><% end %>
       <path d="<%= revenue_line %> L<%= width.to_i %>,<%= height.to_i %> L0,<%= height.to_i %> Z" fill="url(#sa-ca)"/>
       <path d="<%= profit_line %> L<%= width.to_i %>,<%= height.to_i %> L0,<%= height.to_i %> Z" fill="url(#sa-pr)"/>
-      <path d="<%= revenue_line %>" fill="none" stroke="#a8432e" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      <path d="<%= revenue_line %>" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
       <path d="<%= profit_line %>" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
-      <line x1="<%= revenue_pts[last][0] %>" x2="<%= revenue_pts[last][0] %>" y1="0" y2="<%= height.to_i %>" stroke="#1f2430" stroke-opacity=".15" vector-effect="non-scaling-stroke"/>
+      <line x1="<%= revenue_pts[last][0] %>" x2="<%= revenue_pts[last][0] %>" y1="0" y2="<%= height.to_i %>" stroke="#1c1c1e" stroke-opacity=".15" vector-effect="non-scaling-stroke"/>
     </svg>
     <span class="sa-dot is-brand" style="left: 100%; top: <%= (revenue_pts[last][1] / height * 100).round(1) %>%"></span>
     <span class="sa-dot is-green" style="left: 100%; top: <%= (profit_pts[last][1] / height * 100).round(1) %>%"></span>
@@ -83,7 +83,8 @@
   <div class="sa-card sa-order" data-sa-order data-steps="<%= steps.to_json %>" data-notes="<%= a.("step_notes").to_json %>">
     <div class="sa-order-head"><p class="sa-metric-label"><%= a.("new_order") %></p><span class="sa-live"><i></i><%= a.("live") %></span></div>
     <div class="sa-order-body">
-      <div><p><b>#<span data-sa-num>2046</span></b></p><small>Chemise en lin, beige, M, Casablanca</small></div>
+      <span class="sa-order-icon">👕</span>
+      <div><p><b>#<span data-sa-num>2046</span></b></p><small>Chemise en lin · Beige · M · Casablanca</small></div>
       <b dir="ltr">249 MAD</b>
     </div>
     <div class="sa-order-steps">

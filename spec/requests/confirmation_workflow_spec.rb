@@ -50,6 +50,8 @@ RSpec.describe "Manager to confirmation-agent workflow", type: :request do
 
     worker = browser
     login(worker, agent)
+    worker.post "/admin/confirmations/clock_in"
+    expect(worker.response).to have_http_status(:redirect)
     worker.get "/admin/confirmations"
     expect(worker.response).to have_http_status(:ok)
     expect(document(worker).at_css("[data-agent-desk]")).to be_present
@@ -85,7 +87,7 @@ RSpec.describe "Manager to confirmation-agent workflow", type: :request do
 
     worker.get "/admin/my_stats"
     expect(worker.response).to have_http_status(:ok)
-    expect(document(worker).css(".seallo-kpi strong").first.text.strip).to eq("1")
+    expect(document(worker).at_css("[data-kpi=confirmed] [data-value]").text.strip).to start_with("1")
     worker.get "/admin/confirmations/home"
     expect(worker.response).to have_http_status(:ok)
     expect(document(worker).css("div.grid.grid-cols-2 > .admin-card .admin-metric__value").first.text.strip).to eq("10")
@@ -104,7 +106,7 @@ RSpec.describe "Manager to confirmation-agent workflow", type: :request do
 
     worker.get "/admin/staff"
     expect(worker.response).to have_http_status(:redirect)
-    expect(URI(worker.response.location).path).to eq("/admin/confirmations/home")
+    expect(URI(worker.response.location).path).to eq("/admin/my_stats")
   end
 
   it "preserves contact and order lines when the call sends only an address correction" do
@@ -114,6 +116,8 @@ RSpec.describe "Manager to confirmation-agent workflow", type: :request do
     agent = create_agent(manager)
     worker = browser
     login(worker, agent)
+    worker.post "/admin/confirmations/clock_in"
+    expect(worker.response).to have_http_status(:redirect)
     worker.post "/admin/confirmations/#{order.id}/call", as: :json
     expect(worker.response).to have_http_status(:ok)
 

@@ -13,11 +13,11 @@ module Platform
     # Tables with a store_id that this service empties. A spec fails when a new
     # store-owned table appears in neither list, so every migration has to decide.
     CLEARED_TABLES = %w[
-      advertising_accounts agent_changesets agent_deductions agent_payments blocked_phones carts collections confirmation_attempts
+      advertising_accounts agent_changesets agent_deductions agent_payment_items agent_payments assignment_rules blocked_phones carts collections confirmation_attempts
       confirmation_shifts customers delivery_accounts discounts home_sections menu_items meta_ads_ad_accounts
       meta_ads_ad_sets meta_ads_ads meta_ads_campaigns meta_ads_connections meta_ads_daily_insights
       meta_ads_product_links oauth_access_tokens order_confirmations order_imports orders pages products push_subscriptions
-      privacy_rights_requests seallo_connection_codes store_connections store_expenses store_translations
+      privacy_rights_requests seallo_connection_codes store_connections whatsapp_accounts whatsapp_messages store_expenses store_translations
       storefront_themes woocommerce_connection_codes
     ].freeze
     KEPT_TABLES = %w[access_requests admin_sessions audit_events invoices payments users].freeze
@@ -119,6 +119,7 @@ module Platform
       @store.products.find_each(&:destroy!)
       @store.collections.find_each(&:destroy!)
       @store.discounts.delete_all
+      @store.assignment_rules.delete_all                      # attribution rules (their agent rows go with them); the agents themselves are kept
     end
 
     def clear_content
@@ -150,6 +151,9 @@ module Platform
     end
 
     def clear_operations
+      WhatsappMessage.where(store_id: @store.id).delete_all
+      WhatsappAccount.where(store_id: @store.id).delete_all
+      AgentPaymentItem.where(store_id: @store.id).delete_all
       AgentPayment.where(store_id: @store.id).delete_all
       ConfirmationShift.where(store_id: @store.id).delete_all
       PushSubscription.where(store_id: @store.id).delete_all

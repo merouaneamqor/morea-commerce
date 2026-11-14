@@ -8,31 +8,32 @@
 <% usd_note = ->(usd) { cur == Plans.reference_currency ? "" : " (#{Plans.money(usd, Plans.reference_currency)})" } %>
 <% trial_date = tag.time(@store.trial_ends_at.to_date.iso8601, datetime: @store.trial_ends_at.to_date.iso8601, data: { long_date: true }) %>
 <% methods = [["transfer", "Virement bancaire", "Activation sous 24 h"], ["card", "Carte bancaire", Plans.card_enabled? ? "Visa, Mastercard, CMI" : "Bientôt disponible"]] %>
-<main class="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-16 sm:px-6" data-payment data-locale="<%= { "ar" => "ar-MA", "en" => "en-GB" }.fetch(I18n.locale.to_s, "fr-FR") %>"
+<main class="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-16 sm:px-6" data-payment data-locale="<%= { "ar" => "ar-MA", "en" => "en-GB", "es" => "es-ES" }.fetch(I18n.locale.to_s, "fr-FR") %>"
       data-copied="<%= st("Copié ✓") %>" data-copy="<%= st("Copier") %>">
   <%= render "signups/steps", current: 3, links: { 2 => plans_path } %>
 
-  <h1 class="mt-8 text-4xl font-extrabold tracking-tight text-[#1f2430] sm:text-5xl">
-    <% if I18n.locale.to_s == "en" %>Complete your <span class="text-[#a8432e]">subscription.</span>
-    <% elsif I18n.locale.to_s == "ar" %>أكمل <span class="text-[#a8432e]">اشتراكك.</span>
-    <% else %>Finalisez votre <span class="text-[#a8432e]">abonnement.</span>
+  <h1 class="mt-8 text-4xl font-extrabold tracking-tight text-[#1c1c1e] sm:text-5xl">
+    <% if I18n.locale.to_s == "en" %>Complete your <span class="text-[#1d1d1f]">subscription.</span>
+    <% elsif I18n.locale.to_s == "es" %>Finaliza tu <span class="text-[#1d1d1f]">suscripción.</span>
+    <% elsif I18n.locale.to_s == "ar" %>أكمل <span class="text-[#1d1d1f]">اشتراكك.</span>
+    <% else %>Finalisez votre <span class="text-[#1d1d1f]">abonnement.</span>
     <% end %>
   </h1>
   <p class="mt-3 max-w-xl">
-    <%= st("Votre essai gratuit est actif jusqu'au") %> <strong class="text-[#1f2430]"><%= trial_date %></strong>. <%= st("Vous pouvez payer maintenant ou plus tard.") %>
+    <%= st("Votre essai gratuit est actif jusqu'au") %> <strong class="text-[#1c1c1e]"><%= trial_date %></strong>. <%= st("Vous pouvez payer maintenant ou plus tard.") %>
   </p>
 
   <% if notice.present? %><div class="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800"><%= notice %></div><% end %>
   <% if alert.present? %><div role="alert" class="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"><%= alert %></div><% end %>
 
   <div class="mt-8 grid items-start gap-6 lg:grid-cols-[1fr_360px]">
-    <section class="min-w-0 rounded-2xl border border-[#e8e3df] bg-white p-5 sm:p-6">
-      <h2 class="font-semibold text-[#1f2430]"><%= st("Moyen de paiement") %></h2>
+    <section class="min-w-0 rounded-2xl border border-[#e0e0e5] bg-white p-5 sm:p-6">
+      <h2 class="font-semibold text-[#1c1c1e]"><%= st("Moyen de paiement") %></h2>
       <div class="mt-4 grid gap-3 sm:grid-cols-2">
         <% methods.each_with_index do |(key, title, sub), i| %>
-          <button type="button" data-method="<%= key %>" aria-pressed="<%= i.zero? %>" class="rounded-xl border p-4 text-start transition <%= i.zero? ? "border-[#a8432e] ring-1 ring-[#a8432e]" : "border-[#e8e3df] hover:border-[#a8432e]/50" %>">
-            <span class="flex items-center gap-2 font-semibold text-[#1f2430]">
-              <span data-radio class="size-4 rounded-full border-2 <%= i.zero? ? "border-[5px] border-[#a8432e]" : "border-[#cfc7c1]" %>"></span>
+          <button type="button" data-method="<%= key %>" aria-pressed="<%= i.zero? %>" class="rounded-xl border p-4 text-start transition <%= i.zero? ? "border-[#1d1d1f] ring-1 ring-[#1d1d1f]" : "border-[#e0e0e5] hover:border-[#1d1d1f]/50" %>">
+            <span class="flex items-center gap-2 font-semibold text-[#1c1c1e]">
+              <span data-radio class="size-4 rounded-full border-2 <%= i.zero? ? "border-[5px] border-[#1d1d1f]" : "border-[#cfc7c1]" %>"></span>
               <%= st(title) %>
             </span>
             <span class="mt-1 block ps-6 text-xs"><%= st(sub) %></span>
@@ -49,21 +50,21 @@
             </p>
           </div>
         <% end %>
-        <p class="text-sm"><%= st("Effectuez un virement de") %> <strong class="text-[#1f2430]" dir="ltr"><%= m.(amount) %><%= usd_note.(amount) %></strong> <%= st("vers ce compte :") %></p>
-        <div class="mt-3 rounded-xl bg-[#f3f1ef] px-4">
+        <p class="text-sm"><%= st("Effectuez un virement de") %> <strong class="text-[#1c1c1e]" dir="ltr"><%= m.(amount) %><%= usd_note.(amount) %></strong> <%= st("vers ce compte :") %></p>
+        <div class="mt-3 rounded-xl bg-[#e8e8ed] px-4">
           <% [["Titulaire", @bank["holder"]], ["Banque", @bank["bank"]], ["RIB", @bank["rib"]], ["SWIFT", @bank["swift"]], ["Montant", m.(amount)]].each do |label, value| %>
-            <div class="flex items-center justify-between gap-3 border-b border-[#f0ebe7] py-3 last:border-0">
+            <div class="flex items-center justify-between gap-3 border-b border-[#ececf0] py-3 last:border-0">
               <div class="min-w-0">
-                <p class="text-xs text-[#8a8380]"><%= st(label) %></p>
-                <p class="truncate font-semibold text-[#1f2430]" dir="ltr"><%= value %></p>
+                <p class="text-xs text-[#6e6e73]"><%= st(label) %></p>
+                <p class="truncate font-semibold text-[#1c1c1e]" dir="ltr"><%= value %></p>
               </div>
-              <button type="button" data-copy-value="<%= value.to_s.delete("⁦⁩").sub(/\s+MAD\z/, "") %>" class="shrink-0 rounded-lg border border-[#e8e3df] px-2.5 py-1 text-xs font-semibold text-[#1f2430] hover:border-[#a8432e] hover:text-[#a8432e]"><%= st("Copier") %></button>
+              <button type="button" data-copy-value="<%= value.to_s.delete("⁦⁩").sub(/\s+MAD\z/, "") %>" class="shrink-0 rounded-lg border border-[#e0e0e5] px-2.5 py-1 text-xs font-semibold text-[#1c1c1e] hover:border-[#1d1d1f] hover:text-[#1d1d1f]"><%= st("Copier") %></button>
             </div>
           <% end %>
         </div>
 
         <%= form_with url: payment_transfer_path, method: :post, class: "mt-5 grid gap-2" do %>
-          <%= label_tag :reference, st("Référence du virement"), class: "text-sm font-medium text-[#1f2430]" %>
+          <%= label_tag :reference, st("Référence du virement"), class: "text-sm font-medium text-[#1c1c1e]" %>
           <%= text_field_tag :reference, @pending&.reference, maxlength: 100, required: true, placeholder: st("Ex. : numéro de l'opération sur votre reçu"), class: "fx-input !mt-0" %>
           <%= submit_tag st(@pending ? "Mettre à jour la référence" : "J'ai effectué le virement"), class: "fx-btn mt-2" %>
         <% end %>
@@ -73,34 +74,34 @@
         <% if Plans.card_enabled? %>
           <p class="text-sm"><%= st("Le paiement par carte va s'ouvrir sur la page sécurisée de notre prestataire.") %></p>
         <% else %>
-          <p class="font-semibold text-[#1f2430]"><%= st("Paiement par carte bientôt disponible") %></p>
+          <p class="font-semibold text-[#1c1c1e]"><%= st("Paiement par carte bientôt disponible") %></p>
           <p class="mt-1 text-sm"><%= st("En attendant, payez par virement ou continuez votre essai gratuit.") %></p>
         <% end %>
       </div>
     </section>
 
-    <aside class="min-w-0 rounded-2xl border border-[#e8e3df] bg-white p-5 sm:p-6 lg:sticky lg:top-6">
-      <h2 class="font-semibold text-[#1f2430]"><%= st("Récapitulatif") %></h2>
+    <aside class="min-w-0 rounded-2xl border border-[#e0e0e5] bg-white p-5 sm:p-6 lg:sticky lg:top-6">
+      <h2 class="font-semibold text-[#1c1c1e]"><%= st("Récapitulatif") %></h2>
       <div class="mt-4 flex items-start justify-between">
         <div>
-          <p class="text-lg font-bold text-[#1f2430]"><%= st(plan["name"]) %></p>
+          <p class="text-lg font-bold text-[#1c1c1e]"><%= st(plan["name"]) %></p>
           <p class="text-sm"><%= st(annual ? "Facturation annuelle" : "Facturation mensuelle") %></p>
         </div>
-        <%= link_to st("Changer"), plans_path, class: "text-sm font-semibold text-[#a8432e] hover:underline" %>
+        <%= link_to st("Changer"), plans_path, class: "text-sm font-semibold text-[#1d1d1f] hover:underline" %>
       </div>
-      <ul class="mt-4 space-y-1.5 text-sm text-[#1f2430]">
+      <ul class="mt-4 space-y-1.5 text-sm text-[#1c1c1e]">
         <li>✓ <%= plan_orders_label(plan) %></li>
         <li>✓ <%= plan_stores_label(plan) %></li>
       </ul>
-      <dl class="mt-5 space-y-2 border-t border-[#f0ebe7] pt-4 text-sm">
-        <div class="flex justify-between"><dt><%= st("Prix") %></dt><dd class="text-[#1f2430]" dir="ltr"><%= m.(Plans.monthly_price(plan, annual ? "annual" : "monthly")) %> <%= st("/ mois") %></dd></div>
+      <dl class="mt-5 space-y-2 border-t border-[#ececf0] pt-4 text-sm">
+        <div class="flex justify-between"><dt><%= st("Prix") %></dt><dd class="text-[#1c1c1e]" dir="ltr"><%= m.(Plans.monthly_price(plan, annual ? "annual" : "monthly")) %> <%= st("/ mois") %></dd></div>
         <% if annual %>
           <div class="flex justify-between"><dt><%= st("Économie") %></dt><dd class="font-semibold text-emerald-700">−<%= m.(plan["price"] * 12 - amount) %></dd></div>
         <% end %>
-        <div class="flex justify-between text-base font-bold text-[#1f2430]"><dt><%= st("Total") %> <%= st(annual ? "/ an" : "/ mois") %></dt><dd><%= m.(amount) %></dd></div>
+        <div class="flex justify-between text-base font-bold text-[#1c1c1e]"><dt><%= st("Total") %> <%= st(annual ? "/ an" : "/ mois") %></dt><dd><%= m.(amount) %></dd></div>
       </dl>
       <p class="mt-4 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-800"><%= st("Aucun paiement exigé avant le") %> <%= trial_date %>.</p>
-      <%= link_to st("Continuer l'essai, payer plus tard"), admin_root_path, class: "mt-4 flex h-11 items-center justify-center rounded-xl border border-[#e8e3df] text-sm font-semibold text-[#1f2430] transition hover:border-[#1f2430]/30" %>
+      <%= link_to st("Continuer l'essai, payer plus tard"), admin_root_path, class: "mt-4 flex h-11 items-center justify-center rounded-xl border border-[#e0e0e5] text-sm font-semibold text-[#1c1c1e] transition hover:border-[#1c1c1e]/30" %>
     </aside>
   </div>
 </main>
@@ -119,8 +120,8 @@
         buttons.forEach(function (other) {
           var on = other === b;
           other.setAttribute("aria-pressed", on ? "true" : "false");
-          other.className = "rounded-xl border p-4 text-start transition " + (on ? "border-[#a8432e] ring-1 ring-[#a8432e]" : "border-[#e8e3df] hover:border-[#a8432e]/50");
-          other.querySelector("[data-radio]").className = "size-4 rounded-full border-2 " + (on ? "border-[5px] border-[#a8432e]" : "border-[#cfc7c1]");
+          other.className = "rounded-xl border p-4 text-start transition " + (on ? "border-[#1d1d1f] ring-1 ring-[#1d1d1f]" : "border-[#e0e0e5] hover:border-[#1d1d1f]/50");
+          other.querySelector("[data-radio]").className = "size-4 rounded-full border-2 " + (on ? "border-[5px] border-[#1d1d1f]" : "border-[#cfc7c1]");
           root.querySelector('[data-panel="' + other.dataset.method + '"]').hidden = !on;
         });
       });

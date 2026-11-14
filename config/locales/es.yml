@@ -1,0 +1,548 @@
+es:
+  time:
+    formats:
+      short: '%d/%m/%Y %H:%M'
+  store:
+    preparing: La tienda se está preparando.
+    missing_eyebrow: Tienda multi-tenant
+    missing_title: Tienda no encontrada
+    missing_body: Abre tu tienda en su subdominio, por ejemplo morea.%{domain}.
+    default_campaign_title: Nueva colección
+    default_campaign_cta: Descubre Morea
+    tagline_fallback: Ropa deportiva pudorosa de lujo para mujeres activas.
+    footer_tagline: Activewear pudoroso y moderno
+  home:
+    selection_title: La selección
+    view_all: Ver todo
+    collections_title: Entrenar, moverse, descansar
+    explore: Explorar
+    hero_support: Shop the edit. Pay on delivery across Morocco.
+  landing:
+    eyebrow: Activewear
+    hero_product: L'Essentiel Set
+    hero_tagline: Comodidad. Libertad. Pudor. Cada día.
+    discover: Descubrir
+    for_movement: Para todos tus movimientos
+    features:
+      breathable: Tejido transpirable
+      quickdry: Secado rápido
+      fit: Corte amplio y elegante
+      modest: Pudor asegurado
+    gallery:
+      front: Vista frontal
+      side: Vista lateral
+      back: Vista trasera
+      details: Detalles
+    trust:
+      delivery: Entrega en todo Marruecos / Pago contra reembolso
+      returns: Devolución en 7 días
+      cod: Pago contra reembolso
+      ship: Entrega en todo Marruecos
+      strip_label: Garantías de compra
+    story_title: Diseñado para tu equilibrio
+    story_body: Una prenda pensada para acompañar tus movimientos, del deporte al
+      día a día, sin renunciar al estilo ni al pudor.
+    our_story: Nuestra historia
+    story_eyebrow: La Maison
+  nav:
+    home: Inicio
+    menu: Menú
+    main_menu: Menú principal
+    shop: Tienda
+    search: Buscar
+    bag: Carrito
+    track_order: Seguir un pedido
+  shop:
+    search_title: Buscar
+    search_placeholder: Buscar productos
+    search_submit: Buscar
+    search_results: Resultados para «%{query}»
+    search_prompt: Busca por nombre o descripción del producto.
+    search_no_results: Ningún producto coincide con «%{query}».
+    previous_page: Anterior
+    next_page: Siguiente
+    page_status: Página %{page} de %{pages}
+    in_stock_only: Solo en stock
+    product_count:
+      one: '%{count} producto'
+      other: '%{count} productos'
+    sort_by: Ordenar por
+    apply: Aplicar
+    no_results: Ningún producto coincide con estos filtros.
+    clear_filters: Borrar los filtros
+    sort:
+      featured: Destacados
+      price_asc: Precio ascendente
+      price_desc: Precio descendente
+      newest: Novedades
+    title: Tienda
+    collections: Colecciones
+    collection: Colección
+    enter: Entrar
+    selected: Selección
+  product:
+    sale: Oferta
+    view: Ver
+    buy_now: Comprar ahora
+    shipping_returns: Entrega y devoluciones
+    shipping_details: Todos los detalles de entrega
+    related: También te gustará
+    color: Color
+    size: Talla
+    add_to_bag: Añadir al carrito
+    order_now: Pedir ahora
+    pay_on_delivery: Pago contra reembolso
+    quantity: Cantidad
+    decrease: Disminuir
+    increase: Aumentar
+    whatsapp_question: ¿Tienes una pregunta? Escríbenos por WhatsApp
+    whatsapp_message: 'Hola, tengo una pregunta sobre %{product}: %{url}'
+    the_story: La historia
+    the_fabric: El tejido
+    the_fit: El corte
+    the_movement: El movimiento
+    care: Cuidados
+    sold_out: Agotado
+    only_left:
+      one: Solo queda %{count}
+      other: Solo quedan %{count}
+  cart:
+    close: Cerrar
+    decrease: Disminuir la cantidad
+    increase: Aumentar la cantidad
+    subtotal: Subtotal
+    view_bag: Ver el carrito
+    added: Añadido al carrito.
+    updated: Carrito actualizado.
+    removed: Artículo eliminado.
+    title: Carrito
+    empty: Tu carrito está vacío.
+    empty_hint: Explora las últimas colecciones y encuentra tu próxima prenda.
+    continue_shopping: Seguir comprando
+    update: Actualizar
+    remove: Quitar
+    total: Total
+    checkout: Pedir
+  checkout:
+    title: Finalizar el pedido
+    step_label: Casi listo
+    subtitle: 'Unos pocos datos: confirmamos por teléfono y pagas al recibir.'
+    subtitle_short: 'Teléfono y dirección: pago contra reembolso.'
+    other_country: Otro país
+    add_promo_code: Añadir un código promocional
+    payment_method: Método de pago
+    no_prepay: Sin pago en línea
+    contact_details: Contacto
+    delivery_details: Entrega
+    delivery_hint: ¿Dónde quieres recibir tu pedido?
+    full_name: Nombre completo
+    phone: Teléfono
+    phone_country: Prefijo del país
+    phone_help: Llamamos a este número para confirmar.
+    city: Ciudad
+    district: Barrio
+    choose_city: Busca tu ciudad
+    choose_district: Elige tu barrio
+    district_help: Necesario para entregar en el barrio correcto.
+    city_no_match: Ninguna ciudad coincide.
+    address: Dirección completa
+    notes: Notas
+    optional: opcional
+    optional_extras: Notas y código promocional
+    order_summary: Tu carrito
+    bag_toggle: Tu carrito
+    edit_bag: Editar
+    qty: Cant.
+    subtotal: Subtotal
+    discount: Descuento
+    discount_code: Código promocional
+    shipping: Entrega
+    shipping_free: Gratis
+    shipping_pending: Elige una ciudad
+    total: Total
+    total_note: A pagar al repartidor, en efectivo.
+    confirm: Confirmar el pedido
+    confirm_hint: 'No se cobra nada ahora: solo pago contra reembolso.'
+    confirm_with_total: Confirmar — %{total}
+    placing: Enviando…
+    placed: Pedido confirmado. Pago contra reembolso.
+    items_count:
+      one: '%{count} artículo'
+      other: '%{count} artículos'
+    reassure:
+      cod: Pago contra reembolso
+      no_prepay: Sin pago en línea
+      confirm_call: Confirmación por teléfono
+    errors:
+      name: Indica tu nombre completo.
+      phone: Indica tu número de teléfono.
+      phone_format: Número no válido. Comprueba el prefijo y el número.
+      city: Elige tu ciudad.
+      address: Indica tu dirección de entrega.
+      district: Elige tu barrio.
+      district_invalid: Elige un barrio de la lista.
+      empty_cart: Tu carrito está vacío.
+      discount_code: Este código promocional no es válido o ha caducado.
+      age_confirmed: Please confirm you are at least %{age} years old.
+      privacy_accepted: Please accept the privacy policy and terms to place your order.
+    form_errors: Por favor, corrige
+    placeholders:
+      name: Ej. Sara Benali
+      phone: 6 12 34 56 78
+      city: Empieza a escribir…
+      address: Calle, edificio, piso, punto de referencia…
+      notes: Horarios, punto de referencia…
+      district: Ej. Maarif
+      discount_code: WELCOME10
+      notes_optional: Notas para la entrega (opcional)
+  orders:
+    track_title: Seguir un pedido
+    track_hint: Introduce tu número de pedido y tu teléfono.
+    order_number: Número de pedido
+    phone: Teléfono
+    find: Buscar el pedido
+    confirmed: Pedido confirmado
+    thank_you_html: Gracias, %{name}. Paga <strong>%{total}</strong> al recibir tu
+      pedido.
+    status: Estado
+    delivery: Entrega
+    continue_browsing: Continuar
+    track_order: Seguir un pedido
+    order: Pedido
+    thanks: ¡Gracias, %{name}!
+    number_line: Tu pedido %{number} se ha registrado correctamente.
+    to_pay: A pagar en la entrega
+    next_call: Te llamamos al %{phone} para confirmar tu pedido antes del envío.
+    next_whatsapp: Nos pondremos en contacto contigo al %{phone} (llamada o WhatsApp)
+      para confirmar tu pedido antes del envío.
+    open_whatsapp: Abrir WhatsApp
+    whatsapp_message: Hola, acabo de hacer el pedido %{number} (%{total}).
+    not_found: Pedido no encontrado. Comprueba el número y el teléfono.
+    track_this_order: Seguir este pedido
+  footer:
+    information: Información
+    customer_care: Atención al cliente
+    age_note: This storefront is intended for customers aged %{age} or older.
+    pricing_note: Prices shown at checkout include shipping once your city is selected.
+      You pay cash on delivery — no hidden fees.
+    registration: 'Registration: %{number}'
+  data_protection:
+    privacy_policy: política de privacidad
+    cookie_title: Cookies
+    cookie_body: Usamos cookies para el carrito, el buen funcionamiento del sitio
+      y, en su caso, la medición de audiencia (Meta, TikTok).
+    cookie_policy_link: Más información sobre tus datos
+    cookie_ok: Entendido
+    checkout_notice: De conformidad con la ley n.º 09-08, tienes derecho de acceso,
+      rectificación y, por motivo legítimo, oposición al tratamiento de tus datos
+      personales.
+    checkout_notice_with_cndp: De conformidad con la ley n.º 09-08, tienes derecho
+      de acceso, rectificación y, por motivo legítimo, oposición al tratamiento de
+      tus datos personales. Este tratamiento ha sido notificado a la CNDP con el n.º
+      %{number}.
+    checkout_submit_notice_html: Al hacer el pedido, aceptas nuestra %{privacy_link}.
+    track_notice: Usamos tu número de pedido y tu teléfono únicamente para localizar
+      el seguimiento de tu compra.
+    checkout_age_html: I confirm I am at least %{age} years old.
+    checkout_consent_html: I have read and accept the %{privacy_link} and %{terms_link}.
+    cookie_accept: Accept
+    cookie_body_platform: We use a necessary cookie to remember your language. Optional
+      measurement cookies are not used on these pages. Google Fonts may load from
+      Google’s CDN.
+    cookie_reject: Reject measurement
+    skip_to_content: Skip to content
+    terms_of_service: terms of service
+  privacy_policy:
+    purposes: la gestión y la entrega de tus pedidos, la relación con el cliente (confirmación
+      por teléfono), el seguimiento del pedido y, en su caso, la lucha contra el fraude.
+    cndp_authorized: Este tratamiento ha sido notificado y autorizado por la CNDP
+      con el acuse de recibo o la autorización n.º %{number}.
+    cndp_pending: El responsable del tratamiento se compromete a notificar este tratamiento
+      a la Comisión Nacional de control de la protección de datos de carácter personal
+      (CNDP) de conformidad con la ley 09-08.
+    cookies_section: Se necesitan cookies técnicas para el carrito y la sesión. También
+      pueden usarse cookies de medición (Meta Pixel, TikTok Pixel) cuando la tienda
+      las haya activado. Un banner informativo te avisa de ello durante tu visita.
+    retention: Los datos vinculados a un pedido se conservan durante el tiempo necesario
+      para la entrega y para las obligaciones contables y legales aplicables, y después
+      se archivan o se eliminan de forma proporcionada.
+    prospecting: Tus datos no se utilizan con fines de prospección comercial sin tu
+      consentimiento previo. Puedes oponerte en cualquier momento contactando con
+      el servicio indicado a continuación.
+    recipients:
+      store_staff: • El equipo de la tienda (tratamiento de los pedidos)
+      sendit: • Sendit (transporte y entrega en Marruecos)
+      hosting: • El proveedor de alojamiento técnico del sitio (infraestructura segura)
+    body: '%{controller}
+
+
+      La información recogida en %{site} es objeto de un tratamiento informático destinado
+      a %{purposes}
+
+
+      Destinatarios de los datos:
+
+      %{recipients}
+
+
+      Los campos marcados como obligatorios en el momento del pedido (nombre, teléfono,
+      dirección de entrega) son necesarios para tramitar y entregar tu pedido. Los
+      demás campos son opcionales.
+
+
+      %{cndp_clause}
+
+
+      Puedes ejercer tus derechos de acceso, rectificación y oposición contactando
+      con: %{contact}
+
+
+      %{cookies}
+
+
+      %{retention}
+
+
+      %{prospecting}
+
+      '
+  platform_home:
+    title: Codify — plataforma de comercio electrónico multitienda
+    language: Idioma
+    nav:
+      journey: Cómo funciona
+      features: Funcionalidades
+      integrations: Integraciones
+      faq: FAQ
+      sign_in: Iniciar sesión
+      signup: Crear una cuenta
+    hero:
+      eyebrow: Plataforma de comercio electrónico multitienda
+      headline: Gestiona tus tiendas de pago contra reembolso desde una sola plataforma.
+      lead: Cada tienda conserva su escaparate, su catálogo y su pago. Tu equipo confirma
+        los pedidos, gestiona el stock y envía desde una única administración.
+      primary: Crear una cuenta
+      secondary: Ver el recorrido de un pedido
+      store_hint: ¿Buscas una tienda? Ábrela en su propia dirección, por ejemplo tu-tienda.%{domain}.
+      badges:
+      - Escaparates separados
+      - Pago contra reembolso
+      - Francés · Inglés · Árabe
+      - API y MCP
+    journey:
+      title: Un pedido, del pago a la entrega
+      lead: El mismo expediente sigue el pedido en cada etapa, sin hojas de cálculo.
+      steps:
+      - title: Pedido realizado
+        body: El cliente hace el pedido en el escaparate, o una herramienta conectada
+          envía el pedido por la API.
+      - title: Confirmación
+        body: El equipo toma el pedido de una cola, llama al cliente y registra el
+          resultado o una rellamada.
+      - title: Stock reservado
+        body: Al confirmar, los artículos se reservan para no vender dos veces la
+          misma unidad.
+      - title: Enviado
+        body: El pedido sale hacia el transportista conectado, y la etiqueta y el
+          seguimiento vuelven a la administración.
+      - title: Entregado o devuelto
+        body: Las actualizaciones del transportista pasan el pedido a entregado o
+          devuelto, conservando el historial.
+    preview:
+      title: Tu día de un vistazo
+      note: Ilustración de la vista general de la administración. Las cifras son ejemplos,
+        no datos reales.
+      metrics:
+      - label: Pedidos nuevos
+        value: '42'
+      - label: Confirmados
+        value: '31'
+      - label: Enviados
+        value: '27'
+      - label: Entregados
+        value: '19'
+    features:
+      title: Todo lo que necesita un equipo de tienda
+      lead: Diseñado para las tiendas que venden con pago contra reembolso.
+      items:
+      - title: Un escaparate por tienda
+        body: Dirección, catálogo, colecciones, páginas y carrito propios. Las tiendas
+          están aisladas entre sí.
+      - title: Gestión de pedidos
+        body: Crea, edita, comenta, archiva y duplica pedidos, e imprime los albaranes
+          de preparación.
+      - title: Cola de confirmación
+        body: Toma exclusiva, rellamadas, notas internas y resultados claros para
+          cada pedido.
+      - title: Productos y stock
+        body: Variantes, galerías por color e historial de cada movimiento de stock.
+      - title: Envío
+        body: Envío al transportista conectado, impresión de etiquetas y sincronización
+          del estado de entrega.
+      - title: Cuentas de equipo
+        body: El equipo inicia sesión en su tienda, con sesiones que caducan y registro
+          de auditoría.
+      - title: Píxeles de seguimiento
+        body: Añade los píxeles de Meta y TikTok por tienda.
+      - title: API y automatización
+        body: Los tokens de tienda, GraphQL y MCP permiten a herramientas conectadas
+          leer y gestionar una tienda.
+    integrations:
+      title: Se conecta con tus herramientas
+      lead: Las conexiones de transportista, publicidad y automatización disponibles
+        hoy.
+      items:
+      - Envío Sendit
+      - Meta Pixel
+      - TikTok Pixel
+      - Alertas de Discord
+      - API GraphQL
+      - MCP
+      - OAuth
+    faq:
+      title: Preguntas
+      items:
+      - q: ¿Es un marketplace?
+        a: No. Cada tienda tiene su propia dirección y su escaparate. La plataforma
+          es la administración que hay detrás.
+      - q: ¿Qué idiomas son compatibles?
+        a: Los escaparates admiten francés, inglés y árabe, incluido el diseño de
+          derecha a izquierda.
+      - q: ¿Qué transportistas puedo usar?
+        a: Hoy está conectado Sendit para los envíos en Marruecos.
+      - q: ¿Pueden mis herramientas enviar pedidos?
+        a: Sí. Un token de tienda permite a una herramienta conectada crear pedidos
+          por la API. Una solicitud repetida no crea duplicados.
+      - q: ¿Cómo abro una tienda?
+        a: Crea tu cuenta gratuita y verifica tu email. Explora tu espacio y después
+          suscríbete para usar sus herramientas.
+    cta:
+      headline: ¿Listo para gestionar tu tienda?
+      body: Crea tu cuenta gratuita, verifica tu email y elige una suscripción cuando
+        estés listo.
+      button: Crear una cuenta
+    footer:
+      tagline: Plataforma de comercio electrónico multitienda
+      admin: Acceso a la administración
+      imprint: The Seallo Connect privacy and terms pages name the platform operator
+        and the contracts. Each merchant store publishes its own legal entity, registration,
+        and privacy page.
+    gate:
+      coming_soon:
+        body: One place to confirm cash-on-delivery orders, count the profit, and
+          ship. We are putting the last pieces in place.
+        eyebrow: Coming soon
+        heading: Seallo opens soon.
+        note: Already have a workspace? Sign in to your admin.
+        title: Coming soon — Seallo
+      maintenance:
+        body: Seallo is briefly unavailable while we finish an update. Your stores,
+          orders, and accounts are safe.
+        eyebrow: Under maintenance
+        heading: We'll be back shortly.
+        note: If you already have a workspace, you can still sign in.
+        title: Under maintenance — Seallo
+      sign_in: Sign in
+    seallo:
+      dash_short: Dashboard
+  signup:
+    title: Solicitar acceso — %{name}
+    heading: Solicitar acceso
+    lead: Cuéntanos sobre tu tienda. Un administrador de la plataforma revisa cada
+      solicitud y crea tu tienda. No se crea nada antes de la aprobación.
+    store_name: Nombre de la tienda
+    email: Email
+    phone: Teléfono (opcional)
+    submit: Enviar la solicitud
+    have_account: ¿Ya tienes una cuenta?
+    sign_in: Iniciar sesión
+    fix_fields: Por favor, revisa los campos señalados.
+    throttled: Demasiadas solicitudes. Inténtalo de nuevo más tarde.
+    errors:
+      store_name: Escribe el nombre de tu tienda (de 2 a 80 caracteres).
+      email: Escribe una dirección de email válida.
+      phone: El número de teléfono es demasiado largo.
+    aside:
+      chip: Solicitud de acceso
+      headline: Abre tu tienda con pago contra reembolso.
+      points:
+      - Tu propio escaparate y tu dirección
+      - Confirma, envía y sigue cada pedido
+      - Datos separados y aislados para cada tienda
+    thanks_title: Solicitud recibida
+    thanks_body: La revisaremos y nos pondremos en contacto contigo en el email indicado.
+      Tu tienda se crea una vez aprobada la solicitud.
+    back: Volver al inicio
+  cookie_policy:
+    body: '%{store} uses cookies on %{site}.
+
+
+      Necessary cookies keep your bag, locale and session working. They do not require
+      consent.
+
+
+      Measurement cookies (Meta Pixel, TikTok Pixel) help understand visits and ads.
+      They load only if you press Accept on the cookie banner. Reject measurement
+      to browse without them.
+
+
+      See also the privacy page at %{privacy_path}. Contact: %{contact}.
+
+      '
+  privacy_rights:
+    admin:
+      back: Back to requests
+      empty: No requests yet.
+      instructions: Requests submitted from the public storefront. Resolve them after
+        you have answered the customer.
+      resolve: Mark resolved
+      resolved: Request marked resolved.
+      title: Buyer data-rights requests
+    eyebrow: Personal data
+    fields:
+      contact: Email or phone
+      contact_help: How the store should reach you about this request.
+      details: Details (optional)
+      name: Your name
+      order_number: Order number (optional)
+      type: Request type
+    lead: Request access, correction, objection or deletion of personal data held
+      for your orders with this store.
+    minimization: We only ask for what we need to identify your request. Do not send
+      payment card numbers.
+    statuses:
+      in_progress: In progress
+      open: Open
+      rejected: Rejected
+      resolved: Resolved
+    submit: Send request
+    submitted: Your request was recorded. The store will follow up using the contact
+      you provided.
+    title: Your data rights
+    types:
+      access: Access my data
+      delete: Delete my data
+      object: Object to processing
+      rectify: Correct my data
+      unsubscribe: Stop marketing
+    unsubscribe_note: This storefront does not send marketing email campaigns. Choose
+      “Stop marketing” if you received a promotional message from the merchant by
+      another channel, or to record your preference.
+  terms_of_service:
+    body: 'These terms govern purchases on %{site}, operated by %{store}.
+
+
+      Orders are cash on delivery (%{currency}). The total shown at checkout (products,
+      discounts and shipping once your city is selected) is the amount you pay the
+      courier. There are no hidden online fees.
+
+
+      You must be at least %{age} years old to place an order. Product descriptions
+      must not be treated as medical, investment or other regulated claims unless
+      expressly stated and evidenced.
+
+
+      Returns and refunds follow the store’s returns page. For questions, contact
+      %{contact}.
+
+      '

@@ -12,6 +12,7 @@ RSpec.describe "Integration polling schedules" do
     allow(ENV).to receive(:fetch).with("SHOPIFY_SYNC_CRON", "*/10 * * * *").and_return("*/10 * * * *")
     allow(ENV).to receive(:fetch).with("META_ADS_SYNC_CRON", "5 * * * *").and_return("5 * * * *")
     allow(ENV).to receive(:fetch).with("CLAIM_EXPIRY_CRON", "*/5 * * * *").and_return("*/5 * * * *")
+    allow(ENV).to receive(:fetch).with("ASSIGNMENT_RULES_CRON", "* * * * *").and_return("* * * * *")
     allow(ENV).to receive(:fetch).with("PRODUCTS_SYNC_CRON", "17 */6 * * *").and_return("17 */6 * * *")
   end
 
@@ -27,14 +28,15 @@ RSpec.describe "Integration polling schedules" do
     YAML.safe_load(ERB.new(Rails.root.join("config/schedule.yml").read).result)
   end
 
-  it "schedules courier, Shopify, Meta, claim expiry and catalog sync by default" do
+  it "schedules courier, Shopify, Meta, claim expiry, desk and catalog sync by default" do
     result = schedules
     expect(result.keys).to contain_exactly(
       "sendit_poll", "sendit_cities_refresh",
       "ozon_poll", "ozon_cities_refresh",
       "ameex_poll", "ameex_cities_refresh",
       "shopify_orders_sync", "seallo_retention", "meta_ads_sync",
-      "release_idle_claims", "products_sync"
+      "release_idle_claims", "close_stale_shifts", "assignment_rules",
+      "products_sync"
     )
     expect(result.fetch("sendit_poll")).to include("cron" => "*/15 * * * *", "class" => "SenditPollJob", "active_job" => true)
     expect(result.fetch("ozon_poll")).to include("class" => "OzonPollJob", "active_job" => true)
@@ -48,7 +50,8 @@ RSpec.describe "Integration polling schedules" do
       "ozon_poll", "ozon_cities_refresh",
       "ameex_poll", "ameex_cities_refresh",
       "shopify_orders_sync", "seallo_retention", "meta_ads_sync",
-      "release_idle_claims", "products_sync"
+      "release_idle_claims", "close_stale_shifts", "assignment_rules",
+      "products_sync"
     )
   end
 
@@ -58,13 +61,14 @@ RSpec.describe "Integration polling schedules" do
       "ozon_poll", "ozon_cities_refresh",
       "ameex_poll", "ameex_cities_refresh",
       "seallo_retention", "meta_ads_sync",
-      "release_idle_claims", "products_sync"
+      "release_idle_claims", "close_stale_shifts", "assignment_rules",
+      "products_sync"
     )
   end
 
-  it "keeps retention, Meta Ads, claim expiry and catalog sync when courier and Shopify runners are external" do
+  it "keeps retention, Meta Ads, claim expiry, desk and catalog sync when courier and Shopify runners are external" do
     expect(schedules(sendit_external: "1", ozon_external: "1", ameex_external: "1", shopify_external: "1").keys).to eq(
-      [ "seallo_retention", "meta_ads_sync", "release_idle_claims", "products_sync" ]
+      [ "seallo_retention", "meta_ads_sync", "release_idle_claims", "close_stale_shifts", "assignment_rules", "products_sync" ]
     )
   end
 
@@ -78,6 +82,11 @@ RSpec.describe "Integration polling schedules" do
   it "runs the Meta Ads spend sync hourly unless an external runner owns it" do
     expect(schedules.fetch("meta_ads_sync")).to include("cron" => "5 * * * *", "class" => "MetaAdsSyncJob", "active_job" => true)
     expect(schedules(meta_external: "1").keys).not_to include("meta_ads_sync")
+  end
+
+  it "applies the attribution rules every minute unless an external runner owns the desk jobs" do
+    expect(schedules.fetch("assignment_rules")).to include("cron" => "* * * * *", "class" => "AssignmentRulesJob", "queue" => "default", "active_job" => true)
+    expect(schedules(claim_external: "1").keys).not_to include("assignment_rules", "release_idle_claims", "close_stale_shifts")
   end
 
   it "retains configurable polling intervals" do

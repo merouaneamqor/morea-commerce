@@ -1,12 +1,12 @@
 <%= render "signups/chrome" %>
 <% content_for :title, st("Créer un compte") %>
 <% field_error = ->(attribute) { @signup.errors[attribute].first&.then { |message| tag.p(message, class: "text-sm text-red-600") } } %>
-<% label_class = "text-sm font-medium text-[#1f2430]" %>
+<% label_class = "text-sm font-medium text-[#1c1c1e]" %>
 <% eye = '<svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'.html_safe %>
 
 <div class="mb-5">
   <h1><%= st("Créez votre compte seallo") %></h1>
-  <p class="mt-1 text-sm text-[#6b6059]"><%= st("Gratuit, en moins d’une minute.") %></p>
+  <p class="mt-1 text-sm text-[#3a3a3c]"><%= st("Gratuit, en moins d’une minute.") %></p>
 </div>
 <div class="mb-5"><%= render "signups/steps", current: 1, links: { 2 => plans_path } %></div>
 
@@ -39,7 +39,7 @@
       <%= f.label :password, st("Mot de passe"), class: label_class %>
       <div class="relative">
         <%= f.password_field :password, value: nil, required: true, autocomplete: "new-password", minlength: User::MIN_PASSWORD_LENGTH, maxlength: 72, placeholder: t("signup_flow.password_hint", count: User::MIN_PASSWORD_LENGTH), class: "fx-input !mt-0 pe-10" %>
-        <button type="button" data-toggle-password class="absolute inset-y-0 end-0 flex items-center px-3 text-[#8a8380] hover:text-[#1f2430]" tabindex="-1" aria-label="<%= st("Mot de passe") %>"><%= eye %></button>
+        <button type="button" data-toggle-password class="absolute inset-y-0 end-0 flex items-center px-3 text-[#6e6e73] hover:text-[#1c1c1e]" tabindex="-1" aria-label="<%= st("Mot de passe") %>"><%= eye %></button>
       </div>
       <%= field_error.(:password) %>
     </div>
@@ -47,7 +47,7 @@
       <%= f.label :password_confirmation, st("Confirmer le mot de passe"), class: label_class %>
       <div class="relative">
         <%= f.password_field :password_confirmation, value: nil, required: true, autocomplete: "new-password", minlength: User::MIN_PASSWORD_LENGTH, maxlength: 72, placeholder: st("Retapez le mot de passe"), class: "fx-input !mt-0 pe-10" %>
-        <button type="button" data-toggle-password class="absolute inset-y-0 end-0 flex items-center px-3 text-[#8a8380] hover:text-[#1f2430]" tabindex="-1" aria-label="<%= st("Confirmer le mot de passe") %>"><%= eye %></button>
+        <button type="button" data-toggle-password class="absolute inset-y-0 end-0 flex items-center px-3 text-[#6e6e73] hover:text-[#1c1c1e]" tabindex="-1" aria-label="<%= st("Confirmer le mot de passe") %>"><%= eye %></button>
       </div>
       <%= field_error.(:password_confirmation) %>
     </div>
@@ -58,7 +58,7 @@
     </div>
     <%= f.submit st("Créer mon compte"), class: "fx-btn mt-1 sm:col-span-2" %>
   </div>
-  <p class="text-center text-sm text-[#6b6059]">
+  <p class="text-center text-sm text-[#3a3a3c]">
     <%= st("Vous avez déjà un compte ?") %>
     <%= link_to st("Se connecter"), admin_login_path(locale: I18n.locale), class: "fx-link font-semibold underline underline-offset-4" %>
   </p>

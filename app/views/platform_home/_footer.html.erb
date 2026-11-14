@@ -2,7 +2,6 @@
   <div class="platform-container platform-footer">
     <a href="#top" class="platform-brand" aria-label="seallo"><span dir="ltr">seallo</span></a>
     <p><%= t("platform_home.seallo.foot") %></p>
-    <div class="platform-languages" dir="ltr" role="group" aria-label="<%= t("platform_home.language") %>"><% Morea::Locales::AVAILABLE.each do |locale| %><%= link_to locale.to_s.upcase, platform_home_path(locale: locale), lang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %><% end %></div>
     <nav class="platform-footer-connect" aria-label="<%= t("seallo_connect_pages.nav.label") %>">
       <span class="platform-footer-connect-title"><%= t("seallo_connect_pages.nav.label") %></span>
       <%= link_to t("seallo_connect_pages.nav.overview"), seallo_connect_page_path(locale: I18n.locale) %>

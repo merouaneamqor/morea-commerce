@@ -1,0 +1,11 @@
+es:
+  onboarding:
+    signup_lead: "Solicita un espacio para gestionar tus pedidos. Crea una tienda Codify, conecta tu tienda Shopify, WooCommerce o YouCan, o usa ambas."
+    business_name: "Nombre de la empresa"
+    mode_label: "¿Cómo quieres empezar?"
+    with_storefront: "Crear una tienda Codify"
+    external_only: "Gestionar los pedidos de mi tienda actual"
+    mode_help: "Podrás conectar tus tiendas actuales y activar una tienda Codify más adelante."
+    storefront_heading: "Tienda Codify"
+    enable_storefront: "Activar la tienda pública Codify"
+    settings_help: "Desactiva esta opción para usar Codify solo para gestionar tus pedidos. La administración y las conexiones siguen disponibles. Podrás volver a activarla; el contenido se conserva."

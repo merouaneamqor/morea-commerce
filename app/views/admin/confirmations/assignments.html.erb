@@ -1,0 +1,122 @@
+<%# Attributions: the orders waiting for a call and who they are for, and the load of every agent. Printing only: every figure comes from
+    @assignments (Confirmations::Assignments). Owners and supervisors only. %>
+<% content_for :title, "#{sl("Attributions")} — Admin" %>
+<% content_for :admin_page_class, "admin-page--dashboard" %>
+<% a = @assignments %>
+<% agents = a.agents %>
+<% card = "rounded-2xl border border-[#e0e0e5] bg-white" %>
+<% field = "h-9 rounded-full border border-[#e0e0e5] bg-white px-3 text-[13px] text-[#1c1c1e] focus:border-[#1d1d1f] focus:outline-none" %>
+<% status_badges = { "pending" => [ sl("En attente"), "bg-[#fdf0d9] text-[#8a5a12]" ], "no_answer" => [ sl("Sans réponse"), "bg-[#fdeadb] text-[#b4560f]" ], "callback" => [ sl("Planifiée"), "bg-[#e1edfb] text-[#2b5f9e]" ] } %>
+<% keep = { agent: a.agent_filter == "none" ? nil : a.agent_filter, status: params[:status].presence, missed: params[:missed].presence, source: params[:source].presence, product: params[:product].presence, q: params[:q].presence, sort: params[:sort].presence, per: params[:per].presence }.compact %>
+
+<div class="space-y-3" data-assignments>
+  <header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white" data-assignments-header>
+    <div class="flex items-center gap-3">
+      <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:team, size: 20) %></span>
+      <div>
+        <h1 class="text-xl leading-tight font-bold"><%= sl("Attributions") %></h1>
+        <p class="text-[13px] leading-tight text-white/65"><%= sl("Centre d'appels") %> · <%= sl("Répartissez les commandes entre vos agents") %></p>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <%= link_to center_admin_confirmations_path, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" do %><%= seller_icon(:phone, size: 14) %><%= sl("File d'attente") %><% end %>
+      <%= button_to auto_assign_admin_confirmations_path, method: :post, disabled: a.unattributed_count.zero?, data: { auto_assign: true },
+            class: "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3] disabled:cursor-not-allowed disabled:opacity-50" do %><%= seller_icon(:target, size: 14) %><%= sl("Auto-attribuer tout") %><% if a.unattributed_count.positive? %> <span class="rounded-full bg-[#1c1c1e] px-1.5 text-[11px] text-white"><%= a.unattributed_count %></span><% end %><% end %>
+    </div>
+  </header>
+
+  <%# Filters: they apply as soon as they change %>
+  <%= form_with url: assignments_admin_confirmations_path, method: :get, class: "#{card} space-y-2.5 p-3", data: { controller: "auto-submit", assignments_filters: true } do %>
+    <%= search_field_tag :q, params[:q], placeholder: sl("Rechercher par ID de commande, nom client ou téléphone…"), class: "#{field} w-full", data: { action: "input->auto-submit#debounce", auto_submit_restore: params[:q].present? } %>
+    <div class="flex flex-wrap items-center gap-2">
+      <%= select_tag :agent, options_for_select([ [ "#{sl("Non attribuées")} (#{a.unattributed_count})", "none" ], [ sl("Toutes les commandes en attente"), "all" ] ] + agents.map { |agent| [ "#{agent.name.presence || agent.email} (#{a.loads[agent.id].to_i})", agent.id ] }, a.agent_filter), class: field, "aria-label": sl("Agent"), data: { action: "auto-submit#submit" } %>
+      <%= select_tag :status, options_for_select([ [ sl("En attente"), "pending" ], [ sl("Sans réponse"), "no_answer" ], [ sl("Planifiée"), "callback" ] ], a.status_filter), include_blank: sl("Tous les statuts"), class: field, data: { action: "auto-submit#submit" } %>
+      <%= select_tag :missed, options_for_select([ [ sl("Appels manqués"), "1" ] ], params[:missed]), include_blank: sl("Tous les appels"), class: field, data: { action: "auto-submit#submit" } %>
+      <%= select_tag :source, options_for_select([ [ sl("Manuelle"), "manual" ] ] + a.sources, params[:source]), include_blank: sl("Toutes les sources"), class: field, data: { action: "auto-submit#submit" } %>
+      <%= select_tag :product, options_for_select(a.products, params[:product]), include_blank: sl("Tous les produits"), class: "#{field} max-w-[12rem]", data: { action: "auto-submit#submit" } %>
+      <%= select_tag :sort, options_for_select([ [ sl("Plus récentes"), "recent" ], [ sl("Plus anciennes"), "oldest" ] ], params[:sort]), class: field, data: { action: "auto-submit#submit" } %>
+      <%= select_tag :per, options_for_select(Confirmations::Assignments::PER_PAGE_OPTIONS.map { |count| [ "#{count} / #{sl("page")}", count ] }, a.per_page), class: field, data: { action: "auto-submit#submit" } %>
+      <% if a.filtered? %><%= link_to sl("Effacer"), assignments_admin_confirmations_path, class: "inline-flex h-9 items-center px-2 text-[13px] font-semibold text-[#6e6e73] hover:text-[#1c1c1e]", data: { clear_filters: true } %><% end %>
+    </div>
+  <% end %>
+
+  <section class="<%= card %> overflow-hidden" data-assignments-table>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-[13px]" data-orders-table>
+        <thead class="bg-[#f7f8fa] text-xs font-semibold text-[#6e6e73]">
+          <tr>
+            <% [ "Commande", "Client", "Produits", "Montant", "Appels manqués", "Créée", "Statut", "Attribuée à" ].each do |heading| %>
+              <th class="px-3 py-2.5 whitespace-nowrap <%= "text-end" if heading == "Montant" %>"><%= sl(heading) %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#ececf0]">
+          <% if a.rows.empty? %>
+            <tr><td colspan="8" class="px-3 py-12 text-center" data-empty>
+              <span class="mx-auto mb-3 grid size-12 place-items-center rounded-full bg-[#e3f3e8] text-[#2f9d5c]"><%= seller_icon(:check, size: 22) %></span>
+              <p class="text-sm font-semibold text-[#1c1c1e]"><%= a.filtered? ? sl("Aucune commande ne correspond à ces filtres") : sl("Toutes les commandes sont attribuées !") %></p>
+              <p class="mt-1 text-xs text-[#6e6e73]"><%= a.filtered? ? sl("Essayez d'autres filtres.") : sl("Aucune commande en attente non attribuée.") %></p></td></tr>
+          <% end %>
+          <% a.rows.each do |order| %>
+            <% confirmation = order.order_confirmation %>
+            <% state = confirmation&.disposition == "no_answer" ? "no_answer" : (confirmation&.disposition == "callback" ? "callback" : "pending") %>
+            <% label, badge = status_badges[state] %>
+            <% missed = a.missed_counts[order.id].to_i %>
+            <tr class="align-middle hover:bg-[#fafafc]" data-order-row="<%= order.number %>" data-attributed="<%= confirmation&.attributed_user_id %>">
+              <td class="px-3 py-2.5 font-semibold whitespace-nowrap"><%= link_to "##{order.number}", admin_order_path(order), class: "text-[#1c1c1e] hover:underline" %></td>
+              <td class="px-3 py-2.5"><p class="font-medium text-[#1c1c1e]" dir="auto"><%= order.customer_name %></p><p class="text-[11px] text-[#6e6e73]" dir="ltr"><%= order.customer_phone %> · <span dir="auto"><%= order.customer_city %></span></p></td>
+              <td class="max-w-[14rem] truncate px-3 py-2.5 text-[#1c1c1e]" data-product><%= order.order_items.map { |item| [ "#{item.quantity > 1 ? "#{item.quantity} × " : ""}#{item.product_name}", item.variant_name.presence&.then { |v| "(#{v})" } ].compact.join(" ") }.join(", ") %></td>
+              <td class="px-3 py-2.5 text-end font-semibold whitespace-nowrap tabular-nums" data-amount="<%= order.total_cents %>"><%= order.total_display %></td>
+              <td class="px-3 py-2.5" data-missed="<%= missed %>"><span class="inline-flex min-w-6 justify-center rounded-full px-1.5 text-[12px] font-semibold <%= missed.positive? ? "bg-[#fbe08a] text-[#7a5200]" : "bg-[#efeff3] text-[#1c1c1e]" %>"><%= missed %></span></td>
+              <td class="px-3 py-2.5 whitespace-nowrap text-[#4b4b50]"><%= l(order.created_at.in_time_zone(DateRange::ZONE), format: "%d/%m/%Y") %><p class="text-[11px] text-[#8e8e93]"><%= l(order.created_at.in_time_zone(DateRange::ZONE), format: "%H:%M") %></p></td>
+              <td class="px-3 py-2.5" data-status="<%= state %>"><span class="rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap <%= badge %>"><%= label %></span></td>
+              <td class="px-3 py-2.5">
+                <%= form_with url: assign_admin_confirmation_path(order), method: :patch, data: { controller: "auto-submit" } do %>
+                  <%= select_tag :agent_id, options_for_select([ [ sl("— Non attribuée"), "" ] ] + agents.map { |agent| [ agent.name.presence || agent.email, agent.id ] }, confirmation&.attributed_user_id), class: "#{field} !h-8 max-w-[11rem]", "aria-label": sl("Attribuer à"), data: { action: "auto-submit#submit" } %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <% if a.page > 1 || a.next_page? %>
+      <nav class="flex items-center justify-between border-t border-[#ececf0] px-3 py-2.5 text-[13px]">
+        <% if a.page > 1 %><%= link_to "←", assignments_admin_confirmations_path(keep.merge(page: a.page - 1)), class: "inline-flex h-8 items-center rounded-full border border-[#e0e0e5] px-3.5 font-semibold" %><% else %><span></span><% end %>
+        <span class="text-[#6e6e73]"><%= a.page %> · <%= a.total %> <%= sl("commandes") %></span>
+        <% if a.next_page? %><%= link_to "→", assignments_admin_confirmations_path(keep.merge(page: a.page + 1)), class: "inline-flex h-8 items-center rounded-full border border-[#e0e0e5] px-3.5 font-semibold" %><% else %><span></span><% end %>
+      </nav>
+    <% end %>
+  </section>
+
+  <%# The agents and their load %>
+  <section class="<%= card %> p-5" data-agents-overview>
+    <div class="flex items-start gap-3"><span class="grid size-8 shrink-0 place-items-center rounded-xl bg-[#ececf0] text-[#1c1c1e]"><%= seller_icon(:team, size: 16) %></span>
+      <div><h2 class="text-sm font-semibold text-[#1c1c1e]"><%= sl("Aperçu des agents") %></h2><p class="mt-0.5 text-xs text-[#6e6e73]"><%= sl("Charge de travail et statut actuels. Actif = l'agent a pointé son arrivée. La charge est le nombre de commandes en attente qui lui sont attribuées, sur une capacité de") %> <%= Confirmations::Assignments::CAPACITY %>.</p></div></div>
+    <% if a.agent_cards.empty? %>
+      <p class="my-6 text-center text-sm text-[#6e6e73]" data-no-agents><%= sl("Aucun agent de confirmation. Ajoutez-en dans Équipe.") %></p>
+    <% else %>
+      <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <% a.agent_cards.each do |agent| %>
+          <% user = agent[:user] %>
+          <% bar = agent[:load_percent] >= 100 ? "#d6455d" : (agent[:load_percent] >= 70 ? "#e0a52c" : "#3aa76d") %>
+          <div class="rounded-2xl border p-4 <%= agent[:on_shift] ? "border-[#cfeedd] bg-[#f6fcf9]" : "border-[#e0e0e5] bg-[#fafafc]" %>" data-agent-card="<%= user.id %>" data-pending="<%= agent[:pending] %>" data-active="<%= agent[:on_shift] %>">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0"><p class="truncate text-[15px] font-semibold text-[#1c1c1e]" dir="auto"><%= user.name.presence || user.email %></p><p class="truncate text-xs text-[#6e6e73]" dir="ltr"><%= user.email %></p></div>
+              <span class="shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold <%= agent[:on_shift] ? "bg-[#e3f3e8] text-[#2f7a4a]" : "bg-[#efeff3] text-[#6e6e73]" %>"><%= agent[:on_shift] ? sl("Actif") : sl("Inactif") %></span>
+            </div>
+            <div class="mt-3 grid grid-cols-3 gap-2 text-center">
+              <div class="rounded-xl border border-[#e0e0e5] bg-white px-2 py-2"><p class="text-lg font-bold text-[#1c1c1e] tabular-nums" data-stat="pending"><%= agent[:pending] %></p><p class="text-[10px] font-semibold tracking-wide text-[#6e6e73] uppercase"><%= sl("En attente") %></p></div>
+              <div class="rounded-xl border border-[#e0e0e5] bg-white px-2 py-2"><p class="text-lg font-bold text-[#1c1c1e] tabular-nums" data-stat="today"><%= agent[:today] %></p><p class="text-[10px] font-semibold tracking-wide text-[#6e6e73] uppercase"><%= sl("Aujourd'hui") %></p></div>
+              <div class="rounded-xl border border-[#e0e0e5] bg-white px-2 py-2"><p class="text-lg font-bold text-[#1c1c1e] tabular-nums" data-stat="success"><%= agent[:success] ? "#{agent[:success].round} %" : "—" %></p><p class="text-[10px] font-semibold tracking-wide text-[#6e6e73] uppercase"><%= sl("Réussite") %></p></div>
+            </div>
+            <div class="mt-3">
+              <div class="flex items-center justify-between text-[11px] text-[#6e6e73]"><span><%= sl("Charge") %></span><span class="tabular-nums" data-load><%= agent[:pending] %>/<%= agent[:capacity] %></span></div>
+              <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-[#e3e5ea]"><div data-grow class="h-full rounded-full" style="width: <%= [ agent[:load_percent], 100 ].min %>%; background: <%= bar %>"></div></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+</div>

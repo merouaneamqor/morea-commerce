@@ -157,7 +157,7 @@
       </div>
     </div>
     </div>
-    <% unless @order.persisted? %>
+    <% unless @order.persisted? || agent_view? %>
       <div>
         <%= label_tag "order[agent_id]", t("orders_modal.assignment"), class: label %>
         <%= select_tag "order[agent_id]", options_from_collection_for_select(local_assigns.fetch(:assignable_agents, []), :id, ->(a) { a.name.presence || a.email }, params.dig(:order, :agent_id)), include_blank: t("orders_modal.assignment_none"), class: input %>

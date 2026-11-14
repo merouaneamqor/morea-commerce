@@ -171,7 +171,7 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
     agent = store.users.create!(email: "seallo-agent-#{SecureRandom.hex(5)}@example.test", password: password, confirmation_role: "agent")
     sign_in(agent)
     post "/admin/seallo/connect", params: authorization_params
-    expect(response).to redirect_to(home_admin_confirmations_path)
+    expect(response).to redirect_to(admin_my_stats_path)
     expect(SealloConnectionCode.count).to eq(0)
   end
 

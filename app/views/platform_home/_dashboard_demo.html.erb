@@ -12,7 +12,7 @@
       <ul><% menu.each_with_index do |item, i| %><li class="<%= "is-active" if i.zero? %>"><span></span><%= item %></li><% end %></ul>
     </aside>
     <div class="platform-demo-main">
-      <div class="platform-demo-title"><h3><%= d.("dash") %></h3><span><%= { "fr" => "7 jours", "en" => "7 days", "ar" => "7 أيام" }[I18n.locale.to_s] || "7 days" %></span></div>
+      <div class="platform-demo-title"><h3><%= d.("dash") %></h3><span><%= { "fr" => "7j", "en" => "7d", "es" => "7 d", "ar" => "7 أيام" }[I18n.locale.to_s] || "7d" %></span></div>
       <div class="platform-demo-kpis">
         <% kpis.each_with_index do |label, i| %>
           <div class="<%= "is-dark" if i == 3 %>"><small><%= label %></small><b dir="ltr"><%= values[i] %></b><em dir="ltr"><%= deltas[i] %></em></div>

@@ -11,7 +11,7 @@
 <% segment = 100.0 / count %>
 <% gradient = "linear-gradient(90deg, " + m.tiers.each_with_index.map { |tier, i| "#{tier.color} #{(i * segment).round(3)}% #{((i + 1) * segment).round(3)}%" }.join(", ") + ")" %>
 
-<section class="relative flex flex-wrap items-center gap-x-6 gap-y-2 rounded-2xl bg-[#10224a] px-4 py-2.5 pe-10 text-white" data-milestones>
+<section class="relative flex flex-wrap items-center gap-x-6 gap-y-2 rounded-2xl bg-[#1c1c1e] px-4 py-2.5 pe-10 text-white" data-milestones>
   <%= button_to seller_dashboard_milestones_path(show: 0), method: :patch, form_class: "absolute end-2 top-2", title: sl("Masquer les paliers"), "aria-label": sl("Masquer les paliers"), "data-hide-milestones": true,
         class: "grid size-6 cursor-pointer place-items-center rounded-full text-white/50 hover:bg-white/10 hover:text-white" do %>
     <svg viewBox="0 0 24 24" class="size-3.5 fill-none stroke-current [stroke-width:2.2] [stroke-linecap:round]" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
@@ -55,8 +55,8 @@
         <li class="absolute top-[22px] flex flex-col items-center <%= index == count - 1 ? "-translate-x-full items-end" : "-translate-x-1/2" %>" style="left: <%= position %>%"
             data-tier="<%= tier.key %>" data-unlocked="<%= tier.unlocked %>" data-fill="<%= tier.fill %>" data-color="<%= tier.color %>" data-current="<%= is_current ? "true" : "false" %>" title="<%= sl(tier.name) %> · <%= mad.(tier.threshold_cents) %>">
           <%# Each stage has its own colour: a solid disc with a tick once unlocked, a tinted lock of the same colour before %>
-          <span class="grid size-[18px] place-items-center rounded-full border-2 border-[#10224a]"
-                style="<%= tier.unlocked ? "background: #{tier.color}; color: #fff" : "background: color-mix(in srgb, #{tier.color} 26%, #10224a); color: #{tier.color}" %>"><%= seller_icon(tier.unlocked ? :check : :lock, size: 9) %></span>
+          <span class="grid size-[18px] place-items-center rounded-full border-2 border-[#1c1c1e]"
+                style="<%= tier.unlocked ? "background: #{tier.color}; color: #fff" : "background: color-mix(in srgb, #{tier.color} 26%, #1c1c1e); color: #{tier.color}" %>"><%= seller_icon(tier.unlocked ? :check : :lock, size: 9) %></span>
           <span class="mt-0.5 hidden text-[10px] leading-none whitespace-nowrap sm:block <%= is_current ? "font-bold" : (tier.unlocked ? "font-semibold" : "") %>" style="color: <%= tier.unlocked ? tier.color : "rgba(255,255,255,0.45)" %>"><%= sl(tier.name) %> <span class="font-normal opacity-70"><%= short.(tier.threshold_cents) %></span></span>
         </li>
       <% end %>

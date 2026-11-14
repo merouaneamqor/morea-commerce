@@ -32,6 +32,7 @@ module Admin
       "blocked" => ->(scope) { scope.joins(:order_confirmation).where(status: "new", order_confirmations: { disposition: "blocked" }) }
     }.freeze
 
+    SHIP_JOBS = { "sendit" => SenditSyncJob, "ozon" => OzonSyncJob, "ameex" => AmeexSyncJob }.freeze
     PER_PAGE = 25
     # Older links (the dashboard cards, bookmarks) carry these: they keep working, and open on every date.
     LEGACY_FILTERS = %i[status group attention].freeze
@@ -83,6 +84,7 @@ module Admin
       editor = Orders::Editor.new(store: current_store, user: current_user)
       @order = editor.create(editor_attrs)
       if @order
+        attribute_to_creator(@order) if agent_view?
         redirect_to admin_order_path(@order), notice: "Order created."
       else
         @order = current_store.orders.new(fallback_order_attrs)
@@ -327,6 +329,36 @@ end
       redirect_to admin_orders_path, notice: "Syncing #{count} orders with Ameex in the background."
     end
 
+    # Confirmed orders waiting for a parcel, checked for duplicates, blocked numbers and customers who cancelled before.
+    def ship_review
+      return redirect_to(admin_orders_path, alert: t("orders_ship.unavailable")) unless ship_available?
+
+      @review = Orders::ShipmentReview.new(store: current_store)
+    end
+
+    # Sends the ticked parcels. The server checks again: held-back rows (duplicates, blocked, incomplete) never go, whatever the form says.
+    def ship_confirmed
+      return redirect_to(admin_orders_path, alert: t("orders_ship.unavailable")) unless ship_available?
+
+      ids = Array(params[:order_ids]).map(&:to_i).uniq
+      return redirect_to(ship_review_admin_orders_path, alert: t("orders_ship.none")) if ids.empty?
+
+      rows = Orders::ShipmentReview.new(store: current_store).rows.select { |row| ids.include?(row.order.id) }
+      sendable = rows.select(&:selectable?)
+      held = ids.size - sendable.size
+      return redirect_to(admin_orders_path, notice: t("orders_ship.demo", count: sendable.size), status: :see_other) if Demo::Workspace.demo_store?(current_store)
+
+      sent = sendable.count do |row|
+        # One click only: the same order is not queued twice if the button is pressed twice.
+        next false unless Rails.cache.write("ship_confirmed:#{row.order.id}", 1, expires_in: 5.minutes, unless_exist: true)
+
+        SHIP_JOBS.fetch(row.carrier).perform_later(row.order.id, "push")
+      end
+      message = t("orders_ship.sent", count: sent)
+      message += t("orders_ship.skipped", count: held) if held.positive?
+      redirect_to admin_orders_path, notice: message, status: :see_other
+    end
+
     def shopify_sync_all
       unless Connections::ShopifyOauth.configured?
         return redirect_to admin_orders_path, alert: t("connections.shopify_api.errors.config_missing"), status: :see_other
@@ -444,18 +476,31 @@ end
     def visible_orders
       return current_store.orders unless agent_view?
 
-      held_by_others = OrderConfirmation.where(store: current_store).where.not(assigned_user_id: [ nil, current_user.id ]).select(:order_id)
-      current_store.orders.where.not(id: held_by_others)
+      Confirmations::AgentOrders.new(store: current_store, user: current_user).scope
+    end
+
+    # An order an agent types is theirs: it is attributed to them (not claimed), so it shows in their list and queue even when the owner's
+    # attribution rules decide who gets what.
+    def attribute_to_creator(order)
+      confirmation = OrderConfirmation.find_or_create_by!(order: order) { |row| row.store = current_store }
+      confirmation.update!(attributed_user: current_user, attributed_at: Time.current)
+      order.record_event!("comment", body: "Created by the agent and attributed to them", user: current_user)
+    end
+
+    def ship_available?
+      Demo::Workspace.demo_store?(current_store) || Orders::ShipmentReview::CARRIERS.any? { |carrier| current_store.public_send("#{carrier}_configured?") }
     end
 
     def agents_read_only!
       return unless agent_view?
-      return if %w[index show].include?(action_name)
+      return if %w[index show new create product_search].include?(action_name)
 
-      redirect_to admin_orders_path, alert: "Agents can look at orders but not change them here."
+      redirect_to admin_orders_path, alert: "Agents can look at orders and create new ones, but not change existing ones here."
     end
 
     def assignable_agents
+      return User.none if agent_view?
+
       current_store.users.active.where(confirmation_role: "agent").order(:name, :email)
     end
 
@@ -469,6 +514,7 @@ end
         :shipping_dh, :discount_code, :discount_dh, :agent_id, :second_phone, :delivery_provider, :scheduled_for, :advance_dh, :shipping_excluded,
         lines: [ :product_id, :product_variant_id, :quantity ]
       )
+      raw = raw.except(:agent_id) if agent_view? # an agent cannot hand the order to someone else
       lines = raw[:lines]
       lines = lines.values if lines.respond_to?(:values) && !lines.is_a?(Array)
       raw.to_h.symbolize_keys.merge(lines: Array(lines))

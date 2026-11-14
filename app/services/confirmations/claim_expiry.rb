@@ -18,7 +18,7 @@ module Confirmations
     # The agent clocked out: whatever she still holds goes back to the queue.
     def self.release_for!(store:, user:)
       OrderConfirmation.where(store: store, assigned_user_id: user.id).includes(:order).find_each do |confirmation|
-        release!(confirmation, "Claim released: the agent left the confirmation desk")
+        release!(confirmation, "Claim released: the agent clocked out")
       end
     end
 

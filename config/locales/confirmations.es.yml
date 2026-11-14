@@ -1,0 +1,144 @@
+es:
+  admin:
+    confirmations:
+      title: Cola de confirmación
+      description: Asígnate un pedido nuevo, anota el resultado o programa una rellamada.
+      orders: Pedidos
+      filters: Filtros de confirmación
+      available: Disponibles
+      mine: Mis pedidos
+      all: Todos los nuevos
+      callbacks_due: Rellamadas por hacer
+      empty: Ningún pedido en esta cola.
+      order_label: Pedido %{number}
+      attempts: '%{count} intentos registrados'
+      callback_due: 'Rellamada: %{time}'
+      assigned: Asignado a %{name}
+      release: Liberar
+      claimed_elsewhere: Asignado a otro agente
+      not_due: Rellamada prevista más tarde
+      claim: Tomar el pedido
+      outcome: Resultado de la llamada
+      callback_time: Fecha de la rellamada (resultado rellamada)
+      timezone: 'Zona horaria: %{zone}.'
+      notes: Notas internas
+      dispatch_note: La confirmación reserva el stock. El envío es una acción distinta.
+      save: Guardar
+      pagination: Páginas de la cola
+      previous: Anterior
+      next: Siguiente
+      page: Página %{number}
+      claimed: Pedido asignado.
+      released: Pedido liberado.
+      recorded: Resultado guardado.
+      performance: Rendimiento
+      performance_title: Rendimiento de confirmación
+      performance_description: Roles de los agentes, horas fichadas y resultados de las confirmaciones en el periodo elegido.
+      my_shift: Mi turno
+      on_shift_since: En turno desde %{time}
+      off_shift: No estás en turno. Ficha la entrada para registrar tus horas.
+      clock_in_required: Ficha la entrada para tomar o gestionar pedidos.
+      whatsapp_message: Hola %{name}, te escribimos de %{store}. Hemos recibido tu pedido n.º%{number} (%{total}). ¿Puedes
+        confirmarnos que es tuyo?
+      number_blocked: Número bloqueado.
+      number_unblocked: 'Número desbloqueado: sus pedidos vuelven a la cola.'
+      requeued: Pedido devuelto a la cola.
+      clock_in: Fichar la entrada
+      clock_out: Fichar la salida
+      clocked_in: Turno iniciado.
+      clocked_out: Turno terminado.
+      period: Periodo de seguimiento
+      periods:
+        today: Hoy
+        week: 7 días
+        month: 30 días
+      roles:
+        agent: Agente
+        supervisor: Supervisor
+      role_label: Rol de confirmación
+      products: Productos
+      home: Inicio
+      home_title: Hola, %{name}
+      home_description: Tu turno, tus puntos y los pedidos que gestionas.
+      open_queue: Abrir la cola
+      home_kpi:
+        points: Puntos
+        points_today: Ganados hoy
+        avg_time: Tiempo medio por pedido
+        avg_time_hint: Desde que lo tomas hasta el resultado
+        points_legend: Puntos por resultado
+        points_value: '%{count} pts'
+        claims: Pedidos en curso
+        my_claims: Todos mis pedidos
+        no_claims: No tienes ningún pedido en curso.
+        time_on_order: Tiempo en este pedido
+        recent: Mis resultados recientes
+        no_recent: Ningún resultado registrado hoy.
+      agent_not_admin: Un agente de confirmación no puede ser administrador; solo ve la cola y sus propias cifras.
+      status:
+        on_shift: En turno
+        off_shift: Fuera de turno
+        on_platform: On the platform
+        away: Away
+      kpi:
+        on_shift_now: En turno ahora
+        of_agents: de %{count} agentes
+        hours_worked: Horas trabajadas
+        confirmed: Confirmados
+        attempts: '%{count} intentos'
+        rate: Tasa de confirmación
+        per_hour: '%{value} confirmados por hora'
+        on_platform_now: On the platform now
+        pages_open: Pages open
+      columns:
+        agent: Agente
+        role: Rol
+        status: Estado
+        hours: Horas
+        attempts: Intentos
+        rate: Tasa
+        per_hour: Por hora
+        claims: Pedidos en curso
+        order: Pedido
+        outcome: Resultado
+        time_spent: Tiempo empleado
+        points: Puntos
+        when: Fecha
+        date: Fecha
+        customer: Cliente
+        actions: Acciones
+        pages_open: Pages open
+      no_agents: Ningún agente activo por el momento.
+      outcomes:
+        no_answer: Sin respuesta
+        callback: Rellamada
+        confirmed: Confirmado
+        cancelled: Cancelado
+        wrong_number: Número erróneo
+        abandoned: Llamada cerrada sin resultado
+      home_next: The next order is in the queue.
+      agent_lead: Confirm the next order
+      agent_lead_help: Call the customer, then tap the result. You are paid when that order is delivered.
+      presence_here_label: On the platform
+      presence_away_label: Away
+      presence_here: This page is open, so you can see orders.
+      presence_away: This page is closed, so you are not seeing orders.
+      presence_not_pay: This time is only a stat. Pay stays per delivered order.
+      presence_stat: Pages open shows when a confirmation agent could see orders. Pay stays per delivered order.
+      pages_open_today: 'Pages open today: %{time}'
+      step_call: Step 1 — Call the customer
+      step_call_short: 1. Call
+      step_result: Step 2 — Tap the result
+      step_result_short: 2. Tap the result
+      step_clear: Nothing to call
+      step_clear_help: Keep this page open. The next order shows up here.
+      waiting: Waiting %{time}
+      waiting_long: Waiting %{time} — confirm it now
+      also_waiting: Other orders
+      only_order: This is the only order waiting.
+      call_customer: Call %{name}
+      then_result: After the call, come back here and tap what happened.
+      result_prompt: What happened on the call?
+      callback_only: Pick a time only if you will call back.
+      cancel_needs_note: A cancelled order needs a short reason in the note.
+      save_next: Save and open the next order

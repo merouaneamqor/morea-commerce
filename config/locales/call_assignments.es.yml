@@ -1,0 +1,11 @@
+es:
+  call_assignments:
+    assigned: "Pedido asignado a %{name}."
+    unassigned: "Asignación retirada: el pedido está abierto a todos los agentes."
+    auto_done:
+      zero: "Ningún pedido asignado."
+      one: "1 pedido asignado automáticamente."
+      other: "%{count} pedidos asignados automáticamente."
+    auto_left:
+      one: "1 pedido se queda sin agente (los agentes activos están al límite de su capacidad)."
+      other: "%{count} pedidos se quedan sin agente (los agentes activos están al límite de su capacidad)."

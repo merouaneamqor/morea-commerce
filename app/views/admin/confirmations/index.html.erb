@@ -13,6 +13,13 @@
   </div>
 </div>
 
+<% if @needs_clock_in %>
+  <div class="admin-banner mb-4 flex bg-[#fcf0dc] text-[#9a6412] flex-wrap items-center justify-between gap-3" role="status" data-clock-in-required>
+    <span><%= t("admin.confirmations.clock_in_required") %></span>
+    <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path, class: "admin-btn" %>
+  </div>
+<% end %>
+
 <% if agent_view? %>
   <%= render "agent_desk" %>
 <% else %>

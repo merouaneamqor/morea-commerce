@@ -129,7 +129,8 @@ RSpec.describe "Self-service merchant signup", type: :request do
       expect(document.at_css("[data-plans]")["data-guest"]).to eq("false")
     end
 
-    it "starts the trial on the first paid choice and never restarts it" do
+    it "starts the trial on the first paid choice and never restarts it (payment step on)" do
+      allow(Plans).to receive(:skip_payment?).and_return(false)
       owner = sign_in_new_owner
       post "/abonnement", params: { plan: "intermediate", billing: "monthly", currency: "MAD" }
       expect(response).to redirect_to(payment_path(locale: I18n.locale))

@@ -36,10 +36,15 @@
         ],
         "contact_title": "Contact",
         "contact_sub": "Écrivez pour une question ou pour demander une démo. Nous répondons sous 24 heures.",
-        "h1a": "Confirmez la commande.",
-        "h1b": "Comptez le bénéfice.",
+        "h1a": "Votre e-commerce,",
+        "h1b": "sous contrôle.",
         "sub": "Votre équipe confirme chaque commande en paiement à la livraison dans seallo. Après confirmation, seallo envoie la commande à votre société de livraison. Le bénéfice et les dépenses publicitaires restent sur cette commande.",
         "cta2": "Voir les étapes d'une commande",
+        "pill": "Logiciel COD pour e-commerçants",
+        "live_title": "Utilisateurs en ligne",
+        "demo_cta": "Essayer la démo",
+        "live_event": "Nouvelle commande",
+        "live_pause": "Pause",
         "step_word": "Étape",
         "of_word": "sur",
         "flow": [
@@ -238,10 +243,15 @@
         ],
         "contact_title": "Contact",
         "contact_sub": "Write with a question, or ask for a demo. We reply within 24 hours.",
-        "h1a": "Confirm the order.",
-        "h1b": "Count the profit.",
+        "h1a": "Your e-commerce,",
+        "h1b": "under control.",
         "sub": "Your team confirms each cash-on-delivery order in seallo. After confirmation, seallo sends the order to your delivery company. Profit and ad spend stay on that order.",
         "cta2": "See the steps for one order",
+        "pill": "COD software for e-merchants",
+        "live_title": "Users online",
+        "demo_cta": "Try the demo",
+        "live_event": "New order",
+        "live_pause": "Pause",
         "step_word": "Step",
         "of_word": "of",
         "flow": [
@@ -440,10 +450,15 @@
         ],
         "contact_title": "تواصل",
         "contact_sub": "اكتب لنا سؤالاً، أو اطلب عرضاً. نرد خلال 24 ساعة.",
-        "h1a": "أكّد الطلب.",
-        "h1b": "ثم احسب الربح.",
+        "h1a": "تجارتك الإلكترونية،",
+        "h1b": "تحت السيطرة.",
         "sub": "يؤكد فريقك كل طلب بالدفع عند الاستلام داخل seallo. بعد التأكيد، يرسل seallo الطلب إلى شركة التوصيل. يبقى الربح ومصاريف الإعلان على نفس الطلب.",
         "cta2": "اطلع على خطوات الطلب",
+        "pill": "برنامج الدفع عند الاستلام للتجار",
+        "live_title": "مستخدمون متصلون",
+        "demo_cta": "جرّب العرض التجريبي",
+        "live_event": "طلب جديد",
+        "live_pause": "Pause",
         "step_word": "الخطوة",
         "of_word": "من",
         "flow": [
@@ -602,6 +617,212 @@
           "stores": "المتاجر",
           "delivery": "شركات التوصيل",
           "ads": "الإعلانات"
+        }
+      }
+    }
+  },
+  "es": {
+    "platform_home": {
+      "seallo": {
+        "nav": [
+          "Demo",
+          "Funcionalidades",
+          "Por qué seallo",
+          "Publicidad",
+          "Contacto"
+        ],
+        "cta": "Solicitar acceso",
+        "signin": "Iniciar sesión",
+        "signin_short": "Entrar",
+        "signup_short": "Registro",
+        "signup": "Crear una cuenta",
+        "dash": "Panel",
+        "close": "Cerrar",
+        "ads_title": "Tu publicidad, al dírham",
+        "ads_sub": "Meta Ads y TikTok Ads conectados a tus pedidos.",
+        "ads": [
+          [
+            "Gastos recuperados",
+            "Tus gastos publicitarios llegan automáticamente desde Meta y TikTok, sin copiar cifras."
+          ],
+          [
+            "ROAS real",
+            "El retorno de la publicidad se calcula sobre los pedidos entregados, no solo sobre los pedidos realizados."
+          ],
+          [
+            "Por producto y campaña",
+            "Ve qué campaña rinde de verdad y cuál te hace perder dinero."
+          ]
+        ],
+        "contact_title": "Contáctanos",
+        "contact_sub": "¿Una pregunta, una demo? Escríbenos, respondemos en 24 h.",
+        "pill": "Software COD para comerciantes online",
+        "live_title": "Usuarios en línea",
+        "demo_cta": "Probar la demo",
+        "live_event": "Nuevo pedido",
+        "live_pause": "Pause",
+        "h1a": "Tu e-commerce,",
+        "h1b": "bajo control.",
+        "sub": "Confirma tus pedidos COD, envía con tu empresa de transporte y sigue tus beneficios y tus campañas publicitarias desde una sola plataforma.",
+        "cta2": "Ver el recorrido de un pedido",
+        "step_word": "Paso",
+        "of_word": "de",
+        "flow": [
+          [
+            "Pedido",
+            "Llega al instante desde tu tienda",
+            "En cuanto un cliente hace un pedido en tu tienda (Shopify, YouCan o WooCommerce, por ejemplo), el pedido aparece al instante en seallo con el producto, la cantidad, la dirección y el teléfono. Nada que copiar a mano."
+          ],
+          [
+            "Confirmado",
+            "Por tus agentes de confirmación",
+            "Tus agentes llaman al cliente desde seallo y marcan el pedido: confirmado, cancelado, aplazado o no localizable. Cada agente cobra al mes o por pedido entregado, como prefieras, y su salario se calcula automáticamente."
+          ],
+          [
+            "Registro automático",
+            "Enviado a la empresa de transporte",
+            "En cuanto se confirma, el pedido se envía automáticamente a tu empresa de transporte. Se acabó registrar los paquetes uno por uno: todo se envía por ti."
+          ],
+          [
+            "Seguimiento completo",
+            "El estado del paquete en tiempo real",
+            "Sigue cada paquete hasta el cliente: recogido, en camino, entregado o devuelto. Los estados se actualizan solos, sin llamar a nadie."
+          ],
+          [
+            "Beneficio",
+            "Gastos descontados en la entrega",
+            "En la entrega, seallo descuenta automáticamente el coste del producto, los gastos de entrega, la publicidad y las comisiones. Te queda tu beneficio real, por producto o en total."
+          ]
+        ],
+        "demo_title": "Tu panel",
+        "demo_sub": "Todo lo que importa, en una sola pantalla.",
+        "menu": [
+          "Panel",
+          "Pedidos",
+          "Confirmación",
+          "Entrega",
+          "Productos",
+          "Publicidad",
+          "Beneficios",
+          "Equipo"
+        ],
+        "kpis": [
+          "Pedidos",
+          "Tasa de confirmación",
+          "Tasa de entrega",
+          "Beneficio neto"
+        ],
+        "chart": "Ventas entregadas · últimos 7 días",
+        "recent": "Últimos pedidos",
+        "cols": [
+          "Cliente",
+          "Producto",
+          "Importe",
+          "Estado"
+        ],
+        "status": [
+          "Entregado",
+          "Confirmado",
+          "En curso",
+          "Cancelado"
+        ],
+        "f_title": "Todo lo que necesitas para tus pedidos COD",
+        "f_sub": "Del pedido al beneficio: un solo espacio para gestionarlo todo.",
+        "feats": [
+          [
+            "Pedidos",
+            "Tus pedidos llegan al instante desde tu tienda (Shopify, YouCan, WooCommerce…), con el cliente, el producto y la dirección."
+          ],
+          [
+            "Confirmación",
+            "Tus agentes confirman, cancelan, aplazan o marcan como no localizable. Cada agente cobra al mes o por pedido entregado."
+          ],
+          [
+            "Entrega",
+            "El pedido confirmado se registra automáticamente en tu empresa de transporte, y cada paquete se sigue en tiempo real."
+          ],
+          [
+            "Publicidad",
+            "Meta Ads y TikTok Ads conectados: tus gastos llegan solos y el ROAS real se calcula sobre los pedidos entregados."
+          ],
+          [
+            "Beneficios",
+            "En la entrega se descuentan producto, gastos de entrega, publicidad y comisiones: tu beneficio real, por producto o en total."
+          ],
+          [
+            "Equipo",
+            "Añade a tus gerentes y agentes con accesos separados, sigue su rendimiento y gestiona varias tiendas."
+          ]
+        ],
+        "why_title": "¿Te suena?",
+        "why_sub": "Los problemas de cada día de los vendedores COD, y cómo los resuelve seallo.",
+        "why_topics": [
+          "Pedidos",
+          "Confirmación",
+          "Entrega",
+          "Seguimiento",
+          "Publicidad",
+          "Beneficio"
+        ],
+        "why_result": "Resultado: menos trabajo manual, ningún paquete perdido de vista y tu beneficio real a la vista.",
+        "before": "Hoy",
+        "after": "Con seallo",
+        "why": [
+          [
+            "Copias a mano cada pedido de tu tienda.",
+            "Los pedidos llegan solos, al instante."
+          ],
+          [
+            "Tus agentes confirman por WhatsApp o Google Sheets, sin ningún seguimiento.",
+            "Todo se confirma en seallo, y el salario de cada agente se calcula solo."
+          ],
+          [
+            "Registras los paquetes uno por uno en la empresa de transporte.",
+            "Registro automático en la empresa de transporte en cuanto se confirma el pedido."
+          ],
+          [
+            "Llamas para saber dónde está un paquete o si ha sido devuelto.",
+            "Ves el estado de cada paquete en tiempo real."
+          ],
+          [
+            "Meta muestra un buen ROAS, pero tu cuenta bancaria dice lo contrario.",
+            "El ROAS real se calcula sobre los pedidos entregados."
+          ],
+          [
+            "A final de mes, no sabes cuánto has ganado realmente.",
+            "Tu beneficio real, por producto y en total, siempre actualizado."
+          ]
+        ],
+        "j_title": "El recorrido de un pedido",
+        "steps": [
+          [
+            "Pedido",
+            "Llega desde tu tienda"
+          ],
+          [
+            "Confirmado",
+            "Confirma o cancela con un clic"
+          ],
+          [
+            "Registro automático",
+            "Por la empresa de transporte"
+          ],
+          [
+            "Seguimiento automático",
+            "De tu paquete"
+          ],
+          [
+            "Beneficios",
+            "Calculados automáticamente"
+          ]
+        ],
+        "end_title": "¿Listo para mantener el control?",
+        "end_sub": "Solicita acceso y sé de los primeros en probar seallo.",
+        "foot": "© 2026 seallo. Tu e-commerce, bajo control.",
+        "partner_titles": {
+          "stores": "Tiendas",
+          "delivery": "Entrega",
+          "ads": "Publicidad"
         }
       }
     }

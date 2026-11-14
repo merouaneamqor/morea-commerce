@@ -28,13 +28,18 @@ module Team
       Summary.new(
         user: user,
         figures: figures_for(user),
-        earned_period: delivered_count(user, @range) * rate,
-        earned_total: delivered_count(user, nil) * rate,
+        earned_period: delivered_ids(user, @range).size * rate,
+        earned_total: delivered_ids(user, nil).size * rate,
         paid_total: payments(user).sum(:amount_cents),
         last_paid_at: payments(user).maximum(:paid_at),
         pending_deductions: AgentDeduction.pending.where(store: @store, user: user).sum(:amount_cents),
         applied_deductions: payments(user).sum(:deductions_cents)
       )
+    end
+
+    # The delivered orders this agent is credited for, oldest delivery first (what a payout can settle).
+    def delivered_orders(user)
+      claims(user).where(status: "delivered").where.not(delivered_at: nil).order(:delivered_at, :id)
     end
 
     # Confirmed orders per day inside the range, for the bar chart.
@@ -47,9 +52,10 @@ module Team
     private
 
     def figures_for(user)
-      statuses = confirmed_orders(user, @range, by: :confirmed_at).group(:status).count
+      confirmed = confirmed_orders(user, @range, by: :confirmed_at).to_a
+      statuses = confirmed.map(&:status).tally
       Figures.new(
-        confirmed: statuses.values.sum,
+        confirmed: confirmed.size,
         cancelled: cancelled_count(user),
         pickup: sum_of(statuses, PICKUP),
         in_delivery: sum_of(statuses, IN_DELIVERY),
@@ -83,10 +89,10 @@ module Team
       range ? scope.where(by => range) : scope
     end
 
-    def delivered_count(user, range)
+    def delivered_ids(user, range)
       scope = claims(user).where(status: "delivered").where.not(delivered_at: nil)
       scope = scope.where(delivered_at: range) if range
-      scope.count
+      scope.pluck(:id)
     end
 
     def payments(user)

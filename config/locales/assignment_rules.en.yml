@@ -1,0 +1,11 @@
+en:
+  assignment_rules:
+    created: "Rule created."
+    saved: "Rule saved."
+    deleted: "Rule deleted."
+    switched_on: "Rule “%{name}” switched on."
+    switched_off: "Rule “%{name}” switched off."
+    manual_source: "Manual orders"
+    equal_label: "Each agent gets %{share} % of the orders."
+    total_label: "Total"
+    selected_label: "%{count} agent(s) selected: the orders are shared between them."

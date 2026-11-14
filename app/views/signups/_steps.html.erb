@@ -8,14 +8,14 @@
     <% done = n <= done_until %>
     <% href = active ? nil : links[n] %>
     <% base = "flex items-center gap-2.5 rounded-xl border px-3.5 py-2 text-sm font-semibold" %>
-    <% badge = "flex size-6 items-center justify-center rounded-full text-xs font-bold #{active || done ? "bg-[#a8432e] text-white" : "bg-[#ece6e2] text-[#8a8380]"}" %>
+    <% badge = "flex size-6 items-center justify-center rounded-full text-xs font-bold #{active || done ? "bg-[#1d1d1f] text-white" : "bg-[#ece6e2] text-[#6e6e73]"}" %>
     <li>
       <% if href %>
-        <a href="<%= href %>" title="<%= st("Revenir à l'étape") %> <%= st(label) %>" class="<%= base %> border-transparent text-[#8a8380] transition hover:border-[#e8e3df] hover:bg-white hover:text-[#1f2430]">
+        <a href="<%= href %>" title="<%= st("Revenir à l'étape") %> <%= st(label) %>" class="<%= base %> border-transparent text-[#6e6e73] transition hover:border-[#e0e0e5] hover:bg-white hover:text-[#1c1c1e]">
           <span class="<%= badge %>"><%= done ? "✓" : n %></span><%= st(label) %>
         </a>
       <% else %>
-        <span class="<%= base %> <%= active ? "border-[#a8432e] bg-white text-[#1f2430]" : "border-transparent text-[#8a8380]" %>">
+        <span class="<%= base %> <%= active ? "border-[#1d1d1f] bg-white text-[#1c1c1e]" : "border-transparent text-[#6e6e73]" %>">
           <span class="<%= badge %>"><%= done ? "✓" : n %></span><%= st(label) %>
         </span>
       <% end %>

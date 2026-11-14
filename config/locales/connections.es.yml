@@ -1,0 +1,135 @@
+es:
+  connections:
+    title: Tiendas conectadas
+    lead: Gestiona las conexiones con tus tiendas existentes. El escaparate Codify es opcional.
+    add: Conectar una tienda
+    name: Nombre de la conexión
+    provider: Plataforma
+    domain: Nombre de host de la tienda
+    status: Estado
+    choose: Elegir una plataforma
+    domain_help: Introduce solo el nombre de host. Para Shopify, usa el dominio permanente tienda.myshopify.com.
+    store_id: Identificador de tienda YouCan
+    store_id_help: Obligatorio para YouCan. Copia el UUID de tu tienda desde tu cuenta de YouCan.
+    secret: Secreto de firma del webhook
+    secret_help: 'YouCan: secreto de cliente de tu aplicación. WooCommerce: secreto elegido en los ajustes del webhook.'
+    setup_lead: Configura un webhook firmado en tu tienda existente. La instalación de aplicaciones y la importación del historial
+      todavía no están incluidas.
+    save: Guardar y mostrar la configuración
+    back: Volver
+    saved: Conexión guardada. Termina la configuración del webhook para recibir los pedidos.
+    updated: Conexión actualizada.
+    delete: Eliminar la conexión
+    delete_confirm: ¿Eliminar %{name}? Sus credenciales locales se eliminarán definitivamente. La aplicación no se desinstalará
+      de tu tienda.
+    deleted: Conexión eliminada.
+    delete_blocked: Esta conexión tiene un historial de recepción de pedidos y no se puede eliminar. Desconéctala para detener
+      la recepción y conservar el historial.
+    setup: Terminar la conexión
+    rotate_secret: Sustituir el secreto de firma
+    resume_help: Tras reanudar, comprueba que el webhook sigue activo en tu plataforma; puede ser necesario reactivarlo o
+      volver a crearlo.
+    youcan_limit: Los envíos de YouCan deben incluir los detalles del pago, de la dirección y de los productos. Los eventos
+      incompletos se rechazan; la recuperación automática de los detalles que faltan todavía no está incluida.
+    webhook_url: URL de entrega
+    verification_help: Configura esta URL en tu plataforma con el mismo secreto de firma. El estado cambia al recibir un pedido
+      firmado válido. Reintenta los fallos desde el historial de webhooks de tu plataforma.
+    scope_help: Recepción de los pedidos nuevos no pagados con pago contra reembolso en MAD en Marruecos, sin impuestos, descuentos
+      ni gastos adicionales. El historial, las modificaciones, las cancelaciones y la sincronización del catálogo o del stock
+      todavía no están incluidos.
+    disconnect: Desconectar
+    reconnect: Reanudar la recepción
+    empty: Conecta tu tienda Shopify, WooCommerce o YouCan.
+    deliveries: Últimas recepciones de pedidos
+    external_id: Identificador externo
+    order: Pedido Codify
+    received: Recibido el
+    accepted: Recibido
+    rejected: 'A revisar: %{code}'
+    no_deliveries: Ningún pedido recibido. Termina la configuración en tu tienda existente.
+    delivery_error: 'Recepción a revisar: %{code}. Comprueba el pedido y los ajustes del webhook en tu plataforma y vuelve
+      a lanzar el envío.'
+    source: Tienda de origen
+    all_sources: Todos los orígenes
+    filter: Filtrar
+    snapshot_help: Los productos y los precios proceden de la tienda de origen. Estas líneas no modifican el stock de Codify.
+      Confirma y envía desde aquí; las modificaciones comerciales permanecen bloqueadas.
+    external_order_locked: Los precios y productos importados se conservan desde la tienda de origen. La edición comercial
+      y la duplicación no están disponibles.
+    shopify_setup:
+      title: Conectar Shopify
+      intro: Instala la aplicación Seallo para conectar tu tienda Shopify mediante su API.
+      before_start: Debes poder instalar aplicaciones en tu tienda Shopify.
+      step_one_title: Indica tu tienda Shopify
+      step_one_body: Introduce un nombre de conexión y tu dominio permanente ejemplo.myshopify.com.
+      step_two_title: Autoriza el acceso en Shopify
+      step_two_body: 'Haz clic en Conectar Shopify y después autoriza la aplicación Seallo. Autorizaciones solicitadas: write_orders,
+        read_orders, read_customers y read_products. write_orders incluye read_orders.'
+      step_three_title: Vuelve a Seallo
+      step_three_body: Tras la autorización, encontrarás aquí los permisos concedidos. Usa Probar la conexión API para verificar
+        el acceso.
+      supported_title: Acceso a los datos de clientes
+      supported_body: Los nombres, correos electrónicos, teléfonos y direcciones pueden requerir la aprobación de Shopify
+        para los datos protegidos de clientes.
+      unavailable_title: Sincronización
+      unavailable_body: La conexión verifica el acceso API. La importación automática de pedidos, sus modificaciones y la
+        sincronización de productos o del stock no están activadas.
+      domain_help: Usa ejemplo.myshopify.com sin https:// ni ruta.
+    shopify_api:
+      title: Conexión API de Shopify
+      save_help: Se te redirigirá a Shopify para instalar la aplicación Seallo y autorizar el acceso.
+      saved: Conexión Shopify guardada. Continúa hacia Shopify para autorizar el acceso.
+      verified: Conexión API de Shopify verificada.
+      connected: Acceso API verificado.
+      configured: Autorización de Shopify guardada. Prueba la conexión para verificar el acceso API.
+      not_configured: Conecta Shopify para autorizar la aplicación Seallo.
+      test: Probar la conexión API
+      test_help: Esta prueba lee el dominio y las autorizaciones de la aplicación. No importa ni modifica pedidos, productos
+        ni stocks.
+      last_checked: 'Última verificación: %{time}'
+      permissions: Autorizaciones verificadas
+      reconnect: Reconectar la API
+      imported_orders: Últimos pedidos importados
+      no_imported_orders: Ningún pedido importado. La verificación de la API no importa pedidos.
+      states:
+        connected: API conectada
+        configured: API por verificar
+        missing: Autorización de Shopify necesaria
+      errors:
+        connection_failed: Error en la verificación de la API. Comprueba la configuración e inténtalo de nuevo.
+        credentials_missing: Autoriza la aplicación Seallo para conectar Shopify.
+        disconnected: Reconecta la tienda antes de probar la API.
+        invalid_credentials: El acceso a Shopify ya no es válido. Autoriza de nuevo la aplicación.
+        shop_not_permitted: La aplicación Seallo no puede acceder a esta tienda. Comprueba el dominio y la instalación.
+        missing_scopes: Faltan autorizaciones. Autoriza de nuevo la aplicación Seallo y aprueba los permisos solicitados.
+        source_mismatch: La API ha devuelto otra tienda. Comprueba el dominio permanente myshopify.com.
+        rate_limited: Shopify limita las solicitudes. Repite la prueba más tarde.
+        unavailable: Shopify no está accesible. Inténtalo de nuevo más tarde.
+        invalid_response: Respuesta inesperada de Shopify. Inténtalo de nuevo más tarde.
+        config_missing: La conexión con Shopify aún no está configurada. Contacta con el administrador de la plataforma.
+        authorization_failed: La autorización de Shopify ha fallado. Vuelve a intentar la conexión.
+        authorization_expired: La autorización de Shopify ha caducado. Conecta Shopify de nuevo.
+        invalid_state: Esta solicitud de autorización ya no es válida. Vuelve a empezar la conexión desde Seallo.
+        invalid_signature: No se ha podido verificar la autorización de Shopify. Vuelve a empezar la conexión desde Seallo.
+      connect: Conectar Shopify
+      reauthorize: Autorizar Shopify de nuevo
+    providers:
+      shopify: Shopify
+      woocommerce: WooCommerce
+      youcan: YouCan
+    states:
+      disconnected: Desconectada
+      attention: A revisar
+      verified: Recepción activa
+      awaiting: A la espera de un envío firmado
+    instructions:
+      woocommerce: En WooCommerce → Ajustes → Avanzado → Webhooks, añade un webhook activo Pedido creado. Indica la URL de
+        abajo y el mismo secreto que has introducido aquí.
+      youcan: En tu aplicación YouCan, suscríbete a order.created con esta URL. Usa el secreto de cliente de la aplicación
+        y el UUID de tu tienda.
+    youcan_oauth:
+      connected: YouCan store connected.
+      denied: The YouCan connection was canceled.
+      invalid: This connection request is no longer valid. Start again from Integrations.
+      failed: YouCan could not be connected. Try again.
+      unavailable: YouCan connection is not configured yet.

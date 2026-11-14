@@ -181,6 +181,7 @@ en:
       district: "Choose your neighborhood."
       district_invalid: "Choose a neighborhood from the list."
       empty_cart: "Your bag is empty."
+      unavailable_item: "%{product} is no longer available in the requested quantity. Update your bag and try again."
       discount_code: "This discount code is invalid or expired."
       privacy_accepted: "Please accept the privacy policy and terms to place your order."
       age_confirmed: "Please confirm you are at least %{age} years old."

@@ -5,6 +5,7 @@ require "sidekiq/web"
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
   ActiveAdmin.routes(self)
+  get "/_performance/ready", to: "performance_readiness#show" if Rails.env.test? && ENV["PERF_TARGET_TOKEN"].present?
 
   post "webhooks/sendit/:store_slug", to: "webhooks/sendit#create", as: :sendit_webhook
   post "webhooks/ozon/:store_slug", to: "webhooks/ozon#create", as: :ozon_webhook

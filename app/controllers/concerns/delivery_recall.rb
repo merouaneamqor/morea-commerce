@@ -7,6 +7,7 @@ module DeliveryRecall
 
   def remember_delivery_from_checkout!(checkout)
     session[:last_delivery] = {
+      "store_id" => checkout.store.id,
       "name" => checkout.name.to_s.strip,
       "phone" => checkout.phone.to_s.strip,
       "phone_country" => checkout.phone_country.to_s.presence || "MA",
@@ -18,6 +19,7 @@ module DeliveryRecall
 
   def delivery_recall_attributes(overrides = {})
     base = session[:last_delivery].to_h.stringify_keys
+    base = {} unless base["store_id"] == current_store&.id
     overrides.stringify_keys.each { |key, value| base[key] = value if value.present? }
     base.slice("name", "phone", "phone_country", "city", "district", "address", "discount_code")
   end

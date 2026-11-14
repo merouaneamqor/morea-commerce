@@ -3,14 +3,16 @@ class CartsController < ApplicationController
 
   def show
     @cart = current_cart
-    @items = @cart.cart_items.includes(:product, :product_variant)
+    @items = @cart ? @cart.cart_items.includes(:product, :product_variant) : []
   end
 
   def add_item
     product = current_store.products.active.find(params[:product_id])
-    variant = product.product_variants.active.find_by(id: params[:product_variant_id])
-    quantity = [ params[:quantity].to_i, 1 ].max
-    current_cart.add_product!(product, quantity: quantity, variant: variant)
+    variant = product.product_variants.active.find(params[:product_variant_id]) if params[:product_variant_id].present?
+    return head :unprocessable_entity if variant.nil? && product.product_variants.exists?
+
+    quantity = params[:quantity].to_i.clamp(1, 99)
+    ensure_cart!.add_product!(product, quantity: quantity, variant: variant)
 
     return redirect_to(checkout_path) if params[:checkout].present?
 
@@ -35,13 +37,18 @@ class CartsController < ApplicationController
   end
 
   def update_item
-    item = current_cart.cart_items.find(params[:item_id])
-    item.update!(quantity: params[:quantity].to_i.clamp(1, 99))
+    return head :not_found unless current_cart
+
+    current_cart.with_lock do
+      current_cart.cart_items.find(params[:item_id]).update!(quantity: params[:quantity].to_i.clamp(1, 99))
+    end
     respond_from_drawer_or_redirect(t("cart.updated"))
   end
 
   def remove_item
-    current_cart.cart_items.find(params[:item_id]).destroy!
+    return head :not_found unless current_cart
+
+    current_cart.with_lock { current_cart.cart_items.find(params[:item_id]).destroy! }
     respond_from_drawer_or_redirect(t("cart.removed"))
   end
 

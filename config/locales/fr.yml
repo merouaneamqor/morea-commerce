@@ -181,6 +181,7 @@ fr:
       district: "Choisissez votre quartier."
       district_invalid: "Choisissez un quartier de la liste."
       empty_cart: "Votre panier est vide."
+      unavailable_item: "%{product} n’est plus disponible dans la quantité demandée. Modifiez votre panier et réessayez."
       discount_code: "Ce code promo est invalide ou expiré."
       privacy_accepted: "Veuillez accepter la politique de confidentialité et les conditions pour commander."
       age_confirmed: "Veuillez confirmer que vous avez au moins %{age} ans."

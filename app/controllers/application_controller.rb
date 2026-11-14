@@ -85,6 +85,7 @@ class ApplicationController < ActionController::Base
   def apex_request_allowed?
     path = request.path
     path == "/" ||
+      path == "/demo" ||
       path == "/sitemap.xml" ||
       path.start_with?("/signup") ||
       path.start_with?("/auth/meta/") ||

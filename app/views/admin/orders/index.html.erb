@@ -35,6 +35,9 @@
         <% if @shopify_connections.any? %>
           <%= button_to t("shopify_sync.button"), shopify_sync_all_admin_orders_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20 disabled:opacity-50", disabled: !Connections::ShopifyOauth.configured? %>
         <% end %>
+        <% if current_store.sendit_configured? || Demo::Workspace.demo_store?(current_store) %>
+          <%= link_to t("orders_ship.button"), ship_review_admin_orders_path, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3]" %>
+        <% end %>
         <% if current_store.sendit_configured? %>
           <%= button_to "Sendit", sendit_sync_all_admin_orders_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" %>
         <% end %>

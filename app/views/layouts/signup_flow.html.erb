@@ -20,13 +20,7 @@
       <header class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 <%= content_for?(:tall_header) ? "py-6" : "py-4" %> sm:px-6">
         <a href="/" class="text-2xl font-extrabold tracking-tight text-[#1d1d1f]"><span dir="ltr">seallo</span></a>
         <div class="flex items-center gap-3">
-          <div class="sa-lang">
-            <nav aria-label="<%= t("platform_home.language") %>" dir="ltr">
-              <% Morea::Locales::AVAILABLE.each do |locale| %>
-                <%= link_to locale.to_s.upcase, url_for(request.query_parameters.merge(locale: locale, only_path: true)), "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
-              <% end %>
-            </nav>
-          </div>
+          <div class="sa-lang"><%= render "shared/language_menu" %></div>
           <% if @guest %>
             <p class="hidden text-sm sm:block">
               <%= st("Vous avez déjà un compte ?") %>

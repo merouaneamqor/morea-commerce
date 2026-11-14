@@ -1,0 +1,35 @@
+# "Envoyer les colis confirmés": review page and messages (duplicates, customers who cancelled before).
+{
+  "fr": { "orders_ship": {
+    "button": "Envoyer les colis confirmés", "title": "Envoyer les colis confirmés", "subtitle": "Vérifiez les colis avant de les envoyer à la société de livraison", "back": "Retour aux commandes",
+    "ready": "Prêts à envoyer", "warned": "Client à vérifier", "blocked": "Retenus", "select_ready": "Cocher les colis prêts", "send": "Envoyer les colis cochés (%{count})",
+    "col_order": "Commande", "col_customer": "Client", "col_items": "Produits", "col_amount": "Montant", "col_state": "Contrôle",
+    "ok": "Prêt", "duplicate": "Doublon : même commande que %{number}", "cancelled": "A déjà annulé %{count} commande(s), dernière le %{date}", "blocked_phone": "Numéro bloqué", "incomplete": "Téléphone ou adresse incomplets",
+    "rules": "Les doublons (mêmes produits, même numéro, moins de 14 jours), les numéros bloqués et les adresses incomplètes ne partent pas. Les clients qui ont déjà annulé sont à vérifier : ils ne sont pas cochés.",
+    "empty": "Aucune commande confirmée n'attend d'être envoyée.", "sent": "%{count} colis envoyés à la société de livraison.", "skipped": " %{count} retenus (doublon, numéro bloqué ou adresse incomplète).", "none": "Aucun colis coché.",
+    "unavailable": "Connectez votre société de livraison pour envoyer les colis.", "demo": "Démo : %{count} colis seraient envoyés à la société de livraison. Aucun colis réel n'est créé dans la démo." } },
+  "en": { "orders_ship": {
+    "button": "Send confirmed parcels", "title": "Send confirmed parcels", "subtitle": "Check the parcels before sending them to the delivery company", "back": "Back to orders",
+    "ready": "Ready to send", "warned": "Check the customer", "blocked": "Held back", "select_ready": "Tick the ready parcels", "send": "Send the ticked parcels (%{count})",
+    "col_order": "Order", "col_customer": "Customer", "col_items": "Products", "col_amount": "Amount", "col_state": "Check",
+    "ok": "Ready", "duplicate": "Duplicate: same order as %{number}", "cancelled": "Already cancelled %{count} order(s), last on %{date}", "blocked_phone": "Blocked number", "incomplete": "Phone or address incomplete",
+    "rules": "Duplicates (same products, same number, within 14 days), blocked numbers and incomplete addresses are not sent. Customers who already cancelled need a check: they are not ticked.",
+    "empty": "No confirmed order is waiting to be sent.", "sent": "%{count} parcels sent to the delivery company.", "skipped": " %{count} held back (duplicate, blocked number or incomplete address).", "none": "No parcel ticked.",
+    "unavailable": "Connect your delivery company to send parcels.", "demo": "Demo: %{count} parcels would be sent to the delivery company. No real parcel is created in the demo." } },
+  "es": { "orders_ship": {
+    "button": "Enviar los paquetes confirmados", "title": "Enviar los paquetes confirmados", "subtitle": "Revisa los paquetes antes de enviarlos a la empresa de reparto", "back": "Volver a los pedidos",
+    "ready": "Listos para enviar", "warned": "Revisar al cliente", "blocked": "Retenidos", "select_ready": "Marcar los paquetes listos", "send": "Enviar los paquetes marcados (%{count})",
+    "col_order": "Pedido", "col_customer": "Cliente", "col_items": "Productos", "col_amount": "Importe", "col_state": "Control",
+    "ok": "Listo", "duplicate": "Duplicado: mismo pedido que %{number}", "cancelled": "Ya canceló %{count} pedido(s), el último el %{date}", "blocked_phone": "Número bloqueado", "incomplete": "Teléfono o dirección incompletos",
+    "rules": "Los duplicados (mismos productos, mismo número, menos de 14 días), los números bloqueados y las direcciones incompletas no se envían. Los clientes que ya cancelaron requieren revisión: no vienen marcados.",
+    "empty": "Ningún pedido confirmado espera ser enviado.", "sent": "%{count} paquetes enviados a la empresa de reparto.", "skipped": " %{count} retenidos (duplicado, número bloqueado o dirección incompleta).", "none": "Ningún paquete marcado.",
+    "unavailable": "Conecta tu empresa de reparto para enviar paquetes.", "demo": "Demo: se enviarían %{count} paquetes a la empresa de reparto. En la demo no se crea ningún paquete real." } },
+  "ar": { "orders_ship": {
+    "button": "إرسال الطرود المؤكدة", "title": "إرسال الطرود المؤكدة", "subtitle": "راجع الطرود قبل إرسالها إلى شركة التوصيل", "back": "العودة إلى الطلبات",
+    "ready": "جاهزة للإرسال", "warned": "تحقق من الزبون", "blocked": "موقوفة", "select_ready": "تحديد الطرود الجاهزة", "send": "إرسال الطرود المحددة (%{count})",
+    "col_order": "الطلب", "col_customer": "الزبون", "col_items": "المنتجات", "col_amount": "المبلغ", "col_state": "الفحص",
+    "ok": "جاهز", "duplicate": "مكرر: نفس الطلب %{number}", "cancelled": "ألغى سابقًا %{count} طلب(ات)، آخرها في %{date}", "blocked_phone": "رقم محظور", "incomplete": "الهاتف أو العنوان غير مكتمل",
+    "rules": "الطلبات المكررة (نفس المنتجات ونفس الرقم خلال 14 يومًا) والأرقام المحظورة والعناوين الناقصة لا تُرسل. الزبائن الذين ألغوا سابقًا يحتاجون إلى تحقق: لا يتم تحديدهم تلقائيًا.",
+    "empty": "لا يوجد طلب مؤكد في انتظار الإرسال.", "sent": "تم إرسال %{count} طرد إلى شركة التوصيل.", "skipped": " تم إيقاف %{count} (مكرر أو رقم محظور أو عنوان ناقص).", "none": "لم يتم تحديد أي طرد.",
+    "unavailable": "اربط شركة التوصيل لإرسال الطرود.", "demo": "عرض تجريبي: سيتم إرسال %{count} طرد إلى شركة التوصيل. لا يُنشأ أي طرد حقيقي في العرض التجريبي." } }
+}

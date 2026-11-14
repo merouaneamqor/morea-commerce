@@ -5,6 +5,7 @@ module Admin
 
     layout "admin"
     before_action :require_admin!
+    before_action :block_demo_writes!
     before_action :confine_confirmation_agents!
     before_action :enforce_area_permission!
     before_action :sync_store_billing_past_due!
@@ -26,6 +27,20 @@ end
 
     def current_user
       current_admin_user
+    end
+
+    # The public demo workspace is read-only: any request that would change data is refused with a friendly message.
+    def block_demo_writes!
+      return unless Demo::Workspace.demo_store?(current_store)
+      return if request.get? || request.head?
+      # The bulk send answers itself in the demo (it only shows what would be sent).
+      return if controller_path == "admin/orders" && action_name == "ship_confirmed"
+
+      if request.format.html? || request.format.turbo_stream?
+        redirect_back fallback_location: admin_root_path, alert: t("demo.read_only"), status: :see_other
+      else
+        render json: { error: "demo_read_only", message: t("demo.read_only") }, status: :forbidden
+      end
     end
 
     def require_admin!

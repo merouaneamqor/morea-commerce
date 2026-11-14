@@ -18,6 +18,7 @@
     <%= javascript_importmap_tags %>
   </head>
   <body class="admin-body" data-admin-theme="<%= current_store&.admin_theme || "seallo" %>" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
+    <%= render "demo/banner" if Demo::Workspace.demo_store?(current_store) %>
     <% if current_admin_user %>
       <%# Restore the collapsed menu before the first paint, so it does not jump. %>
       <script>try { if (localStorage.getItem("sellerSidebar") === "collapsed") document.documentElement.setAttribute("data-sidebar", "collapsed"); } catch (error) {}</script>
@@ -87,7 +88,7 @@
                   </details>
                 <% elsif href.nil? %>
                   <% reason = SellerHelper::SELLER_MENU_BLOCKED_REASONS.fetch(key, "Bientôt disponible") %>
-                  <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#8e8e93]" title="<%= sl(label) %> · <%= sl(reason) %>" aria-disabled="true" data-menu-blocked="<%= key %>" data-blocked-reason="<%= sl(reason) %>"><%= seller_icon(icon) %> <span data-label><%= sl(label) %></span><% if SellerHelper::SELLER_MENU_BLOCKED_REASONS.key?(key) %><span data-label class="ms-auto inline-flex items-center gap-1 rounded-full bg-[#efeff3] px-2 py-0.5 text-[10px] font-medium text-[#8e8e93]"><%= seller_icon(:lock, size: 10) %><%= sl("En amélioration") %></span><% end %></span>
+                  <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#8e8e93]" title="<%= sl(label) %> · <%= sl(reason) %>" aria-disabled="true" data-menu-blocked="<%= key %>" data-blocked-reason="<%= sl(reason) %>"><%= seller_icon(icon) %> <span data-label class="flex min-w-0 flex-col leading-tight"><span><%= sl(label) %></span><% if SellerHelper::SELLER_MENU_BLOCKED_REASONS.key?(key) %><span class="inline-flex items-center gap-1 text-[10px] font-medium text-[#a0a0a8]" data-blocked-line><%= seller_icon(:lock, size: 9) %><%= sl(reason) %></span><% end %></span></span>
                 <% else %>
                   <%= link_to href, title: sl(label), class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm #{on ? nav_on : nav_off}" do %>
                     <%= seller_icon(icon) %> <span data-label><%= sl(label) %></span>

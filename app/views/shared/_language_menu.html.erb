@@ -1,0 +1,36 @@
+<%# Language dropdown (same as the landing page): glass button with the language code, list of languages below. Needs the small script in the layout (data-lang-menu). %>
+<div class="lang-menu" dir="ltr" data-lang-menu>
+  <button type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="<%= t("platform_home.language") %>">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>
+    <span><%= Morea::Locales.code_for(I18n.locale) %></span>
+    <svg class="lang-menu-caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg>
+  </button>
+  <ul role="listbox" hidden>
+    <% Morea::Locales::AVAILABLE.each do |locale| %>
+      <li role="option" aria-selected="<%= locale.to_s == I18n.locale.to_s %>">
+        <%= link_to url_for(request.query_parameters.merge(locale: locale, only_path: true)), lang: locale, hreflang: locale, "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) do %>
+          <span><%= Morea::Locales.label_for(locale) %></span><% if locale.to_s == I18n.locale.to_s %><b aria-hidden="true">✓</b><% end %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</div>
+<script>
+  (function () {
+    if (window.__langMenu) return;
+    window.__langMenu = true;
+    document.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-lang-menu] > button");
+      document.querySelectorAll("[data-lang-menu]").forEach(function (menu) {
+        var list = menu.querySelector("ul"), b = menu.querySelector("button");
+        var open = btn && btn.parentNode === menu ? list.hidden : false;
+        list.hidden = !open;
+        b.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      document.querySelectorAll("[data-lang-menu]").forEach(function (menu) { menu.querySelector("ul").hidden = true; menu.querySelector("button").setAttribute("aria-expanded", "false"); });
+    });
+  })();
+</script>

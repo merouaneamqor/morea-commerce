@@ -1,0 +1,93 @@
+<%# "Envoyer les colis confirmés": the confirmed orders waiting for a parcel, with the checks of Orders::ShipmentReview (duplicates, blocked numbers, customers who cancelled before). Printing only. %>
+<% content_for :title, "#{t('orders_ship.title')} — Admin" %>
+<% content_for :admin_page_class, "admin-page--dashboard" %>
+<% rows = @review.rows %>
+<% ready_count = @review.ready.size %>
+<% chip = "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold" %>
+
+<div class="space-y-3" data-ship-review>
+  <header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white">
+    <div class="flex items-center gap-3">
+      <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:truck, size: 20) %></span>
+      <div>
+        <h1 class="text-xl leading-tight font-bold"><%= t("orders_ship.title") %></h1>
+        <p class="text-[13px] leading-tight text-white/65"><%= t("orders_ship.subtitle") %> · <%= current_store.name %></p>
+      </div>
+    </div>
+    <%= link_to t("orders_ship.back"), admin_orders_path, class: "inline-flex h-8 items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" %>
+  </header>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="<%= chip %> bg-[#e3f3e8] text-[#2f7a4a]" data-count="ready"><%= t("orders_ship.ready") %> · <%= ready_count %></span>
+    <span class="<%= chip %> bg-[#fdf0d5] text-[#9a6a07]" data-count="warned"><%= t("orders_ship.warned") %> · <%= @review.warned.size %></span>
+    <span class="<%= chip %> bg-[#fbe7ea] text-[#b4344e]" data-count="blocked"><%= t("orders_ship.blocked") %> · <%= @review.blocked.size %></span>
+  </div>
+  <p class="text-[13px] text-[#6e6e73]"><%= t("orders_ship.rules") %></p>
+
+  <% if rows.empty? %>
+    <div class="rounded-2xl border border-[#e0e0e5] bg-white p-8 text-center text-[14px] text-[#6e6e73]"><%= t("orders_ship.empty") %></div>
+  <% else %>
+    <%= form_with url: ship_confirmed_admin_orders_path, method: :post, data: { turbo: false }, class: "space-y-3" do %>
+      <div class="overflow-x-auto rounded-2xl border border-[#e0e0e5] bg-white">
+        <table class="w-full text-[13px]">
+          <thead>
+            <tr class="border-b border-[#ececf0] text-left text-[11px] font-semibold tracking-wider text-[#6e6e73] uppercase">
+              <th class="w-10 px-3 py-2.5"><input type="checkbox" aria-label="<%= t("orders_ship.select_ready") %>" data-ship-all checked></th>
+              <th class="px-3 py-2.5"><%= t("orders_ship.col_order") %></th>
+              <th class="px-3 py-2.5"><%= t("orders_ship.col_customer") %></th>
+              <th class="px-3 py-2.5"><%= t("orders_ship.col_items") %></th>
+              <th class="px-3 py-2.5 text-right"><%= t("orders_ship.col_amount") %></th>
+              <th class="px-3 py-2.5"><%= t("orders_ship.col_state") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% rows.each do |row| %>
+              <% order = row.order %>
+              <tr class="border-b border-[#f3f3f6] align-top last:border-0 <%= "bg-[#fffafa]" if row.blocked? %>">
+                <td class="px-3 py-3">
+                  <input type="checkbox" name="order_ids[]" value="<%= order.id %>" <%= "checked" if row.checked_by_default? %> <%= "disabled" unless row.selectable? %> data-ship-row data-ready="<%= row.ready? %>" aria-label="<%= order.number %>">
+                </td>
+                <td class="px-3 py-3"><%= link_to "##{order.number}", admin_order_path(order), class: "font-semibold text-[#1c1c1e] hover:underline" %><p class="text-[11px] text-[#8e8e93]"><%= l(order.created_at, format: :short) %></p></td>
+                <td class="px-3 py-3"><p class="font-medium text-[#1c1c1e]"><%= order.customer_name %></p><p class="text-[12px] text-[#6e6e73]"><bdi dir="ltr"><%= order.customer_phone %></bdi> · <%= order.customer_city %></p></td>
+                <td class="px-3 py-3 text-[#3a3a3c]"><%= order.order_items.map { |item| "#{item.quantity} × #{item.product_name}" }.join(", ") %></td>
+                <td class="px-3 py-3 text-right font-semibold whitespace-nowrap"><%= number_with_delimiter(order.total_cents / 100) %> MAD</td>
+                <td class="px-3 py-3">
+                  <% if row.ready? %>
+                    <span class="<%= chip %> bg-[#e3f3e8] text-[#2f7a4a]"><%= t("orders_ship.ok") %></span>
+                  <% else %>
+                    <div class="flex flex-col items-start gap-1">
+                      <% if row.issues.include?(:duplicate) %><span class="<%= chip %> bg-[#fbe7ea] text-[#b4344e]"><%= t("orders_ship.duplicate", number: "##{row.duplicate_of.number}") %></span><% end %>
+                      <% if row.issues.include?(:blocked) %><span class="<%= chip %> bg-[#fbe7ea] text-[#b4344e]"><%= t("orders_ship.blocked_phone") %></span><% end %>
+                      <% if row.issues.include?(:incomplete) %><span class="<%= chip %> bg-[#fbe7ea] text-[#b4344e]"><%= t("orders_ship.incomplete") %></span><% end %>
+                      <% if row.issues.include?(:prior_cancelled) %><span class="<%= chip %> bg-[#fdf0d5] text-[#9a6a07]"><%= t("orders_ship.cancelled", count: row.cancelled_count, date: l(row.cancelled_last_at.to_date, format: :short)) %></span><% end %>
+                    </div>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex justify-end">
+        <button type="submit" class="inline-flex h-10 cursor-pointer items-center rounded-full bg-[#1c1c1e] px-5 text-[14px] font-semibold text-white hover:bg-[#3a3a3c]" data-ship-submit data-label="<%= t("orders_ship.send", count: "__COUNT__") %>"><%= t("orders_ship.send", count: ready_count) %></button>
+      </div>
+    <% end %>
+    <script>
+      (function () {
+        var page = document.querySelector("[data-ship-review]");
+        if (!page) return;
+        var rows = page.querySelectorAll("[data-ship-row]"), all = page.querySelector("[data-ship-all]"), submit = page.querySelector("[data-ship-submit]");
+        var refresh = function () {
+          var count = 0;
+          rows.forEach(function (box) { if (box.checked && !box.disabled) count += 1; });
+          submit.textContent = submit.dataset.label.replace("__COUNT__", count);
+          submit.disabled = count === 0;
+          submit.style.opacity = count === 0 ? ".5" : "";
+        };
+        all.addEventListener("change", function () { rows.forEach(function (box) { if (!box.disabled) box.checked = all.checked && box.dataset.ready === "true"; }); refresh(); });
+        rows.forEach(function (box) { box.addEventListener("change", refresh); });
+        refresh();
+      })();
+    </script>
+  <% end %>
+</div>

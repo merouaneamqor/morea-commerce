@@ -45,16 +45,34 @@ class CatalogExecutor
       variables: variables.deep_stringify_keys,
       context: { store: store, source: "mcp", actor_label: "mcp-tool" }
     )
-    payload = result.to_h
+    payload = result.to_h.as_json
     errored = payload["errors"].present? || payload_errors?(payload)
     MCP::Tool::Response.new(response_content(payload, errored, include_covers: include_covers), error: errored)
+  rescue StandardError => e
+    Rails.logger.error("[mcp] CatalogExecutor #{e.class}: #{e.message}")
+    Array(e.backtrace).first(15).each { |line| Rails.logger.error("[mcp]   #{line}") }
+    MCP::Tool::Response.new(
+      [ { type: "text", text: JSON.generate(error: "Catalog read failed. Retry or use GraphQL { guide } for the field map.") } ],
+      error: true
+    )
+  end
+
+  def self.store_from(server_context)
+    if server_context.respond_to?(:[])
+      store = server_context[:store]
+      return store if store
+    end
+    return server_context.fetch(:store) if server_context.respond_to?(:fetch)
+
+    raise KeyError, "store missing from MCP server_context"
   end
 
   def self.response_content(payload, errored, include_covers: true)
     parts = [ { type: "text", text: JSON.generate(payload) } ]
     return parts if errored || !include_covers
 
-    cover_entries(payload).each do |entry|
+    entries = cover_entries(payload)
+    entries.each do |entry|
       bytes = Catalog::Images.jpeg_bytes(entry[:url])
       unless bytes
         parts << { type: "text", text: "Image preview unavailable for #{entry[:kind]} #{entry[:slug]}. Original image URL: #{entry[:url]}" }
@@ -64,10 +82,13 @@ class CatalogExecutor
       parts << { type: "text", text: "#{entry[:label] || 'Cover photo'} for #{entry[:kind]} #{entry[:slug]}. Image URL: #{entry[:url]}" }
       parts << { type: "image", data: Base64.strict_encode64(bytes), mimeType: "image/jpeg" }
     end
-    if cover_entries(payload).size == 8
+    if entries.size == 8
       parts << { type: "text", text: "At most 8 image previews are attached per response. All image URLs remain in the JSON. Use get_product for a product gallery." }
     end
     parts
+  rescue StandardError => e
+    Rails.logger.error("[mcp] cover attach #{e.class}: #{e.message}")
+    [ { type: "text", text: JSON.generate(payload) } ]
   end
 
   def self.cover_entries(payload)

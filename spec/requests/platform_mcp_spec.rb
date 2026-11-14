@@ -23,8 +23,10 @@ RSpec.describe "Superadmin MCP credentials", type: :request do
   it "rejects missing, merchant and OAuth credentials" do
     discover
     expect(response).to have_http_status(:unauthorized)
+    expect(response.parsed_body.dig("error", "code")).to eq(-32001)
     discover(store.generate_api_token!)
     expect(response).to have_http_status(:unauthorized)
+    expect(response.parsed_body.dig("error", "code")).to eq(-32001)
     oauth, = OauthAccessToken.issue!(store: store, client_id: "synthetic-client")
     discover(oauth)
     expect(response).to have_http_status(:unauthorized)

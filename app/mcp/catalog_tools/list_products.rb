@@ -13,7 +13,7 @@ module CatalogTools
 
     def self.call(server_context:, query: nil, status: nil, limit: nil)
       CatalogExecutor.call(
-        store: server_context.fetch(:store),
+        store: CatalogExecutor.store_from(server_context),
         query: <<~GQL,
           query($query: String, $status: String, $limit: Int) {
             products(query: $query, status: $status, limit: $limit) { #{CatalogExecutor::PRODUCT_FIELDS} }

@@ -120,6 +120,25 @@ await runCase("mobile viewport color change", { registerOrder: "together" }, asy
   assert.deepEqual(await shots(), productImages)
 })
 
+await runCase("color change scrolls the gallery into view", { registerOrder: "together" }, async ({ page, shots }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.addStyleTag({ content: `
+    body { margin: 0; }
+    #root { padding-bottom: 1200px; }
+    .pdp__gallery { scroll-margin-top: 0; }
+    button[data-color] { display: block; margin-top: 900px; }
+  ` })
+  await page.waitForTimeout(50)
+  await page.locator('button[data-color="Pink"]').scrollIntoViewIfNeeded()
+  const before = await page.evaluate(() => window.scrollY)
+  assert.ok(before > 400, `expected to start scrolled down, got ${before}`)
+  await page.click('button[data-color="Pink"]')
+  await page.waitForFunction(() => window.scrollY < 200)
+  const after = await page.evaluate(() => window.scrollY)
+  assert.ok(after < before, `expected scroll up after color change (${before} → ${after})`)
+  assert.deepEqual(await shots(), variants[1].images)
+})
+
 // Remaining bug after #310: color photos lived only on the product gallery and
 // were mapped into the variant payload by filename. Switching must still update
 // the DOM when every color's images come from that mapping (no variant.images).

@@ -4,7 +4,8 @@ import { Controller } from "@hotwired/stimulus"
 // product gallery when the variant has none. Syncs on connect so a lazy-loaded
 // picker change that fired earlier is still applied. Prefers the live picker
 // controller's variants when present so HTML-escaped data attributes are not
-// the only source of truth after connect.
+// the only source of truth after connect. After a shopper changes color, scrolls
+// the gallery into view so the new photo is visible above the swatches.
 export default class extends Controller {
   static targets = ["gallery", "shotTemplate"]
   static values = { productImages: Array }
@@ -15,11 +16,19 @@ export default class extends Controller {
     if (!hasVariantImages && this.hasGalleryTarget) {
       this.placeholderShots = Array.from(this.galleryTarget.children, (shot) => shot.cloneNode(true))
     }
+    this.seenColor = variant?.color ?? null
     this.syncFromSelection()
+    // Skip reveal for the picker's connect() change; only user color picks scroll.
+    requestAnimationFrame(() => { this.allowReveal = true })
   }
 
   show(event) {
-    this.renderVariant(event.detail?.variant || null)
+    const variant = event.detail?.variant || null
+    const nextColor = variant?.color ?? null
+    const colorChanged = this.seenColor !== nextColor
+    this.renderVariant(variant)
+    this.seenColor = nextColor
+    if (this.allowReveal && colorChanged) this.revealGallery()
   }
 
   syncFromSelection() {
@@ -123,5 +132,15 @@ export default class extends Controller {
   resetGalleryScroll() {
     if (!this.hasGalleryTarget) return
     this.galleryTarget.scrollLeft = 0
+  }
+
+  revealGallery() {
+    if (!this.hasGalleryTarget) return
+
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
+    this.galleryTarget.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "start"
+    })
   }
 }

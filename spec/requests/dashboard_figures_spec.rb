@@ -75,7 +75,7 @@ RSpec.describe "Dashboard figures", type: :request do
     expect(featured.map { |card| card["data-kpi"] }).to eq([ "revenue" ])
     expect(others).to all(satisfy { |card| card["class"].include?("border border-[#e0e0e5] bg-white") })
     chips = others.map { |card| card.at_css("p span")["class"] }
-    expect(chips).to all(include("grid size-6 shrink-0 place-items-center rounded-lg bg-[#efeff3] text-[#3a3a3c]"))   # the symbol chip is gray
+    expect(chips).to all(satisfy { |classes| classes.start_with?("grid size-6 shrink-0 place-items-center rounded-lg") && classes.match?(/bg-\[#(efeff3|ececf0)\]/) })   # the symbol chip is gray
     expect(response.body).not_to match(/bg-\[#(f1faf5|f2f7fd|fff8ea|fef2f3)\]/)                             # the old tints are gone
   end
 

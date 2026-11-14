@@ -103,5 +103,4 @@ RSpec.describe "Admin pixels settings", type: :request do
     get "/en", headers: { "CF-IPCountry" => "MA" }
     expect(response.body).to include("googletagmanager.com/gtag/js?id=G-STOREFRONT1")
   end
-
 end

@@ -69,7 +69,6 @@ module DataProtectionHelper
     current_store.present? || Store.apex_host?(request.host)
   end
 
-
   def checkout_rights_notice
     number = current_store&.cndp_authorization.to_s.strip
     if number.present?

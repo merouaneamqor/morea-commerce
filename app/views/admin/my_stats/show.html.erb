@@ -89,18 +89,18 @@
 <%# Row 1: the confirmed orders (the gold card) and where they went. Row 2: the rest and the two rates. Same cards as the owner's dashboard. %>
 <section class="mt-3 grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6" data-kpis="row1">
   <%= render "admin/dashboard/kpi", key: "confirmed", label: t("admin.my_stats.confirmed"), icon: :check, value: figures.confirmed, featured: true, sub: t("admin.my_stats.orders") %>
-  <%= render "admin/dashboard/kpi", key: "cancelled", label: t("admin.my_stats.cancelled"), icon: :cancel, tone: "bg-[#fbe7ea] text-[#d6455d]", value: figures.cancelled, sub: t("admin.my_stats.cancel_reasons") %>
-  <%= render "admin/dashboard/kpi", key: "pickup", label: t("admin.my_stats.pickup"), icon: :box, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: figures.pickup, sub: of_confirmed.(figures.pickup) %>
-  <%= render "admin/dashboard/kpi", key: "in_delivery", label: t("admin.my_stats.in_delivery"), icon: :truck, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: figures.in_delivery, sub: of_confirmed.(figures.in_delivery) %>
-  <%= render "admin/dashboard/kpi", key: "delivered", label: t("admin.my_stats.delivered"), icon: :box, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: figures.delivered, sub: of_confirmed.(figures.delivered) %>
-  <%= render "admin/dashboard/kpi", key: "postponed", label: t("admin.my_stats.postponed"), icon: :clock, tone: "bg-[#fdf0d9] text-[#d28a12]", value: figures.postponed, sub: of_confirmed.(figures.postponed) %>
+  <%= render "admin/dashboard/kpi", key: "cancelled", label: t("admin.my_stats.cancelled"), icon: :cancel, tone: "bg-[#efeff3] text-[#3a3a3c]", value: figures.cancelled, sub: t("admin.my_stats.cancel_reasons") %>
+  <%= render "admin/dashboard/kpi", key: "pickup", label: t("admin.my_stats.pickup"), icon: :box, tone: "bg-[#efeff3] text-[#3a3a3c]", value: figures.pickup, sub: of_confirmed.(figures.pickup) %>
+  <%= render "admin/dashboard/kpi", key: "in_delivery", label: t("admin.my_stats.in_delivery"), icon: :truck, tone: "bg-[#efeff3] text-[#3a3a3c]", value: figures.in_delivery, sub: of_confirmed.(figures.in_delivery) %>
+  <%= render "admin/dashboard/kpi", key: "delivered", label: t("admin.my_stats.delivered"), icon: :box, tone: "bg-[#efeff3] text-[#3a3a3c]", value: figures.delivered, sub: of_confirmed.(figures.delivered) %>
+  <%= render "admin/dashboard/kpi", key: "postponed", label: t("admin.my_stats.postponed"), icon: :clock, tone: "bg-[#efeff3] text-[#3a3a3c]", value: figures.postponed, sub: of_confirmed.(figures.postponed) %>
 </section>
 
 <section class="mt-2.5 grid grid-cols-2 gap-2.5 xl:grid-cols-4" data-kpis="row2">
-  <%= render "admin/dashboard/kpi", key: "unreachable", label: t("admin.my_stats.unreachable"), icon: :ban, tone: "bg-[#fdf0d9] text-[#d28a12]", value: figures.unreachable, sub: of_confirmed.(figures.unreachable) %>
+  <%= render "admin/dashboard/kpi", key: "unreachable", label: t("admin.my_stats.unreachable"), icon: :ban, tone: "bg-[#efeff3] text-[#3a3a3c]", value: figures.unreachable, sub: of_confirmed.(figures.unreachable) %>
   <%= render "admin/dashboard/kpi", key: "returned", label: t("admin.my_stats.returned"), icon: :undo, tone: "bg-[#ececf0] text-[#1c1c1e]", value: figures.returned, sub: of_confirmed.(figures.returned) %>
-  <%= render "admin/dashboard/kpi", key: "confirmation_rate", label: t("admin.my_stats.confirmation_rate"), icon: :check, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: "#{conf_rate} %", sub: t("admin.my_stats.confirmation_rate_sub") %>
-  <%= render "admin/dashboard/kpi", key: "delivery_rate", label: t("admin.my_stats.delivery_rate"), icon: :truck, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: "#{del_rate} %", sub: t("admin.my_stats.delivery_rate_sub") %>
+  <%= render "admin/dashboard/kpi", key: "confirmation_rate", label: t("admin.my_stats.confirmation_rate"), icon: :check, tone: "bg-[#efeff3] text-[#3a3a3c]", value: "#{conf_rate} %", sub: t("admin.my_stats.confirmation_rate_sub") %>
+  <%= render "admin/dashboard/kpi", key: "delivery_rate", label: t("admin.my_stats.delivery_rate"), icon: :truck, tone: "bg-[#efeff3] text-[#3a3a3c]", value: "#{del_rate} %", sub: t("admin.my_stats.delivery_rate_sub") %>
 </section>
 <p class="my-3 text-xs text-[#6e6e73]"><%= t("admin.my_stats.courier_note") %></p>
 

@@ -530,7 +530,7 @@ button.admin-btn-plain {
   gap: 0.4rem 0.65rem;
   padding: 0.35rem 0.65rem;
   border-radius: 0.65rem;
-  background: #f4e4de;
+  background: #ececf0;
   color: #1f2430;
 }
 .admin-impersonation p {
@@ -698,7 +698,7 @@ button.admin-btn-plain {
   text-align: center;
 }
 .confirm-steps li.is-current {
-  background: #f4e4de;
+  background: #ececf0;
   color: #1d1d1f;
 }
 .confirm-next {

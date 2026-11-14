@@ -6,8 +6,8 @@
 <% active = local_assigns.fetch(:active, false) %>
 <% pill_text, pill_tone = local_assigns[:pill] %>
 <% pill_class = { up: "bg-[#e3f3e8] text-[#2f7a4a]", down: "bg-[#fbe7ea] text-[#b4344e]" }.fetch(pill_tone, featured ? "bg-white/15 text-white" : "bg-[#efeff3] text-[#6e6e73]") %>
-<% tones = { "pending" => "bg-[#fdf0d9] text-[#d28a12]", "confirmed" => "bg-[#e3f3e8] text-[#2f9d5c]", "cancelled" => "bg-[#fbe7ea] text-[#d6455d]", "wrong" => "bg-[#ececf0] text-[#1c1c1e]",
-     "to_ship" => "bg-[#eceefa] text-[#5b6bb5]", "in_transit" => "bg-[#e6f0fd] text-[#2f6fed]", "scheduled" => "bg-[#ece9fb] text-[#6a4fd8]", "delivered" => "bg-[#e3f3e8] text-[#2f9d5c]", "failed" => "bg-[#fff1dc] text-[#c26a00]", "returned" => "bg-[#fbe7ea] text-[#d6455d]" } %>
+<% tones = { "pending" => "bg-[#efeff3] text-[#3a3a3c]", "confirmed" => "bg-[#efeff3] text-[#3a3a3c]", "cancelled" => "bg-[#efeff3] text-[#3a3a3c]", "wrong" => "bg-[#ececf0] text-[#1c1c1e]",
+     "to_ship" => "bg-[#efeff3] text-[#3a3a3c]", "in_transit" => "bg-[#efeff3] text-[#3a3a3c]", "scheduled" => "bg-[#efeff3] text-[#3a3a3c]", "delivered" => "bg-[#efeff3] text-[#3a3a3c]", "failed" => "bg-[#efeff3] text-[#3a3a3c]", "returned" => "bg-[#efeff3] text-[#3a3a3c]" } %>
 <%= link_to href, "data-card": key, "data-value": value, title: label, "aria-current": (active ? "true" : nil),
       class: "flex h-[110px] min-w-0 flex-col justify-between rounded-xl px-3.5 py-3 transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-18px_rgba(0,0,0,0.4)] #{featured ? "bg-gradient-to-br from-[#2c2c2e] to-[#1c1c1e] text-white shadow-[0_14px_30px_-20px_rgba(0,0,0,0.6)]" : "border border-[#e0e0e5] bg-white"} #{"outline outline-2 outline-offset-2 outline-[#1c1c1e]" if active}" do %>
   <div class="flex items-center justify-between gap-2">

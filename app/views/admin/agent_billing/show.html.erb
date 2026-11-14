@@ -32,9 +32,9 @@
 
   <section class="mt-3 grid grid-cols-2 gap-2.5 xl:grid-cols-4" data-kpis="billing">
     <%= render "admin/dashboard/kpi", key: "owed", label: sl("Reste à payer (équipe)"), icon: :wallet, value: amount.(owed), unit: currency, featured: true, sub: sl("Gains cumulés non payés") %>
-    <%= render "admin/dashboard/kpi", key: "earned", label: sl("Gagné sur la période"), icon: :calculator, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: amount.(earned), unit: currency, sub: sl("Commandes livrées") %>
-    <%= render "admin/dashboard/kpi", key: "paid", label: sl("Payé sur la période"), icon: :check, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: amount.(paid), unit: currency, sub: sl("Historique des paiements") %>
-    <%= render "admin/dashboard/kpi", key: "pending", label: sl("Retenues en attente"), icon: :undo, tone: "bg-[#fbe7ea] text-[#d6455d]", value: amount.(pending), unit: currency, sub: sl("Retenues pour retours") %>
+    <%= render "admin/dashboard/kpi", key: "earned", label: sl("Gagné sur la période"), icon: :calculator, tone: "bg-[#efeff3] text-[#3a3a3c]", value: amount.(earned), unit: currency, sub: sl("Commandes livrées") %>
+    <%= render "admin/dashboard/kpi", key: "paid", label: sl("Payé sur la période"), icon: :check, tone: "bg-[#efeff3] text-[#3a3a3c]", value: amount.(paid), unit: currency, sub: sl("Historique des paiements") %>
+    <%= render "admin/dashboard/kpi", key: "pending", label: sl("Retenues en attente"), icon: :undo, tone: "bg-[#efeff3] text-[#3a3a3c]", value: amount.(pending), unit: currency, sub: sl("Retenues pour retours") %>
   </section>
 
   <section class="<%= card %> mt-3" data-agents-billing>

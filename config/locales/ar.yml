@@ -12,11 +12,11 @@ ar:
     tagline_fallback: "ملابس رياضية محتشمة فاخرة للنساء النشيطات."
     footer_tagline: "ملابس رياضية محتشمة عصرية"
   home:
-    selection_title: "المختارات"
+    selection_title: "عرض الكل"
     view_all: "عرض الكل"
-    collections_title: "تمرّني، تحرّكي، استرخي"
+    collections_title: "المجموعات"
     explore: "اكتشفي"
-    hero_support: "تسوّقي المختارات. ادفعوا عند الاستلام في جميع أنحاء المغرب."
+    hero_support: "تصفّحوا الكتالوج. ادفعوا عند الاستلام في جميع أنحاء المغرب."
   landing:
     eyebrow: "ملابس رياضية"
     hero_product: "الطقم الأساسي"

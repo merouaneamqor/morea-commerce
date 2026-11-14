@@ -46,10 +46,14 @@
   body.is-rtl .home-card__price,
   body.is-rtl .home-tile__name,
   body.is-rtl .home-section__title,
+  body.is-rtl .home-section__title--catalog,
+  body.is-rtl .catalog-eyebrow,
+  body.is-rtl .catalog-link,
   body.is-rtl .campaign-hero__title,
   body.is-rtl .campaign-hero__brand,
   body.is-rtl .campaign-hero__support,
   body.is-rtl .campaign-hero__watermark,
+  body.is-rtl .home-services__title,
   body.is-rtl .pdp__title,
   body.is-rtl .pdp__price,
   body.is-rtl .collection-page__title,
@@ -297,8 +301,8 @@
 
   .campaign-hero {
     @apply relative flex w-full flex-col justify-end overflow-hidden bg-ink;
-    min-height: 100vh;
-    min-height: 100dvh;
+    min-height: min(72vh, 44rem);
+    min-height: min(72dvh, 44rem);
   }
 
   .campaign-hero__media {
@@ -312,20 +316,20 @@
   .campaign-hero__atmosphere {
     @apply absolute inset-0;
     background:
-      radial-gradient(54rem 36rem at 78% 8%, rgba(196, 160, 163, 0.28), transparent 58%),
-      radial-gradient(42rem 30rem at 8% 92%, rgba(250, 249, 247, 0.12), transparent 55%),
-      linear-gradient(152deg, #141110 0%, #1a1716 48%, #2a2321 100%);
+      radial-gradient(42rem 28rem at 82% 12%, rgba(255, 255, 255, 0.08), transparent 58%),
+      radial-gradient(36rem 24rem at 12% 88%, rgba(255, 255, 255, 0.04), transparent 55%),
+      linear-gradient(160deg, #050505 0%, #0d0d0d 46%, #171717 100%);
   }
 
   .campaign-hero__atmosphere::after {
     content: "";
     position: absolute;
     inset: 0;
-    opacity: 0.18;
+    opacity: 0.12;
     background-image:
-      linear-gradient(rgba(250, 249, 247, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(250, 249, 247, 0.05) 1px, transparent 1px);
-    background-size: 4.5rem 4.5rem;
+      linear-gradient(rgba(245, 245, 245, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245, 245, 245, 0.06) 1px, transparent 1px);
+    background-size: 3.5rem 3.5rem;
     mask-image: radial-gradient(circle at 50% 40%, black 18%, transparent 78%);
   }
 
@@ -342,43 +346,43 @@
   .campaign-hero__veil {
     @apply absolute inset-0;
     background:
-      linear-gradient(to bottom, rgba(26, 23, 22, 0.48) 0%, transparent 24%, transparent 42%, rgba(26, 23, 22, 0.78) 100%);
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.55) 0%, transparent 28%, transparent 48%, rgba(0, 0, 0, 0.82) 100%);
   }
 
   .campaign-hero__watermark {
-    @apply pointer-events-none absolute inset-x-0 top-[18%] z-[1] px-5 text-center font-display uppercase text-paper/10 md:px-10;
-    font-size: clamp(3.5rem, 14vw, 12rem);
-    letter-spacing: 0.18em;
+    @apply pointer-events-none absolute inset-x-0 top-[16%] z-[1] px-5 text-center font-sans font-bold uppercase text-paper/8 md:px-10;
+    font-size: clamp(3rem, 12vw, 9.5rem);
+    letter-spacing: 0.08em;
     line-height: 0.9;
     white-space: nowrap;
     overflow: hidden;
   }
 
   .campaign-hero__content {
-    @apply relative z-10 w-full max-w-5xl px-5 pb-20 pt-28 text-paper md:px-10 md:pb-28 lg:px-16;
-    padding-bottom: max(5rem, calc(env(safe-area-inset-bottom) + 3rem));
+    @apply relative z-10 w-full max-w-5xl px-5 pb-16 pt-28 text-paper md:px-10 md:pb-20 lg:px-16;
+    padding-bottom: max(4rem, calc(env(safe-area-inset-bottom) + 2.5rem));
   }
 
   .campaign-hero__brand {
-    @apply mb-7 font-display text-[0.95rem] uppercase tracking-[0.42em] text-paper md:mb-8 md:text-[1.05rem] md:tracking-[0.48em];
+    @apply mb-5 font-sans text-[0.8rem] font-semibold uppercase tracking-[0.34em] text-paper md:mb-6 md:text-[0.9rem] md:tracking-[0.4em];
   }
 
   .campaign-hero__title {
-    @apply mt-5 font-display font-light text-paper md:mt-6;
-    font-size: clamp(2.85rem, 7vw, 6.75rem);
+    @apply mt-4 font-sans font-bold uppercase text-paper md:mt-5;
+    font-size: clamp(2.2rem, 6.2vw, 5.25rem);
     line-height: 0.98;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.02em;
     text-wrap: balance;
   }
 
   .campaign-hero__support {
-    @apply mt-6 max-w-xl text-sm leading-7 text-paper/78 md:mt-8 md:text-base md:leading-8;
+    @apply mt-5 max-w-xl text-sm leading-7 text-paper/72 md:mt-6 md:text-base md:leading-8;
     text-wrap: pretty;
   }
 
   .campaign-hero__content .landing-eyebrow {
-    @apply text-brass-soft;
-    text-shadow: 0 1px 12px rgba(26, 23, 22, 0.45);
+    @apply text-paper/70;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
   }
 
   .campaign-hero__actions {
@@ -407,7 +411,7 @@
   }
 
   .campaign-btn {
-    @apply relative inline-flex min-h-12 overflow-hidden border border-paper bg-paper px-10 py-4 text-[10px] uppercase tracking-[0.32em] text-ink transition-colors duration-700 md:tracking-[0.38em];
+    @apply relative inline-flex min-h-12 overflow-hidden border border-paper bg-paper px-10 py-4 text-[10px] font-semibold uppercase tracking-[0.28em] text-ink transition-colors duration-500 md:tracking-[0.32em];
   }
 
   .campaign-btn::before {
@@ -434,7 +438,7 @@
 
   /* ——— Home ——— */
   .home-ticker {
-    @apply overflow-hidden border-b border-line bg-paper py-4;
+    @apply overflow-hidden border-b border-white/10 bg-[#0a0a0a] py-4;
   }
 
   .home-ticker__track {
@@ -452,12 +456,12 @@
   }
 
   .home-ticker__item {
-    @apply flex items-center whitespace-nowrap text-[10px] uppercase tracking-[0.32em] text-ink-soft;
+    @apply flex items-center whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.28em] text-white/55;
   }
 
   .home-ticker__item::after {
     content: "";
-    @apply mx-10 inline-block h-1 w-1 rotate-45 bg-brass;
+    @apply mx-10 inline-block h-1 w-1 rotate-45 bg-white/35;
   }
 
   .home-section {
@@ -465,20 +469,35 @@
   }
 
   .home-section--featured {
-    background:
-      linear-gradient(180deg, rgba(247, 245, 242, 0.85) 0%, rgba(250, 249, 247, 1) 18%, rgba(250, 249, 247, 1) 100%);
+    background: #0a0a0a;
+  }
+
+  .home-section--catalog {
+    @apply px-3 py-12 text-paper md:px-6 md:py-16 lg:px-8;
   }
 
   .home-section--flush {
-    @apply bg-stone-floor pb-0 md:pb-0;
+    @apply bg-[#0a0a0a] pb-0 text-paper md:pb-0;
   }
 
   .home-section--collections .home-section__head {
-    @apply mb-10 md:mb-14;
+    @apply mb-8 md:mb-10;
+  }
+
+  .home-section--collections .home-section__title {
+    @apply font-sans text-2xl font-bold uppercase tracking-[0.14em] text-paper md:text-3xl;
+  }
+
+  .home-section--collections .landing-eyebrow {
+    @apply text-paper/55;
   }
 
   .home-section__head {
     @apply mb-12 flex flex-col items-start justify-between gap-6 md:mb-16 md:flex-row md:items-end;
+  }
+
+  .home-section__head--catalog {
+    @apply mb-8 items-end gap-4 border-b border-white/10 pb-5 md:mb-10;
   }
 
   .home-section__title {
@@ -487,20 +506,32 @@
     text-wrap: balance;
   }
 
+  .home-section__title--catalog {
+    @apply mt-2 font-sans text-[1.35rem] font-bold uppercase leading-none tracking-[0.18em] text-paper md:text-2xl md:tracking-[0.22em];
+  }
+
+  .catalog-eyebrow {
+    @apply text-[10px] font-semibold uppercase tracking-[0.28em] text-white/45;
+  }
+
+  .catalog-link {
+    @apply inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-paper/75 transition-colors duration-300 hover:text-paper;
+  }
+
   .home-section__intro {
     @apply mt-6 max-w-xl space-y-3 text-sm leading-7 text-ink-soft;
   }
 
   .home-services {
-    @apply grid gap-12 border-y border-line bg-stone-floor px-5 py-16 md:px-10 md:py-24 lg:grid-cols-3 lg:gap-16 lg:px-16;
+    @apply grid gap-12 border-y border-white/10 bg-[#0a0a0a] px-5 py-16 text-paper md:px-10 md:py-24 lg:grid-cols-3 lg:gap-16 lg:px-16;
   }
 
   .home-services__title {
-    @apply mt-5 font-display text-3xl font-light leading-tight text-ink md:text-4xl;
+    @apply mt-5 font-sans text-2xl font-bold uppercase leading-tight tracking-[0.12em] text-paper md:text-3xl;
   }
 
   .home-services__body {
-    @apply mt-5 max-w-md text-sm leading-7 text-ink-soft;
+    @apply mt-5 max-w-md text-sm leading-7 text-white/60;
   }
 
   .home-services__items {
@@ -508,27 +539,67 @@
   }
 
   .home-services__item {
-    @apply flex flex-col items-start border-t border-line pt-6;
+    @apply flex flex-col items-start border-t border-white/10 pt-6;
   }
 
   .home-services__item h3 {
-    @apply font-display text-xl text-ink;
+    @apply font-sans text-base font-semibold uppercase tracking-[0.14em] text-paper;
   }
 
   .home-services__item p {
-    @apply mb-5 mt-3 max-w-sm text-sm leading-7 text-ink-soft;
+    @apply mb-5 mt-3 max-w-sm text-sm leading-7 text-white/55;
   }
 
   .home-services__item a {
-    @apply mt-auto;
+    @apply mt-auto text-paper/80;
+  }
+
+  .home-services .landing-eyebrow {
+    @apply text-white/45;
+  }
+
+  .home-services .maison-cta {
+    @apply text-paper/80;
   }
 
   .home-products {
     @apply grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6 md:gap-y-16;
   }
 
+  .home-products--catalog {
+    @apply gap-x-2 gap-y-8 md:grid-cols-3 md:gap-x-3 md:gap-y-10 lg:grid-cols-4;
+  }
+
   .home-card {
     @apply block min-w-0;
+  }
+
+  .home-card--catalog .object-frame {
+    @apply bg-[#141414];
+  }
+
+  .home-card--catalog .home-card__meta {
+    @apply mt-2.5 gap-1 md:mt-3;
+  }
+
+  .home-card--catalog .home-card__name {
+    @apply font-sans text-[0.72rem] font-semibold uppercase leading-[1.25] tracking-[0.06em] text-paper md:text-[0.8rem];
+  }
+
+  .home-card--catalog .home-card__price {
+    @apply font-sans text-[0.75rem] font-medium tracking-[0.02em] text-paper/85 md:text-[0.85rem];
+  }
+
+  .home-card--catalog .home-card__price s {
+    @apply text-[0.7rem] text-white/35 md:text-xs;
+  }
+
+  .home-card--catalog .home-card__badge {
+    @apply border border-white/15 bg-black/80 text-[8px] tracking-[0.2em] text-paper;
+  }
+
+  .home-card--catalog .home-card__badge--sale {
+    @apply border-transparent bg-paper text-ink;
   }
 
   .home-card__alt {
@@ -731,7 +802,7 @@
   }
 
   .home-card__badge {
-    @apply absolute start-3 top-3 z-10 bg-paper px-2.5 py-1 text-[9px] uppercase tracking-[0.24em] text-ink;
+    @apply absolute start-2.5 top-2.5 z-10 bg-paper px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-ink;
   }
 
   .home-card__badge--sale {
@@ -2860,7 +2931,7 @@
   }
 
   .landing-story {
-    @apply grid items-stretch bg-stone-floor md:grid-cols-12;
+    @apply grid items-stretch bg-[#0a0a0a] text-paper md:grid-cols-12;
   }
 
   .landing-story__media {
@@ -2870,8 +2941,8 @@
   .landing-story__placeholder {
     @apply h-full w-full;
     background:
-      radial-gradient(32rem 24rem at 70% 20%, rgba(154, 111, 114, 0.22), transparent 60%),
-      linear-gradient(160deg, #2a2321 0%, #1a1716 55%, #141110 100%);
+      radial-gradient(32rem 24rem at 70% 20%, rgba(255, 255, 255, 0.08), transparent 60%),
+      linear-gradient(160deg, #171717 0%, #0d0d0d 55%, #050505 100%);
   }
 
   .landing-story__copy {
@@ -2879,13 +2950,20 @@
   }
 
   .landing-story__title {
-    @apply mt-6 font-display text-4xl font-light leading-[1.02] text-ink md:mt-8 md:text-5xl lg:text-6xl;
-    letter-spacing: -0.015em;
+    @apply mt-6 font-sans text-3xl font-bold uppercase leading-[1.05] tracking-[0.08em] text-paper md:mt-8 md:text-4xl lg:text-5xl;
     text-wrap: balance;
   }
 
   .landing-story__body {
-    @apply mt-8 max-w-md text-sm leading-8 text-ink-soft md:mt-10;
+    @apply mt-8 max-w-md text-sm leading-8 text-white/60 md:mt-10;
+  }
+
+  .landing-story .landing-eyebrow {
+    @apply text-white/45;
+  }
+
+  .landing-story .maison-cta {
+    @apply text-paper/80;
   }
 }
 

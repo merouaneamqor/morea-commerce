@@ -10,7 +10,8 @@ class ProductsController < ApplicationController
 
     @eyebrow = current_store.name
     @collection = @product.collections.published.order(:position).first
-    @gallery = product_gallery
+    @product_image_urls = product_image_urls
+    @gallery = initial_gallery
     @related = related_products
   end
 
@@ -42,8 +43,16 @@ class ProductsController < ApplicationController
     @initial_variant = @variant_payload.find { |v| !@product.track_inventory || v[:stock].positive? } || @variant_payload.first
   end
 
+  def product_image_urls
+    @product.ordered_images.map { |image| helpers.media_url(image) }
+  end
+
   def product_gallery
-    @product.ordered_images.map { |image| helpers.media_url(image) }.presence || [ nil ]
+    product_image_urls.presence || [ nil ]
+  end
+
+  def initial_gallery
+    @initial_variant&.dig(:images).presence || product_gallery
   end
 
   def variant_gallery(variant)

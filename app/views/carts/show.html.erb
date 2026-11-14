@@ -1,7 +1,7 @@
 <% content_for :title, "#{t("cart.title")} — #{current_store.name}" %>
 
 <section class="cart-page">
-  <h1 class="font-display text-3xl text-ink md:text-4xl"><%= t("cart.title") %></h1>
+  <h1 class="cart-page__title"><%= t("cart.title") %></h1>
 
   <% if @items.empty? %>
     <div class="mt-10 md:mt-12">
@@ -21,7 +21,7 @@
           </div>
           <div class="flex min-w-0 flex-col gap-3 md:col-span-9 md:grid md:grid-cols-9 md:gap-4">
             <div class="space-y-2 md:col-span-6">
-              <p class="font-display text-xl leading-snug text-ink md:text-2xl"><%= item.display_name %></p>
+              <p class="font-sans text-sm font-semibold uppercase leading-snug tracking-[0.06em] text-ink md:text-base"><%= item.display_name %></p>
               <p class="cart-page__unit"><%= money(item.unit_price_cents, item.product.currency) %></p>
               <div class="flex flex-wrap items-center gap-4 pt-1">
                 <div class="cart-qty">

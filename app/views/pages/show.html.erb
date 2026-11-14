@@ -2,7 +2,7 @@
 <% content_for :meta_description, @page.seo_description.presence || @page.body.to_s.truncate(155) %>
 
 <% if @page.landing? && @sections.any? %>
-  <% if @sections.first&.kind == "hero" %>
+  <% if @sections.first&.kind == "hero" && @sections.first.image_src.present? %>
     <% content_for :hero_nav, "1" %>
   <% end %>
   <% if (lcp_preload = page_lcp_preload(@sections.first)) %>

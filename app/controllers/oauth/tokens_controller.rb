@@ -10,6 +10,17 @@ module Oauth
       head :no_content
     end
 
+    # Agents probe GET on the advertised token_endpoint. Answer 405 with Allow
+    # instead of a Rails routing 404 so discovery does not look broken.
+    def method_not_allowed
+      response.set_header("Allow", "POST, OPTIONS")
+      response.set_header("Cache-Control", "no-store")
+      render json: {
+        error: "invalid_request",
+        error_description: "Token endpoint accepts POST only"
+      }, status: :method_not_allowed
+    end
+
     def create
       case params[:grant_type]
       when "authorization_code" then authorization_code

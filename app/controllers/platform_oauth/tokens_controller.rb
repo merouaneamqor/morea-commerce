@@ -9,6 +9,15 @@ module PlatformOauth
       head :no_content
     end
 
+    def method_not_allowed
+      response.set_header("Allow", "POST, OPTIONS")
+      response.set_header("Cache-Control", "no-store")
+      render json: {
+        error: "invalid_request",
+        error_description: "Token endpoint accepts POST only"
+      }, status: :method_not_allowed
+    end
+
     def create
       if params.key?(:resource) && params[:resource] != "#{request.base_url}/platform/mcp"
         return oauth_error("invalid_target")

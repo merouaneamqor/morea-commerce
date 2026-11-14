@@ -38,7 +38,7 @@ RSpec.describe "Notices as toasts", type: :request do
   it "shows nothing when there is no notice, and no old banner" do
     sign_in(owner)
     get admin_users_path # the sign-in notice shows here, once
-    expect(page.at_css("[data-toasts] [data-toast-kind=notice]").text).to include("Bienvenue")
+    expect(page.at_css("[data-toasts] [data-toast-kind=notice]").text).to include("Vous êtes connecté")
     get admin_users_path
     expect(page.at_css("[data-toasts]")).to be_nil
   end

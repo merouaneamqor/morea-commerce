@@ -25,7 +25,12 @@ RSpec.describe "Send the confirmed parcels", type: :request do
     order
   end
 
-  def review = Orders::ShipmentReview.new(store: store)
+  def review = Orders::ShipmentReview.new(store: Store.find(store.id)) # a fresh store, so nothing remembered about its couriers is stale
+
+  # Ozon Express and Ameex are connected through delivery accounts (their keys live there).
+  def connect(provider)
+    store.delivery_accounts.create!(provider: provider, name: provider.capitalize, credentials: { "api_key" => "id-1", "api_secret" => "secret-1" }, is_active: true, connected_at: Time.current)
+  end
   def row_for(order) = review.rows.find { |row| row.order.id == order.id }
 
   it "lets a clean confirmed order go" do
@@ -160,7 +165,8 @@ RSpec.describe "Send the confirmed parcels", type: :request do
 
   describe "with Ozon Express and Ameex" do
     it "sends through the only connected company, whichever it is" do
-      store.update!(sendit_public_key: nil, sendit_secret_key: nil, ozon_customer_id: "1", ozon_api_key: "key")
+      store.update!(sendit_public_key: nil, sendit_secret_key: nil)
+      connect("ozon")
       sign_in
       ok = order_for("0612345030")
       expect(row_for(ok).carrier).to eq("ozon")
@@ -168,7 +174,9 @@ RSpec.describe "Send the confirmed parcels", type: :request do
     end
 
     it "asks for a choice when several companies are connected and the order names none" do
-      store.update!(ozon_customer_id: "1", ozon_api_key: "key")
+      store.update!(sendit_public_key: nil, sendit_secret_key: nil)
+      connect("ozon")
+      connect("ameex")
       sign_in
       undecided = order_for("0612345031")
       chosen = order_for("0612345032")

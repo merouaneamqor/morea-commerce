@@ -1,0 +1,23 @@
+es:
+  pixels:
+    title: "Píxeles"
+    lead: "Añade los identificadores de medición de Meta, TikTok y Google Analytics. Solo se cargan en la tienda cuando un visitante acepta la medición en el aviso de cookies."
+    back: "Volver"
+    save: "Guardar"
+    saved: "Ajustes de píxeles guardados."
+    connected: "Conectado"
+    meta:
+      title: "Meta Events Manager"
+      label: "ID de Events Manager"
+      help: "Events Manager → Fuentes de datos → tu píxel → ID. Solo dígitos. Déjalo vacío para desconectar."
+      events: "PageView, ViewContent, AddToCart, InitiateCheckout y Purchase se activan en la tienda."
+    tiktok:
+      title: "Píxel de TikTok"
+      label: "ID del píxel"
+      help: "TikTok Events Manager → tu píxel → ID. Letras y números. Déjalo vacío para desconectar."
+      events: "Page, ViewContent, AddToCart, InitiateCheckout y CompletePayment se activan en la tienda."
+    analytics:
+      title: "Google Analytics"
+      label: "ID de medición"
+      help: "Google Analytics → Administrar → Flujos de datos → tu flujo web → ID de medición (G-…). Déjalo vacío para desconectar."
+      events: "Las visitas a páginas se registran en cada visita a la tienda tras el consentimiento."

@@ -8,7 +8,7 @@ module Orders
   #   - another order of the same number holds the same products (same lines and quantities), created within DUPLICATE_WINDOW and not cancelled or returned:
   #     it is a duplicate parcel. The first order of a pair stays, the later one is held back. An identical order that already has a parcel also holds this one back.   (blocked)
   #   - the customer already cancelled an order within CANCELLED_WINDOW   (a warning: the owner may still send it, it is not ticked by default)
-  # The delivery company of an order is the one chosen on it (Sendit, Ozon Express, Ameex), or the store's only connected one; with several and no choice, the order waits for a choice.
+  # The delivery company of an order is the one chosen on it (Sendit, Ozon Express, Ameex), or the store's default courier, or its only connected one; with several and no choice, the order waits for a choice.
   # Orders that already have a parcel code (at any company) are never offered again. Everything is read from this store only; the phone is compared on its last 9 digits.
   class ShipmentReview
     SHIPPABLE = %w[confirmed preparing].freeze
@@ -87,10 +87,8 @@ module Orders
 
     # The company that will take this parcel, or nil when none can (not connected, or several connected and none chosen).
     def carrier_for(order)
-      chosen = order.delivery_provider.to_s.presence
-      return (configured.include?(chosen) ? chosen : nil) if chosen
-
-      configured.one? ? configured.first : nil
+      chosen = order.delivery_provider.to_s.presence || store.default_shipping_provider.presence || (configured.first if configured.one?)
+      configured.include?(chosen) ? chosen : nil
     end
 
     def configured

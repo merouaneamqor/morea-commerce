@@ -185,13 +185,14 @@ RSpec.describe "Meta Ads connection", type: :request do
     end
   end
 
-  it "opens from the seller Publicités menu alias and highlights that entry" do
+  it "opens from the seller Publicités address while its menu entry is closed (En cours d'amélioration)" do
     sign_in
     get "/publicites"
     expect(response).to have_http_status(:ok)
     expect(response.body).to include(I18n.t("meta_ads.connection"))
-    active = Nokogiri::HTML(response.body).css("aside nav ul a").find { |link| link["href"] == "/publicites" }
-    expect(active["class"]).to include("lg-nav__active", "font-semibold")
+    nav = Nokogiri::HTML(response.body).css("aside nav ul")
+    expect(nav.css("a").map { |link| link["href"] }).not_to include("/publicites")
+    expect(nav.css("li").find { |li| li.text.include?("Publicités") }.text).to include("En cours d'amélioration")
   end
 
   it "serves Publicités on the platform apex for a signed-in merchant" do

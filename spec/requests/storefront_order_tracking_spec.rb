@@ -25,30 +25,39 @@ RSpec.describe "Storefront order tracking", type: :request do
 
   before { host! "#{store.slug}.#{Store.base_domain}" }
 
-  it "shows an order by number on the owning tenant host" do
+  it "hides an order when the shopper only knows its number" do
     get "/en/orders/#{order.number}"
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "opens the private receipt after matching the full normalized phone" do
+    post "/en/orders/lookup", params: { number: order.number, phone: "06 12 34 56 78" }
+    expect(response).to have_http_status(:see_other)
+    expect(response).to redirect_to("/en/orders/#{order.number}")
+    follow_redirect!
     expect(response).to have_http_status(:ok)
     expect(response.body).to include(order.number)
+    expect(response.headers["Cache-Control"]).to include("private", "no-store")
   end
 
-  it "looks up an order when the phone last 8 digits match" do
-    post "/en/orders/lookup", params: { number: order.number, phone: "0612345678" }
-    expect(response).to redirect_to("/en/orders/#{order.number}")
+  [ "", "12345678", "0712345678" ].each do |phone|
+    it "refuses a phone that does not match in full (#{phone.inspect})" do
+      post "/en/orders/lookup", params: { number: order.number, phone: phone }
+      expect(response).to redirect_to("/en/orders/track")
+      expect(flash[:alert]).to be_present
+      get "/en/orders/#{order.number}"
+      expect(response).to have_http_status(:not_found)
+    end
   end
 
-  it "refuses lookup with the wrong phone" do
-    post "/en/orders/lookup", params: { number: order.number, phone: "0699999999" }
-    expect(response).to redirect_to("/en/orders/track")
-    expect(flash[:alert]).to be_present
-  end
-
-  it "does not expose another tenant's order number" do
+  it "keeps a verified session and tracking lookup scoped to the owning tenant" do
     foreign = Store.create!(slug: "trkfx-#{SecureRandom.hex(4)}", name: "Other", currency: "MAD", storefront_enabled: true)
-    foreign_customer = foreign.customers.create!(name: "Other", phone: "+212612345678", city: "Rabat")
+    foreign_customer = foreign.customers.create!(name: "Other", phone: "+212712345678", city: "Rabat")
     foreign_order = foreign.orders.create!(
+      number: order.number,
       customer: foreign_customer,
       customer_name: "Other",
-      customer_phone: "+212612345678",
+      customer_phone: foreign_customer.phone,
       customer_city: "Rabat",
       customer_address: "Ave 2",
       payment_method: "cod",
@@ -58,10 +67,14 @@ RSpec.describe "Storefront order tracking", type: :request do
       total_cents: 5_000
     )
 
+    post "/en/orders/lookup", params: { number: foreign_order.number, phone: foreign_customer.phone }
+    expect(response).to redirect_to("/en/orders/track")
+
+    post "/en/orders/lookup", params: { number: order.number, phone: "0612345678" }
+    expect(response).to redirect_to("/en/orders/#{order.number}")
+
+    host! "#{foreign.slug}.#{Store.base_domain}"
     get "/en/orders/#{foreign_order.number}"
     expect(response).to have_http_status(:not_found)
-
-    post "/en/orders/lookup", params: { number: foreign_order.number, phone: "0612345678" }
-    expect(response).to redirect_to("/en/orders/track")
   end
 end

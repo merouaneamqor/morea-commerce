@@ -1,0 +1,65 @@
+name: morea-performance
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: disposable
+      POSTGRES_DB: morea_performance_test
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U postgres -d morea_performance_test]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+    networks: [isolated]
+  web:
+    image: ${PERF_WEB_IMAGE:-morea-performance-local:locked}
+    working_dir: /audit
+    entrypoint: [/bin/bash, -ec]
+    command:
+      - |
+        tar -C /source --exclude=.git --exclude=.agents --exclude=log --exclude=tmp --exclude=storage --exclude='./performance/results' --exclude='.env*' --exclude='*.key' -cf - . | tar xf -
+        bundle check
+        bundle exec rails db:schema:load
+        bundle exec rails runner performance/scripts/seed.rb
+        bundle exec rails tailwindcss:build
+        bundle exec rails dartsass:build
+        exec bundle exec rails server -b 127.0.0.1 -p 3000
+    healthcheck:
+      test: [CMD, curl, -fsS, --max-time, "2", http://127.0.0.1:3000/up]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - ${PERF_SOURCE:-..}:/source:ro
+    tmpfs:
+      - /audit/tmp
+      - /audit/log
+    environment:
+      RAILS_ENV: test
+      SECRET_KEY_BASE: performance-disposable-ci-key-keep-this-out-of-production
+      DATABASE_URL: postgresql://postgres:disposable@db:5432/morea_performance_test
+      PERF_TARGET_TOKEN: ${PERF_TARGET_TOKEN:?Set an isolated test token}
+      PERF_SYNTHETIC_ORDERS: "yes"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [isolated]
+  k6:
+    image: grafana/k6:1.6.1
+    network_mode: service:web
+    volumes:
+      - .:/performance
+    working_dir: /performance
+    environment:
+      BASE_URL: http://127.0.0.1:3000
+      TARGET_ENV: local
+      PERF_TARGET_TOKEN: ${PERF_TARGET_TOKEN:?Set an isolated test token}
+      BASELINE_PASSED: ${BASELINE_PASSED:-no}
+      ALLOW_SYNTHETIC_ORDERS: ${ALLOW_SYNTHETIC_ORDERS:-no}
+      PERF_PROFILE: ${PERF_PROFILE:-stress}
+
+networks:
+  isolated:
+    internal: true

@@ -43,9 +43,9 @@
   <% end %>
 
   <% if @products.any? %>
-    <div class="home-products md:!grid-cols-3 lg:!grid-cols-4" data-controller="reveal">
+    <div class="home-products home-products--catalog" data-controller="reveal">
       <% @products.each do |product| %>
-        <%= render "products/card", product: product, sizes: "(max-width: 768px) 50vw, 25vw" %>
+        <%= render "products/card", product: product, sizes: "(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" %>
       <% end %>
     </div>
   <% else %>

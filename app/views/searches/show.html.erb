@@ -13,7 +13,7 @@
     <h1 class="collection-page__title"><%= t("shop.search_title") %></h1>
 
     <%= form_with url: search_path, method: :get, class: "mx-auto mt-8 flex max-w-xl gap-3", data: { turbo_action: "replace" } do %>
-      <%= search_field_tag :q, @query, placeholder: t("shop.search_placeholder"), aria: { label: t("shop.search_placeholder") }, maxlength: SearchesController::MAX_QUERY_LENGTH, class: "min-w-0 flex-1 border border-ink/20 bg-transparent px-4 py-3 text-sm" %>
+      <%= search_field_tag :q, @query, placeholder: t("shop.search_placeholder"), aria: { label: t("shop.search_placeholder") }, maxlength: SearchesController::MAX_QUERY_LENGTH, class: "min-w-0 flex-1 border border-ink/15 bg-white px-4 py-3 text-sm" %>
       <%= submit_tag t("shop.search_submit"), class: "maison-cta cursor-pointer" %>
     <% end %>
   </header>
@@ -39,9 +39,9 @@
   <% if @query.blank? %>
     <div class="py-20 text-center"><p class="text-sm text-ink-soft"><%= t("shop.search_prompt") %></p></div>
   <% elsif @products.any? %>
-    <div class="home-products md:!grid-cols-3 lg:!grid-cols-4" data-controller="reveal">
+    <div class="home-products home-products--catalog" data-controller="reveal">
       <% @products.each do |product| %>
-        <%= render "products/card", product: product, sizes: "(max-width: 768px) 50vw, 25vw" %>
+        <%= render "products/card", product: product, sizes: "(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" %>
       <% end %>
     </div>
 

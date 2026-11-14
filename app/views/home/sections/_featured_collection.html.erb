@@ -14,7 +14,7 @@
     <div class="home-products home-products--catalog" <% unless local_assigns[:lcp] %>data-controller="reveal" data-reveal-delay-value="100" data-reveal-stagger-value="true"<% end %>>
       <% products.each_with_index do |product, i| %>
         <div data-reveal-item>
-          <%= render "products/card", product: product, catalog: true, sizes: "(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw",
+          <%= render "products/card", product: product, sizes: "(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw",
                 loading: (local_assigns[:lcp] && i.zero? ? "eager" : nil),
                 fetchpriority: (local_assigns[:lcp] && i.zero? ? "high" : nil) %>
         </div>

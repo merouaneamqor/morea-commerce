@@ -1,6 +1,7 @@
 <% content_for :title, "#{@store&.name || "Morea"} — #{@store&.tagline.presence || t("store.tagline_fallback")}" %>
 <% hero = @sections.find { |section| section.kind == "hero" && section.image_src.present? } %>
-<% if @sections.first&.kind == "hero" %>
+<% first_hero = @sections.first if @sections.first&.kind == "hero" %>
+<% if first_hero&.image_src.present? %>
   <% content_for :hero_nav, "1" %>
 <% end %>
 <% if hero %>

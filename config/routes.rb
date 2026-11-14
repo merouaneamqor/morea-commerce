@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   post "/platform/oauth/authorize", to: "platform_oauth/authorizations#create"
   post "/platform/oauth/token", to: "platform_oauth/tokens#create", as: :platform_oauth_token
   match "/platform/oauth/token", to: "platform_oauth/tokens#preflight", via: :options
+  get "/platform/oauth/token", to: "platform_oauth/tokens#method_not_allowed"
 
   post "/graphql", to: "graphql#execute"
   match "/platform/mcp", to: "platform_mcp#handle", via: %i[get post delete]
@@ -46,6 +47,7 @@ Rails.application.routes.draw do
   post "/oauth/authorize", to: "oauth/authorizations#create"
   post "/oauth/token", to: "oauth/tokens#create"
   match "/oauth/token", to: "oauth/tokens#preflight", via: :options
+  get "/oauth/token", to: "oauth/tokens#method_not_allowed"
   post "/oauth/register", to: "oauth/registrations#create"
   match "/oauth/register", to: "oauth/registrations#preflight", via: :options
 

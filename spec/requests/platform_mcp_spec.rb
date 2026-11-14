@@ -14,8 +14,8 @@ RSpec.describe "Superadmin MCP credentials", type: :request do
     post "/admin/login", params: { email: user.email, password: password, workspace: user.store&.slug }
   end
 
-  def discover(secret = nil)
-    headers = { "Accept" => "application/json, text/event-stream" }
+  def discover(secret = nil, accept: "application/json")
+    headers = { "Accept" => accept, "Content-Type" => "application/json" }
     headers["Authorization"] = "Bearer #{secret}" if secret
     post "/platform/mcp", params: { jsonrpc: "2.0", id: 1, method: "tools/list" }, headers: headers, as: :json
   end
@@ -30,10 +30,11 @@ RSpec.describe "Superadmin MCP credentials", type: :request do
     expect(response).to have_http_status(:unauthorized)
   end
 
-  it "accepts platform credentials and rechecks revocation and owner status" do
+  it "accepts platform credentials over JSON Accept and rechecks revocation and owner status" do
     secret = PlatformApiToken.issue!(user: owner)
     discover(secret)
     expect(response).to have_http_status(:ok)
+    expect(response.headers["Cache-Control"]).to include("no-store")
     expect(response.body).to include("tools")
     owner.update!(status: "suspended")
     discover(secret)
@@ -42,6 +43,20 @@ RSpec.describe "Superadmin MCP credentials", type: :request do
     PlatformApiToken.where(user: owner).update_all(revoked_at: Time.current)
     discover(secret)
     expect(response).to have_http_status(:unauthorized)
+  end
+
+  it "rejects authenticated GET with Allow POST" do
+    secret = PlatformApiToken.issue!(user: owner)
+    get "/platform/mcp", headers: { "Authorization" => "Bearer #{secret}", "Accept" => "application/json" }
+    expect(response).to have_http_status(:method_not_allowed)
+    expect(response.headers["Allow"]).to eq("POST")
+  end
+
+  it "answers GET on the platform token endpoint with Allow POST" do
+    get "/platform/oauth/token"
+    expect(response).to have_http_status(:method_not_allowed)
+    expect(response.headers["Allow"]).to include("POST")
+    expect(response.parsed_body.fetch("error")).to eq("invalid_request")
   end
 
   it "does not grant platform tokens access to merchant APIs" do

@@ -42,7 +42,7 @@
     <div class="admin-card__header"><h2 class="admin-card__title">Connect an agent (MCP)</h2></div>
     <div class="space-y-4 px-4 pb-4">
       <p class="admin-help">
-        Paste this into the agent MCP settings. The agent receives the catalog guide at <code>morea://catalog</code> when it connects. Replace the token if this is not a freshly generated one.
+        Paste this into the agent MCP settings (Streamable HTTP, POST only). The agent receives the catalog guide at <code>morea://catalog</code> when it connects. Replace the token if this is not a freshly generated one.
       </p>
       <pre class="admin-input overflow-x-auto whitespace-pre-wrap text-sm"><%= JSON.pretty_generate(
         mcpServers: {

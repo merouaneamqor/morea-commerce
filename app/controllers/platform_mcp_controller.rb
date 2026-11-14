@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class PlatformMcpController < ActionController::API
+  include McpStreamableEndpoint
+
   before_action :authenticate_platform_token!
   rescue_from PlatformTools::Unauthorized do
     response.set_header("Cache-Control", "no-store")
@@ -8,19 +10,7 @@ class PlatformMcpController < ActionController::API
   end
 
   def handle
-    server = PlatformServer.build(user: @platform_user)
-    transport = MCP::Server::Transports::StreamableHTTPTransport.new(
-      server,
-      stateless: true,
-      dns_rebinding_protection: false,
-      serve_subscriptions_listen: false,
-      max_request_bytes: 1.megabyte
-    )
-    status, headers, body = transport.handle_request(request)
-    self.status = status
-    headers.each { |key, value| response.set_header(key, value) }
-    response.set_header("Cache-Control", "no-store")
-    self.response_body = body
+    serve_mcp(PlatformServer.build(user: @platform_user), max_request_bytes: 1.megabyte)
   end
 
   private

@@ -36,7 +36,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     expect(document.css("aside nav ul li").map { |li| li.text.squish }).to include(a_string_including("Comptabilité"))
     expect(document.css("aside nav ul li").map { |li| li.text.squish }).not_to include(a_string_matching(/\bProfit\b/))
     expect(document.at_css("h1").text).to include("Bonjour, Salma")
-    expect(response.body).to include("Boutique #{suffix}", "Plan · Starter")
+    expect(response.body).to include("Boutique #{suffix}", "Plan Starter")
     expect(document.css("[data-kpis=row1] [data-kpi]").map { |tile| tile.at_css("p").text.squish }).to eq([ "Chiffre d'affaires", "Commandes", "En attente de confirmation", "En cours de livraison", "Annulées", "Refusées" ])
     expect(document.css("[data-kpis=row2] [data-kpi]").map { |tile| tile.at_css("p").text.squish }).to eq([ "Taux de confirmation", "Taux de livraison", "Taux de retour" ])
   end

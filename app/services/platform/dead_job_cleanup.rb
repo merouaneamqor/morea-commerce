@@ -15,14 +15,23 @@ module Platform
 
     def self.clear_orphans!
       require "sidekiq/api"
-      removed = 0
-      Sidekiq::DeadSet.new.each do |job|
-        next unless orphan_class?(job.display_class)
-
-        job.delete
-        removed += 1
-      end
+      removed = delete_orphans_from!(Sidekiq::DeadSet.new)
       Result.new(removed: removed, mode: "orphans")
+    end
+
+    # Drop missing-class jobs from retry/schedule/dead/queues so a shared Redis
+    # leftover (RebuildBusinessSearchIndexJob, BookingMailer, …) cannot keep
+    # failing and inflating RSS on the free web+Sidekiq box.
+    def self.clear_runtime_orphans!
+      require "sidekiq/api"
+      removed = 0
+      removed += delete_orphans_from!(Sidekiq::RetrySet.new)
+      removed += delete_orphans_from!(Sidekiq::ScheduledSet.new)
+      removed += delete_orphans_from!(Sidekiq::DeadSet.new)
+      Sidekiq::Queue.all.each do |queue|
+        removed += delete_orphans_from!(queue)
+      end
+      Result.new(removed: removed, mode: "runtime_orphans")
     end
 
     def self.clear_all!
@@ -41,5 +50,17 @@ module Platform
       job.delete
       Result.new(removed: 1, mode: "jid")
     end
+
+    def self.delete_orphans_from!(set)
+      removed = 0
+      set.each do |job|
+        next unless orphan_class?(job.display_class)
+
+        job.delete
+        removed += 1
+      end
+      removed
+    end
+    private_class_method :delete_orphans_from!
   end
 end

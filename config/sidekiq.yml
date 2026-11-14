@@ -1,4 +1,6 @@
-:concurrency: 5
+# Co-hosted with Puma on free-tier morea-web: keep this low. Raise
+# SIDEKIQ_CONCURRENCY only when Sidekiq runs on its own instance.
+:concurrency: <%= Integer(ENV.fetch("SIDEKIQ_CONCURRENCY", "1")) %>
 :queues:
   - default
   - mailers

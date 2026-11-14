@@ -13,6 +13,15 @@ services:
     envVars:
       - key: RAILS_ENV
         value: production
+      # Stay inside free 512Mi while Puma and Sidekiq share this service.
+      - key: WEB_CONCURRENCY
+        value: "0"
+      - key: SIDEKIQ_CONCURRENCY
+        value: "1"
+      - key: RUBY_YJIT_ENABLE
+        value: "0"
+      - key: MALLOC_ARENA_MAX
+        value: "2"
       - key: APP_HOST
         value: seallo.ma
       - key: APP_BASE_DOMAIN

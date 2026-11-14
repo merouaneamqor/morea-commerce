@@ -37,7 +37,8 @@ module SellerHelper
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
     shop: '<path d="M4 9 5.5 4h13L20 9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9"/><path d="M5 12v8h14v-8"/><path d="M10 20v-4h4v4"/>',
-    theme: '<rect x="3" y="3" width="7" height="18" rx="1"/><rect x="12" y="3" width="9" height="8" rx="1"/><rect x="12" y="13" width="9" height="8" rx="1"/>'
+    theme: '<rect x="3" y="3" width="7" height="18" rx="1"/><rect x="12" y="3" width="9" height="8" rx="1"/><rect x="12" y="13" width="9" height="8" rx="1"/>',
+    pixel: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'
   }.freeze
 
   # [key, icon, label, link]; no link means "coming soon".
@@ -51,6 +52,7 @@ module SellerHelper
     [ "products", :box, "Produits", "/produits" ],
     [ "themes", :theme, "Éditeur de thème", "/themes" ],
     [ "ads", :target, "Publicités", "/publicites" ],
+    [ "pixels", :pixel, "Pixels", "/pixels" ],
     [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
     [ "integrations", :plug, "Intégrations API", "/integrations" ],
@@ -78,7 +80,7 @@ module SellerHelper
     "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
     "seallo_connections" => "integrations", "woocommerce_connections" => "integrations",
     "sendit_settings" => "integrations", "ozon_settings" => "integrations", "ameex_settings" => "integrations",
-    "meta_ads" => "ads", "advertising" => "ads", "pixels" => "ads",
+    "meta_ads" => "ads", "advertising" => "ads", "pixels" => "pixels",
     "accounting" => "accounting", "assignment_rules" => "confirmation", "stores" => "store", "agent_billing" => "confirmation",
     "themes" => "themes", "online_store" => "themes", "home_sections" => "themes"
   }.freeze

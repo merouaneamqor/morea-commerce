@@ -1,0 +1,23 @@
+en:
+  pixels:
+    title: "Pixels"
+    lead: "Add Meta, TikTok and Google Analytics measurement IDs. They load on the storefront only after a visitor accepts measurement in the cookie banner."
+    back: "Back"
+    save: "Save"
+    saved: "Pixel settings saved."
+    connected: "Connected"
+    meta:
+      title: "Meta Events Manager"
+      label: "Events Manager ID"
+      help: "Events Manager → Data sources → your pixel → ID. Digits only. Leave blank to disconnect."
+      events: "PageView, ViewContent, AddToCart, InitiateCheckout and Purchase fire on the storefront."
+    tiktok:
+      title: "TikTok Pixel"
+      label: "Pixel ID"
+      help: "TikTok Events Manager → your pixel → ID. Letters and numbers. Leave blank to disconnect."
+      events: "Page, ViewContent, AddToCart, InitiateCheckout and CompletePayment fire on the storefront."
+    analytics:
+      title: "Google Analytics"
+      label: "Measurement ID"
+      help: "Google Analytics → Admin → Data streams → your web stream → Measurement ID (G-…). Leave blank to disconnect."
+      events: "Page views fire on each storefront visit after consent."

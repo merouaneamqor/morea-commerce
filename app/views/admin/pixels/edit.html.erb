@@ -1,49 +1,92 @@
-<% content_for :title, "Pixels, Admin" %>
+<% content_for :title, t("pixels.title") %>
+<% content_for :admin_page_class, "seller-page" %>
+<% content_for :seller_lang, "1" %>
 
-<div class="admin-page-header">
-  <h1 class="admin-page-header__title">Pixels</h1>
-  <button type="submit" form="pixels-form" class="admin-btn">Save</button>
-</div>
+<header class="flex flex-wrap items-start justify-between gap-3">
+  <div class="flex items-start gap-3">
+    <%= link_to "/dashboard", class: "mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[#e8e3df] bg-white text-[#1f2430] hover:bg-[#f3f1ef]",
+          data: { back_button: true }, "aria-label": t("pixels.back"), title: t("pixels.back") do %>
+      <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round] rtl:rotate-180" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+    <% end %>
+    <div>
+      <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= t("pixels.title") %></h1>
+      <p class="max-w-2xl text-sm"><%= t("pixels.lead") %></p>
+    </div>
+  </div>
+  <%= render "admin/shared/language_switcher" %>
+</header>
 
-<%= form_with model: @store, url: admin_pixels_path, method: :patch, id: "pixels-form", class: "admin-stack" do |f| %>
-  <p class="admin-help">
-    Meta and TikTok pixels use cookies. They load on the storefront only after a visitor accepts measurement in the cookie banner. Reject keeps necessary cookies only.
-  </p>
+<%= form_with model: @store, url: admin_pixels_path, method: :patch, id: "pixels-form", class: "space-y-4" do |f| %>
   <% if @store.errors.any? %>
-    <div class="admin-banner admin-banner--critical">
+    <div role="alert" class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]">
       <%= @store.errors.full_messages.to_sentence %>
     </div>
   <% end %>
 
-  <section class="admin-card">
-    <div class="admin-card__header"><h2 class="admin-card__title">Meta Pixel</h2></div>
-    <div class="space-y-4 px-4 pb-4">
+  <section class="rounded-2xl border border-[#e8e3df] bg-white p-5" data-pixel="meta">
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      <img src="/images/partners/meta.png" alt="Meta" class="size-11 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
       <div>
-        <%= f.label :meta_pixel_id, "Pixel ID", class: "admin-label" %>
-        <%= f.text_field :meta_pixel_id, class: "admin-input", placeholder: "123456789012345", autocomplete: "off", inputmode: "numeric" %>
-        <p class="admin-help">Events Manager, then Data sources, then your pixel, then the ID. Digits only. Leave the field blank to disconnect.</p>
+        <h2 class="text-base font-semibold text-[#1f2430]"><%= t("pixels.meta.title") %></h2>
+        <p class="text-xs text-[#8a8380]"><%= t("pixels.meta.help") %></p>
       </div>
       <% if @store.meta_pixel_id.present? %>
-        <p class="admin-muted">Connected. PageView, ViewContent, AddToCart, InitiateCheckout, and Purchase fire on the storefront.</p>
+        <span class="ms-auto rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><%= t("pixels.connected") %></span>
       <% end %>
     </div>
+    <div>
+      <%= f.label :meta_pixel_id, t("pixels.meta.label"), class: "mb-1.5 block text-sm font-medium text-[#1f2430]" %>
+      <%= f.text_field :meta_pixel_id, class: "h-11 w-full rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#a8432e]",
+            placeholder: "123456789012345", autocomplete: "off", inputmode: "numeric", dir: "ltr" %>
+    </div>
+    <% if @store.meta_pixel_id.present? %>
+      <p class="mt-2 text-xs text-[#8a8380]"><%= t("pixels.meta.events") %></p>
+    <% end %>
   </section>
 
-  <section class="admin-card">
-    <div class="admin-card__header"><h2 class="admin-card__title">TikTok Pixel</h2></div>
-    <div class="space-y-4 px-4 pb-4">
+  <section class="rounded-2xl border border-[#e8e3df] bg-white p-5" data-pixel="tiktok">
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      <img src="/images/partners/tiktok.png" alt="TikTok" class="size-11 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
       <div>
-        <%= f.label :tiktok_pixel_id, "Pixel ID", class: "admin-label" %>
-        <%= f.text_field :tiktok_pixel_id, class: "admin-input", placeholder: "CXXXXXXXXXXXXXXXXXX", autocomplete: "off" %>
-        <p class="admin-help">TikTok Events Manager, then the pixel, then the ID. Letters and numbers. Leave the field blank to disconnect.</p>
+        <h2 class="text-base font-semibold text-[#1f2430]"><%= t("pixels.tiktok.title") %></h2>
+        <p class="text-xs text-[#8a8380]"><%= t("pixels.tiktok.help") %></p>
       </div>
       <% if @store.tiktok_pixel_id.present? %>
-        <p class="admin-muted">Connected. The page event, ViewContent, AddToCart, InitiateCheckout, and CompletePayment fire on the storefront.</p>
+        <span class="ms-auto rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><%= t("pixels.connected") %></span>
       <% end %>
     </div>
+    <div>
+      <%= f.label :tiktok_pixel_id, t("pixels.tiktok.label"), class: "mb-1.5 block text-sm font-medium text-[#1f2430]" %>
+      <%= f.text_field :tiktok_pixel_id, class: "h-11 w-full rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#a8432e]",
+            placeholder: "CXXXXXXXXXXXXXXXXXX", autocomplete: "off", dir: "ltr" %>
+    </div>
+    <% if @store.tiktok_pixel_id.present? %>
+      <p class="mt-2 text-xs text-[#8a8380]"><%= t("pixels.tiktok.events") %></p>
+    <% end %>
+  </section>
+
+  <section class="rounded-2xl border border-[#e8e3df] bg-white p-5" data-pixel="analytics">
+    <div class="mb-4 flex flex-wrap items-center gap-3">
+      <div class="flex size-11 items-center justify-center rounded-full border border-[#f0ebe7] bg-white text-sm font-bold text-[#4285F4]">GA</div>
+      <div>
+        <h2 class="text-base font-semibold text-[#1f2430]"><%= t("pixels.analytics.title") %></h2>
+        <p class="text-xs text-[#8a8380]"><%= t("pixels.analytics.help") %></p>
+      </div>
+      <% if @store.google_analytics_id.present? %>
+        <span class="ms-auto rounded-full bg-[#e3f3e8] px-2.5 py-1 text-xs font-semibold text-[#2f7a4a]"><%= t("pixels.connected") %></span>
+      <% end %>
+    </div>
+    <div>
+      <%= f.label :google_analytics_id, t("pixels.analytics.label"), class: "mb-1.5 block text-sm font-medium text-[#1f2430]" %>
+      <%= f.text_field :google_analytics_id, class: "h-11 w-full rounded-xl border border-[#e8e3df] bg-white px-3 text-sm text-[#1f2430] outline-none focus:border-[#a8432e]",
+            placeholder: "G-XXXXXXXXXX", autocomplete: "off", dir: "ltr" %>
+    </div>
+    <% if @store.google_analytics_id.present? %>
+      <p class="mt-2 text-xs text-[#8a8380]"><%= t("pixels.analytics.events") %></p>
+    <% end %>
   </section>
 
   <div class="flex justify-end">
-    <%= f.submit "Save", class: "admin-btn" %>
+    <%= f.submit t("pixels.save"), class: "h-11 rounded-xl bg-[#a8432e] px-5 text-sm font-semibold text-white hover:bg-[#8e3624]" %>
   </div>
 <% end %>

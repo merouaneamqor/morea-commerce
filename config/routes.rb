@@ -85,6 +85,7 @@ Rails.application.routes.draw do
   get "/clients", to: "admin/customers#index", as: :seller_customers
   get "/integrations", to: "admin/store_connections#index", as: :seller_integrations
   get "/publicites", to: "admin/meta_ads#show", as: :seller_ads
+  get "/pixels", to: "admin/pixels#edit", as: :seller_pixels
   get "/themes", to: "admin/themes#open", as: :seller_theme_editor
   get "/comptabilite", to: "admin/accounting#show", as: :seller_accounting
   get "/comptabilite/export", to: "admin/accounting#export", as: :seller_accounting_export, defaults: { format: "csv" }

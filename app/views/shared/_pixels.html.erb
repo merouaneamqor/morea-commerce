@@ -34,3 +34,13 @@
     }(window, document, 'ttq');
   </script>
 <% end %>
+
+<% if current_store.google_analytics_id.present? %>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= current_store.google_analytics_id %>"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', <%= raw current_store.google_analytics_id.to_json %>, { send_page_view: false });
+  </script>
+<% end %>

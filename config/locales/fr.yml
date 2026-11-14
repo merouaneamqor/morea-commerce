@@ -226,7 +226,7 @@ fr:
     privacy_policy: "politique de confidentialité"
     terms_of_service: "conditions générales"
     cookie_title: "Cookies"
-    cookie_body: "Nous utilisons des cookies nécessaires au panier et au fonctionnement du site. La mesure d’audience (Meta, TikTok) ne se charge que si vous acceptez."
+    cookie_body: "Nous utilisons des cookies nécessaires au panier et au fonctionnement du site. La mesure d’audience (Meta, TikTok, Google Analytics) ne se charge que si vous acceptez."
     cookie_body_platform: "Nous utilisons un cookie nécessaire pour mémoriser votre langue. Aucun cookie de mesure n’est chargé sur ces pages. Les polices Google Fonts peuvent être chargées depuis le CDN de Google."
     cookie_policy_link: "Politique de cookies"
     cookie_ok: "Compris"
@@ -243,7 +243,7 @@ fr:
     purposes: "la gestion et la livraison de vos commandes, la relation client (confirmation par téléphone), le suivi de commande et, le cas échéant, la lutte contre la fraude."
     cndp_authorized: "Ce traitement a été notifié et autorisé par la CNDP au titre du récépissé ou de l’autorisation n° %{number}."
     cndp_pending: "Le responsable du traitement s’engage à notifier ce traitement à la Commission Nationale de contrôle de la protection des données à caractère personnel (CNDP) conformément à la loi 09-08."
-    cookies_section: "Des cookies techniques sont nécessaires au panier et à la session. Les cookies de mesure (Meta Pixel, TikTok Pixel) ne se chargent qu’après votre acceptation dans le bandeau. Vous pouvez refuser la mesure et continuer vos achats."
+    cookies_section: "Des cookies techniques sont nécessaires au panier et à la session. Les cookies de mesure (Meta Pixel, TikTok Pixel, Google Analytics) ne se chargent qu’après votre acceptation dans le bandeau. Vous pouvez refuser la mesure et continuer vos achats."
     retention: "Les données liées à une commande sont conservées le temps nécessaire à la livraison, aux obligations comptables et légales applicables, puis archivées ou supprimées de manière proportionnée."
     prospecting: "Vos données ne sont pas utilisées à des fins de prospection commerciale sans votre consentement préalable. Vous pouvez vous opposer à tout moment en contactant le service indiqué ci-dessous ou via le formulaire de droits sur ce site."
     recipients:
@@ -284,7 +284,7 @@ fr:
 
       Les cookies nécessaires font fonctionner le panier, la langue et la session. Ils ne nécessitent pas de consentement.
 
-      Les cookies de mesure (Meta Pixel, TikTok Pixel) aident à comprendre les visites et les publicités. Ils ne se chargent que si vous appuyez sur Accepter. Refusez la mesure pour naviguer sans eux.
+      Les cookies de mesure (Meta Pixel, TikTok Pixel, Google Analytics) aident à comprendre les visites et les publicités. Ils ne se chargent que si vous appuyez sur Accepter. Refusez la mesure pour naviguer sans eux.
 
       Voir aussi la page confidentialité : %{privacy_path}. Contact : %{contact}.
   privacy_rights:
@@ -355,12 +355,12 @@ fr:
         - { title: "Produits et stock", body: "Variantes, galeries par couleur et historique de chaque mouvement de stock." }
         - { title: "Expédition", body: "Envoi au transporteur connecté, impression des étiquettes et synchronisation du statut de livraison." }
         - { title: "Comptes équipe", body: "L'équipe se connecte à sa boutique, avec sessions expirantes et journal d'audit." }
-        - { title: "Pixels de suivi", body: "Ajoutez les pixels Meta et TikTok par boutique." }
+        - { title: "Pixels de suivi", body: "Ajoutez Meta, TikTok et Google Analytics par boutique." }
         - { title: "API et automatisation", body: "Jetons de boutique, GraphQL et MCP permettent à des outils connectés de lire et gérer une boutique." }
     integrations:
       title: "Se connecte à vos outils"
       lead: "Les connexions transporteur, publicité et automatisation disponibles aujourd'hui."
-      items: [ "Expédition Sendit", "Meta Pixel", "TikTok Pixel", "Alertes Discord", "API GraphQL", "MCP", "OAuth" ]
+      items: [ "Expédition Sendit", "Meta Pixel", "TikTok Pixel", "Google Analytics", "Alertes Discord", "API GraphQL", "MCP", "OAuth" ]
     faq:
       title: "Questions"
       items:

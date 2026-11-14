@@ -21,6 +21,10 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     document.css("aside nav ul a").reject { |link| link["data-subnav-item"].present? && link["data-subnav-item"] != "queue" }.map { |link| link["href"] }   # the pages inside Centre d'appels are checked in call_center_menu_spec
   end
 
+  def owner_menu_links
+    %w[/dashboard /commandes /confirmation /clients /livraison /produits /themes /publicites /pixels /comptabilite /equipe /integrations /boutique]
+  end
+
   it "requires authentication" do
     host! "#{store.slug}.#{Store.base_domain}"
     get "/dashboard"

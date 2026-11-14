@@ -226,7 +226,7 @@ en:
     privacy_policy: "privacy policy"
     terms_of_service: "terms of service"
     cookie_title: "Cookies"
-    cookie_body: "We use necessary cookies for your bag and site functionality. Audience measurement (Meta, TikTok) loads only if you accept."
+    cookie_body: "We use necessary cookies for your bag and site functionality. Audience measurement (Meta, TikTok, Google Analytics) loads only if you accept."
     cookie_body_platform: "We use a necessary cookie to remember your language. Optional measurement cookies are not used on these pages. Google Fonts may load from Google’s CDN."
     cookie_policy_link: "Cookie policy"
     cookie_ok: "Got it"
@@ -243,7 +243,7 @@ en:
     purposes: "order fulfilment and delivery, customer care (phone confirmation), order tracking and, where applicable, fraud prevention."
     cndp_authorized: "This processing was notified to and authorized by the CNDP under receipt or authorization no. %{number}."
     cndp_pending: "The data controller undertakes to notify this processing to Morocco’s CNDP (Commission Nationale de contrôle de la protection des données à caractère personnel) as required by Law 09-08."
-    cookies_section: "Strictly necessary cookies power your bag and session. Measurement cookies (Meta Pixel, TikTok Pixel) load only after you accept them in the cookie banner. You can reject measurement and keep shopping."
+    cookies_section: "Strictly necessary cookies power your bag and session. Measurement cookies (Meta Pixel, TikTok Pixel, Google Analytics) load only after you accept them in the cookie banner. You can reject measurement and keep shopping."
     retention: "Order-related data is kept only as long as needed for delivery, applicable legal and accounting obligations, then archived or deleted proportionately."
     prospecting: "Your data is not used for direct marketing without your prior consent. You may object at any time by contacting the address below or using the data-rights form on this site."
     recipients:
@@ -284,7 +284,7 @@ en:
 
       Necessary cookies keep your bag, locale and session working. They do not require consent.
 
-      Measurement cookies (Meta Pixel, TikTok Pixel) help understand visits and ads. They load only if you press Accept on the cookie banner. Reject measurement to browse without them.
+      Measurement cookies (Meta Pixel, TikTok Pixel, Google Analytics) help understand visits and ads. They load only if you press Accept on the cookie banner. Reject measurement to browse without them.
 
       See also the privacy page at %{privacy_path}. Contact: %{contact}.
   privacy_rights:
@@ -355,12 +355,12 @@ en:
         - { title: "Products and stock", body: "Variants, colour galleries and a stock history for every movement." }
         - { title: "Shipping", body: "Send orders to the connected carrier, print labels and sync delivery status." }
         - { title: "Staff accounts", body: "Staff sign in to their own store, with expiring sessions and an audit trail." }
-        - { title: "Tracking pixels", body: "Add Meta and TikTok pixels per store." }
+        - { title: "Tracking pixels", body: "Add Meta, TikTok and Google Analytics tags per store." }
         - { title: "API and automation", body: "Store tokens, GraphQL and MCP let connected tools read and manage a store." }
     integrations:
       title: "Connects to what you already use"
       lead: "Carrier, ads and automation connections that exist today."
-      items: [ "Sendit shipping", "Meta Pixel", "TikTok Pixel", "Discord order alerts", "GraphQL API", "MCP", "OAuth" ]
+      items: [ "Sendit shipping", "Meta Pixel", "TikTok Pixel", "Google Analytics", "Discord order alerts", "GraphQL API", "MCP", "OAuth" ]
     faq:
       title: "Questions"
       items:

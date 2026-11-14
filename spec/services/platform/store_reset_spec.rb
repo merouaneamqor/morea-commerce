@@ -57,7 +57,7 @@ RSpec.describe Platform::StoreReset do
     workspace.invoices.create!(period_starts_on: Date.current, period_ends_on: 1.month.from_now.to_date)
     workspace.update!(tagline: "Synthetic tagline", whatsapp: "0612345678", shipping_dh: 40, free_shipping_threshold_dh: 300, low_stock_threshold: 9,
       sendit_public_key: "synthetic-public", sendit_secret_key: "synthetic-secret", discord_orders_webhook_url: "https://discord.example.test/hook",
-      meta_pixel_id: "1234567890", legal_entity_name: "Synthetic LLC", admin_theme: (Store::ADMIN_THEMES - [ Store.column_defaults["admin_theme"] ]).first, sendit_allow_open: false)
+      meta_pixel_id: "1234567890", google_analytics_id: "G-RESETTEST1", legal_entity_name: "Synthetic LLC", admin_theme: (Store::ADMIN_THEMES - [ Store.column_defaults["admin_theme"] ]).first, sendit_allow_open: false)
     workspace.generate_api_token!
     order
   end

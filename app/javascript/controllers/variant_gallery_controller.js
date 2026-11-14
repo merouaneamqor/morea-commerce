@@ -2,7 +2,9 @@ import { Controller } from "@hotwired/stimulus"
 
 // Swaps the PDP gallery to the selected variant's photos. Falls back to the
 // product gallery when the variant has none. Syncs on connect so a lazy-loaded
-// picker change that fired earlier is still applied.
+// picker change that fired earlier is still applied. Prefers the live picker
+// controller's variants when present so HTML-escaped data attributes are not
+// the only source of truth after connect.
 export default class extends Controller {
   static targets = ["gallery", "shotTemplate"]
   static values = { productImages: Array }
@@ -25,13 +27,25 @@ export default class extends Controller {
   }
 
   selectedVariant() {
-    const id = this.element.querySelector("[data-variant-picker-target='variantId']")?.value
+    const id = this.selectedVariantId()
     if (!id) return null
 
-    return this.variantsFromPicker().find((variant) => String(variant.id) === String(id)) || null
+    return this.variantsList().find((variant) => String(variant.id) === String(id)) || null
   }
 
-  variantsFromPicker() {
+  selectedVariantId() {
+    const picker = this.pickerController()
+    if (picker?.hasVariantIdTarget) return picker.variantIdTarget.value
+
+    return this.element.querySelector("[data-variant-picker-target='variantId']")?.value
+  }
+
+  variantsList() {
+    const picker = this.pickerController()
+    if (picker && Array.isArray(picker.variantsValue) && picker.variantsValue.length > 0) {
+      return picker.variantsValue
+    }
+
     const raw = this.element.getAttribute("data-variant-picker-variants-value")
     if (!raw) return []
 
@@ -41,6 +55,13 @@ export default class extends Controller {
     } catch (_error) {
       return []
     }
+  }
+
+  pickerController() {
+    const app = this.application
+    if (!app?.getControllerForElementAndIdentifier) return null
+
+    return app.getControllerForElementAndIdentifier(this.element, "variant-picker")
   }
 
   renderVariant(variant) {
@@ -69,6 +90,7 @@ export default class extends Controller {
     }
     this.currentGalleryKey = null
     this.renderedOnce = true
+    this.resetGalleryScroll()
   }
 
   renderUrls(urls, { productFallback = false } = {}) {
@@ -95,5 +117,11 @@ export default class extends Controller {
     this.galleryTarget.replaceChildren(...shots)
     this.currentGalleryKey = key
     this.renderedOnce = true
+    this.resetGalleryScroll()
+  }
+
+  resetGalleryScroll() {
+    if (!this.hasGalleryTarget) return
+    this.galleryTarget.scrollLeft = 0
   }
 }

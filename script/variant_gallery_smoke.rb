@@ -13,6 +13,7 @@ black = product.product_variants.create!(option1_value: "S", option2_value: "Bla
 plain = product.product_variants.create!(option1_value: "S", option2_value: "White", stock: 2)
 legacy = product.product_variants.create!(name: "L / Pink", stock: 2)
 png = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN9sAAAAASUVORK5CYII="
+named = nil
 
 begin
   # Exercise the actual MCP upload tool, rather than attaching variant fixtures directly.
@@ -43,6 +44,25 @@ begin
     selected_key = selected_images.first.to_s.split("?").first.split("/").last
     raise "SSR gallery did not use the selected variant's photos" unless lead && lead["src"].to_s.include?(selected_key)
   end
+
+  # Color photos left on the product gallery (common merchant path) must still
+  # drive the swatch → image swap when no variant row has its own attachments.
+  named = store.products.create!(slug: "named-color-files", name: "Named color files", price_cents: 1000, status: "active")
+  named.images.attach(io: StringIO.new(Base64.decode64(png)), filename: "noir-front.png", content_type: "image/png")
+  named.images.attach(io: StringIO.new(Base64.decode64(png)), filename: "rose-poudre-side.png", content_type: "image/png")
+  named.images.attach(io: StringIO.new(Base64.decode64(png)), filename: "lookbook.png", content_type: "image/png")
+  noir = named.product_variants.create!(option1_value: "S", option2_value: "Noir", stock: 2)
+  rose = named.product_variants.create!(option1_value: "S", option2_value: "Rose poudré", stock: 2)
+  beige = named.product_variants.create!(option1_value: "S", option2_value: "Beige", stock: 2)
+  http.get "/en/products/#{named.slug}"
+  raise "Named-color product page failed: #{http.response.status}" unless http.response.status == 200
+  named_doc = Nokogiri::HTML(http.response.body)
+  named_photos = JSON.parse(named_doc.at_css("[data-variant-picker-variants-value]")["data-variant-picker-variants-value"]).index_by { |variant| variant["id"] }
+  raise "Filename noir photo not mapped to Noir" unless named_photos.fetch(noir.id)["images"]&.any? { |url| url.include?("noir-front") }
+  raise "Accented color filename not mapped" unless named_photos.fetch(rose.id)["images"]&.any? { |url| url.include?("rose-poudre") }
+  raise "Unrelated product photo attached to Beige" unless named_photos.fetch(beige.id)["images"].nil?
+  named_lead = named_doc.at_css(".pdp__gallery img")["src"].to_s
+  raise "SSR did not paint the filename-mapped color" unless named_lead.include?("noir-front")
 
   # Upload a different color through the admin editor.
   password = SecureRandom.hex(16)
@@ -94,12 +114,14 @@ begin
   shared_blob = library.first.blob
   shared_blob.purge
   raise "Shared image file was deleted" unless shared_blob.service.exist?(shared_blob.key)
-  puts "Variant galleries: MCP + admin uploads, same-color size sharing, legacy options, SSR selected-color photos, unmapped-color fallback and product without general photos OK"
+  puts "Variant galleries: MCP + admin uploads, same-color size sharing, legacy options, SSR selected-color photos, filename-mapped product photos, unmapped-color fallback and product without general photos OK"
   puts "Admin media picker: reuse existing photos, main-first order, stable IDs, bulk + individual saves, clear to inherit and reject foreign media atomically OK"
 ensure
   file&.close!
   product&.product_variants&.each { |variant| variant.images.purge }
   product&.images&.purge
+  named&.product_variants&.each { |variant| variant.images.purge }
+  named&.images&.purge
   foreign_blob&.purge
   store&.destroy!
 end

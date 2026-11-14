@@ -78,16 +78,6 @@
       }
     }
 
-    // Language menu: open / close, links reload the page in the chosen language.
-    var lang = root.querySelector("[data-controller='locale-switcher']");
-    if (lang) {
-      var lbtn = lang.querySelector("button"), lmenu = lang.querySelector("ul");
-      var lset = function (open) { lmenu.hidden = !open; lbtn.setAttribute("aria-expanded", open ? "true" : "false"); };
-      lbtn.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); lset(lmenu.hidden); });
-      document.addEventListener("click", function (e) { if (!lang.contains(e.target)) lset(false); });
-      document.addEventListener("keydown", function (e) { if (e.key === "Escape") lset(false); });
-    }
-
     // Menu sections open in a window over the page.
     var modal = root.querySelector("[data-modal]");
     var sections = modal.querySelectorAll("[data-section]");

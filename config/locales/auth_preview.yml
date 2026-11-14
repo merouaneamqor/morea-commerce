@@ -2,8 +2,8 @@
 fr:
   auth_preview:
     eyebrow: "Exemple, pas les chiffres d'une boutique"
-    headline: "Confirmez la commande."
-    headline_accent: "Comptez le bénéfice."
+    headline: "Votre e-commerce,"
+    headline_accent: "sous contrôle."
     tagline: "Votre équipe confirme la commande. Seallo soustrait les coûts à la livraison et affiche le bénéfice."
     live: "Exemple"
     new_order: "Nouvelle commande, Shopify"
@@ -29,8 +29,8 @@ fr:
 en:
   auth_preview:
     eyebrow: "Example, not a store's numbers"
-    headline: "Confirm the order."
-    headline_accent: "Count the profit."
+    headline: "Your e-commerce,"
+    headline_accent: "under control."
     tagline: "Your team confirms the order. Seallo subtracts the costs on delivery and shows the profit."
     live: "Example"
     new_order: "New order, Shopify"
@@ -56,8 +56,8 @@ en:
 ar:
   auth_preview:
     eyebrow: "مثال، وليست أرقام متجر"
-    headline: "أكّد الطلب."
-    headline_accent: "ثم احسب الربح."
+    headline: "تجارتك الإلكترونية،"
+    headline_accent: "تحت السيطرة."
     tagline: "يؤكد فريقك الطلب. يخصم seallo التكاليف عند التسليم ويعرض الربح."
     live: "مثال"
     new_order: "طلب جديد، Shopify"

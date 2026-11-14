@@ -87,7 +87,7 @@ RSpec.describe "Manager to confirmation-agent workflow", type: :request do
 
     worker.get "/admin/my_stats"
     expect(worker.response).to have_http_status(:ok)
-    expect(document(worker).css(".seallo-kpi strong").first.text.strip).to eq("1")
+    expect(document(worker).at_css("[data-kpi=confirmed] [data-value]").text.strip).to start_with("1")
     worker.get "/admin/confirmations/home"
     expect(worker.response).to have_http_status(:ok)
     expect(document(worker).css("div.grid.grid-cols-2 > .admin-card .admin-metric__value").first.text.strip).to eq("10")

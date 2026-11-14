@@ -78,8 +78,10 @@ module Confirmations
     end
 
     def open_user_ids
-      # Clock-in stack: an open shift (ended_at nil) means on shift, matching feat/team-page.
-      @open_user_ids ||= ConfirmationShift.open.where(store: @store).pluck(:user_id)
+      # Fresh Presence heartbeats count; open clock-in shifts with no heartbeat yet also count.
+      grace = @now - ConfirmationShift::PRESENCE_GRACE
+      @open_user_ids ||= ConfirmationShift.open.where(store: @store)
+        .where("last_seen_at IS NULL OR last_seen_at >= ?", grace).pluck(:user_id)
     end
   end
 end

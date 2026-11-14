@@ -139,7 +139,7 @@ RSpec.describe "Call panel", type: :request do
     post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: {
       outcome: "cancelled", notes: "par client",
       order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: {} }       # no product: the editor would refuse a total of 0
-    }
+    }, as: :json
 
     expect(response).to have_http_status(:ok), response.body
     expect(order.reload.status).to eq("cancelled")
@@ -152,7 +152,7 @@ RSpec.describe "Call panel", type: :request do
     sign_in(agent)
     post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
-    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed", order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: {} } }
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed", order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: {} } }, as: :json
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(order.reload.status).to eq("new")

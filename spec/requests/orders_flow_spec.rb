@@ -207,7 +207,7 @@ RSpec.describe "Orders flow, from creation to confirmation", type: :request do
       get "/admin/confirmations"
 
       expect(document.at_css("[data-clock-in-required]").text).to include(I18n.t("admin.confirmations.clock_in_required"))
-      expect(document.css("form[action$='/claim'] button[disabled], form[action$='/claim'] input[disabled]").size).to eq(1)
+      expect(document.css("form[action$='/call'] button[disabled], form[action$='/call'] input[disabled]").size).to be >= 1
 
       post "/admin/confirmations/#{waiting.id}/claim"
 

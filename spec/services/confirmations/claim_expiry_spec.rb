@@ -56,7 +56,7 @@ RSpec.describe Confirmations::ClaimExpiry do
     expect(first.reload.order_confirmation.assigned_user_id).to be_nil
     expect(second.reload.order_confirmation.assigned_user_id).to be_nil
     expect(first.order_events.pluck(:body)).to include(
-      "Claim released: the agent left the confirmation desk"
+      "Claim released: the agent clocked out"
     )
   end
 

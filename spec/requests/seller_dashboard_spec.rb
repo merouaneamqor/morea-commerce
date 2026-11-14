@@ -31,7 +31,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     sign_in(owner)
     get "/dashboard", params: { locale: "fr" }
     expect(response).to have_http_status(:ok)
-    expect(menu_links).to eq(%w[/dashboard /commandes /confirmation /clients /livraison /produits /comptabilite /equipe /integrations /themes /publicites /boutique])
+    expect(menu_links).to eq(%w[/dashboard /commandes /confirmation /clients /livraison /produits /themes /publicites /comptabilite /equipe /integrations /boutique])
     expect(document.css("aside nav ul li span").map(&:text).join).to include("Publicités")
     expect(document.css("aside nav ul li").map { |li| li.text.squish }).to include(a_string_including("Comptabilité"))
     expect(document.css("aside nav ul li").map { |li| li.text.squish }).not_to include(a_string_matching(/\bProfit\b/))

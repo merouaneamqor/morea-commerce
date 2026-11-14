@@ -1,0 +1,8 @@
+fr:
+  admin:
+    team_actions:
+      role_changed: "Rôle de %{name} modifié."
+      deactivated: "%{name} est désactivé : la personne ne peut plus se connecter."
+      reactivated: "%{name} est de nouveau actif."
+      last_owner: "Gardez au moins un propriétaire actif."
+      unknown_role: "Choisissez un rôle valide."

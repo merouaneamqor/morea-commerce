@@ -1,0 +1,8 @@
+ar:
+  admin:
+    team_actions:
+      role_changed: "تم تغيير دور %{name}."
+      deactivated: "تم تعطيل %{name}: لم يعد بإمكانه تسجيل الدخول."
+      reactivated: "%{name} نشط من جديد."
+      last_owner: "احتفظ بمالك نشط واحد على الأقل."
+      unknown_role: "اختر دورًا صالحًا."

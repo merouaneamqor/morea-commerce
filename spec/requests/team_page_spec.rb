@@ -30,8 +30,8 @@ RSpec.describe "Team page", type: :request do
     expect(rows[saida.id].text).to include("Moubarak Amqor", "Agent", "Actif", "1 boutique")
     expect(rows[yasmine.id].text).to include("Suspendu", "Système")
     expect(page.at_css("[data-add-user]")["href"]).to eq(new_admin_user_path)
-    expect(rows[owner.id].at_css("form[action='#{admin_user_path(owner)}']")).to be_nil # you cannot remove yourself
-    expect(rows[saida.id].at_css("form[action='#{admin_user_path(saida)}']")).to be_present
+    expect(rows[owner.id].at_css("form[action='#{admin_user_path(owner)}'] input[name=_method][value=delete]")).to be_nil # you cannot remove yourself
+    expect(rows[saida.id].at_css("form[action='#{admin_user_path(saida)}'] input[name=_method][value=delete]")).to be_present
   end
 
   it "searches the members by name or email, and lists the roles with how many people have each" do

@@ -133,6 +133,8 @@ RSpec.describe "User permissions", type: :request do
     expect(ticked).to match_array(Team::Roles.find(:agent).areas)
     expect(page.at_css("[data-custom-badge]")).to be_nil
     expect(form.at_css("[data-save-permissions]")).to be_present
+    expect(form.css("[data-card]").all? { |card| card.at_css("button[data-card-details]") && card.at_css("dialog[data-card-dialog] input[name='areas[]']") }).to be(true) # a title with an arrow, its areas in a small window
+    expect(form.at_css("details")).to be_nil
 
     save(saida, %w[dashboard queue])
     get admin_users_path, params: { tab: "permissions", user_id: saida.id }

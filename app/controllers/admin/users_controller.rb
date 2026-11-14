@@ -1,6 +1,6 @@
 module Admin
   class UsersController < BaseController
-    before_action :set_user, only: %i[edit update destroy pay permissions]
+    before_action :set_user, only: %i[edit update destroy pay permissions role status]
 
     def index
       @tab = %w[roles permissions].include?(params[:tab]) ? params[:tab] : "users"
@@ -46,6 +46,8 @@ module Admin
 
       if @user.update(attrs)
         redirect_to admin_users_path, notice: "Staff account saved."
+      elsif params[:inline].present?
+        redirect_to admin_users_path, alert: @user.errors.full_messages.to_sentence
       else
         render :edit, status: :unprocessable_entity
       end
@@ -89,6 +91,41 @@ module Admin
       redirect_to back, notice: t("admin.permissions.saved", name: @user.name.presence || @user.email)
     rescue ActiveRecord::RecordInvalid => e
       redirect_to back, alert: e.message
+    end
+
+    # Gives the person the owner or the agent role (the owner and agent areas are different, so a custom permissions list is dropped). Not yourself, not a super
+    # administrator, and never the last owner.
+    def role
+      return redirect_to(admin_users_path, alert: t("admin.permissions.not_editable")) if @user == current_user || @user.super_admin?
+
+      attrs = case params[:role]
+      when "owner" then { admin: true, confirmation_role: "supervisor", custom_permissions: nil }
+      when "agent" then { admin: false, confirmation_role: "agent", custom_permissions: nil }
+      end
+      return redirect_to(admin_users_path, alert: t("admin.team_actions.unknown_role")) unless attrs
+      return redirect_to(admin_users_path, alert: t("admin.team_actions.last_owner")) if !attrs[:admin] && @user.admin? && current_store.users.where(admin: true).where.not(id: @user.id).none?
+
+      @user.update!(attrs.merge(session_version: @user.session_version + 1))
+      redirect_to admin_users_path, notice: t("admin.team_actions.role_changed", name: @user.name.presence || @user.email)
+    rescue ActiveRecord::RecordInvalid => e
+      redirect_to admin_users_path, alert: e.message
+    end
+
+    # Deactivate (they can no longer sign in, and are signed out) or reactivate. Not yourself, not a super administrator, never the last owner.
+    def status
+      return redirect_to(admin_users_path, alert: t("admin.permissions.not_editable")) if @user == current_user || @user.super_admin?
+
+      if @user.active?
+        return redirect_to(admin_users_path, alert: t("admin.team_actions.last_owner")) if @user.admin? && current_store.users.active.where(admin: true).where.not(id: @user.id).none?
+
+        @user.update!(status: "suspended", status_changed_at: Time.current, session_version: @user.session_version + 1)
+        redirect_to admin_users_path, notice: t("admin.team_actions.deactivated", name: @user.name.presence || @user.email)
+      else
+        @user.update!(status: "active", status_changed_at: Time.current)
+        redirect_to admin_users_path, notice: t("admin.team_actions.reactivated", name: @user.name.presence || @user.email)
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      redirect_to admin_users_path, alert: e.message
     end
 
     private

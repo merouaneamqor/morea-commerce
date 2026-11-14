@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
+    <%= render "shared/favicon" %>
     <title><%= content_for?(:title) ? yield(:title) : "Platform — #{Store.platform_name}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <link rel="manifest" href="<%= admin_pwa_manifest_path %>">

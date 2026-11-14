@@ -863,3 +863,67 @@
   en: "By default, each user reaches the parts of the store according to their role. The permissions you choose replace these defaults."
   ar: "افتراضيًا يصل كل مستخدم إلى أجزاء المتجر وفق دوره. الصلاحيات التي تختارها تحل محل هذه القيم."
   es: "Por defecto, cada usuario accede a las partes de la tienda según su rol. Los permisos que elijas sustituyen estos valores."
+"Plus d'actions":
+  en: "More actions"
+  ar: "المزيد من الإجراءات"
+  es: "Más acciones"
+"Tarif par livraison":
+  en: "Rate per delivery"
+  ar: "السعر لكل توصيل"
+  es: "Tarifa por entrega"
+"Pénalité pour retour":
+  en: "Return penalty"
+  ar: "غرامة المرتجع"
+  es: "Penalización por devolución"
+"Voir les détails":
+  en: "View details"
+  ar: "عرض التفاصيل"
+  es: "Ver los detalles"
+"Modifier l'utilisateur":
+  en: "Edit the user"
+  ar: "تعديل المستخدم"
+  es: "Editar el usuario"
+"Attribuer des rôles":
+  en: "Assign roles"
+  ar: "تعيين الأدوار"
+  es: "Asignar roles"
+"Personnalisation des permissions":
+  en: "Customize permissions"
+  ar: "تخصيص الصلاحيات"
+  es: "Personalizar los permisos"
+"Désactiver":
+  en: "Deactivate"
+  ar: "تعطيل"
+  es: "Desactivar"
+"Réactiver":
+  en: "Reactivate"
+  ar: "إعادة التفعيل"
+  es: "Reactivar"
+"Supprimer l'utilisateur":
+  en: "Delete the user"
+  ar: "حذف المستخدم"
+  es: "Eliminar el usuario"
+"Nouveau mot de passe (laisser vide pour garder l'actuel)":
+  en: "New password (leave empty to keep the current one)"
+  ar: "كلمة مرور جديدة (اتركها فارغة للإبقاء على الحالية)"
+  es: "Nueva contraseña (déjala vacía para conservar la actual)"
+"Choisissez le rôle de cette personne. Ses permissions personnalisées sont remises à zéro.":
+  en: "Choose this person's role. Their custom permissions are reset."
+  ar: "اختر دور هذا الشخص. تتم إعادة ضبط صلاحياته المخصصة."
+  es: "Elige el rol de esta persona. Sus permisos personalizados se restablecen."
+"Désactiver le compte":
+  en: "Deactivate the account"
+  ar: "تعطيل الحساب"
+  es: "Desactivar la cuenta"
+"Réactiver le compte":
+  en: "Reactivate the account"
+  ar: "إعادة تفعيل الحساب"
+  es: "Reactivar la cuenta"
+"En cours d'amélioration":
+  en: "Under improvement"
+  ar: "قيد التحسين"
+  es: "En proceso de mejora"
+"En amélioration":
+  en: "Improving"
+  ar: "قيد التحسين"
+  es: "En mejora"

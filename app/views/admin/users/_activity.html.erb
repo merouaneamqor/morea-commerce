@@ -10,14 +10,14 @@
 <% role_names = { owner: t("admin.team.owner"), agent: sl("Agent") } %>
 
 <section class="mt-3" data-team-activity>
-  <div class="glass-bar flex flex-wrap items-center justify-between gap-2 rounded-2xl px-4 py-3" data-activity-bar>
+  <div class="glass-bar flex flex-wrap items-center justify-between gap-2 rounded-xl px-3 py-1.5" data-activity-bar>
     <div>
-      <h2 class="font-semibold text-[#1c1c1e]"><%= sl("Activité de l'équipe") %></h2>
-      <p class="text-xs text-[#6e6e73]"><%= sl("Qui est en ligne, combien de temps chacun a travaillé et ce qu'il a fait") %></p>
+      <h2 class="text-[13px] leading-tight font-semibold text-[#1c1c1e]"><%= sl("Activité de l'équipe") %></h2>
+      <p class="text-[11px] leading-tight text-[#6e6e73]"><%= sl("Qui est en ligne, combien de temps chacun a travaillé et ce qu'il a fait") %></p>
     </div>
-    <div class="flex items-center gap-2 text-[12px] font-semibold">
-      <span class="inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-white/55 px-3 py-1 text-[#2f7a4a] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]" data-live><span class="relative flex size-3" aria-hidden="true" data-live-dot><span class="absolute inline-flex size-full animate-ping rounded-full bg-[#2f9d5c] opacity-60"></span><span class="relative inline-flex size-3 rounded-full bg-[#2f9d5c]"></span></span>Live</span>
-      <span class="rounded-full border border-white/80 bg-white/55 px-3 py-1 text-[#3a3a3c] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]" data-activity-day><%= l(DateRange.today, format: :long) %></span>
+    <div class="flex items-center gap-1.5 text-[11px] font-semibold">
+      <span class="inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-white/55 px-2.5 py-0.5 text-[#2f7a4a] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]" data-live><span class="relative flex size-2.5" aria-hidden="true" data-live-dot><span class="absolute inline-flex size-full animate-ping rounded-full bg-[#2f9d5c] opacity-60"></span><span class="relative inline-flex size-2.5 rounded-full bg-[#2f9d5c]"></span></span>Live</span>
+      <span class="rounded-full border border-white/80 bg-white/55 px-2.5 py-0.5 text-[#3a3a3c] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]" data-activity-day><%= l(DateRange.today, format: :long) %></span>
     </div>
   </div>
 

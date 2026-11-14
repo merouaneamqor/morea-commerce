@@ -207,6 +207,8 @@ Rails.application.routes.draw do
       member do
         post :pay
         patch :permissions
+        patch :role
+        patch :status
       end
     end
     get "my_stats", to: "my_stats#show", as: :my_stats

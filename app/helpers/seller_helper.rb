@@ -52,8 +52,11 @@ module SellerHelper
     [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
     [ "integrations", :plug, "Intégrations API", "/integrations" ],
-    [ "store", :shop, "Boutique", "/boutique" ]
+    [ "store", :shop, "Boutique", nil ]
   ].freeze
+
+  # Entries that are blocked for now (no link) and why: the reason shows next to the entry. The others without a link are simply "coming soon".
+  SELLER_MENU_BLOCKED_REASONS = { "ads" => "En cours d'amélioration", "store" => "En cours d'amélioration" }.freeze
 
   # Which menu entry a controller belongs to, so the pages not yet ported still highlight their entry.
   SELLER_ACTIVE_BY_CONTROLLER = {

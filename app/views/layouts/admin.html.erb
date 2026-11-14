@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
+    <%= render "shared/favicon" %>
     <title><%= content_for?(:title) ? yield(:title) : "#{Store.platform_name} — #{current_store&.name || "seallo"}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="theme-color" content="#1d1d1f">
@@ -85,7 +86,8 @@
                     </ul>
                   </details>
                 <% elsif href.nil? %>
-                  <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#8e8e93]" title="<%= sl(label) %> · <%= sl("Bientôt disponible") %>"><%= seller_icon(icon) %> <span data-label><%= sl(label) %></span></span>
+                  <% reason = SellerHelper::SELLER_MENU_BLOCKED_REASONS.fetch(key, "Bientôt disponible") %>
+                  <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#8e8e93]" title="<%= sl(label) %> · <%= sl(reason) %>" aria-disabled="true" data-menu-blocked="<%= key %>" data-blocked-reason="<%= sl(reason) %>"><%= seller_icon(icon) %> <span data-label><%= sl(label) %></span><% if SellerHelper::SELLER_MENU_BLOCKED_REASONS.key?(key) %><span data-label class="ms-auto inline-flex items-center gap-1 rounded-full bg-[#efeff3] px-2 py-0.5 text-[10px] font-medium text-[#8e8e93]"><%= seller_icon(:lock, size: 10) %><%= sl("En amélioration") %></span><% end %></span>
                 <% else %>
                   <%= link_to href, title: sl(label), class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm #{on ? nav_on : nav_off}" do %>
                     <%= seller_icon(icon) %> <span data-label><%= sl(label) %></span>

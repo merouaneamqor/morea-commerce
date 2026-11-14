@@ -140,6 +140,9 @@ RSpec.describe "Storefront pages", type: :request do
     expect(by_id.fetch(pink.id)["images"].join).to include("pink-main")
     expect(by_id.fetch(black.id)["images"].join).to include("black-hero")
     expect(by_id.fetch(white.id)["images"]).to be_nil
-    expect(document.at_css(".pdp__gallery img")["src"]).to include("pink-main")
+    # Initial variant sorts by size then color, so Black leads and the SSR
+    # gallery follows its filename mapping.
+    expect(document.at_css("input[name='product_variant_id']")["value"]).to eq(black.id.to_s)
+    expect(document.at_css(".pdp__gallery img")["src"]).to include("black-hero")
   end
 end

@@ -169,17 +169,17 @@
 </article>
 
 <% if @related.any? %>
-  <section class="home-section border-t border-line">
-    <header class="home-section__head" data-controller="reveal">
+  <section class="home-section home-section--catalog border-t border-line">
+    <header class="home-section__head home-section__head--catalog" data-controller="reveal">
       <div>
-        <p class="landing-eyebrow"><%= @collection&.name || t("shop.selected") %></p>
-        <h2 class="home-section__title"><%= t("product.related") %></h2>
+        <p class="catalog-eyebrow"><%= @collection&.name || t("shop.selected") %></p>
+        <h2 class="home-section__title home-section__title--catalog"><%= t("product.related") %></h2>
       </div>
-      <%= link_to t("home.view_all"), (@collection ? collection_path(@collection) : collections_path), class: "maison-cta" %>
+      <%= link_to t("home.view_all"), (@collection ? collection_path(@collection) : collections_path), class: "catalog-link" %>
     </header>
-    <div class="home-products" data-controller="reveal" data-reveal-delay-value="120">
+    <div class="home-products home-products--catalog" data-controller="reveal" data-reveal-delay-value="120">
       <% @related.each do |product| %>
-        <%= render "products/card", product: product %>
+        <%= render "products/card", product: product, sizes: "(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" %>
       <% end %>
     </div>
   </section>

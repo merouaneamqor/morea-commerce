@@ -6,6 +6,7 @@ Living inventory of outbound scripts and services that can touch storefront or p
 |---|---|---|---|
 | Meta Pixel (`connect.facebook.net`) | Tenant storefront | Pixel ID set **and** tracking consent granted | PageView / ecommerce events |
 | TikTok Pixel (`analytics.tiktok.com`) | Tenant storefront | Pixel ID set **and** tracking consent granted | Page / ecommerce events |
+| Google Analytics (`googletagmanager.com/gtag`) | Tenant storefront | Measurement ID (`G-…`) set **and** tracking consent granted | page_view / mapped ecommerce events |
 | Google Fonts | Storefront / admin / auth | Always (layout) | Font CSS only; consider self-host later |
 | Unsplash images | Optional media URLs | Merchant-configured URLs | CDN image fetch |
 | Sendit | Admin + checkout shipping | Keys configured | Delivery addresses for parcels |

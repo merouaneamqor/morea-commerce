@@ -27,7 +27,8 @@ module Admin
       ] ],
       [ :channels, [
         entry(:stores, :admin_store_connections_path, :external, controllers: "store_connections"),
-        entry(:advertising, :admin_advertising_path, :advertising, controllers: %w[advertising pixels]),
+        entry(:advertising, :admin_advertising_path, :advertising, controllers: "advertising"),
+        entry(:pixels, :edit_admin_pixels_path, :analytics, controllers: "pixels"),
         entry(:whatsapp, :admin_whatsapp_path, :whatsapp, placeholder: true)
       ] ],
       [ :insights, [

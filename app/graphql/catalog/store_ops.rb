@@ -44,6 +44,11 @@ module Catalog
       elsif attrs[:tiktok_pixel_id].present?
         store.tiktok_pixel_id = attrs[:tiktok_pixel_id]
       end
+      if attrs[:clear_google_analytics]
+        store.google_analytics_id = nil
+      elsif attrs[:google_analytics_id].present?
+        store.google_analytics_id = attrs[:google_analytics_id]
+      end
       save!(store)
     end
 

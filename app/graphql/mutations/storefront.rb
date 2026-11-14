@@ -38,6 +38,8 @@ module Mutations
       argument :clear_meta_pixel, Boolean, required: false
       argument :tiktok_pixel_id, String, required: false
       argument :clear_tiktok_pixel, Boolean, required: false
+      argument :google_analytics_id, String, required: false
+      argument :clear_google_analytics, Boolean, required: false
 
       field :settings, Types::Storefront::SettingsType, null: true
       field :errors, [ String ], null: false

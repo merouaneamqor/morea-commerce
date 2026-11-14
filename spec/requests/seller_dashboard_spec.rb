@@ -22,7 +22,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
   end
 
   def owner_menu_links
-    %w[/dashboard /commandes /confirmation /admin/confirmations/dashboard /admin/confirmations?filter=all /clients /livraison /produits /themes /publicites /comptabilite /equipe /integrations]
+    %w[/dashboard /commandes /confirmation /admin/confirmations/dashboard /admin/confirmations?filter=all /clients /livraison /produits /themes /publicites /pixels /comptabilite /equipe /integrations]
   end
 
   it "requires authentication" do

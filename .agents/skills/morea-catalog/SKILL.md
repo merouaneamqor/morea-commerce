@@ -41,7 +41,7 @@ Coupons: `list_discounts`, `upsert_discount`, `delete_discount`. `discountType` 
 
 Customers: `list_customers`, `get_customer`, `upsert_customer`. These include phone and email. Order tools still leave phone, street address, and email out.
 
-Marketing tags are `update_marketing` (Meta and TikTok pixel ids). There is no email campaign.
+Marketing tags are `update_marketing` (Meta, TikTok and Google Analytics measurement ids). There is no email campaign.
 
 `export_csv` and `import_csv` cover products, customers, and discounts. Export also covers orders (without phone or street address) and inventory levels. Import needs `confirm: true`.
 

@@ -6,7 +6,7 @@ module CatalogTools
       name slug origin currency phone whatsapp email paymentMethod
       shippingDh freeShippingThresholdDh lowStockThreshold
       senditConfigured senditPickupDistrictId senditAllowOpen senditAllowTry discordConfigured
-      metaPixelId tiktokPixelId featuredProductSlug featuredCollectionSlug
+      metaPixelId tiktokPixelId googleAnalyticsId featuredProductSlug featuredCollectionSlug
       legalEntityName cndpAuthorization privacyRightsContact
       translations { locale tagline about codLabel codNote campaignTitle campaignSeason campaignCta announcement }
     GQL
@@ -73,13 +73,15 @@ module CatalogTools
     end
 
     class UpdateMarketing < MCP::Tool
-      description "Set the Meta and TikTok pixel ids. These are the store's marketing tags. There is no email or SMS campaign sender. clearMetaPixel or clearTiktokPixel removes an id."
+      description "Set the Meta, TikTok and Google Analytics measurement ids. These are the store's marketing tags. There is no email or SMS campaign sender. clearMetaPixel, clearTiktokPixel or clearGoogleAnalytics removes an id."
       input_schema(
         properties: {
           metaPixelId: { type: "string" },
           clearMetaPixel: { type: "boolean" },
           tiktokPixelId: { type: "string" },
-          clearTiktokPixel: { type: "boolean" }
+          clearTiktokPixel: { type: "boolean" },
+          googleAnalyticsId: { type: "string" },
+          clearGoogleAnalytics: { type: "boolean" }
         }
       )
 
@@ -87,9 +89,9 @@ module CatalogTools
         CatalogExecutor.call(
           store: server_context.fetch(:store),
           query: <<~GQL,
-            mutation($metaPixelId: String, $clearMetaPixel: Boolean, $tiktokPixelId: String, $clearTiktokPixel: Boolean) {
-              updateMarketing(metaPixelId: $metaPixelId, clearMetaPixel: $clearMetaPixel, tiktokPixelId: $tiktokPixelId, clearTiktokPixel: $clearTiktokPixel) {
-                settings { metaPixelId tiktokPixelId }
+            mutation($metaPixelId: String, $clearMetaPixel: Boolean, $tiktokPixelId: String, $clearTiktokPixel: Boolean, $googleAnalyticsId: String, $clearGoogleAnalytics: Boolean) {
+              updateMarketing(metaPixelId: $metaPixelId, clearMetaPixel: $clearMetaPixel, tiktokPixelId: $tiktokPixelId, clearTiktokPixel: $clearTiktokPixel, googleAnalyticsId: $googleAnalyticsId, clearGoogleAnalytics: $clearGoogleAnalytics) {
+                settings { metaPixelId tiktokPixelId googleAnalyticsId }
                 errors
               }
             }

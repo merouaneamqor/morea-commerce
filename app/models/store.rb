@@ -53,6 +53,7 @@ class Store < ApplicationRecord
   validates :plan, inclusion: { in: ->(_) { Plans.list.keys } }, allow_nil: true
   validates :meta_pixel_id, format: { with: /\A\d{5,20}\z/, message: "must be 5–20 digits" }, allow_blank: true
   validates :tiktok_pixel_id, format: { with: /\A[A-Za-z0-9]{10,40}\z/, message: "must be 10–40 letters or numbers" }, allow_blank: true
+  validates :google_analytics_id, format: { with: /\AG-[A-Z0-9]{6,14}\z/i, message: "must look like G-XXXXXXXXXX" }, allow_blank: true
 
   before_validation :normalize_pixel_ids
   before_validation :normalize_slug
@@ -125,7 +126,7 @@ class Store < ApplicationRecord
   end
 
   def pixels_configured?
-    meta_pixel_id.present? || tiktok_pixel_id.present?
+    meta_pixel_id.present? || tiktok_pixel_id.present? || google_analytics_id.present?
   end
 
   def data_controller_name
@@ -412,6 +413,7 @@ class Store < ApplicationRecord
   def normalize_pixel_ids
     self.meta_pixel_id = meta_pixel_id.to_s.strip.presence
     self.tiktok_pixel_id = tiktok_pixel_id.to_s.strip.presence
+    self.google_analytics_id = google_analytics_id.to_s.strip.upcase.presence
   end
 
   def assign_default_billing_period_end

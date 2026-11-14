@@ -1,10 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Loads once in the layout. Fires PageView / page on every Turbo visit.
+// Loads once in the layout. Fires PageView / page / page_view on every Turbo visit.
 export default class extends Controller {
   static values = {
     metaId: String,
-    tiktokId: String
+    tiktokId: String,
+    analyticsId: String
   }
 
   connect() {
@@ -21,6 +22,7 @@ export default class extends Controller {
   trackPageView() {
     this.meta("PageView")
     this.tiktokPage()
+    this.analyticsPage()
   }
 
   track(name, payload = {}) {
@@ -29,6 +31,7 @@ export default class extends Controller {
 
     this.meta(metaName, payload)
     this.tiktok(tiktokName, payload)
+    this.analytics(metaName, payload)
   }
 
   meta(eventName, payload = {}) {
@@ -64,5 +67,36 @@ export default class extends Controller {
       mapped.contents = mapped.content_ids.map((id) => ({ content_id: String(id), content_type: mapped.content_type || "product" }))
     }
     return mapped
+  }
+
+  analyticsPage() {
+    if (!this.analyticsIdValue || typeof window.gtag !== "function") return
+    window.gtag("event", "page_view", {
+      page_location: window.location.href,
+      page_path: window.location.pathname + window.location.search
+    })
+  }
+
+  analytics(eventName, payload = {}) {
+    if (!this.analyticsIdValue || typeof window.gtag !== "function") return
+    if (eventName === "PageView") {
+      this.analyticsPage()
+      return
+    }
+
+    const params = {}
+    if (payload.value != null) params.value = payload.value
+    if (payload.currency) params.currency = payload.currency
+    if (payload.content_ids) {
+      params.items = payload.content_ids.map((id) => ({ item_id: String(id) }))
+    }
+
+    const map = {
+      ViewContent: "view_item",
+      AddToCart: "add_to_cart",
+      InitiateCheckout: "begin_checkout",
+      Purchase: "purchase"
+    }
+    window.gtag("event", map[eventName] || eventName, params)
   }
 }

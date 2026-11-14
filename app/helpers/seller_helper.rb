@@ -73,7 +73,8 @@ module SellerHelper
     "des colis" => [ "of parcels", "من الطرود" ],
     "par rapport à la période précédente" => [ "compared with the previous period", "مقارنة بالفترة السابقة" ],
     "commandes attendent une confirmation." => [ "orders are waiting for confirmation.", "طلبات بانتظار التأكيد." ],
-    "Éditeur de thème" => [ "Theme editor", "محرر القالب" ]
+    "Éditeur de thème" => [ "Theme editor", "محرر القالب" ],
+    "Pixels" => [ "Pixels", "البكسلات" ]
   }.freeze
 
   SELLER_ICONS = {
@@ -103,7 +104,8 @@ module SellerHelper
     flag: '<path d="M5 21V4"/><path d="M5 5h11l-2 4 2 4H5"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
     menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
-    theme: '<rect x="3" y="3" width="7" height="18" rx="1"/><rect x="12" y="3" width="9" height="8" rx="1"/><rect x="12" y="13" width="9" height="8" rx="1"/>'
+    theme: '<rect x="3" y="3" width="7" height="18" rx="1"/><rect x="12" y="3" width="9" height="8" rx="1"/><rect x="12" y="13" width="9" height="8" rx="1"/>',
+    pixel: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'
   }.freeze
 
   # [key, icon, label, link]; no link means "coming soon".
@@ -117,6 +119,7 @@ module SellerHelper
     [ "products", :box, "Produits", "/produits" ],
     [ "themes", :theme, "Éditeur de thème", "/themes" ],
     [ "ads", :target, "Publicités", "/publicites" ],
+    [ "pixels", :pixel, "Pixels", "/pixels" ],
     [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
     [ "integrations", :plug, "Intégrations API", "/integrations" ]
@@ -144,7 +147,7 @@ module SellerHelper
     "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
     "seallo_connections" => "integrations", "woocommerce_connections" => "integrations",
     "sendit_settings" => "integrations", "ozon_settings" => "integrations", "ameex_settings" => "integrations",
-    "meta_ads" => "ads", "advertising" => "ads", "pixels" => "ads",
+    "meta_ads" => "ads", "advertising" => "ads", "pixels" => "pixels",
     "accounting" => "accounting",
     "themes" => "themes", "online_store" => "themes", "home_sections" => "themes"
   }.freeze

@@ -1,0 +1,23 @@
+fr:
+  pixels:
+    title: "Pixels"
+    lead: "Ajoutez les identifiants Meta, TikTok et Google Analytics. Ils se chargent sur la vitrine uniquement après acceptation de la mesure dans le bandeau cookies."
+    back: "Retour"
+    save: "Enregistrer"
+    saved: "Paramètres des pixels enregistrés."
+    connected: "Connecté"
+    meta:
+      title: "Meta Events Manager"
+      label: "ID Events Manager"
+      help: "Events Manager → Sources de données → votre pixel → ID. Chiffres uniquement. Laissez vide pour déconnecter."
+      events: "PageView, ViewContent, AddToCart, InitiateCheckout et Purchase partent sur la vitrine."
+    tiktok:
+      title: "Pixel TikTok"
+      label: "ID pixel"
+      help: "TikTok Events Manager → votre pixel → ID. Lettres et chiffres. Laissez vide pour déconnecter."
+      events: "Page, ViewContent, AddToCart, InitiateCheckout et CompletePayment partent sur la vitrine."
+    analytics:
+      title: "Google Analytics"
+      label: "ID de mesure"
+      help: "Google Analytics → Admin → Flux de données → votre flux web → ID de mesure (G-…). Laissez vide pour déconnecter."
+      events: "Les pages vues partent à chaque visite de la vitrine après consentement."

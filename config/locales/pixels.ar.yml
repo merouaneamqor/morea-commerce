@@ -1,0 +1,23 @@
+ar:
+  pixels:
+    title: "البكسلات"
+    lead: "أضيفي معرّفات القياس لـ Meta وTikTok وGoogle Analytics. تُحمَّل في الواجهة فقط بعد قبول القياس في شريط ملفات تعريف الارتباط."
+    back: "رجوع"
+    save: "حفظ"
+    saved: "تم حفظ إعدادات البكسل."
+    connected: "متصل"
+    meta:
+      title: "Meta Events Manager"
+      label: "معرّف Events Manager"
+      help: "Events Manager ← مصادر البيانات ← البكسل ← المعرّف. أرقام فقط. اتركي الحقل فارغًا للفصل."
+      events: "تُرسل PageView وViewContent وAddToCart وInitiateCheckout وPurchase على الواجهة."
+    tiktok:
+      title: "بكسل TikTok"
+      label: "معرّف البكسل"
+      help: "TikTok Events Manager ← البكسل ← المعرّف. حروف وأرقام. اتركي الحقل فارغًا للفصل."
+      events: "تُرسل Page وViewContent وAddToCart وInitiateCheckout وCompletePayment على الواجهة."
+    analytics:
+      title: "Google Analytics"
+      label: "معرّف القياس"
+      help: "Google Analytics ← Admin ← Data streams ← بث الويب ← Measurement ID (G-…). اتركي الحقل فارغًا للفصل."
+      events: "تُرسل مشاهدات الصفحة عند كل زيارة للواجهة بعد الموافقة."

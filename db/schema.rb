@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_14_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -1282,6 +1282,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_214500) do
     t.integer "low_stock_threshold", default: 5, null: false
     t.string "meta_pixel_id"
     t.string "tiktok_pixel_id"
+    t.string "google_analytics_id"
     t.text "sendit_public_key"
     t.text "sendit_secret_key"
     t.text "sendit_webhook_secret"

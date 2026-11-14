@@ -65,18 +65,17 @@ RSpec.describe "Dashboard figures", type: :request do
     expect(document.css("[data-kpis=row2] [data-kpi]").map { |card| card["data-kpi"] }).to eq(%w[confirmation_rate taux-de-livraison taux-de-retour])
   end
 
-  it "draws the cards like Comptabilité: gold revenue card, white bordered cards, no tints; only the symbol is coloured" do
+  it "draws the cards like Comptabilité: graphite revenue card, white bordered cards, no tints; only the symbol sits in a gray chip" do
     get "/dashboard", params: { from: Date.current.iso8601, to: Date.current.iso8601, locale: "fr" }
 
     cards = document.css("[data-kpis] [data-kpi]")
     expect(cards.size).to eq(9)
     expect(cards.map { |card| card["class"][/h-\[\d+px\]/] }.uniq).to eq([ "h-[110px]" ])
-    gold, others = cards.partition { |card| card["class"].include?("from-[#2c2c2e]") }
-    expect(gold.map { |card| card["data-kpi"] }).to eq([ "revenue" ])
+    featured, others = cards.partition { |card| card["class"].include?("from-[#2c2c2e]") }
+    expect(featured.map { |card| card["data-kpi"] }).to eq([ "revenue" ])
     expect(others).to all(satisfy { |card| card["class"].include?("border border-[#e0e0e5] bg-white") })
     chips = others.map { |card| card.at_css("p span")["class"] }
-    expect(chips).to all(include("grid size-6 shrink-0 place-items-center rounded-lg bg-[#"))                  # the colour is on the symbol chip only
-    expect(chips.uniq.size).to be > 3                                                                          # one colour per kind of figure
+    expect(chips).to all(include("grid size-6 shrink-0 place-items-center rounded-lg bg-[#efeff3] text-[#3a3a3c]"))   # the symbol chip is gray
     expect(response.body).not_to match(/bg-\[#(f1faf5|f2f7fd|fff8ea|fef2f3)\]/)                             # the old tints are gone
   end
 

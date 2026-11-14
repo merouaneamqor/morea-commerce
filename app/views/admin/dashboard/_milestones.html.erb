@@ -55,8 +55,8 @@
         <li class="absolute top-[22px] flex flex-col items-center <%= index == count - 1 ? "-translate-x-full items-end" : "-translate-x-1/2" %>" style="left: <%= position %>%"
             data-tier="<%= tier.key %>" data-unlocked="<%= tier.unlocked %>" data-fill="<%= tier.fill %>" data-color="<%= tier.color %>" data-current="<%= is_current ? "true" : "false" %>" title="<%= sl(tier.name) %> · <%= mad.(tier.threshold_cents) %>">
           <%# Each stage has its own colour: a solid disc with a tick once unlocked, a tinted lock of the same colour before %>
-          <span class="grid size-[18px] place-items-center rounded-full border-2 border-[#10224a]"
-                style="<%= tier.unlocked ? "background: #{tier.color}; color: #fff" : "background: color-mix(in srgb, #{tier.color} 26%, #10224a); color: #{tier.color}" %>"><%= seller_icon(tier.unlocked ? :check : :lock, size: 9) %></span>
+          <span class="grid size-[18px] place-items-center rounded-full border-2 border-[#1c1c1e]"
+                style="<%= tier.unlocked ? "background: #{tier.color}; color: #fff" : "background: color-mix(in srgb, #{tier.color} 26%, #1c1c1e); color: #{tier.color}" %>"><%= seller_icon(tier.unlocked ? :check : :lock, size: 9) %></span>
           <span class="mt-0.5 hidden text-[10px] leading-none whitespace-nowrap sm:block <%= is_current ? "font-bold" : (tier.unlocked ? "font-semibold" : "") %>" style="color: <%= tier.unlocked ? tier.color : "rgba(255,255,255,0.45)" %>"><%= sl(tier.name) %> <span class="font-normal opacity-70"><%= short.(tier.threshold_cents) %></span></span>
         </li>
       <% end %>

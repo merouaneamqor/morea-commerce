@@ -10,6 +10,7 @@
 
 <div data-controller="variant-gallery variant-picker"
      data-action="variant-picker:change->variant-gallery#show turbo:before-cache@document->variant-gallery#restoreProductGallery"
+     data-variant-gallery-product-images-value="<%= @product_image_urls.to_json %>"
      data-variant-picker-variants-value="<%= @variant_payload.to_json %>"
      data-variant-picker-track-inventory-value="<%= @product.track_inventory %>"
      data-variant-picker-available-label-value="<%= t("merchandising.available") %>"

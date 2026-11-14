@@ -2,6 +2,7 @@
 
 require "rails_helper"
 require "nokogiri"
+require "base64"
 
 RSpec.describe "Storefront pages", type: :request do
   let(:store) do
@@ -80,5 +81,38 @@ RSpec.describe "Storefront pages", type: :request do
     expect(document.at_css('link[rel="preconnect"][href="https://res.cloudinary.com"]')).to be_present
     font = document.at_css('link[as="style"][href*="fonts.googleapis.com"]')
     expect(font["rel"]).to eq("preload")
+  end
+
+  it "paints the selected color's photos on first load and keeps product photos for fallback" do
+    product = store.products.create!(
+      name: "Color Set",
+      slug: "color-set",
+      status: "active",
+      price_cents: 12_000,
+      track_inventory: false
+    )
+    png = Base64.decode64("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN9sAAAAASUVORK5CYII=")
+    product.images.attach(io: StringIO.new(png), filename: "product.png", content_type: "image/png")
+    black = product.product_variants.create!(option1_value: "S", option2_value: "Black", stock: 2)
+    white = product.product_variants.create!(option1_value: "S", option2_value: "White", stock: 2)
+    black.images.attach(io: StringIO.new(png), filename: "black.png", content_type: "image/png")
+
+    get "/en/products/color-set"
+
+    expect(response).to have_http_status(:ok)
+    root = document.at_css("[data-controller~='variant-gallery']")
+    expect(root["data-controller"]).to include("variant-picker")
+    product_urls = JSON.parse(root["data-variant-gallery-product-images-value"])
+    expect(product_urls).not_to be_empty
+    payload = JSON.parse(root["data-variant-picker-variants-value"])
+    by_id = payload.index_by { |variant| variant["id"] }
+    expect(by_id.fetch(black.id)["images"]).to be_present
+    expect(by_id.fetch(white.id)["images"]).to be_nil
+    expect(document.at_css("input[name='product_variant_id']")["value"]).to eq(black.id.to_s)
+    lead = document.at_css(".pdp__gallery img")["src"]
+    black_key = by_id.fetch(black.id)["images"].first.to_s.split("?").first.split("/").last
+    product_key = product_urls.first.to_s.split("?").first.split("/").last
+    expect(lead).to include(black_key)
+    expect(lead).not_to include(product_key) if black_key != product_key
   end
 end

@@ -8,7 +8,8 @@ Engineering map for the legal / privacy / accessibility list. Templates are star
 | 2 | Terms of service | Per-tenant CMS `pages/terms` via `Morea::TermsOfService` |
 | 3 | Refund policy | Default `pages/returns` titled returns & refunds |
 | 4 | Cookie policy | Per-tenant CMS `pages/cookies` via `Morea::CookiePolicy` |
-| 5 | Cookie consent banner | Shown only for EU/EEA/UK/CH visitors (`CF-IPCountry` etc.); accept / reject measurement. Elsewhere (incl. Africa) no banner; pixels load unless consent was denied |
+| 5 | Cookie consent banner | Shown only for EU/EEA/UK/CH visitors (`CF-IPCountry` etc.); accept / reject measurement. Elsewhere (incl. Africa) no banner and configured pixels still load |
+
 | 6 | Form consents | Checkout requires privacy/terms checkbox + CNDP rights notice |
 | 7 | No useless data | Checkout + track copy collect only order fields; rights form minimization note |
 | 8 | Audit third-party SDKs | See [third-party-sdks.md](third-party-sdks.md) |

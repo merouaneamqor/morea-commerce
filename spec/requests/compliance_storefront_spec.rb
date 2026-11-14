@@ -54,6 +54,14 @@ RSpec.describe "Compliance storefront", type: :request do
     expect(response.body).to include("connect.facebook.net")
   end
 
+  it "keeps pixels loading for African visitors even if a prior reject cookie is present" do
+    cookies[DataProtectionHelper::TRACKING_CONSENT_COOKIE] = DataProtectionHelper::DENIED
+    get "/en", headers: { "CF-IPCountry" => "MA" }
+    expect(response.body).not_to include("cookie-consent")
+    expect(response.body).to include("connect.facebook.net")
+  end
+
+
 
   it "shows imprint and age note in the footer" do
     get "/en"

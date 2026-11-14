@@ -3,7 +3,7 @@
   <div class="platform-container platform-header-inner">
     <a href="#top" class="platform-brand" aria-label="seallo"><span dir="ltr">seallo</span></a>
     <nav class="platform-nav" aria-label="<%= t("platform_home.refresh.navigation") %>">
-      <% t("platform_home.seallo.nav").each_with_index do |label, i| %><button type="button" data-open="<%= ids[i] %>"><%= label %></button><% end %>
+      <% t("platform_home.seallo.nav").each_with_index do |label, i| %><% if ids[i] == "demo" %><a href="<%= demo_path %>" class="platform-nav-demo" data-turbo="false"><%= label %></a><% else %><button type="button" data-open="<%= ids[i] %>"><%= label %></button><% end %><% end %>
     </nav>
     <div class="platform-header-actions">
       <div class="platform-language-menu" dir="ltr" data-controller="locale-switcher">

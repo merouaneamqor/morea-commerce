@@ -68,6 +68,8 @@ Rails.application.routes.draw do
   end
 
   get "/", to: "platform_home#show", as: :platform_home, constraints: ->(request) { Store.apex_host?(request.host) }
+  # Read-only demo of the seller platform (fictitious workspace), opened from the landing page.
+  get "/demo", to: "demo#show", as: :demo, constraints: ->(request) { Store.apex_host?(request.host) }
   # Public Seallo Connect pages linked from the Shopify app listing; apex only, never tenant hosts.
   constraints ->(request) { Store.apex_host?(request.host) } do
     get "/seallo-connect", to: "seallo_connect_pages#show", as: :seallo_connect_page
@@ -257,7 +259,12 @@ Rails.application.routes.draw do
     resources :collections
     resources :discounts, except: %i[show]
     resources :users, path: "staff", except: %i[show] do
-      member { post :pay }
+      member do
+        post :pay
+        patch :permissions
+        patch :role
+        patch :status
+      end
     end
     get "my_stats", to: "my_stats#show", as: :my_stats
     get "my_billing", to: "my_billing#show", as: :my_billing
@@ -316,6 +323,8 @@ Rails.application.routes.draw do
         post :sendit_sync_all
         post :ozon_sync_all
         post :ameex_sync_all
+        get :ship_review
+        post :ship_confirmed
         post :shopify_sync_all
         get :product_search
         post :quick_product

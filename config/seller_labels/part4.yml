@@ -848,3 +848,107 @@ Statistiques:
   en: "Pixels"
   ar: "البكسلات"
   es: "Píxeles"
+"Boutique et abonnement":
+  en: "Store and subscription"
+  ar: "المتجر والاشتراك"
+  es: "Tienda y suscripción"
+"Personnalisé":
+  en: "Custom"
+  ar: "مخصص"
+  es: "Personalizado"
+"Une personne ne peut avoir que moins d'accès que son rôle : cochez ce qu'elle peut ouvrir.":
+  en: "A person can only have less access than their role: tick what they can open."
+  ar: "لا يمكن لأي شخص أن يملك وصولًا أكثر من دوره: حدّد ما يمكنه فتحه."
+  es: "Una persona solo puede tener menos acceso que su rol: marca lo que puede abrir."
+"Rechercher des applications…":
+  en: "Search applications…"
+  ar: "ابحث عن التطبيقات…"
+  es: "Buscar aplicaciones…"
+"application(s) sélectionnée(s)":
+  en: "application(s) selected"
+  ar: "تطبيق(ات) محددة"
+  es: "aplicación(es) seleccionada(s)"
+"permission(s) au total":
+  en: "permission(s) in total"
+  ar: "صلاحية(ات) في المجموع"
+  es: "permiso(s) en total"
+"Rétablir les valeurs du rôle":
+  en: "Restore the role's defaults"
+  ar: "استعادة قيم الدور الافتراضية"
+  es: "Restablecer los valores del rol"
+"Enregistrer les permissions":
+  en: "Save permissions"
+  ar: "حفظ الصلاحيات"
+  es: "Guardar permisos"
+"Vous ne pouvez pas modifier les permissions de cette personne.":
+  en: "You cannot change this person's permissions."
+  ar: "لا يمكنك تغيير صلاحيات هذا الشخص."
+  es: "No puedes cambiar los permisos de esta persona."
+"Par défaut, chaque utilisateur accède aux parties de la boutique selon son rôle. Les permissions que vous choisissez remplacent ces valeurs.":
+  en: "By default, each user reaches the parts of the store according to their role. The permissions you choose replace these defaults."
+  ar: "افتراضيًا يصل كل مستخدم إلى أجزاء المتجر وفق دوره. الصلاحيات التي تختارها تحل محل هذه القيم."
+  es: "Por defecto, cada usuario accede a las partes de la tienda según su rol. Los permisos que elijas sustituyen estos valores."
+"Plus d'actions":
+  en: "More actions"
+  ar: "المزيد من الإجراءات"
+  es: "Más acciones"
+"Tarif par livraison":
+  en: "Rate per delivery"
+  ar: "السعر لكل توصيل"
+  es: "Tarifa por entrega"
+"Pénalité pour retour":
+  en: "Return penalty"
+  ar: "غرامة المرتجع"
+  es: "Penalización por devolución"
+"Voir les détails":
+  en: "View details"
+  ar: "عرض التفاصيل"
+  es: "Ver los detalles"
+"Modifier l'utilisateur":
+  en: "Edit the user"
+  ar: "تعديل المستخدم"
+  es: "Editar el usuario"
+"Attribuer des rôles":
+  en: "Assign roles"
+  ar: "تعيين الأدوار"
+  es: "Asignar roles"
+"Personnalisation des permissions":
+  en: "Customize permissions"
+  ar: "تخصيص الصلاحيات"
+  es: "Personalizar los permisos"
+"Désactiver":
+  en: "Deactivate"
+  ar: "تعطيل"
+  es: "Desactivar"
+"Réactiver":
+  en: "Reactivate"
+  ar: "إعادة التفعيل"
+  es: "Reactivar"
+"Supprimer l'utilisateur":
+  en: "Delete the user"
+  ar: "حذف المستخدم"
+  es: "Eliminar el usuario"
+"Nouveau mot de passe (laisser vide pour garder l'actuel)":
+  en: "New password (leave empty to keep the current one)"
+  ar: "كلمة مرور جديدة (اتركها فارغة للإبقاء على الحالية)"
+  es: "Nueva contraseña (déjala vacía para conservar la actual)"
+"Choisissez le rôle de cette personne. Ses permissions personnalisées sont remises à zéro.":
+  en: "Choose this person's role. Their custom permissions are reset."
+  ar: "اختر دور هذا الشخص. تتم إعادة ضبط صلاحياته المخصصة."
+  es: "Elige el rol de esta persona. Sus permisos personalizados se restablecen."
+"Désactiver le compte":
+  en: "Deactivate the account"
+  ar: "تعطيل الحساب"
+  es: "Desactivar la cuenta"
+"Réactiver le compte":
+  en: "Reactivate the account"
+  ar: "إعادة تفعيل الحساب"
+  es: "Reactivar la cuenta"
+"En cours d'amélioration":
+  en: "Under improvement"
+  ar: "قيد التحسين"
+  es: "En proceso de mejora"
+"En amélioration":
+  en: "Improving"
+  ar: "قيد التحسين"
+  es: "En mejora"

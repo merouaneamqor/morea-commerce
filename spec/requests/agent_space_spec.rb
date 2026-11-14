@@ -205,12 +205,17 @@ RSpec.describe "Agent workspace", type: :request do
       expect(page.at_css("[data-sidebar-nav]").text).not_to include("seallo")
     end
 
-    it "gives the owner a Boutique entry that opens the logo card, and saves the logo as soon as it is chosen" do
+    it "blocks the Boutique and Publicités entries of the menu with the reason, while the logo card stays reachable from the settings and saves the logo as soon as it is chosen" do
       owner = store.users.create!(name: "Owner", email: "own-#{SecureRandom.hex(4)}@example.test", password: password, admin: true)
       sign_in(owner)
       get admin_orders_path
-      boutique = page.css("[data-sidebar-nav] a").find { |link| link["href"] == "/boutique" }
-      expect(boutique.text.squish).to include("Boutique")
+      %w[store ads].each do |key|
+        blocked = page.at_css("[data-sidebar-nav] [data-menu-blocked='#{key}']")
+        expect(blocked["aria-disabled"]).to eq("true")
+        expect(blocked["data-blocked-reason"]).to eq("En cours d'amélioration")
+        expect(blocked.name).to eq("span") # not a link
+      end
+      expect(page.css("[data-sidebar-nav] a").map { |link| link["href"] }).not_to include("/boutique")
       get "/boutique"
       expect(response).to redirect_to("/admin/store/edit#logo")
 

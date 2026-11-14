@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= current_locale %>" dir="<%= rtl? ? 'rtl' : 'ltr' %>">
   <head>
+    <%= render "shared/favicon" %>
     <title><%= content_for?(:title) ? yield(:title) : "#{Store.platform_name} — #{current_store&.name || "seallo"}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <meta name="theme-color" content="<%= current_store&.admin_theme == "seallo_dark" ? "#15110f" : "#a8432e" %>">
@@ -24,6 +25,7 @@
     <%= javascript_importmap_tags %>
   </head>
   <body class="admin-body" data-admin-theme="<%= current_store&.admin_theme || "seallo" %>" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
+    <%= render "demo/banner" if Demo::Workspace.demo_store?(current_store) %>
     <% if current_admin_user %>
       <%# Restore the collapsed menu before the first paint, so it does not jump. %>
       <script>try { if (localStorage.getItem("sellerSidebar") === "collapsed") document.documentElement.setAttribute("data-sidebar", "collapsed"); } catch (error) {}</script>
@@ -92,7 +94,8 @@
                     </ul>
                   </details>
                 <% elsif href.nil? %>
-                  <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#8e8e93]" title="<%= sl(label) %> · <%= sl("Bientôt disponible") %>"><%= seller_icon(icon) %> <span data-label><%= sl(label) %></span></span>
+                  <% reason = SellerHelper::SELLER_MENU_BLOCKED_REASONS.fetch(key, "Bientôt disponible") %>
+                  <span class="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#8e8e93]" title="<%= sl(label) %> · <%= sl(reason) %>" aria-disabled="true" data-menu-blocked="<%= key %>" data-blocked-reason="<%= sl(reason) %>"><%= seller_icon(icon) %> <span data-label class="flex min-w-0 flex-col leading-tight"><span><%= sl(label) %></span><% if SellerHelper::SELLER_MENU_BLOCKED_REASONS.key?(key) %><span class="inline-flex items-center gap-1 text-[10px] font-medium text-[#a0a0a8]" data-blocked-line><%= seller_icon(:lock, size: 9) %><%= sl(reason) %></span><% end %></span></span>
                 <% else %>
                   <%= link_to href, title: sl(label), class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm #{on ? nav_on : nav_off}", data: { onboarding_nav: key } do %>
                     <%= seller_icon(icon) %> <span data-label><%= sl(label) %></span>
@@ -157,8 +160,7 @@
             <% if store_billing_past_due? %>
               <p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= t("admin_ui.past_due") %></p>
             <% end %>
-            <% if notice.present? %><p class="rounded-xl bg-[#e3f3e8] px-4 py-3 text-sm text-[#2f7a4a]"><%= notice %></p><% end %>
-            <% if alert.present? %><p class="rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= alert %></p><% end %>
+            <%= render "admin/shared/toasts" %>
             <%= render "admin/shared/meta_ads_notice" %>
             <% unless content_for?(:seller_lang) %><div class="flex justify-end"><%= render "admin/shared/language_switcher" %></div><% end %>
             <div class="admin-page <%= yield(:admin_page_class) %>"><%= yield %></div>

@@ -1,0 +1,6 @@
+fr:
+  admin:
+    permissions:
+      denied: "Vous n'avez pas accès à cette partie de la boutique."
+      saved: "Permissions de %{name} enregistrées."
+      not_editable: "Vous ne pouvez pas modifier vos propres permissions, ni celles d'un super administrateur."

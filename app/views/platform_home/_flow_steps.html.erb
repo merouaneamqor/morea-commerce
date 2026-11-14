@@ -4,7 +4,7 @@
 <div class="platform-flow-steps" data-flow>
   <ol>
     <% flow.each_with_index do |(title, sub, detail), i| %>
-      <li>
+      <li data-tone="<%= PlatformHomeHelper::PLATFORM_FLOW_TONES[i] %>">
         <% if i < flow.length - 1 %><span class="platform-flow-link"><span></span></span><% end %>
         <button type="button" data-flow-step="<%= i %>" data-title="<%= title %>" data-detail="<%= detail %>" aria-pressed="<%= i.zero? %>">
           <span class="platform-flow-icon"><%= platform_icon(PlatformHomeHelper::PLATFORM_FLOW_ICONS[i]) %></span>

@@ -1,0 +1,15 @@
+<%# The notices of the page (notice / alert) as a window in the middle of the screen, drawn like the agent's welcome window (a white glass card with an icon over a light veil). It goes away
+    by itself: a notice after two seconds, an error after four so it can be read. Nothing here can be clicked, so the page below stays usable. %>
+<% if notice.present? || alert.present? %>
+  <div class="pointer-events-none fixed inset-0 z-[70]" data-turbo-temporary data-toasts>
+    <% [ [ notice, "notice", 2000, :check, "text-[#2f9d5c]", "status" ], [ alert, "alert", 4000, :alert, "text-[#d6455d]", "alert" ] ].each do |message, kind, duration, icon, tone, role| %>
+      <% next if message.blank? %>
+      <div class="toast-overlay absolute inset-0 grid place-items-center p-4" role="<%= role %>" data-controller="toast" data-toast-duration-value="<%= duration %>" data-toast-kind="<%= kind %>">
+        <div class="toast-card flex w-fit max-w-sm flex-col items-center gap-2 rounded-3xl border border-white/70 bg-white/70 px-5 py-4 text-center shadow-[0_30px_80px_-24px_rgba(31,36,48,0.35),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl backdrop-saturate-150">
+          <span class="grid size-10 place-items-center rounded-xl bg-white/70 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.35)] <%= tone %>"><%= seller_icon(icon, size: 20) %></span>
+          <p class="text-sm leading-snug font-semibold text-[#1c1c1e]"><%= message %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -1,15 +1,7 @@
 <% content_for :localized, "1" %>
 <% content_for :title, st("Connexion") %>
 <% content_for :back_label, t("sign_in.back") %>
-<% content_for :topbar do %>
-  <nav class="flex items-center gap-2" aria-label="<%= t("sign_in.language") %>">
-    <% Morea::Locales::AVAILABLE.each do |locale| %>
-      <%= link_to locale.to_s.upcase, admin_login_path(locale: locale),
-            class: (locale.to_s == I18n.locale.to_s ? "font-semibold text-white" : "fx-link"),
-            "aria-current": (locale.to_s == I18n.locale.to_s ? "true" : nil) %>
-    <% end %>
-  </nav>
-<% end %>
+<% content_for :topbar do %><%= render "shared/language_menu" %><% end %>
 <% apex = Store.apex_host?(request.host) %>
 <% show_workspace = apex %>
 <% account_origin = apex ? "" : Store.platform_origin %>

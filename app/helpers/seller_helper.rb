@@ -51,12 +51,12 @@ module SellerHelper
     [ "delivery", :truck, "Livraison", "/livraison" ],
     [ "products", :box, "Produits", "/produits" ],
     [ "themes", :theme, "Éditeur de thème", "/themes" ],
-    [ "ads", :target, "Publicités", "/publicites" ],
+    [ "ads", :target, "Publicités", nil ],
     [ "pixels", :pixel, "Pixels", "/pixels" ],
     [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
     [ "integrations", :plug, "Intégrations API", "/integrations" ],
-    [ "store", :shop, "Boutique", "/boutique" ]
+    [ "store", :shop, "Boutique", nil ]
   ].freeze
 
   # Thumb-reach destinations on phones. Short labels; full sidebar stays via "Plus".
@@ -72,6 +72,9 @@ module SellerHelper
     [ "confirmation", :phone, "Confirmation", "/confirmation" ],
     [ "stats", :chart, "Statistiques", "/mes-statistiques" ]
   ].freeze
+
+  # Entries that are blocked for now (no link) and why: the reason shows next to the entry. The others without a link are simply "coming soon".
+  SELLER_MENU_BLOCKED_REASONS = { "ads" => "En cours d'amélioration", "store" => "En cours d'amélioration" }.freeze
 
   # Which menu entry a controller belongs to, so the pages not yet ported still highlight their entry.
   SELLER_ACTIVE_BY_CONTROLLER = {
@@ -145,7 +148,10 @@ module SellerHelper
 
   # An agent sees the queue and their own analytics only; assignments, rules and billing are the owner's.
   def seller_call_center_menu(user)
-    user&.confirmation_agent_view? ? SELLER_CALL_CENTER_MENU.first(2) : SELLER_CALL_CENTER_MENU
+    entries = user&.confirmation_agent_view? ? SELLER_CALL_CENTER_MENU.first(2) : SELLER_CALL_CENTER_MENU
+    return entries unless user
+
+    entries.select { |key, *| (area = SELLER_CALL_CENTER_AREAS[key]).nil? || user.area_allowed?(area) }
   end
 
   def seller_call_center_active
@@ -169,10 +175,19 @@ module SellerHelper
     [ "billing", :wallet, "Facturation", "/facturation" ]
   ].freeze
 
-  def seller_menu(user)
-    return SELLER_AGENT_MENU if user&.confirmation_agent_view?
+  # The areas a menu entry leads to: it shows when the person may open at least one of them (the owner can close parts of the store to a person).
+  SELLER_MENU_AREAS = {
+    "dashboard" => %w[dashboard], "stats" => %w[dashboard], "orders" => %w[orders], "confirmation" => %w[queue analytics assignments attendance clock_in agent_billing],
+    "clients" => %w[customers], "delivery" => %w[delivery], "products" => %w[products], "accounting" => %w[accounting], "team" => %w[team],
+    "integrations" => %w[integrations], "store" => %w[store subscription], "billing" => %w[own_billing]
+  }.freeze
+  SELLER_CALL_CENTER_AREAS = { "queue" => "queue", "analytics" => "analytics", "assignments" => "assignments", "rules" => "assignments", "attendance" => "attendance", "billing" => "agent_billing" }.freeze
 
-    SELLER_MENU.reject { |key, *| key == "stats" }
+  def seller_menu(user)
+    entries = user&.confirmation_agent_view? ? SELLER_AGENT_MENU : SELLER_MENU.reject { |key, *| key == "stats" }
+    return entries unless user
+
+    entries.select { |key, *| (areas = SELLER_MENU_AREAS[key]).nil? || areas.any? { |area| user.area_allowed?(area) } }
   end
 
   def seller_bottom_nav(user)

@@ -5,6 +5,7 @@ import { Controller } from "@hotwired/stimulus"
 // hidden, which is still readable.
 export default class extends Controller {
   static targets = ["button", "panel", "thumb"]
+  static values = { param: String }
 
   connect() {
     this.placeThumb()
@@ -25,6 +26,12 @@ export default class extends Controller {
       button.classList.toggle("text-[#6e6e73]", !active)
     })
     this.placeThumb()
+    // With a param name the address follows the chosen panel, so a reload or a shared link opens the same one.
+    if (this.hasParamValue && this.paramValue) {
+      const url = new URL(window.location.href)
+      url.searchParams.set(this.paramValue, key)
+      window.history.replaceState(window.history.state, "", url)
+    }
   }
 
   placeThumb() {

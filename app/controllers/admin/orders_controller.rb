@@ -32,6 +32,7 @@ module Admin
       "blocked" => ->(scope) { scope.joins(:order_confirmation).where(status: "new", order_confirmations: { disposition: "blocked" }) }
     }.freeze
 
+    SHIP_JOBS = { "sendit" => SenditSyncJob, "ozon" => OzonSyncJob, "ameex" => AmeexSyncJob }.freeze
     PER_PAGE = 25
     # Older links (the dashboard cards, bookmarks) carry these: they keep working, and open on every date.
     LEGACY_FILTERS = %i[status group attention].freeze
@@ -328,6 +329,36 @@ end
       redirect_to admin_orders_path, notice: "Syncing #{count} orders with Ameex in the background."
     end
 
+    # Confirmed orders waiting for a parcel, checked for duplicates, blocked numbers and customers who cancelled before.
+    def ship_review
+      return redirect_to(admin_orders_path, alert: t("orders_ship.unavailable")) unless ship_available?
+
+      @review = Orders::ShipmentReview.new(store: current_store)
+    end
+
+    # Sends the ticked parcels. The server checks again: held-back rows (duplicates, blocked, incomplete) never go, whatever the form says.
+    def ship_confirmed
+      return redirect_to(admin_orders_path, alert: t("orders_ship.unavailable")) unless ship_available?
+
+      ids = Array(params[:order_ids]).map(&:to_i).uniq
+      return redirect_to(ship_review_admin_orders_path, alert: t("orders_ship.none")) if ids.empty?
+
+      rows = Orders::ShipmentReview.new(store: current_store).rows.select { |row| ids.include?(row.order.id) }
+      sendable = rows.select(&:selectable?)
+      held = ids.size - sendable.size
+      return redirect_to(admin_orders_path, notice: t("orders_ship.demo", count: sendable.size), status: :see_other) if Demo::Workspace.demo_store?(current_store)
+
+      sent = sendable.count do |row|
+        # One click only: the same order is not queued twice if the button is pressed twice.
+        next false unless Rails.cache.write("ship_confirmed:#{row.order.id}", 1, expires_in: 5.minutes, unless_exist: true)
+
+        SHIP_JOBS.fetch(row.carrier).perform_later(row.order.id, "push")
+      end
+      message = t("orders_ship.sent", count: sent)
+      message += t("orders_ship.skipped", count: held) if held.positive?
+      redirect_to admin_orders_path, notice: message, status: :see_other
+    end
+
     def shopify_sync_all
       unless Connections::ShopifyOauth.configured?
         return redirect_to admin_orders_path, alert: t("connections.shopify_api.errors.config_missing"), status: :see_other
@@ -454,6 +485,10 @@ end
       confirmation = OrderConfirmation.find_or_create_by!(order: order) { |row| row.store = current_store }
       confirmation.update!(attributed_user: current_user, attributed_at: Time.current)
       order.record_event!("comment", body: "Created by the agent and attributed to them", user: current_user)
+    end
+
+    def ship_available?
+      Demo::Workspace.demo_store?(current_store) || Orders::ShipmentReview::CARRIERS.any? { |carrier| current_store.public_send("#{carrier}_configured?") }
     end
 
     def agents_read_only!

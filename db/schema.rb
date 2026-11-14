@@ -1397,7 +1397,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_010000) do
     t.boolean "show_milestones", default: true, null: false
     t.bigint "created_by_id"
     t.jsonb "custom_permissions"
-    t.index ["created_by_id"], name: "index_users_on_created_by_id"
     t.index ["email"], name: "index_users_on_email_super_admin", unique: true, where: "(super_admin = true)"
     t.index ["status"], name: "index_users_on_status"
     t.index ["store_id", "email"], name: "index_users_on_store_id_and_email", unique: true

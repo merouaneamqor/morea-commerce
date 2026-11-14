@@ -57,8 +57,8 @@ RSpec.describe "Seallo Connect public pages", type: :request do
     expect(response.body).to include("No hidden fees")
   end
 
-  it "shows a cookie banner on apex pages until a choice is recorded" do
-    get "/seallo-connect", params: { locale: "en" }
+  it "shows a cookie banner on apex pages for EU visitors until a choice is recorded" do
+    get "/seallo-connect", params: { locale: "en" }, headers: { "CF-IPCountry" => "DE" }
     expect(response.body).to include("cookie-consent")
     expect(response.body).to include("skip-link")
 
@@ -66,9 +66,16 @@ RSpec.describe "Seallo Connect public pages", type: :request do
     expect(response).to have_http_status(:no_content)
     expect(cookies["morea_tracking_consent"]).to eq("denied")
 
-    get "/seallo-connect", params: { locale: "en" }
+    get "/seallo-connect", params: { locale: "en" }, headers: { "CF-IPCountry" => "DE" }
     expect(response.body).not_to include('data-controller="tracking-consent"')
   end
+
+  it "does not show a cookie banner on apex pages for African visitors" do
+    get "/seallo-connect", params: { locale: "en" }, headers: { "CF-IPCountry" => "MA" }
+    expect(response.body).not_to include("cookie-consent")
+    expect(response.body).to include("skip-link")
+  end
+
 
   it "records a platform data-rights request" do
     expect {

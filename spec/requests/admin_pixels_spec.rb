@@ -85,15 +85,22 @@ RSpec.describe "Admin pixels settings", type: :request do
     expect(store.reload).to have_attributes(meta_pixel_id: nil, tiktok_pixel_id: nil, google_analytics_id: nil)
   end
 
-  it "loads Google Analytics on the storefront only after measurement consent" do
+  it "loads Google Analytics on the storefront only after measurement consent in the EU" do
     store.update!(google_analytics_id: "G-STOREFRONT1")
     host! tenant_host
-    get "/en"
+    get "/en", headers: { "CF-IPCountry" => "FR" }
     expect(response.body).not_to include("googletagmanager.com/gtag")
 
     post tracking_consent_path, params: { choice: "granted" }, as: :json
-    get "/en"
+    get "/en", headers: { "CF-IPCountry" => "FR" }
     expect(response.body).to include("googletagmanager.com/gtag/js?id=G-STOREFRONT1")
     expect(response.body).to include('gtag(\'config\', "G-STOREFRONT1"')
+  end
+
+  it "loads Google Analytics on the storefront without consent outside consent jurisdictions" do
+    store.update!(google_analytics_id: "G-STOREFRONT1")
+    host! tenant_host
+    get "/en", headers: { "CF-IPCountry" => "MA" }
+    expect(response.body).to include("googletagmanager.com/gtag/js?id=G-STOREFRONT1")
   end
 end

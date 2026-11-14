@@ -158,13 +158,14 @@ en:
             - "A language cookie remembers the FR, EN or AR choice you make on these pages so the next visit stays in that language. It is required for the site to work as you configured it."
         - heading: "Measurement cookies"
           body:
-            - "These Seallo Connect pages do not load Meta Pixel, TikTok Pixel or other audience-measurement scripts. If you later visit a merchant storefront on this platform, that storefront has its own cookie banner and may load measurement only after you accept."
+            - "These Seallo Connect pages do not load Meta Pixel, TikTok Pixel or other audience-measurement scripts. On merchant storefronts, a cookie banner appears for visitors in the EU, UK and Switzerland; measurement then loads only after Accept. In other countries, including Africa, measurement may load without a banner."
+
         - heading: "Fonts and third parties"
           body:
             - "Page fonts may be loaded from Google Fonts. That request goes to Google’s servers. See also our privacy policy and the third-party inventory in the product documentation."
         - heading: "Your choices"
           body:
-            - "Use Accept or Reject measurement on the banner. Necessary cookies still work if you reject. You can clear site cookies in your browser at any time."
+            - "Where the banner appears, use Accept or Reject measurement. Necessary cookies still work if you reject. You can clear site cookies in your browser at any time."
     refunds:
       title: "Refunds and cancellations"
       summary: "How billing, cancellations and refunds work for Seallo Connect plans."

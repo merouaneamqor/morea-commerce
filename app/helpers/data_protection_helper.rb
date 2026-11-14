@@ -45,7 +45,25 @@ module DataProtectionHelper
     tracking_consent_granted? || tracking_consent_denied?
   end
 
+  def visitor_country_code
+    Morea::TrackingConsentJurisdiction.country_from_request(request)
+  end
+
+  def cookie_consent_required?
+    Morea::TrackingConsentJurisdiction.required?(visitor_country_code)
+  end
+
+  # Banner visibility and measurement are separate: when the notice is not
+  # required (e.g. African visitors), configured pixels always load.
+  def measurement_allowed?
+    return true unless cookie_consent_required?
+
+    tracking_consent_granted?
+  end
+
+
   def cookie_notice_pending?
+    return false unless cookie_consent_required?
     return false if tracking_consent_decided?
 
     current_store.present? || Store.apex_host?(request.host)

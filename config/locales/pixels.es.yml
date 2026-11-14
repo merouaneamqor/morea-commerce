@@ -1,7 +1,8 @@
 es:
   pixels:
     title: "Píxeles"
-    lead: "Añade los identificadores de medición de Meta, TikTok y Google Analytics. Solo se cargan en la tienda cuando un visitante acepta la medición en el aviso de cookies."
+    lead: "Añade los identificadores de medición de Meta, TikTok y Google Analytics. En la UE, el Reino Unido y Suiza solo se cargan tras aceptar el aviso de cookies. En otros países, incluida África, se cargan sin aviso."
+
     back: "Volver"
     save: "Guardar"
     saved: "Ajustes de píxeles guardados."

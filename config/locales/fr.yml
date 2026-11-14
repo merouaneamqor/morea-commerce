@@ -243,7 +243,8 @@ fr:
     purposes: "la gestion et la livraison de vos commandes, la relation client (confirmation par téléphone), le suivi de commande et, le cas échéant, la lutte contre la fraude."
     cndp_authorized: "Ce traitement a été notifié et autorisé par la CNDP au titre du récépissé ou de l’autorisation n° %{number}."
     cndp_pending: "Le responsable du traitement s’engage à notifier ce traitement à la Commission Nationale de contrôle de la protection des données à caractère personnel (CNDP) conformément à la loi 09-08."
-    cookies_section: "Des cookies techniques sont nécessaires au panier et à la session. Les cookies de mesure (Meta Pixel, TikTok Pixel, Google Analytics) ne se chargent qu’après votre acceptation dans le bandeau. Vous pouvez refuser la mesure et continuer vos achats."
+    cookies_section: "Des cookies techniques sont nécessaires au panier et à la session. Les cookies de mesure (Meta Pixel, TikTok Pixel, Google Analytics) n’exigent le bandeau que dans l’UE, au Royaume-Uni et en Suisse. Ailleurs, y compris en Afrique, ils peuvent se charger sans bandeau. Là où le bandeau s’affiche, vous pouvez refuser la mesure et continuer vos achats."
+
     retention: "Les données liées à une commande sont conservées le temps nécessaire à la livraison, aux obligations comptables et légales applicables, puis archivées ou supprimées de manière proportionnée."
     prospecting: "Vos données ne sont pas utilisées à des fins de prospection commerciale sans votre consentement préalable. Vous pouvez vous opposer à tout moment en contactant le service indiqué ci-dessous ou via le formulaire de droits sur ce site."
     recipients:
@@ -284,7 +285,8 @@ fr:
 
       Les cookies nécessaires font fonctionner le panier, la langue et la session. Ils ne nécessitent pas de consentement.
 
-      Les cookies de mesure (Meta Pixel, TikTok Pixel, Google Analytics) aident à comprendre les visites et les publicités. Ils ne se chargent que si vous appuyez sur Accepter. Refusez la mesure pour naviguer sans eux.
+      Les cookies de mesure (Meta Pixel, TikTok Pixel, Google Analytics) aident à comprendre les visites et les publicités. Dans l’UE, au Royaume-Uni et en Suisse, ils ne se chargent que si vous appuyez sur Accepter. Ailleurs, y compris en Afrique, ils peuvent se charger sans bandeau. Là où le bandeau s’affiche, refusez la mesure pour naviguer sans eux.
+
 
       Voir aussi la page confidentialité : %{privacy_path}. Contact : %{contact}.
   privacy_rights:

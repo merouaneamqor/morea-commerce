@@ -28,8 +28,8 @@ RSpec.describe "Compliance storefront", type: :request do
     expect(store.pages.published.pluck(:slug)).to include("privacy", "terms", "cookies", "returns")
   end
 
-  it "shows the cookie banner until a choice is recorded and gates pixels" do
-    get "/en"
+  it "shows the cookie banner for EU visitors until a choice is recorded and gates pixels" do
+    get "/en", headers: { "CF-IPCountry" => "FR" }
     expect(response.body).to include("cookie-consent")
     expect(response.body).to include("has-cookie-notice")
     expect(response.body).not_to include("connect.facebook.net")
@@ -38,14 +38,30 @@ RSpec.describe "Compliance storefront", type: :request do
     expect(response).to have_http_status(:no_content)
     expect(cookies["morea_tracking_consent"]).to eq("denied")
 
-    get "/en"
+    get "/en", headers: { "CF-IPCountry" => "FR" }
     expect(response.body).not_to include("cookie-consent")
     expect(response.body).not_to include("connect.facebook.net")
 
     post tracking_consent_path, params: { choice: "granted" }, as: :json
-    get "/en"
+    get "/en", headers: { "CF-IPCountry" => "FR" }
     expect(response.body).to include("connect.facebook.net")
   end
+
+  it "does not show the cookie banner for African visitors and loads pixels without consent" do
+    get "/en", headers: { "CF-IPCountry" => "MA" }
+    expect(response.body).not_to include("cookie-consent")
+    expect(response.body).not_to include("has-cookie-notice")
+    expect(response.body).to include("connect.facebook.net")
+  end
+
+  it "keeps pixels loading for African visitors even if a prior reject cookie is present" do
+    cookies[DataProtectionHelper::TRACKING_CONSENT_COOKIE] = DataProtectionHelper::DENIED
+    get "/en", headers: { "CF-IPCountry" => "MA" }
+    expect(response.body).not_to include("cookie-consent")
+    expect(response.body).to include("connect.facebook.net")
+  end
+
+
 
   it "shows imprint and age note in the footer" do
     get "/en"

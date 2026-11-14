@@ -481,9 +481,10 @@ es:
       consent.
 
 
-      Measurement cookies (Meta Pixel, TikTok Pixel) help understand visits and ads.
-      They load only if you press Accept on the cookie banner. Reject measurement
-      to browse without them.
+      Measurement cookies (Meta Pixel, TikTok Pixel, Google Analytics) help understand
+      visits and ads. In the EU, UK and Switzerland they load only if you press Accept
+      on the cookie banner. Elsewhere, including Africa, they may load without a banner.
+      Where the banner appears, reject measurement to browse without them.
 
 
       See also the privacy page at %{privacy_path}. Contact: %{contact}.

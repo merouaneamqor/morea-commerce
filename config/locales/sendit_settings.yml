@@ -12,23 +12,23 @@ en:
     connect: Connect Sendit
     existing_connection: Existing Sendit connection
     delete_connection: Delete connection
-    delete_confirm: "Delete this Sendit connection? Saved credentials will be removed. Existing orders will be kept."
-    rates_help: "Delivery fees follow the selected city. Cached cities: %{count}."
+    delete_confirm: Delete this Sendit connection? Saved credentials will be removed. Existing orders will be kept.
+    rates_help: 'Delivery fees follow the selected city. Cached cities: %{count}.'
     refresh_cities: Refresh cities
     view_rates: View Sendit city rates
     pickup_city: Pickup city
     choose_pickup: Choose where Sendit collects your parcels
-    saved_pickup: "Saved pickup city (%{id})"
+    saved_pickup: Saved pickup city (%{id})
     pickup_help: Required by Sendit to create parcels. Refresh cities if your pickup city is missing.
     allow_open: Allow the customer to open the parcel
     allow_try: Allow the customer to try on
     webhook_secret: Sendit webhook secret
-    saved_secret: "•••••••• (saved)"
+    saved_secret: •••••••• (saved)
     secret_help: Leave blank to keep the saved secret.
     webhook_url: Webhook URL
-    fallback_fee: "Fallback shipping fee (%{currency})"
+    fallback_fee: Fallback shipping fee (%{currency})
     fallback_help: Used when Sendit city rates are unavailable.
-    free_shipping: "Free shipping from (%{currency})"
+    free_shipping: Free shipping from (%{currency})
     free_shipping_help: Waives shipping once the cart reaches this amount. Leave empty to always charge.
     optional: Optional
     save: Save Sendit settings
@@ -46,26 +46,61 @@ fr:
     connect: Connecter Sendit
     existing_connection: Connexion Sendit existante
     delete_connection: Supprimer la connexion
-    delete_confirm: "Supprimer cette connexion Sendit ? Les identifiants enregistrés seront supprimés. Les commandes existantes seront conservées."
-    rates_help: "Les frais de livraison dépendent de la ville sélectionnée. Villes en cache : %{count}."
+    delete_confirm: Supprimer cette connexion Sendit ? Les identifiants enregistrés seront supprimés. Les commandes existantes
+      seront conservées.
+    rates_help: 'Les frais de livraison dépendent de la ville sélectionnée. Villes en cache : %{count}.'
     refresh_cities: Actualiser les villes
     view_rates: Voir les tarifs Sendit par ville
     pickup_city: Ville de ramassage
     choose_pickup: Choisissez où Sendit récupère vos colis
-    saved_pickup: "Ville de ramassage enregistrée (%{id})"
+    saved_pickup: Ville de ramassage enregistrée (%{id})
     pickup_help: Nécessaire pour créer les colis Sendit. Actualisez les villes si votre ville de ramassage manque.
     allow_open: Autoriser le client à ouvrir le colis
     allow_try: Autoriser le client à essayer
     webhook_secret: Secret du webhook Sendit
-    saved_secret: "•••••••• (enregistré)"
+    saved_secret: •••••••• (enregistré)
     secret_help: Laissez vide pour conserver le secret enregistré.
     webhook_url: URL du webhook
-    fallback_fee: "Frais de livraison par défaut (%{currency})"
+    fallback_fee: Frais de livraison par défaut (%{currency})
     fallback_help: Utilisés lorsque les tarifs Sendit par ville sont indisponibles.
-    free_shipping: "Livraison gratuite à partir de (%{currency})"
+    free_shipping: Livraison gratuite à partir de (%{currency})
     free_shipping_help: La livraison est offerte lorsque le panier atteint ce montant. Laissez vide pour toujours facturer.
     optional: Facultatif
     save: Enregistrer les paramètres Sendit
+es:
+  sendit_settings:
+    saved: Sendit settings saved
+    managed_delete_required: Delete the Sendit account from its connection card
+    deleted: Sendit connection deleted
+    connect_to_refresh: Connect Sendit to refresh cities
+    refresh_queued: Sendit city refresh requested
+    title: Sendit settings
+    description: Manage pickup, parcel options and shipping fees for this workspace.
+    settings_link: Manage Sendit and shipping settings
+    manage_connection: Manage connection
+    connect: Connect Sendit
+    existing_connection: Existing Sendit connection
+    delete_connection: Delete connection
+    delete_confirm: Delete this Sendit connection? Saved credentials will be removed. Existing orders will be kept.
+    rates_help: 'Delivery fees follow the selected city. Cached cities: %{count}.'
+    refresh_cities: Refresh cities
+    view_rates: View Sendit city rates
+    pickup_city: Pickup city
+    choose_pickup: Choose where Sendit collects your parcels
+    saved_pickup: Saved pickup city (%{id})
+    pickup_help: Required by Sendit to create parcels. Refresh cities if your pickup city is missing.
+    allow_open: Allow the customer to open the parcel
+    allow_try: Allow the customer to try on
+    webhook_secret: Sendit webhook secret
+    saved_secret: •••••••• (saved)
+    secret_help: Leave blank to keep the saved secret.
+    webhook_url: Webhook URL
+    fallback_fee: Fallback shipping fee (%{currency})
+    fallback_help: Used when Sendit city rates are unavailable.
+    free_shipping: Free shipping from (%{currency})
+    free_shipping_help: Waives shipping once the cart reaches this amount. Leave empty to always charge.
+    optional: Optional
+    save: Save Sendit settings
 ar:
   sendit_settings:
     saved: تم حفظ إعدادات Sendit
@@ -80,23 +115,23 @@ ar:
     connect: ربط Sendit
     existing_connection: اتصال Sendit الحالي
     delete_connection: حذف الاتصال
-    delete_confirm: "حذف اتصال Sendit؟ ستُحذف بيانات الاعتماد المحفوظة مع الاحتفاظ بالطلبات الحالية."
-    rates_help: "تعتمد رسوم التوصيل على المدينة المحددة. المدن المحفوظة: %{count}."
+    delete_confirm: حذف اتصال Sendit؟ ستُحذف بيانات الاعتماد المحفوظة مع الاحتفاظ بالطلبات الحالية.
+    rates_help: 'تعتمد رسوم التوصيل على المدينة المحددة. المدن المحفوظة: %{count}.'
     refresh_cities: تحديث المدن
     view_rates: عرض أسعار Sendit حسب المدينة
     pickup_city: مدينة الاستلام
     choose_pickup: اختر المدينة التي تستلم منها Sendit طرودك
-    saved_pickup: "مدينة الاستلام المحفوظة (%{id})"
+    saved_pickup: مدينة الاستلام المحفوظة (%{id})
     pickup_help: مطلوبة لإنشاء طرود Sendit. حدّث المدن إذا لم تظهر مدينة الاستلام.
     allow_open: السماح للعميل بفتح الطرد
     allow_try: السماح للعميل بالتجربة
     webhook_secret: المفتاح السري لإشعارات Sendit
-    saved_secret: "•••••••• (محفوظ)"
+    saved_secret: •••••••• (محفوظ)
     secret_help: اترك الحقل فارغًا للاحتفاظ بالمفتاح السري المحفوظ.
     webhook_url: رابط الإشعارات
-    fallback_fee: "رسوم التوصيل الافتراضية (%{currency})"
+    fallback_fee: رسوم التوصيل الافتراضية (%{currency})
     fallback_help: تُستخدم عند عدم توفر أسعار Sendit حسب المدينة.
-    free_shipping: "توصيل مجاني ابتداءً من (%{currency})"
+    free_shipping: توصيل مجاني ابتداءً من (%{currency})
     free_shipping_help: يُلغى رسم التوصيل عند بلوغ السلة هذا المبلغ. اترك الحقل فارغًا لاحتساب الرسوم دائمًا.
     optional: اختياري
     save: حفظ إعدادات Sendit

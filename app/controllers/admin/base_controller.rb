@@ -59,6 +59,5 @@ end
     def store_billing_past_due?
       current_store&.billing_past_due?
     end
-
   end
 end

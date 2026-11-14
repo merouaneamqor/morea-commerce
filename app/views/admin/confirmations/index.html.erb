@@ -2,8 +2,8 @@
 <% content_for :admin_page_class, "admin-page--dashboard" %>
 <div class="admin-page-header">
   <div>
-    <h1 class="admin-page-header__title"><%= t("admin.confirmations.title") %></h1>
-    <p class="admin-muted mt-2"><%= t("admin.confirmations.description") %></p>
+    <h1 class="admin-page-header__title"><%= t(agent_view? ? "admin.confirmations.agent_lead" : "admin.confirmations.title") %></h1>
+    <p class="admin-muted mt-2"><%= t(agent_view? ? "admin.confirmations.agent_lead_help" : "admin.confirmations.description") %></p>
   </div>
   <div class="flex flex-wrap gap-2">
     <%= link_to t("admin.confirmations.performance"), dashboard_admin_confirmations_path, class: "admin-btn-secondary" %>
@@ -17,6 +17,10 @@
     <%= button_to t("admin.confirmations.clock_in"), clock_in_admin_confirmations_path, class: "admin-btn" %>
   </div>
 <% end %>
+
+<% if agent_view? %>
+  <%= render "agent_desk" %>
+<% else %>
 
 <div class="admin-card overflow-hidden">
   <nav class="admin-tabs px-4" aria-label="<%= t('admin.confirmations.filters') %>">
@@ -141,3 +145,4 @@
     </div>
   </nav>
 </div>
+<% end %>

@@ -817,7 +817,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_180000) do
 
   create_table "orders", force: :cascade do |t|
     t.bigint "store_id", null: false
-    t.bigint "customer_id", null: false
+    t.bigint "customer_id"
     t.string "number", null: false
     t.string "status", default: "new", null: false
     t.string "payment_method", default: "cod", null: false
@@ -825,10 +825,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_13_180000) do
     t.integer "shipping_cents", default: 0, null: false
     t.integer "total_cents", default: 0, null: false
     t.string "currency", default: "DH", null: false
-    t.string "customer_name", null: false
-    t.string "customer_phone", null: false
-    t.string "customer_city", null: false
-    t.string "customer_address", null: false
+    t.string "customer_name"
+    t.string "customer_phone"
+    t.string "customer_city"
+    t.string "customer_address"
     t.text "notes"
     t.datetime "confirmed_at"
     t.datetime "shipped_at"

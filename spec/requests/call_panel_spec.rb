@@ -30,7 +30,7 @@ RSpec.describe "Call panel", type: :request do
   it "cannot start a call without clocking in, and the server says why" do
     sign_in(agent)
 
-    post "/admin/confirmations/#{order.id}/call"
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(json["error"]).to eq(I18n.t("admin.confirmations.clock_in_required"))
@@ -41,7 +41,7 @@ RSpec.describe "Call panel", type: :request do
     clock_in(agent)
     sign_in(agent)
 
-    post "/admin/confirmations/#{order.id}/call"
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
     expect(response).to have_http_status(:ok)
     expect(confirmation).to have_attributes(assigned_user_id: agent.id, call_started_at: be_present)
@@ -50,14 +50,14 @@ RSpec.describe "Call panel", type: :request do
   it "locks the order to the agent who opened it: a second agent cannot open it" do
     [ agent, other ].each { |person| clock_in(person) }
     sign_in(agent)
-    post "/admin/confirmations/#{order.id}/call"
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
     sign_in(other)
 
-    post "/admin/confirmations/#{order.id}/call"
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(json["error"]).to eq("Another agent has claimed this order.")
-    post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "confirmed" }
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed" }
     expect(order.reload.status).to eq("new")
     expect(confirmation.assigned_user_id).to eq(agent.id)
   end
@@ -65,28 +65,28 @@ RSpec.describe "Call panel", type: :request do
   it "cannot finish a call without a result" do
     clock_in(agent)
     sign_in(agent)
-    post "/admin/confirmations/#{order.id}/call"
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
-    post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "" }
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "" }
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(json["error"]).to eq("Pick the result of the call.")
     expect(ConfirmationAttempt.where(store: store).count).to eq(0)
-    post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "abandoned" }
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "abandoned" }
     expect(response).to have_http_status(:unprocessable_content)
   end
 
   it "needs a reason to cancel" do
     clock_in(agent)
     sign_in(agent)
-    post "/admin/confirmations/#{order.id}/call"
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
-    post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "cancelled", notes: " " }
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "cancelled", notes: " " }
 
     expect(json["error"]).to eq("Give a reason to cancel the order.")
     expect(order.reload.status).to eq("new")
 
-    post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "cancelled", notes: "Customer changed their mind" }
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "cancelled", notes: "Customer changed their mind" }
     expect(response).to have_http_status(:ok)
     expect(order.reload.status).to eq("cancelled")
   end
@@ -95,9 +95,9 @@ RSpec.describe "Call panel", type: :request do
     clock_in(agent)
     sign_in(agent)
     travel_to(Time.zone.local(2026, 11, 5, 10, 0, 0)) do
-      post "/admin/confirmations/#{order.id}/call"
+      post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
       travel 83.seconds
-      post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "confirmed", notes: "OK" }
+      post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed", notes: "OK" }
 
       expect(response).to have_http_status(:ok)
       attempt = ConfirmationAttempt.where(store: store).sole
@@ -113,9 +113,9 @@ RSpec.describe "Call panel", type: :request do
   it "changing the quantity updates the total and the history says who changed what" do
     clock_in(agent)
     sign_in(agent)
-    post "/admin/confirmations/#{order.id}/call"
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
-    post "/admin/confirmations/#{order.id}/finish_call", params: {
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: {
       outcome: "confirmed",
       order: { name: "Karim", phone: "0612345678", second_phone: "0698765432", city: "Casablanca", address: "Rue 2",
                lines: { "0" => { product_id: product.id, quantity: 3 } } }
@@ -134,9 +134,9 @@ RSpec.describe "Call panel", type: :request do
   it "cancels with a reason even when the order form would refuse the edits sent with it (they are ignored for a cancellation)" do
     clock_in(agent)
     sign_in(agent)
-    post "/admin/confirmations/#{order.id}/call"
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
-    post "/admin/confirmations/#{order.id}/finish_call", params: {
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: {
       outcome: "cancelled", notes: "par client",
       order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: {} }       # no product: the editor would refuse a total of 0
     }
@@ -150,9 +150,9 @@ RSpec.describe "Call panel", type: :request do
   it "refuses edits that bring the total to 0 and keeps the order and the attempt untouched" do
     clock_in(agent)
     sign_in(agent)
-    post "/admin/confirmations/#{order.id}/call"
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
-    post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "confirmed", order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: {} } }
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed", order: { name: "Karim", phone: "0612345678", city: "Casablanca", address: "Rue 1", lines: {} } }
 
     expect(response).to have_http_status(:unprocessable_content)
     expect(order.reload.status).to eq("new")
@@ -164,14 +164,14 @@ RSpec.describe "Call panel", type: :request do
     clock_in(agent)
     sign_in(agent)
     travel_to(Time.zone.local(2026, 11, 5, 10, 0, 0)) do
-      post "/admin/confirmations/#{order.id}/call"
+      post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
       travel 4.seconds
-      post "/admin/confirmations/#{order.id}/abandon_call"
+      post "/admin/confirmations/#{order.id}/abandon_call", headers: { "ACCEPT" => "application/json" }
       expect(ConfirmationAttempt.where(store: store).count).to eq(0)
 
-      post "/admin/confirmations/#{order.id}/call"
+      post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
       travel 6.seconds
-      post "/admin/confirmations/#{order.id}/abandon_call"
+      post "/admin/confirmations/#{order.id}/abandon_call", headers: { "ACCEPT" => "application/json" }
     end
 
     expect(ConfirmationAttempt.where(store: store).sole).to have_attributes(outcome: "abandoned", call_seconds: 6)
@@ -183,9 +183,9 @@ RSpec.describe "Call panel", type: :request do
   it "records a wrong number: the order stays new and leaves the queue" do
     clock_in(agent)
     sign_in(agent)
-    post "/admin/confirmations/#{order.id}/call"
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
-    post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "wrong_number" }
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "wrong_number" }
 
     expect(response).to have_http_status(:ok)
     expect(order.reload.status).to eq("new")
@@ -199,9 +199,9 @@ RSpec.describe "Call panel", type: :request do
       .create(name: "Salma", phone: "0612345679", city: "Fès", address: "Rue 3", lines: [ { product_id: product.id, quantity: 1 } ])
     clock_in(agent)
     sign_in(agent)
-    post "/admin/confirmations/#{order.id}/call"
+    post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
 
-    post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "no_answer" }
+    post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "no_answer" }
 
     expect(json["next_order_id"]).to eq(order.id).or eq(second.id)
     expect(json["next_order_id"]).not_to be_nil

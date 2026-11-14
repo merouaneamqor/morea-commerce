@@ -1,54 +1,58 @@
 es:
   platform_users:
-    nav: "Usuarios admin"
-    title: "Usuarios admin"
-    description: "Gestiona los administradores de la plataforma y de los espacios de trabajo. Los usuarios suspendidos o archivados no pueden iniciar sesión."
-    new: "Nuevo usuario admin"
-    edit: "Editar"
-    save: "Guardar"
-    created: "Usuario admin creado."
-    saved: "Usuario admin guardado."
-    empty: "No hay ningún usuario admin: %{status}."
-    no_workspace: "Ningún espacio (solo plataforma)"
-    workspace_help: "Obligatorio para un administrador de espacio de trabajo. Déjalo vacío para un administrador de la plataforma."
-    new_password: "Nueva contraseña"
-    password_help: "Déjalo vacío para conservar la contraseña actual."
-    password_confirmation: "Confirmar la contraseña"
+    nav: Usuarios admin
+    title: Usuarios admin
+    description: Gestiona los administradores de la plataforma y de los espacios de trabajo. Los usuarios suspendidos o archivados
+      no pueden iniciar sesión.
+    new: Nuevo usuario admin
+    edit: Editar
+    save: Guardar
+    created: Usuario admin creado.
+    saved: Usuario admin guardado.
+    empty: 'No hay ningún usuario admin: %{status}.'
+    no_workspace: Ningún espacio (solo plataforma)
+    workspace_help: Obligatorio para un administrador de espacio de trabajo. Déjalo vacío para un administrador de la plataforma.
+    new_password: Nueva contraseña
+    password_help: Déjalo vacío para conservar la contraseña actual.
+    password_confirmation: Confirmar la contraseña
     columns:
-      name: "Nombre"
-      email: "Correo electrónico"
-      role: "Rol"
-      workspace: "Espacio de trabajo"
-      status: "Estado"
-      password: "Contraseña"
+      name: Nombre
+      email: Correo electrónico
+      role: Rol
+      workspace: Espacio de trabajo
+      status: Estado
+      password: Contraseña
     roles:
-      super_admin: "Administrador de la plataforma"
-      workspace_admin: "Administrador de espacio"
+      super_admin: Administrador de la plataforma
+      workspace_admin: Administrador de espacio
     role_filters:
-      all: "Todos los roles"
-      super_admin: "Administradores de la plataforma"
-      workspace_admin: "Administradores de espacio"
+      all: Todos los roles
+      super_admin: Administradores de la plataforma
+      workspace_admin: Administradores de espacio
     statuses:
-      active: "Activo"
-      suspended: "Suspendido"
-      archived: "Archivado"
+      active: Activo
+      suspended: Suspendido
+      archived: Archivado
     actions:
-      suspend: "Suspender"
-      reactivate: "Reactivar"
-      archive: "Archivar"
-      restore: "Restaurar"
+      suspend: Suspender
+      reactivate: Reactivar
+      archive: Archivar
+      restore: Restaurar
     confirm:
-      suspend: "¿Suspender a %{email}? Se cerrará su sesión."
-      reactivate: "¿Reactivar a %{email}?"
-      archive: "¿Archivar a %{email}? Se cerrará su sesión."
-      restore: "¿Restaurar a %{email}?"
+      suspend: ¿Suspender a %{email}? Se cerrará su sesión.
+      reactivate: ¿Reactivar a %{email}?
+      archive: ¿Archivar a %{email}? Se cerrará su sesión.
+      restore: ¿Restaurar a %{email}?
+      grant_super_admin: Grant platform administrator access? This person will manage all workspaces and staff.
     done:
-      suspend: "%{email} suspendido."
-      reactivate: "%{email} reactivado."
-      archive: "%{email} archivado."
-      restore: "%{email} restaurado."
+      suspend: '%{email} suspendido.'
+      reactivate: '%{email} reactivado.'
+      archive: '%{email} archivado.'
+      restore: '%{email} restaurado.'
     denied:
-      self: "No puedes suspender, archivar ni degradar tu propia cuenta."
-      last_super_admin: "Conserva al menos un administrador de la plataforma activo."
-      invalid_transition: "Este cambio no está disponible para el estado actual."
-      unknown_action: "Acción desconocida."
+      self: No puedes suspender, archivar ni degradar tu propia cuenta.
+      last_super_admin: Conserva al menos un administrador de la plataforma activo.
+      invalid_transition: Este cambio no está disponible para el estado actual.
+      unknown_action: Acción desconocida.
+    access_help: Only a platform administrator can grant platform access. Impersonation opens a workspace as one of its non-platform
+      members; platform administrators cannot be impersonated.

@@ -21,18 +21,11 @@ class ConfirmationShift < ApplicationRecord
     ended_at.nil? && last_seen_at.present? && last_seen_at >= now - PRESENCE_GRACE
   end
 
-  # Seconds the pages were open inside the range. A live session runs until now;
-  # a session with no recent heartbeat stops at the last time the pages were open.
+  # Seconds this shift worked inside the range. Open clock-in shifts run until `now`
+  # (feat/team-page). Heartbeat freshness still drives Presence helpers separately.
   def seconds_within(range, now: Time.current)
-    cap = if ended_at
-      ended_at
-    elsif fresh?(now: now)
-      now
-    else
-      last_seen_at || started_at
-    end
     from = [ started_at, range.begin ].max
-    to = [ cap, range.end ].min
+    to = [ ended_at || now, range.end ].min
     [ to - from, 0 ].max
   end
 

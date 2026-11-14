@@ -1,0 +1,7 @@
+es:
+  admin:
+    confirmations:
+      start_call: Start call
+      finish_call: Finish call and save
+      abandon_call: Close call without a result
+      call_in_progress: Call in progress — choose the result before saving.

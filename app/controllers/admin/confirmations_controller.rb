@@ -50,12 +50,14 @@ module Admin
       @attempt_counts = ConfirmationAttempt.joins(:order_confirmation)
         .where(store: current_store, order_confirmations: { order_id: counted_ids })
         .group("order_confirmations.order_id").count
+      @agent_present = @open_shift&.fresh? || false if agent_view?
     end
 
     def home
       @home = Confirmations::AgentHome.new(store: current_store, user: current_user, range: period_range("today"))
       @presence_seconds = Confirmations::Presence.new(store: current_store, user: current_user).seconds_within(period_range("today")) if agent_view?
       @open_shift = ConfirmationShift.open.find_by(store: current_store, user: current_user)
+      @agent_present = @open_shift&.fresh? || false if agent_view?
     end
 
     # "Attributions": the orders waiting for a call and who they are for, with the agents' load. Owners and supervisors only.
@@ -167,12 +169,12 @@ module Admin
       redirect_to admin_confirmations_path, alert: e.message
     end
 
-    # Call panel endpoints (JSON, used by the panel's Stimulus controller).
+    # Call endpoints support the agent-desk HTML forms and the panel's JSON Stimulus client.
     def call
       confirmation = desk.open_call(params[:order_id])
-      render json: { order_id: confirmation.order_id, call_started_at: confirmation.call_started_at.iso8601(3), server_now: Time.current.iso8601(3) }
+      call_response({ order_id: confirmation.order_id, call_started_at: confirmation.call_started_at.iso8601(3), server_now: Time.current.iso8601(3) }, notice: t("admin.confirmations.claimed"))
     rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid => e
-      render json: { error: e.message }, status: :unprocessable_content
+      call_error(e.message)
     end
 
     # The call window: opened from "Appeler" in the order-modal frame. It shows the customer, the products and the result buttons;
@@ -188,16 +190,16 @@ module Admin
 
     def abandon_call
       desk.abandon_call(params[:order_id])
-      render json: { ok: true }
+      call_response({ ok: true }, notice: nil)
     rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid => e
-      render json: { error: e.message }, status: :unprocessable_content
+      call_error(e.message)
     end
 
     def finish_call
       desk.finish_call(params[:order_id], outcome: params[:outcome], notes: params[:notes], callback_at: params[:callback_at], changes: call_changes)
-      render json: { ok: true, next_order_id: next_available_order_id(excluding: params[:order_id]) }
+      call_response({ ok: true, next_order_id: next_available_order_id(excluding: params[:order_id]) }, notice: t("admin.confirmations.recorded"))
     rescue Confirmations::Desk::Error, ActiveRecord::RecordInvalid, ArgumentError => e
-      render json: { error: e.message }, status: :unprocessable_content
+      call_error(e.message)
     end
 
     def touch_call
@@ -260,15 +262,33 @@ module Admin
 
     private
 
+    def call_response(payload, notice:)
+      respond_to do |format|
+        format.json { render json: payload }
+        format.html { redirect_to admin_confirmations_path(filter: "mine"), notice: notice }
+      end
+    end
+
+    def call_error(message)
+      respond_to do |format|
+        format.json { render json: { error: message }, status: :unprocessable_content }
+        format.html { redirect_to admin_confirmations_path(filter: "mine"), alert: message }
+      end
+    end
+
     # The edits sent by the panel, in the order editor's shape; nil when the panel sent none.
     def call_changes
       return unless params[:order].present?
 
+      order_params = params[:order]
       raw = params.require(:order).permit(:name, :phone, :second_phone, :city, :district, :address, lines: [ :product_id, :product_variant_id, :quantity ])
       lines = raw[:lines]
       lines = lines.values if lines.respond_to?(:values) && !lines.is_a?(Array)
       attrs = raw.to_h.symbolize_keys
-      attrs[:lines] = Array(lines) if raw.key?(:lines)
+      # permit drops lines: {} (no nested keys). Still treat an explicit empty list as clearing products.
+      if order_params.key?(:lines) || order_params.key?("lines")
+        attrs[:lines] = Array(lines)
+      end
       attrs
     end
 

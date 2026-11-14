@@ -823,3 +823,24 @@
   en: "Platform administration"
   ar: "إدارة المنصة"
   es: "Administración de la plataforma"
+
+"\xC9diteur de th\xE8me":
+  en: "Theme editor"
+  ar: "محرر السمة"
+  es: "Editor de tema"
+Accueil:
+  en: "Home"
+  ar: "الرئيسية"
+  es: "Inicio"
+Menu:
+  en: "Menu"
+  ar: "القائمة"
+  es: "Menú"
+Plus:
+  en: "More"
+  ar: "المزيد"
+  es: "Más"
+Statistiques:
+  en: "Statistics"
+  ar: "الإحصائيات"
+  es: "Estadísticas"

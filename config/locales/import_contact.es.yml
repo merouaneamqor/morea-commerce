@@ -1,0 +1,17 @@
+es:
+  import_contact:
+    title: Contact details need attention
+    badge: Review
+    help: This Shopify order was imported. Confirmation and shipping are blocked until its contact details are corrected.
+    check_fields: 'Check: %{fields}'
+    manager_help: Ask a manager to complete the contact details on this order.
+    blocked: Complete the contact details before confirming or shipping this order.
+    local_correction: This updates the contact details in Seallo. It does not change the Shopify order or its amounts.
+    save: Save contact details
+    saved: Contact details saved. The order is ready for confirmation.
+    fields:
+      name: Customer name
+      phone: Phone number
+      city: City
+      address: Street address
+      district: District (optional)

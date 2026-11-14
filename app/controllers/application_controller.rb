@@ -145,14 +145,16 @@ class ApplicationController < ActionController::Base
 
   def current_cart
     return @current_cart if defined?(@current_cart)
-    return @current_cart = nil unless current_store
-
-    @current_cart = current_store.carts.find_by(token: session[:cart_token])
-    if @current_cart.nil?
-      @current_cart = current_store.carts.create!
-      session[:cart_token] = @current_cart.token
+    @current_cart = if current_store && session[:cart_token].present?
+      current_store.carts.find_by(token: session[:cart_token])
     end
-    @current_cart
+  end
+
+  def ensure_cart!
+    current_cart || current_store.carts.create!.tap do |cart|
+      @current_cart = cart
+      session[:cart_token] = cart.token
+    end
   end
 
   def cart_count

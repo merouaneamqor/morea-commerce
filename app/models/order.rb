@@ -499,7 +499,7 @@ end
   end
 
   def reserve_inventory!
-    order_items.includes(:product, :product_variant).each do |item|
+    inventory_items.each do |item|
       next unless item.product&.track_inventory
 
       Inventory::Adjuster.adjust!(
@@ -518,7 +518,7 @@ end
   end
 
   def restore_inventory!(reason: "order_cancelled")
-    order_items.includes(:product, :product_variant).each do |item|
+    inventory_items.each do |item|
       next unless item.product&.track_inventory
 
       Inventory::Adjuster.adjust!(
@@ -530,5 +530,9 @@ end
         order: self
       )
     end
+  end
+
+  def inventory_items
+    order_items.includes(:product, :product_variant).order(:product_id, :product_variant_id, :id)
   end
 end

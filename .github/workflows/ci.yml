@@ -103,6 +103,8 @@ jobs:
         run: bin/rails zeitwerk:check
       - name: Run workspace approval and merchant dashboard specs
         run: bundle exec rspec
+      - name: Check storefront checkout, order privacy, stock races and tenant isolation
+        run: bin/rails runner script/storefront_regression.rb
       - name: Check catalog changesets and rollback
         run: bin/rails runner script/autonomy_smoke.rb morea
       - name: Check MCP tools and inventory lifecycle

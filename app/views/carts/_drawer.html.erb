@@ -1,5 +1,5 @@
 <%# Slide-out bag. Re-rendered by Turbo Streams after add / update / remove. %>
-<% items = cart.cart_items.includes(product: [:translations, { images_attachments: :blob }], product_variant: []).order(:created_at) %>
+<% items = cart ? cart.cart_items.includes(product: [:translations, { images_attachments: :blob }], product_variant: []).order(:created_at) : [] %>
 <div id="cart-drawer"
      class="cart-drawer"
      data-cart-drawer-target="drawer"
@@ -8,7 +8,7 @@
   <div class="cart-drawer__scrim" data-action="click->cart-drawer#close"></div>
   <aside class="cart-drawer__panel" role="dialog" aria-modal="true" aria-label="<%= t("cart.title") %>">
     <header class="cart-drawer__head">
-      <p class="font-display text-2xl text-ink"><%= t("cart.title") %> <span class="text-base text-ink-faint">(<%= cart.item_count %>)</span></p>
+      <p class="font-display text-2xl text-ink"><%= t("cart.title") %> <span class="text-base text-ink-faint">(<%= items.sum(&:quantity) %>)</span></p>
       <button type="button" class="cart-drawer__close" data-action="cart-drawer#close" aria-label="<%= t("cart.close") %>">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 4l12 12M16 4 4 16"/></svg>
       </button>

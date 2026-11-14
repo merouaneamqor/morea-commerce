@@ -9,6 +9,7 @@ class Checkout
   validate :required_fields
   validate :phone_must_be_valid
   validate :cart_must_have_items
+  validate :cart_items_must_be_available
   validate :discount_must_be_valid
   validate :district_must_be_valid
   validate :consents_must_be_accepted
@@ -50,10 +51,10 @@ class Checkout
     applied_discount.amount_for(subtotal_cents)
   end
 
-  def shipping_cents
+  def shipping_cents(subtotal: subtotal_cents, discount: discount_cents)
     return 0 unless store
 
-    net = [ subtotal_cents - discount_cents, 0 ].max
+    net = [ subtotal - discount, 0 ].max
     return 0 if store.free_shipping?(net)
 
     sendit = Sendit::Districts.shipping_cents_for(store: store, city: city, district: district, address: address)
@@ -120,11 +121,16 @@ class Checkout
   end
 
   def place_order!
-    validate!
+    validate! unless cart
     order = nil
     phone_number = self.class.normalize_phone(phone, country: phone_country)
 
-    ActiveRecord::Base.transaction do
+    cart.with_lock do
+      # with_lock reloads the cart, so a concurrent submit sees consumed items.
+      validate!
+      subtotal = subtotal_cents
+      discount = discount_cents
+      shipping = shipping_cents(subtotal: subtotal, discount: discount)
       customer = Customer.find_or_create_from_checkout!(
         store: store,
         name: name,
@@ -145,11 +151,11 @@ class Checkout
         payment_method: "cod",
         status: "new",
         currency: store.currency,
-        subtotal_cents: subtotal_cents,
-        discount_cents: discount_cents,
+        subtotal_cents: subtotal,
+        discount_cents: discount,
         discount_code: applied_discount&.code,
-        shipping_cents: shipping_cents,
-        total_cents: total_cents,
+        shipping_cents: shipping,
+        total_cents: [ subtotal - discount + shipping, 0 ].max,
         **sendit_district
       )
 
@@ -219,6 +225,21 @@ class Checkout
 
   def cart_must_have_items
     errors.add(:base, I18n.t("checkout.errors.empty_cart")) if cart.nil? || cart.empty?
+  end
+
+  def cart_items_must_be_available
+    return unless cart
+
+    cart.cart_items.includes(:product, :product_variant).each do |item|
+      product = item.product
+      variant = item.product_variant
+      eligible = product.store_id == store&.id && product.status == "active" &&
+        (variant ? variant.active? && variant.product_id == product.id : !product.product_variants.exists?)
+      enough_stock = !product.track_inventory? || (variant || product).stock >= item.quantity
+      next if eligible && enough_stock
+
+      errors.add(:base, I18n.t("checkout.errors.unavailable_item", product: product.name))
+    end
   end
 
   def discount_must_be_valid

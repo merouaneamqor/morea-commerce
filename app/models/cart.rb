@@ -42,11 +42,13 @@ class Cart < ApplicationRecord
 
   def add_product!(product, quantity: 1, variant: nil)
     quantity = quantity.to_i.clamp(1, 99)
-    item = cart_items.find_or_initialize_by(product: product, product_variant: variant)
-    item.quantity = item.new_record? ? quantity : item.quantity + quantity
-    item.unit_price_cents = variant&.unit_price_cents || product.price_cents
-    item.save!
-    item
+    with_lock do
+      item = cart_items.find_or_initialize_by(product: product, product_variant: variant)
+      item.quantity = item.new_record? ? quantity : [ item.quantity + quantity, 99 ].min
+      item.unit_price_cents = variant&.unit_price_cents || product.price_cents
+      item.save!
+      item
+    end
   end
 
   private

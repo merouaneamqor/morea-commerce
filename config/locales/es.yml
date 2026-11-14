@@ -182,6 +182,7 @@ es:
       district: Elige tu barrio.
       district_invalid: Elige un barrio de la lista.
       empty_cart: Tu carrito está vacío.
+      unavailable_item: "%{product} ya no está disponible en la cantidad solicitada. Actualiza tu carrito e inténtalo de nuevo."
       discount_code: Este código promocional no es válido o ha caducado.
       age_confirmed: Please confirm you are at least %{age} years old.
       privacy_accepted: Please accept the privacy policy and terms to place your order.

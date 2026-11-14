@@ -92,24 +92,7 @@ module Inventory
         variant_id: variant_id
       )
       require_variant_target!(target_variant)
-      target = target_variant || @product
-      previous = target.stock
-      new_stock = previous + qty
-      raise Error, "Stock cannot go below zero." if new_stock.negative?
-
-      movement = nil
-      ActiveRecord::Base.transaction do
-        target.update!(stock: new_stock)
-        movement = @product.inventory_movements.create!(
-          product_variant: target_variant,
-          order: order,
-          quantity: qty,
-          reason: reason_key,
-          note: note.to_s.strip.presence
-        )
-      end
-
-      Result.new(product: @product.reload, movement: movement, previous_stock: previous, stock: new_stock)
+      change_stock!(target_variant, reason: reason_key, note: note, order: order) { |previous| previous + qty }
     end
 
     def set!(stock:, reason: "correction", note: nil, variant: nil, size: nil, color: nil, variant_id: nil)
@@ -124,19 +107,29 @@ module Inventory
         variant_id: variant_id
       )
       require_variant_target!(target_variant)
-      target = target_variant || @product
-      delta = absolute - target.stock
-      return Result.new(product: @product, movement: nil, previous_stock: target.stock, stock: absolute) if delta.zero?
-
-      adjust!(
-        quantity: delta,
-        reason: reason.presence || "correction",
-        note: note.presence || "Set stock to #{absolute}",
-        variant: target_variant
-      )
+      reason_key = self.class.normalize_reason!(reason.presence || "correction")
+      change_stock!(target_variant, reason: reason_key, note: note.presence || "Set stock to #{absolute}") { absolute }
     end
 
     private
+
+    def change_stock!(variant, reason:, note:, order: nil)
+      target = variant || @product
+      target.with_lock do
+        previous = target.stock
+        new_stock = yield(previous)
+        raise Error, "Stock cannot go below zero." if new_stock.negative?
+
+        movement = if previous != new_stock
+          target.update!(stock: new_stock)
+          self.class.ledger!(
+            product: @product, variant: variant, order: order,
+            quantity: new_stock - previous, reason: reason, note: note
+          )
+        end
+        Result.new(product: @product, movement: movement, previous_stock: previous, stock: new_stock)
+      end
+    end
 
     def require_variant_target!(target_variant)
       return if target_variant

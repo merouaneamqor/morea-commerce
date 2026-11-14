@@ -48,9 +48,9 @@ RSpec.describe "Call center rules", type: :request do
     it "keeps a claim alive while the call panel pings" do
       sign_in(agent)
       travel_to(Time.zone.local(2026, 11, 5, 10, 0)) do
-        post "/admin/confirmations/#{order.id}/call"
+        post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
         travel 10.minutes
-        post "/admin/confirmations/#{order.id}/touch_call"
+        post "/admin/confirmations/#{order.id}/touch_call", headers: { "ACCEPT" => "application/json" }
         travel 10.minutes
         Confirmations::ClaimExpiry.release_idle!(store)
         expect(confirmation_of(order).assigned_user_id).to eq(agent.id)
@@ -60,9 +60,9 @@ RSpec.describe "Call center rules", type: :request do
     it "makes an agent who comes back after 15 minutes find the order released, not act on a stale claim" do
       sign_in(agent)
       travel_to(Time.zone.local(2026, 11, 5, 10, 0)) do
-        post "/admin/confirmations/#{order.id}/call"
+        post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
         travel 16.minutes
-        post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "confirmed" }
+        post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed" }
         expect(response).to have_http_status(:unprocessable_content)
         expect(order.reload.status).to eq("new")
         expect(confirmation_of(order).assigned_user_id).to be_nil
@@ -99,8 +99,8 @@ RSpec.describe "Call center rules", type: :request do
     def flag_wrong_number
       clock_in(agent)
       sign_in(agent)
-      post "/admin/confirmations/#{order.id}/call"
-      post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "wrong_number" }
+      post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
+      post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "wrong_number" }
       sign_in(owner)
     end
 
@@ -143,8 +143,8 @@ RSpec.describe "Call center rules", type: :request do
       other = make_order(phone: "0611111111")
       clock_in(agent) unless ConfirmationShift.open.exists?(user: agent)
       sign_in(agent)
-      post "/admin/confirmations/#{other.id}/call"
-      post "/admin/confirmations/#{other.id}/finish_call", params: { outcome: "wrong_number" }
+      post "/admin/confirmations/#{other.id}/call", headers: { "ACCEPT" => "application/json" }
+      post "/admin/confirmations/#{other.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "wrong_number" }
       post "/admin/confirmations/#{other.id}/requeue", params: { phone: "0698765432" }
       expect(confirmation_of(other).disposition).to eq("wrong_number")
     end
@@ -226,8 +226,8 @@ RSpec.describe "Call center rules", type: :request do
     def confirm_as_agent(order)
       clock_in(agent) unless ConfirmationShift.open.exists?(user: agent)
       sign_in(agent)
-      post "/admin/confirmations/#{order.id}/call"
-      post "/admin/confirmations/#{order.id}/finish_call", params: { outcome: "confirmed" }
+      post "/admin/confirmations/#{order.id}/call", headers: { "ACCEPT" => "application/json" }
+      post "/admin/confirmations/#{order.id}/finish_call", headers: { "ACCEPT" => "application/json" }, params: { outcome: "confirmed" }
     end
 
     it "creates one pending deduction frozen at the agent's penalty when a confirmed order is returned" do

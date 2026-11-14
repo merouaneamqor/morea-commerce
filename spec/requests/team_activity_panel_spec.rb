@@ -35,8 +35,8 @@ RSpec.describe "Team activity panel", type: :request do
     expect(rows[saida.id]["data-online"]).to eq("true")
     expect(rows[yasmine.id]["data-online"]).to eq("false")
     expect(panel.css("[data-activity-row]").first["data-activity-row"].to_i).to eq(saida.id) # online first
-    expect(rows[owner.id].at_css("span[class*='from-[#f7d9a4]']")).to be_present   # owner chip: gold
-    expect(rows[saida.id].at_css("span[class*='bg-[#d9f2e2]']")).to be_present     # agent chip: green
+    expect(rows[owner.id].at_css("span[class*='bg-[#1c1c1e]']")).to be_present   # owner chip: black
+    expect(rows[saida.id].at_css("span[class*='bg-[#e8e8ed]']")).to be_present     # agent chip: gray
   end
 
   it "filters the panel by status, role and name, and keeps the members table" do

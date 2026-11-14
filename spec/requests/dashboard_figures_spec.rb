@@ -71,7 +71,7 @@ RSpec.describe "Dashboard figures", type: :request do
     cards = document.css("[data-kpis] [data-kpi]")
     expect(cards.size).to eq(9)
     expect(cards.map { |card| card["class"][/h-\[\d+px\]/] }.uniq).to eq([ "h-[110px]" ])
-    gold, others = cards.partition { |card| card["class"].include?("from-[#f7d9a4]") }
+    gold, others = cards.partition { |card| card["class"].include?("from-[#2c2c2e]") }
     expect(gold.map { |card| card["data-kpi"] }).to eq([ "revenue" ])
     expect(others).to all(satisfy { |card| card["class"].include?("border border-[#e0e0e5] bg-white") })
     chips = others.map { |card| card.at_css("p span")["class"] }

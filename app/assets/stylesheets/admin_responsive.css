@@ -607,7 +607,7 @@ button.admin-btn-plain {
 .onboarding-tour__spot {
   position: fixed;
   border-radius: 1rem;
-  box-shadow: 0 0 0 9999px rgb(31 36 48 / 0.45), 0 0 0 2px #008060;
+  box-shadow: 0 0 0 9999px rgb(31 36 48 / 0.45), 0 0 0 2px #1d1d1f;
   background: transparent;
   pointer-events: none;
   transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
@@ -772,7 +772,7 @@ button.admin-btn-plain {
 .confirm-choice--confirmed:has(:checked) { background: #0c5132; border-color: #0c5132; }
 .confirm-choice--cancelled:has(:checked),
 .confirm-choice--wrong_number:has(:checked) { background: #8e0b21; border-color: #8e0b21; }
-.confirm-choice:focus-within { outline: 2px solid #008060; outline-offset: 2px; }
+.confirm-choice:focus-within { outline: 2px solid #1d1d1f; outline-offset: 2px; }
 
 /* Platform Super Admin: mobile-first shell and dense ops pages. */
 .admin-body--platform .platform-mobile-search {

@@ -137,8 +137,8 @@ RSpec.describe "Comptabilité page", type: :request do
       second_row = document.css("[data-cards=second] [data-card]")
       expect(first_row.map { |card| card["data-size"] }).to all(eq("regular"))
       expect(first_row.map { |card| card["class"][/h-\[\d+px\]/] }.uniq).to eq([ "h-[110px]" ]) # all the same size, the gold one included
-      expect(first_row.first["class"]).to include("from-[#f7d9a4]", "to-[#eeb460]")                  # Chiffre d'affaires keeps its gold
-      expect(first_row.drop(1).map { |card| card["class"] }.join).not_to include("from-[#f7d9a4]")
+      expect(first_row.first["class"]).to include("from-[#2c2c2e]", "to-[#1c1c1e]")                  # Chiffre d'affaires keeps its gold
+      expect(first_row.drop(1).map { |card| card["class"] }.join).not_to include("from-[#2c2c2e]")
       expect(second_row.map { |card| card["data-size"] }).to all(eq("compact"))
       expect(second_row.map { |card| card["class"][/h-\[\d+px\]/] }.uniq).to eq([ "h-[65px]" ])
       second_row.each do |card|

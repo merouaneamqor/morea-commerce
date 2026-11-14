@@ -6,7 +6,7 @@
 <% clock = ->(time) { time ? l(time.in_time_zone(DateRange::ZONE), format: "%H:%M") : "—" } %>
 <% offline_count = activity.total - activity.online_count %>
 <% online_percent = activity.total.zero? ? 0 : (activity.online_count * 100.0 / activity.total).round %>
-<% role_tones = { owner: "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e]", agent: "bg-[#d9f2e2] text-[#1f6b3f]" } %>
+<% role_tones = { owner: "bg-[#1c1c1e] text-white", agent: "bg-[#e8e8ed] text-[#3a3a3c]" } %>
 <% role_names = { owner: t("admin.team.owner"), agent: sl("Agent") } %>
 
 <section class="mt-3" data-team-activity>

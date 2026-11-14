@@ -8,23 +8,23 @@
   <div class="flex h-[65px] min-w-0 flex-col justify-center rounded-xl border border-[#e0e0e5] bg-white px-3.5" data-card="<%= key %>" data-size="compact" title="<%= [ local_assigns[:title], sub ].compact_blank.join(" · ") %>">
     <p class="flex items-center gap-1.5 text-xs font-medium text-[#3a3a3c]"><span class="text-[#6e6e73]"><%= seller_icon(icon, size: 14) %></span><%= label %></p>
     <div class="mt-1 flex items-center justify-between gap-2">
-      <p class="flex min-w-0 items-baseline gap-x-1 text-[20px] leading-none font-bold whitespace-nowrap text-[#1c1c1e]" data-value><%= value %> <span class="text-xs font-semibold text-[#6e6e73]"><%= unit %></span></p>
+      <p class="flex min-w-0 items-baseline gap-x-1 text-[20px] leading-none font-bold whitespace-nowrap <%= featured ? "text-white" : "text-[#1c1c1e]" %>" data-value><%= value %> <span class="text-xs font-semibold text-[#6e6e73]"><%= unit %></span></p>
       <span class="rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap <%= pill %>" data-change="<%= tone %>"><%= change_text %></span>
     </div>
   </div>
 <% else %>
-  <div class="flex h-[110px] min-w-0 flex-col justify-between rounded-xl px-3.5 py-3 <%= featured ? "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e] shadow-[0_14px_30px_-20px_rgba(190,120,20,0.8)]" : "border border-[#e0e0e5] bg-white" %>" data-card="<%= key %>" data-size="regular">
+  <div class="flex h-[110px] min-w-0 flex-col justify-between rounded-xl px-3.5 py-3 <%= featured ? "bg-gradient-to-br from-[#2c2c2e] to-[#1c1c1e] text-white shadow-[0_14px_30px_-20px_rgba(0,0,0,0.6)]" : "border border-[#e0e0e5] bg-white" %>" data-card="<%= key %>" data-size="regular">
     <div class="flex items-center justify-between gap-2">
       <p class="flex min-w-0 items-center gap-1.5 text-xs font-medium <%= featured ? "" : "text-[#3a3a3c]" %>" title="<%= local_assigns[:title] %>">
-        <span class="<%= featured ? "grid size-5 shrink-0 place-items-center rounded-md bg-[#1c1c1e] text-white" : "shrink-0 text-[#6e6e73]" %>"><%= seller_icon(icon, size: featured ? 12 : 14) %></span>
+        <span class="<%= featured ? "grid size-5 shrink-0 place-items-center rounded-md bg-white text-[#1c1c1e]" : "shrink-0 text-[#6e6e73]" %>"><%= seller_icon(icon, size: featured ? 12 : 14) %></span>
         <span class="truncate"><%= label %></span>
       </p>
       <span class="rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap <%= pill %>" data-change="<%= tone %>"><%= change_text %></span>
     </div>
-    <p class="flex items-baseline gap-x-1 text-[22px] leading-none font-bold whitespace-nowrap text-[#1c1c1e] 2xl:text-[25px]" data-value><%= value %> <span class="text-xs font-semibold <%= featured ? "text-[#7a5a1e]" : "text-[#6e6e73]" %>"><%= unit %></span></p>
+    <p class="flex items-baseline gap-x-1 text-[22px] leading-none font-bold whitespace-nowrap <%= featured ? "text-white" : "text-[#1c1c1e]" %> 2xl:text-[25px]" data-value><%= value %> <span class="text-xs font-semibold <%= featured ? "text-white/70" : "text-[#6e6e73]" %>"><%= unit %></span></p>
     <div class="flex items-end justify-between gap-2">
-      <p class="line-clamp-2 min-w-0 text-[11px] leading-tight <%= featured ? "text-[#6d4f17]" : "text-[#6e6e73]" %>" title="<%= sub %>"><%= sub %></p>
-      <%= acc_sparkline(series, color: featured ? "#1c1c1e" : acc_spark_color(good_when, series), width: 72, height: 24) %>
+      <p class="line-clamp-2 min-w-0 text-[11px] leading-tight <%= featured ? "text-white/65" : "text-[#6e6e73]" %>" title="<%= sub %>"><%= sub %></p>
+      <%= acc_sparkline(series, color: featured ? "#ffffff" : acc_spark_color(good_when, series), width: 72, height: 24) %>
     </div>
   </div>
 <% end %>

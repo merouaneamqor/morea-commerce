@@ -9,7 +9,7 @@
 <% card = "rounded-2xl border border-[#e0e0e5] bg-white p-5" %>
 <% status_tones = { "active" => "bg-[#e3f3e8] text-[#2f7a4a]", "suspended" => "bg-[#fdf0d9] text-[#8a5a12]", "archived" => "bg-[#efeff3] text-[#6e6e73]" } %>
 <% status_labels = { "active" => sl("Actif"), "suspended" => sl("Suspendu"), "archived" => sl("Archivé") } %>
-<% role_of = ->(user) { user.admin? ? [ t("admin.team.owner"), "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e]", :owner ] : (user.confirmation_agent? ? [ t("admin.team.role_agent"), "bg-[#d9f2e2] text-[#1f6b3f]", :agent ] : [ t("admin.team.role_supervisor"), "bg-[#eee8fb] text-[#5b3fb0]", :supervisor ]) } %>
+<% role_of = ->(user) { user.admin? ? [ t("admin.team.owner"), "bg-[#1c1c1e] text-white", :owner ] : (user.confirmation_agent? ? [ t("admin.team.role_agent"), "bg-[#e8e8ed] text-[#3a3a3c]", :agent ] : [ t("admin.team.role_supervisor"), "bg-[#efeff3] text-[#3a3a3c]", :supervisor ]) } %>
 <% initials = ->(user) { (user.name.presence || user.email).to_s.strip.split(/\s+/).first(2).map { |part| part[0] }.join.upcase } %>
 
 <header class="relative z-30 flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white" data-team-header>
@@ -36,7 +36,7 @@
   <section class="mt-3 grid grid-cols-2 gap-2.5 xl:grid-cols-4" data-kpis="roles">
     <%= render "admin/dashboard/kpi", key: "roles_total", label: sl("Rôles totaux"), icon: :lock, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: Team::Roles::ALL.size, sub: sl("Rôles de la boutique") %>
     <%= render "admin/dashboard/kpi", key: "roles_active", label: sl("Rôles actifs"), icon: :check, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: Team::Roles::ALL.size, sub: sl("Utilisables maintenant") %>
-    <%= render "admin/dashboard/kpi", key: "roles_custom", label: sl("Rôles personnalisés"), icon: :settings, tone: "bg-[#eee8fb] text-[#5b3fb0]", value: 0, sub: sl("Bientôt disponible") %>
+    <%= render "admin/dashboard/kpi", key: "roles_custom", label: sl("Rôles personnalisés"), icon: :settings, tone: "bg-[#efeff3] text-[#3a3a3c]", value: 0, sub: sl("Bientôt disponible") %>
     <%= render "admin/dashboard/kpi", key: "roles_system", label: sl("Rôles système"), icon: :lock, tone: "bg-[#fdf0d9] text-[#d28a12]", value: Team::Roles::ALL.size, sub: sl("Fournis par seallo") %>
   </section>
 
@@ -71,7 +71,7 @@
           <tbody class="divide-y divide-[#f1f1f4]">
             <% role_rows.each do |role| %>
               <tr data-role="<%= role.key %>">
-                <td class="px-3 py-3"><span class="inline-flex items-center gap-2.5 font-semibold text-[#1c1c1e]"><span class="grid size-8 place-items-center rounded-lg <%= { super_admin: "bg-[#eee8fb] text-[#5b3fb0]", owner: "bg-gradient-to-br from-[#f7d9a4] to-[#eeb460] text-[#3a2a0e]" }.fetch(role.key, "bg-[#d9f2e2] text-[#1f6b3f]") %>"><%= seller_icon(:lock, size: 15) %></span><%= sl(role.name) %></span></td>
+                <td class="px-3 py-3"><span class="inline-flex items-center gap-2.5 font-semibold text-[#1c1c1e]"><span class="grid size-8 place-items-center rounded-lg <%= { super_admin: "bg-[#efeff3] text-[#3a3a3c]", owner: "bg-[#1c1c1e] text-white" }.fetch(role.key, "bg-[#e8e8ed] text-[#3a3a3c]") %>"><%= seller_icon(:lock, size: 15) %></span><%= sl(role.name) %></span></td>
                 <td class="max-w-md px-3 py-3 text-[#6e6e73]"><span class="line-clamp-2" title="<%= sl(role.description) %>"><%= sl(role.description) %></span></td>
                 <td class="px-3 py-3 tabular-nums"><span class="inline-flex items-center gap-1.5"><%= seller_icon(:check, size: 14) %><b data-permission-count><%= role.areas.size %></b></span></td>
                 <td class="px-3 py-3 tabular-nums"><span class="inline-flex items-center gap-1.5"><%= seller_icon(:clients, size: 14) %><b data-role-count><%= @all_users.count { |user| Team::Roles.for_user(user) == role.key } %></b></span></td>
@@ -190,7 +190,7 @@
     <%= render "admin/dashboard/kpi", key: "total", label: sl("Utilisateurs totaux"), icon: :team, tone: "bg-[#e6f0fd] text-[#2f6fed]", value: everyone.size, sub: sl("Membres de l'équipe") %>
     <%= render "admin/dashboard/kpi", key: "active", label: sl("Utilisateurs actifs"), icon: :check, tone: "bg-[#e3f3e8] text-[#2f9d5c]", value: active_count, sub: sl("Peuvent se connecter") %>
     <%= render "admin/dashboard/kpi", key: "inactive", label: sl("Utilisateurs inactifs"), icon: :ban, tone: "bg-[#fdf0d9] text-[#d28a12]", value: everyone.size - active_count, sub: sl("Suspendus ou archivés") %>
-    <%= render "admin/dashboard/kpi", key: "owners", label: sl("Propriétaires"), icon: :lock, tone: "bg-[#eee8fb] text-[#5b3fb0]", value: everyone.count(&:admin?), sub: sl("Accès complet") %>
+    <%= render "admin/dashboard/kpi", key: "owners", label: sl("Propriétaires"), icon: :lock, tone: "bg-[#efeff3] text-[#3a3a3c]", value: everyone.count(&:admin?), sub: sl("Accès complet") %>
   </section>
 
   <%= render "activity", activity: @activity, rows: @activity_rows %>

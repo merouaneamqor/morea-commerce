@@ -170,7 +170,7 @@
 .platform-flow-link { position: absolute; top: 1.5rem; inset-inline-start: calc(50% + 24px); width: calc(100% - 48px); height: 2px; overflow: hidden; border-radius: 999px; background: var(--line); }
 .platform-flow-link span { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0; background: var(--brand); transition: width .7s; }
 .platform-flow-steps li button { display: flex; flex-direction: column; align-items: center; width: 100%; padding: .25rem; border: 0; border-radius: .75rem; background: none; color: inherit; font: inherit; text-align: center; cursor: pointer; }
-.platform-flow-steps li button:focus-visible { outline: 2px solid rgb(0 128 96 / .55); }
+.platform-flow-steps li button:focus-visible { outline: 2px solid rgb(29 29 31 / .5); }
 .platform-flow-icon { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border: 1px solid var(--line); border-radius: 1rem; background: #fff; color: #b3aca8; transition: all .5s; }
 .platform-flow-icon svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .platform-flow-steps li button:hover .platform-flow-icon { border-color: rgb(29 29 31 / .5); color: var(--brand); }

@@ -28,8 +28,8 @@ module Platform
       removed += delete_orphans_from!(Sidekiq::RetrySet.new)
       removed += delete_orphans_from!(Sidekiq::ScheduledSet.new)
       removed += delete_orphans_from!(Sidekiq::DeadSet.new)
-      Sidekiq::Queue.all.each do |queue|
-        removed += delete_orphans_from!(queue)
+      queue_names.each do |name|
+        removed += delete_orphans_from!(Sidekiq::Queue.new(name))
       end
       Result.new(removed: removed, mode: "runtime_orphans")
     end
@@ -62,5 +62,11 @@ module Platform
       removed
     end
     private_class_method :delete_orphans_from!
+
+    # Sidekiq 8 has no Queue.all; queue names live in the Redis "queues" set.
+    def self.queue_names
+      Sidekiq.redis { |conn| conn.smembers("queues") }.sort
+    end
+    private_class_method :queue_names
   end
 end

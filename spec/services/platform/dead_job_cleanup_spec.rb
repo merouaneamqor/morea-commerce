@@ -36,7 +36,8 @@ RSpec.describe Platform::DeadJobCleanup do
       allow(Sidekiq::RetrySet).to receive(:new).and_return(retry_set)
       allow(Sidekiq::ScheduledSet).to receive(:new).and_return(scheduled_set)
       allow(Sidekiq::DeadSet).to receive(:new).and_return(dead_set)
-      allow(Sidekiq::Queue).to receive(:all).and_return([ queue ])
+      allow(Sidekiq::Queue).to receive(:new).with("default").and_return(queue)
+      allow(Sidekiq).to receive(:redis).and_yield(double("redis", smembers: [ "default" ]))
 
       result = described_class.clear_runtime_orphans!
 

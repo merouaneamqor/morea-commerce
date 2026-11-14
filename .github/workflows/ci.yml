@@ -181,3 +181,5 @@ jobs:
       - run: npm run test:responsive
       - run: npm run test:dark
       - run: node --test script/tracking_consent_test.mjs
+      - name: Check variant color gallery updates
+        run: node script/variant_gallery_controller_smoke.mjs

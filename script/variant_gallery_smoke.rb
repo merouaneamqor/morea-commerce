@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "base64"
+
 raise "Gallery smoke requires the isolated test environment" unless Rails.env.test?
 ActiveJob::Base.queue_adapter = :test
 
@@ -32,6 +34,15 @@ begin
   raise "Legacy size did not inherit its color photos" unless photos.fetch(legacy.id)["images"] == photos.fetch(pink.id)["images"]
   raise "Unmapped color inherited another color" unless photos.fetch(plain.id)["images"].nil?
   raise "Dynamic gallery template missing" unless doc.at_css("template[data-variant-gallery-target='shotTemplate'] img")
+  product_images = JSON.parse(doc.at_css("[data-variant-gallery-product-images-value]")["data-variant-gallery-product-images-value"])
+  raise "Product image fallback payload missing" unless product_images.is_a?(Array)
+  selected_id = doc.at_css("input[name='product_variant_id']")["value"].to_i
+  selected_images = photos.fetch(selected_id)["images"]
+  lead = doc.at_css(".pdp__gallery img")
+  if selected_images
+    selected_key = selected_images.first.to_s.split("?").first.split("/").last
+    raise "SSR gallery did not use the selected variant's photos" unless lead && lead["src"].to_s.include?(selected_key)
+  end
 
   # Upload a different color through the admin editor.
   password = SecureRandom.hex(16)
@@ -83,7 +94,7 @@ begin
   shared_blob = library.first.blob
   shared_blob.purge
   raise "Shared image file was deleted" unless shared_blob.service.exist?(shared_blob.key)
-  puts "Variant galleries: MCP + admin uploads, same-color size sharing, legacy options, unmapped-color fallback and product without general photos OK"
+  puts "Variant galleries: MCP + admin uploads, same-color size sharing, legacy options, SSR selected-color photos, unmapped-color fallback and product without general photos OK"
   puts "Admin media picker: reuse existing photos, main-first order, stable IDs, bulk + individual saves, clear to inherit and reject foreign media atomically OK"
 ensure
   file&.close!

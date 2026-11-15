@@ -96,6 +96,10 @@ es:
     order_now: Pedir
     order_with_price: "Pedir — %{price}"
     choose_size: Elegir mi talla
+    size_sheet_eyebrow: Casi listo
+    size_sheet_title: "¿Qué talla?"
+    size_sheet_hint: Toca una talla para continuar al pedido.
+    size_sheet_close: Cerrar
     selection_summary: "%{color} · Talla %{size}"
     selection_summary_size: "Talla %{size}"
     pay_on_delivery: Pago contra reembolso

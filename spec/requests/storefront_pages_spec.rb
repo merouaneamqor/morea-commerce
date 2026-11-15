@@ -180,6 +180,9 @@ RSpec.describe "Storefront pages", type: :request do
     expect(document.at_css(".mobile-buy-bar [data-variant-picker-target='orderLabel']").text).to include("Choisir ma taille")
     expect(document.css(".mobile-buy-bar button").size).to eq(1)
     expect(document.at_css("[data-variant-picker-target='selectionSummary']")).to be_present
+    expect(document.at_css(".size-sheet")).to be_present
+    expect(document.at_css("#size-sheet-title").text).to include("Quelle taille")
+    expect(document.css(".size-sheet [data-variant-picker-target='sheetSizeButton']").map { |n| n.text.strip }).to include("M", "L")
     expect(document.at_css(".pdp__trust").text).to include("Livraison partout au Maroc")
     expect(document.at_css(".pdp__trust-link").text).to include("Retours")
     expect(response.body).not_to match(/Plus que \d+/i)

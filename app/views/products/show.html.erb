@@ -294,6 +294,10 @@
   </div>
 </div>
 
+<% if require_size %>
+  <%= render "products/size_sheet", sizes: @sizes, size_chart: @size_chart %>
+<% end %>
+
 <% if @size_chart.present? %>
   <%= render "products/size_advisor", chart: @size_chart %>
 <% end %>

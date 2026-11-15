@@ -3,7 +3,15 @@ ar:
     title: "إعلانات Meta"
     lead: "اربط حساباتك الإعلانية على Meta لمتابعة الإنفاق ونتائج الحملات."
     read_only_note: "للقراءة فقط: يقرأ seallo إنفاقك ونتائج إعلاناتك فقط. لا ينشئ إعلانًا ولا يعدّله ولا يوقفه ولا يغيّر أي ميزانية. أرقام Meta تعتمد على نسبة Meta الخاصة."
-    back: "تكاملات API"
+    mcp:
+      probe: "اختبار Ads MCP"
+      ready: "Meta Ads MCP جاهز لهذا الاتصال (تم منح ads_mcp_management)."
+      missing_scopes: "يتطلب Ads MCP إعادة اتصال بهذه صلاحيات Meta: %{scopes}. تزامن Graph يستمر بدونها."
+      sync_flag_on: "META_ADS_SYNC_VIA_MCP مفعّل: التزامن الساعي يفضّل Meta Ads MCP عند توفر الصلاحيات، وإلا Graph."
+      probe_ok: "استجاب Meta Ads MCP بـ %{count} أدوات."
+      probe_failed: "فشل اختبار Meta Ads MCP (%{code})."
+      probe_summary: "آخر اختبار MCP: %{count} أدوات (%{code})."
+    back: "تكاملات واجهة البرمجة"
     connection: "اتصال Meta"
     status:
       disconnected: "غير متصل"

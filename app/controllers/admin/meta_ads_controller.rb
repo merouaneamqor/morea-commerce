@@ -19,6 +19,32 @@ module Admin
       @products = current_store.products.order(:name).select(:id, :name, :sku)
       @ad_links = MetaAds::ProductLink.where(store_id: current_store.id, object_type: "ad").index_by(&:meta_id)
       @campaign_links = MetaAds::ProductLink.where(store_id: current_store.id, object_type: "campaign").index_by(&:meta_id)
+      @mcp_ready = MetaAds::McpCapability.ready?(@connection)
+      @mcp_missing_scopes = MetaAds::McpCapability.missing_scopes(@connection)
+      @mcp_sync = MetaAds::McpCapability.sync_via_mcp?
+      @mcp_probe = flash[:meta_mcp_probe]
+    end
+
+    # Calls Meta's hosted Ads MCP with the store token (tools/list + optional sample campaigns).
+    def mcp_probe
+      return redirect_to(admin_meta_ads_path, alert: t("meta_ads.errors.reauthorization_required"), status: :see_other) unless @connection&.active?
+
+      account = @connection.ad_accounts.where(store_id: current_store.id, selected: true).order(:name).first
+      result = MetaAds::McpProbe.new(connection: @connection, ad_account: account).call
+      flash[:meta_mcp_probe] = {
+        ready: result.ready,
+        tool_count: result.tool_count,
+        tool_names: result.tool_names,
+        missing_scopes: result.missing_scopes,
+        error_code: result.error_code,
+        sample_present: result.sample.present?
+      }
+      notice = if result.ready
+        t("meta_ads.mcp.probe_ok", count: result.tool_count)
+      else
+        t("meta_ads.mcp.probe_failed", code: result.error_code || "unavailable")
+      end
+      redirect_to admin_meta_ads_path, notice: notice, status: :see_other
     end
 
     def connect

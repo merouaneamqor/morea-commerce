@@ -3,6 +3,14 @@ en:
     title: "Meta Ads"
     lead: "Connect your Meta ad accounts to follow advertising spend and campaign results."
     read_only_note: "Read-only: seallo only reads your ad spend and results. It never creates, edits or pauses an ad and never changes a budget. Meta’s figures rely on Meta’s own attribution."
+    mcp:
+      probe: "Test Ads MCP"
+      ready: "Meta Ads MCP is ready for this connection (ads_mcp_management granted)."
+      missing_scopes: "Ads MCP needs a reconnect with these Meta permissions: %{scopes}. Graph spend sync still works without them."
+      sync_flag_on: "META_ADS_SYNC_VIA_MCP is on: hourly sync prefers Meta Ads MCP when scopes allow, otherwise Graph."
+      probe_ok: "Meta Ads MCP responded with %{count} tools."
+      probe_failed: "Meta Ads MCP probe failed (%{code})."
+      probe_summary: "Last MCP probe: %{count} tools (%{code})."
     back: "API integrations"
     connection: "Meta connection"
     status:

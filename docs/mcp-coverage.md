@@ -14,6 +14,7 @@ This assessment compares existing app controllers, GraphQL fields and registered
 | Imports and exports | CSV import/export | Verify size limits, validation and failure reporting |
 | Brand and catalog autonomy | Profile, audit, suggestions, preview/apply/verify/rollback | Connected plugin currently exposes a subset of the repository's registered tools |
 | Media transformations | Paginated media-library lookup and confirmed portrait/square crop, watermark, background-removal request and clear | Needs deployed-tool verification; background removal is asynchronous and consumes configured Cloudinary resources |
+| Meta Ads MCP proxy | `meta_ads_status`, `meta_ads_list_mcp_tools`, `meta_ads_call_mcp_tool` forwarding to `mcp.facebook.com/ads` | Needs Meta app Ads MCP use case + merchant reconnect with `ads_mcp_management`; live tool discovery against Meta |
 | Staff | Admin staff CRUD | Needs dedicated authorized staff-management capabilities; store catalog tokens must not silently acquire platform privileges |
 | Platform tenants and billing | Admin tenant and invoice workflows | Needs separate platform authorization before exposing tenant creation, invoices and billing actions |
 | OAuth | Discovery, dynamic registration, PKCE, exchange and refresh | Hardenings prepared locally; full fresh ChatGPT authorization still needs interactive verification |

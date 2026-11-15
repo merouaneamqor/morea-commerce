@@ -52,6 +52,9 @@ class CatalogServer
     CatalogTools::Funnel::FunnelSummary,
     CatalogTools::Funnel::FunnelSources,
     CatalogTools::Funnel::FunnelLandings,
+    CatalogTools::MetaAdsMcp::MetaAdsStatus,
+    CatalogTools::MetaAdsMcp::MetaAdsListMcpTools,
+    CatalogTools::MetaAdsMcp::MetaAdsCallMcpTool,
     CatalogTools::Storefront::GetStoreSettings,
     CatalogTools::Storefront::GetTheme,
     CatalogTools::Storefront::SetBlackFridayTheme,
@@ -125,6 +128,8 @@ class CatalogServer
         Prefer adjust_stock for receives and damage; set_stock for absolute corrections. Both write ledger movements.
         Funnel / attribution (read-only aggregates): funnel_summary, funnel_sources, funnel_landings.
         Date windows match store_stats (YYYY-MM-DD, default 30 days, max 366). Caps on sources and landings; no raw visit dumps.
+        Meta Ads MCP proxy: meta_ads_status, meta_ads_list_mcp_tools, meta_ads_call_mcp_tool (hosted mcp.facebook.com/ads).
+        Requires Meta reconnect with ads_mcp_management. Write/management tools need confirm: true.
         The full manual is the tool read_catalog_guide. GraphQL { guide } returns the same text.
         Use store_stats, product_stats, list_orders, get_order, and cancel_order for strategy. Delivered revenue is cash collected.
         cancel_order needs confirm: true and only works before pickup.

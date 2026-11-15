@@ -6,11 +6,14 @@ module MetaAds
   module Config
     DEFAULT_API_VERSION = "v25.0"
     BASE_URL = "https://graph.facebook.com"
-    # Only these two permissions are ever requested. They are set on the Facebook Login for Business
-    # configuration (META_LOGIN_CONFIG_ID), which is what the login dialog uses instead of a scope list.
-    SCOPES = %w[ads_read business_management].freeze
-    # Reading ad data needs ads_read; business_management only widens which ad accounts are visible.
+    # Permissions the Facebook Login for Business configuration (META_LOGIN_CONFIG_ID) should request.
+    # The login dialog uses that config, not this list as a query param. Keep Graph read scopes, and
+    # add ads_mcp_management so Seallo can call Meta's hosted Ads MCP with the same merchant token.
+    SCOPES = %w[ads_read business_management ads_mcp_management].freeze
+    # Connecting still requires ads_read so Graph spend sync keeps working before MCP App Review lands.
     REQUIRED_SCOPES = %w[ads_read].freeze
+    # Ready for https://mcp.facebook.com/ads (Meta: ads_mcp_management + ads_read or ads_management).
+    MCP_REQUIRED_SCOPES = %w[ads_mcp_management ads_read].freeze
 
     module_function
 
@@ -19,6 +22,10 @@ module MetaAds
       raise ArgumentError, "META_GRAPH_VERSION must look like v25.0" unless version.match?(/\Av\d{1,3}\.\d\z/)
 
       version
+    end
+
+    def mcp_url
+      ENV["META_ADS_MCP_URL"].presence || "https://mcp.facebook.com/ads"
     end
 
     def app_id

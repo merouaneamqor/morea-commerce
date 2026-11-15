@@ -362,6 +362,7 @@ Rails.application.routes.draw do
     resource :meta_ads, path: "meta-ads", only: :show, controller: "meta_ads" do
       post :connect
       post :refresh
+      post :mcp_probe
       patch :accounts, action: :select_accounts
       patch :product_links
       delete :connection, action: :disconnect

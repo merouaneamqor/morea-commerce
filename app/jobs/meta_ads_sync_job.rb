@@ -15,7 +15,11 @@ class MetaAdsSyncJob < ApplicationJob
     # Skip a run another worker started less than half an hour ago.
     return if account.sync_status == "running" && account.last_attempt_at.present? && account.last_attempt_at > 30.minutes.ago
 
-    MetaAds::InsightsSync.new(ad_account: account).call
+    if MetaAds::McpCapability.sync_via_mcp? && MetaAds::McpCapability.ready?(account.connection)
+      MetaAds::McpInsightsSync.new(ad_account: account).call
+    else
+      MetaAds::InsightsSync.new(ad_account: account).call
+    end
   end
 
   private

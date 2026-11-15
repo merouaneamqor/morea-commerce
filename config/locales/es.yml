@@ -83,6 +83,7 @@ es:
     selected: Selección
   product:
     sale: Oferta
+    promotion: Promoción
     view: Ver
     buy_now: Comprar ahora
     shipping_returns: Entrega y devoluciones
@@ -102,6 +103,8 @@ es:
     save_amount: "%{amount} de ahorro"
     price_reverts_after: "Después de %{when}, el precio vuelve a %{compare}."
     delivery_reassurance: "Envío a todo Marruecos · Gastos según tu ciudad"
+    shipping_at_checkout_lead: Gastos de envío
+    shipping_at_checkout_rest: " calculados en el pago."
     shipping_flat: "Envío %{price}"
     shipping_free: Envío gratis
     returns_policy: Devoluciones

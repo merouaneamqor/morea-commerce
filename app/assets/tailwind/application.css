@@ -768,7 +768,7 @@
   }
 
   .size-pill {
-    @apply inline-flex h-12 min-w-12 flex-1 items-center justify-center border border-line px-3 text-[11px] uppercase tracking-[0.18em] text-ink-soft transition-all duration-300 md:h-11 md:min-w-11 md:flex-none;
+    @apply inline-flex h-12 min-w-[3.25rem] flex-1 items-center justify-center border border-ink/80 bg-white px-4 text-[12px] font-medium uppercase tracking-[0.08em] text-ink transition-colors duration-200 md:h-11 md:min-w-[3.5rem] md:flex-none;
   }
 
   .size-pill.is-active {
@@ -778,6 +778,10 @@
   @media (hover: hover) {
     .size-pill:hover {
       @apply border-ink text-ink;
+    }
+
+    .size-pill.is-active:hover {
+      @apply text-paper;
     }
   }
 
@@ -842,8 +846,8 @@
   }
 
   .mobile-buy-bar {
-    @apply fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 backdrop-blur-sm md:hidden;
-    padding: 0.65rem 1.25rem max(0.65rem, env(safe-area-inset-bottom));
+    @apply fixed inset-x-0 bottom-0 z-40 border-t border-line/70 bg-white md:hidden;
+    padding: 0.75rem 1.25rem max(0.75rem, env(safe-area-inset-bottom));
   }
 
   .pdp-mobile-pad {
@@ -1029,37 +1033,86 @@
     @apply md:sticky md:top-28;
   }
 
+  .pdp__eyebrow {
+    @apply text-center md:text-start;
+  }
+
   .pdp__title {
-    @apply mt-3 font-sans text-[1.65rem] font-bold uppercase leading-[1.05] tracking-[0.08em] text-ink md:text-4xl md:tracking-[0.1em];
+    @apply mt-3 text-center font-sans text-[1.55rem] font-bold uppercase leading-[1.05] tracking-[0.12em] text-ink md:text-start md:text-4xl md:tracking-[0.1em];
   }
 
   .pdp__offer {
-    @apply mt-5;
+    @apply mt-6 flex flex-col items-center md:items-start;
   }
 
   .pdp__offer-prices {
-    @apply flex flex-wrap items-baseline gap-3;
+    @apply flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 md:justify-start;
   }
 
   .pdp__price {
-    @apply font-sans text-xl font-semibold tracking-[0.02em] text-ink md:text-2xl;
+    @apply font-sans text-lg font-bold tracking-[0.01em] text-ink md:text-2xl;
   }
 
   .pdp__price-compare {
-    @apply text-sm text-ink-faint;
+    @apply text-sm font-medium text-ink-faint;
+  }
+
+  .pdp__promo-badge {
+    @apply mt-3 inline-flex rounded-full bg-ink px-3.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-paper;
   }
 
   .pdp__offer-save,
   .pdp__offer-until {
-    @apply mt-2 text-sm font-medium text-ink;
+    @apply mt-2 text-center text-sm font-medium text-ink-soft md:text-start;
   }
 
   .pdp__offer-until {
     @apply text-ink-soft;
   }
 
+  .pdp__ship-note {
+    @apply mt-4 text-center text-[12px] leading-5 text-ink-faint md:text-start;
+  }
+
+  .pdp__ship-note-lead {
+    @apply underline underline-offset-2;
+  }
+
   .pdp__availability {
-    @apply mt-4 text-xs text-ink-soft;
+    @apply mt-3 text-center text-xs text-ink-soft md:text-start;
+  }
+
+  .pdp__desc {
+    @apply mx-auto mt-5 max-w-md text-center text-sm leading-7 text-ink-soft md:mx-0 md:text-start;
+  }
+
+  .pdp__buy-form {
+    @apply mt-8 space-y-8;
+  }
+
+  .pdp__option-label {
+    @apply text-[13px] font-medium text-ink-faint;
+  }
+
+  .pdp__option-label .landing-buy__value,
+  .pdp__option-label span {
+    @apply font-sans not-italic tracking-normal text-ink-faint;
+  }
+
+  .pdp__swatches {
+    @apply mt-3 flex flex-wrap gap-3;
+  }
+
+  .pdp__size-head {
+    @apply flex flex-wrap items-baseline justify-between gap-3;
+  }
+
+  .pdp__sizes {
+    @apply mt-3 flex flex-wrap gap-2.5;
+  }
+
+  .pdp__qty {
+    @apply pt-1;
   }
 
   .pdp__trust {
@@ -1094,9 +1147,16 @@
     @apply text-ink-faint line-through;
   }
 
-  .size-advisor-trigger,
   .size-guide-trigger {
-    @apply text-[11px] uppercase tracking-[0.18em] text-ink underline underline-offset-4 transition-colors hover:text-ink-soft;
+    @apply text-[11px] uppercase tracking-[0.14em] text-ink-faint underline underline-offset-4 transition-colors hover:text-ink;
+  }
+
+  .size-advisor-trigger {
+    @apply mt-4 inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-ink underline underline-offset-4 transition-colors hover:text-ink-soft;
+  }
+
+  .size-advisor-trigger__icon {
+    @apply shrink-0;
   }
 
   .size-advisor {
@@ -2916,8 +2976,20 @@
     @apply py-3.5;
   }
 
+  .pdp-order-btn--desktop {
+    @apply rounded-none;
+  }
+
   .mobile-buy-bar .pdp-order-btn {
     @apply py-3;
+  }
+
+  .pdp-order-btn__row {
+    @apply inline-flex items-center justify-center gap-2.5;
+  }
+
+  .pdp-order-btn__bag {
+    @apply shrink-0;
   }
 
   .pdp-order-btn__sub {
@@ -3165,7 +3237,7 @@
   }
 
   .landing-swatch {
-    @apply inline-flex rounded-full p-[3px] ring-1 ring-transparent transition duration-500;
+    @apply inline-flex rounded-full p-[2px] ring-1 ring-transparent transition duration-300;
   }
 
   .landing-swatch.is-active {
@@ -3181,6 +3253,10 @@
   .landing-swatch__dot {
     @apply block h-8 w-8 rounded-full md:h-7 md:w-7;
     box-shadow: inset 0 0 0 1px rgba(26, 23, 22, 0.08);
+  }
+
+  .pdp .landing-buy__label {
+    @apply text-[13px] font-medium normal-case tracking-normal text-ink-faint;
   }
 
   .landing-trust {

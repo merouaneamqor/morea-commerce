@@ -169,9 +169,11 @@ RSpec.describe "Storefront pages", type: :request do
     expect(document.at_css(".pdp__offer")).to be_present
     expect(document.at_css(".pdp__price").text).to include("389")
     expect(document.at_css(".pdp__price-compare").text).to include("449")
+    expect(document.at_css(".pdp__promo-badge").text).to match(/promotion/i)
     expect(document.at_css(".pdp__offer-save").text).to include("60")
     expect(document.at_css(".pdp__offer-save").text).to match(/économie/i)
     expect(document.at_css(".pdp__offer-until")).to be_nil
+    expect(document.at_css(".pdp__ship-note-lead").text).to include("Frais d")
     expect(document.at_css("input[name='product_variant_id']")["value"]).to eq("")
     expect(document.at_css("#pdp-sizes .landing-buy__label").text).to include("Taille")
     expect(document.at_css(".mobile-buy-bar .pdp-order-btn__sub").text).to include("Aucun paiement en ligne")

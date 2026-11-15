@@ -90,17 +90,18 @@
 
     <div class="pdp__info" data-controller="reveal" data-reveal-delay-value="140">
       <div class="pdp__sticky">
-        <p class="landing-eyebrow"><%= @collection&.name || @eyebrow %></p>
+        <p class="landing-eyebrow pdp__eyebrow"><%= @collection&.name || @eyebrow %></p>
         <h1 class="pdp__title"><%= @product.name %></h1>
 
         <div class="pdp__offer" data-variant-picker-target="offer">
           <div class="pdp__offer-prices">
-            <p class="pdp__price" data-variant-picker-target="price"><%= initial_price %></p>
             <% if @product.on_sale? %>
               <s class="pdp__price-compare" data-variant-picker-target="comparePrice" <%= "hidden" if @product.compare_at_cents.to_i <= (@initial_variant&.fetch(:price_cents) || @product.price_cents) %>><%= @product.compare_at_display %></s>
             <% end %>
+            <p class="pdp__price" data-variant-picker-target="price"><%= initial_price %></p>
           </div>
           <% if @product.on_sale? %>
+            <span class="pdp__promo-badge"><%= t("product.promotion") %></span>
             <p class="pdp__offer-save" data-variant-picker-target="savings" <%= "hidden" if sale_until_copy.present? %>>
               <%= t("product.save_amount", amount: @product.savings_display) %>
             </p>
@@ -110,17 +111,21 @@
           <% end %>
         </div>
 
+        <p class="pdp__ship-note">
+          <span class="pdp__ship-note-lead"><%= t("product.shipping_at_checkout_lead") %></span><%= t("product.shipping_at_checkout_rest") %>
+        </p>
+
         <p class="pdp__availability" role="status" data-variant-picker-target="availability"><%= @product.available? ? t("merchandising.available") : t("product.sold_out") %></p>
 
         <% if @product.short_description.present? %>
-          <p class="mt-6 max-w-md text-sm leading-7 text-ink-soft"><%= @product.short_description %></p>
+          <p class="pdp__desc"><%= @product.short_description %></p>
         <% end %>
 
         <% if @product.material.present? || @product.fit.present? || @product.dimensions.present? %>
           <a href="#product-details" class="pdp__details-link"><%= t("merchandising.explore_details") %></a>
         <% end %>
 
-        <%= form_with url: add_item_cart_path, method: :post, class: "mt-8 space-y-8 border-t border-line pt-8", id: "pdp-add-form",
+        <%= form_with url: add_item_cart_path, method: :post, class: "pdp__buy-form", id: "pdp-add-form",
               data: { action: "submit->variant-picker#validate submit->cart-drawer#optimisticAdd" } do %>
           <%= hidden_field_tag :product_id, @product.id %>
 
@@ -128,12 +133,12 @@
             <%= hidden_field_tag :product_variant_id, (require_size ? "" : @initial_variant[:id]), data: { variant_picker_target: "variantId" } %>
 
             <% if @colors.any? %>
-              <div>
-                <p class="landing-buy__label">
-                  <%= t("product.color") %>
-                  <span class="landing-buy__value" data-variant-picker-target="colorLabel"><%= @initial_variant[:color] %></span>
+              <div class="pdp__option">
+                <p class="pdp__option-label">
+                  <%= t("product.color") %>:
+                  <span data-variant-picker-target="colorLabel"><%= @initial_variant[:color] %></span>
                 </p>
-                <div class="mt-4 flex flex-wrap gap-4">
+                <div class="pdp__swatches">
                   <% @colors.each do |color| %>
                     <button type="button"
                             class="landing-swatch <%= "is-active" if color == @initial_variant[:color] %>"
@@ -150,21 +155,16 @@
             <% end %>
 
             <% if @sizes.any? %>
-              <div id="pdp-sizes" data-variant-picker-target="sizeGroup">
-                <div class="flex flex-wrap items-baseline justify-between gap-3">
-                  <p class="landing-buy__label"><%= t("product.size") %></p>
+              <div id="pdp-sizes" class="pdp__option" data-variant-picker-target="sizeGroup">
+                <div class="pdp__size-head">
+                  <p class="landing-buy__label pdp__option-label"><%= t("product.size") %></p>
                   <% if @size_chart.present? %>
-                    <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                      <button type="button" class="size-guide-trigger" data-action="size-advisor#openGuide">
-                        <%= t("product.size_guide") %>
-                      </button>
-                      <button type="button" class="size-advisor-trigger" data-action="size-advisor#open">
-                        <%= t("size_advisor.find_my_size") %>
-                      </button>
-                    </div>
+                    <button type="button" class="size-guide-trigger" data-action="size-advisor#openGuide">
+                      <%= t("product.size_guide") %>
+                    </button>
                   <% end %>
                 </div>
-                <div class="mt-4 flex flex-wrap gap-2">
+                <div class="pdp__sizes">
                   <% @sizes.each do |size| %>
                     <button type="button"
                             class="size-pill"
@@ -173,6 +173,15 @@
                             data-action="variant-picker#selectSize" aria-pressed="false"><%= size %></button>
                   <% end %>
                 </div>
+                <% if @size_chart.present? %>
+                  <button type="button" class="size-advisor-trigger" data-action="size-advisor#open">
+                    <svg class="size-advisor-trigger__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                      <path d="M3 8h18v8H3z"/>
+                      <path d="M7 8v3M11 8v2M15 8v3M19 8v2"/>
+                    </svg>
+                    <span><%= t("size_advisor.find_my_size") %></span>
+                  </button>
+                <% end %>
               </div>
             <% end %>
           <% end %>
@@ -271,8 +280,14 @@
             data-action="click->variant-picker#ensureSize"
             data-variant-picker-target="purchaseButton"
             <%= "disabled" unless @product.available? %>>
-      <span data-variant-picker-target="orderLabel">
-        <%= @product.available? ? (require_size ? t("product.choose_size") : t("product.order_with_price", price: initial_price)) : t("product.sold_out") %>
+      <span class="pdp-order-btn__row">
+        <svg class="pdp-order-btn__bag" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M6 8h12l-1 13H7L6 8z"/>
+          <path d="M9 8a3 3 0 0 1 6 0"/>
+        </svg>
+        <span data-variant-picker-target="orderLabel">
+          <%= @product.available? ? (require_size ? t("product.choose_size") : t("product.order_with_price", price: initial_price)) : t("product.sold_out") %>
+        </span>
       </span>
       <span class="pdp-order-btn__sub"><%= t("product.pay_on_delivery_detail") %></span>
     </button>

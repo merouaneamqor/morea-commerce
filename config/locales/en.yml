@@ -82,6 +82,7 @@ en:
     selected: "Selected"
   product:
     sale: "Sale"
+    promotion: "Promotion"
     view: "View"
     buy_now: "Buy it now"
     shipping_returns: "Shipping & returns"
@@ -101,6 +102,8 @@ en:
     save_amount: "%{amount} off"
     price_reverts_after: "After %{when}, the price goes back to %{compare}."
     delivery_reassurance: "Delivery across Morocco · Fees shown for your city"
+    shipping_at_checkout_lead: "Shipping fees"
+    shipping_at_checkout_rest: " calculated at checkout."
     shipping_flat: "Shipping %{price}"
     shipping_free: "Free shipping"
     returns_policy: "Returns"

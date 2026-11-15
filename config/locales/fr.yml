@@ -82,6 +82,7 @@ fr:
     selected: "Sélection"
   product:
     sale: "Promo"
+    promotion: "Promotion"
     view: "Voir"
     buy_now: "Acheter maintenant"
     shipping_returns: "Livraison & retours"
@@ -101,6 +102,8 @@ fr:
     save_amount: "%{amount} d’économie"
     price_reverts_after: "Après %{when}, le prix repasse à %{compare}."
     delivery_reassurance: "Livraison partout au Maroc · Frais affichés selon votre ville"
+    shipping_at_checkout_lead: "Frais d’expédition"
+    shipping_at_checkout_rest: " calculés à l’étape de paiement."
     shipping_flat: "Livraison %{price}"
     shipping_free: "Livraison offerte"
     returns_policy: "Retours"

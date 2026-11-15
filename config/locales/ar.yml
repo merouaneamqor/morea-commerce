@@ -82,6 +82,7 @@ ar:
     selected: "مختارات"
   product:
     sale: "تخفيض"
+    promotion: "عرض"
     view: "عرض"
     buy_now: "اشتري الآن"
     shipping_returns: "التوصيل والإرجاع"
@@ -101,6 +102,8 @@ ar:
     save_amount: "%{amount} توفير"
     price_reverts_after: "بعد %{when}، يعود السعر إلى %{compare}."
     delivery_reassurance: "التوصيل في كل المغرب · الرسوم حسب مدينتك"
+    shipping_at_checkout_lead: "رسوم الشحن"
+    shipping_at_checkout_rest: " تُحسب عند الدفع."
     shipping_flat: "التوصيل %{price}"
     shipping_free: "توصيل مجاني"
     returns_policy: "الإرجاع"

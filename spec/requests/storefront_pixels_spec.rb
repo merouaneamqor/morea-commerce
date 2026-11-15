@@ -67,6 +67,8 @@ RSpec.describe "Storefront Meta pixels", type: :request do
     expect(response.body).to include('data-pixel-event-name-value="Purchase"')
     expect(response.body).to include("purchase-")
     expect(response.body).to include("order_id")
+    expect(response.body).to include("delivery_city")
+    expect(response.body).to include("Casablanca")
     expect(response.body).to match(/fbq\('init', "123456789012345", \{/)
     expect(response.body).to match(/"ph":"\+212\d+"/)
     expect(response.body).to include('"fn":"amina"')

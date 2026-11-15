@@ -159,6 +159,7 @@ export default class extends Controller {
     if (payload.search_string) params.search_term = payload.search_string
     if (payload.content_name) params.item_list_name = payload.content_name
     if (payload.content_category) params.item_category = payload.content_category
+    if (payload.delivery_city) params.delivery_city = payload.delivery_city
     if (payload.content_ids) {
       params.items = payload.content_ids.map((id, index) => {
         const row = Array.isArray(payload.contents) ? payload.contents[index] : null

@@ -308,6 +308,17 @@
 /* A multi-line subtitle stays in the header instead of sliding under the next row. */
 .admin-page-header { align-items: flex-start; }
 
+/* Orders index (seller dashboard): phone cards replace the wide table below md. */
+.admin-body [data-orders-page] { min-inline-size: 0; }
+.admin-body [data-orders-header-actions] > * { min-inline-size: 0; }
+.admin-body [data-orders-filter-row] > * { min-inline-size: 0; }
+.admin-body [data-orders-mobile-list] .admin-mobile-list__actions > [data-order-actions] {
+  display: contents;
+}
+.admin-body [data-orders-mobile-list] .admin-mobile-list__actions .contents {
+  display: contents;
+}
+
 /* Orders index: keep title + create on one row; sync tools stay secondary. */
 .admin-page-header--orders {
   display: flex;
@@ -388,6 +399,24 @@
   .admin-body .admin-page-header__meta,
   .admin-body .admin-page-header .admin-muted {
     display: none;
+  }
+  /* Orders page: filters and header actions fill the phone width; table stays desktop-only. */
+  .admin-body [data-orders-page] [data-orders-header-actions] {
+    width: 100%;
+  }
+  .admin-body [data-orders-page] [data-orders-header-actions] > * {
+    flex: 1 1 auto;
+  }
+  .admin-body [data-orders-page] .admin-orders-filter {
+    font-size: 16px;
+    min-block-size: 2.75rem;
+  }
+  .admin-body [data-orders-page] [data-overview] [data-card] {
+    min-block-size: 5.5rem;
+    height: auto;
+  }
+  .admin-body [data-orders-page] [data-overview] [data-card] p[class*="text-[22px]"] {
+    font-size: 1.125rem;
   }
   .admin-body .admin-page-header > .admin-btn,
   .admin-body .admin-page-header__primary,

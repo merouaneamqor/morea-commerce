@@ -1,9 +1,17 @@
 <% content_for :title, "#{@order.number} — Admin" %>
+<% primary_transitions = @order.staff_transitions.reject { |s| s == "cancelled" } %>
+<% refresh_carrier = if current_store.sendit_configured? && @order.sendit_code.present? && !@order.status.in?(%w[delivered cancelled returned])
+     [ "Refresh Sendit", sendit_admin_order_path(@order, op: "refresh") ]
+   elsif current_store.ozon_configured? && @order.ozon_code.present? && !@order.status.in?(%w[delivered cancelled returned])
+     [ "Refresh Ozon", ozon_admin_order_path(@order, op: "refresh") ]
+   elsif current_store.ameex_configured? && @order.ameex_code.present? && !@order.status.in?(%w[delivered cancelled returned])
+     [ "Refresh Ameex", ameex_admin_order_path(@order, op: "refresh") ]
+   end %>
 
 <div class="admin-page-header">
-  <div class="flex items-center gap-2">
+  <div class="flex min-w-0 items-center gap-2">
     <%= link_to admin_orders_path, class: "admin-back", "aria-label": "Back to orders" do %><%= admin_icon(:back) %><% end %>
-    <div>
+    <div class="min-w-0">
       <h1 class="admin-page-header__title">
         #<%= @order.number %> <%= admin_badge(@order.status) %>
         <% if @order.archived? %><%= admin_badge(:archived, label: "Archived", tone: "neutral") %><% end %>
@@ -21,8 +29,8 @@
     </div>
   </div>
 
-  <div class="flex flex-wrap items-center gap-2">
-    <% @order.staff_transitions.reject { |s| s == "cancelled" }.each do |next_status| %>
+  <div class="admin-page-header__actions--desktop flex flex-wrap items-center gap-2">
+    <% primary_transitions.each do |next_status| %>
       <% confirm = (next_status == "returned" ? "Mark ##{@order.number} as returned and restore stock?" : nil) %>
       <%= button_to "Mark as #{Order::STATUS_LABELS.fetch(next_status, next_status.humanize).downcase}",
             transition_admin_order_path(@order),
@@ -31,12 +39,8 @@
             class: next_status == "returned" ? "admin-btn-secondary" : "admin-btn",
             form: (confirm ? { data: { turbo_confirm: confirm } } : {}) %>
     <% end %>
-    <% if current_store.sendit_configured? && @order.sendit_code.present? && !@order.status.in?(%w[delivered cancelled returned]) %>
-      <%= button_to "Refresh Sendit", sendit_admin_order_path(@order, op: "refresh"), class: "admin-btn-secondary" %>
-    <% elsif current_store.ozon_configured? && @order.ozon_code.present? && !@order.status.in?(%w[delivered cancelled returned]) %>
-      <%= button_to "Refresh Ozon", ozon_admin_order_path(@order, op: "refresh"), class: "admin-btn-secondary" %>
-    <% elsif current_store.ameex_configured? && @order.ameex_code.present? && !@order.status.in?(%w[delivered cancelled returned]) %>
-      <%= button_to "Refresh Ameex", ameex_admin_order_path(@order, op: "refresh"), class: "admin-btn-secondary" %>
+    <% if refresh_carrier %>
+      <%= button_to refresh_carrier[0], refresh_carrier[1], class: "admin-btn-secondary" %>
     <% end %>
 
     <details class="relative">
@@ -60,6 +64,27 @@
   </div>
 </div>
 
+<% if primary_transitions.any? || refresh_carrier || @order.editable? %>
+  <div class="admin-mobile-actions" data-order-mobile-actions>
+    <% primary_transitions.first(1).each do |next_status| %>
+      <% confirm = (next_status == "returned" ? "Mark ##{@order.number} as returned and restore stock?" : nil) %>
+      <%= button_to "Mark as #{Order::STATUS_LABELS.fetch(next_status, next_status.humanize).downcase}",
+            transition_admin_order_path(@order),
+            method: :patch,
+            params: { to_status: next_status },
+            class: next_status == "returned" ? "admin-btn-secondary" : "admin-btn",
+            form: (confirm ? { data: { turbo_confirm: confirm } } : {}) %>
+    <% end %>
+    <% if refresh_carrier %>
+      <%= button_to refresh_carrier[0], refresh_carrier[1], class: "admin-btn-secondary" %>
+    <% elsif @order.editable? %>
+      <%= link_to "Edit order", edit_admin_order_path(@order), class: "admin-btn-secondary" %>
+    <% else %>
+      <%= link_to "More", packing_slip_admin_order_path(@order), class: "admin-btn-secondary", target: "_blank" %>
+    <% end %>
+  </div>
+<% end %>
+
 <%= render "import_contact_alert", order: @order, allow_correction: !agent_view? %>
 
 <% if @order.external_order_receipt.present? %>
@@ -82,16 +107,18 @@
       </div>
       <ul>
         <% @order.order_items.each do |item| %>
-          <li class="flex items-center gap-3 border-b border-[#ebebeb] px-4 py-3 last:border-0">
+          <li class="admin-order-line-item flex items-center gap-3 border-b border-[#ebebeb] px-4 py-3 last:border-0">
             <%= admin_thumb(item.product && product_image_url(item.product)) %>
             <div class="min-w-0 flex-1">
-              <p class="truncate font-medium"><%= item.product_name %></p>
+              <p class="whitespace-normal break-words font-medium"><%= item.product_name %></p>
               <% if item.variant_name.present? %>
                 <p class="admin-badge admin-badge--neutral mt-1"><%= item.variant_name %></p>
               <% end %>
             </div>
-            <span class="admin-muted tabular-nums"><%= money(item.unit_price_cents, @order.currency) %> × <%= item.quantity %></span>
-            <span class="w-24 text-end tabular-nums"><%= money(item.total_cents, @order.currency) %></span>
+            <div class="admin-order-line-item__totals flex items-center gap-3">
+              <span class="admin-muted tabular-nums"><%= money(item.unit_price_cents, @order.currency) %> × <%= item.quantity %></span>
+              <span class="min-w-[5rem] text-end tabular-nums"><%= money(item.total_cents, @order.currency) %></span>
+            </div>
           </li>
         <% end %>
       </ul>

@@ -54,6 +54,20 @@ module Admin
       redirect_to admin_meta_ads_path, alert: t("meta_ads.errors.#{error.code}"), status: :see_other
     end
 
+    # Same Login-for-Business OAuth as connect, always with auth_type=rerequest so merchants can
+    # grant ads_mcp_management for Meta's hosted Ads MCP after a Graph-only connection.
+    def connect_mcp
+      url = MetaAds::Oauth.authorization_url(
+        store: current_store,
+        session: session,
+        user_id: current_user.id,
+        rerequest: true
+      )
+      redirect_to url, allow_other_host: true, status: :see_other
+    rescue MetaAds::Oauth::Error => error
+      redirect_to admin_meta_ads_path, alert: t("meta_ads.errors.#{error.code}"), status: :see_other
+    end
+
     def refresh
       return redirect_to(admin_meta_ads_path, alert: t("meta_ads.errors.reauthorization_required"), status: :see_other) unless @connection&.active?
 

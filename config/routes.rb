@@ -361,6 +361,7 @@ Rails.application.routes.draw do
     post "tiktok-ads/connect", to: "tiktok_ads#connect", as: :connect_tiktok_ads
     resource :meta_ads, path: "meta-ads", only: :show, controller: "meta_ads" do
       post :connect
+      post :connect_mcp
       post :refresh
       post :mcp_probe
       patch :accounts, action: :select_accounts

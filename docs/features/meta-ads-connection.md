@@ -58,6 +58,7 @@ Without the four required variables the Connect button is disabled and the page 
 
 Seallo calls Meta's hosted MCP with the encrypted merchant token (`Authorization: Bearer`):
 
+- Admin **Connect MCP Meta** (`POST /admin/meta-ads/connect_mcp`) starts the same Login-for-Business OAuth with `auth_type=rerequest` so merchants can grant `ads_mcp_management` after a Graph-only connect. Distinct from **Connect Meta Ads** (`POST /admin/meta-ads/connect`).
 - Admin **Test Ads MCP** (`POST /admin/meta-ads/mcp_probe`) runs `tools/list` and an optional `ads_get_ad_entities` sample for the first selected account.
 - Merchant MCP tools on `POST /mcp`: `meta_ads_status`, `meta_ads_list_mcp_tools`, `meta_ads_call_mcp_tool` (read tools without confirm; other tools need `confirm: true`).
 - Hourly sync still defaults to Graph. Set `META_ADS_SYNC_VIA_MCP=1` to prefer `MetaAds::McpInsightsSync` when scopes allow. MCP money fields can be display strings; unparsable rows are skipped.

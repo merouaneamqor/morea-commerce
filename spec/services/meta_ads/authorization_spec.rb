@@ -68,6 +68,13 @@ RSpec.describe "Meta Ads authorization services" do
       expect(query["auth_type"]).to eq("rerequest")
     end
 
+    it "forces auth_type=rerequest when Connect MCP Meta asks for it" do
+      url = MetaAds::Oauth.authorization_url(store: store, session: session, user_id: user.id, rerequest: true)
+      query = Rack::Utils.parse_nested_query(URI(url).query)
+      expect(query["auth_type"]).to eq("rerequest")
+      expect(query["config_id"]).to eq("synthetic-config-id")
+    end
+
     it "does not start without the Meta settings" do
       stub_meta_env("META_LOGIN_CONFIG_ID" => nil)
       expect { start }.to raise_error(MetaAds::Oauth::Error) { |error| expect(error.code).to eq("config_missing") }

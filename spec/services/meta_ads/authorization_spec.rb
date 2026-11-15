@@ -37,8 +37,10 @@ RSpec.describe "Meta Ads authorization services" do
       end
     end
 
-    it "only ever asks for ads_read and business_management" do
-      expect(described_class::SCOPES).to eq(%w[ads_read business_management])
+    it "documents Login for Business scopes including Ads MCP" do
+      expect(described_class::SCOPES).to eq(%w[ads_read business_management ads_mcp_management])
+      expect(described_class::REQUIRED_SCOPES).to eq(%w[ads_read])
+      expect(described_class::MCP_REQUIRED_SCOPES).to eq(%w[ads_mcp_management ads_read])
     end
   end
 

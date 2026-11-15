@@ -13,6 +13,7 @@ class ProductsController < ApplicationController
     @product_image_urls = product_image_urls
     @gallery = initial_gallery
     @related = related_products
+    @size_chart = @product.size_advisor_chart(sizes: @sizes) if @sizes.any?
   end
 
   private

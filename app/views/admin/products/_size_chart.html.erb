@@ -1,0 +1,74 @@
+<%# Garment measurements for the storefront size advisor. %>
+<% chart = Storefront::SizeChart.normalize(product.size_chart) %>
+<% sizes = product.variant_sizes.presence || ProductVariant::SIZE_OPTIONS %>
+<% rows_by_size = chart["rows"].index_by { |row| row["size"].to_s.upcase } %>
+<% rows = sizes.map do |size|
+  rows_by_size[size.to_s.upcase] || { "size" => size }
+end %>
+
+<section class="admin-card">
+  <div class="admin-card__header">
+    <h2 class="admin-card__title">Size chart</h2>
+  </div>
+  <div class="space-y-4 px-4 pb-4">
+    <p class="admin-help">Used by Find my size on the product page. Leave rows blank to use the profile defaults for this product’s sizes. Values are garment measurements in centimetres.</p>
+
+    <div class="admin-field-grid">
+      <div>
+        <label class="admin-label" for="product_size_chart_profile">Sizing profile</label>
+        <%= select_tag "product[size_chart][profile]",
+              options_for_select(Storefront::SizeChart::PROFILES.map { |p| [p.humanize, p] }, chart["profile"]),
+              id: "product_size_chart_profile", class: "admin-input" %>
+      </div>
+      <div>
+        <label class="admin-label" for="product_size_chart_cut">How it’s cut</label>
+        <%= select_tag "product[size_chart][cut]",
+              options_for_select(Storefront::SizeChart::CUTS.map { |c| [c.humanize, c] }, chart["cut"]),
+              id: "product_size_chart_cut", class: "admin-input" %>
+      </div>
+      <div>
+        <label class="admin-label" for="product_size_chart_garment">Garment type</label>
+        <%= select_tag "product[size_chart][garment]",
+              options_for_select([
+                [ "Tops (chest, waist, hips, length)", "tops" ],
+                [ "Bottoms (waist, hips, length)", "bottoms" ]
+              ], chart["garment"]),
+              id: "product_size_chart_garment", class: "admin-input" %>
+      </div>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Size</th>
+            <th>Chest</th>
+            <th>Waist</th>
+            <th>Hips</th>
+            <th>Length</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% rows.each do |row| %>
+            <tr>
+              <td>
+                <%= hidden_field_tag "product[size_chart][rows][][size]", row["size"] %>
+                <span class="font-medium"><%= row["size"] %></span>
+              </td>
+              <% %w[chest waist hips length].each do |measure| %>
+                <td>
+                  <%= number_field_tag "product[size_chart][rows][][#{measure}]",
+                        row[measure],
+                        class: "admin-input",
+                        min: 0,
+                        step: 0.5,
+                        placeholder: "—" %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

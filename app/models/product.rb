@@ -27,6 +27,7 @@ class Product < ApplicationRecord
   validates :stock, numericality: { greater_than_or_equal_to: 0 }
 
   before_validation :ensure_slug, on: :create
+  before_validation :normalize_size_chart
 
   scope :active, -> { where(status: "active") }
   # What the workspace works with: the products it made itself and those of its connected stores that are switched on.
@@ -136,9 +137,22 @@ class Product < ApplicationRecord
     "#{(cents / 100.0).to_i.to_fs(:delimited)} #{currency}"
   end
 
+  # Resolved garment chart for the storefront size advisor (defaults when empty).
+  def size_advisor_chart(sizes: nil)
+    Storefront::SizeChart.for(self, sizes: sizes)
+  end
+
+  def size_advisor_available?
+    variant_sizes.any?
+  end
+
   private
 
   def ensure_slug
     self.slug = name.to_s.parameterize if slug.blank?
+  end
+
+  def normalize_size_chart
+    self.size_chart = Storefront::SizeChart.normalize(size_chart)
   end
 end

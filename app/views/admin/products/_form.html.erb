@@ -149,6 +149,12 @@
 <% if @product.persisted? %>
   <%# Separate forms keep product and variant saves valid and predictable. %>
   <div class="admin-layout mt-4"><div><%= render "variants", product: @product %></div></div>
+  <% if @product.variant_sizes.any? %>
+    <%= form_with model: [:admin, @product], class: "admin-layout mt-4" do %>
+      <div><%= render "size_chart", product: @product %></div>
+      <div class="mt-4"><button type="submit" class="admin-btn">Save size chart</button></div>
+    <% end %>
+  <% end %>
   <div class="admin-layout mt-4">
     <section class="admin-card">
       <div class="admin-card__header"><h2 class="admin-card__title">Inventory history</h2></div>

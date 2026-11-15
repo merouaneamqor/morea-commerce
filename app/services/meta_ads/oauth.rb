@@ -29,7 +29,10 @@ module MetaAds
     end
 
     # Creates a token-less placeholder connection on first use so the state digest has a row to live on.
-    def self.authorization_url(store:, session:, user_id:)
+    # rerequest: true forces Meta to show the permission dialog again (used by Connect MCP Meta so
+    # ads_mcp_management can be granted after a Graph-only connect). Otherwise rerequest is applied
+    # after a prior verified connect, disconnect, or lost grant.
+    def self.authorization_url(store:, session:, user_id:, rerequest: false)
       raise Error.new("config_missing") unless configured?
 
       nonce = SecureRandom.hex(32)
@@ -39,10 +42,10 @@ module MetaAds
       end
       session[:meta_ads_oauth] = { "nonce" => nonce, "store_id" => store.id, "user_id" => user_id }
       state = verifier.generate({ "n" => nonce, "s" => store.id, "u" => user_id }, expires_in: LIFETIME, purpose: PURPOSE)
-      # rerequest forces Meta to show the permission dialog again after a prior connect, disconnect or lost grant.
       params = { client_id: Config.app_id, redirect_uri: Config.redirect_uri, state: state,
         config_id: Config.login_config_id, response_type: "code", override_default_response_type: "true" }
-      params[:auth_type] = "rerequest" if connection.last_verified_at.present? || connection.status == "needs_reauthorization"
+      force_rerequest = rerequest || connection.last_verified_at.present? || connection.status == "needs_reauthorization"
+      params[:auth_type] = "rerequest" if force_rerequest
       "https://www.facebook.com/#{Config.api_version}/dialog/oauth?#{URI.encode_www_form(params)}"
     end
 

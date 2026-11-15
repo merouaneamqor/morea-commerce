@@ -66,10 +66,20 @@
         <%= t("meta_ads.permissions") %> <span dir="ltr"><%= @connection.granted_scopes.join(", ") %></span>
       </p>
     <% end %>
+    <div class="mt-4 rounded-xl border border-[#e8e3df] bg-[#faf9f7] p-4" data-meta-mcp-connect>
+      <p class="text-sm font-semibold text-[#1f2430]"><%= t("meta_ads.mcp.connect_title") %></p>
+      <p class="mt-1 text-xs leading-5 text-[#8a8380]"><%= t("meta_ads.mcp.connect_help") %></p>
+      <div class="mt-3">
+        <%= button_to t("meta_ads.mcp.connect"), connect_mcp_admin_meta_ads_path, method: :post,
+              form: { data: { turbo: false } },
+              disabled: !@configured,
+              class: "h-11 rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c] disabled:cursor-not-allowed disabled:opacity-50" %>
+      </div>
+    </div>
     <div class="mt-4 flex flex-wrap gap-2">
       <%= button_to t(active || status == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect"), connect_admin_meta_ads_path, method: :post,
             form: { data: { turbo: false } },
-            class: "h-11 rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c]" %>
+            class: "h-11 rounded-xl border border-[#e8e3df] bg-white px-5 text-sm font-semibold text-[#1f2430] hover:bg-[#f3f1ef]" %>
       <% if active %>
         <%= button_to t("meta_ads.refresh"), refresh_admin_meta_ads_path, method: :post, class: "h-11 rounded-xl border border-[#e8e3df] px-4 text-sm font-semibold text-[#1f2430] hover:bg-[#f3f1ef]" %>
         <%= button_to t("meta_ads.mcp.probe"), mcp_probe_admin_meta_ads_path, method: :post, class: "h-11 rounded-xl border border-[#e8e3df] px-4 text-sm font-semibold text-[#1f2430] hover:bg-[#f3f1ef]" %>

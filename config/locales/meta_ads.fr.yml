@@ -5,6 +5,9 @@ fr:
     read_only_note: "Lecture seule : seallo lit uniquement les dépenses et les résultats de vos publicités. Il ne crée, ne modifie ni ne met en pause aucune publicité et ne change aucun budget. Les chiffres de Meta reposent sur l’attribution de Meta."
     mcp:
       probe: "Tester Ads MCP"
+      connect: "Connecter MCP Meta"
+      connect_title: "Meta Ads MCP"
+      connect_help: "Relance Facebook Login for Business pour que Seallo puisse appeler Ads MCP (ads_mcp_management). L’app Meta doit avoir le use case Ads MCP, et META_REDIRECT_URI doit correspondre à l’URI OAuth valide. La synchro Graph continue avec Connecter Meta Ads seul."
       ready: "Meta Ads MCP est prêt pour cette connexion (ads_mcp_management accordé)."
       missing_scopes: "Ads MCP exige une reconnexion avec ces permissions Meta : %{scopes}. La synchro Graph continue sans elles."
       sync_flag_on: "META_ADS_SYNC_VIA_MCP est actif : la synchro horaire préfère Meta Ads MCP si les permissions le permettent, sinon Graph."

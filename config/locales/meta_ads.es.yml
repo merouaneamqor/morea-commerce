@@ -6,6 +6,9 @@ es:
       ningún anuncio y no cambia ningún presupuesto. Las cifras de Meta se basan en la atribución de Meta.'
     mcp:
       probe: Probar Ads MCP
+      connect: Conectar MCP Meta
+      connect_title: Meta Ads MCP
+      connect_help: "Vuelve a abrir Facebook Login for Business para que Seallo pueda llamar a Ads MCP (ads_mcp_management). La app de Meta necesita el use case Ads MCP y META_REDIRECT_URI debe coincidir con la URI OAuth válida. La sincronización Graph sigue con Conectar Meta Ads solo."
       ready: Meta Ads MCP está listo para esta conexión (ads_mcp_management concedido).
       missing_scopes: "Ads MCP requiere reconectar con estos permisos de Meta: %{scopes}. La sincronización Graph sigue sin ellos."
       sync_flag_on: "META_ADS_SYNC_VIA_MCP está activo: la sincronización horaria prefiere Meta Ads MCP si hay permisos; si no, Graph."

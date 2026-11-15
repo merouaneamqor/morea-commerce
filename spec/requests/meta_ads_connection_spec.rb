@@ -219,6 +219,26 @@ RSpec.describe "Meta Ads connection", type: :request do
     expect(flash[:alert]).to include("META_LOGIN_CONFIG_ID")
   end
 
+  it "shows Connect MCP Meta on Publicité and starts OAuth with auth_type=rerequest" do
+    sign_in
+    get "/admin/meta-ads"
+    expect(response).to have_http_status(:ok)
+    card = Nokogiri::HTML(response.body).at_css("[data-meta-mcp-connect]")
+    expect(card.text).to include(I18n.t("meta_ads.mcp.connect"))
+    expect(card.text).to include(I18n.t("meta_ads.mcp.connect_help").split(".").first)
+    form = card.at_css("form[action='/admin/meta-ads/connect_mcp']")
+    expect(form["data-turbo"]).to eq("false")
+    expect(form.at_css("button").text).to include(I18n.t("meta_ads.mcp.connect"))
+
+    post "/admin/meta-ads/connect_mcp"
+    expect(response).to have_http_status(:see_other)
+    location = URI(response.location)
+    expect(location.host).to eq("www.facebook.com")
+    query = Rack::Utils.parse_nested_query(location.query)
+    expect(query["auth_type"]).to eq("rerequest")
+    expect(query["config_id"]).to eq("synthetic-config-id")
+  end
+
   it "never lets one store read, select or sync another store's accounts" do
     other_connection = MetaAds::Connection.create!(store: other_store, access_token: "synthetic-other-token")
     foreign = other_store.meta_ads_ad_accounts.create!(connection: other_connection, meta_ad_account_id: "act_77", name: "Foreign", currency: "EUR", timezone_name: "UTC", account_status: 1)

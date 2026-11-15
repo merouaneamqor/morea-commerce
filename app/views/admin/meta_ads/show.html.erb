@@ -6,7 +6,12 @@
 <% status = "needs_reauthorization" if @connection&.needs_reconnect? %>
 <% badge = { "active" => "bg-[#e3f3e8] text-[#2f7a4a]", "needs_reauthorization" => "bg-[#fbe7ea] text-[#b4344e]", "disconnected" => "bg-[#f1eee9] text-[#8a8380]" }.fetch(status) %>
 <% active = status == "active" %>
+<% needs_reauth = status == "needs_reauthorization" %>
 <% missing_business = active && !@connection.granted_scopes.include?("business_management") %>
+<% mcp_needed = active && !@mcp_ready %>
+<% selected_accounts = Array(@accounts).select(&:selected?) %>
+<% last_synced_at = selected_accounts.map(&:last_synced_at).compact.max %>
+<% scopes = Array(@connection&.granted_scopes) %>
 <% money = ->(amount, currency) { amount.nil? ? admin_blank : number_to_currency(amount, unit: currency.to_s, format: "%n %u", precision: 2) } %>
 <% status_badge = ->(key) {
   case key.to_s
@@ -16,6 +21,17 @@
   else "bg-[#fdf0d9] text-[#8a5a12]"
   end
 } %>
+<% sync_badge = ->(key) {
+  case key.to_s
+  when "ok" then "bg-[#e3f3e8] text-[#2f7a4a]"
+  when "running", "pending" then "bg-[#fdf0d9] text-[#8a5a12]"
+  when "failed", "needs_reauthorization" then "bg-[#fbe7ea] text-[#b4344e]"
+  else "bg-[#f1eee9] text-[#8a8380]"
+  end
+} %>
+<% btn_primary = "h-11 rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c] disabled:cursor-not-allowed disabled:opacity-50" %>
+<% btn_secondary = "h-11 rounded-xl border border-[#e8e3df] bg-white px-5 text-sm font-semibold text-[#1f2430] hover:bg-[#f3f1ef]" %>
+<% btn_danger = "h-11 rounded-xl px-4 text-sm font-semibold text-[#b4344e] hover:bg-[#fbe7ea]" %>
 
 <header class="flex flex-wrap items-start justify-between gap-3">
   <div class="flex items-start gap-3">
@@ -25,26 +41,78 @@
     <% end %>
     <div>
       <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= t("meta_ads.title") %></h1>
-      <p class="max-w-2xl text-sm"><%= t("meta_ads.lead") %></p>
+      <p class="max-w-2xl text-sm text-[#8a8380]"><%= t("meta_ads.lead") %></p>
     </div>
   </div>
   <%= render "admin/shared/language_switcher" %>
 </header>
 
 <section>
-  <div class="rounded-2xl border border-[#e8e3df] bg-white p-5" data-meta-connection>
-    <div class="flex flex-wrap items-center gap-3">
-      <img src="/images/partners/meta.png" alt="Meta" class="size-11 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
-      <h2 class="text-base font-semibold text-[#1f2430]"><%= t("meta_ads.connection") %></h2>
-      <span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= badge %>" data-meta-status="<%= status %>"><%= t("meta_ads.status.#{status}") %></span>
+  <div class="rounded-2xl border border-[#e8e3df] bg-white p-4 sm:p-5" data-meta-connection>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex min-w-0 flex-wrap items-center gap-3">
+        <img src="/images/partners/meta.png" alt="Meta" class="size-11 shrink-0 rounded-full border border-[#f0ebe7] bg-white object-contain p-0.5">
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="text-base font-semibold text-[#1f2430]"><%= t("meta_ads.connection") %></h2>
+            <span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= badge %>" data-meta-status="<%= status %>"><%= t("meta_ads.status.#{status}") %></span>
+            <% if active %>
+              <span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= @mcp_ready ? "bg-[#e3f3e8] text-[#2f7a4a]" : "bg-[#fdf0d9] text-[#8a5a12]" %>" data-meta-mcp-status="<%= @mcp_ready ? "ready" : "missing" %>">
+                <%= @mcp_ready ? t("meta_ads.mcp.chip_ready") : t("meta_ads.mcp.chip_missing") %>
+              </span>
+            <% end %>
+          </div>
+          <p class="mt-0.5 text-xs text-[#8a8380]"><%= t("meta_ads.read_only_note") %></p>
+        </div>
+      </div>
+      <% if active %>
+        <%= button_to t("meta_ads.mcp.probe"), mcp_probe_admin_meta_ads_path, method: :post,
+              class: btn_secondary,
+              form: { class: "shrink-0" } %>
+      <% end %>
     </div>
-    <p class="mt-2 text-xs text-[#8a8380]"><%= t("meta_ads.read_only_note") %></p>
+
+    <div class="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-4" data-meta-connection-summary>
+      <div class="rounded-2xl border border-[#e8e3df] bg-white p-3.5">
+        <p class="text-xs text-[#8a8380]"><%= t("meta_ads.kpi.status") %></p>
+        <p class="mt-1 text-sm font-semibold text-[#1f2430]"><%= t("meta_ads.status.#{status}") %></p>
+      </div>
+      <div class="rounded-2xl border border-[#e8e3df] bg-white p-3.5">
+        <p class="text-xs text-[#8a8380]"><%= t("meta_ads.kpi.mcp") %></p>
+        <p class="mt-1 text-sm font-semibold text-[#1f2430]">
+          <% if !active %>
+            <%= t("meta_ads.kpi.mcp_unavailable") %>
+          <% elsif @mcp_ready %>
+            <%= t("meta_ads.mcp.chip_ready") %>
+          <% else %>
+            <%= t("meta_ads.mcp.chip_missing") %>
+          <% end %>
+        </p>
+      </div>
+      <div class="rounded-2xl border border-[#e8e3df] bg-white p-3.5">
+        <p class="text-xs text-[#8a8380]"><%= t("meta_ads.kpi.last_sync") %></p>
+        <p class="mt-1 text-sm font-semibold text-[#1f2430]">
+          <% if last_synced_at %>
+            <%= l(last_synced_at, format: :short) %>
+          <% else %>
+            <%= t("meta_ads.kpi.never_synced") %>
+          <% end %>
+        </p>
+      </div>
+      <div class="rounded-2xl border border-[#e8e3df] bg-white p-3.5">
+        <p class="text-xs text-[#8a8380]"><%= t("meta_ads.kpi.accounts") %></p>
+        <p class="mt-1 text-sm font-semibold text-[#1f2430]"><%= selected_accounts.size %> / <%= Array(@accounts).size %></p>
+      </div>
+    </div>
+
     <% unless @configured %><p class="mt-3 rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= t("meta_ads.errors.config_missing") %></p><% end %>
-    <% if status == "needs_reauthorization" %><p role="alert" class="mt-3 rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= t("meta_ads.reauthorize_note") %></p><% end %>
+    <% if needs_reauth %><p role="alert" class="mt-3 rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= t("meta_ads.reauthorize_note") %></p><% end %>
     <% if @connection&.expires_soon? %><p role="alert" class="mt-3 rounded-xl bg-[#fdf0d9] px-4 py-3 text-sm text-[#8a5a12]"><%= t("meta_ads.notice.expires_soon", date: l(@connection.token_expires_at.to_date, format: "%d/%m/%Y")) %></p><% end %>
     <% if missing_business %><p class="mt-3 rounded-xl bg-[#fdf0d9] px-4 py-3 text-sm text-[#8a5a12]"><%= t("meta_ads.missing_business_management") %></p><% end %>
-    <% if active && !@mcp_ready %>
-      <p class="mt-3 rounded-xl bg-[#fdf0d9] px-4 py-3 text-sm text-[#8a5a12]"><%= t("meta_ads.mcp.missing_scopes", scopes: @mcp_missing_scopes.join(", ")) %></p>
+    <% if mcp_needed %>
+      <p role="status" class="mt-3 rounded-xl bg-[#fdf0d9] px-4 py-3 text-sm text-[#8a5a12]" data-meta-mcp-missing>
+        <%= t("meta_ads.mcp.missing_scopes", scopes: @mcp_missing_scopes.join(", ")) %>
+      </p>
     <% end %>
     <% if active && @mcp_ready %>
       <p class="mt-3 rounded-xl bg-[#e3f3e8] px-4 py-3 text-sm text-[#2f7a4a]"><%= t("meta_ads.mcp.ready") %></p>
@@ -52,6 +120,66 @@
     <% if @mcp_sync %>
       <p class="mt-3 text-xs text-[#8a8380]"><%= t("meta_ads.mcp.sync_flag_on") %></p>
     <% end %>
+
+    <% if active && scopes.any? %>
+      <dl class="mt-4 grid gap-2 text-xs text-[#8a8380] sm:grid-cols-2" data-meta-connection-details>
+        <div class="rounded-xl border border-[#e8e3df] bg-[#faf9f7] px-3.5 py-3">
+          <dt class="font-semibold text-[#1f2430]"><%= t("meta_ads.kpi.scopes") %></dt>
+          <dd class="mt-1 break-all" dir="ltr"><%= scopes.join(", ") %></dd>
+        </div>
+        <div class="rounded-xl border border-[#e8e3df] bg-[#faf9f7] px-3.5 py-3">
+          <dt class="font-semibold text-[#1f2430]"><%= t("meta_ads.kpi.valid_until") %></dt>
+          <dd class="mt-1">
+            <% if @connection.token_expires_at %>
+              <%= l(@connection.token_expires_at.to_date, format: "%d/%m/%Y") %>
+            <% else %>
+              <%= admin_blank %>
+            <% end %>
+          </dd>
+        </div>
+        <% if selected_accounts.any? %>
+          <div class="rounded-xl border border-[#e8e3df] bg-[#faf9f7] px-3.5 py-3 sm:col-span-2">
+            <dt class="font-semibold text-[#1f2430]"><%= t("meta_ads.kpi.linked_accounts") %></dt>
+            <dd class="mt-1" dir="auto"><%= selected_accounts.map { |a| a.name.presence || a.meta_ad_account_id }.join(", ") %></dd>
+          </div>
+        <% end %>
+      </dl>
+    <% end %>
+
+    <div class="mt-4 rounded-xl border border-[#e8e3df] bg-[#faf9f7] p-4" data-meta-mcp-connect>
+      <p class="text-sm font-semibold text-[#1f2430]"><%= t("meta_ads.mcp.connect_title") %></p>
+      <p class="mt-1 text-xs leading-5 text-[#8a8380]"><%= t("meta_ads.mcp.connect_help") %></p>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <%= button_to t("meta_ads.mcp.connect"), connect_mcp_admin_meta_ads_path, method: :post,
+              form: { data: { turbo: false } },
+              disabled: !@configured,
+              class: mcp_needed ? btn_primary : btn_secondary %>
+      </div>
+    </div>
+
+    <div class="mt-4 flex flex-wrap gap-2" data-meta-connection-actions>
+      <%= button_to t(active || needs_reauth ? "meta_ads.reconnect" : "meta_ads.connect"), connect_admin_meta_ads_path, method: :post,
+            form: { data: { turbo: false } },
+            class: mcp_needed ? btn_secondary : ((!active || needs_reauth) ? btn_primary : btn_secondary) %>
+      <% if active %>
+        <%= button_to t("meta_ads.refresh"), refresh_admin_meta_ads_path, method: :post, class: btn_secondary %>
+      <% end %>
+      <% if status != "disconnected" %>
+        <%= button_to t("meta_ads.disconnect"), connection_admin_meta_ads_path, method: :delete,
+              class: btn_danger,
+              form: { data: { turbo_confirm: t("meta_ads.disconnect_confirm") } } %>
+      <% end %>
+    </div>
+
+    <details class="mt-4 rounded-xl border border-[#e8e3df] bg-white px-3.5 py-3 text-xs text-[#8a8380]" data-meta-help>
+      <summary class="cursor-pointer text-sm font-semibold text-[#1f2430]"><%= t("meta_ads.help.title") %></summary>
+      <ul class="mt-2 list-disc space-y-1.5 ps-4 leading-5">
+        <li><%= t("meta_ads.help.redirect") %></li>
+        <li><%= t("meta_ads.help.ads_mcp") %></li>
+        <li><%= t("meta_ads.help.reconnect") %></li>
+      </ul>
+    </details>
+
     <% if @mcp_probe.is_a?(Hash) %>
       <p class="mt-3 rounded-xl border border-[#e8e3df] bg-[#faf9f7] px-4 py-3 text-sm text-[#1f2430]" data-meta-mcp-probe>
         <%= t("meta_ads.mcp.probe_summary", count: @mcp_probe[:tool_count].to_i, code: @mcp_probe[:error_code].presence || "ok") %>
@@ -60,70 +188,50 @@
         <% end %>
       </p>
     <% end %>
-    <% if active %>
-      <p class="mt-3 text-xs text-[#8a8380]">
-        <% if @connection.token_expires_at %><%= t("meta_ads.valid_until", date: l(@connection.token_expires_at.to_date, format: "%d/%m/%Y")) %>, <% end %>
-        <%= t("meta_ads.permissions") %> <span dir="ltr"><%= @connection.granted_scopes.join(", ") %></span>
-      </p>
-    <% end %>
-    <div class="mt-4 rounded-xl border border-[#e8e3df] bg-[#faf9f7] p-4" data-meta-mcp-connect>
-      <p class="text-sm font-semibold text-[#1f2430]"><%= t("meta_ads.mcp.connect_title") %></p>
-      <p class="mt-1 text-xs leading-5 text-[#8a8380]"><%= t("meta_ads.mcp.connect_help") %></p>
-      <div class="mt-3">
-        <%= button_to t("meta_ads.mcp.connect"), connect_mcp_admin_meta_ads_path, method: :post,
-              form: { data: { turbo: false } },
-              disabled: !@configured,
-              class: "h-11 rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c] disabled:cursor-not-allowed disabled:opacity-50" %>
-      </div>
-    </div>
-    <div class="mt-4 flex flex-wrap gap-2">
-      <%= button_to t(active || status == "needs_reauthorization" ? "meta_ads.reconnect" : "meta_ads.connect"), connect_admin_meta_ads_path, method: :post,
-            form: { data: { turbo: false } },
-            class: "h-11 rounded-xl border border-[#e8e3df] bg-white px-5 text-sm font-semibold text-[#1f2430] hover:bg-[#f3f1ef]" %>
-      <% if active %>
-        <%= button_to t("meta_ads.refresh"), refresh_admin_meta_ads_path, method: :post, class: "h-11 rounded-xl border border-[#e8e3df] px-4 text-sm font-semibold text-[#1f2430] hover:bg-[#f3f1ef]" %>
-        <%= button_to t("meta_ads.mcp.probe"), mcp_probe_admin_meta_ads_path, method: :post, class: "h-11 rounded-xl border border-[#e8e3df] px-4 text-sm font-semibold text-[#1f2430] hover:bg-[#f3f1ef]" %>
-      <% end %>
-      <% if status != "disconnected" %>
-        <%= button_to t("meta_ads.disconnect"), connection_admin_meta_ads_path, method: :delete,
-              class: "h-11 rounded-xl px-4 text-sm font-semibold text-[#b4344e] hover:bg-[#fbe7ea]",
-              form: { data: { turbo_confirm: t("meta_ads.disconnect_confirm") } } %>
-      <% end %>
-    </div>
   </div>
 </section>
 
 <section>
-  <h2 class="mb-2.5 text-sm font-semibold text-[#1f2430]"><%= t("meta_ads.accounts_title") %></h2>
+  <div class="mb-2.5 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h2 class="text-sm font-semibold text-[#1f2430]"><%= t("meta_ads.accounts_title") %></h2>
+      <p class="text-xs text-[#8a8380]"><%= t("meta_ads.accounts_lead") %></p>
+    </div>
+  </div>
   <% if @accounts.blank? %>
     <p class="rounded-2xl border border-[#e8e3df] bg-white p-5 text-sm"><%= t("meta_ads.no_accounts") %></p>
   <% else %>
     <%= form_with url: accounts_admin_meta_ads_path, method: :patch do %>
-      <p class="mb-2 text-xs text-[#8a8380]"><%= t("meta_ads.accounts_lead") %></p>
-      <ul class="space-y-2" data-meta-accounts>
-        <% @accounts.each do |account| %>
-          <% selectable = account.selectable? %>
-          <li class="flex flex-wrap items-center gap-3 rounded-2xl border bg-white p-3.5 <%= account.selected? ? "border-[#bfe0c9]" : "border-[#e8e3df]" %> <%= "opacity-60" unless selectable %>" data-ad-account="<%= account.meta_ad_account_id %>">
-            <%= check_box_tag "ad_account_ids[]", account.meta_ad_account_id, account.selected?, id: "ad_account_#{account.id}", disabled: !active || !selectable,
-                  class: "size-4 accent-[#1d1d1f]", "aria-label": account.name.presence || account.meta_ad_account_id %>
-            <label for="ad_account_<%= account.id %>" class="min-w-0 flex-1">
-              <span class="block truncate text-sm font-semibold text-[#1f2430]" dir="auto"><%= account.name.presence || account.meta_ad_account_id %></span>
-              <span class="block truncate text-xs text-[#8a8380]"><span dir="ltr"><%= account.meta_ad_account_id %></span>, <%= account.currency %>, <%= account.timezone_name %></span>
-            </label>
-            <% unless selectable %>
-              <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]" data-account-status="<%= account.status_key %>"><%= t("meta_ads.account_status.#{account.status_key}") %>, <%= t("meta_ads.not_selectable") %></span>
-            <% end %>
-            <% if account.selected? %>
-              <span class="text-xs text-[#8a8380]">
-                <%= t("meta_ads.sync_status.#{account.sync_status}") %>
-                <% if account.last_synced_at %>, <%= t("meta_ads.last_synced", time: l(account.last_synced_at, format: :short)) %><% end %>
-                <% if account.last_error_code.present? %>, <span dir="ltr"><%= account.last_error_code %></span><% end %>
-              </span>
-            <% end %>
-          </li>
-        <% end %>
-      </ul>
-      <% if active %><div class="mt-3"><%= submit_tag t("meta_ads.save_selection"), class: "h-11 cursor-pointer rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c]" %></div><% end %>
+      <div class="overflow-x-auto rounded-2xl border border-[#e8e3df] bg-white">
+        <ul class="divide-y divide-[#f1eee9]" data-meta-accounts>
+          <% @accounts.each do |account| %>
+            <% selectable = account.selectable? %>
+            <li class="flex flex-wrap items-center gap-3 px-3.5 py-3 <%= "opacity-60" unless selectable %>" data-ad-account="<%= account.meta_ad_account_id %>">
+              <%= check_box_tag "ad_account_ids[]", account.meta_ad_account_id, account.selected?, id: "ad_account_#{account.id}", disabled: !active || !selectable,
+                    class: "size-4 accent-[#1d1d1f]", "aria-label": account.name.presence || account.meta_ad_account_id %>
+              <label for="ad_account_<%= account.id %>" class="min-w-0 flex-1">
+                <span class="block truncate text-sm font-semibold text-[#1f2430]" dir="auto"><%= account.name.presence || account.meta_ad_account_id %></span>
+                <span class="block truncate text-xs text-[#8a8380]"><span dir="ltr"><%= account.meta_ad_account_id %></span>, <%= account.currency %>, <%= account.timezone_name %></span>
+              </label>
+              <% unless selectable %>
+                <span class="rounded-full bg-[#f1eee9] px-2.5 py-1 text-xs font-semibold text-[#8a8380]" data-account-status="<%= account.status_key %>"><%= t("meta_ads.account_status.#{account.status_key}") %>, <%= t("meta_ads.not_selectable") %></span>
+              <% end %>
+              <% if account.selected? %>
+                <span class="rounded-full px-2.5 py-1 text-xs font-semibold <%= sync_badge.call(account.sync_status) %>">
+                  <%= t("meta_ads.sync_status.#{account.sync_status}") %>
+                </span>
+                <% if account.last_synced_at %>
+                  <span class="text-xs text-[#8a8380]"><%= t("meta_ads.last_synced", time: l(account.last_synced_at, format: :short)) %></span>
+                <% end %>
+                <% if account.last_error_code.present? %>
+                  <span class="text-xs text-[#b4344e]" dir="ltr"><%= account.last_error_code %></span>
+                <% end %>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+      <% if active %><div class="mt-3"><%= submit_tag t("meta_ads.save_selection"), class: "#{btn_primary} cursor-pointer" %></div><% end %>
     <% end %>
   <% end %>
 </section>
@@ -239,7 +347,7 @@
           </tbody>
         </table>
       </div>
-      <div class="mt-3"><%= submit_tag t("meta_ads.save_campaign_links"), class: "h-11 cursor-pointer rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c]" %></div>
+      <div class="mt-3"><%= submit_tag t("meta_ads.save_campaign_links"), class: "#{btn_primary} cursor-pointer" %></div>
     <% end %>
   <% end %>
 </section>
@@ -263,7 +371,7 @@
           </li>
         <% end %>
       </ul>
-      <div class="mt-3"><%= submit_tag t("meta_ads.save_links"), class: "h-11 cursor-pointer rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c]" %></div>
+      <div class="mt-3"><%= submit_tag t("meta_ads.save_links"), class: "#{btn_primary} cursor-pointer" %></div>
     <% end %>
   </section>
 <% end %>

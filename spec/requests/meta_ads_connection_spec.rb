@@ -223,7 +223,10 @@ RSpec.describe "Meta Ads connection", type: :request do
     sign_in
     get "/admin/meta-ads"
     expect(response).to have_http_status(:ok)
-    card = Nokogiri::HTML(response.body).at_css("[data-meta-mcp-connect]")
+    page = Nokogiri::HTML(response.body)
+    expect(page.at_css("[data-meta-connection-summary]")).to be_present
+    expect(page.at_css("[data-meta-help]")).to be_present
+    card = page.at_css("[data-meta-mcp-connect]")
     expect(card.text).to include(I18n.t("meta_ads.mcp.connect"))
     expect(card.text).to include(I18n.t("meta_ads.mcp.connect_help").split(".").first)
     form = card.at_css("form[action='/admin/meta-ads/connect_mcp']")
@@ -254,6 +257,20 @@ RSpec.describe "Meta Ads connection", type: :request do
     summary = Nokogiri::HTML(response.body).at_css("[data-meta-mcp-probe]").text
     expect(summary).to include("108", tool_names.first, tool_names.fetch(7))
     expect(summary).not_to include(tool_names.fetch(8))
+  end
+
+  it "surfaces MCP status near the connection header and prioritizes Connect MCP Meta when scopes are missing" do
+    connect!
+    get "/admin/meta-ads"
+    page = Nokogiri::HTML(response.body)
+    connection = page.at_css("[data-meta-connection]")
+    expect(connection.at_css("[data-meta-mcp-status=missing]").text).to include(I18n.t("meta_ads.mcp.chip_missing"))
+    expect(connection.at_css("[data-meta-mcp-missing]").text).to include("ads_mcp_management")
+    expect(connection.at_css("form[action='/admin/meta-ads/mcp_probe']")).to be_present
+    mcp_btn = connection.at_css("[data-meta-mcp-connect] form[action='/admin/meta-ads/connect_mcp'] button")
+    graph_btn = connection.at_css("[data-meta-connection-actions] form[action='/admin/meta-ads/connect'] button")
+    expect(mcp_btn["class"]).to include("bg-[#1d1d1f]")
+    expect(graph_btn["class"]).to include("bg-white")
   end
 
   it "never lets one store read, select or sync another store's accounts" do

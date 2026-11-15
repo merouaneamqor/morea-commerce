@@ -8,13 +8,30 @@ es:
       probe: Probar Ads MCP
       connect: Conectar MCP Meta
       connect_title: Meta Ads MCP
-      connect_help: "Vuelve a abrir Facebook Login for Business para que Seallo pueda llamar a Ads MCP (ads_mcp_management). La app de Meta necesita el use case Ads MCP y META_REDIRECT_URI debe coincidir con la URI OAuth válida. La sincronización Graph sigue con Conectar Meta Ads solo."
-      ready: Meta Ads MCP está listo para esta conexión (ads_mcp_management concedido).
-      missing_scopes: "Ads MCP requiere reconectar con estos permisos de Meta: %{scopes}. La sincronización Graph sigue sin ellos."
-      sync_flag_on: "META_ADS_SYNC_VIA_MCP está activo: la sincronización horaria prefiere Meta Ads MCP si hay permisos; si no, Graph."
+      connect_help: "Vuelve a abrir Facebook Login para conceder ads_mcp_management. La app de Meta necesita el use case Ads MCP y META_REDIRECT_URI debe coincidir con la URI OAuth válida. La sincronización Graph sigue con Conectar Meta Ads."
+      ready: Ads MCP está listo (ads_mcp_management concedido).
+      missing_scopes: "Faltan permisos MCP: %{scopes}. La sincronización Graph sigue. Usa Conectar MCP Meta."
+      sync_flag_on: "META_ADS_SYNC_VIA_MCP está activo: sincronización horaria vía Ads MCP si es posible; si no, Graph."
       probe_ok: "Meta Ads MCP respondió con %{count} herramientas."
       probe_failed: "Falló la prueba de Meta Ads MCP (%{code})."
       probe_summary: "Última prueba MCP: %{count} herramientas (%{code})."
+      chip_ready: MCP listo
+      chip_missing: MCP faltante
+    kpi:
+      status: Estado
+      mcp: Ads MCP
+      mcp_unavailable: Fuera de línea
+      last_sync: Última sincronización
+      never_synced: Todavía no
+      accounts: Cuentas vinculadas
+      scopes: Permisos
+      valid_until: Token válido hasta
+      linked_accounts: Cuentas seleccionadas
+    help:
+      title: Ayuda rápida
+      redirect: META_REDIRECT_URI debe coincidir exactamente con la URI OAuth válida de la app de Meta.
+      ads_mcp: Para Ads MCP, la app de Meta necesita el use case Ads MCP y el permiso ads_mcp_management.
+      reconnect: Conectar Meta Ads lee el gasto (Graph). Conectar MCP Meta vuelve a pedir los permisos de Ads MCP.
     back: Integraciones API
     connection: Conexión Meta
     status:

@@ -112,11 +112,25 @@ RSpec.describe "Storefront COD checkout", type: :request do
     expect(response).to redirect_to("/en/cart")
   end
 
-  it "pre-checks privacy and age acceptance on the order form" do
+  it "renders a fast checkout popup without email and with first name, phone, city, address" do
     add_to_cart
     get "/en/checkout"
     expect(response).to have_http_status(:ok)
     doc = Nokogiri::HTML(response.body)
+
+    expect(doc.at_css(".checkout-overlay")).to be_present
+    expect(doc.at_css(".checkout-modal[role='dialog']")).to be_present
+    expect(doc.at_css("#checkout_name")).to be_present
+    expect(doc.at_css("label[for='checkout_name']")&.text).to include("First name")
+    expect(doc.at_css("#checkout_phone")).to be_present
+    expect(doc.at_css("#checkout_city")).to be_present
+    expect(doc.at_css("#checkout_address")).to be_present
+    expect(doc.at_css("#checkout_district")).to be_present
+    expect(doc.at_css("input[type='email'], #checkout_email")).to be_nil
+    expect(doc.at_css("#checkout_notes")).to be_nil
+    expect(response.body).to include("Limited stock, confirm before the hold ends.")
+    expect(response.body).not_to include('name="checkout[email]"')
+
     privacy = doc.at_css("#checkout_privacy_accepted")
     age = doc.at_css("#checkout_age_confirmed")
     expect(privacy).to be_present

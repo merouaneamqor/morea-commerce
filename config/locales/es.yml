@@ -141,7 +141,7 @@ es:
     checkout: Pedir
   checkout:
     title: Finalizar el pedido
-    step_label: Casi listo
+    step_label: Pedido en curso
     subtitle: 'Unos pocos datos: confirmamos por teléfono y pagas al recibir.'
     subtitle_short: 'Teléfono y dirección: pago contra reembolso.'
     other_country: Otro país
@@ -152,6 +152,7 @@ es:
     delivery_details: Entrega
     delivery_hint: ¿Dónde quieres recibir tu pedido?
     full_name: Nombre completo
+    first_name: Nombre
     phone: Teléfono
     phone_country: Prefijo del país
     phone_help: Llamamos a este número para confirmar.
@@ -161,7 +162,10 @@ es:
     choose_district: Elige tu barrio
     district_help: Necesario para entregar en el barrio correcto.
     city_no_match: Ninguna ciudad coincide.
-    address: Dirección completa
+    address: Dirección
+    urgency_nudge: Stock limitado, confirma antes de que termine la reserva.
+    urgency_holding: Tu carrito está reservado %{time}
+    urgency_expired: Últimas piezas, confirma ahora.
     notes: Notas
     optional: opcional
     optional_extras: Notas y código promocional
@@ -190,7 +194,7 @@ es:
       no_prepay: Sin pago en línea
       confirm_call: Confirmación por teléfono
     errors:
-      name: Indica tu nombre completo.
+      name: Indica tu nombre.
       phone: Indica tu número de teléfono.
       phone_format: Número no válido. Comprueba el prefijo y el número.
       city: Elige tu ciudad.
@@ -204,7 +208,8 @@ es:
       privacy_accepted: Please accept the privacy policy and terms to place your order.
     form_errors: Por favor, corrige
     placeholders:
-      name: Ej. Sara Benali
+      name: Ej. Sara
+      first_name: Ej. Sara
       phone: 6 12 34 56 78
       city: Empieza a escribir…
       address: Calle, edificio, piso, punto de referencia…

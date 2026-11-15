@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_15_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_230000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -1419,6 +1419,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_160000) do
     t.boolean "subscription_required", default: false, null: false
     t.string "admin_theme", default: "seallo", null: false
     t.boolean "black_friday_theme", default: false, null: false
+    t.boolean "checkout_popup_enabled", default: true, null: false
     t.boolean "storefront_theme_editor_enabled", default: true, null: false
     t.string "plan"
     t.datetime "trial_ends_at"

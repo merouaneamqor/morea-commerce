@@ -1,0 +1,20 @@
+en:
+  checkout_popup:
+    heading: "Checkout popup"
+    enable: "Checkout in popup"
+    help: "When on, buy/checkout opens a fast popup (first name, phone, city, address). When off, customers use the previous on-page checkout form. On by default."
+fr:
+  checkout_popup:
+    heading: "Checkout en popup"
+    enable: "Checkout en popup"
+    help: "Activé : l’achat ouvre le popup rapide (prénom, téléphone, ville, adresse). Désactivé : formulaire de checkout classique sur la page. Activé par défaut."
+ar:
+  checkout_popup:
+    heading: "الدفع في نافذة منبثقة"
+    enable: "الدفع في نافذة منبثقة"
+    help: "عند التفعيل يفتح الشراء نافذة سريعة (الاسم الأول، الهاتف، المدينة، العنوان). عند الإيقاف يُستخدم نموذج الدفع السابق في الصفحة. مفعّل افتراضياً."
+es:
+  checkout_popup:
+    heading: "Checkout en popup"
+    enable: "Checkout en popup"
+    help: "Activado: la compra abre el popup rápido (nombre, teléfono, ciudad, dirección). Desactivado: el formulario de checkout anterior en la página. Activado por defecto."

@@ -48,6 +48,14 @@
     </div>
   </section>
 
+  <section class="admin-card" id="checkout-popup">
+    <div class="admin-card__header"><h2 class="admin-card__title"><%= t("checkout_popup.heading") %></h2></div>
+    <div class="space-y-3 px-4 pb-4">
+      <label class="admin-check"><%= f.check_box :checkout_popup_enabled %> <%= t("checkout_popup.enable") %></label>
+      <p class="admin-help"><%= t("checkout_popup.help") %></p>
+    </div>
+  </section>
+
   <section class="admin-card">
     <div class="admin-card__header"><h2 class="admin-card__title"><%= t("admin_theme.heading") %></h2></div>
     <div class="px-4 pb-4"><%= render "shared/theme_picker", form: f, legend: false %></div>

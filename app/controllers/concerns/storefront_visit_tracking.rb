@@ -5,7 +5,8 @@ module StorefrontVisitTracking
   extend ActiveSupport::Concern
 
   included do
-    after_action :capture_storefront_attribution
+    # Capture before the response so session attribution is ready when the visit row is written.
+    before_action :capture_storefront_attribution
     after_action :record_storefront_page_visit
   end
 

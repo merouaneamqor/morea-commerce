@@ -35,18 +35,26 @@ module Attribution
 
     # Merge incoming into existing first-touch values (first non-blank wins).
     def merge_first_touch(existing, incoming)
-      base = from_hash(existing || {})
-      next_attrs = from_hash(incoming || {})
+      existing = existing.is_a?(Hash) ? existing : {}
+      incoming = incoming.is_a?(Hash) ? incoming : {}
+      base = from_hash(existing)
+      EXTRA_KEYS.each do |key|
+        text = path_or_value(existing[key] || existing[key.to_s], key)
+        base[key] = text if text.present?
+      end
+
+      next_attrs = from_hash(incoming)
       ALL_KEYS.each do |key|
         sym = key.to_sym
         base[sym] = next_attrs[sym] if base[sym].blank? && next_attrs[sym].present?
       end
-      %i[landing_path referrer meta_campaign_id meta_adset_id meta_ad_id].each do |key|
-        incoming_value = incoming.is_a?(Hash) ? (incoming[key] || incoming[key.to_s]) : nil
-        text = scalar(incoming_value)
-        limit = key == :landing_path || key == :referrer ? PATH_LIMIT : VALUE_LIMIT
-        base[key] = text.first(limit) if base[key].blank? && text.present?
+      EXTRA_KEYS.each do |key|
+        next if base[key].present?
+
+        text = path_or_value(incoming[key] || incoming[key.to_s], key)
+        base[key] = text if text.present?
       end
+
       meta = Meta.from_params(base)
       base.merge!(meta) if meta.any? && base[:meta_campaign_id].blank?
       base
@@ -56,5 +64,17 @@ module Attribution
       text = value.is_a?(Array) ? value.first : value
       text.to_s.strip.first(VALUE_LIMIT).presence
     end
+
+    def path_or_value(value, key)
+      text = value.is_a?(Array) ? value.first : value
+      text = text.to_s.strip.presence
+      return unless text
+
+      limit = key == :landing_path || key == :referrer ? PATH_LIMIT : VALUE_LIMIT
+      text.first(limit)
+    end
+
+    EXTRA_KEYS = %i[landing_path referrer meta_campaign_id meta_adset_id meta_ad_id].freeze
+    private_class_method :path_or_value
   end
 end

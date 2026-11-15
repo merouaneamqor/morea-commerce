@@ -57,13 +57,13 @@ module Storefront
     end
 
     def session_attribution
-      Attribution::Params.from_hash(@session[:storefront_attribution] || {})
+      Attribution::Params.merge_first_touch(@session[:storefront_attribution] || {}, {})
     end
 
     private
 
     def find_or_create_visit!(path:)
-      token = @cookies[COOKIE].to_s.presence || new_token
+      token = read_cookie_token || new_token
       visit = @store.storefront_visits.find_by(token: token)
       if visit
         write_cookie(token)
@@ -72,11 +72,12 @@ module Storefront
 
       now = Time.current
       path_text = path.to_s.first(Attribution::Params::PATH_LIMIT).presence
+      attrs = truncated_attribution(attribution_for_visit)
       visit = @store.storefront_visits.create!(
-        **attribution_for_visit.slice(*visit_attr_keys),
+        **attrs,
         token: token,
-        landing_path: path_text,
-        last_path: path_text,
+        landing_path: path_text || attrs[:landing_path],
+        last_path: path_text || attrs[:landing_path],
         landed_at: now,
         last_seen_at: now,
         funnel_stage: "landed"
@@ -95,28 +96,54 @@ module Storefront
     end
 
     def attribution_for_visit
-      Attribution::Params.merge_first_touch(session_attribution, {})
+      Attribution::Params.merge_first_touch(@session[:storefront_attribution] || {}, {})
     end
 
-    def assign_attribution(visit, attrs)
-      visit_attr_keys.each do |key|
-        next if visit.public_send(key).present?
+    def truncated_attribution(attrs)
+      limits = {
+        utm_source: 100, utm_medium: 100, utm_campaign: 200, utm_term: 200, utm_content: 200,
+        fbclid: 255, gclid: 255, ttclid: 255,
+        meta_campaign_id: 25, meta_adset_id: 25, meta_ad_id: 25,
+        referrer: 500, landing_path: 500
+      }
+      limits.each_with_object({}) do |(key, limit), result|
+        value = attrs[key].to_s
+        next if value.blank?
 
-        value = attrs[key]
-        visit.public_send("#{key}=", value) if value.present?
+        result[key] = value.first(limit)
       end
     end
 
-    def visit_attr_keys
-      %i[utm_source utm_medium utm_campaign utm_term utm_content fbclid gclid ttclid
-         meta_campaign_id meta_adset_id meta_ad_id referrer landing_path]
+    def assign_attribution(visit, attrs)
+      truncated_attribution(attrs).each do |key, value|
+        next if visit.public_send(key).present?
+
+        visit.public_send("#{key}=", value)
+      end
     end
 
     def new_token
       SecureRandom.hex(TOKEN_BYTES)
     end
 
+    def read_cookie_token
+      raw = @cookies[COOKIE]
+      value =
+        case raw
+        when Hash then raw[:value].presence || raw["value"].presence
+        else raw
+        end
+      text = value.to_s
+      text.presence&.first(64)
+    end
+
     def write_cookie(token)
+      # Plain hashes (unit tests) store the token string; CookieJar takes the options hash.
+      if @cookies.is_a?(Hash)
+        @cookies[COOKIE] = token
+        return
+      end
+
       @cookies[COOKIE] = {
         value: token,
         expires: VISIT_TTL.from_now,

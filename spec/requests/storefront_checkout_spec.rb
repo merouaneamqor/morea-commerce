@@ -112,7 +112,8 @@ RSpec.describe "Storefront COD checkout", type: :request do
     expect(response).to redirect_to("/en/cart")
   end
 
-  it "renders a fast checkout popup without email and with first name, phone, city, address" do
+  it "defaults to a fast checkout popup without email and with first name, phone, city, address" do
+    expect(store.checkout_popup_enabled).to be(true)
     add_to_cart
     get "/en/checkout"
     expect(response).to have_http_status(:ok)
@@ -120,6 +121,7 @@ RSpec.describe "Storefront COD checkout", type: :request do
 
     expect(doc.at_css(".checkout-overlay")).to be_present
     expect(doc.at_css(".checkout-modal[role='dialog']")).to be_present
+    expect(doc.at_css(".checkout-page")).to be_nil
     expect(doc.at_css("#checkout_name")).to be_present
     expect(doc.at_css("label[for='checkout_name']")&.text).to include("First name")
     expect(doc.at_css("#checkout_phone")).to be_present
@@ -137,6 +139,28 @@ RSpec.describe "Storefront COD checkout", type: :request do
     expect(age).to be_present
     expect(privacy["checked"]).to be_present
     expect(age["checked"]).to be_present
+  end
+
+  it "renders the on-page checkout when the popup setting is off" do
+    store.update!(checkout_popup_enabled: false)
+    add_to_cart
+    get "/en/checkout"
+    expect(response).to have_http_status(:ok)
+    doc = Nokogiri::HTML(response.body)
+
+    expect(doc.at_css(".checkout-page")).to be_present
+    expect(doc.at_css(".checkout-overlay")).to be_nil
+    expect(doc.at_css(".checkout-modal")).to be_nil
+    expect(doc.at_css("#checkout_name")).to be_present
+    expect(doc.at_css("label[for='checkout_name']")&.text).to include("Full name")
+    expect(doc.at_css("#checkout_phone")).to be_present
+    expect(doc.at_css("#checkout_city")).to be_present
+    expect(doc.at_css("#checkout_address")).to be_present
+    expect(doc.at_css("#checkout_district")).to be_present
+    expect(doc.at_css("#checkout_notes")).to be_present
+    expect(doc.at_css("input[type='email'], #checkout_email")).to be_nil
+    expect(response.body).not_to include("Limited stock, confirm before the hold ends.")
+    expect(response.body).not_to include('name="checkout[email]"')
   end
 
   it "still rejects an order when acceptance is unchecked" do

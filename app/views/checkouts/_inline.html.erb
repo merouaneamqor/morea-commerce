@@ -1,0 +1,293 @@
+<% content_for :title, "#{t("checkout.title")} — #{current_store.name}" %>
+
+<%
+  cities = Checkout.cities(current_store)
+  rates = Sendit::Districts.shipping_cents_by_city(store: current_store)
+  item_count = @items.sum(&:quantity)
+  bag_preview_total = money(@checkout.total_cents, current_store.currency)
+  district_required = @checkout.district_required?
+  district_options = Checkout.districts_by_city(current_store)[@checkout.city].to_a
+  foreign_phone = @checkout.phone_country.present? && @checkout.phone_country != "MA"
+%>
+<%= pixel_event_tag "InitiateCheckout", cart_pixel_payload(@cart).merge(value: pixel_value(@checkout.total_cents)) %>
+
+<section class="checkout-page"
+         data-controller="checkout-city"
+         <% if cities.any? %>
+         data-checkout-city-cities-value="<%= cities.to_json %>"
+         data-checkout-city-districts-value="<%= Checkout.districts_by_city(current_store).to_json %>"
+         data-checkout-city-rates-value="<%= rates.to_json %>"
+         <% end %>
+         data-checkout-city-subtotal-value="<%= @checkout.subtotal_cents %>"
+         data-checkout-city-discount-value="<%= @checkout.discount_cents %>"
+         data-checkout-city-free-threshold-value="<%= current_store.free_shipping_threshold_cents.to_i %>"
+         data-checkout-city-currency-value="<%= current_store.currency %>"
+         data-checkout-city-locale-value="<%= "#{I18n.locale}-MA" %>"
+         data-checkout-city-free-label-value="<%= t("checkout.shipping_free") %>"
+         data-checkout-city-pending-label-value="<%= t("checkout.shipping_pending") %>"
+         data-checkout-city-confirm-template-value="<%= t("checkout.confirm_with_total", total: "%{total}") %>"
+         data-checkout-city-choose-district-value="<%= t("checkout.choose_district") %>"
+         data-checkout-city-no-match-value="<%= t("checkout.city_no_match") %>">
+
+  <header class="checkout-hero">
+    <p class="checkout-hero__eyebrow"><%= t("checkout.step_label") %></p>
+    <h1 class="checkout-hero__title"><%= t("checkout.title") %></h1>
+    <p class="checkout-hero__subtitle"><%= t("checkout.subtitle_short") %></p>
+  </header>
+
+  <details class="checkout-bag-mobile lg:hidden">
+    <summary class="checkout-bag-mobile__summary">
+      <span>
+        <%= t("checkout.bag_toggle") %>
+        <span class="checkout-bag-mobile__meta">· <%= t("checkout.items_count", count: item_count) %></span>
+      </span>
+      <span class="font-display text-xl text-ink" data-checkout-city-target="bagPreview"><%= bag_preview_total %></span>
+    </summary>
+    <div class="checkout-bag-mobile__body">
+      <ul class="checkout-lines">
+        <% @items.each do |item| %>
+          <li class="checkout-line">
+            <div class="object-frame aspect-[3/4] w-14 shrink-0">
+              <%= product_image_tag item.product, sizes: "56px", widths: [112, 160], alt: item.display_name %>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="font-display text-base leading-snug text-ink"><%= item.display_name %></p>
+              <p class="mt-1 text-[10px] uppercase tracking-[0.18em] text-ink-faint">
+                <%= t("checkout.qty") %> <%= item.quantity %>
+              </p>
+            </div>
+            <p class="font-display text-base text-ink"><%= money(item.line_total_cents, current_store.currency) %></p>
+          </li>
+        <% end %>
+      </ul>
+      <%= link_to t("checkout.edit_bag"), cart_path, class: "checkout-edit-link" %>
+    </div>
+  </details>
+
+  <div class="checkout-grid">
+    <div class="checkout-form-col">
+      <%= form_with model: @checkout, url: checkout_path, method: :post, class: "checkout-form",
+            html: {
+              id: "checkout-form",
+              data: {
+                controller: "checkout-recall checkout-extras phone-country",
+                checkout_recall_store_value: current_store.slug,
+                action: "submit->checkout-city#validateCity"
+              }
+            } do |f| %>
+        <% if @checkout.errors.any? %>
+          <div class="checkout-alert" role="alert">
+            <p class="text-[10px] uppercase tracking-[0.22em] text-ink"><%= t("checkout.form_errors") %></p>
+            <ul class="mt-2 list-disc space-y-1 ps-5 text-sm text-ink-soft">
+              <% @checkout.errors.map(&:message).uniq.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <fieldset class="checkout-step">
+          <legend class="checkout-step__title"><%= t("checkout.contact_details") %></legend>
+          <div class="checkout-fields checkout-fields--contact">
+            <div class="checkout-field">
+              <%= f.label :name, t("checkout.full_name"), class: "checkout-label" %>
+              <%= f.text_field :name, required: true, autocomplete: "name", class: "checkout-input", placeholder: t("checkout.placeholders.name") %>
+            </div>
+            <div class="checkout-field">
+              <%= f.label :phone, t("checkout.phone"), class: "checkout-label" %>
+              <div class="checkout-phone" dir="ltr">
+                <div class="checkout-phone__compact" data-phone-country-target="compact" <%= "hidden" if foreign_phone %>>
+                  <%= f.hidden_field :phone_country, value: "MA", disabled: foreign_phone, data: { phone_country_target: "maCountry" } %>
+                  <span class="checkout-phone__prefix" aria-hidden="true">+212</span>
+                </div>
+                <div class="checkout-phone__full" data-phone-country-target="full" <%= "hidden" unless foreign_phone %>>
+                  <%= f.select :phone_country,
+                        options_for_select(Checkout::PHONE_COUNTRIES, @checkout.phone_country.presence || "MA"),
+                        {},
+                        class: "checkout-phone__prefix checkout-select",
+                        autocomplete: "tel-country-code",
+                        disabled: !foreign_phone,
+                        aria: { label: t("checkout.phone_country") },
+                        data: { phone_country_target: "countrySelect" } %>
+                </div>
+                <%= f.telephone_field :phone, required: true, autocomplete: "tel-national", inputmode: "tel", class: "checkout-input checkout-phone__input", placeholder: t("checkout.placeholders.phone") %>
+              </div>
+              <button type="button" class="checkout-phone__other" data-phone-country-target="compact" data-action="phone-country#expand" <%= "hidden" if foreign_phone %>>
+                <%= t("checkout.other_country") %>
+              </button>
+              <p class="checkout-help"><%= t("checkout.phone_help") %></p>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="checkout-step">
+          <legend class="checkout-step__title"><%= t("checkout.delivery_details") %></legend>
+          <p class="checkout-step__hint"><%= t("checkout.delivery_hint") %></p>
+          <div class="checkout-fields">
+            <div class="checkout-field <%= "sm:col-span-2" unless district_required %>" data-checkout-city-target="cityField">
+              <%= f.label :city, t("checkout.city"), class: "checkout-label" %>
+              <% if cities.any? %>
+                <div class="checkout-combobox" data-checkout-city-target="combobox">
+                  <%= f.text_field :city,
+                        required: true,
+                        autocomplete: "shipping address-level2",
+                        class: "checkout-input",
+                        role: "combobox",
+                        aria: { autocomplete: "list", expanded: false, controls: "checkout-city-list" },
+                        placeholder: t("checkout.placeholders.city"),
+                        data: {
+                          checkout_city_target: "city",
+                          action: [
+                            "input->checkout-city#onCityInput",
+                            "change->checkout-city#onCityChange",
+                            "animationstart->checkout-city#onAutofillAnimation",
+                            "focus->checkout-city#openCities",
+                            "keydown->checkout-city#onCityKeydown",
+                            "blur->checkout-city#onCityBlur"
+                          ].join(" ")
+                        } %>
+                  <ul id="checkout-city-list"
+                      class="checkout-combobox__list"
+                      role="listbox"
+                      hidden
+                      data-checkout-city-target="cityList"></ul>
+                </div>
+              <% else %>
+                <%= f.text_field :city, required: true, autocomplete: "address-level2", class: "checkout-input", placeholder: t("checkout.placeholders.city"),
+                      data: { checkout_city_target: "city", action: "input->checkout-city#update" } %>
+              <% end %>
+            </div>
+
+            <div class="checkout-field" data-checkout-city-target="districtField" <%= "hidden" unless district_required %>>
+              <%= f.label :district, t("checkout.district"), class: "checkout-label" %>
+              <%= f.select :district,
+                    options_for_select(district_options, @checkout.district),
+                    { include_blank: t("checkout.choose_district") },
+                    required: district_required,
+                    disabled: !district_required,
+                    autocomplete: "address-level3",
+                    class: "checkout-input checkout-select",
+                    data: { checkout_city_target: "district", action: "checkout-city#update" } %>
+              <p class="checkout-help" data-checkout-city-target="districtHelp" <%= "hidden" unless district_required %>>
+                <%= t("checkout.district_help") %>
+              </p>
+            </div>
+
+            <div class="checkout-field sm:col-span-2">
+              <%= f.label :address, t("checkout.address"), class: "checkout-label" %>
+              <%= f.text_area :address, required: true, autocomplete: "street-address", rows: 2, class: "checkout-input checkout-input--area", placeholder: t("checkout.placeholders.address") %>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="checkout-field sm:col-span-2">
+          <%= f.text_area :notes, rows: 2, class: "checkout-input checkout-input--area", placeholder: t("checkout.placeholders.notes_optional") %>
+        </div>
+        <div class="checkout-promo">
+          <button type="button" class="checkout-promo__toggle" data-action="checkout-extras#togglePromo">
+            <%= t("checkout.add_promo_code") %>
+          </button>
+          <div class="checkout-promo__panel" data-checkout-extras-target="promoPanel" <%= "hidden" unless @checkout.discount_code.present? %>>
+            <%= f.label :discount_code, t("checkout.discount_code"), class: "checkout-label" %>
+            <%= f.text_field :discount_code, class: "checkout-input mt-2", placeholder: t("checkout.placeholders.discount_code"), autocomplete: "off" %>
+          </div>
+        </div>
+
+        <p class="checkout-legal-note"><%= checkout_rights_notice %></p>
+
+        <label class="checkout-consent">
+          <%= f.check_box :privacy_accepted, class: "checkout-consent__input" %>
+          <span>
+            <% privacy_link = privacy_page_path_for_store ? link_to(t("data_protection.privacy_policy"), privacy_page_path_for_store, class: "checkout-legal-note__link") : t("data_protection.privacy_policy") %>
+            <% terms_link = terms_page_path_for_store ? link_to(t("data_protection.terms_of_service"), terms_page_path_for_store, class: "checkout-legal-note__link") : t("data_protection.terms_of_service") %>
+            <%= t("data_protection.checkout_consent_html", privacy_link: privacy_link, terms_link: terms_link).html_safe %>
+          </span>
+        </label>
+        <% if @checkout.errors[:privacy_accepted].any? %>
+          <p class="checkout-field-error" role="alert"><%= @checkout.errors[:privacy_accepted].to_sentence %></p>
+        <% end %>
+
+        <label class="checkout-consent">
+          <%= f.check_box :age_confirmed, class: "checkout-consent__input" %>
+          <span><%= t("data_protection.checkout_age_html", age: current_store.minimum_purchase_age) %></span>
+        </label>
+        <% if @checkout.errors[:age_confirmed].any? %>
+          <p class="checkout-field-error" role="alert"><%= @checkout.errors[:age_confirmed].to_sentence %></p>
+        <% end %>
+
+        <div class="checkout-submit checkout-submit--desktop">
+          <%= f.button type: "submit", class: "maison-button checkout-submit__button w-full cursor-pointer text-center", data: { turbo_submits_with: t("checkout.placing") } do %>
+            <span data-checkout-city-target="submitLabel"><%= t("checkout.confirm_with_total", total: money(@checkout.total_cents, current_store.currency)) %></span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <aside class="checkout-summary-col">
+      <div class="checkout-panel checkout-summary-panel">
+        <div class="flex items-center justify-between gap-4">
+          <h2 class="checkout-panel__title"><%= t("checkout.order_summary") %></h2>
+          <%= link_to t("checkout.edit_bag"), cart_path, class: "checkout-edit-link" %>
+        </div>
+
+        <ul class="checkout-lines mt-5">
+          <% @items.each do |item| %>
+            <li class="checkout-line">
+              <div class="object-frame aspect-[3/4] w-16 shrink-0 sm:w-20">
+                <%= product_image_tag item.product, sizes: "80px", widths: [160, 240], alt: item.display_name %>
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="font-display text-lg leading-snug text-ink"><%= item.display_name %></p>
+                <p class="mt-1 text-[10px] uppercase tracking-[0.18em] text-ink-faint">
+                  <%= t("checkout.qty") %> <%= item.quantity %>
+                  · <%= money(item.unit_price_cents, item.product.currency) %>
+                </p>
+              </div>
+              <p class="font-display text-lg text-ink"><%= money(item.line_total_cents, current_store.currency) %></p>
+            </li>
+          <% end %>
+        </ul>
+
+        <div class="checkout-totals">
+          <div class="checkout-totals__row">
+            <span><%= t("checkout.subtotal") %></span>
+            <span><%= money(@checkout.subtotal_cents, current_store.currency) %></span>
+          </div>
+          <% if @checkout.discount_cents.positive? %>
+            <div class="checkout-totals__row">
+              <span><%= t("checkout.discount") %></span>
+              <span>−<%= money(@checkout.discount_cents, current_store.currency) %></span>
+            </div>
+          <% end %>
+          <div class="checkout-totals__row">
+            <span><%= t("checkout.shipping") %></span>
+            <span data-checkout-city-target="shipping">
+              <% if @checkout.city.present? %>
+                <%= @checkout.shipping_cents.zero? ? t("checkout.shipping_free") : money(@checkout.shipping_cents, current_store.currency) %>
+              <% else %>
+                <%= t("checkout.shipping_pending") %>
+              <% end %>
+            </span>
+          </div>
+          <div class="checkout-totals__row checkout-totals__row--total">
+            <span><%= t("checkout.total") %></span>
+            <span data-checkout-city-target="total"><%= money(@checkout.total_cents, current_store.currency) %></span>
+          </div>
+          <p class="checkout-totals__note"><%= t("checkout.total_note") %></p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="checkout-sticky lg:hidden">
+    <div class="checkout-sticky__bar">
+      <div>
+        <p class="text-[10px] uppercase tracking-[0.2em] text-ink-faint"><%= t("checkout.total") %></p>
+        <p class="font-display text-2xl text-ink" data-checkout-city-target="mobileTotal"><%= money(@checkout.total_cents, current_store.currency) %></p>
+      </div>
+      <button type="submit" form="checkout-form" class="maison-button checkout-sticky__button cursor-pointer" data-turbo-submits-with="<%= t("checkout.placing") %>">
+        <span data-checkout-city-target="stickyLabel"><%= t("checkout.confirm_with_total", total: money(@checkout.total_cents, current_store.currency)) %></span>
+      </button>
+    </div>
+  </div>
+</section>

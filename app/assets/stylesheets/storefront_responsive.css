@@ -64,9 +64,11 @@ main, .site-footer, .mobile-menu__panel, .cart-drawer__panel {
   .maison-nav__actions { gap: .65rem; }
   .maison-nav .maison-link { min-height: 2.75rem; display: inline-flex; align-items: center; }
   .maison-nav__actions > .hidden { display: none; }
-  .maison-nav .morea-lockup { max-width: 30vw; }
-  .maison-nav .morea-lockup__mark { min-width: 0; }
-  .maison-nav .morea-wordmark-type { font-size: clamp(.85rem, 4vw, 1.35rem); }
+  .maison-nav .morea-lockup { max-width: 42vw; }
+  .maison-nav .morea-lockup__mark { min-width: 0; gap: .4rem; }
+  .maison-nav .morea-mark { width: clamp(1.15rem, 4.8vw, 1.4rem); height: clamp(1.15rem, 4.8vw, 1.4rem); }
+  .maison-nav .morea-wordmark-svg { height: clamp(.9rem, 3.6vw, 1.1rem); }
+  .maison-nav .morea-wordmark-type:not(.sr-only) { font-size: clamp(.85rem, 4vw, 1.2rem); letter-spacing: .04em; }
   .campaign-hero__brand { letter-spacing: .22em; }
   .campaign-hero__watermark { font-size: clamp(2.4rem, 16vw, 4.5rem); letter-spacing: .06em; }
   .campaign-hero__support { max-width: 34rem; }

@@ -206,47 +206,83 @@
     color: #faf9f7;
   }
 
-  /* Fashion-house wordmark lockup — quiet, spaced, no icon */
+  /* Aggressive brand lockup — framed monogram + condensed geometric wordmark */
   .morea-lockup {
     @apply inline-flex shrink-0 items-center text-ink;
+    color: var(--sf-ink, #111111);
   }
 
   .morea-lockup__mark {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
     overflow: visible;
+    min-width: 0;
   }
 
-  .morea-wordmark-type {
+  .morea-mark {
     display: block;
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-synthesis: none;
-    font-size: clamp(1.2rem, 5.4vw, 1.35rem);
-    letter-spacing: 0.22em;
-    line-height: 1;
-    text-transform: uppercase;
-    margin-right: -0.22em;
+    flex: 0 0 auto;
+    width: clamp(1.35rem, 5.2vw, 1.55rem);
+    height: clamp(1.35rem, 5.2vw, 1.55rem);
+    color: inherit;
+  }
+
+  .morea-wordmark-svg {
+    display: block;
+    flex: 0 1 auto;
+    height: clamp(1.05rem, 4.2vw, 1.2rem);
+    width: auto;
+    max-width: 100%;
+    color: inherit;
   }
 
   @media (min-width: 768px) {
-    .morea-wordmark-type {
-      font-size: 1.55rem;
-      letter-spacing: 0.28em;
-      margin-right: -0.28em;
+    .morea-mark {
+      width: 1.7rem;
+      height: 1.7rem;
+    }
+
+    .morea-wordmark-svg {
+      height: 1.35rem;
     }
   }
 
-  .morea-packaging__mark .morea-wordmark-type {
-    font-size: 1.45rem;
-    letter-spacing: 0.26em;
-    margin-right: -0.26em;
+  /* Kept for fixtures / legacy text spans; live lockup uses SVG */
+  .morea-wordmark-type:not(.sr-only) {
+    display: block;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-synthesis: none;
+    font-size: clamp(1.05rem, 4.2vw, 1.2rem);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+    margin-right: -0.04em;
   }
 
   @media (min-width: 768px) {
-    .morea-packaging__mark .morea-wordmark-type {
-      font-size: 1.7rem;
-      letter-spacing: 0.28em;
-      margin-right: -0.28em;
+    .morea-wordmark-type:not(.sr-only) {
+      font-size: 1.35rem;
+      letter-spacing: 0.05em;
+      margin-right: -0.05em;
+    }
+  }
+
+  .morea-packaging__mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    width: auto;
+  }
+
+  .morea-packaging__mark .morea-wordmark-svg {
+    height: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .morea-packaging__mark .morea-wordmark-svg {
+      height: 1.45rem;
     }
   }
 
@@ -255,10 +291,6 @@
   [dir="rtl"] .morea-packaging__mark {
     direction: ltr;
     unicode-bidi: isolate;
-  }
-
-  .morea-packaging__mark {
-    width: auto;
   }
 
   .maison-brand {
@@ -1249,9 +1281,14 @@
     }
   }
 
-  .site-footer__brand .morea-wordmark-type {
-    letter-spacing: 0.26em;
-    margin-right: -0.26em;
+  .site-footer__brand .morea-wordmark-svg {
+    height: 1.2rem;
+  }
+
+  @media (min-width: 768px) {
+    .site-footer__brand .morea-wordmark-svg {
+      height: 1.35rem;
+    }
   }
 
   .site-footer__col {

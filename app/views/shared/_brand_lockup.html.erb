@@ -1,8 +1,12 @@
-<%# Quiet fashion-house wordmark. %>
+<%# Aggressive brand lockup: heavy framed monogram + condensed wordmark. %>
 <%= link_to localized_root_path,
       class: "morea-lockup #{local_assigns[:class]}",
       "aria-label": "Morea home" do %>
   <span class="morea-lockup__mark" aria-hidden="true">
+    <svg class="morea-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" focusable="false">
+      <rect x="3" y="3" width="58" height="58" fill="none" stroke="currentColor" stroke-width="7"/>
+      <path fill="currentColor" d="M13 53V11h9.2L32 40.2 41.8 11H51v42h-8V28.4L34.2 53h-4.4L21 28.4V53H13z"/>
+    </svg>
     <%= render "shared/wordmark_svg" %>
   </span>
   <span class="sr-only">Morea</span>

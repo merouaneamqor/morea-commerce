@@ -59,8 +59,9 @@ class Store < ApplicationRecord
   has_one :meta_ads_connection, class_name: "MetaAds::Connection", dependent: :destroy
   has_many :store_expenses, dependent: :destroy
   has_many :storefront_themes, dependent: :destroy
-  has_many :storefront_visits, dependent: :delete_all
+  # Events before visits: delete_all does not cascade through the visit association.
   has_many :storefront_funnel_events, dependent: :delete_all
+  has_many :storefront_visits, dependent: :delete_all
 
   accepts_nested_attributes_for :translations, allow_destroy: false
 

@@ -50,7 +50,7 @@ class CreateStorefrontVisitsAndFunnelEvents < ActiveRecord::Migration[8.1]
 
     create_table :storefront_funnel_events do |t|
       t.references :store, null: false, foreign_key: true
-      t.references :storefront_visit, null: false, foreign_key: true
+      t.references :storefront_visit, null: false, foreign_key: { on_delete: :cascade }
       t.string :name, null: false, limit: 32
       t.string :path, limit: 500
       t.bigint :product_id

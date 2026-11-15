@@ -1635,7 +1635,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_140000) do
   add_foreign_key "store_connections", "stores"
   add_foreign_key "store_expenses", "stores"
   add_foreign_key "store_translations", "stores"
-  add_foreign_key "storefront_funnel_events", "storefront_visits"
+  add_foreign_key "storefront_funnel_events", "storefront_visits", on_delete: :cascade
   add_foreign_key "storefront_funnel_events", "stores"
   add_foreign_key "storefront_themes", "stores"
   add_foreign_key "storefront_visits", "orders"

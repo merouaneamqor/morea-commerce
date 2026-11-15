@@ -1314,9 +1314,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_140000) do
     t.bigint "product_id"
     t.jsonb "metadata", default: {}, null: false
     t.datetime "created_at", null: false
-    t.index ["store_id", "name", "created_at"], name: "index_storefront_funnel_events_on_store_id_and_name_and_created_at"
+    t.index ["store_id", "name", "created_at"], name: "index_storefront_funnel_events_on_store_name_created"
     t.index ["store_id"], name: "index_storefront_funnel_events_on_store_id"
-    t.index ["storefront_visit_id", "name"], name: "index_storefront_funnel_events_on_storefront_visit_id_and_name"
+    t.index ["storefront_visit_id", "name"], name: "index_storefront_funnel_events_on_visit_and_name"
     t.index ["storefront_visit_id"], name: "index_storefront_funnel_events_on_storefront_visit_id"
     t.check_constraint "name::text = ANY (ARRAY['landed'::character varying::text, 'product_viewed'::character varying::text, 'added_to_cart'::character varying::text, 'checkout_started'::character varying::text, 'abandoned'::character varying::text, 'ordered'::character varying::text])", name: "storefront_funnel_events_name"
   end
@@ -1361,7 +1361,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_140000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["order_id"], name: "index_storefront_visits_on_order_id"
-    t.index ["store_id", "funnel_stage", "landed_at"], name: "index_storefront_visits_on_store_id_and_funnel_stage_and_landed_at"
+    t.index ["store_id", "funnel_stage", "landed_at"], name: "index_storefront_visits_on_store_stage_landed"
     t.index ["store_id", "landed_at"], name: "index_storefront_visits_on_store_id_and_landed_at"
     t.index ["store_id", "token"], name: "index_storefront_visits_on_store_id_and_token", unique: true
     t.index ["store_id", "utm_source", "landed_at"], name: "index_storefront_visits_on_store_utm_source", where: "(utm_source IS NOT NULL)"

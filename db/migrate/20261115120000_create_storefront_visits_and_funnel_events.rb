@@ -29,7 +29,7 @@ class CreateStorefrontVisitsAndFunnelEvents < ActiveRecord::Migration[8.1]
 
     add_index :storefront_visits, %i[store_id token], unique: true
     add_index :storefront_visits, %i[store_id landed_at]
-    add_index :storefront_visits, %i[store_id funnel_stage landed_at]
+    add_index :storefront_visits, %i[store_id funnel_stage landed_at], name: "index_storefront_visits_on_store_stage_landed"
     add_index :storefront_visits, %i[store_id utm_source landed_at], where: "utm_source IS NOT NULL", name: "index_storefront_visits_on_store_utm_source"
 
     add_check_constraint :storefront_visits,
@@ -58,8 +58,8 @@ class CreateStorefrontVisitsAndFunnelEvents < ActiveRecord::Migration[8.1]
       t.datetime :created_at, null: false
     end
 
-    add_index :storefront_funnel_events, %i[store_id name created_at]
-    add_index :storefront_funnel_events, %i[storefront_visit_id name]
+    add_index :storefront_funnel_events, %i[store_id name created_at], name: "index_storefront_funnel_events_on_store_name_created"
+    add_index :storefront_funnel_events, %i[storefront_visit_id name], name: "index_storefront_funnel_events_on_visit_and_name"
 
     add_check_constraint :storefront_funnel_events,
       "name IN ('landed', 'product_viewed', 'added_to_cart', 'checkout_started', 'abandoned', 'ordered')",

@@ -1,6 +1,8 @@
 en:
   size_advisor:
     find_my_size: "Find my size"
+    guide_title: "Size guide"
+    guide_body: "Garment measurements in centimetres."
     eyebrow: "Fitting"
     title: "Size advisor"
     close: "Close"

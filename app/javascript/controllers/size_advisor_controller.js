@@ -55,14 +55,28 @@ export default class extends Controller {
 
   open(event) {
     event?.preventDefault()
+    this.guideOnly = false
+    this.openShell()
+    this.showStep(this.answers.complete ? this.stepTargets.length - 1 : 0)
+    if (this.answers.complete) this.renderResult()
+    requestAnimationFrame(() => this.focusFirst())
+  }
+
+  // Size chart only — no height/weight questionnaire.
+  openGuide(event) {
+    event?.preventDefault()
+    this.guideOnly = true
+    this.openShell()
+    this.renderGuide()
+    requestAnimationFrame(() => this.focusFirst())
+  }
+
+  openShell() {
     const shell = this.hasShellTarget ? this.shellTarget : this.element
     shell.classList.add("is-open")
     shell.setAttribute("aria-hidden", "false")
     document.body.classList.add("overflow-hidden")
     document.addEventListener("keydown", this.boundKey)
-    this.showStep(this.answers.complete ? this.stepTargets.length - 1 : 0)
-    if (this.answers.complete) this.renderResult()
-    requestAnimationFrame(() => this.focusFirst())
   }
 
   close(event) {
@@ -186,7 +200,27 @@ export default class extends Controller {
     return true
   }
 
+  renderGuide() {
+    this.stepTargets.forEach((step) => {
+      step.hidden = step.dataset.step !== "result"
+    })
+    this.stepIndex = this.stepTargets.findIndex((step) => step.dataset.step === "result")
+    if (this.hasProgressTarget) this.progressTarget.textContent = ""
+    if (this.hasResultSizeTarget) this.resultSizeTarget.textContent = ""
+    if (this.hasResultTitleTarget) this.resultTitleTarget.textContent = this.label("guide_title")
+    if (this.hasResultBodyTarget) this.resultBodyTarget.textContent = this.label("guide_body")
+    if (this.hasResultReasonsTarget) this.resultReasonsTarget.innerHTML = ""
+    if (this.hasResultChartTarget) this.resultChartTarget.innerHTML = this.chartTableHtml(null)
+    if (this.hasSelectButtonTarget) this.selectButtonTarget.hidden = true
+    const edit = this.element.querySelector('[data-action="size-advisor#back"]')
+    if (edit) edit.hidden = true
+  }
+
   renderResult() {
+    this.guideOnly = false
+    const edit = this.element.querySelector('[data-action="size-advisor#back"]')
+    if (edit) edit.hidden = false
+
     const result = this.recommend()
     this.recommendedSize = result.size
 

@@ -1094,7 +1094,8 @@
     @apply text-ink-faint line-through;
   }
 
-  .size-advisor-trigger {
+  .size-advisor-trigger,
+  .size-guide-trigger {
     @apply text-[11px] uppercase tracking-[0.18em] text-ink underline underline-offset-4 transition-colors hover:text-ink-soft;
   }
 

@@ -25,7 +25,9 @@
   "note_match" => t("size_advisor.note.match"),
   "note_snug" => t("size_advisor.note.snug"),
   "note_easy" => t("size_advisor.note.easy"),
-  "note_roomy" => t("size_advisor.note.roomy")
+  "note_roomy" => t("size_advisor.note.roomy"),
+  "guide_title" => t("size_advisor.guide_title"),
+  "guide_body" => t("size_advisor.guide_body")
 } : nil %>
 <% require_size = @sizes.any? %>
 <% initial_price = @initial_variant&.fetch(:price) || @product.price_display %>
@@ -152,9 +154,14 @@
                 <div class="flex flex-wrap items-baseline justify-between gap-3">
                   <p class="landing-buy__label"><%= t("product.size") %></p>
                   <% if @size_chart.present? %>
-                    <button type="button" class="size-advisor-trigger" data-action="size-advisor#open">
-                      <%= t("product.size_guide") %>
-                    </button>
+                    <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                      <button type="button" class="size-guide-trigger" data-action="size-advisor#openGuide">
+                        <%= t("product.size_guide") %>
+                      </button>
+                      <button type="button" class="size-advisor-trigger" data-action="size-advisor#open">
+                        <%= t("size_advisor.find_my_size") %>
+                      </button>
+                    </div>
                   <% end %>
                 </div>
                 <div class="mt-4 flex flex-wrap gap-2">

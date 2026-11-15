@@ -5,7 +5,7 @@ export default class extends Controller {
   static targets = [
     "variantId", "sizeButton", "colorButton", "colorLabel", "availability",
     "purchaseButton", "orderLabel", "price", "comparePrice", "savings", "saleUntil",
-    "sizeGroup", "selectionSummary"
+    "sizeGroup", "selectionSummary", "sizeSheet", "sizeSheetPanel", "sheetSizeButton"
   ]
   static values = {
     variants: Array,
@@ -40,12 +40,29 @@ export default class extends Controller {
     } else {
       this.selectedSize = initial.size
     }
+    this.boundKeydown = this.onSheetKeydown.bind(this)
     this.render()
+  }
+
+  disconnect() {
+    this.unlockScroll()
+    document.removeEventListener("keydown", this.boundKeydown)
   }
 
   selectSize(event) {
     event.preventDefault()
-    this.selectedSize = event.currentTarget.dataset.size
+    this.applySize(event.currentTarget.dataset.size)
+  }
+
+  pickSizeAndContinue(event) {
+    event.preventDefault()
+    this.applySize(event.currentTarget.dataset.size)
+    this.closeSizeSheet()
+    this.continuePendingPurchase()
+  }
+
+  applySize(size) {
+    this.selectedSize = size
     const colors = this.colorsFor(this.selectedSize)
     if (!colors.includes(this.selectedColor)) {
       this.selectedColor = colors[0] || null
@@ -62,7 +79,60 @@ export default class extends Controller {
   ensureSize(event) {
     if (!this.needsSize()) return
     event.preventDefault()
+    this.pendingPurchaseButton = event.currentTarget
+    if (this.hasSizeSheetTarget) {
+      this.openSizeSheet()
+      return
+    }
     this.focusSizes()
+  }
+
+  openSizeSheet() {
+    if (!this.hasSizeSheetTarget) return
+    this.sizeSheetTarget.classList.add("is-open")
+    this.sizeSheetTarget.setAttribute("aria-hidden", "false")
+    this.lockScroll()
+    document.addEventListener("keydown", this.boundKeydown)
+    requestAnimationFrame(() => {
+      const first = this.sheetSizeButtonTargets.find((btn) => !btn.classList.contains("is-unavailable"))
+        || this.sheetSizeButtonTargets[0]
+      first?.focus({ preventScroll: true })
+    })
+  }
+
+  closeSizeSheet(event) {
+    if (event) event.preventDefault()
+    if (!this.hasSizeSheetTarget) return
+    this.sizeSheetTarget.classList.remove("is-open")
+    this.sizeSheetTarget.setAttribute("aria-hidden", "true")
+    this.unlockScroll()
+    document.removeEventListener("keydown", this.boundKeydown)
+  }
+
+  onSheetKeydown(event) {
+    if (event.key !== "Escape") return
+    this.closeSizeSheet()
+  }
+
+  continuePendingPurchase() {
+    const button = this.pendingPurchaseButton
+    this.pendingPurchaseButton = null
+    if (!button || this.needsSize() || !this.purchasable) return
+
+    const form = button.form || (button.getAttribute("form") && document.getElementById(button.getAttribute("form")))
+    if (form && typeof form.requestSubmit === "function") {
+      form.requestSubmit(button)
+      return
+    }
+    button.click()
+  }
+
+  lockScroll() {
+    document.documentElement.classList.add("size-sheet-open")
+  }
+
+  unlockScroll() {
+    document.documentElement.classList.remove("size-sheet-open")
   }
 
   render() {
@@ -72,6 +142,16 @@ export default class extends Controller {
       btn.classList.toggle("is-active", !!this.selectedSize && btn.dataset.size === this.selectedSize)
       btn.setAttribute("aria-pressed", String(!!this.selectedSize && btn.dataset.size === this.selectedSize))
     })
+
+    if (this.hasSheetSizeButtonTarget) {
+      this.sheetSizeButtonTargets.forEach((btn) => {
+        const available = this.variantsValue.some((variant) => variant.size === btn.dataset.size && this.inStock(variant))
+        btn.classList.toggle("is-unavailable", !available)
+        btn.classList.toggle("is-active", !!this.selectedSize && btn.dataset.size === this.selectedSize)
+        btn.setAttribute("aria-pressed", String(!!this.selectedSize && btn.dataset.size === this.selectedSize))
+        btn.disabled = !available
+      })
+    }
 
     this.colorButtonTargets.forEach((btn) => {
       const available = this.colorsFor(this.selectedSize).includes(btn.dataset.color)
@@ -109,14 +189,17 @@ export default class extends Controller {
         : this.unavailableLabelValue
     })
 
-    // Keep the CTA tappable when size is missing so the first tap can focus sizes.
+    // Keep the CTA tappable when size is missing so the first tap can open the size sheet.
     this.purchaseButtonTargets.forEach((button) => {
       button.disabled = waitingForSize ? false : !this.purchasable
     })
 
     const priceText = preview?.price || ""
     this.orderLabelTargets.forEach((label) => {
-      if (waitingForSize) {
+      if (waitingForSize && this.hasSizeSheetTarget) {
+        // Size sheet path: keep sticky as "Commander — price"; tap opens the sheet.
+        label.textContent = this.orderLabelFor(priceText) || this.orderLabelValue
+      } else if (waitingForSize) {
         label.textContent = this.chooseSizeLabelValue || this.orderLabelValue
       } else if (!this.purchasable) {
         label.textContent = this.unavailableLabelValue
@@ -217,6 +300,11 @@ export default class extends Controller {
   validate(event) {
     if (this.needsSize()) {
       event.preventDefault()
+      this.pendingPurchaseButton = event.submitter || this.purchaseButtonTargets.find((btn) => btn.name === "checkout") || this.purchaseButtonTargets[0]
+      if (this.hasSizeSheetTarget) {
+        this.openSizeSheet()
+        return
+      }
       this.focusSizes()
       return
     }

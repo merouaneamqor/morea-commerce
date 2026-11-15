@@ -4,9 +4,20 @@ import { readFileSync } from "node:fs"
 import vm from "node:vm"
 
 const source = readFileSync(new URL("../app/javascript/controllers/variant_picker_controller.js", import.meta.url), "utf8")
+const fakeDocument = {
+  documentElement: { classList: { add() {}, remove() {} } },
+  addEventListener() {},
+  removeEventListener() {},
+  getElementById() { return null }
+}
 const Picker = vm.runInNewContext(
   source.replace(/^import .*$/m, "class Controller {}").replace("export default class", "class Picker") + "\nPicker",
-  { clearTimeout, setTimeout }
+  {
+    clearTimeout,
+    setTimeout,
+    document: fakeDocument,
+    requestAnimationFrame: (cb) => cb()
+  }
 )
 const element = (dataset = {}) => ({ dataset, classList: { toggle() {}, add() {}, remove() {} }, setAttribute() {}, textContent: "", disabled: false, hidden: false, focus() {}, scrollIntoView() {} })
 const picker = new Picker()
@@ -47,6 +58,9 @@ picker.hasSavingsTarget = true
 picker.hasSaleUntilTarget = false
 picker.hasSizeGroupTarget = false
 picker.hasSelectionSummaryTarget = true
+picker.hasSizeSheetTarget = false
+picker.hasSheetSizeButtonTarget = false
+picker.sheetSizeButtonTargets = []
 picker.dispatch = (_name, event) => { picker.lastVariant = event.detail.variant }
 picker.variantIdTarget.value = "1"
 picker.connect()
@@ -91,28 +105,62 @@ picker.saleUntilWhenValue = ""
 picker.variantIdTarget.value = ""
 picker.sizeGroupTarget = element()
 picker.hasSizeGroupTarget = true
+picker.sizeSheetTarget = Object.assign(element(), {
+  classList: {
+    tokens: new Set(),
+    add(name) { this.tokens.add(name) },
+    remove(name) { this.tokens.delete(name) },
+    contains(name) { return this.tokens.has(name) },
+    toggle() {}
+  },
+  getAttribute() { return null },
+  setAttribute() {}
+})
+picker.hasSizeSheetTarget = true
+picker.hasSheetSizeButtonTarget = true
+picker.sheetSizeButtonTargets = [element({ size: "S" }), element({ size: "M" })]
+picker.sheetSizeButtonTargets.forEach((btn) => {
+  btn.focus = () => {}
+  btn.classList = { toggle() {}, add() {}, remove() {}, contains() { return false } }
+})
 let focused = false
 picker.sizeButtonTargets[0].focus = () => { focused = true }
 picker.connect()
 assert.equal(picker.selectedSize, null, "Do not preselect a size when requireSize is on")
 assert.equal(picker.variantIdTarget.value, "", "Variant id stays empty until a size is chosen")
-assert.ok(picker.purchaseButtonTargets.every((button) => !button.disabled), "CTA stays tappable so it can focus sizes")
-assert.ok(picker.orderLabelTargets.every((label) => label.textContent === "Choose my size"), "Unset size uses choose-size CTA")
+assert.ok(picker.purchaseButtonTargets.every((button) => !button.disabled), "CTA stays tappable so it can open the size sheet")
+assert.ok(picker.orderLabelTargets.every((label) => label.textContent === "Order — 389 DH"), "With size sheet, sticky stays Commander — price")
 assert.equal(picker.selectionSummaryTarget.hidden, true, "Hide selection summary until a size is chosen")
 assert.equal(picker.savingsTarget.hidden, false, "Show savings when there is no sale end")
 assert.ok(picker.savingsTarget.textContent.includes("60 DH"))
+const buyButton = Object.assign(element(), { name: "checkout", form: { requestSubmit(btn) { buyButton.submitted = btn === buyButton } }, getAttribute() { return null } })
 let sizeBlocked = false
-picker.ensureSize({ preventDefault() { sizeBlocked = true } })
+picker.ensureSize({ preventDefault() { sizeBlocked = true }, currentTarget: buyButton })
 assert.ok(sizeBlocked, "First tap without a size is blocked")
-assert.ok(focused, "First tap focuses a size control")
-picker.selectSize({ preventDefault() {}, currentTarget: { dataset: { size: "M" } } })
+assert.ok(picker.sizeSheetTarget.classList.contains("is-open"), "First tap opens the size sheet")
+assert.equal(focused, false, "Sheet path does not scroll-focus on-page sizes")
+picker.pickSizeAndContinue({ preventDefault() {}, currentTarget: { dataset: { size: "M" } } })
 assert.equal(picker.variantIdTarget.value, 2)
+assert.equal(buyButton.submitted, true, "Choosing a size in the sheet continues the pending buy")
+assert.ok(!picker.sizeSheetTarget.classList.contains("is-open"), "Sheet closes after a size is picked")
 assert.ok(picker.orderLabelTargets.every((label) => label.textContent === "Order — 389 DH"))
 assert.equal(picker.selectionSummaryTarget.hidden, false)
 assert.equal(picker.selectionSummaryTarget.textContent, "Gris chiné · Size M")
 sizeBlocked = false
-picker.ensureSize({ preventDefault() { sizeBlocked = true } })
+picker.ensureSize({ preventDefault() { sizeBlocked = true }, currentTarget: buyButton })
 assert.equal(sizeBlocked, false, "With a size selected, ensureSize does not block")
+
+// Fallback: without a sheet, first tap still focuses on-page sizes and CTA says choose-size.
+picker.hasSizeSheetTarget = false
+focused = false
+picker.selectedSize = null
+picker.render()
+assert.ok(picker.orderLabelTargets.every((label) => label.textContent === "Choose my size"), "Without sheet, unset size uses choose-size CTA")
+sizeBlocked = false
+picker.ensureSize({ preventDefault() { sizeBlocked = true }, currentTarget: buyButton })
+assert.ok(sizeBlocked)
+assert.ok(focused, "Without a sheet, first tap focuses a size control")
+picker.selectSize({ preventDefault() {}, currentTarget: { dataset: { size: "M" } } })
 
 picker.hasSaleUntilTarget = true
 picker.saleUntilWhenValue = "dimanche à 23 h 59"

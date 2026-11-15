@@ -175,13 +175,19 @@ RSpec.describe "Storefront pages", type: :request do
     expect(document.at_css(".pdp__offer-until")).to be_nil
     expect(document.at_css(".pdp__ship-note-lead").text).to include("Frais d")
     expect(document.at_css("input[name='product_variant_id']")["value"]).to eq("")
-    expect(document.at_css("#pdp-sizes .landing-buy__label").text).to include("Taille")
+    expect(document.at_css("#pdp-sizes .landing-buy__label").text).to include("Choisir la taille")
     expect(document.at_css(".mobile-buy-bar .pdp-order-btn__sub").text).to include("Aucun paiement en ligne")
-    expect(document.at_css(".mobile-buy-bar [data-variant-picker-target='orderLabel']").text).to include("Choisir ma taille")
+    # Sticky keeps Commander — price; size sheet opens on tap when size is required.
+    expect(document.at_css(".mobile-buy-bar [data-variant-picker-target='orderLabel']").text).to include("Commander")
     expect(document.css(".mobile-buy-bar button").size).to eq(1)
     expect(document.at_css("[data-variant-picker-target='selectionSummary']")).to be_present
-    expect(document.at_css(".pdp__trust").text).to include("Livraison partout au Maroc")
+    expect(document.at_css(".size-sheet")).to be_present
+    expect(document.at_css("#size-sheet-title").text).to include("Quelle taille")
+    expect(document.css(".size-sheet [data-variant-picker-target='sheetSizeButton']").map { |n| n.text.strip }).to include("M", "L")
+    expect(document.at_css(".pdp__buy-form .pdp__trust").text).to include("Livraison partout au Maroc")
+    expect(document.at_css(".pdp__buy-form .pdp__trust").text).to include("Paiement à la livraison")
     expect(document.at_css(".pdp__trust-link").text).to include("Retours")
+    expect(document.at_css(".pdp__secondary")).to be_present
     expect(response.body).not_to match(/Plus que \d+/i)
   end
 

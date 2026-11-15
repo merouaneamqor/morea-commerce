@@ -121,6 +121,10 @@ RSpec.describe "Storefront COD checkout", type: :request do
 
     expect(doc.at_css(".checkout-overlay")).to be_present
     expect(doc.at_css(".checkout-modal[role='dialog']")).to be_present
+    expect(doc.at_css(".checkout-modal__ship-row")).to be_present
+    expect(doc.at_css(".checkout-modal__ship-row").text).to include(I18n.t("checkout.shipping", locale: :en))
+    expect(doc.at_css("[data-checkout-city-target='shipping']").text).to be_present
+    expect(doc.at_css(".checkout-modal__cod").text).to be_present
     expect(doc.at_css(".checkout-page")).to be_nil
     expect(doc.at_css("#checkout_name")).to be_present
     expect(doc.at_css("label[for='checkout_name']")&.text).to include("First name")

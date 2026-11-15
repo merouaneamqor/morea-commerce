@@ -111,20 +111,6 @@
           <% end %>
         </div>
 
-        <p class="pdp__ship-note">
-          <span class="pdp__ship-note-lead"><%= t("product.shipping_at_checkout_lead") %></span><%= t("product.shipping_at_checkout_rest") %>
-        </p>
-
-        <p class="pdp__availability" role="status" data-variant-picker-target="availability"><%= @product.available? ? t("merchandising.available") : t("product.sold_out") %></p>
-
-        <% if @product.short_description.present? %>
-          <p class="pdp__desc"><%= @product.short_description %></p>
-        <% end %>
-
-        <% if @product.material.present? || @product.fit.present? || @product.dimensions.present? %>
-          <a href="#product-details" class="pdp__details-link"><%= t("merchandising.explore_details") %></a>
-        <% end %>
-
         <%= form_with url: add_item_cart_path, method: :post, class: "pdp__buy-form", id: "pdp-add-form",
               data: { action: "submit->variant-picker#validate submit->cart-drawer#optimisticAdd" } do %>
           <%= hidden_field_tag :product_id, @product.id %>
@@ -157,7 +143,7 @@
             <% if @sizes.any? %>
               <div id="pdp-sizes" class="pdp__option" data-variant-picker-target="sizeGroup">
                 <div class="pdp__size-head">
-                  <p class="landing-buy__label pdp__option-label"><%= t("product.size") %></p>
+                  <p class="landing-buy__label pdp__option-label"><%= t("product.select_size") %></p>
                   <% if @size_chart.present? %>
                     <button type="button" class="size-guide-trigger" data-action="size-advisor#openGuide">
                       <%= t("product.size_guide") %>
@@ -190,11 +176,28 @@
 
           <div class="pdp__trust md:hidden">
             <p><%= flat_shipping.presence || t("product.delivery_reassurance") %></p>
+            <p><%= t("product.pay_on_delivery") %></p>
             <% if returns_page %>
               <p><%= link_to t("product.returns_policy"), page_path(returns_page), class: "pdp__trust-link" %></p>
             <% end %>
           </div>
         <% end %>
+
+        <div class="pdp__secondary">
+          <p class="pdp__ship-note">
+            <span class="pdp__ship-note-lead"><%= t("product.shipping_at_checkout_lead") %></span><%= t("product.shipping_at_checkout_rest") %>
+          </p>
+
+          <p class="pdp__availability" role="status" data-variant-picker-target="availability"><%= @product.available? ? t("merchandising.available") : t("product.sold_out") %></p>
+
+          <% if @product.short_description.present? %>
+            <p class="pdp__desc"><%= @product.short_description %></p>
+          <% end %>
+
+          <% if @product.material.present? || @product.fit.present? || @product.dimensions.present? %>
+            <a href="#product-details" class="pdp__details-link"><%= t("merchandising.explore_details") %></a>
+          <% end %>
+        </div>
 
         <% if (wa = current_store.whatsapp_url(t("product.whatsapp_message", product: @product.name, url: product_url(@product)))) %>
           <aside class="pdp-advice">
@@ -246,6 +249,7 @@
 
         <div class="pdp__trust hidden md:block">
           <p><%= flat_shipping.presence || t("product.delivery_reassurance") %></p>
+          <p><%= t("product.pay_on_delivery") %></p>
           <% if returns_page %>
             <p><%= link_to t("product.returns_policy"), page_path(returns_page), class: "pdp__trust-link" %></p>
           <% end %>
@@ -286,13 +290,17 @@
           <path d="M9 8a3 3 0 0 1 6 0"/>
         </svg>
         <span data-variant-picker-target="orderLabel">
-          <%= @product.available? ? (require_size ? t("product.choose_size") : t("product.order_with_price", price: initial_price)) : t("product.sold_out") %>
+          <%= @product.available? ? t("product.order_with_price", price: initial_price) : t("product.sold_out") %>
         </span>
       </span>
       <span class="pdp-order-btn__sub"><%= t("product.pay_on_delivery_detail") %></span>
     </button>
   </div>
 </div>
+
+<% if require_size %>
+  <%= render "products/size_sheet", sizes: @sizes, size_chart: @size_chart %>
+<% end %>
 
 <% if @size_chart.present? %>
   <%= render "products/size_advisor", chart: @size_chart %>

@@ -239,6 +239,23 @@ RSpec.describe "Meta Ads connection", type: :request do
     expect(query["config_id"]).to eq("synthetic-config-id")
   end
 
+  it "shows the full MCP tool count without storing the full list in the session cookie" do
+    connect!
+    tool_names = (1..50).map { |number| "ads_get_campaign_delivery_and_attribution_diagnostics_#{number}_sample" }
+    result = MetaAds::McpProbe::Result.new(ready: true, tool_count: 108, tool_names: tool_names, missing_scopes: [])
+    allow(MetaAds::McpProbe).to receive(:new).and_return(instance_double(MetaAds::McpProbe, call: result))
+
+    post "/admin/meta-ads/mcp_probe"
+
+    expect(response).to have_http_status(:see_other)
+    expect(flash[:meta_mcp_probe]).to include(tool_count: 108, tool_names: tool_names.first(8))
+
+    follow_redirect!
+    summary = Nokogiri::HTML(response.body).at_css("[data-meta-mcp-probe]").text
+    expect(summary).to include("108", tool_names.first, tool_names.fetch(7))
+    expect(summary).not_to include(tool_names.fetch(8))
+  end
+
   it "never lets one store read, select or sync another store's accounts" do
     other_connection = MetaAds::Connection.create!(store: other_store, access_token: "synthetic-other-token")
     foreign = other_store.meta_ads_ad_accounts.create!(connection: other_connection, meta_ad_account_id: "act_77", name: "Foreign", currency: "EUR", timezone_name: "UTC", account_status: 1)

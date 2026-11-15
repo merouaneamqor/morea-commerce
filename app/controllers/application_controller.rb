@@ -1,6 +1,4 @@
 class ApplicationController < ActionController::Base
-  include StorefrontVisitTracking
-
   LOCALE_COOKIE = :morea_locale
   # Default signed-in lifetime. "Remember me" stretches this on every cookie rewrite.
   SESSION_TTL = 30.days
@@ -12,6 +10,8 @@ class ApplicationController < ActionController::Base
   before_action :configure_session_cookie
   before_action :set_current_store
   before_action :set_locale
+  # After set_current_store: capture needs Current.store before writing session attribution.
+  include StorefrontVisitTracking
 
   helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :admin_entry_path, :super_admin?, :impersonating?, :store_billing_past_due?
 

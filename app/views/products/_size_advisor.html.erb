@@ -1,0 +1,96 @@
+<%# Find-my-size drawer. Controller lives on the PDP wrapper so the trigger can open it. %>
+<div class="size-advisor" data-size-advisor-target="shell" aria-hidden="true">
+  <div class="size-advisor__scrim" data-size-advisor-target="scrim" data-action="click->size-advisor#backdrop"></div>
+  <div class="size-advisor__panel" data-size-advisor-target="panel" role="dialog" aria-modal="true" aria-labelledby="size-advisor-title">
+    <header class="size-advisor__head">
+      <div>
+        <p class="size-advisor__eyebrow"><%= t("size_advisor.eyebrow") %></p>
+        <h2 id="size-advisor-title" class="size-advisor__title"><%= t("size_advisor.title") %></h2>
+      </div>
+      <button type="button" class="size-advisor__close" data-action="size-advisor#close" aria-label="<%= t("size_advisor.close") %>">×</button>
+    </header>
+
+    <p class="size-advisor__progress" data-size-advisor-target="progress"></p>
+    <p class="size-advisor__error" data-size-advisor-target="error" hidden></p>
+
+    <div class="size-advisor__body">
+      <section class="size-advisor__step" data-size-advisor-target="step" data-step="measures">
+        <p class="size-advisor__lead"><%= t("size_advisor.measures_lead") %></p>
+        <div class="size-advisor__fields">
+          <label class="size-advisor__field">
+            <span class="size-advisor__label">
+              <%= t("size_advisor.height") %>
+              <button type="button" class="size-advisor__unit" data-size-advisor-target="heightUnit" data-action="size-advisor#toggleHeightUnit">cm</button>
+            </span>
+            <input type="text" inputmode="decimal" class="size-advisor__input" data-size-advisor-target="height" autocomplete="off" placeholder="170">
+          </label>
+          <label class="size-advisor__field">
+            <span class="size-advisor__label">
+              <%= t("size_advisor.weight") %>
+              <button type="button" class="size-advisor__unit" data-size-advisor-target="weightUnit" data-action="size-advisor#toggleWeightUnit">kg</button>
+            </span>
+            <input type="number" inputmode="decimal" class="size-advisor__input" data-size-advisor-target="weight" autocomplete="off" placeholder="70" min="35" max="250" step="1">
+          </label>
+        </div>
+        <div class="size-advisor__actions">
+          <button type="button" class="maison-button size-advisor__primary" data-action="size-advisor#next"><%= t("size_advisor.continue") %></button>
+        </div>
+      </section>
+
+      <section class="size-advisor__step" data-size-advisor-target="step" data-step="shape" hidden>
+        <p class="size-advisor__lead"><%= t("size_advisor.shape_lead") %></p>
+        <div class="size-advisor__choices">
+          <% %w[slim average athletic broad].each do |shape| %>
+            <button type="button"
+                    class="size-advisor__choice <%= "is-active" if shape == "average" %>"
+                    data-size-advisor-target="shape"
+                    data-value="<%= shape %>"
+                    data-action="size-advisor#chooseShape"
+                    aria-pressed="<%= shape == "average" %>">
+              <span class="size-advisor__choice-title"><%= t("size_advisor.shapes.#{shape}") %></span>
+              <span class="size-advisor__choice-hint"><%= t("size_advisor.shapes.#{shape}_hint") %></span>
+            </button>
+          <% end %>
+        </div>
+        <div class="size-advisor__actions">
+          <button type="button" class="size-advisor__ghost" data-action="size-advisor#back"><%= t("size_advisor.back") %></button>
+          <button type="button" class="maison-button size-advisor__primary" data-action="size-advisor#next"><%= t("size_advisor.continue") %></button>
+        </div>
+      </section>
+
+      <section class="size-advisor__step" data-size-advisor-target="step" data-step="fit" hidden>
+        <p class="size-advisor__lead"><%= t("size_advisor.fit_lead") %></p>
+        <div class="size-advisor__choices">
+          <% %w[fitted regular relaxed].each do |fit| %>
+            <button type="button"
+                    class="size-advisor__choice <%= "is-active" if fit == "regular" %>"
+                    data-size-advisor-target="fit"
+                    data-value="<%= fit %>"
+                    data-action="size-advisor#chooseFit"
+                    aria-pressed="<%= fit == "regular" %>">
+              <span class="size-advisor__choice-title"><%= t("size_advisor.fits.#{fit}") %></span>
+              <span class="size-advisor__choice-hint"><%= t("size_advisor.fits.#{fit}_hint") %></span>
+            </button>
+          <% end %>
+        </div>
+        <div class="size-advisor__actions">
+          <button type="button" class="size-advisor__ghost" data-action="size-advisor#back"><%= t("size_advisor.back") %></button>
+          <button type="button" class="maison-button size-advisor__primary" data-action="size-advisor#next"><%= t("size_advisor.see_size") %></button>
+        </div>
+      </section>
+
+      <section class="size-advisor__step" data-size-advisor-target="step" data-step="result" hidden>
+        <p class="size-advisor__result-size" data-size-advisor-target="resultSize">—</p>
+        <h3 class="size-advisor__result-title" data-size-advisor-target="resultTitle"></h3>
+        <p class="size-advisor__result-body" data-size-advisor-target="resultBody"></p>
+        <ul class="size-advisor__reasons" data-size-advisor-target="resultReasons"></ul>
+        <div class="size-advisor__chart-wrap" data-size-advisor-target="resultChart"></div>
+        <p class="size-advisor__privacy"><%= t("size_advisor.privacy") %></p>
+        <div class="size-advisor__actions">
+          <button type="button" class="size-advisor__ghost" data-action="size-advisor#back"><%= t("size_advisor.edit_answers") %></button>
+          <button type="button" class="maison-button size-advisor__primary" data-size-advisor-target="selectButton" data-action="size-advisor#selectOnPage"><%= t("size_advisor.select_size") %></button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

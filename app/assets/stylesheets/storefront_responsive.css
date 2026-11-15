@@ -26,7 +26,11 @@ main, .site-footer, .mobile-menu__panel, .cart-drawer__panel {
   white-space: normal;
   overflow-wrap: anywhere;
 }
-.cart-drawer__items { min-height: 0; overscroll-behavior: contain; }
+.cart-drawer__items, .size-advisor__body { min-height: 0; overscroll-behavior: contain; }
+.size-advisor__panel { min-width: 0; }
+.size-advisor__head { gap: 1rem; }
+.size-advisor__close { flex-shrink: 0; }
+.size-advisor__chart { display: block; max-width: 100%; overflow-x: auto; }
 .cart-drawer__head { gap: 1rem; }
 .cart-drawer__close { flex-shrink: 0; }
 .cart-drawer__item .cart-qty { flex-shrink: 0; }
@@ -81,6 +85,8 @@ main, .site-footer, .mobile-menu__panel, .cart-drawer__panel {
   .checkout-input, .checkout-select, .checkout-phone__prefix,
   .collection-toolbar select, .cart-page input, .pdp input { font-size: 16px; }
   .cart-drawer__item > div > .flex { flex-wrap: wrap; }
+  .size-advisor__panel { max-height: 92dvh; }
+  .size-advisor__input { font-size: 16px; }
   .checkout-sticky__button { letter-spacing: .08em; }
   .checkout-sticky__bar > :first-child { max-width: 40%; }
   .checkout-line { display: grid; grid-template-columns: auto minmax(0, 1fr); }

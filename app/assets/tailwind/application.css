@@ -1060,6 +1060,175 @@
     @apply text-ink-faint line-through;
   }
 
+  .size-advisor-trigger {
+    @apply text-[11px] uppercase tracking-[0.18em] text-ink underline underline-offset-4 transition-colors hover:text-ink-soft;
+  }
+
+  .size-advisor {
+    @apply pointer-events-none fixed inset-0 z-[60];
+  }
+
+  .size-advisor.is-open {
+    @apply pointer-events-auto;
+  }
+
+  .size-advisor__scrim {
+    @apply absolute inset-0 bg-ink/40 opacity-0 transition-opacity duration-500;
+  }
+
+  .size-advisor.is-open .size-advisor__scrim {
+    @apply opacity-100;
+  }
+
+  .size-advisor__panel {
+    @apply absolute inset-x-0 bottom-0 flex max-h-[92dvh] w-full flex-col bg-white shadow-2xl md:inset-x-auto md:inset-y-0 md:end-0 md:max-h-none md:max-w-[26rem];
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.45s;
+  }
+
+  @media (min-width: 768px) {
+    .size-advisor__panel {
+      transform: translateX(100%);
+    }
+
+    [dir="rtl"] .size-advisor__panel {
+      transform: translateX(-100%);
+    }
+  }
+
+  .size-advisor.is-open .size-advisor__panel {
+    transform: none;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .size-advisor__head {
+    @apply flex items-start justify-between gap-4 border-b border-line px-6 py-5;
+    padding-top: max(1.25rem, env(safe-area-inset-top));
+  }
+
+  .size-advisor__eyebrow {
+    @apply text-[10px] uppercase tracking-[0.28em] text-ink-soft;
+  }
+
+  .size-advisor__title {
+    @apply mt-2 font-display text-2xl text-ink;
+  }
+
+  .size-advisor__close {
+    @apply inline-flex h-9 w-9 shrink-0 items-center justify-center text-2xl leading-none text-ink-soft hover:text-ink;
+  }
+
+  .size-advisor__progress {
+    @apply px-6 pt-4 text-[10px] uppercase tracking-[0.22em] text-ink-faint;
+  }
+
+  .size-advisor__error {
+    @apply mx-6 mt-3 border border-line bg-stone-floor px-3 py-2 text-sm text-ink;
+  }
+
+  .size-advisor__body {
+    @apply flex-1 overflow-y-auto px-6 py-5;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+
+  .size-advisor__lead {
+    @apply max-w-sm text-sm leading-7 text-ink-soft;
+  }
+
+  .size-advisor__fields {
+    @apply mt-6 grid gap-4;
+  }
+
+  .size-advisor__field {
+    @apply block;
+  }
+
+  .size-advisor__label {
+    @apply mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.22em] text-ink-soft;
+  }
+
+  .size-advisor__unit {
+    @apply cursor-pointer text-ink underline underline-offset-4;
+  }
+
+  .size-advisor__input {
+    @apply w-full border border-line bg-white px-4 py-3 text-base text-ink outline-none focus:border-ink;
+  }
+
+  .size-advisor__choices {
+    @apply mt-6 grid gap-3;
+  }
+
+  .size-advisor__choice {
+    @apply border border-line bg-white px-4 py-4 text-start transition-colors hover:border-ink;
+  }
+
+  .size-advisor__choice.is-active {
+    @apply border-ink bg-stone-floor;
+  }
+
+  .size-advisor__choice-title {
+    @apply block text-sm text-ink;
+  }
+
+  .size-advisor__choice-hint {
+    @apply mt-1 block text-xs leading-5 text-ink-soft;
+  }
+
+  .size-advisor__actions {
+    @apply mt-8 flex flex-wrap items-center gap-3;
+  }
+
+  .size-advisor__primary {
+    @apply flex-1 cursor-pointer;
+  }
+
+  .size-advisor__ghost {
+    @apply cursor-pointer text-[11px] uppercase tracking-[0.18em] text-ink-soft underline underline-offset-4 hover:text-ink;
+  }
+
+  .size-advisor__result-size {
+    @apply font-display text-5xl text-ink;
+  }
+
+  .size-advisor__result-title {
+    @apply mt-3 font-display text-xl text-ink;
+  }
+
+  .size-advisor__result-body {
+    @apply mt-2 text-sm leading-7 text-ink-soft;
+  }
+
+  .size-advisor__reasons {
+    @apply mt-5 space-y-2 border-t border-line pt-5 text-sm text-ink;
+  }
+
+  .size-advisor__chart-wrap {
+    @apply mt-6 overflow-x-auto;
+  }
+
+  .size-advisor__chart {
+    @apply w-full min-w-[18rem] border-collapse text-left text-xs text-ink;
+  }
+
+  .size-advisor__chart th {
+    @apply border-b border-line pb-2 text-[10px] uppercase tracking-[0.18em] text-ink-soft;
+  }
+
+  .size-advisor__chart td {
+    @apply border-b border-line py-2 tabular-nums;
+  }
+
+  .size-advisor__chart-row.is-active td {
+    @apply bg-stone-floor font-medium;
+  }
+
+  .size-advisor__privacy {
+    @apply mt-6 text-xs leading-5 text-ink-faint;
+  }
+
   .landing-swatch.is-unavailable .landing-swatch__dot {
     @apply opacity-30;
   }

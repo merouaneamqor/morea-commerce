@@ -63,15 +63,28 @@ module Admin
     end
 
     def product_params
-      params.require(:product).permit(
+      permitted = params.require(:product).permit(
         :slug, :status, :price_dh, :compare_at_dh, :cost_dh, :currency,
         :sku, :stock, :track_inventory, :featured, :position,
         collection_ids: [],
+        size_chart: [
+          :profile, :cut, :garment,
+          { rows: [ :size, :chest, :waist, :hips, :length ] }
+        ],
         translations_attributes: [
           :id, :locale, :name, :short_description, :story, :material, :fit, :movement,
           :dimensions, :origin, :care, :seo_title, :seo_description
         ]
       )
+      merge_size_chart!(permitted)
+      permitted
+    end
+
+    # Nested row hashes arrive as ActionController::Parameters; stringify for jsonb.
+    def merge_size_chart!(permitted)
+      return unless permitted.key?(:size_chart)
+
+      permitted[:size_chart] = Storefront::SizeChart.normalize(permitted[:size_chart])
     end
 
     # Remove ticked images, attach uploads, then save the dragged order (new uploads go last)

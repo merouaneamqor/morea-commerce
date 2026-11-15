@@ -8,7 +8,26 @@
 <% end %>
 <%= pixel_event_tag "ViewContent", product_pixel_payload(@product) %>
 
-<div data-controller="variant-gallery variant-picker"
+<% size_advisor_labels = @size_chart.present? ? {
+  "step_of" => t("size_advisor.step_of"),
+  "height_invalid" => t("size_advisor.height_invalid"),
+  "weight_invalid" => t("size_advisor.weight_invalid"),
+  "best_title" => t("size_advisor.best_title"),
+  "between_title" => t("size_advisor.between_title"),
+  "none_title" => t("size_advisor.none_title"),
+  "none_body" => t("size_advisor.none_body"),
+  "result_body" => t("size_advisor.result_body"),
+  "size" => t("product.size"),
+  "measure_chest" => t("size_advisor.measure.chest"),
+  "measure_waist" => t("size_advisor.measure.waist"),
+  "measure_hips" => t("size_advisor.measure.hips"),
+  "measure_length" => t("size_advisor.measure.length"),
+  "note_match" => t("size_advisor.note.match"),
+  "note_snug" => t("size_advisor.note.snug"),
+  "note_easy" => t("size_advisor.note.easy"),
+  "note_roomy" => t("size_advisor.note.roomy")
+} : nil %>
+<div data-controller="variant-gallery variant-picker<%= " size-advisor" if @size_chart.present? %>"
      data-action="variant-picker:change->variant-gallery#show turbo:before-cache@document->variant-gallery#restoreProductGallery"
      data-variant-gallery-product-images-value="<%= @product_image_urls.to_json %>"
      data-variant-picker-variants-value="<%= @variant_payload.to_json %>"
@@ -16,7 +35,11 @@
      data-variant-picker-available-label-value="<%= t("merchandising.available") %>"
      data-variant-picker-unavailable-label-value="<%= t("product.sold_out") %>"
      data-variant-picker-order-label-value="<%= t("product.order_now") %>"
-     data-variant-picker-compare-at-value="<%= @product.compare_at_cents.to_i %>">
+     data-variant-picker-compare-at-value="<%= @product.compare_at_cents.to_i %>"
+     <% if @size_chart.present? %>
+       data-size-advisor-chart-value="<%= @size_chart.to_json %>"
+       data-size-advisor-labels-value="<%= size_advisor_labels.to_json %>"
+     <% end %>>
 <article class="pdp pdp-mobile-pad">
   <nav class="pdp__crumbs" aria-label="<%= t("merchandising.breadcrumb") %>">
     <%= link_to t("nav.home"), localized_root_path %>
@@ -99,7 +122,14 @@
 
             <% if @sizes.any? %>
               <div>
-                <p class="landing-buy__label"><%= t("product.size") %></p>
+                <div class="flex flex-wrap items-baseline justify-between gap-3">
+                  <p class="landing-buy__label"><%= t("product.size") %></p>
+                  <% if @size_chart.present? %>
+                    <button type="button" class="size-advisor-trigger" data-action="size-advisor#open">
+                      <%= t("size_advisor.find_my_size") %>
+                    </button>
+                  <% end %>
+                </div>
                 <div class="mt-4 flex flex-wrap gap-2">
                   <% @sizes.each do |size| %>
                     <button type="button"
@@ -201,4 +231,8 @@
     </button>
   </div>
 </div>
+
+<% if @size_chart.present? %>
+  <%= render "products/size_advisor", chart: @size_chart %>
+<% end %>
 </div>

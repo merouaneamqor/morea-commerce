@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_14_010000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_010000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -1137,6 +1137,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_14_010000) do
     t.bigint "store_connection_id"
     t.string "external_id"
     t.datetime "external_synced_at"
+    t.jsonb "size_chart", default: {}, null: false
     t.index ["featured"], name: "index_products_on_featured"
     t.index ["status"], name: "index_products_on_status"
     t.index ["store_connection_id", "external_id"], name: "index_products_on_connection_and_external_id", unique: true, where: "(external_id IS NOT NULL)"

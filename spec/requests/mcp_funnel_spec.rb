@@ -117,6 +117,7 @@ RSpec.describe "Merchant MCP funnel tools", type: :request do
       as: :json
     body = response.parsed_body
     text = body.dig("result", "content", 0, "text").to_s
-    expect(body.dig("result", "isError") || text).to match(/366|error/i)
+    expect(body.dig("result", "isError")).to eq(true)
+    expect(text).to match(/366/)
   end
 end

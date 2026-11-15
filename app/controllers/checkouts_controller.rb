@@ -16,7 +16,14 @@ class CheckoutsController < ApplicationController
         district: params[:district],
         address: params[:address],
         discount_code: params[:discount_code]
-      ).merge(cart: @cart, store: current_store)
+      ).merge(
+        cart: @cart,
+        store: current_store,
+        # Pre-check privacy/terms and age on first paint. Create still validates
+        # the submitted values, so an unchecked box blocks the order.
+        privacy_accepted: true,
+        age_confirmed: true
+      )
     )
   end
 

@@ -22,7 +22,7 @@ module Admin
       @mcp_ready = MetaAds::McpCapability.ready?(@connection)
       @mcp_missing_scopes = MetaAds::McpCapability.missing_scopes(@connection)
       @mcp_sync = MetaAds::McpCapability.sync_via_mcp?
-      @mcp_probe = flash[:meta_mcp_probe]
+      @mcp_probe = flash[:meta_mcp_probe]&.with_indifferent_access
     end
 
     # Calls Meta's hosted Ads MCP with the store token (tools/list + optional sample campaigns).

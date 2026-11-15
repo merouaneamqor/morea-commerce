@@ -26,8 +26,9 @@ ActiveRecord::Base.transaction do
       # Size stays unset for checkout; SSR still previews the first in-stock variant's price/photos.
       raise "Checkout variant must stay unset until a size is chosen" unless doc.at_css("input[name='product_variant_id']")["value"].blank?
       raise "Size pills missing" unless doc.css("[data-variant-picker-target='sizeButton']").size >= 2
-      prices = doc.css("[data-variant-picker-target='price']").map(&:text)
-      raise "Variant prices inconsistent" unless prices.size == 2 && prices.all? { |price| price == "120 MAD" }
+      # One offer price under the photo (sticky no longer duplicates the price target).
+      prices = doc.css("[data-variant-picker-target='price']").map { |node| node.text.strip }
+      raise "Variant prices inconsistent" unless prices.size == 1 && prices.first == "120 MAD"
       raise "Story not visible" unless doc.at_css("details[open]")&.text&.include?("A studio silhouette.")
       raise "Origin not shown" unless doc.at_css("#product-details").text.include?("Morocco")
       root = doc.at_css("[data-controller~='variant-picker']")

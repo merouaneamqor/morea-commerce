@@ -2,14 +2,37 @@
 
 module Storefront
   # Merchant-facing totals: funnel reach, drop-offs, and visit sources for a date range.
+  # Aggregates in SQL with hard caps so admin and MCP never dump raw visit/event rows.
   class FunnelSummary
     Stage = Data.define(:key, :visits, :share_of_landed, :drop_from_previous)
     Source = Data.define(:label, :visits, :checkouts, :orders, :conversion_rate)
     Landing = Data.define(:path, :visits, :orders)
 
-    def initialize(store:, range:)
+    DEFAULT_SOURCES_LIMIT = 25
+    DEFAULT_LANDINGS_LIMIT = 10
+    MAX_SOURCES_LIMIT = 50
+    MAX_LANDINGS_LIMIT = 50
+
+    # Mirrors StorefrontVisit#source_label without loading rows.
+    SOURCE_LABEL_SQL = <<~SQL.squish.freeze
+      CASE
+        WHEN NULLIF(meta_campaign_id, '') IS NOT NULL THEN 'meta'
+        WHEN LOWER(utm_source) IN ('facebook', 'ig', 'instagram', 'meta') THEN 'meta'
+        WHEN NULLIF(ttclid, '') IS NOT NULL THEN 'tiktok'
+        WHEN LOWER(utm_source) IN ('tiktok', 'tt') THEN 'tiktok'
+        WHEN NULLIF(gclid, '') IS NOT NULL THEN 'google'
+        WHEN LOWER(utm_source) IN ('google', 'adwords') THEN 'google'
+        WHEN NULLIF(utm_source, '') IS NOT NULL THEN utm_source
+        WHEN NULLIF(referrer, '') IS NOT NULL THEN 'referral'
+        ELSE 'direct'
+      END
+    SQL
+
+    def initialize(store:, range:, sources_limit: nil, landings_limit: nil)
       @store = store
       @range = range.respond_to?(:time_range) ? range.time_range : range
+      @sources_limit = clamp_limit(sources_limit, DEFAULT_SOURCES_LIMIT, MAX_SOURCES_LIMIT)
+      @landings_limit = clamp_limit(landings_limit, DEFAULT_LANDINGS_LIMIT, MAX_LANDINGS_LIMIT)
     end
 
     def visits
@@ -42,30 +65,64 @@ module Storefront
     end
 
     def sources
-      rows = visits.limit(5_000).to_a
-      grouped = rows.group_by(&:source_label)
-      grouped.map do |label, list|
-        checkouts = list.count { |v| StorefrontVisit::STAGE_RANK[v.funnel_stage] >= StorefrontVisit::STAGE_RANK["checkout_started"] }
-        orders = list.count { |v| v.funnel_stage == "ordered" }
-        rate = list.size.positive? ? (orders.to_f / list.size * 100).round(1) : 0.0
-        Source.new(label: label, visits: list.size, checkouts: checkouts, orders: orders, conversion_rate: rate)
-      end.sort_by { |row| [ -row.orders, -row.visits, row.label ] }
+      label = Arel.sql(SOURCE_LABEL_SQL)
+      checkout_stages = %w[checkout_started ordered]
+      rows = visits
+        .group(label)
+        .order(Arel.sql("COUNT(*) DESC"), label)
+        .limit(@sources_limit)
+        .pluck(
+          label,
+          Arel.sql("COUNT(*)"),
+          Arel.sql("SUM(CASE WHEN funnel_stage IN (#{quoted_list(checkout_stages)}) THEN 1 ELSE 0 END)"),
+          Arel.sql("SUM(CASE WHEN funnel_stage = 'ordered' THEN 1 ELSE 0 END)")
+        )
+
+      rows.map do |name, visit_count, checkouts, orders|
+        visit_count = visit_count.to_i
+        orders = orders.to_i
+        rate = visit_count.positive? ? (orders.to_f / visit_count * 100).round(1) : 0.0
+        Source.new(
+          label: name.to_s,
+          visits: visit_count,
+          checkouts: checkouts.to_i,
+          orders: orders,
+          conversion_rate: rate
+        )
+      end
     end
 
-    def top_landings(limit: 10)
+    def top_landings(limit: nil)
+      cap = clamp_limit(limit, @landings_limit, MAX_LANDINGS_LIMIT)
       visits.where.not(landing_path: [ nil, "" ])
         .group(:landing_path)
-        .order(Arel.sql("COUNT(*) DESC"))
-        .limit(limit)
-        .count
-        .map do |path, count|
-          orders = visits.where(landing_path: path, funnel_stage: "ordered").count
-          Landing.new(path: path, visits: count, orders: orders)
+        .order(Arel.sql("COUNT(*) DESC"), :landing_path)
+        .limit(cap)
+        .pluck(
+          :landing_path,
+          Arel.sql("COUNT(*)"),
+          Arel.sql("SUM(CASE WHEN funnel_stage = 'ordered' THEN 1 ELSE 0 END)")
+        )
+        .map do |path, count, orders|
+          Landing.new(path: path, visits: count.to_i, orders: orders.to_i)
         end
     end
 
     def attributed_orders
       @store.orders.where(created_at: @range).where.not(meta_campaign_id: nil).count
+    end
+
+    def as_payload
+      {
+        total_visits: total_visits,
+        abandoned_visits: abandoned_visits,
+        attributed_orders: attributed_orders,
+        stages: stages.map { |row| row.to_h },
+        sources: sources.map { |row| row.to_h },
+        landings: top_landings.map { |row| row.to_h },
+        sources_limit: @sources_limit,
+        landings_limit: @landings_limit
+      }
     end
 
     private
@@ -82,6 +139,16 @@ module Storefront
         end
       end
       totals
+    end
+
+    def clamp_limit(value, default, max)
+      n = value.to_i
+      n = default if n <= 0
+      n.clamp(1, max)
+    end
+
+    def quoted_list(values)
+      values.map { |value| ActiveRecord::Base.connection.quote(value) }.join(", ")
     end
   end
 end

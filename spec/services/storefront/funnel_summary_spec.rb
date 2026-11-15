@@ -37,5 +37,16 @@ RSpec.describe Storefront::FunnelSummary do
 
     facebook = summary.sources.find { |row| row.label == "meta" }
     expect(facebook).to have_attributes(visits: 2, checkouts: 1, orders: 0)
+
+    landings = summary.top_landings(limit: 5)
+    expect(landings.map(&:path)).to include("/en/?utm_source=facebook")
+    expect(landings.size).to be <= 5
+  end
+
+  it "aggregates sources in SQL and respects the sources limit" do
+    12.times { |i| visit!(stage: "landed", source: "src#{i}") }
+    summary = described_class.new(store: store, range: range, sources_limit: 5)
+    expect(summary.sources.size).to eq(5)
+    expect(summary.as_payload[:sources_limit]).to eq(5)
   end
 end

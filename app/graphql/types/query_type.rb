@@ -121,6 +121,12 @@ module Types
       argument :since, GraphQL::Types::ISO8601Date, required: false
       argument :until, GraphQL::Types::ISO8601Date, required: false, as: :until_on
     end
+    field :funnel_summary, Funnel::SummaryType, null: false do
+      argument :since, GraphQL::Types::ISO8601Date, required: false
+      argument :until, GraphQL::Types::ISO8601Date, required: false, as: :until_on
+      argument :sources_limit, Integer, required: false
+      argument :landings_limit, Integer, required: false
+    end
 
     def guide
       CatalogGuide.text
@@ -297,6 +303,20 @@ module Types
 
     def inventory_summary(since: nil, until_on: nil)
       inventory { Catalog::Inventory.summary(store, since: since, until_on: until_on) }
+    end
+
+    def funnel_summary(since: nil, until_on: nil, sources_limit: nil, landings_limit: nil)
+      begin
+        Catalog::Funnel.summary(
+          store,
+          since: since,
+          until_on: until_on,
+          sources_limit: sources_limit,
+          landings_limit: landings_limit
+        )
+      rescue Catalog::Funnel::Error, Catalog::Analytics::Error => e
+        raise GraphQL::ExecutionError, e.message
+      end
     end
 
     def media_library(page: 1, per_page: 30, product_slug: nil)

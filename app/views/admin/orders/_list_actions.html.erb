@@ -1,0 +1,49 @@
+<%# Shared row actions for the orders table and phone list.
+    locals: order, confirmation_state, held, compact (optional — icon-only links on the desktop table) %>
+<% compact = local_assigns.fetch(:compact, false) %>
+<% btn_dark = "inline-flex min-h-8 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-[#1c1c1e] px-3.5 text-[13px] font-semibold text-white hover:bg-[#3a3a3c]" %>
+<% btn_light = "inline-flex min-h-8 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-[#e0e0e5] bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3]" %>
+<% field = "min-h-8 w-full rounded-full border border-[#e0e0e5] bg-white px-3 text-[13px] text-[#1c1c1e] focus:border-[#1c1c1e] focus:outline-none sm:w-32" %>
+<% icon_btn = ->(tone) { "grid size-8 shrink-0 place-items-center rounded-full #{tone}" } %>
+
+<div class="<%= compact ? "flex flex-wrap items-center justify-end gap-1.5" : "contents" %>" data-order-actions>
+  <% if confirmation_state == "wrong" && !agent_view? %>
+    <%= form_with url: requeue_admin_confirmation_path(order), class: "flex min-w-0 flex-[1_1_100%] flex-wrap items-center gap-1.5" do |f| %>
+      <%= text_field_tag :phone, order.customer_phone, class: field, "aria-label": t("orders_page.list.corrected_phone") %>
+      <%= f.submit t("orders_page.list.requeue"), class: btn_light %>
+    <% end %>
+    <%= button_to t("orders_page.list.cancel"), transition_admin_order_path(order), method: :patch, params: { to_status: "cancelled", cancel_reason: "Wrong number" }, class: "#{btn_light} !text-[#b4344e]" %>
+  <% elsif confirmation_state == "blocked" && !agent_view? %>
+    <%= button_to t("orders_page.list.unblock"), unblock_admin_confirmation_path(order), class: btn_light %>
+  <% elsif held&.assigned_user_id && order.status == "new" && !agent_view? %>
+    <%= button_to t("orders_page.list.release"), force_release_admin_confirmation_path(order), class: btn_light %>
+  <% end %>
+
+  <%= link_to admin_order_path(order), title: t("orders_page.list.view"), "aria-label": t("orders_page.list.view"), class: (compact ? icon_btn.("bg-[#e8f0fe] text-[#2f6fed] hover:bg-[#d5e4fd]") : "#{btn_light} flex-1") do %>
+    <% if compact %>
+      <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+    <% else %>
+      <%= t("orders_page.list.view") %>
+    <% end %>
+  <% end %>
+
+  <% if !agent_view? && order_editable_in_list?(order) %>
+    <%= link_to edit_admin_order_path(order), title: t("orders_page.list.edit"), "aria-label": t("orders_page.list.edit"), class: (compact ? icon_btn.("bg-[#fff1dc] text-[#c26a00] hover:bg-[#ffe3b8]") : "#{btn_light} flex-1") do %>
+      <% if compact %>
+        <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>
+      <% else %>
+        <%= t("orders_page.list.edit") %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% unless agent_view? %>
+    <%= button_to duplicate_admin_order_path(order), method: :post, title: t("orders_page.list.duplicate"), "aria-label": t("orders_page.list.duplicate"), class: (compact ? "#{icon_btn.("bg-[#ece9fb] text-[#6a4fd8] hover:bg-[#ddd7f7]")} cursor-pointer" : "#{btn_light} flex-1 cursor-pointer") do %>
+      <% if compact %>
+        <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+      <% else %>
+        <%= t("orders_page.list.duplicate") %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

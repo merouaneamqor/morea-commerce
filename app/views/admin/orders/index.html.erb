@@ -14,34 +14,33 @@
 <% card_link = ->(extra = {}) { admin_orders_path(**range_params.to_h.symbolize_keys.merge(extra.to_h.symbolize_keys), anchor: "orders-list") } %>
 <% open_on = ->(name, value) { params[name] == value } %>
 <% card_filtered = params[:confirmation].present? || params[:shipping].present? %>
-<% btn_dark = "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-[#1c1c1e] px-3.5 text-[13px] font-semibold text-white hover:bg-[#3a3a3c]" %>
-<% btn_light = "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-[#e0e0e5] bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3]" %>
-<% field = "h-8 rounded-full border border-[#e0e0e5] bg-white px-3 text-[13px] text-[#1c1c1e] focus:border-[#1c1c1e] focus:outline-none" %>
+<% field = "admin-orders-filter h-10 w-full min-w-0 rounded-full border border-[#e0e0e5] bg-white px-3 text-base text-[#1c1c1e] focus:border-[#1c1c1e] focus:outline-none md:h-8 md:w-auto md:text-[13px]" %>
 <% group_label = "flex items-center gap-3 text-[11px] font-semibold tracking-wider text-[#6e6e73] uppercase" %>
+<% header_btn = "inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold md:min-h-8" %>
 
 <div class="space-y-3" data-orders-page>
   <turbo-frame id="order-modal"></turbo-frame>
-  <header class="flex min-h-[72px] flex-wrap items-center justify-between gap-3 rounded-3xl bg-[#1c1c1e] px-5 py-3 text-white" data-orders-header>
-    <div class="flex items-center gap-3">
+  <header class="flex flex-col gap-3 rounded-3xl bg-[#1c1c1e] px-4 py-3 text-white sm:px-5 md:min-h-[72px] md:flex-row md:flex-wrap md:items-center md:justify-between" data-orders-header>
+    <div class="flex min-w-0 items-center gap-3">
       <span class="grid size-10 shrink-0 place-items-center rounded-2xl bg-white/10"><%= seller_icon(:orders, size: 20) %></span>
-      <div>
+      <div class="min-w-0">
         <h1 class="text-xl leading-tight font-bold"><%= t("orders_page.title") %></h1>
-        <p class="text-[13px] leading-tight text-white/65"><%= t("orders_page.subtitle") %> · <%= current_store.name %></p>
+        <p class="truncate text-[13px] leading-tight text-white/65"><%= t("orders_page.subtitle") %> · <%= current_store.name %></p>
       </div>
     </div>
-    <div class="flex flex-wrap items-center gap-2">
+    <div class="flex min-w-0 flex-wrap items-center gap-2" data-orders-header-actions>
       <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: admin_orders_path, theme: "dark", size: "compact", extra: filters %>
       <% unless agent_view? %>
         <% if @shopify_connections.any? %>
-          <%= button_to t("shopify_sync.button"), shopify_sync_all_admin_orders_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20 disabled:opacity-50", disabled: !Connections::ShopifyOauth.configured? %>
+          <%= button_to t("shopify_sync.button"), shopify_sync_all_admin_orders_path, class: "#{header_btn} cursor-pointer bg-white/10 text-white hover:bg-white/20 disabled:opacity-50", disabled: !Connections::ShopifyOauth.configured? %>
         <% end %>
         <% if Demo::Workspace.demo_store?(current_store) || Orders::ShipmentReview::CARRIERS.any? { |carrier| current_store.public_send("#{carrier}_configured?") } %>
-          <%= link_to t("orders_ship.button"), ship_review_admin_orders_path, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3]" %>
+          <%= link_to t("orders_ship.button"), ship_review_admin_orders_path, class: "#{header_btn} bg-white text-[#1c1c1e] hover:bg-[#efeff3]" %>
         <% end %>
         <% if current_store.sendit_configured? %>
-          <%= button_to "Sendit", sendit_sync_all_admin_orders_path, class: "inline-flex h-8 cursor-pointer items-center rounded-full bg-white/10 px-3.5 text-[13px] font-semibold text-white hover:bg-white/20" %>
+          <%= button_to "Sendit", sendit_sync_all_admin_orders_path, class: "#{header_btn} cursor-pointer bg-white/10 text-white hover:bg-white/20" %>
         <% end %>
-        <%= link_to new_admin_order_path, data: { turbo_frame: "order-modal" }, class: "inline-flex h-8 items-center gap-1.5 rounded-full bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3]" do %>+ <%= t("orders_page.new_order") %><% end %>
+        <%= link_to new_admin_order_path, data: { turbo_frame: "order-modal" }, class: "#{header_btn} bg-white text-[#1c1c1e] hover:bg-[#efeff3]" do %>+ <%= t("orders_page.new_order") %><% end %>
       <% end %>
     </div>
   </header>
@@ -62,7 +61,6 @@
     </section>
   <% end %>
 
-  <%# The figures: every order created in the range, counted once per card (see Orders::Overview) %>
   <%# The figures: every order created in the range, counted once per card (see Orders::Overview). A card opens the list below
       filtered on exactly what it counts; the open card goes back to all the orders. %>
   <section class="space-y-2.5" data-overview>
@@ -90,9 +88,9 @@
     </div>
   </section>
 
-  <section id="orders-list" class="scroll-mt-4 rounded-3xl border border-[#e0e0e5] bg-white p-4" data-orders-list>
+  <section id="orders-list" class="scroll-mt-4 rounded-3xl border border-[#e0e0e5] bg-white p-3 sm:p-4" data-orders-list>
     <div class="flex flex-wrap items-start justify-between gap-2">
-      <div>
+      <div class="min-w-0">
         <h2 class="text-base font-bold text-[#1c1c1e]"><%= t("orders_page.list.title") %></h2>
         <p class="text-xs text-[#6e6e73]" data-list-subtitle><% if params[:confirmation].present? && Admin::OrdersController::CONFIRMATION_FILTERS.include?(params[:confirmation]) %><%= t("orders_page.list.filtered_by", name: t("orders_page.confirmation_options.#{params[:confirmation]}")) %><% elsif params[:shipping].present? && Admin::OrdersController::SHIPPING_FILTERS.include?(params[:shipping]) %><%= t("orders_page.list.filtered_by", name: t("orders_page.shipping_options.#{params[:shipping]}")) %><% else %><%= t("orders_page.list.subtitle") %><% end %></p>
       </div>
@@ -105,12 +103,12 @@
       <%= hidden_field_tag :status, @status if @status.present? %>
       <%= hidden_field_tag :group, params[:group] if params[:group].present? %>
       <%= hidden_field_tag :attention, params[:attention] if params[:attention].present? %>
-      <%= search_field_tag :q, params[:q], placeholder: t("orders_page.filters.search"), class: "#{field} w-full", data: { action: "input->auto-submit#debounce", auto_submit_restore: params[:q].present? } %>
-      <div class="flex flex-wrap items-center gap-2">
+      <%= search_field_tag :q, params[:q], placeholder: t("orders_page.filters.search"), class: "#{field}", data: { action: "input->auto-submit#debounce", auto_submit_restore: params[:q].present? } %>
+      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:flex md:flex-wrap md:items-center" data-orders-filter-row>
         <% unless agent_view? %>
           <%= select_tag :agent_id, options_for_select([ [ t("orders_page.filters.unassigned"), "none" ] ] + @agents.map { |agent| [ agent.name.presence || agent.email, agent.id ] }, params[:agent_id]), include_blank: t("orders_page.filters.all_agents"), class: field, data: { action: "auto-submit#submit" } %>
         <% end %>
-        <%= select_tag :product, options_for_select(@products, params[:product]), include_blank: t("orders_page.filters.all_products"), class: "#{field} max-w-[12rem]", data: { action: "auto-submit#submit" } %>
+        <%= select_tag :product, options_for_select(@products, params[:product]), include_blank: t("orders_page.filters.all_products"), class: "#{field} md:max-w-[12rem]", data: { action: "auto-submit#submit" } %>
         <%= select_tag :connection_id, options_for_select([ [ t("orders_page.filters.manual"), "manual" ] ] + @connections.map { |connection| [ connection.name, connection.id ] }, params[:connection_id]), include_blank: t("orders_page.filters.all_sources"), class: field, data: { action: "auto-submit#submit" } %>
         <% if @companies.any? %>
           <%= select_tag :company, options_for_select(@companies + [ [ t("orders_page.filters.no_company"), "none" ] ], params[:company]), include_blank: t("orders_page.filters.all_companies"), class: field, data: { action: "auto-submit#submit" } %>
@@ -118,88 +116,116 @@
       </div>
     <% end %>
 
-    <div class="mt-3 overflow-x-auto rounded-2xl border border-[#e0e0e5]" data-orders-table-wrap>
-      <table class="w-full text-left text-[13px]" data-orders-table>
-        <thead class="bg-[#f5f5f7] text-[11px] font-semibold tracking-wider text-[#6e6e73] uppercase">
-          <tr>
-            <% %w[id created customer product amount confirmation shipping source delivery city].each do |column| %>
-              <th class="px-3 py-2.5 whitespace-nowrap <%= "text-end" if column == "amount" %>"><%= t("orders_page.columns.#{column}") %></th>
-            <% end %>
-            <th class="px-3 py-2.5 text-end whitespace-nowrap"><%= t("orders_page.columns.actions") %></th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-[#eef0f4]">
-          <% if @orders.empty? %>
-            <tr><td colspan="11" class="px-3 py-8 text-center text-[#6e6e73]"><%= t("orders_page.list.empty") %></td></tr>
-          <% end %>
-          <% @orders.each do |order| %>
-            <% confirmation_state = order_confirmation_state(order) %>
-            <% shipping_state = order_shipping_state(order) %>
-            <% items = order.order_items.to_a %>
-            <% first_item = items.first %>
-            <% held = order.order_confirmation %>
-            <tr class="align-middle hover:bg-[#fafafc]" data-order-row="<%= order.number %>">
-              <td class="px-3 py-2.5 font-semibold whitespace-nowrap">
-                <%= link_to "##{order.number}", admin_order_path(order), class: "text-[#1c1c1e] hover:underline" %>
-                <%= render "import_contact_alert", order: order, compact: true %>
-                <% if order.tag_list.any? %><span class="ms-1 text-[11px] font-normal text-[#8e8e93]"><%= order.tag_list.first(2).join(", ") %></span><% end %>
-              </td>
-              <td class="px-3 py-2.5 whitespace-nowrap text-[#4b4b50]">
-                <p><%= l(order.created_at.in_time_zone(DateRange::ZONE), format: "%d/%m/%Y") %></p>
-                <p class="text-[11px] text-[#8e8e93]"><%= l(order.created_at.in_time_zone(DateRange::ZONE), format: "%H:%M") %></p>
-              </td>
-              <td class="px-3 py-2.5">
-                <p class="font-medium whitespace-nowrap text-[#1c1c1e]" dir="auto"><%= order.customer_name %></p>
-                <p class="text-[11px] text-[#6e6e73]" dir="ltr"><%= order.customer_phone %></p>
-              </td>
-              <td class="max-w-[14rem] px-3 py-2.5" data-product>
-                <% if first_item %>
-                  <p class="truncate font-medium text-[#1c1c1e]" dir="auto"><%= first_item.product_name %><% if items.size > 1 %> <span class="text-[11px] font-semibold text-[#6e6e73]"><%= t("orders_page.list.more_items", count: items.size - 1) %></span><% end %></p>
-                  <% if first_item.variant_name.present? %><p class="truncate text-[11px] text-[#8e8e93]" dir="auto"><%= first_item.variant_name %></p><% end %>
-                <% else %>—<% end %>
-              </td>
-              <td class="px-3 py-2.5 text-end font-semibold whitespace-nowrap text-[#1c1c1e] tabular-nums" data-amount="<%= order.total_cents %>"><%= order.total_display %></td>
-              <td class="px-3 py-2.5" data-confirmation="<%= confirmation_state %>"><%= order_state_badge(:confirmation, confirmation_state) %></td>
-              <td class="px-3 py-2.5" data-shipping="<%= shipping_state %>"><%= order_state_badge(:shipping, shipping_state) %></td>
-              <td class="px-3 py-2.5 whitespace-nowrap text-[#4b4b50]" data-source><%= order.store_connection&.name || t("orders_page.filters.manual") %></td>
-              <td class="px-3 py-2.5 whitespace-nowrap" data-delivery><%= sendit_badge(order) || tag.span("—", class: "text-[#8e8e93]") %></td>
-              <td class="px-3 py-2.5 text-[#4b4b50]" dir="auto"><%= order.customer_city %></td>
-              <td class="px-3 py-2.5" data-order-actions>
-                <div class="flex items-center justify-end gap-1.5">
-                  <% if confirmation_state == "wrong" && !agent_view? %>
-                    <%= form_with url: requeue_admin_confirmation_path(order), class: "flex items-center gap-1.5" do |f| %>
-                      <%= text_field_tag :phone, order.customer_phone, class: "#{field} !w-32", "aria-label": t("orders_page.list.corrected_phone") %>
-                      <%= f.submit t("orders_page.list.requeue"), class: btn_light %>
-                    <% end %>
-                    <%= button_to t("orders_page.list.cancel"), transition_admin_order_path(order), method: :patch, params: { to_status: "cancelled", cancel_reason: "Wrong number" }, class: "#{btn_light} !text-[#b4344e]" %>
-                  <% elsif confirmation_state == "blocked" && !agent_view? %>
-                    <%= button_to t("orders_page.list.unblock"), unblock_admin_confirmation_path(order), class: btn_light %>
-                  <% elsif held&.assigned_user_id && order.status == "new" && !agent_view? %>
-                    <%= button_to t("orders_page.list.release"), force_release_admin_confirmation_path(order), class: btn_light %>
-                  <% end %>
-                  <%= link_to admin_order_path(order), title: t("orders_page.list.view"), "aria-label": t("orders_page.list.view"), class: "grid size-8 place-items-center rounded-full bg-[#e8f0fe] text-[#2f6fed] hover:bg-[#d5e4fd]" do %>
-                    <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
-                  <% end %>
-                  <% if !agent_view? && order_editable_in_list?(order) %>
-                    <%= link_to edit_admin_order_path(order), title: t("orders_page.list.edit"), "aria-label": t("orders_page.list.edit"), class: "grid size-8 place-items-center rounded-full bg-[#fff1dc] text-[#c26a00] hover:bg-[#ffe3b8]" do %>
-                      <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>
-                    <% end %>
-                  <% end %>
-                  <% unless agent_view? %>
-                    <%= button_to duplicate_admin_order_path(order), method: :post, title: t("orders_page.list.duplicate"), "aria-label": t("orders_page.list.duplicate"), class: "grid size-8 cursor-pointer place-items-center rounded-full bg-[#ece9fb] text-[#6a4fd8] hover:bg-[#ddd7f7]" do %>
-                      <svg viewBox="0 0 24 24" class="size-4 fill-none stroke-current [stroke-width:1.8] [stroke-linecap:round] [stroke-linejoin:round]" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
-                    <% end %>
-                  <% end %>
+    <% if @orders.empty? %>
+      <p class="mt-3 rounded-2xl border border-[#e0e0e5] px-3 py-8 text-center text-[#6e6e73]"><%= t("orders_page.list.empty") %></p>
+    <% else %>
+      <ul class="admin-mobile-list mt-3 overflow-hidden rounded-2xl border border-[#e0e0e5] md:hidden" data-orders-mobile-list>
+        <% @orders.each do |order| %>
+          <% confirmation_state = order_confirmation_state(order) %>
+          <% shipping_state = order_shipping_state(order) %>
+          <% items = order.order_items.to_a %>
+          <% first_item = items.first %>
+          <% held = order.order_confirmation %>
+          <li class="admin-mobile-list__card" data-order-mobile-row="<%= order.number %>">
+            <div class="admin-mobile-list__top">
+              <div class="min-w-0">
+                <div class="admin-mobile-list__title">
+                  <%= link_to "##{order.number}", admin_order_path(order), class: "text-[#1c1c1e] hover:underline" %>
+                  <%= render "import_contact_alert", order: order, compact: true %>
                 </div>
-              </td>
+                <p class="admin-mobile-list__meta">
+                  <%= l(order.created_at.in_time_zone(DateRange::ZONE), format: "%d/%m/%Y %H:%M") %>
+                  · <%= order.store_connection&.name || t("orders_page.filters.manual") %>
+                </p>
+              </div>
+              <p class="admin-mobile-list__amount shrink-0" dir="ltr" data-amount="<%= order.total_cents %>"><%= order.total_display %></p>
+            </div>
+
+            <p class="admin-mobile-list__name" dir="auto"><%= order.customer_name %></p>
+            <p class="admin-mobile-list__meta">
+              <span dir="ltr"><%= order.customer_phone %></span>
+              <% if order.customer_city.present? %><span dir="auto"> · <%= order.customer_city %></span><% end %>
+            </p>
+
+            <% if first_item %>
+              <p class="admin-mobile-list__meta mt-1" dir="auto" data-product>
+                <%= first_item.product_name %>
+                <% if first_item.variant_name.present? %> · <%= first_item.variant_name %><% end %>
+                <% if items.size > 1 %> · <%= t("orders_page.list.more_items", count: items.size - 1) %><% end %>
+              </p>
+            <% end %>
+
+            <div class="admin-mobile-list__badges">
+              <span data-confirmation="<%= confirmation_state %>"><%= order_state_badge(:confirmation, confirmation_state) %></span>
+              <span data-shipping="<%= shipping_state %>"><%= order_state_badge(:shipping, shipping_state) %></span>
+              <% badge = sendit_badge(order) %>
+              <% if badge %><span data-delivery><%= badge %></span><% end %>
+              <% if order.tag_list.any? %><span class="admin-badge admin-badge--neutral"><%= order.tag_list.first(2).join(", ") %></span><% end %>
+            </div>
+
+            <div class="admin-mobile-list__actions">
+              <%= render "list_actions", order: order, confirmation_state: confirmation_state, held: held, compact: false %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+
+      <div class="mt-3 hidden overflow-x-auto rounded-2xl border border-[#e0e0e5] md:block" data-orders-table-wrap>
+        <table class="w-full text-left text-[13px]" data-orders-table>
+          <thead class="bg-[#f5f5f7] text-[11px] font-semibold tracking-wider text-[#6e6e73] uppercase">
+            <tr>
+              <% %w[id created customer product amount confirmation shipping source delivery city].each do |column| %>
+                <th class="px-3 py-2.5 whitespace-nowrap <%= "text-end" if column == "amount" %>"><%= t("orders_page.columns.#{column}") %></th>
+              <% end %>
+              <th class="px-3 py-2.5 text-end whitespace-nowrap"><%= t("orders_page.columns.actions") %></th>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody class="divide-y divide-[#eef0f4]">
+            <% @orders.each do |order| %>
+              <% confirmation_state = order_confirmation_state(order) %>
+              <% shipping_state = order_shipping_state(order) %>
+              <% items = order.order_items.to_a %>
+              <% first_item = items.first %>
+              <% held = order.order_confirmation %>
+              <tr class="align-middle hover:bg-[#fafafc]" data-order-row="<%= order.number %>">
+                <td class="px-3 py-2.5 font-semibold whitespace-nowrap">
+                  <%= link_to "##{order.number}", admin_order_path(order), class: "text-[#1c1c1e] hover:underline" %>
+                  <%= render "import_contact_alert", order: order, compact: true %>
+                  <% if order.tag_list.any? %><span class="ms-1 text-[11px] font-normal text-[#8e8e93]"><%= order.tag_list.first(2).join(", ") %></span><% end %>
+                </td>
+                <td class="px-3 py-2.5 whitespace-nowrap text-[#4b4b50]">
+                  <p><%= l(order.created_at.in_time_zone(DateRange::ZONE), format: "%d/%m/%Y") %></p>
+                  <p class="text-[11px] text-[#8e8e93]"><%= l(order.created_at.in_time_zone(DateRange::ZONE), format: "%H:%M") %></p>
+                </td>
+                <td class="px-3 py-2.5">
+                  <p class="font-medium whitespace-nowrap text-[#1c1c1e]" dir="auto"><%= order.customer_name %></p>
+                  <p class="text-[11px] text-[#6e6e73]" dir="ltr"><%= order.customer_phone %></p>
+                </td>
+                <td class="max-w-[14rem] px-3 py-2.5" data-product>
+                  <% if first_item %>
+                    <p class="truncate font-medium text-[#1c1c1e]" dir="auto"><%= first_item.product_name %><% if items.size > 1 %> <span class="text-[11px] font-semibold text-[#6e6e73]"><%= t("orders_page.list.more_items", count: items.size - 1) %></span><% end %></p>
+                    <% if first_item.variant_name.present? %><p class="truncate text-[11px] text-[#8e8e93]" dir="auto"><%= first_item.variant_name %></p><% end %>
+                  <% else %>—<% end %>
+                </td>
+                <td class="px-3 py-2.5 text-end font-semibold whitespace-nowrap text-[#1c1c1e] tabular-nums" data-amount="<%= order.total_cents %>"><%= order.total_display %></td>
+                <td class="px-3 py-2.5" data-confirmation="<%= confirmation_state %>"><%= order_state_badge(:confirmation, confirmation_state) %></td>
+                <td class="px-3 py-2.5" data-shipping="<%= shipping_state %>"><%= order_state_badge(:shipping, shipping_state) %></td>
+                <td class="px-3 py-2.5 whitespace-nowrap text-[#4b4b50]" data-source><%= order.store_connection&.name || t("orders_page.filters.manual") %></td>
+                <td class="px-3 py-2.5 whitespace-nowrap" data-delivery><%= sendit_badge(order) || tag.span("—", class: "text-[#8e8e93]") %></td>
+                <td class="px-3 py-2.5 text-[#4b4b50]" dir="auto"><%= order.customer_city %></td>
+                <td class="px-3 py-2.5">
+                  <%= render "list_actions", order: order, confirmation_state: confirmation_state, held: held, compact: true %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
 
     <% if @page > 1 || @has_next %>
-      <nav class="mt-3 flex items-center justify-between text-[13px]">
+      <nav class="mt-3 flex items-center justify-between gap-2 text-[13px]">
+        <% btn_light = "inline-flex min-h-10 items-center justify-center rounded-full border border-[#e0e0e5] bg-white px-3.5 text-[13px] font-semibold text-[#1c1c1e] hover:bg-[#efeff3] md:min-h-8" %>
         <% if @page > 1 %><%= link_to t("orders_page.list.previous"), admin_orders_path(request.query_parameters.merge("page" => @page - 1)), class: btn_light %><% else %><span></span><% end %>
         <span class="text-[#6e6e73]"><%= @page %></span>
         <% if @has_next %><%= link_to t("orders_page.list.next"), admin_orders_path(request.query_parameters.merge("page" => @page + 1)), class: btn_light %><% else %><span></span><% end %>

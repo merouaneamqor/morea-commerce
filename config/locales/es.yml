@@ -91,6 +91,7 @@ es:
     related: También te gustará
     color: Color
     size: Talla
+    select_size: Elegir talla
     size_guide: Guía de tallas
     add_to_bag: Añadir al carrito
     order_now: Pedir

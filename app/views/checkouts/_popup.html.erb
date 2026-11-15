@@ -232,18 +232,21 @@
           <span class="checkout-modal__nudge-text"><%= t("checkout.urgency_nudge") %></span>
           <span class="checkout-modal__timer" data-checkout-modal-target="timer" aria-live="polite" hidden></span>
         </div>
+        <div class="checkout-modal__ship-row">
+          <span><%= t("checkout.shipping") %></span>
+          <span data-checkout-city-target="shipping">
+            <% if @checkout.city.present? %>
+              <%= @checkout.shipping_cents.zero? ? t("checkout.shipping_free") : money(@checkout.shipping_cents, current_store.currency) %>
+            <% else %>
+              <%= t("checkout.shipping_pending") %>
+            <% end %>
+          </span>
+        </div>
         <div class="checkout-modal__pay">
           <div class="checkout-modal__pay-total">
             <p class="checkout-modal__pay-label"><%= t("checkout.total") %></p>
             <p class="checkout-modal__pay-amount" data-checkout-city-target="total"><%= money(@checkout.total_cents, current_store.currency) %></p>
             <p class="sr-only" data-checkout-city-target="mobileTotal"><%= money(@checkout.total_cents, current_store.currency) %></p>
-            <p class="sr-only" data-checkout-city-target="shipping">
-              <% if @checkout.city.present? %>
-                <%= @checkout.shipping_cents.zero? ? t("checkout.shipping_free") : money(@checkout.shipping_cents, current_store.currency) %>
-              <% else %>
-                <%= t("checkout.shipping_pending") %>
-              <% end %>
-            </p>
           </div>
           <%= f.button type: "submit", class: "maison-button checkout-modal__submit cursor-pointer text-center", data: { turbo_submits_with: t("checkout.placing") } do %>
             <span data-checkout-city-target="submitLabel"><%= t("checkout.confirm_with_total", total: money(@checkout.total_cents, current_store.currency)) %></span>

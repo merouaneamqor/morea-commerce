@@ -129,7 +129,7 @@ picker.connect()
 assert.equal(picker.selectedSize, null, "Do not preselect a size when requireSize is on")
 assert.equal(picker.variantIdTarget.value, "", "Variant id stays empty until a size is chosen")
 assert.ok(picker.purchaseButtonTargets.every((button) => !button.disabled), "CTA stays tappable so it can open the size sheet")
-assert.ok(picker.orderLabelTargets.every((label) => label.textContent === "Choose my size"), "Unset size uses choose-size CTA")
+assert.ok(picker.orderLabelTargets.every((label) => label.textContent === "Order — 389 DH"), "With size sheet, sticky stays Commander — price")
 assert.equal(picker.selectionSummaryTarget.hidden, true, "Hide selection summary until a size is chosen")
 assert.equal(picker.savingsTarget.hidden, false, "Show savings when there is no sale end")
 assert.ok(picker.savingsTarget.textContent.includes("60 DH"))
@@ -150,11 +150,12 @@ sizeBlocked = false
 picker.ensureSize({ preventDefault() { sizeBlocked = true }, currentTarget: buyButton })
 assert.equal(sizeBlocked, false, "With a size selected, ensureSize does not block")
 
-// Fallback: without a sheet, first tap still focuses on-page sizes.
+// Fallback: without a sheet, first tap still focuses on-page sizes and CTA says choose-size.
 picker.hasSizeSheetTarget = false
 focused = false
 picker.selectedSize = null
 picker.render()
+assert.ok(picker.orderLabelTargets.every((label) => label.textContent === "Choose my size"), "Without sheet, unset size uses choose-size CTA")
 sizeBlocked = false
 picker.ensureSize({ preventDefault() { sizeBlocked = true }, currentTarget: buyButton })
 assert.ok(sizeBlocked)

@@ -90,6 +90,7 @@ fr:
     related: "Vous aimerez aussi"
     color: "Couleur"
     size: "Taille"
+    select_size: "Choisir la taille"
     size_guide: "Guide des tailles"
     add_to_bag: "Ajouter au panier"
     order_now: "Commander"

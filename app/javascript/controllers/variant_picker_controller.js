@@ -196,7 +196,10 @@ export default class extends Controller {
 
     const priceText = preview?.price || ""
     this.orderLabelTargets.forEach((label) => {
-      if (waitingForSize) {
+      if (waitingForSize && this.hasSizeSheetTarget) {
+        // Size sheet path: keep sticky as "Commander — price"; tap opens the sheet.
+        label.textContent = this.orderLabelFor(priceText) || this.orderLabelValue
+      } else if (waitingForSize) {
         label.textContent = this.chooseSizeLabelValue || this.orderLabelValue
       } else if (!this.purchasable) {
         label.textContent = this.unavailableLabelValue

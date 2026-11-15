@@ -768,11 +768,11 @@
   }
 
   .size-pill {
-    @apply inline-flex h-12 min-w-[3.25rem] flex-1 items-center justify-center border border-ink/80 bg-white px-4 text-[12px] font-medium uppercase tracking-[0.08em] text-ink transition-colors duration-200 md:h-11 md:min-w-[3.5rem] md:flex-none;
+    @apply inline-flex h-12 min-w-[3.25rem] flex-1 items-center justify-center border border-ink/80 bg-white px-4 text-[12px] font-medium uppercase tracking-[0.08em] text-ink transition-[background-color,border-color,color,box-shadow] duration-150 md:h-11 md:min-w-[3.5rem] md:flex-none;
   }
 
   .size-pill.is-active {
-    @apply border-ink bg-ink text-paper;
+    @apply border-ink bg-ink text-paper shadow-[inset_0_0_0_1px_rgb(255_255_255_/_0.2)];
   }
 
   @media (hover: hover) {
@@ -992,7 +992,7 @@
   }
 
   .pdp__crumbs {
-    @apply flex flex-wrap items-center gap-2 px-5 pb-6 text-[10px] uppercase tracking-[0.24em] text-ink-faint md:px-10 lg:px-16;
+    @apply hidden flex-wrap items-center gap-2 px-5 pb-3 text-[10px] uppercase tracking-[0.24em] text-ink-faint md:flex md:px-10 md:pb-6 lg:px-16;
   }
 
   .pdp__crumbs a:hover {
@@ -1000,7 +1000,7 @@
   }
 
   .pdp__grid {
-    @apply grid gap-10 px-5 pb-20 md:grid-cols-12 md:gap-10 md:px-10 md:pb-28 lg:gap-16 lg:px-16;
+    @apply grid gap-5 px-5 pb-16 md:grid-cols-12 md:gap-10 md:px-10 md:pb-28 lg:gap-16 lg:px-16;
   }
 
   .pdp__gallery {
@@ -1017,12 +1017,16 @@
   }
 
   .pdp__shot {
-    @apply aspect-[3/4] w-[78vw] shrink-0 bg-[color:var(--sf-frame,#f0f0f0)] md:w-auto;
+    @apply aspect-[4/5] w-[72vw] shrink-0 bg-[color:var(--sf-frame,#f0f0f0)] md:aspect-[3/4] md:w-auto;
     scroll-snap-align: start;
   }
 
   .pdp__shot--lead {
-    @apply w-[calc(100vw-2.5rem)] md:col-span-2 md:w-auto md:aspect-[4/5];
+    @apply w-[calc(100vw-2.5rem)] max-h-[min(52dvh,24rem)] md:col-span-2 md:w-auto md:max-h-none md:aspect-[4/5];
+  }
+
+  .pdp__shot--lead img {
+    @apply h-full w-full object-cover;
   }
 
   .pdp__info {
@@ -1038,11 +1042,11 @@
   }
 
   .pdp__title {
-    @apply mt-3 text-start font-sans text-[1.55rem] font-bold uppercase leading-[1.05] tracking-[0.12em] text-ink md:text-4xl md:tracking-[0.1em];
+    @apply mt-2 text-start font-sans text-[1.4rem] font-bold uppercase leading-[1.05] tracking-[0.12em] text-ink md:mt-3 md:text-4xl md:tracking-[0.1em];
   }
 
   .pdp__offer {
-    @apply mt-6 flex flex-col items-start;
+    @apply mt-3 flex flex-col items-start md:mt-6;
   }
 
   .pdp__offer-prices {
@@ -1058,20 +1062,24 @@
   }
 
   .pdp__promo-badge {
-    @apply mt-3 inline-flex rounded-full bg-ink px-3.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-paper;
+    @apply mt-2 inline-flex rounded-full bg-ink px-3.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-paper md:mt-3;
   }
 
   .pdp__offer-save,
   .pdp__offer-until {
-    @apply mt-2 text-start text-sm font-medium text-ink-soft;
+    @apply mt-1.5 text-start text-sm font-medium text-ink-soft md:mt-2;
   }
 
   .pdp__offer-until {
     @apply text-ink-soft;
   }
 
+  .pdp__secondary {
+    @apply mt-6 space-y-3 md:mt-8 md:space-y-0;
+  }
+
   .pdp__ship-note {
-    @apply mt-4 text-start text-[12px] leading-5 text-ink-faint;
+    @apply hidden text-start text-[12px] leading-5 text-ink-faint md:mt-4 md:block;
   }
 
   .pdp__ship-note-lead {
@@ -1079,15 +1087,15 @@
   }
 
   .pdp__availability {
-    @apply mt-3 text-start text-xs text-ink-soft;
+    @apply text-start text-xs text-ink-soft md:mt-3;
   }
 
   .pdp__desc {
-    @apply mt-5 max-w-md text-start text-sm leading-7 text-ink-soft;
+    @apply max-w-md text-start text-sm leading-6 text-ink-soft md:mt-5 md:leading-7;
   }
 
   .pdp__buy-form {
-    @apply mt-8 space-y-8;
+    @apply mt-4 space-y-4 md:mt-8 md:space-y-8;
   }
 
   .pdp__option-label {
@@ -1100,7 +1108,7 @@
   }
 
   .pdp__swatches {
-    @apply mt-3 flex flex-wrap gap-3;
+    @apply mt-2 flex flex-wrap gap-3 md:mt-3;
   }
 
   .pdp__size-head {
@@ -1108,7 +1116,7 @@
   }
 
   .pdp__sizes {
-    @apply mt-3 flex flex-wrap gap-2.5;
+    @apply mt-2 flex flex-wrap gap-2 md:mt-3 md:gap-2.5;
   }
 
   .pdp__qty {
@@ -1116,7 +1124,7 @@
   }
 
   .pdp__trust {
-    @apply space-y-1 text-xs leading-5 text-ink-soft;
+    @apply space-y-1 pt-1 text-xs leading-5 text-ink-soft;
   }
 
   .pdp__trust-link {
@@ -1128,7 +1136,7 @@
   }
 
   .pdp__details-link {
-    @apply mt-4 inline-block text-xs text-ink underline underline-offset-4;
+    @apply inline-block text-xs text-ink underline underline-offset-4 md:mt-4;
   }
 
   .pdp-advice {
@@ -2728,12 +2736,16 @@
     @apply shrink-0 font-mono text-sm tabular-nums tracking-wide text-ink;
   }
 
+  .checkout-modal__ship-row {
+    @apply mb-2 flex items-center justify-between gap-3 text-xs leading-5 text-ink-soft;
+  }
+
   .checkout-modal__pay {
     @apply flex items-stretch gap-3;
   }
 
   .checkout-modal__pay-total {
-    @apply hidden min-w-[5.5rem] sm:block;
+    @apply min-w-[5.5rem] shrink-0;
   }
 
   .checkout-modal__pay-label {
@@ -3465,7 +3477,7 @@
   }
 
   .landing-swatch {
-    @apply inline-flex rounded-full p-[2px] ring-1 ring-transparent transition duration-300;
+    @apply inline-flex rounded-full p-[3px] ring-2 ring-transparent transition-[box-shadow,ring-color] duration-150;
   }
 
   .landing-swatch.is-active {

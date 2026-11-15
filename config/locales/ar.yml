@@ -90,6 +90,7 @@ ar:
     related: "قد يعجبك أيضاً"
     color: "اللون"
     size: "المقاس"
+    select_size: "اختَر المقاس"
     size_guide: "دليل المقاسات"
     add_to_bag: "أضف إلى الحقيبة"
     order_now: "اطلب"

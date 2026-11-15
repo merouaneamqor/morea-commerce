@@ -90,6 +90,7 @@ en:
     related: "You may also like"
     color: "Color"
     size: "Size"
+    select_size: "Choose size"
     size_guide: "Size guide"
     add_to_bag: "Add to bag"
     order_now: "Order"

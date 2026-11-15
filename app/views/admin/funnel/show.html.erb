@@ -1,0 +1,127 @@
+<% content_for :title, t("funnel.title") %>
+<% content_for :admin_page_class, "seller-page" %>
+<% content_for :seller_lang, "1" %>
+
+<header class="flex flex-wrap items-start justify-between gap-3">
+  <div class="flex items-start gap-3">
+    <%= link_to "/dashboard", class: "mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[#e8e3df] bg-white text-[#1f2430] hover:bg-[#f3f1ef]",
+          data: { back_button: true }, "aria-label": t("funnel.back"), title: t("funnel.back") do %>
+      <svg viewBox="0 0 24 24" class="size-5 fill-none stroke-current [stroke-width:2] [stroke-linecap:round] [stroke-linejoin:round] rtl:rotate-180" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+    <% end %>
+    <div>
+      <h1 class="text-2xl font-bold text-[#1f2430] sm:text-[28px]"><%= t("funnel.title") %></h1>
+      <p class="max-w-2xl text-sm text-[#5c5652]"><%= t("funnel.lead") %></p>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-3">
+    <%= render "admin/shared/date_range_picker", range: @date_range, preset: @date_range_preset, url: seller_funnel_path, size: "compact" %>
+    <%= render "admin/shared/language_switcher" %>
+  </div>
+</header>
+
+<section class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" data-funnel-kpis>
+  <article class="rounded-2xl border border-[#e8e3df] bg-white p-4">
+    <p class="text-xs font-medium uppercase tracking-wide text-[#8a8380]"><%= t("funnel.kpi.visits") %></p>
+    <p class="mt-1 text-2xl font-semibold text-[#1f2430]"><%= number_with_delimiter(@summary.total_visits) %></p>
+  </article>
+  <article class="rounded-2xl border border-[#e8e3df] bg-white p-4">
+    <p class="text-xs font-medium uppercase tracking-wide text-[#8a8380]"><%= t("funnel.kpi.orders") %></p>
+    <p class="mt-1 text-2xl font-semibold text-[#1f2430]"><%= number_with_delimiter(@summary.stages.find { |s| s.key == "ordered" }&.visits.to_i) %></p>
+  </article>
+  <article class="rounded-2xl border border-[#e8e3df] bg-white p-4">
+    <p class="text-xs font-medium uppercase tracking-wide text-[#8a8380]"><%= t("funnel.kpi.abandoned") %></p>
+    <p class="mt-1 text-2xl font-semibold text-[#1f2430]"><%= number_with_delimiter(@summary.abandoned_visits) %></p>
+  </article>
+  <article class="rounded-2xl border border-[#e8e3df] bg-white p-4">
+    <p class="text-xs font-medium uppercase tracking-wide text-[#8a8380]"><%= t("funnel.kpi.meta_orders") %></p>
+    <p class="mt-1 text-2xl font-semibold text-[#1f2430]"><%= number_with_delimiter(@summary.attributed_orders) %></p>
+  </article>
+</section>
+
+<section class="mt-6 rounded-2xl border border-[#e8e3df] bg-white p-5" data-funnel-stages>
+  <h2 class="text-base font-semibold text-[#1f2430]"><%= t("funnel.stages.title") %></h2>
+  <p class="mt-1 text-sm text-[#8a8380]"><%= t("funnel.stages.help") %></p>
+  <div class="mt-4 overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead>
+        <tr class="border-b border-[#f0ebe7] text-left text-[#8a8380]">
+          <th class="py-2 pe-4 font-medium"><%= t("funnel.stages.stage") %></th>
+          <th class="py-2 pe-4 font-medium"><%= t("funnel.stages.visits") %></th>
+          <th class="py-2 pe-4 font-medium"><%= t("funnel.stages.share") %></th>
+          <th class="py-2 font-medium"><%= t("funnel.stages.drop") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @summary.stages.each do |stage| %>
+          <tr class="border-b border-[#f7f3f0]" data-funnel-stage="<%= stage.key %>">
+            <td class="py-3 pe-4 font-medium text-[#1f2430]"><%= t("funnel.stages.keys.#{stage.key}") %></td>
+            <td class="py-3 pe-4 text-[#1f2430]"><%= number_with_delimiter(stage.visits) %></td>
+            <td class="py-3 pe-4 text-[#5c5652]"><%= number_to_percentage(stage.share_of_landed, precision: 1) %></td>
+            <td class="py-3 text-[#5c5652]">
+              <% if stage.drop_from_previous %>
+                <%= number_to_percentage(stage.drop_from_previous, precision: 1) %>
+              <% else %>
+                —
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="mt-6 grid gap-6 lg:grid-cols-2">
+  <div class="rounded-2xl border border-[#e8e3df] bg-white p-5" data-funnel-sources>
+    <h2 class="text-base font-semibold text-[#1f2430]"><%= t("funnel.sources.title") %></h2>
+    <p class="mt-1 text-sm text-[#8a8380]"><%= t("funnel.sources.help") %></p>
+    <% if @summary.sources.any? %>
+      <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="border-b border-[#f0ebe7] text-left text-[#8a8380]">
+              <th class="py-2 pe-3 font-medium"><%= t("funnel.sources.source") %></th>
+              <th class="py-2 pe-3 font-medium"><%= t("funnel.sources.visits") %></th>
+              <th class="py-2 pe-3 font-medium"><%= t("funnel.sources.checkouts") %></th>
+              <th class="py-2 pe-3 font-medium"><%= t("funnel.sources.orders") %></th>
+              <th class="py-2 font-medium"><%= t("funnel.sources.rate") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @summary.sources.each do |source| %>
+              <tr class="border-b border-[#f7f3f0]" data-funnel-source="<%= source.label %>">
+                <td class="py-3 pe-3 font-medium text-[#1f2430]"><%= source.label %></td>
+                <td class="py-3 pe-3"><%= number_with_delimiter(source.visits) %></td>
+                <td class="py-3 pe-3"><%= number_with_delimiter(source.checkouts) %></td>
+                <td class="py-3 pe-3"><%= number_with_delimiter(source.orders) %></td>
+                <td class="py-3"><%= number_to_percentage(source.conversion_rate, precision: 1) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="mt-4 text-sm text-[#8a8380]"><%= t("funnel.empty") %></p>
+    <% end %>
+  </div>
+
+  <div class="rounded-2xl border border-[#e8e3df] bg-white p-5" data-funnel-landings>
+    <h2 class="text-base font-semibold text-[#1f2430]"><%= t("funnel.landings.title") %></h2>
+    <p class="mt-1 text-sm text-[#8a8380]"><%= t("funnel.landings.help") %></p>
+    <% landings = @summary.top_landings %>
+    <% if landings.any? %>
+      <ul class="mt-4 space-y-3">
+        <% landings.each do |landing| %>
+          <li class="flex items-start justify-between gap-3 border-b border-[#f7f3f0] pb-3 text-sm" data-funnel-landing>
+            <span class="min-w-0 break-all font-medium text-[#1f2430]"><%= landing.path %></span>
+            <span class="shrink-0 text-[#5c5652]"><%= t("funnel.landings.counts", visits: landing.visits, orders: landing.orders) %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="mt-4 text-sm text-[#8a8380]"><%= t("funnel.empty") %></p>
+    <% end %>
+  </div>
+</section>
+
+<p class="mt-6 text-xs text-[#8a8380]"><%= t("funnel.gaps_note_html", pixels_path: seller_pixels_path).html_safe %></p>

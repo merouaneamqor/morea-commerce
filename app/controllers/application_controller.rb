@@ -10,6 +10,8 @@ class ApplicationController < ActionController::Base
   before_action :configure_session_cookie
   before_action :set_current_store
   before_action :set_locale
+  # After set_current_store: capture needs Current.store before writing session attribution.
+  include StorefrontVisitTracking
 
   helper_method :current_store, :current_cart, :cart_count, :current_locale, :rtl?, :current_admin_user, :admin_entry_path, :super_admin?, :impersonating?, :store_billing_past_due?
 
@@ -77,7 +79,7 @@ class ApplicationController < ActionController::Base
   end
 
   # Seller workspace pages (as on seallo) are served on the shared admin host as well as on tenant hosts.
-  SELLER_PATHS = %w[/dashboard /commandes /confirmation /mes-statistiques /clients /livraison /produits /themes /publicites /equipe /integrations /comptabilite /settings].freeze
+  SELLER_PATHS = %w[/dashboard /commandes /confirmation /mes-statistiques /clients /livraison /produits /themes /publicites /pixels /funnel /equipe /integrations /comptabilite /settings].freeze
 
   def seller_path?
     SELLER_PATHS.any? { |path| request.path == path || request.path.start_with?("#{path}/") }

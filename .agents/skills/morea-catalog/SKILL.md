@@ -92,6 +92,7 @@ Local A-to-Z smoke (happy path + edge cases): `bin/rails runner script/mcp_inven
 ## Analytics
 
 - `store_stats`, `product_stats`, `list_orders`, `get_order` are read only. `cancel_order` cancels one order by `number` and needs `confirm: true`. An optional `reason` is stored on the order. Cancel works from `new`, `confirmed`, `preparing`, `awaiting_pickup`, and `address_issue`. It restores reserved stock and deletes a Sendit parcel that has not left the warehouse. After pickup, say the order cannot be cancelled from its current status.
+- Funnel / ad attribution (read-only aggregates, no raw visit dumps): `funnel_summary` (`since`, `until`, `sourcesLimit`, `landingsLimit`), `funnel_sources` (`since`, `until`, `limit`), `funnel_landings` (`since`, `until`, `limit`). Same date window rules as `store_stats`. Caps are 1–50 for source/landing rows; results are cached briefly per store/window.
 - `since` and `until` are `YYYY-MM-DD`. They default to the last 30 days and cannot span more than 366 days. Order lists are not date-filtered unless you pass a date.
 - Placed numbers use `created_at`. Delivered numbers use `delivered_at` and are the cash collected. Cancel and return rates are among orders placed in the window.
 - `pipeline` is how many orders are in each status right now, including `address_issue`, `unreachable`, and `postponed`.
@@ -157,7 +158,7 @@ Autonomy: `get_store_profile`, `get_full_catalog` (`page`, `perPage`, `status`),
 
 Builders: `get_section_schema`, `get_home_layout`, `reorder_home_sections` (`ids`), `set_home_layout` (`sections`, `replace`), `list_landing_pages`, `get_landing_page` (`slug`), `upsert_landing_page`, `delete_landing_page`, `upsert_landing_section` (`pageSlug`), `delete_landing_section`, `reorder_landing_sections`, `set_landing_layout`.
 
-Analytics: `store_stats`, `product_stats` (`slug` optional), `list_orders` (`status`, `city`, `since`, `until`, `limit`), `get_order` (`number`), `cancel_order` (`number`, `confirm`, `reason`).
+Analytics: `store_stats`, `product_stats` (`slug` optional), `list_orders` (`status`, `city`, `since`, `until`, `limit`), `get_order` (`number`), `cancel_order` (`number`, `confirm`, `reason`), `funnel_summary` (`since`, `until`, `sourcesLimit`, `landingsLimit`), `funnel_sources`, `funnel_landings`.
 
 Collections: `list_collections` (`published`, `limit`), `get_collection`, `create_collection`, `update_collection`, `delete_collection`, `set_collection_products`.
 

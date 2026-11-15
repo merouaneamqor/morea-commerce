@@ -22,7 +22,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
   end
 
   def owner_menu_links
-    %w[/dashboard /commandes /confirmation /clients /livraison /produits /themes /publicites /pixels /comptabilite /equipe /integrations /boutique]
+    %w[/dashboard /commandes /confirmation /clients /livraison /produits /themes /publicites /pixels /funnel /comptabilite /equipe /integrations /boutique]
   end
 
   it "requires authentication" do
@@ -35,7 +35,7 @@ RSpec.describe "Seller shell and dashboard", type: :request do
     sign_in(owner)
     get "/dashboard", params: { locale: "fr" }
     expect(response).to have_http_status(:ok)
-    expect(menu_links).to eq(%w[/dashboard /commandes /confirmation /clients /livraison /produits /themes /pixels /comptabilite /equipe /integrations])
+    expect(menu_links).to eq(%w[/dashboard /commandes /confirmation /clients /livraison /produits /themes /pixels /funnel /comptabilite /equipe /integrations])
     expect(document.css("aside nav ul li span").map(&:text).join).to include("Publicités")
     expect(document.css("aside nav ul li").map { |li| li.text.squish }).to include(a_string_including("Comptabilité"))
     expect(document.css("aside nav ul li").map { |li| li.text.squish }).not_to include(a_string_matching(/\bProfit\b/))

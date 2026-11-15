@@ -1306,6 +1306,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_140000) do
     t.index ["store_id"], name: "index_store_translations_on_store_id"
   end
 
+  create_table "storefront_funnel_events", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.bigint "storefront_visit_id", null: false
+    t.string "name", limit: 32, null: false
+    t.string "path", limit: 500
+    t.bigint "product_id"
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.index ["store_id", "name", "created_at"], name: "index_storefront_funnel_events_on_store_name_created"
+    t.index ["store_id"], name: "index_storefront_funnel_events_on_store_id"
+    t.index ["storefront_visit_id", "name"], name: "index_storefront_funnel_events_on_visit_and_name"
+    t.index ["storefront_visit_id"], name: "index_storefront_funnel_events_on_storefront_visit_id"
+    t.check_constraint "name::text = ANY (ARRAY['landed'::character varying::text, 'product_viewed'::character varying::text, 'added_to_cart'::character varying::text, 'checkout_started'::character varying::text, 'abandoned'::character varying::text, 'ordered'::character varying::text])", name: "storefront_funnel_events_name"
+  end
+
   create_table "storefront_themes", force: :cascade do |t|
     t.bigint "store_id", null: false
     t.string "name", null: false
@@ -1319,6 +1334,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_140000) do
     t.index ["store_id", "status"], name: "index_storefront_themes_one_published_per_store", unique: true, where: "((status)::text = 'published'::text)"
     t.index ["store_id"], name: "index_storefront_themes_on_store_id"
     t.check_constraint "status::text = ANY (ARRAY['draft'::character varying::text, 'published'::character varying::text])", name: "storefront_themes_status"
+  end
+
+  create_table "storefront_visits", force: :cascade do |t|
+    t.bigint "store_id", null: false
+    t.string "token", limit: 64, null: false
+    t.string "landing_path", limit: 500
+    t.string "last_path", limit: 500
+    t.string "referrer", limit: 500
+    t.string "utm_source", limit: 100
+    t.string "utm_medium", limit: 100
+    t.string "utm_campaign", limit: 200
+    t.string "utm_term", limit: 200
+    t.string "utm_content", limit: 200
+    t.string "fbclid", limit: 255
+    t.string "gclid", limit: 255
+    t.string "ttclid", limit: 255
+    t.string "meta_campaign_id", limit: 25
+    t.string "meta_adset_id", limit: 25
+    t.string "meta_ad_id", limit: 25
+    t.string "funnel_stage", limit: 32, default: "landed", null: false
+    t.bigint "order_id"
+    t.datetime "landed_at", null: false
+    t.datetime "last_seen_at", null: false
+    t.datetime "converted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_storefront_visits_on_order_id"
+    t.index ["store_id", "funnel_stage", "landed_at"], name: "index_storefront_visits_on_store_stage_landed"
+    t.index ["store_id", "landed_at"], name: "index_storefront_visits_on_store_id_and_landed_at"
+    t.index ["store_id", "token"], name: "index_storefront_visits_on_store_id_and_token", unique: true
+    t.index ["store_id", "utm_source", "landed_at"], name: "index_storefront_visits_on_store_utm_source", where: "(utm_source IS NOT NULL)"
+    t.index ["store_id"], name: "index_storefront_visits_on_store_id"
+    t.check_constraint "funnel_stage::text = ANY (ARRAY['landed'::character varying::text, 'product_viewed'::character varying::text, 'added_to_cart'::character varying::text, 'checkout_started'::character varying::text, 'ordered'::character varying::text])", name: "storefront_visits_funnel_stage"
+    t.check_constraint "meta_ad_id IS NULL OR meta_ad_id::text ~ '^[0-9]{5,25}$'::text", name: "storefront_visits_meta_ad_id_numeric"
+    t.check_constraint "meta_adset_id IS NULL AND meta_ad_id IS NULL OR meta_campaign_id IS NOT NULL", name: "storefront_visits_meta_ids_need_campaign"
+    t.check_constraint "meta_adset_id IS NULL OR meta_adset_id::text ~ '^[0-9]{5,25}$'::text", name: "storefront_visits_meta_adset_id_numeric"
+    t.check_constraint "meta_campaign_id IS NULL OR meta_campaign_id::text ~ '^[0-9]{5,25}$'::text", name: "storefront_visits_meta_campaign_id_numeric"
   end
 
   create_table "stores", force: :cascade do |t|
@@ -1583,7 +1635,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_140000) do
   add_foreign_key "store_connections", "stores"
   add_foreign_key "store_expenses", "stores"
   add_foreign_key "store_translations", "stores"
+  add_foreign_key "storefront_funnel_events", "storefront_visits", on_delete: :cascade
+  add_foreign_key "storefront_funnel_events", "stores"
   add_foreign_key "storefront_themes", "stores"
+  add_foreign_key "storefront_visits", "orders"
+  add_foreign_key "storefront_visits", "stores"
   add_foreign_key "users", "stores"
   add_foreign_key "users", "users", column: "created_by_id", on_delete: :nullify
   add_foreign_key "whatsapp_accounts", "stores"

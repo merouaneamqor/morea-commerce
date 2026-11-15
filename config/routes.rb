@@ -92,6 +92,7 @@ Rails.application.routes.draw do
   get "/integrations", to: "admin/store_connections#index", as: :seller_integrations
   get "/publicites", to: "admin/meta_ads#show", as: :seller_ads
   get "/pixels", to: "admin/pixels#edit", as: :seller_pixels
+  get "/funnel", to: "admin/funnel#show", as: :seller_funnel
   get "/themes", to: "admin/themes#open", as: :seller_theme_editor
   get "/comptabilite", to: "admin/accounting#show", as: :seller_accounting
   get "/comptabilite/export", to: "admin/accounting#export", as: :seller_accounting_export, defaults: { format: "csv" }
@@ -252,6 +253,7 @@ Rails.application.routes.draw do
       delete :token, action: :revoke_token
     end
     resource :pixels, only: %i[edit update], controller: "pixels"
+    resource :funnel, only: :show, controller: "funnel"
     resources :products do
       resources :variants, only: %i[create edit update destroy] do
         collection do

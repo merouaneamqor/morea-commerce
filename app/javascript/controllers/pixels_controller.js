@@ -1,7 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Loads once in the layout. Fires PageView on every Turbo visit and drains
-// events queued while this controller was still lazy-loading.
+// Layout bridge. Fires PageView when this element mounts (each Turbo body
+// swap) and drains events queued while the controller was still lazy-loading.
+// Do not also listen for turbo:load: that event often fires before lazy
+// connect on the first paint, then again after connect on later visits, which
+// duplicates PageView.
 export default class extends Controller {
   static values = {
     metaId: String,
@@ -11,14 +14,12 @@ export default class extends Controller {
   }
 
   connect() {
-    this.onLoad = () => this.trackPageView()
-    document.addEventListener("turbo:load", this.onLoad)
     window.MoreaPixels = this
     this.flushQueue()
+    this.trackPageView()
   }
 
   disconnect() {
-    document.removeEventListener("turbo:load", this.onLoad)
     if (window.MoreaPixels === this) window.MoreaPixels = null
   }
 

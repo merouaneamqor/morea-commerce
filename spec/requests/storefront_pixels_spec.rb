@@ -32,7 +32,9 @@ RSpec.describe "Storefront Meta pixels", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("connect.facebook.net")
-    expect(response.body).to include('fbq(\'init\', "123456789012345")')
+    expect(response.body).to include("_moreaMetaPixels")
+    expect(response.body).to include('fbq(\'init\', id')
+    expect(response.body).not_to include("ev=PageView&noscript=1")
     expect(response.body).to include('data-controller="pixels"')
     expect(response.body).to include('data-pixel-event-name-value="ViewContent"')
     expect(response.body).to include("BT-001")
@@ -67,9 +69,10 @@ RSpec.describe "Storefront Meta pixels", type: :request do
     expect(response.body).to include('data-pixel-event-name-value="Purchase"')
     expect(response.body).to include("purchase-")
     expect(response.body).to include("order_id")
-    expect(response.body).to match(/fbq\('init', "123456789012345", \{/)
+    expect(response.body).to include("_moreaMetaPixels")
     expect(response.body).to match(/"ph":"\+212\d+"/)
     expect(response.body).to include('"fn":"amina"')
     expect(response.body).to include('"ct":"casablanca"')
+    expect(response.body).not_to include("ev=PageView&noscript=1")
   end
 end

@@ -2,19 +2,31 @@
 
 <% if current_store.meta_pixel_id.present? %>
   <% user_data = meta_pixel_advanced_matching %>
+  <%# Init once per page session. Turbo re-evaluates head scripts on visits; a
+      bare fbq('init') each time makes Meta report a duplicated pixel. The
+      noscript <img> is omitted on purpose: Turbo parses it and requests the
+      PageView URL even when JavaScript is enabled. %>
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
     n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
     n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
     t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', <%= raw current_store.meta_pixel_id.to_json %><%= user_data.present? ? ", #{raw user_data.to_json}".html_safe : "" %>);
+    (function(id, userData) {
+      var store = window._moreaMetaPixels = window._moreaMetaPixels || {};
+      var prev = store[id];
+      var keys = userData ? Object.keys(userData) : [];
+      var hasUserData = keys.length > 0;
+      if (!prev) {
+        if (hasUserData) { fbq('init', id, userData); }
+        else { fbq('init', id); }
+        store[id] = { am: hasUserData };
+      } else if (hasUserData && !prev.am) {
+        fbq('init', id, userData);
+        prev.am = true;
+      }
+    })(<%= raw current_store.meta_pixel_id.to_json %>, <%= raw user_data.to_json %>);
   </script>
-  <noscript>
-    <img height="1" width="1" style="display:none"
-         src="https://www.facebook.com/tr?id=<%= current_store.meta_pixel_id %>&ev=PageView&noscript=1"
-         alt="">
-  </noscript>
 <% end %>
 
 <% if current_store.tiktok_pixel_id.present? %>
@@ -31,17 +43,36 @@
         n = document.createElement("script"); n.type = "text/javascript"; n.async = !0; n.src = r + "?sdkid=" + e + "&lib=" + t;
         e = document.getElementsByTagName("script")[0]; e.parentNode.insertBefore(n, e)
       };
-      ttq.load(<%= raw current_store.tiktok_pixel_id.to_json %>);
+      w._moreaTiktokPixels = w._moreaTiktokPixels || {};
+      var id = <%= raw current_store.tiktok_pixel_id.to_json %>;
+      if (!w._moreaTiktokPixels[id]) {
+        ttq.load(id);
+        w._moreaTiktokPixels[id] = true;
+      }
     }(window, document, 'ttq');
   </script>
 <% end %>
 
 <% if current_store.google_analytics_id.present? %>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= current_store.google_analytics_id %>"></script>
+  <% ga_id = current_store.google_analytics_id %>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', <%= raw current_store.google_analytics_id.to_json %>, { send_page_view: false });
+    (function() {
+      var id = <%= raw ga_id.to_json %>;
+      window._moreaGaIds = window._moreaGaIds || {};
+      if (window._moreaGaIds[id]) return;
+      window._moreaGaIds[id] = true;
+      var src = "https://www.googletagmanager.com/gtag/js?id=<%= ga_id %>";
+      if (!document.querySelector('script[src="' + src + '"]')) {
+        var s = document.createElement("script");
+        s.async = true;
+        s.src = src;
+        document.head.appendChild(s);
+      }
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = window.gtag || gtag;
+      gtag('js', new Date());
+      gtag('config', <%= raw ga_id.to_json %>, { send_page_view: false });
+    })();
   </script>
 <% end %>

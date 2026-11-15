@@ -34,6 +34,7 @@ module Types
       field :meta_pixel_id, String, null: true
       field :tiktok_pixel_id, String, null: true
       field :google_analytics_id, String, null: true
+      field :black_friday_theme, Boolean, null: false
       field :featured_product_slug, String, null: true
       field :featured_collection_slug, String, null: true
       field :legal_entity_name, String, null: true

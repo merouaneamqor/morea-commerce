@@ -5,7 +5,9 @@
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "#{current_store&.name || "Morea"} — #{current_store&.tagline || t("store.tagline_fallback")}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <meta name="theme-color" content="<%= content_for?(:hero_nav) ? "#111111" : "#ffffff" %>">
+    <% black_friday = current_store&.black_friday_theme? %>
+    <% show_announcement = black_friday || current_store&.announcement.present? %>
+    <meta name="theme-color" content="<%= black_friday ? "#0a0a0a" : (content_for?(:hero_nav) ? "#111111" : "#ffffff") %>">
     <meta name="description" content="<%= content_for?(:meta_description) ? yield(:meta_description) : (current_store&.tagline || t("store.tagline_fallback")) %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -21,18 +23,19 @@
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "storefront_responsive", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "black_friday_theme", "data-turbo-track": "reload" if black_friday %>
     <%= javascript_importmap_tags %>
     <%= render "shared/pixels" %>
   </head>
 
-  <body class="storefront-body min-h-screen min-h-dvh <%= "has-mobile-buy" if content_for?(:mobile_buy) %> <%= "is-rtl" if rtl? %> <%= "has-announcement" if current_store&.announcement.present? %> <%= "has-cookie-notice" if cookie_notice_pending? %>"
+  <body class="storefront-body min-h-screen min-h-dvh <%= "theme-black-friday" if black_friday %> <%= "has-mobile-buy" if content_for?(:mobile_buy) %> <%= "is-rtl" if rtl? %> <%= "has-announcement" if show_announcement %> <%= "has-cookie-notice" if cookie_notice_pending? %>"
         data-controller="cart-drawer web-vitals">
 
     <%= render "shared/pixel_bridge" %>
     <a class="skip-link" href="#main-content"><%= t("data_protection.skip_to_content") %></a>
     <div class="site-header">
-      <% if current_store&.announcement.present? %>
-        <p class="announcement-bar"><%= current_store.announcement %></p>
+      <% if show_announcement %>
+        <p class="announcement-bar"><%= current_store.announcement.presence || t("store.black_friday_banner") %></p>
       <% end %>
       <header class="maison-nav <%= "is-over-hero" if content_for?(:hero_nav) %> <%= "is-split-hero" if content_for?(:split_hero_nav) %>"
               data-controller="nav-scroll">

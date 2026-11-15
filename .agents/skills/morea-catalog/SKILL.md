@@ -43,6 +43,8 @@ Customers: `list_customers`, `get_customer`, `upsert_customer`. These include ph
 
 Marketing tags are `update_marketing` (Meta, TikTok and Google Analytics measurement ids). There is no email campaign.
 
+Storefront Black Friday look: `get_theme` returns `blackFridayTheme`. `set_black_friday_theme` with `enabled: true` or `false` turns it on or off for this store only.
+
 `export_csv` and `import_csv` cover products, customers, and discounts. Export also covers orders (without phone or street address) and inventory levels. Import needs `confirm: true`.
 
 The home page builder is `get_home_layout`, `set_home_layout`, `reorder_home_sections`, plus `upsert_home_section` / `delete_home_section`. Landing pages use the same section kinds via `upsert_landing_page` and `set_landing_layout` (public URL `/:locale/pages/:slug`). Content pages stay on `list_pages` / `upsert_page`. Header/footer links are menu tools. `install_theme` fills only the parts that are still empty. The public host is the store subdomain. Custom domains are not a setting.

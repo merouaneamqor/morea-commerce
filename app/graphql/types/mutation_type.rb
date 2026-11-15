@@ -26,6 +26,7 @@ module Types
     field :set_stock, mutation: Mutations::SetStock
     field :update_checkout, mutation: Mutations::Storefront::UpdateCheckout
     field :update_marketing, mutation: Mutations::Storefront::UpdateMarketing
+    field :set_black_friday_theme, mutation: Mutations::Storefront::SetBlackFridayTheme
     field :update_shipping, mutation: Mutations::Storefront::UpdateShipping
     field :sync_shipping, mutation: Mutations::Storefront::SyncShipping
     field :install_theme, mutation: Mutations::Storefront::InstallTheme

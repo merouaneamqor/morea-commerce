@@ -73,6 +73,7 @@ class Store < ApplicationRecord
   validates :name, :slug, presence: true
   validates :admin_theme, inclusion: { in: ADMIN_THEMES }
   validates :storefront_enabled, inclusion: { in: [ true, false ] }
+  validates :black_friday_theme, inclusion: { in: [ true, false ] }
   validates :slug, uniqueness: true, format: { with: /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/, message: "must be lowercase letters, numbers, and hyphens" }
   validates :slug, exclusion: { in: RESERVED_SUBDOMAINS }
   validates :shipping_cents, :low_stock_threshold, numericality: { greater_than_or_equal_to: 0 }

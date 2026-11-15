@@ -1,0 +1,28 @@
+en:
+  black_friday_theme:
+    heading: "Black Friday storefront"
+    enable: "Activate Black Friday theme"
+    help: "Applies a black and gold look on your public shop, with a campaign banner. Prices and buy buttons stay visible. Turn off anytime to restore the normal look."
+  store:
+    black_friday_banner: "Black Friday — limited offers"
+fr:
+  black_friday_theme:
+    heading: "Boutique Black Friday"
+    enable: "Activer le thème Black Friday"
+    help: "Applique un look noir et or sur votre boutique publique, avec une bannière campagne. Les prix et boutons d’achat restent visibles. Désactivez pour retrouver l’apparence normale."
+  store:
+    black_friday_banner: "Black Friday — offres limitées"
+ar:
+  black_friday_theme:
+    heading: "واجهة الجمعة السوداء"
+    enable: "تفعيل مظهر الجمعة السوداء"
+    help: "يطبق مظهراً أسود وذهبياً على متجرك العام مع شريط حملة. تبقى الأسعار وأزرار الشراء ظاهرة. أوقف الخيار لاستعادة المظهر العادي."
+  store:
+    black_friday_banner: "الجمعة السوداء — عروض محدودة"
+es:
+  black_friday_theme:
+    heading: "Tienda Black Friday"
+    enable: "Activar el tema Black Friday"
+    help: "Aplica un look negro y dorado en tu tienda pública, con un banner de campaña. Los precios y botones de compra siguen visibles. Desactívalo para volver al aspecto normal."
+  store:
+    black_friday_banner: "Black Friday — ofertas limitadas"

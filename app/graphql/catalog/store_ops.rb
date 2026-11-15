@@ -52,6 +52,11 @@ module Catalog
       save!(store)
     end
 
+    def set_black_friday_theme!(store, enabled:)
+      store.black_friday_theme = ActiveModel::Type::Boolean.new.cast(enabled)
+      save!(store)
+    end
+
     def update_shipping!(store, attrs)
       attrs = attrs.to_h.symbolize_keys
       if attrs[:clear_sendit]

@@ -262,7 +262,9 @@ module Ameex
       return if order.ameex_status == previous
       return unless ALERT_STATUSES.include?(order.ameex_status)
 
-      DiscordNotifier.notify_delivery_update(order, self.class.label(order.ameex_status, store: order.store))
+      text = self.class.label(order.ameex_status, store: order.store)
+      DiscordNotifier.notify_delivery_update(order, text)
+      Notifications::DeliveryAlert.new(order, status_text: text).deliver
     rescue StandardError => e
       Rails.logger.warn("[Ameex] alert failed for #{order.number}: #{e.message}")
     end

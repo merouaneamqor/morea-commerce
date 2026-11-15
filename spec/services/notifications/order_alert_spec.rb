@@ -25,13 +25,46 @@ RSpec.describe Notifications::OrderAlert do
 
   before { allow(WebPush).to receive(:payload_send) }
 
-  it "is queued for storefront and staff orders, but not for imports" do
+  it "is queued for storefront and staff orders, but not for API imports" do
     product = store.products.create!(slug: "alert-tee", name: "Tee", price_cents: 10_000, stock: 10, status: "active", track_inventory: true)
     attrs = { name: "Synthetic buyer", phone: "0612345678", city: "Casablanca", address: "Synthetic address",
       lines: [ { product_id: product.id, quantity: 1 } ] }
 
     expect { Orders::Editor.new(store: store).create(attrs) }.to have_enqueued_job(NewOrderAlertJob)
     expect { Orders::Editor.new(store: store, external_effects: false).create(attrs) }.not_to have_enqueued_job(NewOrderAlertJob)
+  end
+
+  it "is queued for newly accepted connected-store webhooks, not replays or poll imports" do
+    secret = "synthetic-webhook-secret"
+    connection = store.store_connections.create!(provider: "shopify", name: "Synthetic Shopify",
+      external_domain: "alerts-#{SecureRandom.hex(4)}.myshopify.com", webhook_secret: secret)
+    payload = {
+      "id" => 9_001, "currency" => "MAD", "financial_status" => "pending",
+      "payment_gateway_names" => [ "Cash on Delivery (COD)" ], "total_tax" => "0.00",
+      "total_discounts" => "0.00", "total_price" => "150.00",
+      "shipping_address" => { "name" => "Synthetic buyer", "phone" => "0612345678", "city" => "Casablanca",
+        "address1" => "Synthetic address", "country_code" => "MA" },
+      "total_shipping_price_set" => { "shop_money" => { "amount" => "20.00", "currency_code" => "MAD" } },
+      "line_items" => [ { "name" => "External product", "quantity" => 1, "price" => "130.00" } ]
+    }
+    body = JSON.generate(payload)
+    headers = {
+      "X-Shopify-Topic" => "orders/create",
+      "X-Shopify-Shop-Domain" => connection.external_domain,
+      "X-Shopify-Hmac-SHA256" => Base64.strict_encode64(OpenSSL::HMAC.digest("sha256", secret, body))
+    }
+
+    expect {
+      Connections::WebhookIntake.new(connection: connection).call(body: body, headers: headers)
+    }.to have_enqueued_job(NewOrderAlertJob).and have_enqueued_job(DiscordOrderNotifyJob)
+
+    expect {
+      Connections::WebhookIntake.new(connection: connection).call(body: body, headers: headers)
+    }.not_to have_enqueued_job(NewOrderAlertJob)
+
+    expect {
+      Connections::WebhookIntake.new(connection: connection).import(payload.merge("id" => 9_002))
+    }.not_to have_enqueued_job(NewOrderAlertJob)
   end
 
   it "alerts active staff of the order's store only, including agents" do

@@ -23,16 +23,23 @@ deliver = lambda do |conn, payload, hdrs|
   signature = conn.provider == "youcan" ? digest.unpack1("H*") : Base64.strict_encode64(digest)
   Connections::WebhookIntake.new(connection: conn).call(body: body, headers: hdrs.merge(signature_header => signature))
 end
-jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.size
+jobs_before = ActiveJob::Base.queue_adapter.enqueued_jobs.dup
 result = deliver.call(connection, shopify, headers)
 order = result.receipt.order
 assert.call("external lines retain exact cents", order.total_cents == 26_990 && order.order_items.first.unit_price_cents == 12_495)
 assert.call("no local product required", order.order_items.first.product.nil? && store.products.empty?)
 assert.call("new COD enters existing queue", order.status == "new" && order.payment_method == "cod")
-assert.call("no jobs or stock movement", ActiveJob::Base.queue_adapter.enqueued_jobs.size == jobs && order.inventory_movements.empty?)
+new_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.drop(jobs_before.size)
+job_name = ->(job) { (job[:job] || job["job_class"]).to_s }
+assert.call("staff alerts queued on accept", new_jobs.count { |job| job_name.call(job) == "NewOrderAlertJob" } == 1 &&
+  new_jobs.count { |job| job_name.call(job) == "DiscordOrderNotifyJob" } == 1)
+assert.call("no stock or shipment jobs on receipt", new_jobs.none? { |job| job_name.call(job).match?(/Sendit|Ozon|Ameex|Inventory/) } &&
+  order.inventory_movements.empty?)
 assert.call("source verified", connection.reload.connection_state == "verified")
+jobs_before_replay = ActiveJob::Base.queue_adapter.enqueued_jobs.size
 replay = deliver.call(connection, shopify.merge("total_price" => "999.00"), headers)
 assert.call("replay does not mutate order", replay.replayed && replay.receipt.order_id == order.id && order.reload.total_cents == 26_990 && store.orders.count == 1)
+assert.call("replay does not re-alert", ActiveJob::Base.queue_adapter.enqueued_jobs.size == jobs_before_replay)
 rejected = deliver.call(connection, shopify.merge("id" => 124, "total_tax" => "1.00"), headers)
 assert.call("unsupported money visible safely", rejected.receipt.error_code == "unsupported_tax_or_discount" && rejected.receipt.order.nil? && connection.reload.last_error_code == "unsupported_tax_or_discount")
 assert.call("rejections create no customer/order", store.orders.count == 1 && store.customers.count == 1)

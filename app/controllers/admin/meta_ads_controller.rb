@@ -22,7 +22,7 @@ module Admin
       @mcp_ready = MetaAds::McpCapability.ready?(@connection)
       @mcp_missing_scopes = MetaAds::McpCapability.missing_scopes(@connection)
       @mcp_sync = MetaAds::McpCapability.sync_via_mcp?
-      @mcp_probe = flash[:meta_mcp_probe]
+      @mcp_probe = flash[:meta_mcp_probe]&.with_indifferent_access
     end
 
     # Calls Meta's hosted Ads MCP with the store token (tools/list + optional sample campaigns).
@@ -34,7 +34,8 @@ module Admin
       flash[:meta_mcp_probe] = {
         ready: result.ready,
         tool_count: result.tool_count,
-        tool_names: result.tool_names,
+        # The session cookie only needs the names shown in the probe summary.
+        tool_names: result.tool_names.first(8),
         missing_scopes: result.missing_scopes,
         error_code: result.error_code,
         sample_present: result.sample.present?

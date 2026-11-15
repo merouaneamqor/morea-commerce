@@ -58,6 +58,72 @@ const fixtures = {
   </section>
 </div>
 <div class="admin-mobile-actions"><button type="button" class="admin-btn">Marquer comme confirmée</button></div></main>`,
+  callPanel: `<div data-seller-shell><div data-order-modal>
+  <div data-order-modal-panel data-call-panel role="dialog" aria-modal="true" aria-labelledby="call-panel-title">
+    <header class="call-panel-header flex items-start justify-between gap-3 px-6 pt-5">
+      <div class="call-panel-header__copy min-w-0">
+        <h2 id="call-panel-title" class="call-panel-header__title flex flex-wrap items-center gap-x-2 gap-y-1 text-2xl font-bold text-[#1c1c1e]">
+          <span>Appel <span class="text-[#6e6e73]" dir="ltr">#CMD-1042</span></span>
+        </h2>
+        <p class="call-panel-header__subtitle mt-1 text-sm text-[#6e6e73]">Parlez au client, vérifiez la commande, puis choisissez le résultat de l’appel.</p>
+      </div>
+      <div class="call-panel-header__tools flex shrink-0 items-center gap-2">
+        <span class="call-panel-timer inline-flex items-center gap-2 rounded-full bg-[#1c1c1e] px-3.5 py-1.5 text-sm font-semibold text-white tabular-nums"><span dir="ltr">00:42</span></span>
+        <button type="button" class="call-panel-close grid size-8 shrink-0 place-items-center rounded-full bg-[#e5484d] text-white" aria-label="Fermer">×</button>
+      </div>
+    </header>
+    <div class="call-panel-body px-6 pt-3 pb-5">
+      <form class="space-y-3">
+        <div class="grid items-start gap-x-6 gap-y-3 lg:grid-cols-2">
+          <section class="space-y-2" data-section="customer">
+            <h3 class="text-[13px] font-semibold">Informations client</h3>
+            <div class="grid gap-x-3 gap-y-2 sm:grid-cols-2">
+              <div class="min-w-0"><label class="admin-label">Nom du client</label><input class="admin-input !rounded-xl" value="${long}"></div>
+              <div class="min-w-0"><label class="admin-label">Téléphone</label>
+                <div class="call-panel-phone flex min-w-0 items-center gap-1.5">
+                  <input class="admin-input !rounded-xl min-w-0 flex-1" type="tel" value="0612345678" dir="ltr">
+                  <a class="grid size-9 shrink-0 place-items-center rounded-full bg-[#e3f3e8]" href="tel:0612345678">☎</a>
+                  <button type="button" class="grid size-9 shrink-0 place-items-center rounded-full bg-[#ececf0]">⎘</button>
+                </div>
+              </div>
+              <div class="min-w-0"><label class="admin-label">Deuxième téléphone</label><input class="admin-input !rounded-xl" type="tel" value="" dir="ltr"></div>
+              <div class="min-w-0"><label class="admin-label">Ville</label><input class="admin-input !rounded-xl" value="Casablanca"></div>
+            </div>
+            <div class="min-w-0"><label class="admin-label">Adresse</label><input class="admin-input !rounded-xl" value="${long}"></div>
+            <div class="min-w-0"><label class="admin-label">Notes de l’appel</label><textarea class="admin-input !rounded-xl" rows="2" placeholder="Raison d’annulation…"></textarea></div>
+          </section>
+          <section class="space-y-2" data-section="items">
+            <h3 class="text-[13px] font-semibold">Produits</h3>
+            <ul class="divide-y divide-[#1c1c1e]/10 rounded-xl border border-[#1c1c1e]/10 bg-white/50">
+              <li class="call-panel-line space-y-1.5 px-3 py-2.5">
+                <div class="flex items-start justify-between gap-2">
+                  <p class="min-w-0 flex-1 break-words text-[13px] font-semibold" dir="auto">${long}</p>
+                  <button type="button" class="admin-btn-plain admin-btn-plain--critical shrink-0">Retirer</button>
+                </div>
+                <div class="call-panel-line__controls grid grid-cols-[minmax(0,1fr)_5rem_auto] items-end gap-2">
+                  <div class="min-w-0"><span class="admin-label">Variante</span><select class="admin-input !rounded-xl"><option>${long}</option></select></div>
+                  <div class="min-w-0"><span class="admin-label">Quantité</span><input class="admin-input !rounded-xl text-center" type="number" value="2"></div>
+                  <p class="call-panel-line__total pb-2 text-end text-[13px] font-semibold tabular-nums" dir="ltr">1 234 MAD</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+        </div>
+        <section class="call-panel-result border-t border-[#1c1c1e]/10 pt-3" data-section="result">
+          <h3 class="mb-2 text-[13px] font-semibold">Résultat de l’appel</h3>
+          <div class="call-panel-actions flex flex-wrap items-center gap-2">
+            <button type="button" class="inline-flex h-9 items-center justify-center rounded-full bg-[#2f9d5c] px-4 text-[13px] font-semibold text-white">Confirmer</button>
+            <button type="button" class="inline-flex h-9 items-center justify-center rounded-full bg-[#e5484d] px-4 text-[13px] font-semibold text-white">Annuler la commande</button>
+            <button type="button" class="inline-flex h-9 items-center justify-center rounded-full bg-[#fdf0d9] px-4 text-[13px] font-semibold text-[#b4730f]">Injoignable</button>
+            <button type="button" class="inline-flex h-9 items-center justify-center rounded-full bg-[#e6f0fd] px-4 text-[13px] font-semibold text-[#2f6fed]">Rappeler plus tard</button>
+            <button type="button" class="inline-flex h-9 items-center justify-center rounded-full bg-[#ececf0] px-4 text-[13px] font-semibold">Faux numéro</button>
+            <button type="button" class="admin-btn-secondary call-panel-hang-up ms-auto">Raccrocher sans résultat</button>
+          </div>
+        </section>
+      </form>
+    </div>
+  </div>
+</div></div>`,
   checkout: `<main class="checkout"><form class="checkout-grid"><fieldset class="checkout-step"><legend>Informations de livraison</legend><div class="checkout-fields"><label class="checkout-field">Adresse<input class="checkout-input" value="${long}"></label><label class="checkout-field">Ville<select class="checkout-select"><option>${long}</option></select></label></div></fieldset><aside><ul class="checkout-lines"><li class="checkout-line"><div class="checkout-line__image" style="width:64px;height:64px"></div><div>${long}</div><strong>123 456 MAD</strong></li></ul></aside></form><div class="checkout-sticky"><div class="checkout-sticky__bar"><div>Total 123 456 MAD</div><button class="maison-button checkout-sticky__button">Confirmer ma commande maintenant</button></div></div></main>`,
   content: `<main class="store-page"><div class="store-page__body"><h1>${long}</h1><img width="1600" height="900" alt="Synthetic image"><pre>${long.repeat(3)}</pre><table><tr><td>${long.repeat(3)}</td></tr></table></div></main>`,
   platform: `<div class="platform-landing"><header class="platform-header"><div class="platform-container platform-header-inner"><a class="platform-brand">seallo</a><div class="platform-header-actions"><div class="platform-languages"><a>FR</a><a>EN</a><a>AR</a></div><a class="platform-login-nav">Connexion</a><a class="platform-button platform-header-button">Inscription</a></div></div></header><main class="platform-container"><h1>${long}</h1></main></div>`,
@@ -79,10 +145,10 @@ try {
         assert.equal(new URL(page.url()).pathname, new URL(route).pathname, `Unexpected redirect: ${route}`)
         await page.locator("html").evaluate((el, direction) => el.dir = direction, dir)
       } else {
-        const bodyClass = ["admin", "accounting", "datePicker"].includes(route)
+        const bodyClass = ["admin", "accounting", "datePicker", "callPanel"].includes(route)
           ? "admin-body"
           : route === "cookies" ? "storefront-body has-cookie-notice" : "storefront-body"
-        await page.setContent(`<!doctype html><html dir="${dir}"><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>${css}</style></head><body class="${bodyClass}" data-admin-theme="seallo">${["admin", "accounting", "datePicker"].includes(route) ? `<div class="flex"><div class="min-w-0 flex-1">${fixtures[route]}</div></div>` : fixtures[route]}</body></html>`)
+        await page.setContent(`<!doctype html><html dir="${dir}"><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>${css}</style></head><body class="${bodyClass}" data-admin-theme="seallo">${["admin", "accounting", "datePicker", "callPanel"].includes(route) ? `<div class="flex"><div class="min-w-0 flex-1">${fixtures[route]}</div></div>` : fixtures[route]}</body></html>`)
       }
       if (!process.env.RESPONSIVE_URLS && route === "datePicker") {
         await page.addScriptTag({content: pickerSource})
@@ -117,7 +183,7 @@ try {
         assert.ok(banner.y > height * 0.4, "storefront cookie banner must not sit in the top half")
         checks++
       }
-      if (!process.env.RESPONSIVE_URLS && width <= 767 && ["auth", "admin", "checkout"].includes(route)) {
+      if (!process.env.RESPONSIVE_URLS && width <= 767 && ["auth", "admin", "checkout", "callPanel"].includes(route)) {
         const fontSizes = await page.locator('input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea').evaluateAll(els =>
           els.map(el => ({ tag: el.tagName, className: el.className, size: parseFloat(getComputedStyle(el).fontSize) }))
         )

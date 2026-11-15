@@ -1,0 +1,88 @@
+/* Storefront Black Friday overlay. Loaded only when the store flag is on. */
+
+body.storefront-body.theme-black-friday {
+  --sf-page: #0a0a0a;
+  --sf-soft: #141414;
+  --sf-frame: #1c1c1c;
+  --sf-ink: #f5f0e6;
+  --sf-muted: #c4bba8;
+  --sf-faint: #8f8676;
+  --sf-line: rgba(212, 175, 55, 0.28);
+  --sf-line-strong: rgba(212, 175, 55, 0.45);
+  --bf-gold: #d4af37;
+  --bf-gold-soft: #f0d78c;
+  --bf-accent: #c41e3a;
+  background-color: var(--sf-page);
+  color: var(--sf-ink);
+  background-image:
+    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(212, 175, 55, 0.12), transparent 55%),
+    linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 100%);
+}
+
+body.theme-black-friday ::selection {
+  background: rgba(212, 175, 55, 0.35);
+  color: #0a0a0a;
+}
+
+body.theme-black-friday .announcement-bar {
+  background: #000;
+  color: var(--bf-gold-soft);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+  letter-spacing: 0.32em;
+}
+
+body.theme-black-friday .maison-nav {
+  background: rgba(10, 10, 10, 0.92);
+  border-bottom-color: rgba(212, 175, 55, 0.2);
+}
+
+body.theme-black-friday .maison-brand,
+body.theme-black-friday .maison-link,
+body.theme-black-friday .bag-link {
+  color: var(--sf-ink);
+}
+
+body.theme-black-friday .maison-nav.is-over-hero .maison-brand,
+body.theme-black-friday .maison-nav.is-over-hero .maison-link {
+  color: var(--sf-ink);
+}
+
+body.theme-black-friday .pdp__price,
+body.theme-black-friday .home-card__price,
+body.theme-black-friday .catalog-link {
+  color: var(--bf-gold-soft);
+}
+
+body.theme-black-friday .home-card__badge--sale,
+body.theme-black-friday .btn-primary,
+body.theme-black-friday button[type="submit"].btn-primary,
+body.theme-black-friday .pdp__buy .btn-primary,
+body.theme-black-friday .mobile-buy-bar .btn-primary {
+  background: var(--bf-accent);
+  color: #fff;
+  border-color: var(--bf-accent);
+}
+
+body.theme-black-friday .mobile-buy-bar {
+  background: rgba(10, 10, 10, 0.96);
+  border-top-color: rgba(212, 175, 55, 0.35);
+  color: var(--sf-ink);
+}
+
+body.theme-black-friday .mobile-buy-bar__bag,
+body.theme-black-friday .mobile-buy-bar .pdp__price {
+  color: var(--bf-gold-soft);
+}
+
+body.theme-black-friday footer,
+body.theme-black-friday .store-footer {
+  background: #050505;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  color: var(--sf-muted);
+}
+
+body.theme-black-friday .flash {
+  background: #1a1208;
+  color: var(--bf-gold-soft);
+  border-color: rgba(212, 175, 55, 0.4);
+}

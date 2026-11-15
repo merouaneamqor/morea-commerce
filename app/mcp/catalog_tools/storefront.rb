@@ -6,10 +6,12 @@ module CatalogTools
       name slug origin currency phone whatsapp email paymentMethod
       shippingDh freeShippingThresholdDh lowStockThreshold
       senditConfigured senditPickupDistrictId senditAllowOpen senditAllowTry discordConfigured
-      metaPixelId tiktokPixelId googleAnalyticsId featuredProductSlug featuredCollectionSlug
+      metaPixelId tiktokPixelId googleAnalyticsId blackFridayTheme featuredProductSlug featuredCollectionSlug
       legalEntityName cndpAuthorization privacyRightsContact
       translations { locale tagline about codLabel codNote campaignTitle campaignSeason campaignCta announcement }
     GQL
+
+    THEME_FIELDS = "blackFridayTheme"
 
     class GetStoreSettings < MCP::Tool
       description "Read checkout, cash-on-delivery copy, fallback shipping, Sendit status, pixels, and the public store URL. Secrets are not returned. Cash on delivery is the only payment gateway. The public host is origin; custom domains are not available."
@@ -97,6 +99,44 @@ module CatalogTools
             }
           GQL
           variables: attrs.compact
+        )
+      end
+    end
+
+    class GetTheme < MCP::Tool
+      description "Read storefront visual theme flags for this store. blackFridayTheme is true when the Black Friday look is active on the public storefront."
+
+      def self.call(server_context:)
+        CatalogExecutor.call(
+          store: server_context.fetch(:store),
+          include_covers: false,
+          query: "query { storeSettings { #{THEME_FIELDS} } }"
+        )
+      end
+    end
+
+    class SetBlackFridayTheme < MCP::Tool
+      description "Turn the storefront Black Friday theme on or off for this store. Idempotent: pass enabled true or false. Does not change admin theme, pixels, or home-page sections."
+      input_schema(
+        properties: {
+          enabled: { type: "boolean", description: "true to activate Black Friday, false to restore the normal storefront look" }
+        },
+        required: [ "enabled" ]
+      )
+
+      def self.call(enabled:, server_context:)
+        CatalogExecutor.call(
+          store: server_context.fetch(:store),
+          include_covers: false,
+          query: <<~GQL,
+            mutation($enabled: Boolean!) {
+              setBlackFridayTheme(enabled: $enabled) {
+                settings { #{THEME_FIELDS} }
+                errors
+              }
+            }
+          GQL
+          variables: { enabled: enabled }
         )
       end
     end

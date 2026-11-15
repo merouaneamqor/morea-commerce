@@ -72,6 +72,19 @@ module Mutations
       end
     end
 
+    class SetBlackFridayTheme < BaseMutation
+      argument :enabled, Boolean, required: true
+
+      field :settings, Types::Storefront::SettingsType, null: true
+      field :errors, [ String ], null: false
+
+      def resolve(enabled:)
+        { settings: Catalog::StoreOps.set_black_friday_theme!(store, enabled: enabled), errors: [] }
+      rescue Catalog::StoreOps::Error => e
+        { settings: nil, errors: [ e.message ] }
+      end
+    end
+
     class SyncShipping < BaseMutation
       argument :confirm, Boolean, required: true
 

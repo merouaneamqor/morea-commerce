@@ -53,6 +53,8 @@ class CatalogServer
     CatalogTools::Funnel::FunnelSources,
     CatalogTools::Funnel::FunnelLandings,
     CatalogTools::Storefront::GetStoreSettings,
+    CatalogTools::Storefront::GetTheme,
+    CatalogTools::Storefront::SetBlackFridayTheme,
     CatalogTools::Storefront::UpdateCheckout,
     CatalogTools::Storefront::UpdateMarketing,
     CatalogTools::Storefront::UpdateShipping,
@@ -127,6 +129,7 @@ class CatalogServer
         Use store_stats, product_stats, list_orders, get_order, and cancel_order for strategy. Delivered revenue is cash collected.
         cancel_order needs confirm: true and only works before pickup.
         Checkout is cash on delivery. Shipping is Sendit. Coupons, customers, CSV, pixels, and the home page are their own tools. There is no card gateway, email campaign, or custom domain.
+        Storefront Black Friday look: get_theme reads blackFridayTheme; set_black_friday_theme with enabled true/false toggles it per store.
         coverUrl and the attached cover photo are the storefront image. Do not replace them with a web search.
         Prices are whole currency units (priceDh), not cents. Locales are fr, en, and ar; create with a fr name.
         Deletes require confirm: true. Images are base64 or a public http(s) URL (jpeg, png, webp, gif, 8MB, 4 per call).

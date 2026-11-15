@@ -2539,102 +2539,128 @@
     @apply flex justify-between gap-4 py-1 text-[13px];
   }
 
-  /* ——— Checkout ——— */
+  /* ——— Checkout popup ——— */
+  html.checkout-modal-open,
+  html.checkout-modal-open body {
+    overflow: hidden;
+  }
+
+  .checkout-overlay {
+    @apply fixed inset-0 z-[60] flex items-end justify-center bg-[rgba(26,23,22,0.48)] p-0 sm:items-center sm:p-4;
+    animation: checkout-scrim-in 180ms ease-out;
+  }
+
+  .checkout-modal {
+    @apply flex max-h-[min(100dvh,52rem)] w-full max-w-lg flex-col overflow-y-auto overscroll-contain bg-paper shadow-[0_24px_80px_rgba(26,23,22,0.28)] sm:max-h-[min(92dvh,52rem)] sm:rounded-sm;
+    animation: checkout-in 220ms ease-out;
+  }
+
+  .checkout-modal__header {
+    @apply sticky top-0 z-20 shrink-0 border-b border-line bg-paper px-4 pb-3 pt-[max(0.85rem,env(safe-area-inset-top))] sm:px-5 sm:pt-4;
+  }
+
+  .checkout-modal__top {
+    @apply relative flex items-start gap-3;
+  }
+
+  .checkout-modal__close {
+    @apply absolute end-0 top-0 grid size-11 place-items-center text-2xl leading-none text-ink-soft transition hover:text-ink;
+  }
+
+  .checkout-modal__heading {
+    @apply pe-12;
+  }
+
+  .checkout-modal__eyebrow {
+    @apply text-[10px] font-semibold uppercase tracking-[0.28em] text-ink/45;
+  }
+
+  .checkout-modal__title {
+    @apply mt-1 font-sans text-lg font-bold uppercase tracking-[0.14em] text-ink sm:text-xl sm:tracking-[0.16em];
+  }
+
+  .checkout-modal__urgency {
+    @apply mt-2 text-sm font-medium leading-5 text-ink;
+  }
+
+  .checkout-modal__bag {
+    @apply mt-3 flex items-center gap-3 rounded-sm bg-stone-floor/80 px-3 py-2.5;
+  }
+
+  .checkout-modal__thumb {
+    @apply w-12 shrink-0;
+  }
+
+  .checkout-modal__bag-meta {
+    @apply truncate text-sm text-ink;
+  }
+
+  .checkout-modal__bag-total {
+    @apply mt-0.5 flex flex-wrap items-baseline gap-x-2 font-display text-lg text-ink;
+  }
+
+  .checkout-modal__bag-note {
+    @apply text-[10px] font-sans uppercase tracking-[0.16em] text-ink-faint;
+  }
+
+  .checkout-modal__form {
+    @apply flex flex-1 flex-col;
+  }
+
+  .checkout-modal__body {
+    @apply flex-1 space-y-4 overflow-visible px-4 py-4 sm:px-5;
+  }
+
+  .checkout-modal__fields {
+    @apply grid gap-3.5;
+  }
+
+  .checkout-modal__footer {
+    @apply sticky bottom-0 z-20 shrink-0 border-t border-line bg-paper px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:px-5;
+  }
+
+  .checkout-modal__nudge {
+    @apply mb-2 flex items-center justify-between gap-3 text-xs text-ink-soft;
+  }
+
+  .checkout-modal__nudge-text {
+    @apply leading-5;
+  }
+
+  .checkout-modal__timer {
+    @apply shrink-0 font-mono text-sm tabular-nums tracking-wide text-ink;
+  }
+
+  .checkout-modal__pay {
+    @apply flex items-stretch gap-3;
+  }
+
+  .checkout-modal__pay-total {
+    @apply hidden min-w-[5.5rem] sm:block;
+  }
+
+  .checkout-modal__pay-label {
+    @apply text-[10px] uppercase tracking-[0.2em] text-ink-faint;
+  }
+
+  .checkout-modal__pay-amount {
+    @apply font-display text-xl leading-none text-ink;
+  }
+
+  .checkout-modal__submit {
+    @apply min-h-14 flex-1 px-4 py-4 text-[11px] tracking-[0.16em];
+  }
+
+  .checkout-modal__cod {
+    @apply mt-2 text-center text-[11px] leading-4 text-ink-faint;
+  }
+
   .checkout-page {
     @apply mx-auto max-w-6xl bg-white px-5 pb-36 pt-24 md:px-10 md:pb-32 md:pt-28;
   }
 
-  .checkout-hero {
-    @apply max-w-xl animate-[checkout-in_700ms_ease-out] border-b border-line pb-6;
-  }
-
-  .checkout-hero__eyebrow {
-    @apply text-[10px] font-semibold uppercase tracking-[0.28em] text-ink/45;
-  }
-
-  .checkout-hero__title {
-    @apply mt-2 font-sans text-[1.5rem] font-bold uppercase tracking-[0.16em] text-ink md:text-3xl md:tracking-[0.2em];
-  }
-
-  .checkout-hero__subtitle {
-    @apply mt-3 text-sm leading-7 text-ink-soft md:text-base md:leading-8;
-  }
-
-  .checkout-cod-strip {
-    @apply mt-5 inline-flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] uppercase tracking-[0.2em] text-ink-soft;
-  }
-
-  .checkout-cod-strip__dot {
-    @apply hidden h-1 w-1 rounded-full bg-ink/40 sm:inline-block;
-  }
-
-  .checkout-bag-mobile {
-    @apply mt-8 border border-line bg-white;
-  }
-
-  .checkout-bag-mobile__summary {
-    @apply flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3.5 text-sm text-ink;
-  }
-
-  .checkout-bag-mobile__summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .checkout-bag-mobile__meta {
-    @apply text-ink-faint;
-  }
-
-  .checkout-bag-mobile__body {
-    @apply border-t border-line px-4 pb-4 pt-2;
-  }
-
-  .checkout-grid {
-    @apply mt-8 grid gap-8 lg:mt-12 lg:grid-cols-12 lg:items-start lg:gap-12;
-  }
-
-  .checkout-form-col {
-    @apply order-1 animate-[checkout-in_800ms_ease-out] lg:col-span-7;
-  }
-
-  .checkout-summary-col {
-    @apply order-2 hidden lg:col-span-5 lg:block lg:sticky lg:top-28;
-  }
-
-  .checkout-form {
-    @apply space-y-5;
-  }
-
-  .checkout-step {
-    @apply border border-line bg-paper px-5 py-6 sm:px-6 sm:py-7;
-  }
-
-  .checkout-step__title {
-    @apply px-0 font-display text-2xl text-ink;
-  }
-
-  .checkout-step__hint {
-    @apply mt-1 text-sm leading-6 text-ink-soft;
-  }
-
-  .checkout-fields {
-    @apply mt-5 grid gap-4 sm:grid-cols-2 sm:gap-5;
-  }
-
-  .checkout-fields--contact {
-    @apply sm:grid-cols-2;
-  }
-
-  .checkout-panel {
-    @apply border border-line bg-paper px-5 py-6 sm:px-6 sm:py-7;
-  }
-
-  .checkout-panel > legend.checkout-panel__title,
-  .checkout-panel__title {
-    @apply px-0 text-[11px] uppercase tracking-[0.24em] text-ink;
-  }
-
   .checkout-field {
-    @apply space-y-2;
+    @apply space-y-1.5;
   }
 
   .checkout-label {
@@ -2644,6 +2670,11 @@
   .checkout-input {
     @apply w-full border border-line bg-stone-floor px-3.5 py-3.5 text-base text-ink outline-none transition focus:border-ink focus:ring-1 focus:ring-ink/15 md:py-3;
     min-height: 3.25rem;
+  }
+
+  .checkout-input--fast {
+    @apply py-4 text-[1.05rem] md:py-3.5;
+    min-height: 3.5rem;
   }
 
   .checkout-input--area {
@@ -2950,6 +2981,11 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  @keyframes checkout-scrim-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   /* ——— COD buy actions (product pages) ——— */

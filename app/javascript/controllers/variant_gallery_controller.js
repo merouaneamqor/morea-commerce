@@ -37,9 +37,17 @@ export default class extends Controller {
 
   selectedVariant() {
     const id = this.selectedVariantId()
-    if (!id) return null
+    if (id) {
+      return this.variantsList().find((variant) => String(variant.id) === String(id)) || null
+    }
 
-    return this.variantsList().find((variant) => String(variant.id) === String(id)) || null
+    // While size is still required, keep the colour preview photos in the gallery.
+    const picker = this.pickerController()
+    if (picker && typeof picker.previewVariant === "function") {
+      return picker.previewVariant() || null
+    }
+
+    return null
   }
 
   selectedVariantId() {

@@ -41,7 +41,7 @@ class ProductVariant < ApplicationRecord
   end
 
   def unit_price_cents
-    price_cents.presence || product.price_cents
+    price_cents.presence || product.storefront_price_cents
   end
 
   def display_name

@@ -45,7 +45,7 @@ class Cart < ApplicationRecord
     with_lock do
       item = cart_items.find_or_initialize_by(product: product, product_variant: variant)
       item.quantity = item.new_record? ? quantity : [ item.quantity + quantity, 99 ].min
-      item.unit_price_cents = variant&.unit_price_cents || product.price_cents
+      item.unit_price_cents = variant&.unit_price_cents || product.storefront_price_cents
       item.save!
       item
     end

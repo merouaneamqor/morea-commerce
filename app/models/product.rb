@@ -50,7 +50,7 @@ class Product < ApplicationRecord
   end
 
   def price_display
-    format_money(price_cents)
+    format_money(storefront_price_cents)
   end
 
   def price_dh
@@ -81,6 +81,37 @@ class Product < ApplicationRecord
     return if compare_at_cents.blank?
 
     format_money(compare_at_cents)
+  end
+
+  # Sale ended: charge compare-at again until the merchant updates prices.
+  def sale_expired?
+    sale_ends_at.present? && sale_ends_at <= Time.current && compare_at_cents.to_i > price_cents.to_i
+  end
+
+  def storefront_price_cents
+    sale_expired? ? compare_at_cents.to_i : price_cents.to_i
+  end
+
+  def on_sale?
+    !sale_expired? && compare_at_cents.to_i > price_cents.to_i
+  end
+
+  def savings_cents
+    return 0 unless on_sale?
+
+    compare_at_cents.to_i - price_cents.to_i
+  end
+
+  def savings_display
+    format_money(savings_cents) if on_sale?
+  end
+
+  # Timed sale copy only when a real future end is set (admin Pricing).
+  def sale_ends_at_active
+    return if sale_ends_at.blank?
+    return if sale_ends_at <= Time.current
+
+    sale_ends_at
   end
 
   def available?

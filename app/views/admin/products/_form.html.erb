@@ -85,6 +85,11 @@
             <%= f.number_field :compare_at_dh, class: "admin-input", min: 0 %>
           </div>
           <div>
+            <%= f.label :sale_ends_at, "Sale ends at", class: "admin-label" %>
+            <%= f.datetime_local_field :sale_ends_at, class: "admin-input", value: (@product.sale_ends_at&.strftime("%Y-%m-%dT%H:%M")) %>
+            <p class="admin-help">Optional. When set and still in the future, the product page shows the sale price until this time. Leave blank for savings-only copy.</p>
+          </div>
+          <div>
             <%= f.label :cost_dh, "Cost per unit", class: "admin-label" %>
             <%= f.number_field :cost_dh, class: "admin-input", min: 0 %>
             <p class="admin-help">Your purchase cost. Used for net profit; copied onto each new order.</p>

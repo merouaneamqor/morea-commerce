@@ -109,7 +109,9 @@ RSpec.describe "Storefront pages", type: :request do
     by_id = payload.index_by { |variant| variant["id"] }
     expect(by_id.fetch(black.id)["images"]).to be_present
     expect(by_id.fetch(white.id)["images"]).to be_nil
-    expect(document.at_css("input[name='product_variant_id']")["value"]).to eq(black.id.to_s)
+    # Size is required on the PDP: variant id stays empty until the shopper picks one.
+    expect(document.at_css("input[name='product_variant_id']")["value"]).to eq("")
+    expect(document.at_css("#pdp-sizes")).to be_present
     lead = document.at_css(".pdp__gallery img")["src"]
     black_key = by_id.fetch(black.id)["images"].first.to_s.split("?").first.split("/").last
     product_key = product_urls.first.to_s.split("?").first.split("/").last
@@ -142,8 +144,89 @@ RSpec.describe "Storefront pages", type: :request do
     expect(by_id.fetch(black.id)["images"].join).to include("black-hero")
     expect(by_id.fetch(white.id)["images"]).to be_nil
     # Initial variant sorts by size then color, so Black leads and the SSR
-    # gallery follows its filename mapping.
-    expect(document.at_css("input[name='product_variant_id']")["value"]).to eq(black.id.to_s)
+    # gallery follows its filename mapping. Variant id stays empty until size pick.
+    expect(document.at_css("input[name='product_variant_id']")["value"]).to eq("")
     expect(document.at_css(".pdp__gallery img")["src"]).to include("black-hero")
+  end
+
+  it "shows the mobile offer block, savings, and a size-gated sticky CTA" do
+    product = store.products.create!(
+      name: "Basic Tracksuit",
+      slug: "basic-tracksuit",
+      status: "active",
+      price_cents: 38_900,
+      compare_at_cents: 44_900,
+      currency: "DH",
+      track_inventory: false
+    )
+    product.product_variants.create!(option1_value: "M", option2_value: "Noir", stock: 0)
+    product.product_variants.create!(option1_value: "L", option2_value: "Noir", stock: 0)
+    store.pages.create!(slug: "returns", title: "Retours", body: "7 jours", published: true, template: "content")
+
+    get "/fr/products/basic-tracksuit"
+
+    expect(response).to have_http_status(:ok)
+    expect(document.at_css(".pdp__offer")).to be_present
+    expect(document.at_css(".pdp__price").text).to include("389")
+    expect(document.at_css(".pdp__price-compare").text).to include("449")
+    expect(document.at_css(".pdp__offer-save").text).to include("60")
+    expect(document.at_css(".pdp__offer-save").text).to match(/économie/i)
+    expect(document.at_css(".pdp__offer-until")).to be_nil
+    expect(document.at_css("input[name='product_variant_id']")["value"]).to eq("")
+    expect(document.at_css("#pdp-sizes .landing-buy__label").text).to include("Taille")
+    expect(document.at_css(".mobile-buy-bar .pdp-order-btn__sub").text).to include("Aucun paiement en ligne")
+    expect(document.at_css(".mobile-buy-bar [data-variant-picker-target='orderLabel']").text).to include("Choisir ma taille")
+    expect(document.css(".mobile-buy-bar button").size).to eq(1)
+    expect(document.at_css("[data-variant-picker-target='selectionSummary']")).to be_present
+    expect(document.at_css(".pdp__trust").text).to include("Livraison partout au Maroc")
+    expect(document.at_css(".pdp__trust-link").text).to include("Retours")
+    expect(response.body).not_to match(/Plus que \d+/i)
+  end
+
+  it "shows timed sale copy when sale_ends_at is still in the future" do
+    product = store.products.create!(
+      name: "Sale Set",
+      slug: "sale-set",
+      status: "active",
+      price_cents: 38_900,
+      compare_at_cents: 44_900,
+      currency: "DH",
+      track_inventory: false,
+      sale_ends_at: 2.days.from_now.change(hour: 23, min: 59)
+    )
+
+    get "/fr/products/sale-set"
+
+    expect(response).to have_http_status(:ok)
+    until_copy = document.at_css(".pdp__offer-until")
+    expect(until_copy).to be_present
+    expect(until_copy.text).to include("449")
+    expect(until_copy.text).to match(/repasse/i)
+    expect(document.at_css(".pdp__offer-save").attributes).to have_key("hidden")
+  end
+
+  it "reverts the storefront price after sale_ends_at" do
+    product = store.products.create!(
+      name: "Ended Sale",
+      slug: "ended-sale",
+      status: "active",
+      price_cents: 38_900,
+      compare_at_cents: 44_900,
+      currency: "DH",
+      track_inventory: false,
+      sale_ends_at: 1.hour.ago
+    )
+
+    expect(product.sale_expired?).to be(true)
+    expect(product.storefront_price_cents).to eq(44_900)
+    expect(product.on_sale?).to be(false)
+
+    get "/fr/products/ended-sale"
+
+    expect(response).to have_http_status(:ok)
+    expect(document.at_css(".pdp__price").text).to include("449")
+    expect(document.at_css(".pdp__price-compare")).to be_nil
+    expect(document.at_css(".pdp__offer-save")).to be_nil
+    expect(document.at_css(".pdp__offer-until")).to be_nil
   end
 end

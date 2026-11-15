@@ -1034,19 +1034,19 @@
   }
 
   .pdp__eyebrow {
-    @apply text-center md:text-start;
+    @apply text-start;
   }
 
   .pdp__title {
-    @apply mt-3 text-center font-sans text-[1.55rem] font-bold uppercase leading-[1.05] tracking-[0.12em] text-ink md:text-start md:text-4xl md:tracking-[0.1em];
+    @apply mt-3 text-start font-sans text-[1.55rem] font-bold uppercase leading-[1.05] tracking-[0.12em] text-ink md:text-4xl md:tracking-[0.1em];
   }
 
   .pdp__offer {
-    @apply mt-6 flex flex-col items-center md:items-start;
+    @apply mt-6 flex flex-col items-start;
   }
 
   .pdp__offer-prices {
-    @apply flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1 md:justify-start;
+    @apply flex flex-wrap items-baseline justify-start gap-x-3 gap-y-1;
   }
 
   .pdp__price {
@@ -1063,7 +1063,7 @@
 
   .pdp__offer-save,
   .pdp__offer-until {
-    @apply mt-2 text-center text-sm font-medium text-ink-soft md:text-start;
+    @apply mt-2 text-start text-sm font-medium text-ink-soft;
   }
 
   .pdp__offer-until {
@@ -1071,7 +1071,7 @@
   }
 
   .pdp__ship-note {
-    @apply mt-4 text-center text-[12px] leading-5 text-ink-faint md:text-start;
+    @apply mt-4 text-start text-[12px] leading-5 text-ink-faint;
   }
 
   .pdp__ship-note-lead {
@@ -1079,11 +1079,11 @@
   }
 
   .pdp__availability {
-    @apply mt-3 text-center text-xs text-ink-soft md:text-start;
+    @apply mt-3 text-start text-xs text-ink-soft;
   }
 
   .pdp__desc {
-    @apply mx-auto mt-5 max-w-md text-center text-sm leading-7 text-ink-soft md:mx-0 md:text-start;
+    @apply mt-5 max-w-md text-start text-sm leading-7 text-ink-soft;
   }
 
   .pdp__buy-form {
@@ -2850,7 +2850,7 @@
   }
 
   .pdp-add-link {
-    @apply border-0 bg-transparent text-center text-[10px] uppercase tracking-[0.22em] text-ink-soft underline-offset-4 transition hover:text-ink hover:underline;
+    @apply border-0 bg-transparent text-start text-[10px] uppercase tracking-[0.22em] text-ink-soft underline-offset-4 transition hover:text-ink hover:underline;
   }
 
   .mobile-buy-bar__stack {
@@ -2858,7 +2858,7 @@
   }
 
   .mobile-buy-bar__selection {
-    @apply text-center text-xs text-ink-soft;
+    @apply text-start text-xs text-ink-soft;
   }
 
   /* Detect browser autofill so city shipping/districts update */
@@ -2973,7 +2973,7 @@
   }
 
   .pdp-order-btn {
-    @apply py-3.5;
+    @apply py-3.5 text-start;
   }
 
   .pdp-order-btn--desktop {
@@ -2985,7 +2985,7 @@
   }
 
   .pdp-order-btn__row {
-    @apply inline-flex items-center justify-center gap-2.5;
+    @apply inline-flex items-center justify-start gap-2.5;
   }
 
   .pdp-order-btn__bag {
@@ -2993,7 +2993,7 @@
   }
 
   .pdp-order-btn__sub {
-    @apply mt-1 block text-[9px] tracking-[0.2em] opacity-70;
+    @apply mt-1 block text-start text-[9px] tracking-[0.2em] opacity-70;
   }
 
   .whatsapp-link {

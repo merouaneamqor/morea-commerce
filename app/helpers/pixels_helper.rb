@@ -118,8 +118,9 @@ module PixelsHelper
       num_items: order.order_items.sum(&:quantity),
       quantity: order.order_items.sum(&:quantity),
       order_id: order.number.to_s,
-      event_id: "purchase-#{order.number}"
-    }
+      event_id: "purchase-#{order.number}",
+      delivery_city: order.customer_city.to_s.presence
+    }.compact
   end
 
   def order_pixel_user_data(order)

@@ -73,7 +73,8 @@ RSpec.describe PixelsHelper, type: :helper do
       event_id: "purchase-PIX-1001",
       value: 499.0,
       currency: "MAD",
-      content_ids: [ "BT-001" ]
+      content_ids: [ "BT-001" ],
+      delivery_city: "Casablanca"
     )
     expect(helper.order_pixel_user_data(order)).to include(
       ph: "0612345678",
@@ -84,6 +85,34 @@ RSpec.describe PixelsHelper, type: :helper do
       country: "ma",
       external_id: "PIX-1001"
     )
+  end
+
+  it "omits delivery_city from the purchase payload when the order city is blank" do
+    customer = store.customers.create!(name: "No City", phone: "0699988877", city: "Rabat")
+    order = store.orders.create!(
+      number: "PIX-1002",
+      status: "new",
+      customer: customer,
+      customer_name: "No City",
+      customer_phone: "0699988877",
+      customer_city: "Rabat",
+      customer_address: "Street 2",
+      currency: "MAD",
+      subtotal_cents: 49_900,
+      shipping_cents: 0,
+      discount_cents: 0,
+      total_cents: 49_900
+    )
+    order.update_column(:customer_city, "")
+    order.order_items.create!(
+      product: product,
+      product_name: product.name,
+      quantity: 1,
+      unit_price_cents: 49_900,
+      total_cents: 49_900
+    )
+
+    expect(helper.order_pixel_payload(order)).not_to have_key(:delivery_city)
   end
 
   it "renders pixel event tags with JSON object payloads for Stimulus" do

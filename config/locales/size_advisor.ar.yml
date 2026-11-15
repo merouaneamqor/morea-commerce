@@ -1,6 +1,8 @@
 ar:
   size_advisor:
     find_my_size: "اعثر على مقاسي"
+    guide_title: "دليل المقاسات"
+    guide_body: "قياسات القطعة بالسنتيمتر."
     eyebrow: "المقاس"
     title: "مستشار المقاس"
     close: "إغلاق"

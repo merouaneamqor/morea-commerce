@@ -23,9 +23,12 @@ ActiveRecord::Base.transaction do
       raise "Published shipping absent" unless doc.at_css("a[href='/#{locale}/pages/shipping']")
       next unless path.include?("/products/")
 
-      raise "First available variant not selected" unless doc.at_css("input[name='product_variant_id']")["value"] == available.id.to_s
-      prices = doc.css("[data-variant-picker-target='price']").map(&:text)
-      raise "Variant prices inconsistent" unless prices.size == 2 && prices.all? { |price| price == "120 MAD" }
+      # Size stays unset for checkout; SSR still previews the first in-stock variant's price/photos.
+      raise "Checkout variant must stay unset until a size is chosen" unless doc.at_css("input[name='product_variant_id']")["value"].blank?
+      raise "Size pills missing" unless doc.css("[data-variant-picker-target='sizeButton']").size >= 2
+      # One offer price under the photo (sticky no longer duplicates the price target).
+      prices = doc.css("[data-variant-picker-target='price']").map { |node| node.text.strip }
+      raise "Variant prices inconsistent" unless prices.size == 1 && prices.first == "120 MAD"
       raise "Story not visible" unless doc.at_css("details[open]")&.text&.include?("A studio silhouette.")
       raise "Origin not shown" unless doc.at_css("#product-details").text.include?("Morocco")
       root = doc.at_css("[data-controller~='variant-picker']")
@@ -43,7 +46,8 @@ ActiveRecord::Base.transaction do
   raise "Parent stock hides exhausted variants" if product.reload.available?
   http.get "/en/products/#{product.slug}"
   buttons = Nokogiri::HTML(http.response.body).css("[data-variant-picker-target='purchaseButton']")
-  raise "Sold-out purchase button enabled" unless buttons.size == 4 && buttons.all? { |button| button.key?("disabled") }
+  # Desktop order + add-to-bag, plus the mobile sticky order button.
+  raise "Sold-out purchase button enabled" unless buttons.size == 3 && buttons.all? { |button| button.key?("disabled") }
   product.update!(track_inventory: false)
   raise "Untracked inventory unavailable" unless product.available?
   product.product_variants.destroy_all

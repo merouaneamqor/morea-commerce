@@ -2,14 +2,28 @@ import { Controller } from "@hotwired/stimulus"
 
 // Size / color picker that resolves a product_variant_id
 export default class extends Controller {
-  static targets = ["variantId", "sizeButton", "colorButton", "colorLabel", "availability", "purchaseButton", "orderLabel", "price", "comparePrice"]
+  static targets = [
+    "variantId", "sizeButton", "colorButton", "colorLabel", "availability",
+    "purchaseButton", "orderLabel", "price", "comparePrice", "savings", "saleUntil",
+    "sizeGroup", "selectionSummary"
+  ]
   static values = {
     variants: Array,
     trackInventory: Boolean,
+    requireSize: { type: Boolean, default: false },
     availableLabel: String,
     unavailableLabel: String,
     orderLabel: String,
-    compareAt: Number
+    orderWithPriceLabel: String,
+    chooseSizeLabel: String,
+    selectionSummaryLabel: String,
+    selectionSummarySizeLabel: String,
+    compareAt: Number,
+    compareAtDisplay: String,
+    saveAmountLabel: String,
+    priceRevertsLabel: String,
+    saleUntilWhen: String,
+    savingsDisplay: String
   }
 
   connect() {
@@ -19,8 +33,13 @@ export default class extends Controller {
       ? this.variantsValue.find((variant) => String(variant.id) === String(presetId))
       : null
     const initial = preset || this.variantsValue.find((variant) => this.inStock(variant)) || this.variantsValue[0]
-    this.selectedSize = initial.size
     this.selectedColor = initial.color
+    // Never preselect a size when sizes exist — sticky used to submit the default (often S).
+    if (this.requireSizeValue && this.sizeButtonTargets.length) {
+      this.selectedSize = null
+    } else {
+      this.selectedSize = initial.size
+    }
     this.render()
   }
 
@@ -40,12 +59,18 @@ export default class extends Controller {
     this.render()
   }
 
+  ensureSize(event) {
+    if (!this.needsSize()) return
+    event.preventDefault()
+    this.focusSizes()
+  }
+
   render() {
     this.sizeButtonTargets.forEach((btn) => {
       const available = this.variantsValue.some((variant) => variant.size === btn.dataset.size && this.inStock(variant))
       btn.classList.toggle("is-unavailable", !available)
-      btn.classList.toggle("is-active", btn.dataset.size === this.selectedSize)
-      btn.setAttribute("aria-pressed", String(btn.dataset.size === this.selectedSize))
+      btn.classList.toggle("is-active", !!this.selectedSize && btn.dataset.size === this.selectedSize)
+      btn.setAttribute("aria-pressed", String(!!this.selectedSize && btn.dataset.size === this.selectedSize))
     })
 
     this.colorButtonTargets.forEach((btn) => {
@@ -55,18 +80,23 @@ export default class extends Controller {
       btn.classList.toggle("is-unavailable", !this.variantsValue.some((variant) =>
         (!this.selectedSize || variant.size === this.selectedSize) && variant.color === btn.dataset.color && this.inStock(variant)
       ))
-      btn.hidden = !available
+      btn.hidden = this.selectedSize ? !available : false
     })
 
     if (this.hasColorLabelTarget) {
       this.colorLabelTarget.textContent = this.selectedColor || "—"
     }
 
-    const match = this.variantsValue.find((v) => {
-      const sizeOk = !this.selectedSize || v.size === this.selectedSize
-      const colorOk = !this.selectedColor || v.color === this.selectedColor
-      return sizeOk && colorOk
-    })
+    const waitingForSize = this.needsSize()
+    const match = waitingForSize
+      ? null
+      : this.variantsValue.find((v) => {
+        const sizeOk = !this.selectedSize || v.size === this.selectedSize
+        const colorOk = !this.selectedColor || v.color === this.selectedColor
+        return sizeOk && colorOk
+      })
+
+    const preview = match || this.previewVariant()
 
     if (this.hasVariantIdTarget) {
       this.variantIdTarget.value = match ? match.id : ""
@@ -74,18 +104,110 @@ export default class extends Controller {
 
     this.purchasable = !!match && this.inStock(match)
     this.availabilityTargets.forEach((label) => {
-      label.textContent = this.purchasable ? this.availableLabelValue : this.unavailableLabelValue
+      label.textContent = (this.purchasable || waitingForSize)
+        ? this.availableLabelValue
+        : this.unavailableLabelValue
     })
-    this.purchaseButtonTargets.forEach((button) => { button.disabled = !this.purchasable })
+
+    // Keep the CTA tappable when size is missing so the first tap can focus sizes.
+    this.purchaseButtonTargets.forEach((button) => {
+      button.disabled = waitingForSize ? false : !this.purchasable
+    })
+
+    const priceText = preview?.price || ""
     this.orderLabelTargets.forEach((label) => {
-      label.textContent = this.purchasable ? this.orderLabelValue : this.unavailableLabelValue
+      if (waitingForSize) {
+        label.textContent = this.chooseSizeLabelValue || this.orderLabelValue
+      } else if (!this.purchasable) {
+        label.textContent = this.unavailableLabelValue
+      } else {
+        label.textContent = this.orderLabelFor(priceText)
+      }
     })
-    if (match) {
-      this.priceTargets.forEach((label) => { label.textContent = match.price })
-      this.comparePriceTargets.forEach((label) => { label.hidden = this.compareAtValue <= match.price_cents })
+
+    this.updateSelectionSummary()
+
+    if (preview) {
+      this.priceTargets.forEach((label) => { label.textContent = preview.price })
+      this.comparePriceTargets.forEach((label) => {
+        label.hidden = this.compareAtValue <= preview.price_cents
+      })
+      this.updateOfferCopy(preview.price_cents)
     }
 
-    this.dispatch("change", { detail: { variant: match || null } })
+    this.dispatch("change", { detail: { variant: preview || null } })
+  }
+
+  orderLabelFor(priceText) {
+    const template = this.orderWithPriceLabelValue
+    if (template && priceText) return template.replace("%{price}", priceText)
+    return this.orderLabelValue
+  }
+
+  updateSelectionSummary() {
+    if (!this.hasSelectionSummaryTarget) return
+    if (!this.selectedSize) {
+      this.selectionSummaryTarget.hidden = true
+      this.selectionSummaryTarget.textContent = ""
+      return
+    }
+
+    let text = ""
+    if (this.selectedColor && this.selectionSummaryLabelValue) {
+      text = this.selectionSummaryLabelValue
+        .replace("%{color}", this.selectedColor)
+        .replace("%{size}", this.selectedSize)
+    } else if (this.selectionSummarySizeLabelValue) {
+      text = this.selectionSummarySizeLabelValue.replace("%{size}", this.selectedSize)
+    } else {
+      text = this.selectedSize
+    }
+    this.selectionSummaryTarget.textContent = text
+    this.selectionSummaryTarget.hidden = false
+  }
+
+  updateOfferCopy(priceCents) {
+    const onSale = this.compareAtValue > priceCents
+    const untilWhen = this.saleUntilWhenValue
+    if (this.hasSaleUntilTarget) {
+      if (onSale && untilWhen && this.priceRevertsLabelValue && this.compareAtDisplayValue) {
+        this.saleUntilTarget.hidden = false
+        this.saleUntilTarget.textContent = this.priceRevertsLabelValue
+          .replace("%{when}", untilWhen)
+          .replace("%{compare}", this.compareAtDisplayValue)
+      } else {
+        this.saleUntilTarget.hidden = true
+      }
+    }
+    if (this.hasSavingsTarget) {
+      const showSave = onSale && !untilWhen
+      this.savingsTarget.hidden = !showSave
+      if (showSave && this.saveAmountLabelValue && this.savingsDisplayValue) {
+        this.savingsTarget.textContent = this.saveAmountLabelValue.replace("%{amount}", this.savingsDisplayValue)
+      }
+    }
+  }
+
+  previewVariant() {
+    return this.variantsValue.find((variant) =>
+      (!this.selectedColor || variant.color === this.selectedColor) && this.inStock(variant)
+    ) || this.variantsValue.find((variant) =>
+      !this.selectedColor || variant.color === this.selectedColor
+    ) || this.variantsValue[0]
+  }
+
+  needsSize() {
+    return this.requireSizeValue && this.sizeButtonTargets.length > 0 && !this.selectedSize
+  }
+
+  focusSizes() {
+    const group = this.hasSizeGroupTarget ? this.sizeGroupTarget : this.sizeButtonTargets[0]
+    if (!group) return
+    group.scrollIntoView({ behavior: "smooth", block: "center" })
+    group.classList.add("is-size-attention")
+    this.sizeButtonTargets[0]?.focus({ preventScroll: true })
+    clearTimeout(this._sizeFlash)
+    this._sizeFlash = setTimeout(() => group.classList.remove("is-size-attention"), 1400)
   }
 
   inStock(variant) {
@@ -93,6 +215,11 @@ export default class extends Controller {
   }
 
   validate(event) {
+    if (this.needsSize()) {
+      event.preventDefault()
+      this.focusSizes()
+      return
+    }
     if (this.variantsValue.length && !this.purchasable) event.preventDefault()
   }
 

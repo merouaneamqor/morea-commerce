@@ -843,11 +843,11 @@
 
   .mobile-buy-bar {
     @apply fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 backdrop-blur-sm md:hidden;
-    padding: 0.75rem 1.25rem max(0.75rem, env(safe-area-inset-bottom));
+    padding: 0.65rem 1.25rem max(0.65rem, env(safe-area-inset-bottom));
   }
 
   .pdp-mobile-pad {
-    @apply pb-40 md:pb-28;
+    @apply pb-36 md:pb-28;
   }
 
 
@@ -1003,17 +1003,22 @@
     @apply -mx-5 flex gap-3 overflow-x-auto px-5 md:col-span-7 md:mx-0 md:grid md:grid-cols-2 md:gap-3 md:overflow-visible md:px-0;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
     /* Clear the sticky maison nav when a color change scrolls the gallery into view. */
     scroll-margin-top: 5.5rem;
   }
 
+  .pdp__gallery::-webkit-scrollbar {
+    display: none;
+  }
+
   .pdp__shot {
-    @apply aspect-[3/4] w-[82vw] shrink-0 bg-[color:var(--sf-frame,#f0f0f0)] md:w-auto;
+    @apply aspect-[3/4] w-[78vw] shrink-0 bg-[color:var(--sf-frame,#f0f0f0)] md:w-auto;
     scroll-snap-align: start;
   }
 
   .pdp__shot--lead {
-    @apply md:col-span-2 md:aspect-[4/5];
+    @apply w-[calc(100vw-2.5rem)] md:col-span-2 md:w-auto md:aspect-[4/5];
   }
 
   .pdp__info {
@@ -1028,6 +1033,14 @@
     @apply mt-3 font-sans text-[1.65rem] font-bold uppercase leading-[1.05] tracking-[0.08em] text-ink md:text-4xl md:tracking-[0.1em];
   }
 
+  .pdp__offer {
+    @apply mt-5;
+  }
+
+  .pdp__offer-prices {
+    @apply flex flex-wrap items-baseline gap-3;
+  }
+
   .pdp__price {
     @apply font-sans text-xl font-semibold tracking-[0.02em] text-ink md:text-2xl;
   }
@@ -1036,8 +1049,29 @@
     @apply text-sm text-ink-faint;
   }
 
+  .pdp__offer-save,
+  .pdp__offer-until {
+    @apply mt-2 text-sm font-medium text-ink;
+  }
+
+  .pdp__offer-until {
+    @apply text-ink-soft;
+  }
+
   .pdp__availability {
     @apply mt-4 text-xs text-ink-soft;
+  }
+
+  .pdp__trust {
+    @apply space-y-1 text-xs leading-5 text-ink-soft;
+  }
+
+  .pdp__trust-link {
+    @apply underline underline-offset-4;
+  }
+
+  #pdp-sizes.is-size-attention .size-pill {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-ink, #1a1a1a) 35%, transparent);
   }
 
   .pdp__details-link {
@@ -1060,7 +1094,8 @@
     @apply text-ink-faint line-through;
   }
 
-  .size-advisor-trigger {
+  .size-advisor-trigger,
+  .size-guide-trigger {
     @apply text-[11px] uppercase tracking-[0.18em] text-ink underline underline-offset-4 transition-colors hover:text-ink-soft;
   }
 
@@ -2759,7 +2794,11 @@
   }
 
   .mobile-buy-bar__stack {
-    @apply flex flex-col gap-2;
+    @apply flex flex-col gap-1.5;
+  }
+
+  .mobile-buy-bar__selection {
+    @apply text-center text-xs text-ink-soft;
   }
 
   /* Detect browser autofill so city shipping/districts update */
@@ -2874,11 +2913,15 @@
   }
 
   .pdp-order-btn {
-    @apply py-4;
+    @apply py-3.5;
+  }
+
+  .mobile-buy-bar .pdp-order-btn {
+    @apply py-3;
   }
 
   .pdp-order-btn__sub {
-    @apply mt-1.5 block text-[9px] tracking-[0.2em] opacity-70;
+    @apply mt-1 block text-[9px] tracking-[0.2em] opacity-70;
   }
 
   .whatsapp-link {

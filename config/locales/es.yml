@@ -2,6 +2,7 @@ es:
   time:
     formats:
       short: '%d/%m/%Y %H:%M'
+      sale_until: '%A a las %-k:%M'
   store:
     preparing: La tienda se está preparando.
     missing_eyebrow: Tienda multi-tenant
@@ -89,9 +90,21 @@ es:
     related: También te gustará
     color: Color
     size: Talla
+    size_guide: Guía de tallas
     add_to_bag: Añadir al carrito
-    order_now: Pedir ahora
+    order_now: Pedir
+    order_with_price: "Pedir — %{price}"
+    choose_size: Elegir mi talla
+    selection_summary: "%{color} · Talla %{size}"
+    selection_summary_size: "Talla %{size}"
     pay_on_delivery: Pago contra reembolso
+    pay_on_delivery_detail: "Pagas a la entrega. Sin pago en línea."
+    save_amount: "%{amount} de ahorro"
+    price_reverts_after: "Después de %{when}, el precio vuelve a %{compare}."
+    delivery_reassurance: "Envío a todo Marruecos · Gastos según tu ciudad"
+    shipping_flat: "Envío %{price}"
+    shipping_free: Envío gratis
+    returns_policy: Devoluciones
     quantity: Cantidad
     decrease: Disminuir
     increase: Aumentar

@@ -1,6 +1,8 @@
 es:
   size_advisor:
     find_my_size: "Encontrar mi talla"
+    guide_title: "Guía de tallas"
+    guide_body: "Medidas de la prenda en centímetros."
     eyebrow: "Ajuste"
     title: "Asesor de talla"
     close: "Cerrar"

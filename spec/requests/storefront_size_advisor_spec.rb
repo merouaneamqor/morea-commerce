@@ -45,6 +45,7 @@ RSpec.describe "Storefront size advisor", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(document.at_css("button.size-advisor-trigger")&.text).to include("Find my size")
+    expect(document.at_css("button.size-guide-trigger")&.text).to include("Size guide")
     shell = document.at_css(".size-advisor")
     expect(shell).to be_present
     expect(shell["aria-hidden"]).to eq("true")
@@ -69,6 +70,7 @@ RSpec.describe "Storefront size advisor", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(document.at_css(".size-advisor-trigger")).to be_nil
+    expect(document.at_css(".size-guide-trigger")).to be_nil
     expect(document.at_css(".size-advisor")).to be_nil
   end
 
@@ -77,5 +79,6 @@ RSpec.describe "Storefront size advisor", type: :request do
 
     expect(response).to have_http_status(:ok)
     expect(document.at_css("button.size-advisor-trigger").text).to include("Trouver ma taille")
+    expect(document.at_css("button.size-guide-trigger").text).to include("Guide des tailles")
   end
 end

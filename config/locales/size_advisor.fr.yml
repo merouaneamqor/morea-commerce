@@ -1,6 +1,8 @@
 fr:
   size_advisor:
     find_my_size: "Trouver ma taille"
+    guide_title: "Guide des tailles"
+    guide_body: "Mesures du vêtement en centimètres."
     eyebrow: "Essayage"
     title: "Conseiller de taille"
     close: "Fermer"

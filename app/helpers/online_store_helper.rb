@@ -4,6 +4,30 @@ module OnlineStoreHelper
     @storefront_policies[slug]
   end
 
+  # Timed sale line, e.g. "Après dimanche à 23 h 59, le prix repasse à 449 DH."
+  def product_sale_until_copy(product)
+    ends = product.sale_ends_at_active
+    return unless ends && product.on_sale?
+
+    t("product.price_reverts_after", when: sale_until_when(ends), compare: product.compare_at_display)
+  end
+
+  def sale_until_when(time)
+    I18n.l(time.in_time_zone, format: :sale_until).downcase
+  end
+
+  # Flat store shipping only. City rates need a city, so they stay on checkout.
+  def product_flat_shipping_label(product = nil)
+    cents = current_store.shipping_cents.to_i
+    return if cents <= 0
+
+    subtotal = product ? product.storefront_price_cents : cents
+    return t("product.shipping_free") if current_store.free_shipping?(subtotal)
+
+    t("product.shipping_flat", price: money(current_store.shipping_cents_for(subtotal), current_store.currency))
+  end
+
+
   # Resolve a StoreLinkable reference to a localized storefront path.
   # Pass `locale:` outside the storefront (admin has no locale in its URLs).
   def store_link_path(link, locale: I18n.locale)

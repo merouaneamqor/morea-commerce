@@ -267,6 +267,7 @@ module Sendit
 
       text = return_alert ? self.class.return_label(order.sendit_return_status) : self.class.label(order.sendit_status)
       DiscordNotifier.notify_delivery_update(order, text)
+      Notifications::DeliveryAlert.new(order, status_text: text).deliver
     rescue StandardError => e
       Rails.logger.warn("[Sendit] alert failed for #{order.number}: #{e.message}")
     end

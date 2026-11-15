@@ -44,6 +44,7 @@ self.addEventListener("notificationclick", (event) => {
   const url = new URL(event.notification.data?.url || "/admin/confirmations", self.location.origin).href
   event.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
     const open = clients.find((client) => client.url.startsWith(`${self.location.origin}/admin`))
-    return open ? open.focus() : self.clients.openWindow(url)
+    if (!open) return self.clients.openWindow(url)
+    return open.focus().then(() => (typeof open.navigate === "function" ? open.navigate(url) : open.postMessage({ kind: "navigate", url })))
   }))
 })

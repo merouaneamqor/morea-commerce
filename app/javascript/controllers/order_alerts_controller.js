@@ -36,7 +36,7 @@ export default class extends Controller {
   }
 
   async refresh() {
-    const registration = await navigator.serviceWorker.register("/admin/service-worker.js", { scope: "/admin" })
+    const registration = await this.registration()
     const subscription = await registration.pushManager.getSubscription()
     this.render(Boolean(subscription) && Notification.permission === "granted")
   }
@@ -45,7 +45,7 @@ export default class extends Controller {
     const permission = await Notification.requestPermission()
     if (permission !== "granted") return this.render(false, { blocked: permission === "denied" })
 
-    const registration = await navigator.serviceWorker.ready
+    const registration = await this.registration()
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: this.applicationServerKey()
@@ -56,7 +56,7 @@ export default class extends Controller {
   }
 
   async disable() {
-    const registration = await navigator.serviceWorker.ready
+    const registration = await this.registration()
     const subscription = await registration.pushManager.getSubscription()
     if (subscription) {
       await this.send("DELETE", { endpoint: subscription.endpoint })
@@ -65,8 +65,21 @@ export default class extends Controller {
     this.render(false)
   }
 
+  async registration() {
+    const registration = await navigator.serviceWorker.register("/admin/service-worker.js", { scope: "/admin" })
+    await navigator.serviceWorker.ready
+    return registration
+  }
+
   handleMessage(event) {
-    if (event.data?.kind === "new_order") this.chime()
+    if (event.data?.kind === "navigate" && event.data.url) {
+      const path = new URL(event.data.url, window.location.origin)
+      if (path.origin === window.location.origin && path.pathname.startsWith("/admin")) {
+        window.Turbo ? window.Turbo.visit(path.pathname + path.search) : window.location.assign(path.href)
+      }
+      return
+    }
+    if (event.data?.kind === "new_order" || event.data?.kind === "delivery_update") this.chime()
   }
 
   async send(method, subscription) {

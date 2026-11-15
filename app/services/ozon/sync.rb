@@ -272,7 +272,9 @@ module Ozon
       return if order.ozon_status == previous
       return unless ALERT_STATUSES.include?(order.ozon_status)
 
-      DiscordNotifier.notify_delivery_update(order, self.class.label(order.ozon_status))
+      text = self.class.label(order.ozon_status)
+      DiscordNotifier.notify_delivery_update(order, text)
+      Notifications::DeliveryAlert.new(order, status_text: text).deliver
     rescue StandardError => e
       Rails.logger.warn("[Ozon] alert failed for #{order.number}: #{e.message}")
     end

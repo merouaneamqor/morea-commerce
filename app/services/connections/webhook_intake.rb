@@ -24,6 +24,7 @@ module Connections
 
     def call(body:, headers:)
       raise Error.new("payload_too_large", status: 413) if body.bytesize > MAX_BODY_BYTES
+      result = nil
       @connection.with_lock do
         raise Error.new("disconnected", status: 410) unless @connection.active?
         authenticate!(body, headers)
@@ -31,8 +32,11 @@ module Connections
         @connection.update!(last_received_at: Time.current, verified_at: @connection.verified_at || Time.current)
         payload = JSON.parse(body)
         validate_origin!(payload, headers)
-        persist(payload)
+        result = persist(payload)
       end
+      # Live provider webhooks only: poll/import catch-up must not spam the desk on backfill.
+      notify_staff_of_new_order!(result)
+      result
     rescue JSON::ParserError
       raise Error, "invalid_json"
     rescue TypeError, NoMethodError
@@ -43,6 +47,7 @@ module Connections
 
     # Imports an order fetched through the authorized Shopify API. The caller has
     # already authenticated with Shopify, so there is no signature or topic to check.
+    # Does not enqueue staff alerts: first sync and catch-up would flood the desk.
     def import(payload)
       @connection.with_lock do
         raise Error.new("disconnected", status: 410) unless @connection.active?
@@ -55,6 +60,14 @@ module Connections
     end
 
     private
+
+    def notify_staff_of_new_order!(result)
+      return unless result&.receipt&.status == "accepted" && !result.replayed
+      return unless result.receipt.order_id
+
+      NewOrderAlertJob.perform_later(result.receipt.order_id)
+      DiscordOrderNotifyJob.perform_later(result.receipt.order_id)
+    end
 
     def persist(payload)
       data = @connection.provider == "youcan" ? payload["data"] : payload

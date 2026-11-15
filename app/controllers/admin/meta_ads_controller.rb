@@ -34,7 +34,8 @@ module Admin
       flash[:meta_mcp_probe] = {
         ready: result.ready,
         tool_count: result.tool_count,
-        tool_names: result.tool_names,
+        # The session cookie only needs the names shown in the probe summary.
+        tool_names: result.tool_names.first(8),
         missing_scopes: result.missing_scopes,
         error_code: result.error_code,
         sample_present: result.sample.present?

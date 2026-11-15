@@ -2,8 +2,8 @@
 
 | Asset | Where used | License / source |
 |---|---|---|
-| DM Sans, Luxurious Roman, Noto Naskh Arabic | Storefront layout (Google Fonts CDN) | Google Fonts terms / respective OFL or SIL licenses |
-| Inter | Admin / auth layouts (Google Fonts) | SIL OFL |
+| DM Sans, Luxurious Roman, Noto Naskh Arabic | Storefront layouts via `app/assets/fonts` + `fonts.css` | SIL OFL 1.1 (Fontsource / Google Fonts sources); see `vendor/licenses/fonts-ofl.txt` |
+| Inter | Admin / auth layouts via `app/assets/fonts` + `fonts.css` | SIL OFL 1.1; see `vendor/licenses/fonts-ofl.txt` |
 | Lucide icons | `vendor/icons/lucide` | ISC — see `vendor/icons/lucide/README.md` |
 | Lobe icons | `vendor/licenses/lobe-icons.txt` | See vendor file |
 | Chart.js | `vendor/javascript/chartjs-LICENSE.md` | MIT |

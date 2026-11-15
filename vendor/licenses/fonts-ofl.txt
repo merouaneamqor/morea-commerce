@@ -1,0 +1,11 @@
+Self-hosted font files under app/assets/fonts/
+
+Families: DM Sans, Inter, Luxurious Roman, Noto Naskh Arabic
+Source: Fontsource CDN builds of the Google Fonts OFL releases
+       (https://cdn.jsdelivr.net/fontsource/fonts/…)
+License: SIL Open Font License 1.1
+         https://openfontlicense.org/
+
+These WOFF2 files are vendored for same-origin delivery. Weights are limited
+on purpose (storefront DM Sans 300/400/500/700; admin Inter 400/500/600/700/800;
+Arabic 400/600; display Luxurious Roman 400).

@@ -1,5 +1,6 @@
 class SearchesController < ApplicationController
-  SORTS = %w[featured price_asc price_desc newest].freeze
+  include StorefrontCatalogFilters
+
   PER_PAGE = 24
   MAX_QUERY_LENGTH = 100
 
@@ -12,7 +13,7 @@ class SearchesController < ApplicationController
     products = current_store.products.native.active   # what the storefront sells: never the catalog imported from another store
     products = apply_query(products) if @query.present?
     products = apply_stock_filter(products) if @in_stock
-    products = apply_sort(products)
+    products = apply_catalog_sort(products, sort: @sort, featured: true)
 
     @total_count = products.except(:order).distinct.count(:id)
     @total_pages = [ (@total_count.to_f / PER_PAGE).ceil, 1 ].max
@@ -48,33 +49,5 @@ class SearchesController < ApplicationController
       pattern: pattern,
       locales: locales
     )
-  end
-
-  def apply_stock_filter(products)
-    products.where(<<~SQL.squish)
-      products.track_inventory = FALSE
-      OR (
-        NOT EXISTS (
-          SELECT 1 FROM product_variants
-          WHERE product_variants.product_id = products.id
-        )
-        AND products.stock > 0
-      )
-      OR EXISTS (
-        SELECT 1 FROM product_variants
-        WHERE product_variants.product_id = products.id
-          AND product_variants.active = TRUE
-          AND product_variants.stock > 0
-      )
-    SQL
-  end
-
-  def apply_sort(products)
-    case @sort
-    when "price_asc" then products.reorder(price_cents: :asc, id: :asc)
-    when "price_desc" then products.reorder(price_cents: :desc, id: :asc)
-    when "newest" then products.reorder(created_at: :desc, id: :desc)
-    else products.reorder(featured: :desc, position: :asc, name: :asc, id: :asc)
-    end
   end
 end

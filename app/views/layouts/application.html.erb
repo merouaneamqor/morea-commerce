@@ -10,14 +10,10 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
     <%= yield :lcp %>
-    <% font_stylesheet = "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Luxurious+Roman&family=Noto+Naskh+Arabic:wght@400;500;600&display=swap" %>
-    <%= tag.link(rel: "preload", as: "style", href: font_stylesheet, onload: "this.onload=null;this.rel='stylesheet'") %>
-    <noscript><%= tag.link(rel: "stylesheet", href: font_stylesheet) %></noscript>
+    <%= render "shared/fonts", primary: :dm_sans %>
     <%= yield :head %>
 
     <%= render "shared/platform_icons" %>
@@ -30,7 +26,7 @@
   </head>
 
   <body class="storefront-body min-h-screen min-h-dvh <%= "has-mobile-buy" if content_for?(:mobile_buy) %> <%= "is-rtl" if rtl? %> <%= "has-announcement" if current_store&.announcement.present? %> <%= "has-cookie-notice" if cookie_notice_pending? %>"
-        data-controller="cart-drawer">
+        data-controller="cart-drawer web-vitals">
 
     <%= render "shared/pixel_bridge" %>
     <a class="skip-link" href="#main-content"><%= t("data_protection.skip_to_content") %></a>

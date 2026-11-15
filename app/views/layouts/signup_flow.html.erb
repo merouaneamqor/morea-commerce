@@ -9,9 +9,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= render "shared/platform_icons" %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+    <%= render "shared/fonts", primary: :inter %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>

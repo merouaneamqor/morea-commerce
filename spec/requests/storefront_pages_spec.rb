@@ -35,10 +35,11 @@ RSpec.describe "Storefront pages", type: :request do
     title = document.at_css("h1.store-page__title")
     expect(title.text).to eq("Our story")
     expect(title.ancestors.any? { |node| node["data-controller"].to_s.split.include?("reveal") }).to be(false)
-    font = document.at_css('link[as="style"][href*="fonts.googleapis.com"]')
-    expect(font["href"]).to include("display=swap")
-    expect(font["rel"]).to eq("preload")
-    expect(font["as"]).to eq("style")
+    expect(document.at_css('link[href*="fonts.googleapis.com"]')).to be_nil
+    preload = document.at_css('link[rel="preload"][as="font"][href*="dm-sans"]')
+    expect(preload["type"]).to eq("font/woff2")
+    expect(preload["crossorigin"]).to eq("anonymous")
+    expect(response.body).to include("fonts")
   end
 
   it "preloads a landing hero with the same candidate the image will use" do
@@ -79,8 +80,8 @@ RSpec.describe "Storefront pages", type: :request do
     gallery = document.at_css(".pdp__gallery")
     expect(gallery["data-controller"].to_s).not_to include("reveal")
     expect(document.at_css('link[rel="preconnect"][href="https://res.cloudinary.com"]')).to be_present
-    font = document.at_css('link[as="style"][href*="fonts.googleapis.com"]')
-    expect(font["rel"]).to eq("preload")
+    expect(document.at_css('link[href*="fonts.googleapis.com"]')).to be_nil
+    expect(document.at_css('link[rel="preload"][as="font"][href*="dm-sans"]')).to be_present
   end
 
   it "paints the selected color's photos on first load and keeps product photos for fallback" do

@@ -1,0 +1,34 @@
+<%# Size picker sheet: opens when buy is tapped without a size, then continues to checkout. %>
+<div class="size-sheet" data-variant-picker-target="sizeSheet" aria-hidden="true">
+  <div class="size-sheet__scrim" data-action="click->variant-picker#closeSizeSheet"></div>
+  <div class="size-sheet__panel"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="size-sheet-title"
+       data-variant-picker-target="sizeSheetPanel">
+    <div class="size-sheet__handle" aria-hidden="true"></div>
+    <header class="size-sheet__head">
+      <div>
+        <p class="size-sheet__eyebrow"><%= t("product.size_sheet_eyebrow") %></p>
+        <h2 id="size-sheet-title" class="size-sheet__title"><%= t("product.size_sheet_title") %></h2>
+      </div>
+      <button type="button" class="size-sheet__close" data-action="variant-picker#closeSizeSheet" aria-label="<%= t("product.size_sheet_close") %>">×</button>
+    </header>
+    <p class="size-sheet__hint"><%= t("product.size_sheet_hint") %></p>
+    <div class="size-sheet__sizes" role="group" aria-label="<%= t("product.size") %>">
+      <% sizes.each do |size| %>
+        <button type="button"
+                class="size-pill size-sheet__pill"
+                data-variant-picker-target="sheetSizeButton"
+                data-size="<%= size %>"
+                data-action="variant-picker#pickSizeAndContinue"
+                aria-pressed="false"><%= size %></button>
+      <% end %>
+    </div>
+    <% if size_chart.present? %>
+      <button type="button" class="size-sheet__advisor" data-action="variant-picker#closeSizeSheet size-advisor#open">
+        <%= t("size_advisor.find_my_size") %>
+      </button>
+    <% end %>
+  </div>
+</div>

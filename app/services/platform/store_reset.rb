@@ -18,7 +18,7 @@ module Platform
       meta_ads_ad_sets meta_ads_ads meta_ads_campaigns meta_ads_connections meta_ads_daily_insights
       meta_ads_product_links oauth_access_tokens order_confirmations order_imports orders pages products push_subscriptions
       privacy_rights_requests seallo_connection_codes store_connections whatsapp_accounts whatsapp_messages store_expenses store_translations
-      storefront_themes woocommerce_connection_codes
+      storefront_funnel_events storefront_themes storefront_visits woocommerce_connection_codes
     ].freeze
     KEPT_TABLES = %w[access_requests admin_sessions audit_events invoices payments users].freeze
 
@@ -103,6 +103,8 @@ module Platform
       InventoryMovement.where(order_id: orders.select(:id)).or(InventoryMovement.where(product_id: Product.where(store_id: @store.id).select(:id))).delete_all
       OrderEvent.where(order_id: orders.select(:id)).delete_all
       OrderItem.where(order_id: orders.select(:id)).delete_all
+      StorefrontFunnelEvent.where(store_id: @store.id).delete_all
+      StorefrontVisit.where(store_id: @store.id).delete_all
       orders.delete_all
     end
 

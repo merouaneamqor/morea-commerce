@@ -1,0 +1,37 @@
+en:
+  funnel:
+    title: "Traffic"
+    lead: "Where storefront visits came from, and where people left before ordering. Counts follow the cookie banner: in the EU, UK and Switzerland only consented visits are stored."
+    back: "Back"
+    empty: "No consented visits in this range yet."
+    gaps_note_html: "Meta Ads Manager, TikTok and Google Analytics still hold ad-platform reporting. Configure tags under <a class=\"underline\" href=\"%{pixels_path}\">Pixels</a>. This page is first-party reach and drop-off only."
+    kpi:
+      visits: "Visits"
+      orders: "Orders from visits"
+      abandoned: "Cart / checkout left"
+      meta_orders: "Orders with Meta ad ids"
+    stages:
+      title: "Funnel"
+      help: "Each stage counts visits that reached at least that step."
+      stage: "Stage"
+      visits: "Visits"
+      share: "Of landed"
+      drop: "Drop from previous"
+      keys:
+        landed: "Landed"
+        product_viewed: "Viewed a product"
+        added_to_cart: "Added to cart"
+        checkout_started: "Started checkout"
+        ordered: "Placed order"
+    sources:
+      title: "Sources"
+      help: "From UTM, click ids (fbclid, gclid, ttclid) and referrer. Meta/TikTok/Google are grouped when those signals are present."
+      source: "Source"
+      visits: "Visits"
+      checkouts: "Checkouts"
+      orders: "Orders"
+      rate: "Order rate"
+    landings:
+      title: "Landing paths"
+      help: "First path recorded for the visit, including ad query strings when present."
+      counts: "%{visits} visits · %{orders} orders"

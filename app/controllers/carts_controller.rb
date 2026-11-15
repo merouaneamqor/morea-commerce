@@ -13,6 +13,7 @@ class CartsController < ApplicationController
 
     quantity = params[:quantity].to_i.clamp(1, 99)
     ensure_cart!.add_product!(product, quantity: quantity, variant: variant)
+    record_funnel_stage!("added_to_cart", product: product)
 
     return redirect_to(checkout_path) if params[:checkout].present?
 

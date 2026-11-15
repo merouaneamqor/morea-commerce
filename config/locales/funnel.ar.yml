@@ -1,0 +1,37 @@
+ar:
+  funnel:
+    title: "الزيارات"
+    lead: "من أين تأتي زيارات المتجر، وأين يغادر الزوار قبل الطلب. تتبع الأعداد لافتة الكوكيز: في الاتحاد الأوروبي والمملكة المتحدة وسويسرا تُسجَّل فقط الزيارات بالموافقة."
+    back: "رجوع"
+    empty: "لا توجد زيارات بموافقة في هذه الفترة."
+    gaps_note_html: "Meta وTikTok وGoogle Analytics تبقى للتقارير على منصات الإعلان. اضبط البكسلات من <a class=\"underline\" href=\"%{pixels_path}\">Pixels</a>. هذه الصفحة للوصول والتخلي داخل المتجر فقط."
+    kpi:
+      visits: "الزيارات"
+      orders: "طلبات من الزيارات"
+      abandoned: "ترك السلة / الدفع"
+      meta_orders: "طلبات بمعرّفات Meta"
+    stages:
+      title: "القمع"
+      help: "كل مرحلة تعدّ الزيارات التي بلغتها على الأقل."
+      stage: "المرحلة"
+      visits: "الزيارات"
+      share: "من الوصول"
+      drop: "التراجع عن السابقة"
+      keys:
+        landed: "وصول"
+        product_viewed: "عرض منتج"
+        added_to_cart: "إضافة للسلة"
+        checkout_started: "بدء الدفع"
+        ordered: "طلب مكتمل"
+    sources:
+      title: "المصادر"
+      help: "من UTM ومعرّفات النقر (fbclid وgclid وttclid) والمُحيل. تُجمَّع Meta وTikTok وGoogle عند وجود تلك الإشارات."
+      source: "المصدر"
+      visits: "الزيارات"
+      checkouts: "بدء الدفع"
+      orders: "الطلبات"
+      rate: "معدل الطلب"
+    landings:
+      title: "صفحات الدخول"
+      help: "أول مسار سُجّل للزيارة، بما في ذلك استعلام الإعلان إن وُجد."
+      counts: "%{visits} زيارات · %{orders} طلبات"

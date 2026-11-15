@@ -1,0 +1,37 @@
+fr:
+  funnel:
+    title: "Trafic"
+    lead: "D'où viennent les visites de la boutique, et où les gens partent avant de commander. Les compteurs suivent le bandeau cookies : en UE, UK et Suisse, seules les visites consenties sont enregistrées."
+    back: "Retour"
+    empty: "Aucune visite consentie sur cette période."
+    gaps_note_html: "Meta Ads Manager, TikTok et Google Analytics gardent le reporting côté régie. Configurez les balises dans <a class=\"underline\" href=\"%{pixels_path}\">Pixels</a>. Cette page ne montre que l'atteinte et les abandons first-party."
+    kpi:
+      visits: "Visites"
+      orders: "Commandes issues des visites"
+      abandoned: "Panier / checkout quittés"
+      meta_orders: "Commandes avec ids Meta"
+    stages:
+      title: "Entonnoir"
+      help: "Chaque étape compte les visites qui l'ont au moins atteinte."
+      stage: "Étape"
+      visits: "Visites"
+      share: "Des arrivées"
+      drop: "Perte vs précédente"
+      keys:
+        landed: "Arrivée"
+        product_viewed: "Produit vu"
+        added_to_cart: "Ajout au panier"
+        checkout_started: "Checkout commencé"
+        ordered: "Commande passée"
+    sources:
+      title: "Sources"
+      help: "D'après les UTM, les click ids (fbclid, gclid, ttclid) et le referrer. Meta/TikTok/Google sont regroupés quand ces signaux sont présents."
+      source: "Source"
+      visits: "Visites"
+      checkouts: "Checkouts"
+      orders: "Commandes"
+      rate: "Taux de commande"
+    landings:
+      title: "Pages d'entrée"
+      help: "Premier chemin enregistré pour la visite, avec la query pub si elle était là."
+      counts: "%{visits} visites · %{orders} commandes"

@@ -25,14 +25,23 @@ class CheckoutsController < ApplicationController
         age_confirmed: true
       )
     )
+    record_funnel_stage!("checkout_started")
   end
 
   def create
     @cart = current_cart
     @items = @cart.cart_items.includes(:product, :product_variant)
-    @checkout = Checkout.new(checkout_params.merge(cart: @cart, store: current_store))
+    attribution = storefront_visit_tracker.session_attribution
+    @checkout = Checkout.new(
+      checkout_params.merge(
+        cart: @cart,
+        store: current_store,
+        attribution: attribution
+      )
+    )
 
     order = @checkout.place_order!
+    record_funnel_stage!("ordered", order: order)
     remember_delivery_from_checkout!(@checkout)
     session.delete(:cart_token)
     session[:verified_order_id] = order.id

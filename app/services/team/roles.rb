@@ -56,7 +56,7 @@ module Team
       "admin/products" => "products", "admin/variants" => "products", "admin/inventory" => "products", "admin/collections" => "products", "admin/discounts" => "products", "admin/media" => "products",
       "admin/accounting" => "accounting", "admin/users" => "team",
       "admin/store_connections" => "integrations", "admin/seallo_connections" => "integrations", "admin/woocommerce_connections" => "integrations", "admin/agent_api" => "integrations",
-      "admin/meta_ads" => "integrations", "admin/advertising" => "integrations", "admin/pixels" => "integrations",
+      "admin/meta_ads" => "integrations", "admin/advertising" => "integrations", "admin/pixels" => "integrations", "admin/funnel" => "integrations",
       "admin/whatsapp" => "whatsapp", "admin/stores" => "store", "admin/subscriptions" => "subscription",
       "admin/agent_billing" => "agent_billing", "admin/my_billing" => "own_billing", "admin/assignment_rules" => "assignments"
     }.freeze

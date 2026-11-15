@@ -53,6 +53,7 @@ module SellerHelper
     [ "themes", :theme, "Éditeur de thème", "/themes" ],
     [ "ads", :target, "Publicités", nil ],
     [ "pixels", :pixel, "Pixels", "/pixels" ],
+    [ "funnel", :chart, "Trafic", "/funnel" ],
     [ "accounting", :calculator, "Comptabilité", "/comptabilite" ],
     [ "team", :team, "Équipe", "/equipe" ],
     [ "integrations", :plug, "Intégrations API", "/integrations" ],
@@ -83,7 +84,7 @@ module SellerHelper
     "inventory" => "products", "users" => "team", "agent_api" => "integrations", "store_connections" => "integrations",
     "seallo_connections" => "integrations", "woocommerce_connections" => "integrations",
     "sendit_settings" => "integrations", "ozon_settings" => "integrations", "ameex_settings" => "integrations",
-    "meta_ads" => "ads", "advertising" => "ads", "pixels" => "pixels",
+    "meta_ads" => "ads", "advertising" => "ads", "pixels" => "pixels", "funnel" => "funnel",
     "accounting" => "accounting", "assignment_rules" => "confirmation", "stores" => "store", "agent_billing" => "confirmation",
     "themes" => "themes", "online_store" => "themes", "home_sections" => "themes"
   }.freeze
@@ -178,7 +179,8 @@ module SellerHelper
   # The areas a menu entry leads to: it shows when the person may open at least one of them (the owner can close parts of the store to a person).
   SELLER_MENU_AREAS = {
     "dashboard" => %w[dashboard], "stats" => %w[dashboard], "orders" => %w[orders], "confirmation" => %w[queue analytics assignments attendance clock_in agent_billing],
-    "clients" => %w[customers], "delivery" => %w[delivery], "products" => %w[products], "accounting" => %w[accounting], "team" => %w[team],
+    "clients" => %w[customers], "delivery" => %w[delivery], "products" => %w[products], "pixels" => %w[integrations], "funnel" => %w[integrations],
+    "accounting" => %w[accounting], "team" => %w[team],
     "integrations" => %w[integrations], "store" => %w[store subscription], "billing" => %w[own_billing]
   }.freeze
   SELLER_CALL_CENTER_AREAS = { "queue" => "queue", "analytics" => "analytics", "assignments" => "assignments", "rules" => "assignments", "attendance" => "attendance", "billing" => "agent_billing" }.freeze

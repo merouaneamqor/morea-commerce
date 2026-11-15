@@ -4,7 +4,7 @@ class Checkout
   include ActiveModel::Model
 
   attr_accessor :name, :phone, :phone_country, :city, :district, :address, :notes, :discount_code,
-                :privacy_accepted, :age_confirmed, :cart, :store
+                :privacy_accepted, :age_confirmed, :cart, :store, :attribution
 
   validate :required_fields
   validate :phone_must_be_valid
@@ -156,7 +156,8 @@ class Checkout
         discount_code: applied_discount&.code,
         shipping_cents: shipping,
         total_cents: [ subtotal - discount + shipping, 0 ].max,
-        **sendit_district
+        **sendit_district,
+        **order_attribution
       )
 
 
@@ -184,6 +185,11 @@ class Checkout
   end
 
   private
+
+  # Meta ad ids from the first-touch storefront visit (UTM macros on the ad URL).
+  def order_attribution
+    Attribution::Meta.from_params(attribution || {})
+  end
 
   # Pin the Sendit district now, so the parcel doesn't need a manual city pick later
   def sendit_district

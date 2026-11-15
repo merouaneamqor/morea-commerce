@@ -1,0 +1,37 @@
+es:
+  funnel:
+    title: "Tráfico"
+    lead: "De dónde llegan las visitas de la tienda y dónde se van antes de pedir. Los totales siguen el aviso de cookies: en la UE, el Reino Unido y Suiza solo se guardan visitas con consentimiento."
+    back: "Volver"
+    empty: "Aún no hay visitas con consentimiento en este periodo."
+    gaps_note_html: "Meta Ads Manager, TikTok y Google Analytics siguen con el reporting de la plataforma. Configura las etiquetas en <a class=\"underline\" href=\"%{pixels_path}\">Pixels</a>. Esta página solo muestra alcance y abandonos first-party."
+    kpi:
+      visits: "Visitas"
+      orders: "Pedidos desde visitas"
+      abandoned: "Carrito / checkout abandonados"
+      meta_orders: "Pedidos con ids Meta"
+    stages:
+      title: "Embudo"
+      help: "Cada etapa cuenta las visitas que al menos la alcanzaron."
+      stage: "Etapa"
+      visits: "Visitas"
+      share: "Del aterrizaje"
+      drop: "Caída vs anterior"
+      keys:
+        landed: "Aterrizaje"
+        product_viewed: "Producto visto"
+        added_to_cart: "Añadido al carrito"
+        checkout_started: "Checkout iniciado"
+        ordered: "Pedido realizado"
+    sources:
+      title: "Fuentes"
+      help: "Según UTM, click ids (fbclid, gclid, ttclid) y referrer. Meta/TikTok/Google se agrupan cuando hay esas señales."
+      source: "Fuente"
+      visits: "Visitas"
+      checkouts: "Checkouts"
+      orders: "Pedidos"
+      rate: "Tasa de pedido"
+    landings:
+      title: "Rutas de entrada"
+      help: "Primera ruta registrada de la visita, con la query del anuncio si venía."
+      counts: "%{visits} visitas · %{orders} pedidos"

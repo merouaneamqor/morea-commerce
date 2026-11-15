@@ -92,7 +92,7 @@
         <% end %>
 
         <%= form_with url: add_item_cart_path, method: :post, class: "mt-8 space-y-8 border-t border-line pt-8", id: "pdp-add-form",
-              data: { action: "submit->variant-picker#validate" } do %>
+              data: { action: "submit->variant-picker#validate submit->cart-drawer#optimisticAdd" } do %>
           <%= hidden_field_tag :product_id, @product.id %>
 
           <% if @variants.any? %>

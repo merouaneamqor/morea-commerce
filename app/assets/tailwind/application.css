@@ -3218,6 +3218,40 @@
   height: 1px;
 }
 
+/* Soft skeleton while Turbo navigates between catalog / admin list pages. */
+html.is-navigating .skeleton-catalog,
+html.is-navigating .admin-table-shell,
+turbo-frame[busy] .skeleton-catalog,
+turbo-frame[busy] .admin-table-shell {
+  position: relative;
+  min-height: 8rem;
+  pointer-events: none;
+}
+
+html.is-navigating .skeleton-catalog::after,
+html.is-navigating .admin-table-shell::after,
+turbo-frame[busy] .skeleton-catalog::after,
+turbo-frame[busy] .admin-table-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 0.25rem;
+  background: linear-gradient(
+    90deg,
+    rgba(247, 245, 242, 0.2) 0%,
+    rgba(247, 245, 242, 0.75) 45%,
+    rgba(247, 245, 242, 0.2) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.1s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
 main {
   animation: page-enter 1s ease both;
 }

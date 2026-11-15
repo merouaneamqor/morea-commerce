@@ -1,4 +1,5 @@
 <%# Dense catalog product card shared by home, collections, search, and related. %>
+<% cache([ "product-card", I18n.locale, product ]) do %>
 <% alt_url = product_alt_image_url(product) %>
 <%= link_to product_path(product), class: "home-card home-card--catalog" do %>
   <div class="home-card__media object-frame aspect-[3/4]">
@@ -24,4 +25,5 @@
       <% end %>
     </p>
   </div>
+<% end %>
 <% end %>

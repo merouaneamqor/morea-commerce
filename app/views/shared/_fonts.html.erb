@@ -1,0 +1,13 @@
+<%# Self-hosted OFL fonts. Preload the primary Latin face used above the fold. %>
+<% primary = local_assigns.fetch(:primary, :dm_sans) %>
+<% if primary == :inter %>
+  <%= tag.link(rel: "preload", href: asset_path("inter-latin-400.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous") %>
+  <%= tag.link(rel: "preload", href: asset_path("inter-latin-700.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous") %>
+<% else %>
+  <%= tag.link(rel: "preload", href: asset_path("dm-sans-latin-400.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous") %>
+  <%= tag.link(rel: "preload", href: asset_path("luxurious-roman-latin-400.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous") %>
+<% end %>
+<% if respond_to?(:rtl?, true) && rtl? %>
+  <%= tag.link(rel: "preload", href: asset_path("noto-naskh-arabic-400.woff2"), as: "font", type: "font/woff2", crossorigin: "anonymous") %>
+<% end %>
+<%= stylesheet_link_tag "fonts", "data-turbo-track": "reload" %>

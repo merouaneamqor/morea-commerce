@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_15_010000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_083000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -892,7 +892,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_010000) do
     t.index ["store_id", "meta_campaign_id", "created_at"], name: "index_orders_on_meta_campaign", where: "(meta_campaign_id IS NOT NULL)"
     t.index ["store_id", "number"], name: "index_orders_on_store_id_and_number", unique: true
     t.index ["store_id", "ozon_code"], name: "index_orders_on_store_id_and_ozon_code", unique: true, where: "(ozon_code IS NOT NULL)"
+    t.index ["store_id", "created_at"], name: "index_orders_on_store_id_and_created_at"
     t.index ["store_id", "sendit_code"], name: "index_orders_on_store_id_and_sendit_code", unique: true, where: "(sendit_code IS NOT NULL)"
+    t.index ["store_id", "status", "created_at"], name: "index_orders_on_store_id_and_status_and_created_at"
     t.index ["store_id"], name: "index_orders_on_store_id"
     t.check_constraint "advance_cents >= 0", name: "orders_advance_cents_nonnegative"
     t.check_constraint "collected_cents IS NULL OR collected_cents >= 0", name: "orders_collected_cents_nonnegative"

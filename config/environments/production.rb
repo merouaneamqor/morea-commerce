@@ -18,8 +18,12 @@ Rails.application.configure do
   # Cache assets for far-future expiry since they are all digest stamped.
   config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 
+  # Gzip HTML/JSON/CSS/JS responses when the client accepts it. Brotli needs
+  # Thruster or the Render edge; see docs/performance/hosting-followups.md.
+  config.middleware.use Rack::Deflater
+
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
+  # config.asset_host = ENV["ASSET_HOST"].presence
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   # Cloudinary when CLOUDINARY_URL is set (Render's disk is wiped on every deploy), else local disk

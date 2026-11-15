@@ -399,7 +399,7 @@ class Store < ApplicationRecord
   # Saved home sections, or the built-in defaults (unsaved) until the theme is installed
   def home_sections_for_display
     sections = home_sections.visible.ordered.includes(:translations).to_a
-    return sections if home_sections.exists?
+    return sections if sections.any?
 
     OnlineStoreDefaults.new(self).home_sections
   end

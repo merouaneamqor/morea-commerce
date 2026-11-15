@@ -10,3 +10,14 @@ document.addEventListener("turbo:frame-missing", (event) => {
   event.preventDefault()
   event.detail.visit(event.detail.response)
 })
+
+// Drive-level busy class for skeleton CSS on catalog and admin list shells.
+document.addEventListener("turbo:before-visit", () => {
+  document.documentElement.classList.add("is-navigating")
+})
+document.addEventListener("turbo:load", () => {
+  document.documentElement.classList.remove("is-navigating")
+})
+document.addEventListener("turbo:before-render", () => {
+  document.documentElement.classList.remove("is-navigating")
+})

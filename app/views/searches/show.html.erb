@@ -29,7 +29,7 @@
       <label class="collection-toolbar__sort">
         <span><%= t("shop.sort_by") %></span>
         <%= select_tag :sort,
-              options_for_select(SearchesController::SORTS.map { |sort| [ t("shop.sort.#{sort}"), sort ] }, @sort),
+              options_for_select(StorefrontCatalogFilters::SORTS.map { |sort| [ t("shop.sort.#{sort}"), sort ] }, @sort),
               data: { action: "auto-submit#submit" } %>
       </label>
       <noscript><%= submit_tag t("shop.apply") %></noscript>

@@ -13,9 +13,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= render "shared/platform_icons" %>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;800&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+    <%= render "shared/fonts", primary: :inter %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "admin_pwa" %>
     <%= stylesheet_link_tag "liquid_glass" %>
@@ -24,7 +22,7 @@
     <%= stylesheet_link_tag "admin_dark", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="admin-body" data-admin-theme="<%= current_store&.admin_theme || "seallo" %>" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
+  <body class="admin-body" data-controller="web-vitals" data-admin-theme="<%= current_store&.admin_theme || "seallo" %>" style="font-family: 'Inter', 'Noto Naskh Arabic', ui-sans-serif, system-ui, sans-serif">
     <%= render "demo/banner" if Demo::Workspace.demo_store?(current_store) %>
     <% if current_admin_user %>
       <%# Restore the collapsed menu before the first paint, so it does not jump. %>

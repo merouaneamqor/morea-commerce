@@ -35,6 +35,29 @@ export default class extends Controller {
     this.focusable()[0]?.focus()
   }
 
+  // Bump the bag count before the Turbo Stream reply lands. Checkout submits skip this.
+  optimisticAdd(event) {
+    if (event.submitter?.name === "checkout") return
+    const form = event.target
+    const qty = parseInt(form.querySelector('[name="quantity"]')?.value || "1", 10)
+    if (!Number.isFinite(qty) || qty < 1) return
+    this.bumpCount(qty)
+  }
+
+  bumpCount(delta) {
+    const host = document.getElementById("cart-count")
+    if (!host) return
+    let badge = host.querySelector(".bag-count")
+    const current = badge ? parseInt(badge.textContent, 10) || 0 : 0
+    const next = current + delta
+    if (!badge) {
+      badge = document.createElement("span")
+      badge.className = "bag-count"
+      host.appendChild(badge)
+    }
+    badge.textContent = String(next)
+  }
+
   close() {
     if (!this.hasDrawerTarget) return
     this.drawerTarget.classList.remove("is-open")

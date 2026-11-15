@@ -28,8 +28,14 @@ picker.variantIdTarget = element()
 picker.hasVariantIdTarget = true
 picker.hasColorLabelTarget = false
 picker.dispatch = (_name, event) => { picker.lastVariant = event.detail.variant }
+picker.variantIdTarget.value = "1"
 picker.connect()
-assert.equal(picker.variantIdTarget.value, 2, "Start with an available variant")
+assert.equal(picker.variantIdTarget.value, 1, "Honor the SSR-selected variant id on connect")
+assert.equal(picker.selectedColor, "Black")
+assert.equal(picker.selectedSize, "S")
+picker.variantIdTarget.value = ""
+picker.connect()
+assert.equal(picker.variantIdTarget.value, 2, "Start with an available variant when none is preset")
 assert.ok(picker.purchaseButtonTargets.every((button) => !button.disabled))
 assert.ok(picker.priceTargets.every((price) => price.textContent === "120 MAD"), "Desktop and mobile prices agree")
 assert.equal(picker.lastVariant.id, 2, "Notify the gallery about the selection")

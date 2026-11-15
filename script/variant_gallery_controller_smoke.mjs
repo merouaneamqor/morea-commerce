@@ -120,5 +120,106 @@ await runCase("mobile viewport color change", { registerOrder: "together" }, asy
   assert.deepEqual(await shots(), productImages)
 })
 
+await runCase("color change scrolls the gallery into view", { registerOrder: "together" }, async ({ page, shots }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.addStyleTag({ content: `
+    body { margin: 0; }
+    #root { padding-bottom: 1200px; }
+    .pdp__gallery { scroll-margin-top: 0; }
+    button[data-color] { display: block; margin-top: 900px; }
+  ` })
+  await page.waitForTimeout(50)
+  await page.locator('button[data-color="Pink"]').scrollIntoViewIfNeeded()
+  const before = await page.evaluate(() => window.scrollY)
+  assert.ok(before > 400, `expected to start scrolled down, got ${before}`)
+  await page.click('button[data-color="Pink"]')
+  await page.waitForFunction(() => window.scrollY < 200)
+  const after = await page.evaluate(() => window.scrollY)
+  assert.ok(after < before, `expected scroll up after color change (${before} → ${after})`)
+  assert.deepEqual(await shots(), variants[1].images)
+})
+
+// Remaining bug after #310: color photos lived only on the product gallery and
+// were mapped into the variant payload by filename. Switching must still update
+// the DOM when every color's images come from that mapping (no variant.images).
+const mappedVariants = [
+  { id: 10, size: "S", color: "Pink", stock: 2, price: "100 MAD", price_cents: 10000, images: ["https://cdn.test/pink-main.png"] },
+  { id: 11, size: "S", color: "Black", stock: 2, price: "100 MAD", price_cents: 10000, images: ["https://cdn.test/black-hero.png"] },
+  { id: 12, size: "S", color: "White", stock: 2, price: "100 MAD", price_cents: 10000, images: null }
+]
+const mappedProductImages = [
+  "https://cdn.test/pink-main.png",
+  "https://cdn.test/black-hero.png",
+  "https://cdn.test/studio-wide.png"
+]
+
+function mappedPageHtml({ registerOrder = "picker-first", initialVariantId = 11 } = {}) {
+  const ssrShots = `<div class="pdp__shot pdp__shot--lead"><img src="https://cdn.test/black-hero.png" alt="shot"></div>`
+  const register = registerOrder === "picker-first"
+    ? `app.register("variant-picker", VariantPicker)
+       await new Promise((r) => setTimeout(r, 40))
+       app.register("variant-gallery", VariantGallery)`
+    : `app.register("variant-picker", VariantPicker)
+       app.register("variant-gallery", VariantGallery)`
+  const esc = (value) => JSON.stringify(value).replaceAll("&", "&amp;").replaceAll("\"", "&quot;")
+
+  return `<!doctype html>
+<html><body>
+<div id="root"
+  data-controller="variant-gallery variant-picker"
+  data-action="variant-picker:change->variant-gallery#show"
+  data-variant-gallery-product-images-value="${esc(mappedProductImages)}"
+  data-variant-picker-variants-value="${esc(mappedVariants)}"
+  data-variant-picker-track-inventory-value="false"
+  data-variant-picker-available-label-value="Available"
+  data-variant-picker-unavailable-label-value="Sold out"
+  data-variant-picker-order-label-value="Order"
+  data-variant-picker-compare-at-value="0">
+  <div class="pdp__gallery" data-variant-gallery-target="gallery">${ssrShots}</div>
+  <template data-variant-gallery-target="shotTemplate">
+    <div class="pdp__shot"><img alt="x" class="h-full w-full object-cover"></div>
+  </template>
+  <input data-variant-picker-target="variantId" value="${initialVariantId}">
+  <button data-variant-picker-target="colorButton" data-color="Pink" data-action="variant-picker#selectColor">Pink</button>
+  <button data-variant-picker-target="colorButton" data-color="Black" data-action="variant-picker#selectColor">Black</button>
+  <button data-variant-picker-target="colorButton" data-color="White" data-action="variant-picker#selectColor">White</button>
+  <button data-variant-picker-target="sizeButton" data-size="S" data-action="variant-picker#selectSize">S</button>
+  <span data-variant-picker-target="price"></span>
+  <span data-variant-picker-target="availability"></span>
+  <button data-variant-picker-target="purchaseButton"></button>
+  <span data-variant-picker-target="orderLabel"></span>
+</div>
+<script type="module">
+import { Application, Controller } from "https://unpkg.com/@hotwired/stimulus@3.2.2/dist/stimulus.js"
+${pickerSrc}
+${gallerySrc}
+const app = Application.start()
+window.Stimulus = app
+${register}
+window.__ready = true
+</script>
+</body></html>`
+}
+
+{
+  const page = await browser.newPage()
+  const errors = []
+  page.on("pageerror", (err) => errors.push(err.message))
+  await page.setContent(mappedPageHtml(), { waitUntil: "networkidle" })
+  await page.waitForFunction(() => window.__ready === true)
+  await page.waitForTimeout(100)
+  const shots = async () => page.$$eval(".pdp__gallery img", (imgs) => imgs.map((img) => img.getAttribute("src")))
+  assert.deepEqual(await shots(), mappedVariants[1].images, "SSR/connect keeps Black filename mapping")
+  await page.click('button[data-color="Pink"]')
+  assert.deepEqual(await shots(), mappedVariants[0].images, "Pink filename mapping swaps gallery")
+  await page.click('button[data-color="White"]')
+  assert.deepEqual(await shots(), mappedProductImages, "Unmapped color falls back to product gallery")
+  await page.click('button[data-color="Black"]')
+  assert.deepEqual(await shots(), mappedVariants[1].images, "Black filename mapping restores after fallback")
+  assert.deepEqual(errors, [], "mapped filename gallery: console errors")
+  await page.close()
+  console.log("ok - product-filename color mapping swaps gallery after #310")
+}
+
 await browser.close()
-console.log("Variant gallery: first load, lazy controller order, color switch/back, missing-image fallback and mobile checks passed")
+console.log("Variant gallery: first load, lazy controller order, color switch/back, missing-image fallback, mobile and filename-mapped color checks passed")

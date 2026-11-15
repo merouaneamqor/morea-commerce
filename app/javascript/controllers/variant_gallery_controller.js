@@ -2,7 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 
 // Swaps the PDP gallery to the selected variant's photos. Falls back to the
 // product gallery when the variant has none. Syncs on connect so a lazy-loaded
-// picker change that fired earlier is still applied.
+// picker change that fired earlier is still applied. Prefers the live picker
+// controller's variants when present so HTML-escaped data attributes are not
+// the only source of truth after connect. After a shopper changes color, scrolls
+// the gallery into view so the new photo is visible above the swatches.
 export default class extends Controller {
   static targets = ["gallery", "shotTemplate"]
   static values = { productImages: Array }
@@ -13,11 +16,19 @@ export default class extends Controller {
     if (!hasVariantImages && this.hasGalleryTarget) {
       this.placeholderShots = Array.from(this.galleryTarget.children, (shot) => shot.cloneNode(true))
     }
+    this.seenColor = variant?.color ?? null
     this.syncFromSelection()
+    // Skip reveal for the picker's connect() change; only user color picks scroll.
+    requestAnimationFrame(() => { this.allowReveal = true })
   }
 
   show(event) {
-    this.renderVariant(event.detail?.variant || null)
+    const variant = event.detail?.variant || null
+    const nextColor = variant?.color ?? null
+    const colorChanged = this.seenColor !== nextColor
+    this.renderVariant(variant)
+    this.seenColor = nextColor
+    if (this.allowReveal && colorChanged) this.revealGallery()
   }
 
   syncFromSelection() {
@@ -25,13 +36,25 @@ export default class extends Controller {
   }
 
   selectedVariant() {
-    const id = this.element.querySelector("[data-variant-picker-target='variantId']")?.value
+    const id = this.selectedVariantId()
     if (!id) return null
 
-    return this.variantsFromPicker().find((variant) => String(variant.id) === String(id)) || null
+    return this.variantsList().find((variant) => String(variant.id) === String(id)) || null
   }
 
-  variantsFromPicker() {
+  selectedVariantId() {
+    const picker = this.pickerController()
+    if (picker?.hasVariantIdTarget) return picker.variantIdTarget.value
+
+    return this.element.querySelector("[data-variant-picker-target='variantId']")?.value
+  }
+
+  variantsList() {
+    const picker = this.pickerController()
+    if (picker && Array.isArray(picker.variantsValue) && picker.variantsValue.length > 0) {
+      return picker.variantsValue
+    }
+
     const raw = this.element.getAttribute("data-variant-picker-variants-value")
     if (!raw) return []
 
@@ -41,6 +64,13 @@ export default class extends Controller {
     } catch (_error) {
       return []
     }
+  }
+
+  pickerController() {
+    const app = this.application
+    if (!app?.getControllerForElementAndIdentifier) return null
+
+    return app.getControllerForElementAndIdentifier(this.element, "variant-picker")
   }
 
   renderVariant(variant) {
@@ -69,6 +99,7 @@ export default class extends Controller {
     }
     this.currentGalleryKey = null
     this.renderedOnce = true
+    this.resetGalleryScroll()
   }
 
   renderUrls(urls, { productFallback = false } = {}) {
@@ -95,5 +126,21 @@ export default class extends Controller {
     this.galleryTarget.replaceChildren(...shots)
     this.currentGalleryKey = key
     this.renderedOnce = true
+    this.resetGalleryScroll()
+  }
+
+  resetGalleryScroll() {
+    if (!this.hasGalleryTarget) return
+    this.galleryTarget.scrollLeft = 0
+  }
+
+  revealGallery() {
+    if (!this.hasGalleryTarget) return
+
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
+    this.galleryTarget.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "start"
+    })
   }
 }

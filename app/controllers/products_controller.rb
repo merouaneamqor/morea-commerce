@@ -67,7 +67,27 @@ class ProductsController < ApplicationController
       end || variant
     end
 
-    source.ordered_images.filter_map { |image| helpers.media_url(image) }.presence
+    attached = source.ordered_images.filter_map { |image| helpers.media_url(image) }.presence
+    return attached if attached
+
+    # Merchants often drop color photos on the product gallery (pink.png, black-1.jpg)
+    # without assigning them to each size row. Map those filenames to the color so the
+    # storefront gallery can still swap when the swatch changes.
+    product_images_for_color(color)
+  end
+
+  def product_images_for_color(color)
+    needle = gallery_color_key(color)
+    return nil if needle.blank?
+
+    matches = @product.ordered_images.select do |image|
+      gallery_color_key(image.filename.to_s).include?(needle)
+    end
+    matches.filter_map { |image| helpers.media_url(image) }.presence
+  end
+
+  def gallery_color_key(value)
+    value.to_s.downcase.unicode_normalize(:nfd).gsub(/\p{Mn}/, "").gsub(/[^a-z0-9]+/, "")
   end
 
   def related_products

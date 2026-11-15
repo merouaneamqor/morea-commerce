@@ -14,7 +14,11 @@ export default class extends Controller {
 
   connect() {
     if (!this.variantsValue.length) return
-    const initial = this.variantsValue.find((variant) => this.inStock(variant)) || this.variantsValue[0]
+    const presetId = this.hasVariantIdTarget ? this.variantIdTarget.value : ""
+    const preset = presetId
+      ? this.variantsValue.find((variant) => String(variant.id) === String(presetId))
+      : null
+    const initial = preset || this.variantsValue.find((variant) => this.inStock(variant)) || this.variantsValue[0]
     this.selectedSize = initial.size
     this.selectedColor = initial.color
     this.render()

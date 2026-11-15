@@ -115,4 +115,34 @@ RSpec.describe "Storefront pages", type: :request do
     expect(lead).to include(black_key)
     expect(lead).not_to include(product_key) if black_key != product_key
   end
+
+  it "maps product gallery filenames onto colors that have no variant photos" do
+    product = store.products.create!(
+      name: "Filename Colors",
+      slug: "filename-colors",
+      status: "active",
+      price_cents: 9_000,
+      track_inventory: false
+    )
+    png = Base64.decode64("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN9sAAAAASUVORK5CYII=")
+    product.images.attach(io: StringIO.new(png), filename: "pink-main.png", content_type: "image/png")
+    product.images.attach(io: StringIO.new(png), filename: "black-hero.png", content_type: "image/png")
+    product.images.attach(io: StringIO.new(png), filename: "studio-wide.png", content_type: "image/png")
+    pink = product.product_variants.create!(option1_value: "S", option2_value: "Pink", stock: 2)
+    black = product.product_variants.create!(option1_value: "S", option2_value: "Black", stock: 2)
+    white = product.product_variants.create!(option1_value: "S", option2_value: "White", stock: 2)
+
+    get "/en/products/filename-colors"
+
+    expect(response).to have_http_status(:ok)
+    payload = JSON.parse(document.at_css("[data-variant-picker-variants-value]")["data-variant-picker-variants-value"])
+    by_id = payload.index_by { |variant| variant["id"] }
+    expect(by_id.fetch(pink.id)["images"].join).to include("pink-main")
+    expect(by_id.fetch(black.id)["images"].join).to include("black-hero")
+    expect(by_id.fetch(white.id)["images"]).to be_nil
+    # Initial variant sorts by size then color, so Black leads and the SSR
+    # gallery follows its filename mapping.
+    expect(document.at_css("input[name='product_variant_id']")["value"]).to eq(black.id.to_s)
+    expect(document.at_css(".pdp__gallery img")["src"]).to include("black-hero")
+  end
 end

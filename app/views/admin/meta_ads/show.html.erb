@@ -43,6 +43,23 @@
     <% if status == "needs_reauthorization" %><p role="alert" class="mt-3 rounded-xl bg-[#fbe7ea] px-4 py-3 text-sm text-[#b4344e]"><%= t("meta_ads.reauthorize_note") %></p><% end %>
     <% if @connection&.expires_soon? %><p role="alert" class="mt-3 rounded-xl bg-[#fdf0d9] px-4 py-3 text-sm text-[#8a5a12]"><%= t("meta_ads.notice.expires_soon", date: l(@connection.token_expires_at.to_date, format: "%d/%m/%Y")) %></p><% end %>
     <% if missing_business %><p class="mt-3 rounded-xl bg-[#fdf0d9] px-4 py-3 text-sm text-[#8a5a12]"><%= t("meta_ads.missing_business_management") %></p><% end %>
+    <% if active && !@mcp_ready %>
+      <p class="mt-3 rounded-xl bg-[#fdf0d9] px-4 py-3 text-sm text-[#8a5a12]"><%= t("meta_ads.mcp.missing_scopes", scopes: @mcp_missing_scopes.join(", ")) %></p>
+    <% end %>
+    <% if active && @mcp_ready %>
+      <p class="mt-3 rounded-xl bg-[#e3f3e8] px-4 py-3 text-sm text-[#2f7a4a]"><%= t("meta_ads.mcp.ready") %></p>
+    <% end %>
+    <% if @mcp_sync %>
+      <p class="mt-3 text-xs text-[#8a8380]"><%= t("meta_ads.mcp.sync_flag_on") %></p>
+    <% end %>
+    <% if @mcp_probe.is_a?(Hash) %>
+      <p class="mt-3 rounded-xl border border-[#e8e3df] bg-[#faf9f7] px-4 py-3 text-sm text-[#1f2430]" data-meta-mcp-probe>
+        <%= t("meta_ads.mcp.probe_summary", count: @mcp_probe[:tool_count].to_i, code: @mcp_probe[:error_code].presence || "ok") %>
+        <% if Array(@mcp_probe[:tool_names]).any? %>
+          <span class="mt-1 block text-xs text-[#8a8380]" dir="ltr"><%= Array(@mcp_probe[:tool_names]).first(8).join(", ") %></span>
+        <% end %>
+      </p>
+    <% end %>
     <% if active %>
       <p class="mt-3 text-xs text-[#8a8380]">
         <% if @connection.token_expires_at %><%= t("meta_ads.valid_until", date: l(@connection.token_expires_at.to_date, format: "%d/%m/%Y")) %>, <% end %>
@@ -55,6 +72,7 @@
             class: "h-11 rounded-xl bg-[#1d1d1f] px-5 text-sm font-semibold text-white hover:bg-[#3a3a3c]" %>
       <% if active %>
         <%= button_to t("meta_ads.refresh"), refresh_admin_meta_ads_path, method: :post, class: "h-11 rounded-xl border border-[#e8e3df] px-4 text-sm font-semibold text-[#1f2430] hover:bg-[#f3f1ef]" %>
+        <%= button_to t("meta_ads.mcp.probe"), mcp_probe_admin_meta_ads_path, method: :post, class: "h-11 rounded-xl border border-[#e8e3df] px-4 text-sm font-semibold text-[#1f2430] hover:bg-[#f3f1ef]" %>
       <% end %>
       <% if status != "disconnected" %>
         <%= button_to t("meta_ads.disconnect"), connection_admin_meta_ads_path, method: :delete,

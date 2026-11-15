@@ -1,6 +1,6 @@
 # Meta Ads connection and spend sync
 
-Merchants connect a Meta (Facebook) login, link ad accounts to their workspace, and seallo reads daily ad spend so profit can include it. Read-only: only `ads_read` and `business_management` are requested. Ad controls (pause, budget, duplicate) are a later batch with their own review.
+Merchants connect a Meta (Facebook) login, link ad accounts to their workspace, and seallo reads daily ad spend so profit can include it. Graph sync stays read-only with `ads_read` and `business_management`. The Login for Business configuration should also request `ads_mcp_management` so Seallo can call Meta's hosted Ads MCP (`https://mcp.facebook.com/ads`) with the same merchant token. Ad write controls (pause, budget, duplicate) still need `ads_management` and a later App Review batch.
 
 ## Environment
 
@@ -13,12 +13,15 @@ Merchants connect a Meta (Facebook) login, link ad accounts to their workspace, 
 | `META_GRAPH_VERSION` | no | Graph API version, default `v25.0`. (`META_GRAPH_API_VERSION` is still read as an alias.) |
 | `META_ADS_SYNC_CRON` | no | Cron of the sync job, default `5 * * * *` (hourly). |
 | `META_ADS_EXTERNAL_CRON` | no | Set when an external runner calls `MetaAdsSyncJob` instead of sidekiq-cron. |
+| `META_ADS_MCP_URL` | no | Meta Ads MCP endpoint, default `https://mcp.facebook.com/ads`. |
+| `META_ADS_SYNC_VIA_MCP` | no | When `1`/`true`, hourly sync uses `MetaAds::McpInsightsSync` if the connection has Ads MCP scopes; otherwise Graph `InsightsSync`. |
 
 Without the four required variables the Connect button is disabled and the page says Meta is not configured.
 
 ## Meta app settings
 
-- Facebook Login for Business > Configuration: permissions `ads_read` and `business_management`, access token type "User access token".
+- Facebook Login for Business > Configuration: permissions `ads_read`, `business_management`, and `ads_mcp_management` (for Ads MCP), access token type "User access token".
+- App use cases: add **Create & manage ads with ads MCP server** so `ads_mcp_management` is available. Partners/agencies may need Advanced Access / App Review.
 - Valid OAuth Redirect URIs: the value of `META_REDIRECT_URI`.
 - App settings > Advanced (or Data Deletion): **Data deletion request URL** `https://<APP_BASE_DOMAIN>/auth/meta/data-deletion` (callback, not instructions).
 - Privacy policy URL: a page that says what is read (ad accounts, campaign/ad names, spend and results), why, and how to delete it.
@@ -50,6 +53,16 @@ Without the four required variables the Connect button is disabled and the page 
 ## Data deletion callback
 
 `POST /auth/meta/data-deletion` with Meta's `signed_request`: verified with HMAC-SHA256 and the app secret (bad or missing signatures get 400 and change nothing), then every connection of that Meta user, in every store, loses its token, user id and linked accounts. The answer is `{ "url": ".../auth/meta/data-deletion/<code>", "confirmation_code": "<code>" }`. The status page shows the code and `completed`. The Meta user id is kept only as a SHA-256 digest. Synced spend stays with the merchant's records.
+
+## Meta Ads MCP (Seallo as client)
+
+Seallo calls Meta's hosted MCP with the encrypted merchant token (`Authorization: Bearer`):
+
+- Admin **Test Ads MCP** (`POST /admin/meta-ads/mcp_probe`) runs `tools/list` and an optional `ads_get_ad_entities` sample for the first selected account.
+- Merchant MCP tools on `POST /mcp`: `meta_ads_status`, `meta_ads_list_mcp_tools`, `meta_ads_call_mcp_tool` (read tools without confirm; other tools need `confirm: true`).
+- Hourly sync still defaults to Graph. Set `META_ADS_SYNC_VIA_MCP=1` to prefer `MetaAds::McpInsightsSync` when scopes allow. MCP money fields can be display strings; unparsable rows are skipped.
+
+Existing connections without `ads_mcp_management` keep Graph sync. Merchants reconnect once the Login config includes the MCP permission.
 
 ## Campaign follow-up
 

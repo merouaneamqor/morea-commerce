@@ -4,6 +4,14 @@ es:
     lead: Conecta tus cuentas publicitarias de Meta para seguir el gasto y los resultados de tus campañas.
     read_only_note: 'Solo lectura: seallo únicamente lee el gasto y los resultados de tus anuncios. No crea, no edita ni pausa
       ningún anuncio y no cambia ningún presupuesto. Las cifras de Meta se basan en la atribución de Meta.'
+    mcp:
+      probe: Probar Ads MCP
+      ready: Meta Ads MCP está listo para esta conexión (ads_mcp_management concedido).
+      missing_scopes: "Ads MCP requiere reconectar con estos permisos de Meta: %{scopes}. La sincronización Graph sigue sin ellos."
+      sync_flag_on: "META_ADS_SYNC_VIA_MCP está activo: la sincronización horaria prefiere Meta Ads MCP si hay permisos; si no, Graph."
+      probe_ok: "Meta Ads MCP respondió con %{count} herramientas."
+      probe_failed: "Falló la prueba de Meta Ads MCP (%{code})."
+      probe_summary: "Última prueba MCP: %{count} herramientas (%{code})."
     back: Integraciones API
     connection: Conexión Meta
     status:

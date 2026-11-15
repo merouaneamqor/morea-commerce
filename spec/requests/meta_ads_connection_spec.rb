@@ -414,6 +414,10 @@ RSpec.describe "Meta Ads connection", type: :request do
       expect(section.text).to include("Promo", I18n.t("meta_ads.delivery_status.active"), I18n.t("meta_ads.budget_level.campaign"))
       expect(section.at_css("[data-meta-campaign=111]")).to be_present
       expect(section.at_css("select[name='campaign_links[111]']")).to be_present
+      wrap = section.at_css("[data-meta-campaign-table-wrap]")
+      table = section.at_css("[data-meta-campaign-table]")
+      expect(wrap["class"]).to include("overflow-x-auto")
+      expect(table["class"]).to include("min-w-[52rem]")
 
       patch "/admin/meta-ads/product_links", params: { campaign_links: { "111" => alpha.id.to_s } }
       expect(MetaAds::ProductLink.find_by!(object_type: "campaign", meta_id: "111")).to have_attributes(product_id: alpha.id, source: "manual")

@@ -16,14 +16,29 @@ export default class extends Controller {
   }
 
   static BODY_SHAPES = {
-    slim: { chest: 0.92, waist: 0.88, hips: 0.94 },
+    slim: { chest: 0.95, waist: 0.91, hips: 0.96 },
     average: { chest: 1.0, waist: 1.0, hips: 1.0 },
-    athletic: { chest: 1.06, waist: 0.94, hips: 1.02 },
-    broad: { chest: 1.1, waist: 1.08, hips: 1.08 }
+    athletic: { chest: 1.04, waist: 0.93, hips: 1.01 },
+    broad: { chest: 1.06, waist: 1.06, hips: 1.04 }
   }
 
-  static FIT_PREFS = { fitted: -3, regular: 0, relaxed: 3 }
-  static CUT_EASE = { slim: -2, regular: 0, relaxed: 2, oversized: 6 }
+  static PROFILES = {
+    menswear: { chest_h: 0.50, chest_bmi: 1.9, chest_base: 6.0, waist_r: 0.86, hips_r: 0.97, length_r: 0.40, waist_bmi: 0.85 },
+    womenswear: { chest_h: 0.48, chest_bmi: 1.45, chest_base: 3.5, waist_r: 0.77, hips_r: 1.07, length_r: 0.37, waist_bmi: 0.75 },
+    unisex: { chest_h: 0.49, chest_bmi: 1.7, chest_base: 4.8, waist_r: 0.82, hips_r: 1.02, length_r: 0.385, waist_bmi: 0.8 }
+  }
+
+  static BASE_EASE = {
+    tops: { chest: 10, waist: 11, hips: 8, length: 0 },
+    bottoms: { chest: 0, waist: 3, hips: 5, length: 0 }
+  }
+
+  static FIT_PREFS = { fitted: -3, regular: 0, relaxed: 5 }
+  static CUT_EASE = { slim: -3, regular: 0, relaxed: 3, oversized: 8 }
+  static MEASURE_WEIGHTS = {
+    tops: { chest: 1.0, waist: 0.5, hips: 0.4, length: 0.25 },
+    bottoms: { chest: 0, waist: 1.0, hips: 0.95, length: 0.2 }
+  }
 
   connect() {
     this.stepIndex = 0
@@ -229,32 +244,45 @@ export default class extends Controller {
     }
 
     const body = this.estimateBody()
-    const scored = rows.map((row) => this.scoreRow(row, body)).sort((a, b) => a.distance - b.distance)
+    const target = this.garmentTarget(body)
+    const scored = rows.map((row) => this.scoreRow(row, target)).sort((a, b) => a.distance - b.distance)
     const best = scored[0]
     const second = scored[1]
-    const between = second && (second.distance - best.distance) < 4 && best.distance > 2.5
+    const between = second && (second.distance - best.distance) < 3.5 && best.distance > 1.8
 
     return {
       verdict: between ? "between" : "best",
       size: best.size,
       alternateSize: between ? second.size : null,
       reasons: best.reasons,
-      body
+      body,
+      target
     }
   }
 
   estimateBody() {
     const height = this.answers.heightCm
     const weight = this.answers.weightKg
-    const bmi = weight / ((height / 100) ** 2)
+    const profileName = this.constructor.PROFILES[this.chartValue?.profile] ? this.chartValue.profile : "unisex"
+    const profile = this.constructor.PROFILES[profileName]
     const shape = this.constructor.BODY_SHAPES[this.answers.bodyShape] || this.constructor.BODY_SHAPES.average
-    const fitBias = this.constructor.FIT_PREFS[this.answers.fitPreference] ?? 0
-    const cutEase = this.constructor.CUT_EASE[this.chartValue?.cut] ?? 0
-    const ease = fitBias + cutEase
-    const chest = ((height * 0.52) + ((bmi - 22) * 1.4)) * shape.chest + ease
-    const waist = (chest * 0.88) * shape.waist / shape.chest + (ease * 0.7)
-    const hips = (chest * 0.96) * shape.hips / shape.chest + (ease * 0.8)
-    const length = (height * 0.38) + (ease * 0.2)
+    const bmi = Math.min(40, Math.max(17, weight / ((height / 100) ** 2)))
+    const bmiDelta = bmi - 22
+    const softBmi = bmiDelta >= 0 ? Math.pow(bmiDelta, 0.92) : bmiDelta
+
+    const chest = (height * profile.chest_h + softBmi * profile.chest_bmi + profile.chest_base) * shape.chest
+    const waist = (
+      height * profile.chest_h * profile.waist_r +
+      softBmi * (profile.chest_bmi * profile.waist_r + profile.waist_bmi) +
+      profile.chest_base * profile.waist_r
+    ) * shape.waist
+    const hips = (
+      height * profile.chest_h * profile.hips_r +
+      softBmi * profile.chest_bmi * profile.hips_r +
+      profile.chest_base * profile.hips_r
+    ) * shape.hips
+    const length = height * profile.length_r
+
     return {
       chest: round1(chest),
       waist: round1(waist),
@@ -263,31 +291,50 @@ export default class extends Controller {
     }
   }
 
-  scoreRow(row, body) {
-    const garment = this.chartValue?.garment
+  garmentTarget(body) {
+    const garment = this.constructor.BASE_EASE[this.chartValue?.garment] ? this.chartValue.garment : "tops"
+    const base = this.constructor.BASE_EASE[garment]
+    const fitBias = this.constructor.FIT_PREFS[this.answers.fitPreference] ?? 0
+    const cutEase = this.constructor.CUT_EASE[this.chartValue?.cut] ?? 0
+    const ease = fitBias + cutEase
+    const target = {}
+    Object.keys(body).forEach((key) => {
+      const measureEase = key === "length" ? ease * 0.2 : ease
+      target[key] = round1(body[key] + (base[key] || 0) + measureEase)
+    })
+    return target
+  }
+
+  scoreRow(row, target) {
+    const garment = this.constructor.BASE_EASE[this.chartValue?.garment] ? this.chartValue.garment : "tops"
     const keys = garment === "bottoms" ? ["waist", "hips", "length"] : ["chest", "waist", "hips", "length"]
+    const weights = this.constructor.MEASURE_WEIGHTS[garment]
     const reasons = []
     let total = 0
-    let counted = 0
+    let weightSum = 0
 
     keys.forEach((key) => {
       const garmentValue = row[key]
       if (garmentValue == null || garmentValue === "") return
-      const bodyValue = body[key]
-      const delta = Number(garmentValue) - bodyValue
-      const distance = delta < 0 ? Math.abs(delta) * 1.6 : delta * 0.9
-      total += distance
-      counted += 1
+      const weight = weights[key] || 0
+      if (weight <= 0) return
+      const delta = Number(garmentValue) - target[key]
+      const distance = key === "length"
+        ? (delta < 0 ? Math.abs(delta) * 1.4 : delta * 0.6)
+        : (delta < 0 ? Math.abs(delta) * 1.65 : delta * 0.85)
+      total += distance * weight
+      weightSum += weight
+      const threshold = key === "length" ? 2.5 : 2
       reasons.push({
         measure: key,
         delta: round1(delta),
-        note: Math.abs(delta) < 2 ? "match" : delta < 0 ? "snug" : delta < 6 ? "easy" : "roomy"
+        note: Math.abs(delta) < threshold ? "match" : delta < 0 ? "snug" : delta < 7 ? "easy" : "roomy"
       })
     })
 
     return {
       size: row.size,
-      distance: counted === 0 ? 999 : total / counted,
+      distance: weightSum === 0 ? 999 : total / weightSum,
       reasons
     }
   }

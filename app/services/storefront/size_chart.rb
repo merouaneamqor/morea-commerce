@@ -2,15 +2,25 @@
 
 module Storefront
   # Garment measurements for the size advisor. Merchants can paste their own
-  # chart on a product; otherwise we filter the menswear/womenswear defaults
-  # down to the sizes that product actually sells.
+  # chart on a product; otherwise we filter the unisex/menswear/womenswear
+  # defaults down to the sizes that product actually sells.
   class SizeChart
-    PROFILES = %w[menswear womenswear].freeze
+    PROFILES = %w[unisex menswear womenswear].freeze
     CUTS = %w[slim regular relaxed oversized].freeze
     GARMENTS = %w[tops bottoms].freeze
     MEASURES = %w[chest waist hips length].freeze
 
+    # Finished garment centimetres (not body). Unisex sits between menswear and
+    # womenswear for modest sportswear defaults.
     DEFAULTS = {
+      "unisex" => [
+        { "size" => "XS", "chest" => 91, "waist" => 81, "hips" => 93, "length" => 63 },
+        { "size" => "S", "chest" => 97, "waist" => 87, "hips" => 99, "length" => 65 },
+        { "size" => "M", "chest" => 103, "waist" => 93, "hips" => 105, "length" => 67 },
+        { "size" => "L", "chest" => 109, "waist" => 99, "hips" => 111, "length" => 69 },
+        { "size" => "XL", "chest" => 115, "waist" => 105, "hips" => 117, "length" => 71 },
+        { "size" => "XXL", "chest" => 121, "waist" => 111, "hips" => 123, "length" => 73 }
+      ],
       "menswear" => [
         { "size" => "XS", "chest" => 96, "waist" => 90, "hips" => 94, "length" => 66 },
         { "size" => "S", "chest" => 102, "waist" => 96, "hips" => 100, "length" => 68 },
@@ -35,7 +45,7 @@ module Storefront
 
     def self.normalize(raw)
       data = raw.is_a?(Hash) ? raw.deep_stringify_keys : {}
-      profile = PROFILES.include?(data["profile"].to_s) ? data["profile"].to_s : "menswear"
+      profile = PROFILES.include?(data["profile"].to_s) ? data["profile"].to_s : "unisex"
       cut = CUTS.include?(data["cut"].to_s) ? data["cut"].to_s : "regular"
       garment = GARMENTS.include?(data["garment"].to_s) ? data["garment"].to_s : "tops"
       rows = Array(data["rows"]).filter_map { |row| normalize_row(row) }
@@ -85,7 +95,7 @@ module Storefront
     private
 
     def default_rows(profile, sizes)
-      catalog = DEFAULTS[profile] || DEFAULTS["menswear"]
+      catalog = DEFAULTS[profile] || DEFAULTS["unisex"]
       return catalog if sizes.blank?
 
       matched = catalog.select { |row| sizes.map(&:upcase).include?(row["size"].upcase) }

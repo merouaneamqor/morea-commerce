@@ -13,6 +13,21 @@
   -webkit-overflow-scrolling: touch;
 }
 .admin-body .admin-table { text-align: start; }
+/* Meta Ads campaigns: page-level overflow-wrap:anywhere must not crush dense columns on phones. */
+.admin-body [data-meta-campaign-table-wrap] {
+  overflow-x: auto;
+}
+.admin-body [data-meta-campaign-table] {
+  min-inline-size: 52rem;
+  width: max-content;
+  max-inline-size: none;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.admin-body [data-meta-campaign-table] :where(th, td) {
+  overflow-wrap: normal;
+  word-break: normal;
+}
 .admin-body .admin-input { max-inline-size: 100%; }
 .admin-body :where(.admin-card__header, .admin-summary-row, .admin-media-dialog__footer) {
   flex-wrap: wrap;

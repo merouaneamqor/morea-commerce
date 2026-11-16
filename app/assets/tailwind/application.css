@@ -1258,12 +1258,23 @@
     @apply text-start text-[11px] font-medium uppercase tracking-[0.14em] text-ink underline underline-offset-4;
   }
 
+  html.size-advisor-open,
+  html.size-advisor-open body {
+    overflow: hidden;
+  }
+
   .size-advisor {
-    @apply pointer-events-none fixed inset-0 z-[60];
+    @apply pointer-events-none fixed inset-0 z-[80];
   }
 
   .size-advisor.size-advisor--guide .size-advisor__panel {
-    @apply md:max-w-[32rem];
+    @apply md:max-w-[34rem];
+  }
+
+  .size-advisor.size-advisor--guide .size-advisor__progress,
+  .size-advisor.size-advisor--guide .size-advisor__error,
+  .size-advisor.size-advisor--guide .size-advisor__step {
+    display: none !important;
   }
 
   .size-advisor.is-open {
@@ -1271,7 +1282,7 @@
   }
 
   .size-advisor__scrim {
-    @apply absolute inset-0 bg-ink/40 opacity-0 transition-opacity duration-500;
+    @apply absolute inset-0 z-0 bg-ink/40 opacity-0 transition-opacity duration-500;
   }
 
   .size-advisor.is-open .size-advisor__scrim {
@@ -1279,7 +1290,7 @@
   }
 
   .size-advisor__panel {
-    @apply absolute inset-x-0 bottom-0 flex max-h-[92dvh] w-full flex-col bg-white shadow-2xl md:inset-x-auto md:inset-y-0 md:end-0 md:max-h-none md:max-w-[26rem];
+    @apply absolute inset-x-0 bottom-0 z-10 flex max-h-[92dvh] w-full flex-col bg-white shadow-2xl md:inset-x-auto md:inset-y-0 md:end-0 md:max-h-none md:max-w-[26rem];
     transform: translateY(100%);
     visibility: hidden;
     transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.45s;
@@ -1302,7 +1313,7 @@
   }
 
   .size-advisor__head {
-    @apply flex items-start justify-between gap-4 border-b border-line px-6 py-5;
+    @apply relative z-20 flex shrink-0 items-start justify-between gap-4 border-b border-line px-6 py-5;
     padding-top: max(1.25rem, env(safe-area-inset-top));
   }
 
@@ -1315,11 +1326,15 @@
   }
 
   .size-advisor__close {
-    @apply inline-flex h-9 w-9 shrink-0 items-center justify-center text-2xl leading-none text-ink-soft hover:text-ink;
+    @apply relative z-30 inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-sm text-3xl leading-none text-ink-soft transition-colors hover:bg-stone-floor hover:text-ink;
   }
 
   .size-advisor__progress {
     @apply px-6 pt-4 text-[10px] uppercase tracking-[0.22em] text-ink-faint;
+  }
+
+  .size-advisor__progress[hidden] {
+    display: none !important;
   }
 
   .size-advisor__error {
@@ -1404,52 +1419,52 @@
   }
 
   .size-advisor__guide {
-    @apply block;
+    @apply block min-w-0;
   }
 
   .size-advisor__tabs {
-    @apply mt-5 flex flex-wrap gap-2;
+    @apply mt-5 grid grid-cols-2 gap-2;
   }
 
   .size-advisor__tab {
-    @apply border border-line bg-white px-3 py-2 text-[10px] font-medium uppercase tracking-[0.16em] text-ink-soft transition-colors hover:border-ink hover:text-ink;
+    @apply min-h-11 cursor-pointer border border-line bg-white px-3 py-2.5 text-center text-[11px] font-medium uppercase tracking-[0.14em] text-ink-soft transition-colors hover:border-ink hover:text-ink;
   }
 
   .size-advisor__tab.is-active {
-    @apply border-ink bg-stone-floor text-ink;
+    @apply border-ink bg-ink text-paper hover:border-ink hover:text-paper;
+  }
+
+  .size-advisor__part-title {
+    @apply mt-5 text-[10px] font-medium uppercase tracking-[0.22em] text-ink;
   }
 
   .size-advisor__chart-wrap {
-    @apply mt-5 overflow-x-auto;
+    @apply mt-5 -mx-1 overflow-x-auto px-1;
   }
 
   .size-advisor__guide .size-advisor__chart-wrap {
-    @apply mt-4;
+    @apply mt-3;
   }
 
   .size-advisor__chart {
-    @apply w-full min-w-[16rem] border-collapse text-left text-xs text-ink;
+    @apply w-full min-w-[15rem] border-collapse text-start text-sm text-ink;
   }
 
   .size-advisor__chart th {
-    @apply border-b border-line pb-2 pe-3 text-[10px] uppercase tracking-[0.18em] text-ink-soft;
+    @apply border-b border-line pb-2.5 pe-3 text-[10px] font-medium uppercase tracking-[0.16em] text-ink-soft;
   }
 
   .size-advisor__chart td {
-    @apply border-b border-line py-2.5 pe-3 tabular-nums;
+    @apply border-b border-line py-3 pe-3 tabular-nums;
   }
 
   .size-advisor__chart th:first-child,
   .size-advisor__chart td:first-child {
-    @apply sticky start-0 bg-white font-medium;
+    @apply font-medium;
   }
 
   .size-advisor__chart-row.is-active td {
     @apply bg-stone-floor font-medium;
-  }
-
-  .size-advisor__chart-row.is-active td:first-child {
-    @apply bg-stone-floor;
   }
 
   .size-advisor__note {

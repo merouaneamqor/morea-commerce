@@ -8,7 +8,7 @@ export default class extends Controller {
     "shell", "panel", "scrim", "step", "height", "weight", "heightUnit", "weightUnit",
     "shape", "fit", "resultTitle", "resultBody", "resultSize", "resultReasons",
     "resultChart", "progress", "selectButton", "editButton", "error",
-    "eyebrow", "title", "guidePanel", "guideBody", "guideTabs", "guideChart", "guideNote"
+    "eyebrow", "title", "guidePanel", "guideBody", "guideTabs", "guidePartTitle", "guideChart", "guideNote"
   ]
 
   static values = {
@@ -54,6 +54,7 @@ export default class extends Controller {
   disconnect() {
     document.removeEventListener("keydown", this.boundKey)
     document.body.classList.remove("overflow-hidden")
+    document.documentElement.classList.remove("size-advisor-open")
   }
 
   open(event) {
@@ -88,20 +89,23 @@ export default class extends Controller {
     shell.classList.add("is-open")
     shell.setAttribute("aria-hidden", "false")
     document.body.classList.add("overflow-hidden")
+    document.documentElement.classList.add("size-advisor-open")
     document.addEventListener("keydown", this.boundKey)
   }
 
   close(event) {
     event?.preventDefault()
+    event?.stopPropagation?.()
     const shell = this.hasShellTarget ? this.shellTarget : this.element
     shell.classList.remove("is-open", "size-advisor--guide")
     shell.setAttribute("aria-hidden", "true")
     document.body.classList.remove("overflow-hidden")
+    document.documentElement.classList.remove("size-advisor-open")
     document.removeEventListener("keydown", this.boundKey)
   }
 
   backdrop(event) {
-    if (event.target === this.scrimTarget) this.close()
+    if (event.target === this.scrimTarget) this.close(event)
   }
 
   onKey(event) {
@@ -134,9 +138,13 @@ export default class extends Controller {
   }
 
   chooseGuidePart(event) {
+    const button = event.target.closest("[data-part-index]")
+    if (!button || !this.hasGuideTabsTarget || !this.guideTabsTarget.contains(button)) return
+
     event.preventDefault()
-    const index = Number(event.currentTarget.dataset.partIndex || 0)
-    this.guidePartIndex = Number.isFinite(index) ? index : 0
+    const index = Number(button.dataset.partIndex || 0)
+    if (!Number.isFinite(index) || index === this.guidePartIndex) return
+    this.guidePartIndex = index
     this.renderGuidePart()
   }
 
@@ -242,7 +250,7 @@ export default class extends Controller {
 
   renderGuideTabs(parts) {
     if (!this.hasGuideTabsTarget) return
-    const showTabs = parts.length > 1 && parts.some((part) => part.label)
+    const showTabs = parts.length > 1
     this.guideTabsTarget.hidden = !showTabs
     if (!showTabs) {
       this.guideTabsTarget.innerHTML = ""
@@ -252,7 +260,8 @@ export default class extends Controller {
     this.guideTabsTarget.innerHTML = parts.map((part, index) => {
       const active = index === this.guidePartIndex ? " is-active" : ""
       const pressed = index === this.guidePartIndex
-      return `<button type="button" class="size-advisor__tab${active}" role="tab" aria-selected="${pressed}" data-part-index="${index}" data-action="size-advisor#chooseGuidePart">${escapeHtml(part.label)}</button>`
+      const label = this.partLabel(part, index, parts.length)
+      return `<button type="button" class="size-advisor__tab${active}" role="tab" aria-selected="${pressed}" data-part-index="${index}">${escapeHtml(label)}</button>`
     }).join("")
   }
 
@@ -265,6 +274,11 @@ export default class extends Controller {
         button.classList.toggle("is-active", active)
         button.setAttribute("aria-selected", String(active))
       })
+    }
+    if (this.hasGuidePartTitleTarget) {
+      const showTitle = parts.length > 1 && part
+      this.guidePartTitleTarget.hidden = !showTitle
+      this.guidePartTitleTarget.textContent = showTitle ? this.partLabel(part, this.guidePartIndex, parts.length) : ""
     }
     if (this.hasGuideChartTarget) {
       this.guideChartTarget.innerHTML = part
@@ -498,7 +512,7 @@ export default class extends Controller {
     if (parts.length) {
       return parts.map((part, index) => ({
         key: part.key || `part-${index}`,
-        label: part.label || this.defaultPartLabel(part.garment, index, parts.length),
+        label: part.label || "",
         garment: part.garment || "tops",
         rows: part.rows || []
       }))
@@ -509,6 +523,17 @@ export default class extends Controller {
       garment: this.chartValue?.garment || "tops",
       rows: this.chartValue?.rows || []
     } ]
+  }
+
+  partLabel(part, index, total) {
+    if (!part) return ""
+    const key = String(part.key || "").toLowerCase()
+    const garment = String(part.garment || "").toLowerCase()
+    if (key === "bottom" || garment === "bottoms") return this.label("part_bottom")
+    if (key === "top" || garment === "tops") return this.label("part_top")
+    const raw = String(part.label || "").trim()
+    if (raw && !raw.includes("/") && raw.length <= 24) return raw
+    return this.defaultPartLabel(garment, index, total) || raw || this.label("part_top")
   }
 
   advisorParts() {

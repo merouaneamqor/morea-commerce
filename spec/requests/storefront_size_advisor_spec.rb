@@ -50,6 +50,8 @@ RSpec.describe "Storefront size advisor", type: :request do
     expect(shell).to be_present
     expect(shell["aria-hidden"]).to eq("true")
     expect(document.at_css("[data-size-advisor-target='guidePanel']")).to be_present
+    expect(document.at_css("[data-size-advisor-target='guideTabs']")["data-action"]).to include("size-advisor#chooseGuidePart")
+    expect(document.at_css(".size-advisor__close")["data-action"]).to include("size-advisor#close")
     expect(document.at_css(".size-sheet__guide")&.text).to include("Size guide")
     root = document.at_css("[data-controller~='size-advisor']")
     expect(root).to be_present

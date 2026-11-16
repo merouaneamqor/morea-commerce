@@ -7,7 +7,12 @@
         <p class="size-advisor__eyebrow" data-size-advisor-target="eyebrow"><%= t("size_advisor.eyebrow") %></p>
         <h2 id="size-advisor-title" class="size-advisor__title" data-size-advisor-target="title"><%= t("size_advisor.title") %></h2>
       </div>
-      <button type="button" class="size-advisor__close" data-action="size-advisor#close" aria-label="<%= t("size_advisor.close") %>">×</button>
+      <button type="button"
+              class="size-advisor__close"
+              data-action="click->size-advisor#close"
+              aria-label="<%= t("size_advisor.close") %>">
+        <span aria-hidden="true">×</span>
+      </button>
     </header>
 
     <p class="size-advisor__progress" data-size-advisor-target="progress"></p>
@@ -16,7 +21,12 @@
     <div class="size-advisor__body">
       <section class="size-advisor__guide" data-size-advisor-target="guidePanel" hidden>
         <p class="size-advisor__lead" data-size-advisor-target="guideBody"></p>
-        <div class="size-advisor__tabs" data-size-advisor-target="guideTabs" role="tablist" hidden></div>
+        <div class="size-advisor__tabs"
+             data-size-advisor-target="guideTabs"
+             data-action="click->size-advisor#chooseGuidePart"
+             role="tablist"
+             hidden></div>
+        <p class="size-advisor__part-title" data-size-advisor-target="guidePartTitle" hidden></p>
         <div class="size-advisor__chart-wrap" data-size-advisor-target="guideChart"></div>
         <p class="size-advisor__note" data-size-advisor-target="guideNote"></p>
         <div class="size-advisor__actions">

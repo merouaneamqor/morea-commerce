@@ -30,9 +30,12 @@ main, .site-footer, .mobile-menu__panel, .cart-drawer__panel {
 .size-advisor__panel { min-width: 0; }
 .size-advisor__head { gap: 1rem; }
 .size-advisor__close { flex-shrink: 0; }
-.size-advisor__chart { display: block; max-width: 100%; overflow-x: auto; }
+.size-advisor__chart { width: 100%; max-width: 100%; }
 .size-advisor__tabs { min-width: 0; }
 .size-advisor__guide { min-width: 0; }
+.size-advisor__panel { min-width: 0; }
+.size-advisor__close { touch-action: manipulation; }
+.size-advisor__tab { touch-action: manipulation; }
 .cart-drawer__head { gap: 1rem; }
 .cart-drawer__close { flex-shrink: 0; }
 .cart-drawer__item .cart-qty { flex-shrink: 0; }

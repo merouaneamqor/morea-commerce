@@ -1156,7 +1156,7 @@
   }
 
   .size-guide-trigger {
-    @apply text-[11px] uppercase tracking-[0.14em] text-ink-faint underline underline-offset-4 transition-colors hover:text-ink;
+    @apply text-[11px] font-medium uppercase tracking-[0.14em] text-ink underline underline-offset-4 transition-colors hover:text-ink-soft;
   }
 
   .size-advisor-trigger {
@@ -1249,12 +1249,21 @@
     @apply min-h-11 min-w-14 px-4 text-base;
   }
 
+  .size-sheet__help {
+    @apply mt-4 flex flex-wrap items-center gap-x-4 gap-y-2;
+  }
+
+  .size-sheet__guide,
   .size-sheet__advisor {
-    @apply mt-4 text-start text-[11px] font-medium uppercase tracking-[0.14em] text-ink underline underline-offset-4;
+    @apply text-start text-[11px] font-medium uppercase tracking-[0.14em] text-ink underline underline-offset-4;
   }
 
   .size-advisor {
     @apply pointer-events-none fixed inset-0 z-[60];
+  }
+
+  .size-advisor.size-advisor--guide .size-advisor__panel {
+    @apply md:max-w-[32rem];
   }
 
   .size-advisor.is-open {
@@ -1394,24 +1403,57 @@
     @apply mt-5 space-y-2 border-t border-line pt-5 text-sm text-ink;
   }
 
+  .size-advisor__guide {
+    @apply block;
+  }
+
+  .size-advisor__tabs {
+    @apply mt-5 flex flex-wrap gap-2;
+  }
+
+  .size-advisor__tab {
+    @apply border border-line bg-white px-3 py-2 text-[10px] font-medium uppercase tracking-[0.16em] text-ink-soft transition-colors hover:border-ink hover:text-ink;
+  }
+
+  .size-advisor__tab.is-active {
+    @apply border-ink bg-stone-floor text-ink;
+  }
+
   .size-advisor__chart-wrap {
-    @apply mt-6 overflow-x-auto;
+    @apply mt-5 overflow-x-auto;
+  }
+
+  .size-advisor__guide .size-advisor__chart-wrap {
+    @apply mt-4;
   }
 
   .size-advisor__chart {
-    @apply w-full min-w-[18rem] border-collapse text-left text-xs text-ink;
+    @apply w-full min-w-[16rem] border-collapse text-left text-xs text-ink;
   }
 
   .size-advisor__chart th {
-    @apply border-b border-line pb-2 text-[10px] uppercase tracking-[0.18em] text-ink-soft;
+    @apply border-b border-line pb-2 pe-3 text-[10px] uppercase tracking-[0.18em] text-ink-soft;
   }
 
   .size-advisor__chart td {
-    @apply border-b border-line py-2 tabular-nums;
+    @apply border-b border-line py-2.5 pe-3 tabular-nums;
+  }
+
+  .size-advisor__chart th:first-child,
+  .size-advisor__chart td:first-child {
+    @apply sticky start-0 bg-white font-medium;
   }
 
   .size-advisor__chart-row.is-active td {
     @apply bg-stone-floor font-medium;
+  }
+
+  .size-advisor__chart-row.is-active td:first-child {
+    @apply bg-stone-floor;
+  }
+
+  .size-advisor__note {
+    @apply mt-5 max-w-md text-xs leading-5 text-ink-soft;
   }
 
   .size-advisor__privacy {

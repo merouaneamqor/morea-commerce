@@ -2,7 +2,7 @@
 
 module CatalogTools
   class UpdateProduct < MCP::Tool
-    description "Update a product by slug. Omitted fields stay unchanged. newSlug renames it. clearCompareAt removes the compare-at price. Empty sku clears the SKU."
+    description "Update a product by slug. Omitted fields stay unchanged. newSlug renames it. clearCompareAt removes the compare-at price. Empty sku clears the SKU. sizeChart sets the storefront Size guide (flat or circumference; optional top/bottom parts). clearSizeChart resets it to profile defaults."
     input_schema(
       properties: {
         slug: { type: "string" },
@@ -17,6 +17,11 @@ module CatalogTools
         trackInventory: { type: "boolean" },
         featured: { type: "boolean" },
         position: { type: "integer" },
+        sizeChart: {
+          type: "object",
+          description: "Garment chart. profile unisex|menswear|womenswear, cut slim|regular|relaxed|oversized, basis circumference|flat, garment tops|bottoms, rows[{size,chest,waist,hips,length}], or parts[{key,label,garment,rows}] for sets."
+        },
+        clearSizeChart: { type: "boolean" },
         translations: { type: "array", items: { type: "object" } }
       },
       required: [ "slug" ]
@@ -30,12 +35,14 @@ module CatalogTools
             $slug: String!, $newSlug: String, $status: String, $priceDh: Int, $compareAtDh: Int,
             $clearCompareAt: Boolean, $currency: String, $sku: String, $stock: Int,
             $trackInventory: Boolean, $featured: Boolean, $position: Int,
+            $sizeChart: JSON, $clearSizeChart: Boolean,
             $translations: [ProductTranslationInput!]
           ) {
             updateProduct(
               slug: $slug, newSlug: $newSlug, status: $status, priceDh: $priceDh, compareAtDh: $compareAtDh,
               clearCompareAt: $clearCompareAt, currency: $currency, sku: $sku, stock: $stock,
-              trackInventory: $trackInventory, featured: $featured, position: $position, translations: $translations
+              trackInventory: $trackInventory, featured: $featured, position: $position,
+              sizeChart: $sizeChart, clearSizeChart: $clearSizeChart, translations: $translations
             ) {
               product { #{CatalogExecutor::PRODUCT_FIELDS} }
               errors

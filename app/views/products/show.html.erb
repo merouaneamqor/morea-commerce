@@ -20,14 +20,22 @@
   "size" => t("product.size"),
   "measure_chest" => t("size_advisor.measure.chest"),
   "measure_waist" => t("size_advisor.measure.waist"),
+  "measure_hem" => t("size_advisor.measure.hem"),
   "measure_hips" => t("size_advisor.measure.hips"),
   "measure_length" => t("size_advisor.measure.length"),
   "note_match" => t("size_advisor.note.match"),
   "note_snug" => t("size_advisor.note.snug"),
   "note_easy" => t("size_advisor.note.easy"),
   "note_roomy" => t("size_advisor.note.roomy"),
+  "eyebrow" => t("size_advisor.eyebrow"),
+  "title" => t("size_advisor.title"),
+  "guide_eyebrow" => t("size_advisor.guide_eyebrow"),
   "guide_title" => t("size_advisor.guide_title"),
-  "guide_body" => t("size_advisor.guide_body")
+  "guide_body" => t("size_advisor.guide_body"),
+  "guide_note_flat" => t("size_advisor.guide_note_flat"),
+  "guide_note_circumference" => t("size_advisor.guide_note_circumference"),
+  "part_top" => t("size_advisor.part_top"),
+  "part_bottom" => t("size_advisor.part_bottom")
 } : nil %>
 <% require_size = @sizes.any? %>
 <% initial_price = @initial_variant&.fetch(:price) || @product.price_display %>

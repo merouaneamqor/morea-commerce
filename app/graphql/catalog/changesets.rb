@@ -294,6 +294,7 @@ module Catalog
       product.price_dh = op["priceDh"]
       product.compare_at_dh = op["compareAtDh"] if op["compareAtDh"]
       product.slug = op["slug"] if op["slug"].present?
+      assign_size_chart!(product, op)
       Catalog::Translations.assign!(product, normalize_translations(op["translations"]))
       snapshot = { "type" => "create_product", "slug" => product.slug, "created" => true }
 
@@ -336,6 +337,7 @@ module Catalog
       product.track_inventory = attrs["trackInventory"] unless attrs["trackInventory"].nil?
       product.featured = attrs["featured"] unless attrs["featured"].nil?
       product.position = attrs["position"] unless attrs["position"].nil?
+      assign_size_chart!(product, attrs)
       Catalog::Translations.assign!(product, normalize_translations(attrs["translations"])) if attrs["translations"]
 
       unless product.save
@@ -608,6 +610,7 @@ module Catalog
       product.track_inventory = before["trackInventory"]
       product.featured = before["featured"]
       product.position = before["position"]
+      product.size_chart = ::Storefront::SizeChart.normalize(before["sizeChart"] || {})
       Catalog::Translations.assign!(product, normalize_translations(before["translations"]))
       product.save!
       return if product.product_variants.any?
@@ -670,6 +673,7 @@ module Catalog
         "trackInventory" => product.track_inventory,
         "featured" => product.featured,
         "position" => product.position,
+        "sizeChart" => ::Storefront::SizeChart.normalize(product.size_chart),
         "collectionSlugs" => product.collections.map(&:slug),
         "translations" => product.translations.map do |translation|
           {
@@ -688,6 +692,14 @@ module Catalog
           }
         end
       }
+    end
+
+    def assign_size_chart!(product, attrs)
+      if attrs["clearSizeChart"]
+        product.size_chart = {}
+      elsif attrs.key?("sizeChart") && !attrs["sizeChart"].nil?
+        product.size_chart = ::Storefront::SizeChart.normalize(attrs["sizeChart"])
+      end
     end
 
     def inventory_snapshot(product, op)

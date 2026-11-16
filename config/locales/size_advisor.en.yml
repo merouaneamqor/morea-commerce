@@ -2,7 +2,12 @@ en:
   size_advisor:
     find_my_size: "Find my size"
     guide_title: "Size guide"
-    guide_body: "Garment measurements in centimetres."
+    guide_eyebrow: "Measurements"
+    guide_body: "Garment measurements in centimetres, piece by piece."
+    guide_note_flat: "Widths are measured flat, side to side. Multiply by two for the full circumference. Length is measured along the garment."
+    guide_note_circumference: "Finished garment circumference in centimetres, not body measurements."
+    part_top: "Top"
+    part_bottom: "Bottom"
     eyebrow: "Fitting"
     title: "Size advisor"
     close: "Close"
@@ -44,6 +49,7 @@ en:
     measure:
       chest: "Chest"
       waist: "Waist"
+      hem: "Hem"
       hips: "Hips"
       length: "Length"
     note:

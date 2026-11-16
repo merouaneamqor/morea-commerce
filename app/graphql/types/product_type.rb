@@ -13,6 +13,10 @@ module Types
     field :track_inventory, Boolean, null: false
     field :featured, Boolean, null: false
     field :position, Integer, null: false
+    field :size_chart, GraphQL::Types::JSON, null: false,
+          description: "Stored garment chart for Size guide / Find my size. basis flat|circumference; optional parts for sets."
+    field :size_guide, GraphQL::Types::JSON, null: true,
+          description: "Resolved storefront chart (defaults filled, flat widths doubled for scoring). Null when the product has no sizes."
     field :translations, [ ProductTranslationType ], null: false
     field :collection_slugs, [ String ], null: false
     field :cover_url, String, null: true, description: "Photo shown on the store. Same file as the first image."
@@ -26,6 +30,16 @@ module Types
     def cover_url
       attachment = object.ordered_images.first
       Catalog::Images.absolute_url(attachment, object.store) if attachment
+    end
+
+    def size_chart
+      ::Storefront::SizeChart.normalize(object.size_chart)
+    end
+
+    def size_guide
+      return nil unless object.size_advisor_available?
+
+      object.size_advisor_chart
     end
 
     def variants

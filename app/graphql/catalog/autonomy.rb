@@ -72,6 +72,7 @@ module Catalog
           field("trackInventory", "boolean", required: false),
           field("featured", "boolean", required: false),
           field("position", "integer", required: false),
+          field("sizeChart", "object", required: false, notes: "Storefront Size guide. profile, cut, basis (circumference|flat), garment (tops|bottoms), rows[{size,chest,waist,hips,length}], or parts[{key,label,garment,rows}] for sets. clearSizeChart resets to defaults."),
           field("collectionSlugs", "string[]", required: false, notes: "Full membership replace via set_product_collections."),
           field("translations", "object[]", required: true, notes: "Create needs fr name. Fields: #{PRODUCT_TRANSLATION_FIELDS.join(', ')}."),
           field("variants", "object[]", required: false, notes: "size + color pairs via set_product_variants. Variant stock writes ledger movements."),

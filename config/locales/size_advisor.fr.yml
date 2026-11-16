@@ -2,7 +2,12 @@ fr:
   size_advisor:
     find_my_size: "Trouver ma taille"
     guide_title: "Guide des tailles"
-    guide_body: "Mesures du vêtement en centimètres."
+    guide_eyebrow: "Mesures"
+    guide_body: "Mesures du vêtement en centimètres, pièce par pièce."
+    guide_note_flat: "Largeurs mesurées à plat, de gauche à droite. Multipliez par deux pour le tour complet. La longueur se lit le long de la pièce."
+    guide_note_circumference: "Tours du vêtement fini en centimètres, pas les mesures du corps."
+    part_top: "Haut"
+    part_bottom: "Pantalon"
     eyebrow: "Essayage"
     title: "Conseiller de taille"
     close: "Fermer"
@@ -44,6 +49,7 @@ fr:
     measure:
       chest: "Poitrine"
       waist: "Taille"
+      hem: "Bas"
       hips: "Hanches"
       length: "Longueur"
     note:

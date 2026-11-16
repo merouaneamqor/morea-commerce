@@ -53,12 +53,13 @@ The home page builder is `get_home_layout`, `set_home_layout`, `reorder_home_sec
 
 - Prices are whole currency units in `priceDh` (120 means 120 DH), not cents.
 - Locales are `fr`, `en`, and `ar`. Create a product or collection with a `fr` translation `name`. Other locales are optional.
-- On update, omit a field to leave it unchanged. `newSlug` renames. `clearCompareAt: true` removes the compare-at price. An empty `sku` clears the SKU.
+- On update, omit a field to leave it unchanged. `newSlug` renames. `clearCompareAt: true` removes the compare-at price. An empty `sku` clears the SKU. `clearSizeChart: true` resets the Size guide to profile defaults.
 - `delete_product` and `delete_collection` do nothing unless `confirm` is true. A product that is already on an order cannot be deleted.
 - Slugs are unique per store. Unknown slugs come back in `errors`.
 - Status is `draft`, `active`, or `archived`. New products default to `draft`.
 - `set_product_collections` and `set_collection_products` replace the full membership. Pass `[]` to clear it. Order of `productSlugs` is the collection order.
 - Variants are size and color. `set_product_variants` upserts by that pair; omit a row to leave it. `delete_product_variants` needs `confirm: true`. A blank `priceDh` uses the product price.
+- Size guide: `create_product` / `update_product` accept `sizeChart`. `get_product` returns `sizeChart` (stored) and `sizeGuide` (what the storefront shows after defaults and flat→circumference conversion). Measures are finished garment centimetres, not body. `basis` is `circumference` (full tour) or `flat` (laid flat, side to side). `garment` is `tops` or `bottoms`. For two-piece sets, pass `parts` with top and bottom rows instead of a single `rows` array. Empty rows fall back to unisex/menswear/womenswear defaults for the product’s sizes.
 - When a product has variants, the storefront sells the sum of active variant stock. Change that stock with `adjust_stock` / `set_stock` (pass `size`+`color` or `variantId`), not the product `stock` field.
 - Prefer `adjust_stock` for receives and damage. Prefer `set_stock` for absolute corrections. Both write `inventory_movements`. `update_product`/`set_product_variants` stock changes also write ledger rows when they change on-hand quantity.
 - Manual write reasons: `manual_adjustment`, `received`, `damaged`, `correction`. Order lifecycle also writes `order_confirmed`, `order_cancelled`, `order_returned`, `order_edited` (read-only via `list_inventory_movements`).
@@ -127,6 +128,8 @@ Changeset operation `type` values: `create_product`, `update_product`, `set_prod
 
 Example `update_product` op: `{ "type": "update_product", "slug": "robe-lin", "attrs": { "translations": [{ "locale": "fr", "shortDescription": "…" }] } }`.
 
+Example Size guide for a flat two-piece set: `{ "type": "update_product", "slug": "essential-set", "attrs": { "sizeChart": { "profile": "unisex", "cut": "regular", "basis": "flat", "parts": [ { "key": "top", "label": "Haut", "garment": "tops", "rows": [ { "size": "S", "chest": 54, "waist": 58, "length": 83 }, { "size": "M", "chest": 56, "waist": 60, "length": 84 } ] }, { "key": "bottom", "label": "Pantalon", "garment": "bottoms", "rows": [ { "size": "S", "waist": 30, "hips": 55, "length": 107 }, { "size": "M", "waist": 32, "hips": 57, "length": 108 } ] } ] } } }`.
+
 Example `adjust_stock` op: `{ "type": "adjust_stock", "slug": "robe-lin", "quantity": 5, "reason": "received", "note": "Supplier delivery", "size": "M", "color": "Noir" }`.
 
 ## Home page & landing page builders
@@ -153,7 +156,7 @@ Content pages (`about`, `shipping`, `privacy`) stay `template: content` with a s
 
 ## MCP tools
 
-Products: `read_catalog_guide`, `list_products` (`query`, `status`, `limit` 1–100, default 50), `get_product`, `create_product`, `update_product`, `delete_product`, `set_product_collections`, `set_product_variants`, `delete_product_variants`.
+Products: `read_catalog_guide`, `list_products` (`query`, `status`, `limit` 1–100, default 50), `get_product`, `create_product`, `update_product` (includes `sizeChart` / `clearSizeChart`), `delete_product`, `set_product_collections`, `set_product_variants`, `delete_product_variants`.
 
 Inventory: `list_inventory` (`slug`, `status`, `lowStockOnly`, `limit` 1–200), `list_low_stock`, `inventory_summary` (`since`, `until`), `list_inventory_movements` (`slug`, `reason`, `since`, `until`, `limit`), `adjust_stock` (`slug`, `quantity`, `reason`, optional `note`/`size`/`color`/`variantId`), `set_stock` (`slug`, `stock`, optional `reason`/`note`/variant targeting).
 
@@ -197,6 +200,17 @@ mutation($priceDh: Int!, $translations: [ProductTranslationInput!]!) {
 ```
 
 Variables: `{ "priceDh": 120, "translations": [{ "locale": "fr", "name": "Robe lin" }] }`
+
+Size guide:
+
+```graphql
+mutation($slug: String!, $sizeChart: JSON!) {
+  updateProduct(slug: $slug, sizeChart: $sizeChart) {
+    product { slug sizeChart sizeGuide }
+    errors
+  }
+}
+```
 
 Upload:
 

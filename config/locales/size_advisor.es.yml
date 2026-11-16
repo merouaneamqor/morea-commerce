@@ -2,7 +2,12 @@ es:
   size_advisor:
     find_my_size: "Encontrar mi talla"
     guide_title: "Guía de tallas"
-    guide_body: "Medidas de la prenda en centímetros."
+    guide_eyebrow: "Medidas"
+    guide_body: "Medidas de la prenda en centímetros, pieza a pieza."
+    guide_note_flat: "Anchos medidos en plano, de lado a lado. Multiplica por dos para el contorno completo. El largo se mide a lo largo de la prenda."
+    guide_note_circumference: "Contorno de la prenda terminada en centímetros, no medidas del cuerpo."
+    part_top: "Parte de arriba"
+    part_bottom: "Parte de abajo"
     eyebrow: "Ajuste"
     title: "Asesor de talla"
     close: "Cerrar"
@@ -44,6 +49,7 @@ es:
     measure:
       chest: "Pecho"
       waist: "Cintura"
+      hem: "Bajo"
       hips: "Cadera"
       length: "Largo"
     note:

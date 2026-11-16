@@ -68,8 +68,9 @@ module Admin
         :sku, :stock, :track_inventory, :featured, :position,
         collection_ids: [],
         size_chart: [
-          :profile, :cut, :garment,
-          { rows: [ :size, :chest, :waist, :hips, :length ] }
+          :profile, :cut, :garment, :basis,
+          { rows: [ :size, :chest, :waist, :hips, :length ] },
+          { parts: {} }
         ],
         translations_attributes: [
           :id, :locale, :name, :short_description, :story, :material, :fit, :movement,
@@ -80,11 +81,14 @@ module Admin
       permitted
     end
 
-    # Nested row hashes arrive as ActionController::Parameters; stringify for jsonb.
+    # Nested part/row hashes arrive as ActionController::Parameters; normalize for jsonb.
+    # Parts use indexed keys (0/1) so we read the raw size_chart hash and run it through
+    # SizeChart.normalize, which only keeps known measures and enums.
     def merge_size_chart!(permitted)
-      return unless permitted.key?(:size_chart)
+      raw = params.dig(:product, :size_chart)
+      return if raw.blank?
 
-      permitted[:size_chart] = Storefront::SizeChart.normalize(permitted[:size_chart])
+      permitted[:size_chart] = Storefront::SizeChart.normalize(raw.to_unsafe_h)
     end
 
     # Remove ticked images, attach uploads, then save the dragged order (new uploads go last)

@@ -26,9 +26,14 @@
       <% end %>
     </div>
     <% if size_chart.present? %>
-      <button type="button" class="size-sheet__advisor" data-action="variant-picker#closeSizeSheet size-advisor#open">
-        <%= t("size_advisor.find_my_size") %>
-      </button>
+      <div class="size-sheet__help">
+        <button type="button" class="size-sheet__guide" data-action="variant-picker#closeSizeSheet size-advisor#openGuide">
+          <%= t("product.size_guide") %>
+        </button>
+        <button type="button" class="size-sheet__advisor" data-action="variant-picker#closeSizeSheet size-advisor#open">
+          <%= t("size_advisor.find_my_size") %>
+        </button>
+      </div>
     <% end %>
   </div>
 </div>

@@ -149,6 +149,32 @@ RSpec.describe "Storefront pages", type: :request do
     expect(document.at_css(".pdp__gallery img")["src"]).to include("black-hero")
   end
 
+  it "offers color-only variants without requiring a size" do
+    product = store.products.create!(
+      name: "Cache-hanches Sport",
+      slug: "cache-hanches-sport",
+      status: "active",
+      price_cents: 14_900,
+      track_inventory: true
+    )
+    white = product.product_variants.create!(option2_value: "Blanc", stock: 2)
+    black = product.product_variants.create!(option2_value: "Noir", stock: 2)
+
+    get "/fr/products/cache-hanches-sport"
+
+    expect(response).to have_http_status(:ok)
+    root = document.at_css("[data-variant-picker-variants-value]")
+    expect(root["data-variant-picker-require-size-value"]).to eq("false")
+    expect(root["data-controller"].split).not_to include("size-advisor")
+    expect(document.css("[data-variant-picker-target='colorButton']").map { |button| button["data-color"] })
+      .to contain_exactly("Blanc", "Noir")
+    expect(document.at_css("#pdp-sizes, .size-sheet, .size-guide-trigger")).to be_nil
+    expect(document.at_css("input[name='product_variant_id']")["value"]).to eq(white.id.to_s)
+    variants = JSON.parse(root["data-variant-picker-variants-value"])
+    expect(variants.map { |variant| variant.values_at("id", "size", "color") })
+      .to contain_exactly([ white.id, nil, "Blanc" ], [ black.id, nil, "Noir" ])
+  end
+
   it "shows the mobile offer block, savings, and a size-gated sticky CTA" do
     product = store.products.create!(
       name: "Basic Tracksuit",

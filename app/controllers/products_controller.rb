@@ -102,6 +102,8 @@ class ProductsController < ApplicationController
 
   # Legacy fallback when option columns were empty and name held "Size / Color".
   def size_from_name(variant)
+    return if variant.color_value.present?
+
     variant.name.to_s.split(" / ").first.presence
   end
 

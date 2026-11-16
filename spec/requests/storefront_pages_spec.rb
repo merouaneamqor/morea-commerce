@@ -172,7 +172,7 @@ RSpec.describe "Storefront pages", type: :request do
     expect(document.at_css("input[name='product_variant_id']")["value"]).to eq(white.id.to_s)
     variants = JSON.parse(root["data-variant-picker-variants-value"])
     expect(variants.map { |variant| variant.values_at("id", "size", "color") })
-      .to contain_exactly([white.id, nil, "Blanc"], [black.id, nil, "Noir"])
+      .to contain_exactly([ white.id, nil, "Blanc" ], [ black.id, nil, "Noir" ])
   end
 
   it "shows the mobile offer block, savings, and a size-gated sticky CTA" do

@@ -31,8 +31,9 @@ RSpec.describe Platform::IntegrationDiagnostics do
 
   it "summarizes failing connections with safe codes and without secrets" do
     failing = diagnostics.failing_entries
-    expect(failing.map(&:provider)).to include("shopify", "meta_ads", "sendit")
-    shopify_entry = failing.find { |entry| entry.id == shopify.id }
+    workspace_entries = failing.select { |entry| entry.store_id == store.id }
+    expect(workspace_entries.map(&:provider)).to include("shopify", "meta_ads", "sendit")
+    shopify_entry = workspace_entries.find { |entry| entry.kind == "store_connection" && entry.id == shopify.id }
     expect(shopify_entry.error_code).to eq("missing_scopes")
     expect(shopify_entry).to be_failing
     dump = failing.map { |entry| entry.to_h.merge(entry.as_json) }.to_s
@@ -45,7 +46,7 @@ RSpec.describe Platform::IntegrationDiagnostics do
     expect(workspaces.map { |row| row.store.id }).to include(store.id)
     workspace = diagnostics.workspace(store)
     expect(workspace.entries.map(&:provider)).to include("shopify", "woocommerce", "meta_ads", "sendit")
-    woo_entry = workspace.entries.find { |entry| entry.id == woo.id }
+    woo_entry = workspace.entries.find { |entry| entry.kind == "store_connection" && entry.id == woo.id }
     expect(woo_entry.connection_state).to eq("configured")
     expect(workspace.entries.map(&:to_h).to_s).not_to include("synthetic-woo-signing-secret", "pub-synthetic")
   end
@@ -54,6 +55,7 @@ RSpec.describe Platform::IntegrationDiagnostics do
     shopify.update!(shopify_api_error_code: nil, shopify_sync_error: nil, shopify_api_verified_at: Time.current)
     meta.update!(status: "disconnected", last_error_code: nil)
     sendit.update!(connected_at: Time.current)
-    expect(diagnostics.failing_entries.map(&:id)).not_to include(shopify.id, meta.id, sendit.id)
+    workspace_entries = diagnostics.failing_entries.select { |entry| entry.store_id == store.id }
+    expect(workspace_entries).to be_empty
   end
 end

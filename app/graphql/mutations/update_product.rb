@@ -14,6 +14,8 @@ module Mutations
     argument :track_inventory, Boolean, required: false
     argument :featured, Boolean, required: false
     argument :position, Integer, required: false
+    argument :size_chart, GraphQL::Types::JSON, required: false
+    argument :clear_size_chart, Boolean, required: false
     argument :translations, [ Types::ProductTranslationInput ], required: false
 
     field :product, Types::ProductType, null: true
@@ -39,6 +41,7 @@ module Mutations
         product.track_inventory = attrs[:track_inventory] unless attrs[:track_inventory].nil?
         product.featured = attrs[:featured] unless attrs[:featured].nil?
         product.position = attrs[:position] unless attrs[:position].nil?
+        assign_size_chart!(product, attrs)
         Catalog::Translations.assign!(product, translations) if translations
 
         raise ActiveRecord::Rollback unless product.save
@@ -58,6 +61,16 @@ module Mutations
       { product: product.reload, errors: [] }
     rescue Inventory::Adjuster::Error => e
       failure(e.message).merge(product: nil)
+    end
+
+    private
+
+    def assign_size_chart!(product, attrs)
+      if attrs[:clear_size_chart]
+        product.size_chart = {}
+      elsif !attrs[:size_chart].nil?
+        product.size_chart = ::Storefront::SizeChart.normalize(attrs[:size_chart])
+      end
     end
   end
 end

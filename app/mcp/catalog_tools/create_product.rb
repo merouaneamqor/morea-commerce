@@ -36,6 +36,10 @@ module CatalogTools
         trackInventory: { type: "boolean" },
         featured: { type: "boolean" },
         position: { type: "integer" },
+        sizeChart: {
+          type: "object",
+          description: "Optional garment Size guide. Same shape as update_product sizeChart."
+        },
         collectionSlugs: { type: "array", items: { type: "string" } }
       },
       required: %w[priceDh translations]
@@ -48,13 +52,13 @@ module CatalogTools
           mutation(
             $priceDh: Int!, $translations: [ProductTranslationInput!]!, $slug: String, $status: String,
             $compareAtDh: Int, $currency: String, $sku: String, $stock: Int, $trackInventory: Boolean,
-            $featured: Boolean, $position: Int, $collectionSlugs: [String!]
+            $featured: Boolean, $position: Int, $sizeChart: JSON, $collectionSlugs: [String!]
           ) {
             createProduct(
               priceDh: $priceDh, translations: $translations, slug: $slug, status: $status,
               compareAtDh: $compareAtDh, currency: $currency, sku: $sku, stock: $stock,
               trackInventory: $trackInventory, featured: $featured, position: $position,
-              collectionSlugs: $collectionSlugs
+              sizeChart: $sizeChart, collectionSlugs: $collectionSlugs
             ) {
               product { #{CatalogExecutor::PRODUCT_FIELDS} }
               errors

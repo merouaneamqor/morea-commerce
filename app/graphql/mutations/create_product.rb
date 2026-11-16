@@ -13,6 +13,7 @@ module Mutations
     argument :track_inventory, Boolean, required: false
     argument :featured, Boolean, required: false
     argument :position, Integer, required: false
+    argument :size_chart, GraphQL::Types::JSON, required: false
     argument :collection_slugs, [ String ], required: false
 
     field :product, Types::ProductType, null: true
@@ -31,6 +32,7 @@ module Mutations
       product.price_dh = price_dh
       product.compare_at_dh = attrs[:compare_at_dh] if attrs[:compare_at_dh]
       product.slug = attrs[:slug] if attrs[:slug].present?
+      product.size_chart = ::Storefront::SizeChart.normalize(attrs[:size_chart]) unless attrs[:size_chart].nil?
       Catalog::Translations.assign!(product, translations)
 
       ids = nil

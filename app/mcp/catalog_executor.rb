@@ -3,6 +3,7 @@
 class CatalogExecutor
   PRODUCT_FIELDS = <<~GQL.squish
     id slug status priceDh compareAtDh currency sku stock trackInventory featured position collectionSlugs
+    sizeChart sizeGuide
     coverUrl
     variants { id size color colorHex sku stock active priceDh images { id filename url position } }
     images { id filename url position }

@@ -176,10 +176,71 @@ RSpec.describe Storefront::SizeChart do
     expect(payload["profile"]).to eq("womenswear")
     expect(payload["cut"]).to eq("oversized")
     expect(payload["rows"].find { |row| row["size"] == "M" }["chest"]).to eq(96)
+    expect(payload["basis"]).to eq("circumference")
+    expect(payload["parts"].length).to eq(1)
+  end
+
+  it "doubles flat widths for advisor rows and keeps flat values in parts" do
+    product.update!(
+      size_chart: {
+        "profile" => "unisex",
+        "cut" => "regular",
+        "garment" => "tops",
+        "basis" => "flat",
+        "rows" => [
+          { "size" => "S", "chest" => 54, "waist" => 58, "length" => 83 },
+          { "size" => "M", "chest" => 56, "waist" => 60, "length" => 84 }
+        ]
+      }
+    )
+
+    payload = described_class.for(product)
+    expect(payload["basis"]).to eq("flat")
+    expect(payload["parts"].first["rows"].find { |row| row["size"] == "S" }["chest"]).to eq(54)
+    expect(payload["rows"].find { |row| row["size"] == "S" }["chest"]).to eq(108)
+    expect(payload["rows"].find { |row| row["size"] == "S" }["length"]).to eq(83)
+  end
+
+  it "keeps separate top and bottom parts for a set" do
+    product.update!(
+      size_chart: {
+        "profile" => "unisex",
+        "cut" => "regular",
+        "basis" => "flat",
+        "parts" => {
+          "0" => {
+            "key" => "top",
+            "label" => "Haut",
+            "garment" => "tops",
+            "rows" => {
+              "0" => { "size" => "S", "chest" => 54, "waist" => 58, "length" => 83 },
+              "1" => { "size" => "M", "chest" => 56, "waist" => 60, "length" => 84 }
+            }
+          },
+          "1" => {
+            "key" => "bottom",
+            "label" => "Pantalon",
+            "garment" => "bottoms",
+            "rows" => {
+              "0" => { "size" => "S", "waist" => 30, "hips" => 55, "length" => 107 },
+              "1" => { "size" => "M", "waist" => 32, "hips" => 57, "length" => 108 }
+            }
+          }
+        }
+      }
+    )
+
+    payload = described_class.for(product)
+    expect(payload["parts"].map { |part| part["label"] }).to eq(%w[Haut Pantalon])
+    expect(payload["advisor_parts"].map { |part| part["garment"] }).to eq(%w[tops bottoms])
+    expect(payload["advisor_parts"][0]["rows"].find { |row| row["size"] == "S" }["chest"]).to eq(108)
+    expect(payload["advisor_parts"][1]["rows"].find { |row| row["size"] == "S" }["waist"]).to eq(60)
+    expect(payload["garment"]).to eq("tops")
   end
 
   it "normalizes blank profile to unisex" do
     expect(described_class.normalize({})["profile"]).to eq("unisex")
+    expect(described_class.normalize({})["basis"]).to eq("circumference")
   end
 
   it "exposes a unisex default catalog" do

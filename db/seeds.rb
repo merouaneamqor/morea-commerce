@@ -561,6 +561,38 @@ catalog.each_with_index do |attrs, index|
 end
 
 featured = store.products.find_by!(slug: "essential-set")
+# Flat garment chart for the two-piece set (matches Morea production copy).
+featured.update!(
+  size_chart: {
+    "profile" => "unisex",
+    "cut" => "regular",
+    "basis" => "flat",
+    "parts" => [
+      {
+        "key" => "top",
+        "label" => "Haut",
+        "garment" => "tops",
+        "rows" => [
+          { "size" => "S", "chest" => 54, "waist" => 58, "length" => 83 },
+          { "size" => "M", "chest" => 56, "waist" => 60, "length" => 84 },
+          { "size" => "L", "chest" => 58, "waist" => 62, "length" => 85 },
+          { "size" => "XL", "chest" => 60, "waist" => 64, "length" => 86 }
+        ]
+      },
+      {
+        "key" => "bottom",
+        "label" => "Pantalon",
+        "garment" => "bottoms",
+        "rows" => [
+          { "size" => "S", "waist" => 30, "hips" => 55, "length" => 107 },
+          { "size" => "M", "waist" => 32, "hips" => 57, "length" => 108 },
+          { "size" => "L", "waist" => 34, "hips" => 59, "length" => 109 },
+          { "size" => "XL", "waist" => 36, "hips" => 61, "length" => 110 }
+        ]
+      }
+    ]
+  }
+)
 store.update!(featured_product: featured, featured_collection: essentials)
 store.reload.install_online_store_defaults!
 

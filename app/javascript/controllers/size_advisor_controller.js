@@ -1,12 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Find-my-size drawer: height/weight → shape → fit → recommendation.
+// Size guide opens the same shell with a dedicated chart view.
 // Answers stay in localStorage; nothing is posted to the server.
 export default class extends Controller {
   static targets = [
     "shell", "panel", "scrim", "step", "height", "weight", "heightUnit", "weightUnit",
     "shape", "fit", "resultTitle", "resultBody", "resultSize", "resultReasons",
-    "resultChart", "progress", "selectButton", "error"
+    "resultChart", "progress", "selectButton", "editButton", "error",
+    "eyebrow", "title", "guidePanel", "guideBody", "guideTabs", "guideChart", "guideNote"
   ]
 
   static values = {
@@ -42,6 +44,7 @@ export default class extends Controller {
 
   connect() {
     this.stepIndex = 0
+    this.guidePartIndex = 0
     this.answers = this.loadAnswers()
     this.applyAnswersToForm()
     this.showStep(0)
@@ -56,6 +59,8 @@ export default class extends Controller {
   open(event) {
     event?.preventDefault()
     this.guideOnly = false
+    this.setAdvisorChrome()
+    this.hideGuidePanel()
     this.openShell()
     this.showStep(this.answers.complete ? this.stepTargets.length - 1 : 0)
     if (this.answers.complete) this.renderResult()
@@ -66,13 +71,20 @@ export default class extends Controller {
   openGuide(event) {
     event?.preventDefault()
     this.guideOnly = true
+    this.setGuideChrome()
     this.openShell()
     this.renderGuide()
-    requestAnimationFrame(() => this.focusFirst())
+    requestAnimationFrame(() => {
+      const focusable = this.hasGuideTabsTarget && !this.guideTabsTarget.hidden
+        ? this.guideTabsTarget.querySelector("button")
+        : this.guidePanelTarget?.querySelector("button")
+      focusable?.focus()
+    })
   }
 
   openShell() {
     const shell = this.hasShellTarget ? this.shellTarget : this.element
+    shell.classList.toggle("size-advisor--guide", Boolean(this.guideOnly))
     shell.classList.add("is-open")
     shell.setAttribute("aria-hidden", "false")
     document.body.classList.add("overflow-hidden")
@@ -82,7 +94,7 @@ export default class extends Controller {
   close(event) {
     event?.preventDefault()
     const shell = this.hasShellTarget ? this.shellTarget : this.element
-    shell.classList.remove("is-open")
+    shell.classList.remove("is-open", "size-advisor--guide")
     shell.setAttribute("aria-hidden", "true")
     document.body.classList.remove("overflow-hidden")
     document.removeEventListener("keydown", this.boundKey)
@@ -121,6 +133,13 @@ export default class extends Controller {
     this.highlightChoices("fit", this.answers.fitPreference)
   }
 
+  chooseGuidePart(event) {
+    event.preventDefault()
+    const index = Number(event.currentTarget.dataset.partIndex || 0)
+    this.guidePartIndex = Number.isFinite(index) ? index : 0
+    this.renderGuidePart()
+  }
+
   toggleHeightUnit(event) {
     event.preventDefault()
     const next = this.answers.heightUnit === "cm" ? "ft" : "cm"
@@ -155,10 +174,12 @@ export default class extends Controller {
 
   showStep(index) {
     this.stepIndex = index
+    this.hideGuidePanel()
     this.stepTargets.forEach((step, i) => { step.hidden = i !== index })
     if (this.hasProgressTarget) {
       const total = Math.max(this.stepTargets.length - 1, 1)
       const current = Math.min(index + 1, total)
+      this.progressTarget.hidden = false
       this.progressTarget.textContent = this.label("step_of", { current, total })
         .replace("%{current}", current)
         .replace("%{total}", total)
@@ -201,25 +222,61 @@ export default class extends Controller {
   }
 
   renderGuide() {
-    this.stepTargets.forEach((step) => {
-      step.hidden = step.dataset.step !== "result"
-    })
-    this.stepIndex = this.stepTargets.findIndex((step) => step.dataset.step === "result")
-    if (this.hasProgressTarget) this.progressTarget.textContent = ""
-    if (this.hasResultSizeTarget) this.resultSizeTarget.textContent = ""
-    if (this.hasResultTitleTarget) this.resultTitleTarget.textContent = this.label("guide_title")
-    if (this.hasResultBodyTarget) this.resultBodyTarget.textContent = this.label("guide_body")
-    if (this.hasResultReasonsTarget) this.resultReasonsTarget.innerHTML = ""
-    if (this.hasResultChartTarget) this.resultChartTarget.innerHTML = this.chartTableHtml(null)
-    if (this.hasSelectButtonTarget) this.selectButtonTarget.hidden = true
-    const edit = this.element.querySelector('[data-action="size-advisor#back"]')
-    if (edit) edit.hidden = true
+    this.stepTargets.forEach((step) => { step.hidden = true })
+    if (this.hasProgressTarget) {
+      this.progressTarget.textContent = ""
+      this.progressTarget.hidden = true
+    }
+    if (this.hasGuidePanelTarget) this.guidePanelTarget.hidden = false
+    if (this.hasGuideBodyTarget) this.guideBodyTarget.textContent = this.label("guide_body")
+    if (this.hasGuideNoteTarget) {
+      const basis = this.chartValue?.basis === "flat" ? "flat" : "circumference"
+      this.guideNoteTarget.textContent = this.label(basis === "flat" ? "guide_note_flat" : "guide_note_circumference")
+    }
+
+    const parts = this.displayParts()
+    this.guidePartIndex = Math.min(this.guidePartIndex, Math.max(parts.length - 1, 0))
+    this.renderGuideTabs(parts)
+    this.renderGuidePart()
+  }
+
+  renderGuideTabs(parts) {
+    if (!this.hasGuideTabsTarget) return
+    const showTabs = parts.length > 1 && parts.some((part) => part.label)
+    this.guideTabsTarget.hidden = !showTabs
+    if (!showTabs) {
+      this.guideTabsTarget.innerHTML = ""
+      return
+    }
+
+    this.guideTabsTarget.innerHTML = parts.map((part, index) => {
+      const active = index === this.guidePartIndex ? " is-active" : ""
+      const pressed = index === this.guidePartIndex
+      return `<button type="button" class="size-advisor__tab${active}" role="tab" aria-selected="${pressed}" data-part-index="${index}" data-action="size-advisor#chooseGuidePart">${escapeHtml(part.label)}</button>`
+    }).join("")
+  }
+
+  renderGuidePart() {
+    const parts = this.displayParts()
+    const part = parts[this.guidePartIndex] || parts[0]
+    if (this.hasGuideTabsTarget && !this.guideTabsTarget.hidden) {
+      this.guideTabsTarget.querySelectorAll("[data-part-index]").forEach((button) => {
+        const active = Number(button.dataset.partIndex) === this.guidePartIndex
+        button.classList.toggle("is-active", active)
+        button.setAttribute("aria-selected", String(active))
+      })
+    }
+    if (this.hasGuideChartTarget) {
+      this.guideChartTarget.innerHTML = part
+        ? this.chartTableHtml(null, part.rows, part.garment)
+        : ""
+    }
   }
 
   renderResult() {
     this.guideOnly = false
-    const edit = this.element.querySelector('[data-action="size-advisor#back"]')
-    if (edit) edit.hidden = false
+    this.hideGuidePanel()
+    if (this.hasEditButtonTarget) this.editButtonTarget.hidden = false
 
     const result = this.recommend()
     this.recommendedSize = result.size
@@ -262,7 +319,12 @@ export default class extends Controller {
     }
 
     if (this.hasResultChartTarget) {
-      this.resultChartTarget.innerHTML = this.chartTableHtml(result.size)
+      const part = this.advisorParts()[0]
+      this.resultChartTarget.innerHTML = this.chartTableHtml(
+        result.size,
+        part?.rows || this.chartValue?.rows || [],
+        part?.garment || this.chartValue?.garment
+      )
     }
 
     if (this.hasSelectButtonTarget) {
@@ -272,14 +334,24 @@ export default class extends Controller {
   }
 
   recommend() {
-    const rows = this.chartValue?.rows || []
-    if (!rows.length || !this.answers.heightCm || !this.answers.weightKg) {
+    const parts = this.advisorParts()
+    if (!parts.length || !this.answers.heightCm || !this.answers.weightKg) {
       return { verdict: "none", size: null, alternateSize: null, reasons: [] }
     }
 
+    const results = parts.map((part) => this.recommendForPart(part))
+    return this.mergeRecommendations(results)
+  }
+
+  recommendForPart(part) {
+    const rows = part.rows || []
+    if (!rows.length) {
+      return { verdict: "none", size: null, alternateSize: null, reasons: [], rank: -1 }
+    }
+
     const body = this.estimateBody()
-    const target = this.garmentTarget(body)
-    const scored = rows.map((row) => this.scoreRow(row, target)).sort((a, b) => a.distance - b.distance)
+    const target = this.garmentTarget(body, part.garment)
+    const scored = rows.map((row) => this.scoreRow(row, target, part.garment)).sort((a, b) => a.distance - b.distance)
     const best = scored[0]
     const second = scored[1]
     const between = second && (second.distance - best.distance) < 3.5 && best.distance > 1.8
@@ -289,8 +361,26 @@ export default class extends Controller {
       size: best.size,
       alternateSize: between ? second.size : null,
       reasons: best.reasons,
-      body,
-      target
+      rank: this.sizeRank(best.size)
+    }
+  }
+
+  mergeRecommendations(results) {
+    const usable = results.filter((result) => result.size)
+    if (!usable.length) return results[0] || { verdict: "none", size: null, alternateSize: null, reasons: [] }
+    if (usable.length === 1) return usable[0]
+
+    usable.sort((a, b) => b.rank - a.rank)
+    const largest = usable[0]
+    const sizes = new Set(usable.map((result) => result.size))
+    if (sizes.size === 1) return largest
+
+    const next = usable.find((result) => result.size !== largest.size)
+    return {
+      verdict: "between",
+      size: largest.size,
+      alternateSize: next?.size || null,
+      reasons: largest.reasons
     }
   }
 
@@ -325,8 +415,8 @@ export default class extends Controller {
     }
   }
 
-  garmentTarget(body) {
-    const garment = this.constructor.BASE_EASE[this.chartValue?.garment] ? this.chartValue.garment : "tops"
+  garmentTarget(body, garmentName) {
+    const garment = this.constructor.BASE_EASE[garmentName] ? garmentName : "tops"
     const base = this.constructor.BASE_EASE[garment]
     const fitBias = this.constructor.FIT_PREFS[this.answers.fitPreference] ?? 0
     const cutEase = this.constructor.CUT_EASE[this.chartValue?.cut] ?? 0
@@ -339,8 +429,8 @@ export default class extends Controller {
     return target
   }
 
-  scoreRow(row, target) {
-    const garment = this.constructor.BASE_EASE[this.chartValue?.garment] ? this.chartValue.garment : "tops"
+  scoreRow(row, target, garmentName) {
+    const garment = this.constructor.BASE_EASE[garmentName] ? garmentName : "tops"
     const keys = garment === "bottoms" ? ["waist", "hips", "length"] : ["chest", "waist", "hips", "length"]
     const weights = this.constructor.MEASURE_WEIGHTS[garment]
     const reasons = []
@@ -373,17 +463,96 @@ export default class extends Controller {
     }
   }
 
-  chartTableHtml(activeSize) {
-    const rows = this.chartValue?.rows || []
-    if (!rows.length) return ""
-    const keys = ["size", "chest", "waist", "hips", "length"]
-    const head = keys.map((key) => `<th>${escapeHtml(this.label(key === "size" ? "size" : `measure_${key}`))}</th>`).join("")
-    const body = rows.map((row) => {
+  chartTableHtml(activeSize, rows = null, garmentName = null) {
+    const chartRows = rows || this.chartValue?.rows || []
+    if (!chartRows.length) return ""
+    const garment = this.constructor.BASE_EASE[garmentName] ? garmentName : (this.chartValue?.garment || "tops")
+    const candidateKeys = garment === "bottoms"
+      ? ["size", "waist", "hips", "length"]
+      : ["size", "chest", "waist", "hips", "length"]
+    const keys = candidateKeys.filter((key) => {
+      if (key === "size") return true
+      return chartRows.some((row) => row[key] != null && row[key] !== "")
+    })
+    const head = keys.map((key) => `<th>${escapeHtml(this.measureHeading(key, garment))}</th>`).join("")
+    const body = chartRows.map((row) => {
       const active = row.size === activeSize ? " is-active" : ""
-      const cells = keys.map((key) => `<td>${escapeHtml(String(row[key] ?? "—"))}</td>`).join("")
+      const cells = keys.map((key) => {
+        const value = row[key]
+        const shown = value == null || value === "" ? "—" : formatMeasure(value)
+        return `<td>${escapeHtml(String(shown))}</td>`
+      }).join("")
       return `<tr class="size-advisor__chart-row${active}">${cells}</tr>`
     }).join("")
     return `<table class="size-advisor__chart"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`
+  }
+
+  measureHeading(key, garment) {
+    if (key === "size") return this.label("size")
+    if (key === "waist" && garment === "tops") return this.label("measure_hem")
+    return this.label(`measure_${key}`)
+  }
+
+  displayParts() {
+    const parts = Array.isArray(this.chartValue?.parts) ? this.chartValue.parts : []
+    if (parts.length) {
+      return parts.map((part, index) => ({
+        key: part.key || `part-${index}`,
+        label: part.label || this.defaultPartLabel(part.garment, index, parts.length),
+        garment: part.garment || "tops",
+        rows: part.rows || []
+      }))
+    }
+    return [ {
+      key: "primary",
+      label: "",
+      garment: this.chartValue?.garment || "tops",
+      rows: this.chartValue?.rows || []
+    } ]
+  }
+
+  advisorParts() {
+    const parts = Array.isArray(this.chartValue?.advisor_parts) ? this.chartValue.advisor_parts : []
+    if (parts.length) {
+      return parts.map((part) => ({
+        key: part.key,
+        label: part.label,
+        garment: part.garment || "tops",
+        rows: part.rows || []
+      }))
+    }
+    return [ {
+      key: "primary",
+      garment: this.chartValue?.garment || "tops",
+      rows: this.chartValue?.rows || []
+    } ]
+  }
+
+  defaultPartLabel(garment, index, total) {
+    if (total < 2) return ""
+    if (garment === "bottoms") return this.label("part_bottom")
+    if (garment === "tops") return this.label("part_top")
+    return this.label("part_top")
+  }
+
+  sizeRank(size) {
+    const order = ["XXS", "XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL"]
+    const index = order.indexOf(String(size || "").toUpperCase())
+    return index >= 0 ? index : 0
+  }
+
+  setGuideChrome() {
+    if (this.hasEyebrowTarget) this.eyebrowTarget.textContent = this.label("guide_eyebrow")
+    if (this.hasTitleTarget) this.titleTarget.textContent = this.label("guide_title")
+  }
+
+  setAdvisorChrome() {
+    if (this.hasEyebrowTarget) this.eyebrowTarget.textContent = this.label("eyebrow")
+    if (this.hasTitleTarget) this.titleTarget.textContent = this.label("title")
+  }
+
+  hideGuidePanel() {
+    if (this.hasGuidePanelTarget) this.guidePanelTarget.hidden = true
   }
 
   heightCm() {
@@ -467,7 +636,10 @@ export default class extends Controller {
   }
 
   label(key, _vars = {}) {
-    return (this.labelsValue && this.labelsValue[key]) || key
+    const labels = this.labelsValue || {}
+    if (labels[key]) return labels[key]
+    if (key === "measure_hem" && labels.measure_waist) return labels.measure_waist
+    return key
   }
 
   showError(message) {
@@ -490,6 +662,12 @@ export default class extends Controller {
 
 function round1(value) {
   return Math.round(value * 10) / 10
+}
+
+function formatMeasure(value) {
+  const number = Number(value)
+  if (!Number.isFinite(number)) return value
+  return Number.isInteger(number) ? String(number) : String(round1(number))
 }
 
 function escapeHtml(value) {

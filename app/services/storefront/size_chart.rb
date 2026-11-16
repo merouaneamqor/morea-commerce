@@ -1,17 +1,23 @@
 # frozen_string_literal: true
 
 module Storefront
-  # Garment measurements for the size advisor. Merchants can paste their own
-  # chart on a product; otherwise we filter the unisex/menswear/womenswear
-  # defaults down to the sizes that product actually sells.
+  # Garment measurements for the size advisor and size guide. Merchants can paste
+  # their own chart on a product; otherwise we filter the unisex/menswear/
+  # womenswear defaults down to the sizes that product actually sells.
+  #
+  # Values may be stored as full circumference or laid-flat widths (`basis`).
+  # Sets can declare `parts` (e.g. top + bottom) while the advisor still scores
+  # circumference centimetres.
   class SizeChart
     PROFILES = %w[unisex menswear womenswear].freeze
     CUTS = %w[slim regular relaxed oversized].freeze
     GARMENTS = %w[tops bottoms].freeze
     MEASURES = %w[chest waist hips length].freeze
+    WIDTH_MEASURES = %w[chest waist hips].freeze
+    BASES = %w[circumference flat].freeze
 
     # Finished garment centimetres (not body). Unisex sits between menswear and
-    # womenswear for modest sportswear defaults.
+    # womenswear for modest sportswear defaults. Always circumference.
     DEFAULTS = {
       "unisex" => [
         { "size" => "XS", "chest" => 91, "waist" => 81, "hips" => 93, "length" => 63 },
@@ -48,8 +54,67 @@ module Storefront
       profile = PROFILES.include?(data["profile"].to_s) ? data["profile"].to_s : "unisex"
       cut = CUTS.include?(data["cut"].to_s) ? data["cut"].to_s : "regular"
       garment = GARMENTS.include?(data["garment"].to_s) ? data["garment"].to_s : "tops"
+      basis = BASES.include?(data["basis"].to_s) ? data["basis"].to_s : "circumference"
+      parts = normalize_parts(data["parts"])
       rows = Array(data["rows"]).filter_map { |row| normalize_row(row) }
-      { "profile" => profile, "cut" => cut, "garment" => garment, "rows" => rows }
+
+      if parts.any?
+        primary = parts.first
+        {
+          "profile" => profile,
+          "cut" => cut,
+          "garment" => primary["garment"],
+          "basis" => basis,
+          "rows" => primary["rows"],
+          "parts" => parts
+        }
+      else
+        {
+          "profile" => profile,
+          "cut" => cut,
+          "garment" => garment,
+          "basis" => basis,
+          "rows" => rows,
+          "parts" => []
+        }
+      end
+    end
+
+    def self.normalize_parts(raw)
+      list =
+        case raw
+        when Hash
+          raw.sort_by { |key, _| key.to_s.to_i }.map(&:last)
+        else
+          Array(raw)
+        end
+      list.filter_map { |part| normalize_part(part) }
+    end
+
+    def self.normalize_part(part)
+      return if part.blank?
+
+      hash = part.respond_to?(:to_unsafe_h) ? part.to_unsafe_h : part
+      hash = hash.to_h if hash.respond_to?(:to_h)
+      hash = hash.stringify_keys
+      rows = normalize_rows(hash["rows"])
+      return if rows.empty?
+
+      garment = GARMENTS.include?(hash["garment"].to_s) ? hash["garment"].to_s : "tops"
+      key = hash["key"].to_s.strip.presence || garment
+      label = hash["label"].to_s.strip
+      { "key" => key, "label" => label, "garment" => garment, "rows" => rows }
+    end
+
+    def self.normalize_rows(raw)
+      list =
+        case raw
+        when Hash
+          raw.sort_by { |key, _| key.to_s.to_i }.map(&:last)
+        else
+          Array(raw)
+        end
+      list.filter_map { |row| normalize_row(row) }
     end
 
     def self.normalize_row(row)
@@ -71,6 +136,20 @@ module Storefront
       { "size" => size }.merge(measures)
     end
 
+    def self.to_circumference(rows, basis)
+      return Array(rows) unless basis.to_s == "flat"
+
+      Array(rows).map do |row|
+        converted = row.stringify_keys.dup
+        WIDTH_MEASURES.each do |key|
+          next if converted[key].blank?
+
+          converted[key] = (converted[key].to_f * 2).round(1)
+        end
+        converted
+      end
+    end
+
     def initialize(product)
       @product = product
     end
@@ -79,20 +158,60 @@ module Storefront
       available = Array(sizes).presence || @product.variant_sizes
       available = available.map { |size| size.to_s.strip }.compact_blank
       stored = self.class.normalize(@product.size_chart)
-      rows = stored["rows"]
-      rows = default_rows(stored["profile"], available) if rows.blank? || rows_without_measures?(rows)
-      rows = filter_rows(rows, available) if available.any?
+      display_parts = resolve_display_parts(stored, available)
+      advisor_parts = display_parts.map do |part|
+        {
+          "key" => part["key"],
+          "label" => part["label"],
+          "garment" => part["garment"],
+          "rows" => self.class.to_circumference(part["rows"], stored["basis"])
+        }
+      end
+      primary = advisor_parts.first || { "garment" => stored["garment"], "rows" => [] }
 
       {
         "profile" => stored["profile"],
         "cut" => stored["cut"],
-        "garment" => stored["garment"],
-        "rows" => rows,
-        "sizes" => available.presence || rows.map { |row| row["size"] }
+        "garment" => primary["garment"],
+        "basis" => stored["basis"],
+        "rows" => primary["rows"],
+        "parts" => display_parts,
+        "advisor_parts" => advisor_parts,
+        "sizes" => available.presence || primary["rows"].map { |row| row["size"] }
       }
     end
 
     private
+
+    def resolve_display_parts(stored, available)
+      if stored["parts"].any?
+        stored["parts"].filter_map do |part|
+          rows = resolve_rows(part["rows"], stored["profile"], available)
+          next if rows.blank?
+
+          part.merge("rows" => rows)
+        end.presence || default_single_part(stored, available)
+      else
+        default_single_part(stored, available)
+      end
+    end
+
+    def default_single_part(stored, available)
+      rows = resolve_rows(stored["rows"], stored["profile"], available)
+      [ {
+        "key" => "primary",
+        "label" => "",
+        "garment" => stored["garment"],
+        "rows" => rows
+      } ]
+    end
+
+    def resolve_rows(rows, profile, available)
+      resolved = Array(rows)
+      resolved = default_rows(profile, available) if resolved.blank? || rows_without_measures?(resolved)
+      resolved = filter_rows(resolved, available) if available.any?
+      resolved
+    end
 
     def default_rows(profile, sizes)
       catalog = DEFAULTS[profile] || DEFAULTS["unisex"]

@@ -49,11 +49,17 @@ RSpec.describe "Storefront size advisor", type: :request do
     shell = document.at_css(".size-advisor")
     expect(shell).to be_present
     expect(shell["aria-hidden"]).to eq("true")
+    expect(document.at_css("[data-size-advisor-target='guidePanel']")).to be_present
+    expect(document.at_css(".size-sheet__guide")&.text).to include("Size guide")
     root = document.at_css("[data-controller~='size-advisor']")
     expect(root).to be_present
     expect(root["data-controller"]).to include("variant-picker")
     chart = JSON.parse(root["data-size-advisor-chart-value"])
     expect(chart["rows"].map { |row| row["size"] }).to include("S", "M", "L", "XL")
+    expect(chart["parts"]).to be_present
+    expect(chart["basis"]).to eq("circumference")
+    labels = JSON.parse(root["data-size-advisor-labels-value"])
+    expect(labels["guide_note_flat"]).to be_present
     expect(document.at_css("#size-advisor-title").text).to include("Size advisor")
   end
 

@@ -2,7 +2,12 @@ ar:
   size_advisor:
     find_my_size: "اعثر على مقاسي"
     guide_title: "دليل المقاسات"
-    guide_body: "قياسات القطعة بالسنتيمتر."
+    guide_eyebrow: "القياسات"
+    guide_body: "قياسات القطعة بالسنتيمتر، قطعة بقطعة."
+    guide_note_flat: "العروض تُقاس ممدودة من طرف إلى طرف. اضرب في اثنين للحصول على المحيط الكامل. الطول يُقاس على طول القطعة."
+    guide_note_circumference: "محيط القطعة النهائي بالسنتيمتر، وليس قياسات الجسم."
+    part_top: "العلوي"
+    part_bottom: "السفلي"
     eyebrow: "المقاس"
     title: "مستشار المقاس"
     close: "إغلاق"
@@ -44,6 +49,7 @@ ar:
     measure:
       chest: "الصدر"
       waist: "الخصر"
+      hem: "الذيل"
       hips: "الوركين"
       length: "الطول"
     note:

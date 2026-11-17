@@ -120,7 +120,7 @@ jobs:
           node-version: '22'
       - name: Check admin PWA install flow and network-only service worker
         run: |
-          node --test script/admin_pwa_test.mjs
+          node --test script/admin_pwa_test.mjs script/order_alerts_controller_test.mjs
           node script/admin_service_worker_test.mjs
       - name: Check checkout city pricing
         run: node --test script/checkout_city_test.mjs

@@ -14,7 +14,7 @@ module Admin
 
     def service_worker
       response.headers["Cache-Control"] = "no-cache"
-      response.headers["Service-Worker-Allowed"] = "/admin"
+      response.headers["Service-Worker-Allowed"] = "/"
       render template: "pwa/service-worker", formats: [ :js ], content_type: "application/javascript", layout: false
     end
   end

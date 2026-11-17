@@ -68,7 +68,9 @@ Both platform and workspace admin headers provide **FR / EN / AR** language link
 
 After signing in, the admin area offers **Install**. Android browsers that support installation open their native install dialog after the button is tapped. On iPhone/iPad, open the admin in Safari and choose **Share → Add to Home Screen** using the displayed steps. Other browsers show menu instructions. HTTPS is required outside localhost.
 
-The installed app opens `/admin` on the same host. Your normal sign-in and workspace permissions still apply. Installation is per host; using the platform host lets super admins switch workspaces within one app. The prompt stays hidden in standalone mode, and **Later** postpones it for seven days on that browser. Browser rules determine whether the native dialog is available.
+The installed app opens `/admin` on the same host and includes seller routes such as `/dashboard` and `/commandes` in its scope. Your normal sign-in and workspace permissions still apply. Installation is per host; using the platform host lets super admins switch workspaces within one app. The prompt stays hidden in standalone mode, and **Later** postpones it for seven days on that browser. Browser rules determine whether the native dialog is available.
+
+On iOS/iPadOS 16.4 or later, open the installed app from the Home Screen, then tap **Order alerts** and allow notifications. Safari tabs alone cannot receive these Web Push alerts. The server needs `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` and a valid `VAPID_SUBJECT`. After this scope update, reopen the app and enable alerts again if the toggle is off. Existing installations keep the same manifest identity.
 
 Admin operations require a connection. The service worker does not cache private pages, order data, API responses or writes; offline navigation displays a connection message. Installation and device-specific behavior still need a real iOS/Android check before claiming device verification.
 

@@ -18,13 +18,13 @@ RSpec.describe "Admin PWA", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq("application/manifest+json")
       manifest = JSON.parse(response.body)
-      expect(manifest).to include("name" => Store.platform_name, "display" => "standalone", "scope" => "/admin", "start_url" => "/admin", "id" => "/admin")
+      expect(manifest).to include("name" => Store.platform_name, "display" => "standalone", "scope" => "/", "start_url" => "/admin", "id" => "/admin")
       expect(manifest.fetch("icons").map { |icon| icon.fetch("sizes") }).to contain_exactly("192x192", "512x512")
       expect(response.body).not_to include(store.name, store.slug)
       get "/admin/service-worker.js"
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq("application/javascript")
-      expect(response.headers["Service-Worker-Allowed"]).to eq("/admin")
+      expect(response.headers["Service-Worker-Allowed"]).to eq("/")
       expect(response.headers["Cache-Control"]).to include("no-cache")
     end
   end

@@ -66,8 +66,23 @@ export default class extends Controller {
   }
 
   async registration() {
-    const registration = await navigator.serviceWorker.register("/admin/service-worker.js", { scope: "/admin" })
-    await navigator.serviceWorker.ready
+    const registration = await navigator.serviceWorker.register("/admin/service-worker.js", { scope: "/" })
+    // Wait for this worker, not whichever legacy /admin registration controls
+    // the current page while an installed app upgrades to the root scope.
+    if (!registration.active) {
+      const worker = registration.installing || registration.waiting
+      if (!worker) throw new Error("Push worker unavailable")
+      await new Promise((resolve, reject) => {
+        const changed = () => {
+          if (worker.state === "activated" || worker.state === "redundant") {
+            worker.removeEventListener("statechange", changed)
+            worker.state === "activated" ? resolve() : reject(new Error("Push worker activation failed"))
+          }
+        }
+        worker.addEventListener("statechange", changed)
+        changed()
+      })
+    }
     return registration
   }
 

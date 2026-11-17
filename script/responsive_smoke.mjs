@@ -187,6 +187,13 @@ try {
         assert.ok(banner.y > height * 0.4, "storefront cookie banner must not sit in the top half")
         checks++
       }
+      if (!process.env.RESPONSIVE_URLS && ["simpleCheckout", "simpleCheckoutPopup"].includes(route)) {
+        const fieldWidths = await page.locator(".checkout-modal__fields > .checkout-field").evaluateAll(els =>
+          els.map(el => ({ width: el.getBoundingClientRect().width, grid: el.parentElement.getBoundingClientRect().width }))
+        )
+        assert.ok(fieldWidths.every(entry => Math.abs(entry.width - entry.grid) < 2), `${route} delivery fields must stay full width after city selection`)
+        checks++
+      }
       if (!process.env.RESPONSIVE_URLS && width <= 767 && ["auth", "admin", "checkout", "callPanel", "simpleCheckout", "simpleCheckoutPopup"].includes(route)) {
         const fontSizes = await page.locator('input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea').evaluateAll(els =>
           els.map(el => ({ tag: el.tagName, className: el.className, size: parseFloat(getComputedStyle(el).fontSize) }))

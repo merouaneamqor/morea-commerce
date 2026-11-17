@@ -181,7 +181,8 @@ main, .site-footer, .mobile-menu__panel, .cart-drawer__panel {
 .storefront-body .checkout-simple__price { margin-top: 6px; font-size: 20px; font-weight: 700; }
 .storefront-body .checkout-simple__reassurance { margin-top: 16px; padding: 14px; background: #f6f6f5; border-radius: 10px; text-align: center; font-size: 14px; }
 .storefront-body .checkout-simple__title { margin: 6px 0 20px; font-size: 21px; font-weight: 600; line-height: 1.4; }
-.storefront-body .checkout-simple .checkout-modal__fields { gap: 16px; }
+.storefront-body .checkout-simple .checkout-modal__fields { gap: 16px; grid-template-columns: minmax(0, 1fr); }
+.storefront-body .checkout-simple .checkout-modal__fields > * { grid-column: 1 / -1; }
 .storefront-body .checkout-simple .checkout-label { display: block; font-size: 12px; letter-spacing: .12em; margin-bottom: 6px; }
 .storefront-body .checkout-simple .checkout-label span { color: #b02b2b; }
 .storefront-body .checkout-simple .checkout-input { min-height: 50px; font-size: 16px; border: 1px solid var(--checkout-border); border-radius: 3px; background: #fafafa; padding: 12px; width: 100%; }

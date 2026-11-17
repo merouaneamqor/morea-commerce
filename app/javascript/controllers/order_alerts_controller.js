@@ -4,41 +4,60 @@ import { Controller } from "@hotwired/stimulus"
 // while an admin tab is open, the service worker also reports the order here so
 // the page can play the Seallo chime.
 export default class extends Controller {
-  static targets = ["toggle", "label"]
+  static targets = ["toggle", "label", "status", "unsupported"]
   static values = {
     publicKey: String,
     subscribeUrl: String,
     onLabel: String,
     offLabel: String,
+    errorLabel: String,
     blockedLabel: String
   }
 
   connect() {
-    this.supported = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window && this.hasPublicKeyValue
-    this.toggleTarget.hidden = !this.supported
-    if (!this.supported) return
+    this.toggleTarget.disabled = true
+    this.supported = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window && Boolean(this.publicKeyValue)
+    if (!this.supported) {
+      this.toggleTarget.disabled = true
+      if (this.hasUnsupportedTarget) this.unsupportedTarget.hidden = !this.publicKeyValue
+      else this.toggleTarget.hidden = true
+      return
+    }
+    this.toggleTarget.hidden = false
 
     this.handleMessage = this.handleMessage.bind(this)
     navigator.serviceWorker.addEventListener("message", this.handleMessage)
-    this.refresh().catch(() => this.render(false))
+    this.refresh().catch(() => this.showError()).finally(() => { this.toggleTarget.disabled = false })
   }
 
   disconnect() {
     navigator.serviceWorker?.removeEventListener("message", this.handleMessage)
   }
 
-  toggle() {
-    if (this.enabled) {
-      this.disable().catch(() => this.render(true))
-    } else {
-      this.enable().catch(() => this.render(false))
+  async toggle() {
+    if (this.toggleTarget.disabled) return
+    this.toggleTarget.disabled = true
+    try {
+      if (this.hasStatusTarget) this.statusTarget.textContent = ""
+      if (this.enabled) await this.disable()
+      else await this.enable()
+    } catch (_) {
+      this.showError()
+    } finally {
+      this.toggleTarget.disabled = false
     }
+  }
+
+  showError() {
+    if (this.hasStatusTarget) this.statusTarget.textContent = this.errorLabelValue
   }
 
   async refresh() {
     const registration = await this.registration()
     const subscription = await registration.pushManager.getSubscription()
-    this.render(Boolean(subscription) && Notification.permission === "granted")
+    const on = Boolean(subscription) && Notification.permission === "granted"
+    if (on) await this.send("POST", subscription.toJSON())
+    this.render(on, { blocked: Notification.permission === "denied" })
   }
 
   async enable() {
@@ -66,8 +85,23 @@ export default class extends Controller {
   }
 
   async registration() {
-    const registration = await navigator.serviceWorker.register("/admin/service-worker.js", { scope: "/admin" })
-    await navigator.serviceWorker.ready
+    const registration = await navigator.serviceWorker.register("/admin/service-worker.js", { scope: "/" })
+    // Wait for this worker, not whichever legacy /admin registration controls
+    // the current page while an installed app upgrades to the root scope.
+    if (!registration.active) {
+      const worker = registration.installing || registration.waiting
+      if (!worker) throw new Error("Push worker unavailable")
+      await new Promise((resolve, reject) => {
+        const changed = () => {
+          if (worker.state === "activated" || worker.state === "redundant") {
+            worker.removeEventListener("statechange", changed)
+            worker.state === "activated" ? resolve() : reject(new Error("Push worker activation failed"))
+          }
+        }
+        worker.addEventListener("statechange", changed)
+        changed()
+      })
+    }
     return registration
   }
 
@@ -121,6 +155,7 @@ export default class extends Controller {
     this.enabled = on
     this.toggleTarget.setAttribute("aria-pressed", String(on))
     this.toggleTarget.title = blocked ? this.blockedLabelValue : ""
+    if (this.hasStatusTarget) this.statusTarget.textContent = blocked ? this.blockedLabelValue : ""
     this.labelTarget.textContent = on ? this.onLabelValue : this.offLabelValue
   }
 

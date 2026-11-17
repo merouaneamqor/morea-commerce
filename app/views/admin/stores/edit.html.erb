@@ -5,6 +5,14 @@
   <button type="submit" form="store-form" class="admin-btn">Save</button>
 </div>
 
+<section class="admin-card mb-4" id="notifications">
+  <div class="admin-card__header"><h2 class="admin-card__title"><%= t("admin.order_alerts.heading") %></h2></div>
+  <div class="space-y-3 px-4 pb-4">
+    <p class="admin-help"><%= t("admin.order_alerts.device_help") %></p>
+    <%= render "admin/shared/order_alerts", settings: true %>
+  </div>
+</section>
+
 <section class="admin-card mb-4" id="logo" data-store-logo>
   <div class="admin-card__header"><h2 class="admin-card__title"><%= sl("Boutique") %> · <%= @store.name %></h2></div>
   <div class="space-y-3 px-4 pb-4">

@@ -50,7 +50,7 @@ export function setupAdminPwa({ window, document, navigator, storage, now = Date
     if (!element || !adminPath()) return
     if (!registrationStarted && window.isSecureContext && navigator.serviceWorker) {
       registrationStarted = true
-      navigator.serviceWorker.register("/admin/service-worker.js", { scope: "/admin" }).catch(() => {})
+      navigator.serviceWorker.register("/admin/service-worker.js", { scope: "/" }).catch(() => {})
     }
     if (standalone() || coolingDown()) return hide()
     element.querySelector("[data-admin-pwa-ios]").hidden = !isIosDevice(navigator)

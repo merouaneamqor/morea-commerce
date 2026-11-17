@@ -1,4 +1,5 @@
 require "rails_helper"
+require "nokogiri"
 
 RSpec.describe "Order alert subscriptions", type: :request do
   let(:password) { "synthetic-password-123" }
@@ -15,6 +16,23 @@ RSpec.describe "Order alert subscriptions", type: :request do
 
   def subscription_body(url = endpoint)
     { subscription: { endpoint: url, keys: { p256dh: "p256dh-key", auth: "auth-secret" } } }.to_json
+  end
+
+  %w[fr en ar es].each do |locale|
+    it "offers one device notification toggle in settings in #{locale}" do
+      allow(Rails.configuration.x).to receive(:web_push).and_return({ public_key: "synthetic-public-key" })
+      sign_in
+      get "/admin/store/edit", params: { locale: locale }
+      expect(response).to have_http_status(:ok)
+      document = Nokogiri::HTML(response.body)
+      section = document.at_css("#notifications")
+      expect(section).to be_present
+      expect(section.at_css("button[data-order-alerts-target=toggle]")["type"]).to eq("button")
+      expect(section.at_css("[role=status]")).to be_present
+      expect(section.ancestors("form")).to be_empty
+      expect(document.css('[data-controller="order-alerts"]').size).to eq(1)
+      expect(response.body).not_to match(/translation missing|translation_missing/i)
+    end
   end
 
   it "stores the browser subscription for the signed-in staff member" do

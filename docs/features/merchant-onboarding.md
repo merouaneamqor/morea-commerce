@@ -23,3 +23,13 @@ RAILS_ENV=test bundle exec rspec spec/services/seller/onboarding_spec.rb spec/re
 ```
 
 Checks use synthetic tenants and disconnected integrations. No migration or live provider sync is required.
+
+## Optional notifications on iPhone
+
+Notification opt-in remains a per-device action in Settings → Push notifications or the sidebar, outside the store-wide checklist completion rules in `Seller::Onboarding`. It does not change checklist steps or tour destinations. On iOS/iPadOS 16.4 or later, install from Safari with Share → Add to Home Screen, open that installed app, then enable Order alerts. VAPID must be configured on the server.
+
+The manifest keeps its `/admin` identity and start URL, with scope `/` to include seller pages. The worker registers with scope `/` and waits for its own activation before subscribing, including when an old `/admin` worker still controls the page. It does not cache private data or intercept storefront requests.
+
+Before rollout acceptance, verify on a real iPhone using a synthetic workspace: enable alerts from `/dashboard`, accept permission, receive one test order alert with the app backgrounded, open it into the authorized confirmation page, then disable alerts and confirm delivery stops. Also check an existing installation after upgrading; legacy `/admin` subscriptions may remain until revoked and should be checked for duplicate delivery. Record actual device and iOS version. No production delivery has been verified by the automated tests.
+
+Settings provides a per-device notification toggle with visible permission and connection errors. Browsers without push support see installation guidance. This optional preference does not add a required store-wide onboarding step or change checklist completion rules, dashboard copy or tour destinations.

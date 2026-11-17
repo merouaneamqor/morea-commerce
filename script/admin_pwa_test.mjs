@@ -150,7 +150,7 @@ test("Turbo visits keep one registration and reset cached instructions", () => {
   app.dispatch("turbo:load")
   assert.equal(app.element.hidden, false)
   assert.equal(app.registered.length, 1)
-  assert.deepEqual(app.registered[0], ["/admin/service-worker.js", { scope: "/admin" }])
+  assert.deepEqual(app.registered[0], ["/admin/service-worker.js", { scope: "/" }])
   assert.equal(app.handlers.click.length, 1)
 })
 

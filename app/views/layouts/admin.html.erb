@@ -113,7 +113,7 @@
                 <p class="mt-0.5 text-[11px] font-semibold text-[#1c1c1e] underline-offset-2 group-hover:underline"><%= sl("Changer de plan") %> →</p>
               <% end %>
             <% end %>
-            <%= render "admin/shared/order_alerts" %>
+            <%= render "admin/shared/order_alerts" unless controller_path == "admin/stores" && %w[edit update].include?(action_name) %>
             <% if super_admin? %>
               <%= link_to admin_platform_path, class: "flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-[#3a3a3c] hover:bg-[#e8e8ed] hover:text-[#1c1c1e]" do %><%= seller_icon(:plug) %> <span data-label><%= t("platform_admin.title") %></span><% end %>
             <% end %>

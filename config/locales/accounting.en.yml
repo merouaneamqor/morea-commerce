@@ -96,3 +96,17 @@ en:
       net: "Net profit"
       loss: "Net loss"
       empty: "No delivered or returned order in this period."
+    potential:
+      title: "Potential profit from open orders"
+      orders:
+        one: "%{count} open order today, across all dates."
+        other: "%{count} open orders today, across all dates."
+      assumption: "Assumes every open order is delivered. Includes orders in delivery, postponed orders and unreachable customers; excludes delivered, cancelled, refused and returned orders."
+      costs: "Product costs and delivery fees deducted. Excludes advertising and other expenses not allocated to orders. Separate from realized profit and independent of the selected period."
+      incomplete: "Estimate unavailable until missing costs are completed."
+      missing_goods:
+        one: "%{count} order with incomplete product costs."
+        other: "%{count} orders with incomplete product costs."
+      missing_delivery:
+        one: "%{count} order without a known delivery fee."
+        other: "%{count} orders without a known delivery fee."

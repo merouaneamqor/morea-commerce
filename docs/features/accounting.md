@@ -49,3 +49,13 @@ Same data as the overview, laid out as a statement: revenue (product sales), cos
 ## Always-true checks
 
 `AccountingStats#invariants` returns an empty list when: gross margin = revenue - goods; expenses + net = revenue; the split adds up to 1000 tenths; totals = sum of lines; the daily figures add up to the month; the goods by product add up to the total goods; the delivery and return fees add up to the delivery total. The specs assert them on hand-worked data and on random orders, and check that the export's totals row equals the sum of its rows.
+
+## Potential profit from open orders
+
+The overview also shows a separate current estimate across all order dates. It does not depend on the realized report's selected date range or delivered/shipped basis. Open statuses are `new`, `confirmed`, `preparing`, `awaiting_pickup`, `picked_up`, `in_transit`, `out_for_delivery`, `address_issue`, `unreachable`, and `postponed`. Delivered, cancelled and returned orders are excluded; courier refusals already map to returned outcomes. Archived open orders remain included, as archiving is not cancellation.
+
+`AccountingStats#potential` returns the sum of customer totals minus the frozen product costs multiplied by quantities and estimated carrier delivery fees. Delivery fees use the order's stored cents first, then a reported Sendit/Ozon/Ameex fee, then the single distinct non-null delivery tariff among the store's active delivery accounts. Reported fees and defaults are converted to integer cents with half-up rounding. Reading this estimate makes no carrier requests and freezes no fees.
+
+This is the contribution if every open order is delivered, not a probability-weighted forecast. Advertising and other expenses not allocated to orders are excluded and labelled explicitly. Unknown product costs, orders with no items, unknown or conflicting delivery tariffs suppress the total and show missing-data counts. Known zero costs are valid; negative estimates remain negative. No open orders gives zero.
+
+Realized totals, daily charts, period comparisons, income statements and CSV exports remain unchanged. Potential amounts are never added to realized revenue or profit. Access remains restricted to authorized store administrators, and currencies are filtered exactly as for the realized report.

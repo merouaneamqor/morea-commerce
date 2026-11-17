@@ -96,3 +96,17 @@ fr:
       net: "Bénéfice net"
       loss: "Perte nette"
       empty: "Aucune commande livrée ou retournée sur cette période."
+    potential:
+      title: "Bénéfice potentiel des commandes ouvertes"
+      orders:
+        one: "%{count} commande ouverte à ce jour, toutes dates confondues."
+        other: "%{count} commandes ouvertes à ce jour, toutes dates confondues."
+      assumption: "Si toutes ces commandes sont livrées. Les commandes en livraison, reportées ou injoignables sont incluses ; les livrées, annulées, refusées et retournées sont exclues."
+      costs: "Coûts des produits et frais de livraison déduits. Hors publicité et autres charges non attribuées aux commandes. Ce montant reste distinct du bénéfice réalisé et ne dépend pas de la période sélectionnée."
+      incomplete: "Estimation indisponible tant que certains coûts sont manquants."
+      missing_goods:
+        one: "%{count} commande sans coût produit complet."
+        other: "%{count} commandes sans coût produit complet."
+      missing_delivery:
+        one: "%{count} commande sans tarif de livraison connu."
+        other: "%{count} commandes sans tarif de livraison connu."

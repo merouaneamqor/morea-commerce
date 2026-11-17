@@ -96,3 +96,17 @@ es:
       net: "Beneficio neto"
       loss: "Pérdida neta"
       empty: "Ningún pedido entregado o devuelto en este periodo."
+    potential:
+      title: "Beneficio potencial de pedidos abiertos"
+      orders:
+        one: "%{count} pedido abierto actualmente, de todas las fechas."
+        other: "%{count} pedidos abiertos actualmente, de todas las fechas."
+      assumption: "Supone que todos estos pedidos se entregan. Incluye pedidos en reparto, aplazados y clientes no localizables; excluye entregados, cancelados, rechazados y devueltos."
+      costs: "Se deducen los costes de productos y entrega. Excluye publicidad y otros gastos no asignados a pedidos. Separado del beneficio realizado e independiente del periodo seleccionado."
+      incomplete: "Estimación no disponible hasta completar los costes pendientes."
+      missing_goods:
+        one: "%{count} pedido con costes de productos incompletos."
+        other: "%{count} pedidos con costes de productos incompletos."
+      missing_delivery:
+        one: "%{count} pedido sin tarifa de entrega conocida."
+        other: "%{count} pedidos sin tarifa de entrega conocida."

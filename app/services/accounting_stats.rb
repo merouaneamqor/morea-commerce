@@ -27,6 +27,7 @@
 class AccountingStats
   ZONE = DateRange::ZONE
   BASES = %w[delivered shipped].freeze
+  OPEN_STATUSES = %w[new confirmed preparing awaiting_pickup picked_up in_transit out_for_delivery address_issue unreachable postponed].freeze
   TENTHS = 1000 # shares are computed in tenths of a point, so 100.0 is exactly 1000
 
   Line = Struct.new(:date, :kind, :order_id, :number, :revenue, :goods, :delivery, :ads, keyword_init: true)
@@ -146,6 +147,34 @@ class AccountingStats
     end
   end
 
+  # Current open orders across all dates. Known costs are subtotalled, but an incomplete
+  # estimate has no contribution value. This does not recognize COD revenue or allocate ads.
+  def potential
+    @potential ||= begin
+      result = { orders: 0, revenue: 0, goods: 0, delivery: 0, contribution: nil,
+        missing_cost_orders: 0, missing_delivery_fee_orders: 0 }
+      orders.where(status: OPEN_STATUSES).includes(:order_items).find_each do |order|
+        result[:orders] += 1
+        result[:revenue] += order.total_cents
+        items = order.order_items
+        if items.empty? || items.any? { |item| item.unit_cost_cents.nil? }
+          result[:missing_cost_orders] += 1
+        end
+        result[:goods] += items.sum { |item| item.quantity * item.unit_cost_cents.to_i }
+        fee = potential_delivery_fee(order)
+        if fee.nil?
+          result[:missing_delivery_fee_orders] += 1
+        else
+          result[:delivery] += fee
+        end
+      end
+      if result[:missing_cost_orders].zero? && result[:missing_delivery_fee_orders].zero?
+        result[:contribution] = result[:revenue] - result[:goods] - result[:delivery]
+      end
+      result
+    end
+  end
+
   # Stock at purchase price. Products without a purchase cost are left out and counted.
   def inventory
     @inventory ||= begin
@@ -179,6 +208,23 @@ class AccountingStats
   end
 
   private
+
+  def potential_delivery_fee(order)
+    return order.delivery_fee_cents unless order.delivery_fee_cents.nil?
+
+    fee = [ order.sendit_fee, order.ozon_fee, order.ameex_fee ].find(&:present?)
+    return (fee * 100).round(0, half: :up).to_i if fee
+
+    potential_default_delivery_fee
+  end
+
+  # Match Order#carrier_fee_cents without querying the same defaults for every open order.
+  def potential_default_delivery_fee
+    return @potential_default_delivery_fee if defined?(@potential_default_delivery_fee)
+
+    fees = @store.delivery_accounts.where(is_active: true).where.not(delivery_fee: nil).distinct.pluck(:delivery_fee)
+    @potential_default_delivery_fee = fees.one? ? (fees.first * 100).round(0, half: :up).to_i : nil
+  end
 
   def month_range(value)
     return unless value.to_s.match?(/\A\d{4}-(0[1-9]|1[0-2])\z/)

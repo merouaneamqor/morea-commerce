@@ -88,6 +88,8 @@
           sub: t("accounting.subs.margin_points", pts: points_text), series: daily.map(&:margin) %>
   </section>
 
+  <%= render "potential", stats: stats %>
+
   <% split = stats.split_per_100 %>
   <section class="grid gap-2.5 xl:grid-cols-[1.6fr_1fr]">
     <div class="rounded-xl border border-[#e0e0e5] bg-white p-4" data-split>

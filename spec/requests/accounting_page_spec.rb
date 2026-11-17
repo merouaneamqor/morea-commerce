@@ -327,6 +327,49 @@ RSpec.describe "Comptabilité page", type: :request do
     end
   end
 
+  describe "potential profit from open orders" do
+    before { sign_in(owner) }
+
+    it "keeps all open orders separate from realized figures and the realized export" do
+      october_orders
+      order(status: "new", total: 20_000, cost: 6_000, delivery_fee: 2_500)
+      order(status: "unreachable", total: 10_000, cost: 3_000, delivery_fee: 2_000)
+      order(status: "in_transit", total: 8_000, cost: 2_000, delivery_fee: 1_500)
+      order(status: "cancelled", total: 90_000, cost: 0, delivery_fee: 0)
+      get "/comptabilite", params: { month: "2026-10" }
+
+      expect(response).to have_http_status(:ok)
+      expect(clean(document.at_css("[data-potential-value]").text)).to eq("210 MAD")
+      expect(clean(document.at_css("[data-potential-profit]").text)).to include("3 commandes ouvertes", "Hors publicité")
+      expect(document.at_css("[data-potential-incomplete]")).to be_nil
+      expect(value_of("net")).to eq("120 MAD")
+      expect(value_of("revenue")).to eq("250 MAD")
+      get "/comptabilite/export", params: { month: "2026-10", format: "csv" }
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include("Bénéfice potentiel")
+    end
+
+    it "shows missing costs instead of an overstated profit" do
+      order(status: "new", total: 20_000, cost: nil)
+      get "/comptabilite"
+
+      expect(clean(document.at_css("[data-potential-value]").text)).to eq(AccountingHelper::DASH)
+      message = clean(document.at_css("[data-potential-incomplete]").text)
+      expect(message).to include("Estimation indisponible", "1 commande sans coût produit complet", "1 commande sans tarif de livraison connu")
+    end
+
+    %w[fr en ar es].each do |locale|
+      it "renders the potential card in #{locale}" do
+        get "/comptabilite", params: { locale: locale }
+        expect(response).to have_http_status(:ok)
+        section = document.at_css("[data-potential-profit]")
+        expect(section.at_css("h2").text).to eq(I18n.t("accounting.potential.title", locale: locale))
+        expect(clean(section.at_css("[data-potential-value]").text)).to eq("0 MAD")
+        expect(response.body).not_to include("translation_missing", "Translation missing")
+      end
+    end
+  end
+
   describe "the export" do
     before { october_orders }
 

@@ -280,6 +280,135 @@ RSpec.describe AccountingStats do
     end
   end
 
+  describe "potential contribution from current open orders" do
+    def delivery_account(fee, active: true, provider: "ozon", workspace: store)
+      workspace.delivery_accounts.create!(provider: provider, name: "Synthetic delivery", is_active: active, delivery_fee: fee)
+    end
+
+    it "includes every open status across all dates, including archives, and excludes completed outcomes" do
+      %w[new confirmed preparing awaiting_pickup picked_up in_transit out_for_delivery address_issue unreachable postponed].each do |status|
+        order(status: status, total: 10_000, items: [ [ 2, 1_000 ] ], delivery_fee: 2_500, archived_at: (now if status == "new"))
+      end
+      %w[delivered cancelled returned].each do |status|
+        order(status: status, total: 90_000, items: [ [ 1, 8_000 ] ], delivery_fee: 0, delivered_at: now, returned_at: now)
+      end
+
+      expected = { orders: 10, revenue: 100_000, goods: 20_000, delivery: 25_000, contribution: 55_000,
+        missing_cost_orders: 0, missing_delivery_fee_orders: 0 }
+      expect(october.potential).to eq(expected)
+      expect(described_class.new(store: store, month: "2026-11", basis: "shipped", now: now).potential).to eq(expected)
+      expect(october.totals.revenue).to eq(0)
+    end
+
+    it "uses order line snapshots, quantities and the entire customer total, even when contribution is negative" do
+      product = store.products.create!(name: "Snapshot item", slug: "snapshot-#{suffix}", price_cents: 10_000, cost_cents: 1, status: "active")
+      record = order(status: "new", total: 10_500, items: [ [ 2, 4_000 ], [ 3, 1_000 ] ], delivery_fee: 2_500)
+      record.order_items.update_all(product_id: product.id)
+      product.update!(cost_cents: 90_000)
+
+      expect(october.potential).to include(revenue: 10_500, goods: 11_000, delivery: 2_500, contribution: -3_000)
+    end
+
+    it "distinguishes missing snapshots and absent items from legitimate zero costs" do
+      order(status: "new", total: 10_000, items: [ [ 1, nil ], [ 2, 400 ] ], delivery_fee: 0)
+      order(status: "confirmed", total: 5_000, items: [], delivery_fee: 0)
+      order(status: "preparing", total: 3_000, items: [ [ 2, 0 ] ], delivery_fee: 0)
+
+      expect(october.potential).to eq(orders: 3, revenue: 18_000, goods: 800, delivery: 0, contribution: nil,
+        missing_cost_orders: 2, missing_delivery_fee_orders: 0)
+    end
+
+    it "reports unknown fees separately and does not present incomplete costs as a contribution" do
+      order(status: "new", total: 10_000, items: [ [ 1, 500 ] ])
+      order(status: "confirmed", total: 5_000, items: [ [ 1, 0 ] ], delivery_fee: 0)
+
+      expect(october.potential).to eq(orders: 2, revenue: 15_000, goods: 500, delivery: 0, contribution: nil,
+        missing_cost_orders: 0, missing_delivery_fee_orders: 1)
+    end
+
+    it "prefers frozen fees, then each carrier's reported fee in centimes with half-up rounding" do
+      frozen = order(status: "new", total: 10_000, delivery_fee: 0)
+      frozen.update_columns(sendit_fee: BigDecimal("99"))
+      sendit = order(status: "confirmed", total: 10_000)
+      sendit.update_columns(sendit_fee: BigDecimal("12.345"), ozon_fee: BigDecimal("99"))
+      ozon = order(status: "preparing", total: 10_000)
+      ozon.update_columns(ozon_fee: BigDecimal("23.45"), ameex_fee: BigDecimal("99"))
+      ameex = order(status: "in_transit", total: 10_000)
+      ameex.update_columns(ameex_fee: BigDecimal("34.56"))
+      delivery_account(80)
+
+      expect(october.potential).to include(delivery: 7_036, contribution: 32_964, missing_delivery_fee_orders: 0)
+    end
+
+    it "accepts a known zero reported carrier fee" do
+      record = order(status: "new", total: 10_000)
+      record.update_columns(sendit_fee: BigDecimal("0"))
+      delivery_account(30)
+
+      expect(october.potential).to include(delivery: 0, contribution: 10_000, missing_delivery_fee_orders: 0)
+    end
+
+    it "uses agreeing active defaults, ignores inactive accounts, and queries defaults once" do
+      delivery_account(BigDecimal("24.505"))
+      delivery_account(BigDecimal("24.505"), provider: "ameex")
+      delivery_account(99, active: false)
+      3.times { order(status: "new", total: 10_000) }
+      queries = []
+      subscriber = ->(_name, _start, _finish, _id, payload) { queries << payload[:sql] if payload[:sql].match?(/SELECT.*"delivery_accounts"/i) }
+      result = ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { october.potential }
+
+      expect(result).to include(delivery: 7_353, contribution: 22_647, missing_delivery_fee_orders: 0)
+      expect(queries.size).to eq(1)
+    end
+
+    it "leaves conflicting active defaults unknown and keeps the sum of known fees" do
+      delivery_account(25)
+      delivery_account(30, provider: "ameex")
+      order(status: "new", total: 10_000)
+      order(status: "confirmed", total: 10_000, delivery_fee: 1_000)
+
+      expect(october.potential).to include(delivery: 1_000, contribution: nil, missing_delivery_fee_orders: 1)
+    end
+
+    it "scopes orders and fallback delivery accounts to the workspace and reporting currency" do
+      other = Store.create!(name: "Other potential", slug: "other-potential-#{suffix}", currency: "MAD")
+      other_customer = other.customers.create!(name: "Other client", phone: "0612345679")
+      other.orders.create!(customer: other_customer, status: "new", currency: "MAD", customer_name: "Other client", customer_phone: "0612345679",
+        customer_city: "Rabat", customer_address: "Rue 2", subtotal_cents: 90_000, total_cents: 90_000)
+      delivery_account(99, workspace: other)
+      delivery_account(25)
+      order(status: "new", total: 10_000, currency: "MAD")
+      order(status: "confirmed", total: 5_000, currency: "DH")
+      order(status: "preparing", total: 80_000, currency: "EUR")
+
+      expect(october.potential).to include(orders: 2, revenue: 15_000, delivery: 5_000, contribution: 10_000)
+    end
+
+    it "is memoized and reads estimates without freezing fees, changing orders or scheduling jobs" do
+      record = order(status: "new", total: 10_000)
+      delivery_account(25)
+      before = record.reload.attributes
+      jobs_before = ActiveJob::Base.queue_adapter.enqueued_jobs.dup
+      events_before = OrderEvent.count
+      expect(Sendit::Client).not_to receive(:new)
+      expect(Ozon::Client).not_to receive(:new)
+      expect(Ameex::Client).not_to receive(:new)
+      result = october.potential
+
+      expect(october.potential).to equal(result)
+      expect(record.reload.attributes).to eq(before)
+      expect(record.delivery_fee_cents).to be_nil
+      expect(ActiveJob::Base.queue_adapter.enqueued_jobs).to eq(jobs_before)
+      expect(OrderEvent.count).to eq(events_before)
+      expect(result[:contribution]).to eq(7_500)
+    end
+
+    it "returns an exact empty result without missing-data warnings" do
+      expect(october.potential).to eq(orders: 0, revenue: 0, goods: 0, delivery: 0, contribution: 0,
+        missing_cost_orders: 0, missing_delivery_fee_orders: 0)
+    end
+  end
+
   describe "receivables and inventory" do
     it "counts delivered parcels whose cash was not recorded, and stock at purchase price" do
       order(status: "delivered", total: 12_000, delivered_at: zone.local(2026, 10, 10, 10, 0), delivery_fee: 0)

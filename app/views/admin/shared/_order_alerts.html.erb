@@ -1,20 +1,27 @@
-<%# Opt-in browser push for new orders. Hidden when VAPID is not configured. %>
+<% settings = local_assigns.fetch(:settings, false) %>
 <% public_key = Rails.configuration.x.web_push[:public_key] %>
-<% if public_key.present? && current_store %>
+<% if current_store && (settings || public_key.present?) %>
   <div data-controller="order-alerts"
        data-order-alerts-public-key-value="<%= public_key %>"
        data-order-alerts-subscribe-url-value="<%= admin_push_subscription_path %>"
-       data-order-alerts-on-label-value="<%= t("admin.order_alerts.on") %>"
-       data-order-alerts-off-label-value="<%= t("admin.order_alerts.off") %>"
+       data-order-alerts-on-label-value="<%= t(settings ? "admin.order_alerts.disable" : "admin.order_alerts.on") %>"
+       data-order-alerts-off-label-value="<%= t(settings ? "admin.order_alerts.enable" : "admin.order_alerts.off") %>"
+       data-order-alerts-error-label-value="<%= t("admin.order_alerts.error") %>"
        data-order-alerts-blocked-label-value="<%= t("admin.order_alerts.blocked") %>">
     <button type="button"
             data-order-alerts-target="toggle"
             data-action="order-alerts#toggle"
             aria-pressed="false"
             class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#5e5a58] hover:bg-[#f3f1ef] hover:text-[#1f2430]"
-            hidden>
+            disabled
+            <%= "hidden" unless settings %>>
       <%= seller_icon(:phone) %>
-      <span data-order-alerts-target="label"><%= t("admin.order_alerts.off") %></span>
+      <span data-order-alerts-target="label"><%= t(settings ? "admin.order_alerts.enable" : "admin.order_alerts.off") %></span>
     </button>
+    <% if settings %>
+      <p class="admin-help" data-order-alerts-target="status" role="status" aria-live="polite"></p>
+      <p class="admin-help" data-order-alerts-target="unsupported" hidden><%= t("admin.order_alerts.unsupported") %></p>
+      <% if public_key.blank? %><p class="admin-help"><%= t("admin.order_alerts.unavailable") %></p><% end %>
+    <% end %>
   </div>
 <% end %>

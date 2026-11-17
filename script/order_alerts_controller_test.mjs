@@ -48,3 +48,59 @@ test("failed activation rejects instead of leaving the alert toggle pending", as
   serviceWorker({ register: async () => ({ installing: worker }) })
   await assert.rejects(new Alerts().registration(), /activation failed/)
 })
+
+function settingsController() {
+  const controller = new Alerts()
+  controller.toggleTarget = { disabled: false }
+  controller.hasStatusTarget = true
+  controller.statusTarget = { textContent: "" }
+  controller.errorLabelValue = "Connection failed"
+  controller.render = (on, options) => { controller.enabled = on; controller.lastRender = options }
+  controller.chime = () => {}
+  controller.applicationServerKey = () => new Uint8Array()
+  return controller
+}
+
+test("settings activation requests permission from the click and saves before enabling", async () => {
+  const alerts = settingsController()
+  let requested = false
+  globalThis.Notification = { requestPermission: async () => { requested = true; return "granted" } }
+  alerts.registration = async () => ({ pushManager: { subscribe: async () => ({ toJSON: () => ({ endpoint: "synthetic" }) }) } })
+  alerts.send = async (method, body) => { assert.equal(method, "POST"); assert.equal(body.endpoint, "synthetic"); assert.equal(alerts.enabled, undefined) }
+  const pending = alerts.toggle()
+  assert.equal(requested, true)
+  assert.equal(alerts.toggleTarget.disabled, true)
+  await pending
+  assert.equal(alerts.enabled, true)
+  assert.equal(alerts.toggleTarget.disabled, false)
+})
+
+test("settings disable removes server delivery and browser subscription", async () => {
+  const alerts = settingsController()
+  alerts.enabled = true
+  const calls = []
+  alerts.registration = async () => ({ pushManager: { getSubscription: async () => ({ endpoint: "synthetic", unsubscribe: async () => { calls.push("unsubscribe"); return true } }) } })
+  alerts.send = async (method) => { calls.push(method) }
+  await alerts.toggle()
+  assert.deepEqual(calls, ["DELETE", "unsubscribe"])
+  assert.equal(alerts.enabled, false)
+})
+
+test("failed disable keeps the enabled state and exposes a retryable error", async () => {
+  const alerts = settingsController()
+  alerts.enabled = true
+  alerts.disable = async () => { throw new Error("offline") }
+  await alerts.toggle()
+  assert.equal(alerts.enabled, true)
+  assert.equal(alerts.statusTarget.textContent, "Connection failed")
+  assert.equal(alerts.toggleTarget.disabled, false)
+})
+
+test("permission denial never creates a push subscription", async () => {
+  const alerts = settingsController()
+  globalThis.Notification = { requestPermission: async () => "denied" }
+  alerts.registration = () => { throw new Error("must not subscribe") }
+  await alerts.toggle()
+  assert.equal(alerts.enabled, false)
+  assert.equal(alerts.lastRender.blocked, true)
+})

@@ -197,7 +197,7 @@ RSpec.describe "Storefront COD checkout", type: :request do
     expect(doc.at_css("#checkout_name")["value"]).to eq("Buyer")
     expect(doc.at_css("#checkout_address")["value"]).to eq("Rue 1")
     expect(doc.at_css("#checkout_notes").text.delete_prefix("\n")).to eq("Synthetic delivery note")
-    expect(doc.at_css(".checkout-simple__extras")["open"]).to be_present
+    expect(doc.at_css(".checkout-simple__extras[open]")).to be_present
     expect(doc.at_css(".checkout-alert[role=alert]")).to be_present
   end
 

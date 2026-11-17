@@ -25,6 +25,7 @@ export default class extends Controller {
     subtotal: Number,
     discount: { type: Number, default: 0 },
     freeThreshold: Number,
+    fallbackShipping: { type: Number, default: 0 },
     currency: String,
     freeLabel: String,
     pendingLabel: String,
@@ -368,13 +369,13 @@ export default class extends Controller {
   refreshTotals() {
     const city = this.cityValue()
     const net = Math.max(this.subtotalValue - this.discountValue, 0)
-    let shipping = 0
+    let shipping = this.fallbackShippingValue
 
     if (this.freeThresholdValue > 0 && net >= this.freeThresholdValue) {
       shipping = 0
     } else if (city && this.ratesValue[city] != null) {
       shipping = Number(this.ratesValue[city]) || 0
-    } else if (!city) {
+    } else if (!city && this.citiesValue.length > 0) {
       shipping = null
     }
 
@@ -400,6 +401,7 @@ export default class extends Controller {
     if (!this.hasCityTarget) return ""
     const typed = this.cityTarget.value.trim()
     if (!typed) return ""
+    if (this.citiesValue.length === 0) return typed
 
     const exact = this.citiesValue.find((city) => this.normalize(city) === this.normalize(typed))
     return exact || ""

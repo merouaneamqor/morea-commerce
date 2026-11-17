@@ -129,6 +129,10 @@ const fixtures = {
   platform: `<div class="platform-landing"><header class="platform-header"><div class="platform-container platform-header-inner"><a class="platform-brand">seallo</a><div class="platform-header-actions"><div class="platform-languages"><a>FR</a><a>EN</a><a>AR</a></div><a class="platform-login-nav">Connexion</a><a class="platform-button platform-header-button">Inscription</a></div></div></header><main class="platform-container"><h1>${long}</h1></main></div>`,
   document: `<div class="sc-doc"><header class="sc-header"><div class="sc-container sc-header-inner"><a class="sc-brand"><img class="sc-logo" width="640" height="160" alt="" src="data:image/svg+xml,${encodeURIComponent('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"160\"><rect width=\"640\" height=\"160\" fill=\"#1c1b19\"/><text x=\"24\" y=\"100\" fill=\"#fff\" font-size=\"72\" font-family=\"sans-serif\">SealloCRM</text></svg>')}"><span class="sc-brand__name">Seallo Connect</span></a><nav class="sc-nav"><a>Overview and support</a><a>Pricing</a><a>Privacy policy</a><a>Terms of service</a><a>Cookie policy</a><a>Refunds</a><a>Your data rights</a></nav><div class="sc-languages"><a>FR</a><a>EN</a><a>AR</a></div></div></header><main class="sc-container sc-main"><h1>${long}</h1><pre>${long.repeat(3)}</pre></main></div>`
 }
+// Exercise the shared checkout classes in both presentation modes with long copy.
+const simpleCheckout = `<header class="checkout-modal__header"><div class="checkout-simple__brand"><span>MOREA</span><a>Modifier</a></div><ol class="checkout-simple__steps"><li aria-current="step"><b>1</b> Livraison</li><li><b>2</b> Confirmation</li></ol><ul class="checkout-simple__items"><li class="checkout-simple__item"><div class="checkout-simple__thumb"></div><div><p class="checkout-simple__product">${long}</p><p>Quantité : 1</p><p class="checkout-simple__price">149 MAD</p></div></li></ul><p class="checkout-simple__reassurance">Paiement à la réception</p></header><form class="checkout-modal__form"><div class="checkout-modal__body"><h1 class="checkout-simple__title">Où livrer votre commande ?</h1><div class="checkout-modal__fields">${["Nom complet", "Téléphone", "Ville", "Adresse de livraison"].map((label, i) => `<div class="checkout-field ${i === 2 ? "sm:col-span-2" : ""}"><label class="checkout-label" for="field-${i}">${label}</label><input id="field-${i}" class="checkout-input checkout-input--fast" placeholder="${label}" required></div>`).join("")}<div class="checkout-field"><label class="checkout-label">Quartier<select class="checkout-input checkout-select"><option>${long}</option></select></label></div></div><details class="checkout-simple__extras"><summary>Code promo ou note (facultatif)</summary><textarea class="checkout-input"></textarea></details><label class="checkout-consent"><input type="checkbox" checked> J’accepte les conditions</label></div><div class="checkout-modal__footer"><div class="checkout-modal__pay"><div class="checkout-modal__pay-total"><p class="checkout-modal__pay-label">Total à payer</p><p class="checkout-modal__pay-amount">149 MAD</p></div><button class="maison-button checkout-modal__submit">Confirmer ma commande — 149 MAD</button></div><p class="checkout-modal__cod">Aucun paiement en ligne nécessaire</p></div></form>`
+fixtures.simpleCheckout = `<section class="checkout-page checkout-simple-shell"><div class="checkout-simple">${simpleCheckout}</div></section>`
+fixtures.simpleCheckoutPopup = `<section class="checkout-overlay checkout-simple-shell"><div class="checkout-simple checkout-modal" role="dialog">${simpleCheckout}</div></section>`
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || (existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined), headless: true, args: ["--no-sandbox"] })
 const sizes = [[320,640], [375,812], [768,1024], [1024,768], [1440,900], [812,375]]
 const failures = []
@@ -183,7 +187,14 @@ try {
         assert.ok(banner.y > height * 0.4, "storefront cookie banner must not sit in the top half")
         checks++
       }
-      if (!process.env.RESPONSIVE_URLS && width <= 767 && ["auth", "admin", "checkout", "callPanel"].includes(route)) {
+      if (!process.env.RESPONSIVE_URLS && ["simpleCheckout", "simpleCheckoutPopup"].includes(route)) {
+        const fieldWidths = await page.locator(".checkout-modal__fields > .checkout-field").evaluateAll(els =>
+          els.map(el => ({ width: el.getBoundingClientRect().width, grid: el.parentElement.getBoundingClientRect().width }))
+        )
+        assert.ok(fieldWidths.every(entry => Math.abs(entry.width - entry.grid) < 2), `${route} delivery fields must stay full width after city selection`)
+        checks++
+      }
+      if (!process.env.RESPONSIVE_URLS && width <= 767 && ["auth", "admin", "checkout", "callPanel", "simpleCheckout", "simpleCheckoutPopup"].includes(route)) {
         const fontSizes = await page.locator('input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea').evaluateAll(els =>
           els.map(el => ({ tag: el.tagName, className: el.className, size: parseFloat(getComputedStyle(el).fontSize) }))
         )

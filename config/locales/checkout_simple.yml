@@ -1,0 +1,32 @@
+en:
+  checkout:
+    simple:
+      delivery: Delivery
+      confirmation: Confirmation
+      payment: Pay on delivery
+      optional: Add a promo code or delivery note (optional)
+      notes: Delivery note (optional)
+fr:
+  checkout:
+    simple:
+      delivery: Livraison
+      confirmation: Confirmation
+      payment: Paiement à la réception
+      optional: Ajouter un code promo ou une note (facultatif)
+      notes: Note de livraison (facultatif)
+ar:
+  checkout:
+    simple:
+      delivery: التوصيل
+      confirmation: التأكيد
+      payment: الدفع عند الاستلام
+      optional: إضافة رمز تخفيض أو ملاحظة (اختياري)
+      notes: ملاحظة للتوصيل (اختياري)
+es:
+  checkout:
+    simple:
+      delivery: Entrega
+      confirmation: Confirmación
+      payment: Pago contra reembolso
+      optional: Añadir un código promocional o una nota (opcional)
+      notes: Nota de entrega (opcional)

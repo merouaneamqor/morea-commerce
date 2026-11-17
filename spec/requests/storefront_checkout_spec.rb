@@ -112,7 +112,7 @@ RSpec.describe "Storefront COD checkout", type: :request do
     expect(response).to redirect_to("/en/cart")
   end
 
-  it "defaults to a fast checkout popup without email and with first name, phone, city, address" do
+  it "defaults to a fast checkout popup without email and with full name, phone, city, address" do
     expect(store.checkout_popup_enabled).to be(true)
     add_to_cart
     get "/en/checkout"
@@ -127,14 +127,17 @@ RSpec.describe "Storefront COD checkout", type: :request do
     expect(doc.at_css(".checkout-modal__cod").text).to be_present
     expect(doc.at_css(".checkout-page")).to be_nil
     expect(doc.at_css("#checkout_name")).to be_present
-    expect(doc.at_css("label[for='checkout_name']")&.text).to include("First name")
+    expect(doc.at_css("label[for='checkout_name']")&.text).to include("Full name")
     expect(doc.at_css("#checkout_phone")).to be_present
     expect(doc.at_css("#checkout_city")).to be_present
     expect(doc.at_css("#checkout_address")).to be_present
     expect(doc.at_css("#checkout_district")).to be_present
     expect(doc.at_css("input[type='email'], #checkout_email")).to be_nil
-    expect(doc.at_css("#checkout_notes")).to be_nil
-    expect(response.body).to include("Limited stock, confirm before the hold ends.")
+    expect(doc.at_css("#checkout_notes").ancestors("details").first["open"]).to be_nil
+    expect(response.body).not_to include("Limited stock, confirm before the hold ends.")
+    expect(doc.css(".checkout-simple__item").size).to eq(1)
+    expect(doc.css("button[type=submit]").size).to eq(1)
+    expect(doc.at_css("#checkout_name")["autocomplete"]).to eq("name")
     expect(response.body).not_to include('name="checkout[email]"')
 
     privacy = doc.at_css("#checkout_privacy_accepted")
@@ -165,6 +168,37 @@ RSpec.describe "Storefront COD checkout", type: :request do
     expect(doc.at_css("input[type='email'], #checkout_email")).to be_nil
     expect(response.body).not_to include("Limited stock, confirm before the hold ends.")
     expect(response.body).not_to include('name="checkout[email]"')
+  end
+
+  it "renders the shared delivery form in each storefront language and presentation" do
+    add_to_cart
+    [ true, false ].each do |popup|
+      store.update!(checkout_popup_enabled: popup)
+      %w[fr en ar].each do |locale|
+        get "/#{locale}/checkout"
+        expect(response).to have_http_status(:ok)
+        doc = Nokogiri::HTML(response.body)
+        expect(doc.at_css(".checkout-simple__title").text).to eq(I18n.t("checkout.delivery_hint", locale: locale))
+        expect(doc.css(".checkout-simple__item").size).to eq(1)
+        expect(doc.css("button[type=submit]").size).to eq(1)
+        expect(doc.at_css("#checkout_phone")["inputmode"]).to eq("tel")
+        expect(doc.at_css("#checkout_address")["autocomplete"]).to eq("street-address")
+        expect(response.body).not_to include("translation_missing")
+        expect(doc.at_css("html")["dir"]).to eq(locale == "ar" ? "rtl" : "ltr")
+      end
+    end
+  end
+
+  it "keeps entered delivery details and reveals optional notes after validation fails" do
+    add_to_cart
+    place_order(extra: { phone: "12", notes: "Synthetic delivery note" })
+    expect(response).to have_http_status(:unprocessable_content)
+    doc = Nokogiri::HTML(response.body)
+    expect(doc.at_css("#checkout_name")["value"]).to eq("Buyer")
+    expect(doc.at_css("#checkout_address")["value"]).to eq("Rue 1")
+    expect(doc.at_css("#checkout_notes").text).to eq("Synthetic delivery note")
+    expect(doc.at_css(".checkout-simple__extras")["open"]).to be_present
+    expect(doc.at_css(".checkout-alert[role=alert]")).to be_present
   end
 
   it "still rejects an order when acceptance is unchecked" do

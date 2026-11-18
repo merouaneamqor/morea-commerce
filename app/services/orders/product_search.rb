@@ -8,6 +8,7 @@ module Orders
   class ProductSearch
     EMPTY_QUERY_LIMIT = 10
     LIMIT = 25
+    BATCH_SIZE = 100
 
     def initialize(store:, query:)
       @store = store
@@ -24,7 +25,23 @@ module Orders
       return scope.limit(EMPTY_QUERY_LIMIT).to_a if @query.blank?
 
       terms = @query.split
-      scope.select { |product| terms.all? { |term| haystack(product).include?(term) } }.first(LIMIT)
+      matches = []
+      offset = 0
+      # Keep name/id ordering and Ruby's locale-aware folding. Disable the query
+      # cache so scanned products, variants and translations are not retained.
+      Product.uncached do
+        loop do
+          batch = scope.limit(BATCH_SIZE).offset(offset).to_a
+          batch.each do |product|
+            matches << product if terms.all? { |term| haystack(product).include?(term) }
+            return matches if matches.size == LIMIT
+          end
+          break if batch.size < BATCH_SIZE
+
+          offset += BATCH_SIZE
+        end
+      end
+      matches
     end
 
     private

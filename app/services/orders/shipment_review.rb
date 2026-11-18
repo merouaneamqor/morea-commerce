@@ -52,6 +52,7 @@ module Orders
     def build
       keys = candidates.map { |order| key_for(order.customer_phone) }.reject(&:blank?).uniq
       related = related_orders(keys)
+      cancellations = cancelled_history(keys)
       blocked_keys = BlockedPhone.where(store: store, phone_key: (keys + candidates.map { |order| key_for(order.second_phone) }.reject(&:blank?)).uniq).pluck(:phone_key).to_set
 
       candidates.map do |order|
@@ -64,9 +65,9 @@ module Orders
         issues << :blocked if [ key, key_for(order.second_phone) ].any? { |k| k.present? && blocked_keys.include?(k) }
         twin = others.find { |other| duplicate?(order, other) }
         issues << :duplicate if twin
-        cancelled = others.select { |other| other.status == "cancelled" && other.created_at >= @now - CANCELLED_WINDOW }
-        issues << :prior_cancelled if cancelled.any?
-        Row.new(order: order, issues: issues, carrier: carrier, duplicate_of: twin, cancelled_count: cancelled.size, cancelled_last_at: cancelled.map { |other| other.cancelled_at || other.created_at }.max)
+        cancelled_count, cancelled_last_at = cancellations.fetch(key, [ 0, nil ])
+        issues << :prior_cancelled if cancelled_count.positive?
+        Row.new(order: order, issues: issues, carrier: carrier, duplicate_of: twin, cancelled_count: cancelled_count, cancelled_last_at: cancelled_last_at)
       end
     end
 
@@ -99,12 +100,25 @@ module Orders
       order.order_items.map { |item| [ item.product_id || item.product_name, item.variant_name.to_s, item.quantity ] }.sort_by(&:to_s)
     end
 
-    # Every order of this store, within the longest window, sharing a phone number with a candidate.
+    # Load items only for orders that could be duplicates. Cancellation warnings
+    # need counts and dates, so their history is aggregated separately.
     def related_orders(keys)
       return {} if keys.empty?
 
       since = @now - [ DUPLICATE_WINDOW, CANCELLED_WINDOW ].max
-      store.orders.where(created_at: since..).where("#{PHONE_KEY_SQL} IN (?)", keys).includes(:order_items).group_by { |other| key_for(other.customer_phone) }
+      first = [ since, candidates.first.created_at - DUPLICATE_WINDOW.to_i ].max
+      last = candidates.last.created_at + DUPLICATE_WINDOW.to_i
+      store.orders.where(created_at: first..last).where.not(status: %w[cancelled returned])
+        .where("#{PHONE_KEY_SQL} IN (?)", keys).includes(:order_items).group_by { |other| key_for(other.customer_phone) }
+    end
+
+    def cancelled_history(keys)
+      return {} if keys.empty?
+
+      store.orders.where(status: "cancelled", created_at: (@now - CANCELLED_WINDOW)..)
+        .where("#{PHONE_KEY_SQL} IN (?)", keys).group(Arel.sql(PHONE_KEY_SQL))
+        .pluck(Arel.sql(PHONE_KEY_SQL), Arel.sql("COUNT(*)"), Arel.sql("MAX(COALESCE(cancelled_at, created_at))"))
+        .to_h { |key, count, last_at| [ key, [ count, last_at ] ] }
     end
   end
 end

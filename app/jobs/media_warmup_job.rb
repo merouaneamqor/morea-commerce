@@ -16,7 +16,9 @@ class MediaWarmupJob < ApplicationJob
 
     store = Store.find_by(id: store_id) if store_id
     url = MediaUrl.sized(blob.url(transformation: MediaUrl.transformation(MediaUrl.edits(blob), store: store)), width: 960)
-    response = Net::HTTP.get_response(URI(url))
+    response = Net::HTTP.get_response(URI(url)) do |stream|
+      stream.read_body { |_chunk| }
+    end
     raise Pending, "#{response.code} for blob #{blob_id}" if response.code == "423"
   end
 end

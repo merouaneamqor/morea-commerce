@@ -12,6 +12,7 @@ module Confirmations
   # Hand attributions (no rule) never move by themselves.
   class AssignmentRunner
     CAPACITY = Assignments::CAPACITY
+    BATCH_SIZE = 100
 
     def self.run_all!(now: Time.current)
       Store.where(id: AssignmentRule.active.select(:store_id)).find_each { |store| new(store: store, now: now).run! }
@@ -35,9 +36,9 @@ module Confirmations
     def attribute_new!(rules)
       orders = assignments.waiting_scope.where("order_confirmations.attributed_user_id IS NULL")
         .where("order_confirmations.disposition IS NULL OR order_confirmations.disposition IN ('pending', 'no_answer')")
-        .preload(:order_confirmation, external_order_receipt: :store_connection).order(:created_at, :id).to_a
+        .preload(:order_confirmation, external_order_receipt: :store_connection).order(:created_at, :id)
       done = 0
-      orders.each do |order|
+      each_ordered_record(orders, :created_at) do |order|
         rule = rules.find { |candidate| candidate.matches?(order, source_key: source_key(order)) }
         next unless rule
 
@@ -51,7 +52,8 @@ module Confirmations
     end
 
     def transfer_late!
-      late.filter_map do |confirmation|
+      done = 0
+      each_ordered_record(late, :attributed_at) do |confirmation|
         confirmation.with_lock do
           rule = confirmation.assignment_rule
           current = confirmation.attributed_user
@@ -61,9 +63,10 @@ module Confirmations
           next unless agent
 
           give!(confirmation.order, agent, rule, "Moved from #{label(current)} to #{label(agent)}: not confirmed within #{rule.timeout_minutes} minutes")
-          true
+          done += 1
         end
-      end.size
+      end
+      done
     end
 
     # Orders attributed by a rule whose delay is over (the rule may be switched off or edited since: only active rules with the transfer on).
@@ -73,7 +76,28 @@ module Confirmations
         .where("order_confirmations.attributed_at <= ?::timestamp - (assignment_rules.timeout_minutes * INTERVAL '1 minute')", @now)
         .where(orders: { status: "new", archived_at: nil, sendit_code: [ nil, "" ] })
         .where(disposition: %w[pending no_answer], call_started_at: nil)
-        .includes(:order, :assignment_rule, :attributed_user).order(:attributed_at, :id).to_a
+        .includes(:order, :assignment_rule, :attributed_user).order(:attributed_at, :id)
+    end
+
+    # These queues change as assignments are saved. OFFSET would skip rows;
+    # keep the existing timestamp/id order and capture the cursor before writes.
+    def each_ordered_record(scope, timestamp)
+      table = scope.klass.arel_table
+      cursor_time = cursor_id = nil
+      scope.klass.uncached do
+        loop do
+          page = scope
+          if cursor_id
+            page = page.where(table[timestamp].gt(cursor_time).or(table[timestamp].eq(cursor_time).and(table[:id].gt(cursor_id))))
+          end
+          batch = page.limit(BATCH_SIZE).to_a
+          break if batch.empty?
+
+          cursor_time, cursor_id = batch.last.public_send(timestamp), batch.last.id
+          batch.each { |record| yield record }
+          break if batch.size < BATCH_SIZE
+        end
+      end
     end
 
     # The agent the rule picks among its agents who are online, under capacity and good enough (the rule's minimum success rate; an agent who made

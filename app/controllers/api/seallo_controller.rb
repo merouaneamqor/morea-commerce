@@ -24,18 +24,19 @@ module Api
     # into the Shopify app, so order-proxy authorization cannot loop.
     def entitlement
       connection = scoped_connection
-      unless connection&.active?
-        return render json: Connections::SealloEntitlement.inactive_payload, headers: { "Cache-Control" => "no-store" }
+      payload = Connections::SealloEntitlement.inactive_payload
+      if connection&.active?
+        if (attributes = Connections::SealloEntitlement.attributes_from_store(connection.store))
+          connection.update!(attributes)
+          payload = Connections::SealloEntitlement.present(connection.reload)
+        elsif connection.shopify_entitled_until.present? && connection.shopify_entitled_until > Time.current &&
+            connection.shopify_billing_period_start.present?
+          payload = Connections::SealloEntitlement.present(connection)
+        end
       end
 
-      if (attributes = Connections::SealloEntitlement.attributes_from_store(connection.store))
-        connection.update!(attributes)
-      elsif !(connection.shopify_entitled_until.present? && connection.shopify_entitled_until > Time.current &&
-          connection.shopify_billing_period_start.present?)
-        return render json: Connections::SealloEntitlement.inactive_payload, headers: { "Cache-Control" => "no-store" }
-      end
-
-      render json: Connections::SealloEntitlement.present(connection.reload), headers: { "Cache-Control" => "no-store" }
+      response.set_header("Cache-Control", "no-store")
+      render json: payload
     end
 
     def sync

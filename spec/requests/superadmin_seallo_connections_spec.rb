@@ -132,6 +132,7 @@ RSpec.describe "Superadmin Seallo connections", type: :request do
   end
 
   it "returns curated errors without exposing upstream responses" do
+    store.update!(subscription_required: true, billing_status: "canceled", trial_ends_at: nil, billing_period_ends_on: 1.day.ago, plan: nil)
     allow(Connections::SealloBridge).to receive(:entitlement).and_raise(Connections::SealloBridge::Error, "private-upstream-secret")
     sign_in
     post "#{path}/recheck", params: { connection_id: connection.id }

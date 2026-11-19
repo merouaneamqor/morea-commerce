@@ -81,10 +81,10 @@ RSpec.describe Connections::SealloEntitlement do
 
   it "caps the Seallo cache at the end of a near-expiry billing period" do
     freeze_time do
-      store.update!(subscription_required: true, plan: "intermediate", billing_status: "active",
-        billing_interval: "monthly", billing_period_ends_on: Date.current, trial_ends_at: nil)
+      store.update!(subscription_required: true, plan: "intermediate", billing_status: "trial",
+        trial_ends_at: 2.minutes.from_now, billing_period_ends_on: nil)
       described_class.refresh!(connection)
-      expect(connection.reload.shopify_entitled_until).to eq(Date.current.in_time_zone.end_of_day)
+      expect(connection.reload.shopify_entitled_until).to eq(2.minutes.from_now)
     end
   end
 

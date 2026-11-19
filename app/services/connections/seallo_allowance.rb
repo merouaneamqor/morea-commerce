@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 module Connections
-  # The app verifies billing with Shopify and publishes a bounded entitlement.
-  # Intake calls this under the connection lock, after accepted receipt replay.
-  # Checking and creating the next accepted receipt therefore share one lock.
+  # Morea publishes a bounded entitlement from Seallo workspace billing (with a
+  # temporary Shopify App Pricing fallback). Intake calls this under the
+  # connection lock, after accepted receipt replay. Checking and creating the
+  # next accepted receipt therefore share one lock.
   class SealloAllowance
     def self.check!(connection)
       return unless connection.shopify_app == "seallo_connect"

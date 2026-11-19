@@ -301,10 +301,17 @@ class Store < ApplicationRecord
 
   # Older workspaces retain their existing billing policy. Self-service accounts
   # need a paid, current billing period before merchant operations are available.
+  # Cached Seallo Connect entitlement (including a sunset Shopify App Pricing
+  # fallback) can also grant access without changing invoice state.
   def operational_access?
-    return true unless subscription_required?
-    return true if store_connections.where(shopify_app: "seallo_connect", active: true).where("shopify_entitled_until > ?", Time.current).exists?
+    seallo_subscription_access? ||
+      store_connections.where(shopify_app: "seallo_connect", active: true).where("shopify_entitled_until > ?", Time.current).exists?
+  end
 
+  # Seallo-owned billing only. Does not consult Shopify App Pricing or the
+  # connection entitlement cache, so entitlement refresh can call it safely.
+  def seallo_subscription_access?
+    return true unless subscription_required?
     return true if trial_active?
 
     billing_status == "active" && billing_period_ends_on.present? && billing_period_ends_on >= Date.current

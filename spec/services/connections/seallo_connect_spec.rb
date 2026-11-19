@@ -38,8 +38,22 @@ RSpec.describe Connections::SealloConnect do
     expect(Connections::SealloBridge).to have_received(:graphql).with(shop: shop, query: Connections::ShopifyApi::VERIFY_QUERY, variables: {})
   end
 
-  it "connects the paired app's Pro 100-order trial without a billing cycle end" do
+  it "connects using the Seallo workspace plan without calling Shopify billing" do
     freeze_time do
+      store.update!(subscription_required: true, plan: "starter", billing_status: "trial",
+        trial_ends_at: 5.days.from_now, billing_period_ends_on: nil)
+      expect(Connections::SealloBridge).not_to receive(:entitlement)
+      result = connect
+      expect(result).to be_shopify_api_connected
+      expect(result).to have_attributes(shopify_plan_name: "Starter", shopify_order_limit: 300,
+        shopify_entitled_until: 15.minutes.from_now)
+      expect(ShopifyOrdersSyncJob).to have_been_enqueued.with(result.id)
+    end
+  end
+
+  it "falls back to a still-active Shopify Pro trial when Seallo billing is inactive" do
+    freeze_time do
+      store.update!(subscription_required: true, billing_status: "canceled", trial_ends_at: nil, billing_period_ends_on: 1.day.ago, plan: nil)
       allow(Connections::SealloBridge).to receive(:entitlement).and_return(
         "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => nil,
         "plan_name" => "Seallo Pro", "order_limit" => 100
@@ -86,8 +100,9 @@ RSpec.describe Connections::SealloConnect do
     end
   end
 
-  it "requires an active Shopify subscription at redemption" do
+  it "requires an active Seallo subscription (or Shopify legacy fallback) at redemption" do
     code
+    store.update!(subscription_required: true, billing_status: "canceled", trial_ends_at: nil, billing_period_ends_on: 1.day.ago, plan: nil)
     allow(Connections::SealloBridge).to receive(:entitlement).and_return("active" => false)
     expect { connect }.to raise_error(described_class::Error, "subscription_required")
     expect(store.store_connections).to be_empty

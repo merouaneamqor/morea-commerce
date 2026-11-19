@@ -56,6 +56,7 @@ Rails.application.routes.draw do
   namespace :api do
     post "seallo/connect", to: "seallo#connect"
     post "seallo/status", to: "seallo#status"
+    post "seallo/entitlement", to: "seallo#entitlement"
     post "seallo/sync", to: "seallo#sync"
     post "seallo/disconnect", to: "seallo#disconnect"
     post "woocommerce/connect", to: "woocommerce#connect"

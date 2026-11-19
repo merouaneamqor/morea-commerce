@@ -1,10 +1,10 @@
 # Public Seallo Connect app
 
-Seallo Connect is the new public Shopify app (`442094518273`). Its paired React Router service owns Shopify installation, embedded authentication, the official SDK's offline sessions and refresh tokens, Shopify App Pricing checks, and signed webhook forwarding. Morea owns workspace authorization, imports, confirmation, inventory, shipping and privacy processing. Existing standalone Shopify OAuth and legacy signed connections keep their credentials and behavior.
+Seallo Connect is the new public Shopify app (`442094518273`). Its paired React Router service owns Shopify installation, embedded authentication, the official SDK's offline sessions and refresh tokens, and signed webhook forwarding. Morea owns workspace authorization, **Seallo subscription entitlement**, imports, confirmation, inventory, shipping and privacy processing. Existing standalone Shopify OAuth and legacy signed connections keep their credentials and behavior.
 
 ## Installation and authorization
 
-The merchant installs Seallo Connect from Shopify and chooses a plan there. The app redirects the browser to `/admin/seallo/connect?shop=…&state=…&return_to=…`. A signed-in workspace administrator sees a confirmation page naming the workspace and shop. Confirming POSTs back to Morea, which mints a private 10-minute one-time code bound to that shop and redirects to `return_to` (exactly `SEALLO_APP_URL` + `/connect/callback`) with the state unchanged. Nothing is copied or pasted. The app then signs a request to Morea containing only the shop and code. Morea locks and consumes the stored digest once, rechecks the issuing user's current role/workspace/status, verifies the shop's subscription, and verifies Shopify shop identity and `read_orders` access through the app's signed read proxy.
+The merchant installs Seallo Connect from Shopify. Billing is owned by Seallo (`/abonnement` and workspace subscription pages), not Shopify App Pricing. The app redirects the browser to `/admin/seallo/connect?shop=…&state=…&return_to=…`. A signed-in workspace administrator sees a confirmation page naming the workspace and shop. Confirming POSTs back to Morea, which mints a private 10-minute one-time code bound to that shop and redirects to `return_to` (exactly `SEALLO_APP_URL` + `/connect/callback`) with the state unchanged. Nothing is copied or pasted. The app then signs a request to Morea containing only the shop and code. Morea locks and consumes the stored digest once, rechecks the issuing user's current role/workspace/status, verifies the **workspace's Seallo subscription** (with a temporary Shopify App Pricing fallback for still-active legacy contracts), and verifies Shopify shop identity and `read_orders` access through the app's signed read proxy.
 
 No submitted workspace ID selects a workspace. Each Seallo shop is globally unique in the database and stays reserved to its original workspace after disconnect. A workspace transfer needs a separately authorized support procedure; disconnect alone does not transfer ownership. Reconnecting is always safe for the owning workspace: a disconnected or active Seallo connection is reactivated and re-verified, and a retired standalone-app connection for the same shop becomes the Seallo connection, keeping its identity and receipt history but dropping the old app's credentials. A manually signed source for the same shop is a different integration and is never converted. Imported order identities and histories survive disconnect, uninstall and reconnect.
 
@@ -12,24 +12,23 @@ Server envelopes bind operation and raw JSON with HMAC-SHA256 and a five-minute 
 
 ## Billing and order allowances
 
-Use Shopify App Pricing's hosted plans, not legacy Billing API charge creation:
+Seallo owns billing. Authoritative plan names and imported-order allowances come from `config/plans.yml` via `Store#seallo_subscription_access?` and `Connections::SealloEntitlement.attributes_from_store`:
 
-| Plan | Monthly USD | Imported orders per billing cycle | Trial |
-| --- | ---: | ---: | --- |
-| Starter | 19 | Pending confirmation | 7 days |
-| Intermediate | 39 | Pending confirmation | 7 days |
-| Professionnel | 59 | Pending confirmation | 7 days |
-| Business | 129 | Unlimited | 7 days |
+| Plan key | Display name | Monthly USD | Imported orders per billing cycle |
+| --- | --- | ---: | ---: |
+| free | Gratuit | 0 | Unlimited |
+| starter | Starter | 19 | 300 |
+| intermediate | Intermediate | 39 | 800 |
+| professional | Professional | 79 | 3000 |
+| business | Business | 149 | 15000 |
 
-These are the proposed public plans. Order limits for Starter, Intermediate and Professionnel still need confirmation before billing activation. The public copy does not advertise an unconfirmed allowance.
+`POST /api/seallo/entitlement` returns the linked shop's current entitlement from the connection's workspace (or a still-valid cached Shopify-legacy period). It never trusts a browser-supplied workspace ID and never calls back into the Shopify app, so order-proxy authorization cannot loop.
 
-The existing entitlement contract still recognizes `Seallo Basic` (30), `Seallo Pro` (100) and `Seallo Premium` (unlimited), with paired-app pricing item handles `seallo-basic`, `seallo-pro`, `seallo-premium`. Do not deploy the new pricing copy as an active billing offer until this contract, the paired app and Shopify hosted plans are updated together with confirmed limits and canonical plan names/handles. Unknown plans remain rejected. Prices, terms, handles and hosted welcome links must be configured in Shopify before activation. Partner account ID is distinct from the Dev Dashboard organization ID; do not substitute one for the other.
+**Shopify App Pricing sunset / migration:** public Shopify plans were removed. Merchants with a still-active Shopify contract keep access through the paired app's `{operation:"entitlement",shop}` Partner/Admin check (`Seallo Basic` 30 / `Seallo Pro` 100 / `Seallo Premium` unlimited) until that contract ends. Do not cancel or migrate those subscriptions automatically. Once the Shopify period ends, the workspace needs an active Seallo subscription. Partner credentials remain required only for that fallback path.
 
-Existing cached allowances may remain valid for up to 15 minutes. An authoritative ACTIVE trial may have an explicit null billing-period end; its entitlement still expires after at most 15 minutes. Until Shopify supplies the cycle end, accepted imports count from its verified start without inventing a reset date. Missing or malformed required fields and unknown plan/quota combinations remain rejected. This repository does not configure Shopify prices or the paired app. Upgrades remain merchant-selected; there are no automatic tier charges.
+Morea caches a verified entitlement for at most 15 minutes and never beyond the current Seallo (or Shopify-legacy) period/trial end. The existing Shopify sync job renews entitlement before sync. Disconnect/uninstall removes this source of access. Billing-service outages fail closed and never grant access. Privacy handling remains available without a subscription.
 
-Morea caches a verified entitlement for at most 15 minutes and never beyond the current Shopify billing/trial end. Its existing ten-minute Shopify job renews that entitlement before sync, including for a subscription-gated workspace. A verified active Shopify plan grants operational access without altering manual invoice status or existing paid periods. Disconnect/uninstall removes this source of access. Cancellation can take up to the remaining cache lifetime to stop new webhook imports; authenticated app reads verify current subscription state. Privacy handling remains available without a subscription.
-
-Allowances count accepted receipts by import time in Shopify's current billing cycle. They do not count duplicate deliveries, rejections or local/manual orders. The connection lock serializes quota checks with intake. At the limit, intake returns `order_limit_reached`; it creates no order, stock movement or accepted receipt. Polling stops and retains its window/cursor, so a later upgrade or new cycle can recover pending orders instead of advancing past them. A trial with no billing cycle uses the configured seven-day window ending at Shopify's canonical trial end. Trial extensions need additional verification before use.
+Allowances count accepted receipts by import time in the current entitlement period. They do not count duplicate deliveries, rejections or local/manual orders. At the limit, intake returns `order_limit_reached`. Charging outside Shopify Billing API requires prior Shopify approval for listing compliance; that approval is an outstanding release dependency and is not attested here.
 
 ## Imports and health
 

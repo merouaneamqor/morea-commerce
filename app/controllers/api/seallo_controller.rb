@@ -19,6 +19,25 @@ module Api
       render json: connection ? present(connection) : { connected: false, state: "unlinked" }
     end
 
+    # Server-verified entitlement for a linked shop. Uses the connection's store
+    # billing (or a still-valid cached Shopify-legacy period). Does not call back
+    # into the Shopify app, so order-proxy authorization cannot loop.
+    def entitlement
+      connection = scoped_connection
+      unless connection&.active?
+        return render json: Connections::SealloEntitlement.inactive_payload, headers: { "Cache-Control" => "no-store" }
+      end
+
+      if (attributes = Connections::SealloEntitlement.attributes_from_store(connection.store))
+        connection.update!(attributes)
+      elsif !(connection.shopify_entitled_until.present? && connection.shopify_entitled_until > Time.current &&
+          connection.shopify_billing_period_start.present?)
+        return render json: Connections::SealloEntitlement.inactive_payload, headers: { "Cache-Control" => "no-store" }
+      end
+
+      render json: Connections::SealloEntitlement.present(connection.reload), headers: { "Cache-Control" => "no-store" }
+    end
+
     def sync
       connection = scoped_connection
       return render json: { error: "disconnected" }, status: :conflict unless connection&.active?

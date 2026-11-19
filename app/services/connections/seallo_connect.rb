@@ -32,7 +32,8 @@ module Connections
         connection ||= store.store_connections.new(provider: "shopify", external_domain: shop, name: "Seallo Connect · #{shop}", shopify_oauth: true, shopify_app: "seallo_connect")
         connection.active = true
         connection.save!
-        raise Error, "subscription_required" unless SealloEntitlement.refresh!(connection)
+        # Seallo Connect has no Shopify plan/allowance. Workspace platform access
+        # continues to use Store#operational_access? at sync/intake time.
         ShopifyApi.new(connection: connection).verify!
         pending.update!(consumed_at: Time.current)
       end

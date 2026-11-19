@@ -80,7 +80,7 @@ es:
       add_products: Añadir tus primeros productos
       storefront_help: Prepara tu catálogo y tu tienda antes de compartirlos con tus clientes.
       connect: Conectar una tienda existente
-      connect_help: Recibe los pedidos de Shopify, WooCommerce o YouCan. Configura el webhook firmado en tu tienda de origen.
+      connect_help: Recibe los pedidos de Shopify, WooCommerce o YouCan. Seallo Connect no tiene cargo de aplicación Shopify; la suscripción de tu espacio Seallo sigue aplicando. Configura el webhook firmado para otras fuentes.
       first_order: Recibir tu primer pedido
       first_order_help: Los pedidos llegan tras una compra o la aceptación de un envío firmado compatible. También puedes
         crear un pedido manualmente.

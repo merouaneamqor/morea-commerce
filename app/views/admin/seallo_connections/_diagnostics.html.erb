@@ -9,15 +9,15 @@
   "source_mismatch" => "The connection identity does not match. Ask the merchant to reconnect the correct shop.",
   "rate_limited" => "Shopify is rate limiting requests. Retry later.",
   "unavailable" => "The provider is unavailable. Retry later.",
-  "invalid_response" => "Seallo returned an incomplete or unsupported response. Check the deployed bridge and plan contract, then recheck the connection."
+  "invalid_response" => "Seallo returned an incomplete or unsupported response. Check the deployed bridge, then recheck the connection."
 } %>
 <div class="seallo-diagnostics">
-  <p>Review Seallo Connect across all workspaces. This page shows saved status; use a check to contact Seallo. Checks do not reconnect shops or import orders.</p>
+  <p>Review Seallo Connect across all workspaces. This page shows saved status; use a check to contact Shopify through the bridge. Checks do not reconnect shops or import orders.</p>
   <section class="panel">
-    <h3>Expected Shopify plans</h3>
+    <h3>Free Shopify integration</h3>
     <div class="panel_contents">
-      <p>Seallo Basic: 30 orders, Seallo Pro: 100 orders, Seallo Premium: unlimited. Shopify manages subscriptions and billing periods. These values are read only.</p>
-      <p>An active trial may have no billing period end. The verification cache still expires after 15 minutes. To reconnect a disconnected shop, the merchant must authorize it through Seallo Connect.</p>
+      <p>Seallo Connect has no Shopify plan, app charge, trial, or per-order Shopify allowance. Rechecks verify Shopify order access only. Morea workspace operational access remains separate.</p>
+      <p>Legacy plan and entitlement fields may still appear on older rows. They are historical and are not required for new connections. To reconnect a disconnected shop, the merchant must authorize it through Seallo Connect.</p>
     </div>
   </section>
   <%= form_with url: superadmin_seallo_connections_path, method: :get, class: "seallo-diagnostics__search" do |form| %>
@@ -34,7 +34,7 @@
       <% else %>
         <div class="seallo-diagnostics__scroll" role="region" aria-label="Seallo connections" tabindex="0">
           <table class="index_table">
-            <thead><tr><th>Workspace / shop</th><th>Saved status</th><th>Saved Shopify billing</th><th>Verification and sync</th><th>Action</th></tr></thead>
+            <thead><tr><th>Workspace / shop</th><th>Saved status</th><th>Legacy Shopify billing fields</th><th>Verification and sync</th><th>Action</th></tr></thead>
             <tbody>
             <% @connections.each do |connection| %>
               <tr>
@@ -50,11 +50,11 @@
                   <% end %>
                 </td>
                 <td>
-                  <% if Connections::SealloEntitlement::PLANS.key?(connection.shopify_plan_name) %>
+                  <% if connection.shopify_plan_name.present? %>
                     <%= connection.shopify_plan_name %><br>
-                    Order limit: <%= connection.shopify_order_limit.nil? ? "Unlimited" : connection.shopify_order_limit %>
+                    Order limit: <%= connection.shopify_order_limit.nil? ? "Unlimited / blank" : connection.shopify_order_limit %>
                   <% else %>
-                    Plan not verified
+                    None recorded (free integration)
                   <% end %>
                   <br>Period start: <%= timestamp.call(connection.shopify_billing_period_start) %>
                   <br>Period end: <%= timestamp.call(connection.shopify_billing_period_end) %>
@@ -86,7 +86,7 @@
   <section class="panel">
     <h3>Recent pending authorizations</h3>
     <div class="panel_contents">
-      <p>Up to 10 pending authorizations created in the last 24 hours, including expired links. Failed first connections may appear here before a connection exists. A check reads the shop entitlement without completing or renewing the link.</p>
+      <p>Up to 10 pending authorizations created in the last 24 hours, including expired links. Failed first connections may appear here before a connection exists. A check confirms the link is still valid without completing or consuming it.</p>
       <% if @authorizations.empty? %>
         <p>No matching pending authorizations in the last 24 hours.</p>
       <% else %>

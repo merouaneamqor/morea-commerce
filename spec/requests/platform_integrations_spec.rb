@@ -73,10 +73,7 @@ RSpec.describe "Platform integration diagnostics", type: :request do
     expect(response.body).not_to include("private-upstream-secret", "synthetic-meta-token")
   end
 
-  it "rechecks Seallo Shopify without importing orders and audits the action" do
-    allow(Connections::SealloBridge).to receive(:entitlement).with(shop: connection.external_domain).and_return(
-      "active" => true, "plan_name" => "Seallo Basic", "order_limit" => 30,
-      "current_period_start" => 1.day.ago.iso8601, "current_period_end" => nil)
+  it "rechecks Seallo Shopify without a plan refresh or importing orders and audits the action" do
     api = instance_double(Connections::ShopifyApi, verify!: true)
     allow(Connections::ShopifyApi).to receive(:new).and_return(api)
     sign_in
@@ -87,6 +84,7 @@ RSpec.describe "Platform integration diagnostics", type: :request do
     follow_redirect!
     expect(response.body).to include(I18n.t("platform_admin.integrations.outcomes.verified"))
     expect(api).to have_received(:verify!)
+    expect(Connections::SealloBridge).not_to have_received(:entitlement)
     event = AuditEvent.order(:id).last
     expect(event).to have_attributes(action: "integration.recheck", acting_as_platform: true)
     expect(event.metadata).to include("provider" => "shopify", "outcome" => "verified")

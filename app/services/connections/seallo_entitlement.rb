@@ -1,27 +1,21 @@
 module Connections
+  # Legacy Shopify App Pricing helpers. Seallo Connect no longer requires a
+  # Shopify plan, trial, or order allowance. refresh! is a no-op success for
+  # seallo_connect so older call sites and diagnostics stay safe without
+  # contacting the paired app for billing. Subscription-related columns are
+  # left in place; this does not cancel live Shopify subscriptions.
   class SealloEntitlement
-    # Shopify remains authoritative. A short cache lets signed order deliveries
-    # proceed without a network call and bounds access after a plan cancellation.
     CACHE_LIFETIME = 15.minutes
     PLANS = { "Seallo Basic" => 30, "Seallo Pro" => 100, "Seallo Premium" => nil }.freeze
 
     def self.refresh!(connection)
       return unless connection.shopify_app == "seallo_connect"
 
-      data = SealloBridge.entitlement(shop: connection.external_domain)
-      connection.with_lock do
-        attributes = attributes_for(data)
-        unless attributes
-          connection.update!(shopify_entitled_until: nil)
-          return false
-        end
-        connection.update!(attributes)
-      end
       true
     end
 
-    # Share strict billing validation with read-only platform diagnostics.
-    # Parsing never creates a connection or authorizes a workspace.
+    # Kept for specs/diagnostics that still parse historical Partner payloads.
+    # New access paths must not require a Shopify plan.
     def self.attributes_for(data, now: Time.current)
       raise SealloBridge::Error, "invalid_response" unless data.is_a?(Hash)
       return unless data["active"] == true

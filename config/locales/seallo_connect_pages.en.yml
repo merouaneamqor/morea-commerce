@@ -15,7 +15,7 @@ en:
     footer:
       registration: "Registration: %{number}"
       age_note: "Seallo Connect is intended for business users aged 18 or older."
-      pricing_note: "Plan prices are shown on the pricing page and billed by Shopify. There are no hidden app fees beyond your chosen plan."
+      pricing_note: "Seallo Connect has no Shopify app charge. Your Seallo workspace may still need an active Seallo subscription to use the platform."
     contact:
       heading: "Contact"
       with_email: "For support, privacy questions or data requests, email"
@@ -31,9 +31,8 @@ en:
         - heading: "How to connect"
           items:
             - "Install Seallo Connect from the Shopify App Store and approve the requested access."
-            - "Choose a plan on Shopify's pricing page."
-            - "In your Seallo workspace, open the Seallo connection page and generate a one-time connection code. Only someone authorised in that workspace can do this."
-            - "Paste the code in the app inside your Shopify admin within 10 minutes."
+            - "In the app, choose Connect with Seallo. There is no Shopify plan to pick."
+            - "Sign in to Seallo, confirm the workspace for this shop, and return to Shopify. Nothing is copied or pasted."
         - heading: "Which orders are imported"
           body:
             - "Unpaid, unfulfilled cash-on-delivery orders in MAD, shipping to Morocco, without tax or discounts. Webhooks deliver new orders, and a catch-up sync recovers any that were missed. The same order is never imported twice. Other orders are not imported and appear as rejected, with a reason, in Seallo."
@@ -41,34 +40,30 @@ en:
           items:
             - "It does not change orders, products, customers or inventory in Shopify."
             - "It does not read customer email addresses or payment details."
-        - heading: "Plans"
+        - heading: "Pricing"
           body:
-            - "Plans are managed through Shopify: Starter is $19 per month, Intermediate is $39 per month, Professionnel is $59 per month, and Business is $129 per month with unlimited imported orders. Current prices are shown on Shopify's pricing page. Replayed and rejected orders do not use your allowance, and imports that reach the limit resume after you upgrade."
+            - "Seallo Connect itself is free on Shopify: no app charge, trial, or Shopify order quota. Your Seallo workspace may still need an active Seallo subscription to use confirmation, stock and shipping tools."
         - heading: "Disconnecting"
           body:
             - "You can disconnect from the app or uninstall it from Shopify at any time. Importing stops and the connection credentials are removed. Orders already imported remain in your workspace."
     pricing:
       title: "Pricing"
-      summary: "Simple paid monthly plans managed through Shopify."
+      summary: "Seallo Connect is free on Shopify. Seallo workspace billing stays separate."
       sections:
-        - heading: "Seallo Starter: $19 per month"
-        - heading: "Seallo Intermediate: $39 per month"
-        - heading: "Seallo Professionnel: $59 per month"
-        - heading: "Seallo Business: $129 per month"
+        - heading: "No Shopify app charge"
           body:
-            - "Unlimited imported orders."
-        - heading: "What every plan includes"
+            - "Seallo Connect has no separate Shopify subscription, app charge, trial, or Shopify per-order allowance. Connecting your store does not add a Seallo line item on your Shopify invoice for this integration."
+        - heading: "What the free integration includes"
           items:
-            - "A 7-day free trial on paid plans."
             - "Automatic import of eligible cash-on-delivery orders, plus a catch-up sync for any that were missed."
-            - "Order confirmation, stock and delivery tools in your connected Seallo workspace, with no second purchase needed for this connection."
-            - "Read-only access to your Shopify orders."
-        - heading: "How the order allowance works"
+            - "Read-only access to your Shopify orders for that import path."
+            - "No Shopify order quota for Seallo Connect itself."
+        - heading: "Seallo workspace subscription"
           body:
-            - "Only orders that are successfully imported count toward your allowance. Orders that are rejected, or that were already imported, do not. When you reach your limit, importing pauses until the next billing cycle or until you upgrade, and nothing already imported is removed."
-        - heading: "Billing"
+            - "Confirmation, stock and delivery tools live in your Seallo workspace. That workspace may still need an active Seallo subscription under Morea's existing access rules. Workspace billing is managed in Seallo, not as a Shopify App Pricing plan for this app."
+        - heading: "Leftover Shopify subscriptions"
           body:
-            - "Prices are in US dollars and billed monthly by Shopify, and charges appear on your Shopify invoice. Choose, change or cancel your plan from the app in your Shopify admin. Development stores are not charged. Shopify's pricing page always shows the current price."
+            - "If you previously subscribed to a removed Shopify plan for this app, Shopify may still show that subscription. Cancelling it is a separate action in Shopify billing and is not done by this documentation."
     privacy:
       title: "Privacy policy"
       summary: "How Seallo handles Shopify order data and Meta Ads data for merchants."
@@ -83,7 +78,7 @@ en:
           items:
             - "Buyer contact details from the order: shipping name, phone number and delivery address (street, city, country)."
             - "Order details: order number, date, currency, amounts, items, quantities, payment and fulfilment status."
-            - "Shop identity: the store's myshopify.com domain, and the app's installation and subscription status."
+            - "Shop identity: the store's myshopify.com domain, and the app's installation status."
         - heading: "Shopify data we do not access"
           body:
             - "We do not read buyer email addresses, payment card details, customer accounts or marketing data. The app does not request customer-directory or product permissions, and does not write to your Shopify store."
@@ -131,7 +126,7 @@ en:
             - "You must be authorised to install apps on the Shopify store and to connect it to the Seallo workspace you choose. A store can be linked to one workspace at a time. Keep your connection codes private. They are single-use and expire."
         - heading: "Subscription and billing"
           body:
-            - "Seallo Connect is offered through Shopify-managed paid plans, with a trial period on paid plans. Billing, plan changes and cancellation are handled by Shopify under its terms. Each plan includes a number of imported orders per billing cycle. When it is reached, importing pauses until the next cycle or until you upgrade. Orders already imported are preserved."
+            - "Seallo Connect has no Shopify app charge or Shopify order quota. Your Seallo workspace may still need an active Seallo subscription to use the platform. Workspace billing is managed in Seallo under its own terms."
         - heading: "Your responsibilities"
           items:
             - "Use the service lawfully and only for your own store's orders."
@@ -168,23 +163,20 @@ en:
             - "Where the banner appears, use Accept or Reject measurement. Necessary cookies still work if you reject. You can clear site cookies in your browser at any time."
     refunds:
       title: "Refunds and cancellations"
-      summary: "How billing, cancellations and refunds work for Seallo Connect plans."
+      summary: "How billing and cancellations work now that Seallo Connect has no Shopify app charge."
       sections:
         - heading: "Who bills you"
           body:
-            - "Seallo Connect plans are sold and billed by Shopify on your Shopify invoice. Charges appear in US dollars under Shopify’s billing terms."
+            - "Seallo Connect itself does not charge through Shopify App Pricing. If you pay for a Seallo workspace subscription, that billing is handled in Seallo, not as a Shopify charge for this app."
         - heading: "Cancelling"
           body:
-            - "Change or cancel your plan from the Seallo Connect app in your Shopify admin. Cancelling stops future charges at the end of the current Shopify billing period for that subscription. Orders already imported stay in your Seallo workspace."
+            - "Disconnect or uninstall Seallo Connect from Shopify at any time. Importing stops. Orders already imported stay in your Seallo workspace. Cancel a leftover Shopify subscription for a removed plan from Shopify billing if one still appears."
         - heading: "Refunds"
           body:
-            - "Refunds for Shopify app charges follow Shopify’s refund policies and processes. Contact Shopify billing support for charge disputes on your Shopify invoice. For questions about the Seallo Connect service itself, use the contact details on these pages or the data-rights form."
-        - heading: "Trials"
-          body:
-            - "Paid plans include a 7-day free trial where Shopify offers it. Development stores are not charged."
+            - "There is no current Shopify app charge for Seallo Connect. Refunds for any historical Shopify app charges follow Shopify’s refund policies. For Seallo workspace billing questions, use the contact details on these pages or your Seallo workspace."
         - heading: "No hidden fees"
           body:
-            - "There are no additional Seallo Connect fees beyond the plan price shown on the pricing page and charged by Shopify. Carrier, Shopify or other third-party fees are separate."
+            - "Seallo Connect adds no Shopify app fee. Carrier, Shopify store, or Seallo workspace subscription fees are separate."
     privacy_rights:
       title: "Your data rights"
       summary: "Request access, correction, objection, deletion or a marketing opt-out related to Seallo Connect or the platform operator."

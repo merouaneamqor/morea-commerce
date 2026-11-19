@@ -99,9 +99,10 @@ en:
         needs_reauthorization: "Needs reauthorization"
       outcomes:
         verified: "Connection verified."
-        entitlement_verified: "Plan verified. The merchant can retry connecting from Seallo Connect."
+        entitlement_verified: "Authorization is ready. The merchant can retry connecting from Seallo Connect."
+        link_ready: "Authorization is still valid. The merchant can connect from Seallo Connect without a Shopify plan."
         disconnected: "This connection is disconnected. The merchant must reconnect."
-        not_entitled: "No active plan was returned. Check the plan before retrying."
+        not_entitled: "Seallo Connect no longer requires a Shopify plan. Ask the merchant to retry connecting from the app."
         unsupported: "This integration cannot be rechecked here."
         unsupported_connection: "Only Seallo Connect Shopify connections use the Shopify recheck."
         credentials_missing: "Stored credentials are missing. Ask the merchant to reconnect."

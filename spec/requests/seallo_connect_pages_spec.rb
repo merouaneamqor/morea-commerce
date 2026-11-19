@@ -93,15 +93,14 @@ RSpec.describe "Seallo Connect public pages", type: :request do
     expect(response).to redirect_to(%r{/seallo-connect/privacy-rights})
   end
 
-  it "publishes the four plans, unlimited Business imports and the trial" do
+  it "publishes free Shopify integration pricing and keeps workspace billing separate" do
     get "/seallo-connect/pricing", params: { locale: "en" }
 
-    expect(response.body).to include("Seallo Starter: $19 per month")
-    expect(response.body).to include("Seallo Intermediate: $39 per month")
-    expect(response.body).to include("Seallo Professionnel: $59 per month")
-    expect(response.body).to include("Seallo Business: $129 per month")
-    expect(response.body).to include("Unlimited imported orders")
-    expect(response.body).to include("7-day free trial on paid plans")
+    expect(response.body).to include("No Shopify app charge")
+    expect(response.body).to include("no separate Shopify subscription")
+    expect(response.body).to include("Seallo workspace subscription")
+    expect(response.body).not_to include("Seallo Starter: $19 per month")
+    expect(response.body).not_to include("7-day free trial on paid plans")
   end
 
   it "links the pricing page from every page's navigation" do

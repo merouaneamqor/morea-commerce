@@ -15,7 +15,7 @@ fr:
     footer:
       registration: "Immatriculation : %{number}"
       age_note: "Seallo Connect s’adresse aux utilisateurs professionnels de 18 ans ou plus."
-      pricing_note: "Les tarifs des offres figurent sur la page Tarifs et sont facturés par Shopify. Aucun frais d’application caché au-delà de l’offre choisie."
+      pricing_note: "Seallo Connect n’a aucun frais d’application Shopify. Votre espace Seallo peut toujours nécessiter un abonnement Seallo actif pour utiliser la plateforme."
     contact:
       heading: "Contact"
       with_email: "Pour toute demande d'assistance, question sur la confidentialité ou demande relative aux données, écrivez à"
@@ -31,9 +31,8 @@ fr:
         - heading: "Comment la connecter"
           items:
             - "Installez Seallo Connect depuis le Shopify App Store et acceptez les accès demandés."
-            - "Choisissez une offre sur la page de tarifs de Shopify."
-            - "Dans votre espace Seallo, ouvrez la page de connexion Seallo et générez un code de connexion à usage unique. Seule une personne autorisée dans cet espace peut le faire."
-            - "Collez le code dans l'application, depuis votre administration Shopify, dans les 10 minutes."
+            - "Dans l’application, choisissez Connect with Seallo. Aucune offre Shopify n’est à sélectionner."
+            - "Connectez-vous à Seallo, confirmez l’espace pour cette boutique, puis revenez sur Shopify. Rien à copier ni coller."
         - heading: "Commandes importées"
           body:
             - "Commandes avec paiement à la livraison, non payées et non expédiées, en MAD, livrées au Maroc, sans taxe ni remise. Des webhooks transmettent les nouvelles commandes et une synchronisation de rattrapage récupère celles qui auraient été manquées. Une même commande n'est jamais importée deux fois. Les autres commandes ne sont pas importées et apparaissent dans Seallo comme rejetées, avec le motif."
@@ -41,34 +40,30 @@ fr:
           items:
             - "Elle ne modifie ni les commandes, ni les produits, ni les clients, ni le stock dans Shopify."
             - "Elle ne lit ni les adresses e-mail des clients ni les moyens de paiement."
-        - heading: "Offres"
+        - heading: "Tarifs"
           body:
-            - "Les offres sont gérées par Shopify : Starter coûte 19 $ par mois, Intermediate coûte 39 $ par mois, Professionnel coûte 59 $ par mois et Business coûte 129 $ par mois, avec des commandes importées illimitées. Les prix en vigueur sont affichés sur la page de tarifs de Shopify. Les commandes rejouées ou rejetées ne consomment pas votre quota, et les imports bloqués à la limite reprennent après le passage à une offre supérieure."
+            - "Seallo Connect est gratuit sur Shopify : pas de frais d’application, d’essai ni de quota de commandes Shopify. Votre espace Seallo peut toujours nécessiter un abonnement Seallo actif pour la confirmation, le stock et la livraison."
         - heading: "Déconnexion"
           body:
             - "Vous pouvez vous déconnecter depuis l'application ou la désinstaller depuis Shopify à tout moment. L'import s'arrête et les identifiants de connexion sont supprimés. Les commandes déjà importées restent dans votre espace."
     pricing:
       title: "Tarifs"
-      summary: "Des offres mensuelles payantes simples, gérées via Shopify."
+      summary: "Seallo Connect est gratuit sur Shopify. La facturation de l’espace Seallo reste séparée."
       sections:
-        - heading: "Seallo Starter : 19 $ par mois"
-        - heading: "Seallo Intermediate : 39 $ par mois"
-        - heading: "Seallo Professionnel : 59 $ par mois"
-        - heading: "Seallo Business : 129 $ par mois"
+        - heading: "Aucun frais d’application Shopify"
           body:
-            - "Commandes importées illimitées."
-        - heading: "Inclus dans chaque offre"
+            - "Seallo Connect n’a ni abonnement Shopify séparé, ni frais d’application, ni essai, ni quota de commandes Shopify. Relier votre boutique n’ajoute pas de ligne Seallo sur votre facture Shopify pour cette intégration."
+        - heading: "Ce que comprend l’intégration gratuite"
           items:
-            - "7 jours d'essai gratuit pour les offres payantes."
-            - "Import automatique des commandes éligibles avec paiement à la livraison, et synchronisation de rattrapage pour celles qui auraient été manquées."
-            - "Outils de confirmation, de stock et de livraison dans votre espace Seallo connecté, sans second achat nécessaire pour cette connexion."
-            - "Accès en lecture seule à vos commandes Shopify."
-        - heading: "Fonctionnement du quota de commandes"
+            - "Import automatique des commandes éligibles avec paiement à la livraison, et synchronisation de rattrapage."
+            - "Accès en lecture seule à vos commandes Shopify pour cet import."
+            - "Aucun quota de commandes Shopify pour Seallo Connect."
+        - heading: "Abonnement de l’espace Seallo"
           body:
-            - "Seules les commandes importées avec succès comptent dans votre quota. Les commandes rejetées ou déjà importées n'en consomment pas. Lorsque la limite est atteinte, l'import est suspendu jusqu'au prochain cycle de facturation ou jusqu'au passage à une offre supérieure, et rien de ce qui a déjà été importé n'est supprimé."
-        - heading: "Facturation"
+            - "La confirmation, le stock et la livraison restent dans votre espace Seallo. Cet espace peut toujours nécessiter un abonnement Seallo actif selon les règles Morea. Cette facturation se gère dans Seallo, pas comme une offre Shopify App Pricing pour cette application."
+        - heading: "Abonnements Shopify restants"
           body:
-            - "Les prix sont en dollars américains et facturés chaque mois par Shopify ; les frais apparaissent sur votre facture Shopify. Choisissez, modifiez ou annulez votre offre depuis l'application dans votre administration Shopify. Les boutiques de développement ne sont pas facturées. La page de tarifs de Shopify affiche toujours le prix en vigueur."
+            - "Si vous étiez abonné à une offre Shopify retirée pour cette application, Shopify peut encore l’afficher. L’annulation se fait séparément dans la facturation Shopify."
     privacy:
       title: "Politique de confidentialité"
       summary: "Comment Seallo traite les données de commandes Shopify et les données Meta Ads pour les marchands."
@@ -83,7 +78,7 @@ fr:
           items:
             - "Les coordonnées de l'acheteur figurant sur la commande : nom de livraison, numéro de téléphone et adresse de livraison (rue, ville, pays)."
             - "Les informations de la commande : numéro, date, devise, montants, articles, quantités, statuts de paiement et d'exécution."
-            - "L'identité de la boutique : son domaine myshopify.com, ainsi que l'état d'installation et d'abonnement de l'application."
+            - "L'identité de la boutique : son domaine myshopify.com, ainsi que l'état d'installation de l'application."
         - heading: "Données Shopify auxquelles nous n'accédons pas"
           body:
             - "Nous ne lisons ni les adresses e-mail des acheteurs, ni les cartes de paiement, ni les comptes clients, ni les données marketing. L'application ne demande aucune autorisation sur le répertoire clients ou les produits et n'écrit rien dans votre boutique Shopify."
@@ -131,7 +126,7 @@ fr:
             - "Vous devez être autorisé à installer des applications sur la boutique Shopify et à la connecter à l'espace Seallo choisi. Une boutique ne peut être liée qu'à un seul espace à la fois. Gardez vos codes de connexion confidentiels : ils sont à usage unique et expirent."
         - heading: "Abonnement et facturation"
           body:
-            - "Seallo Connect est proposé via des offres payantes gérées par Shopify, avec une période d'essai pour les offres payantes. La facturation, les changements d'offre et la résiliation sont gérés par Shopify selon ses conditions. Chaque offre inclut un nombre de commandes importées par cycle de facturation. Une fois atteint, l'import est suspendu jusqu'au cycle suivant ou jusqu'au passage à une offre supérieure. Les commandes déjà importées sont conservées."
+            - "Seallo Connect n'a aucun frais d'application Shopify ni quota de commandes Shopify. Votre espace Seallo peut toujours nécessiter un abonnement Seallo actif pour utiliser la plateforme. La facturation de l'espace se gère dans Seallo selon ses propres conditions."
         - heading: "Vos responsabilités"
           items:
             - "Utiliser le service de façon licite et uniquement pour les commandes de votre propre boutique."
@@ -167,23 +162,20 @@ fr:
             - "Utilisez Accepter ou Refuser la mesure sur le bandeau. Les cookies nécessaires fonctionnent toujours si vous refusez. Vous pouvez effacer les cookies du site dans votre navigateur à tout moment."
     refunds:
       title: "Remboursements et résiliations"
-      summary: "Facturation, résiliation et remboursements des offres Seallo Connect."
+      summary: "Facturation et résiliation maintenant que Seallo Connect n'a aucun frais d'application Shopify."
       sections:
         - heading: "Qui facture"
           body:
-            - "Les offres Seallo Connect sont vendues et facturées par Shopify sur votre facture Shopify. Les montants apparaissent en dollars américains selon les conditions de facturation de Shopify."
+            - "Seallo Connect ne facture pas via Shopify App Pricing. Si vous payez un abonnement d'espace Seallo, cette facturation se gère dans Seallo, pas comme un frais Shopify pour cette application."
         - heading: "Résiliation"
           body:
-            - "Changez ou résiliez votre offre depuis l’application Seallo Connect dans l’admin Shopify. La résiliation arrête les prélèvements futurs à la fin de la période de facturation Shopify en cours pour cet abonnement. Les commandes déjà importées restent dans votre espace Seallo."
+            - "Déconnectez ou désinstallez Seallo Connect depuis Shopify à tout moment. L'import s'arrête. Les commandes déjà importées restent dans votre espace Seallo. Annulez un abonnement Shopify restant pour une offre retirée depuis la facturation Shopify s'il apparaît encore."
         - heading: "Remboursements"
           body:
-            - "Les remboursements des frais d’application Shopify suivent les politiques et procédures de remboursement de Shopify. Contactez le support facturation Shopify pour contester un prélèvement sur votre facture Shopify. Pour des questions sur le service Seallo Connect lui-même, utilisez les coordonnées de ces pages ou le formulaire de droits."
-        - heading: "Essais"
-          body:
-            - "Les offres payantes incluent un essai gratuit de 7 jours lorsque Shopify le propose. Les boutiques de développement ne sont pas facturées."
+            - "Il n'y a pas de frais d'application Shopify actuel pour Seallo Connect. Les remboursements d'éventuels frais Shopify historiques suivent les politiques de Shopify. Pour la facturation de l'espace Seallo, utilisez les coordonnées de ces pages ou votre espace Seallo."
         - heading: "Aucun frais caché"
           body:
-            - "Il n’y a pas de frais Seallo Connect supplémentaires au-delà du prix de l’offre affiché sur la page Tarifs et prélevé par Shopify. Les frais transporteur, Shopify ou autres tiers sont distincts."
+            - "Seallo Connect n'ajoute aucun frais d'application Shopify. Les frais transporteur, boutique Shopify ou abonnement d'espace Seallo sont distincts."
     privacy_rights:
       title: "Vos droits"
       summary: "Demandez l’accès, la correction, l’opposition, la suppression ou un opt-out marketing liés à Seallo Connect ou à l’opérateur de la plateforme."

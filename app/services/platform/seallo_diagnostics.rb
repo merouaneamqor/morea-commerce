@@ -5,9 +5,8 @@ module Platform
   class SealloDiagnostics
     MESSAGES = {
       "verified" => "The connection and Shopify order access are verified.",
-      "entitlement_verified" => "Shopify returned a valid plan. The merchant can retry connecting from Seallo Connect.",
+      "link_ready" => "The authorization is still valid. The merchant can connect from Seallo Connect without a Shopify plan.",
       "disconnected" => "This connection is disconnected. The merchant must approve reconnection in Shopify through Seallo Connect.",
-      "not_entitled" => "No active Shopify plan was returned. Check the plan in Seallo Connect before retrying.",
       "authorization_expired" => "This authorization link expired. The merchant must start a new connection from Seallo Connect.",
       "authorization_consumed" => "This authorization link was already used. Check the existing connection instead.",
       "unsupported_connection" => "Only Seallo Connect Shopify connections can be checked here.",
@@ -19,12 +18,12 @@ module Platform
       "source_mismatch" => "The stored Shopify identity could not be verified. Check the store in Seallo Connect.",
       "rate_limited" => "Shopify or Seallo temporarily limited requests. Retry later.",
       "unavailable" => "Shopify or Seallo could not be reached. Retry later.",
-      "invalid_response" => "Seallo returned an incomplete or unsupported response. Check the deployed bridge and plan contract, then retry."
+      "invalid_response" => "Seallo returned an incomplete or unsupported response. Check the deployed bridge, then retry."
     }.freeze
 
     Result = Struct.new(:code, :plan_name, :order_limit, :period_end, keyword_init: true) do
       def success?
-        %w[verified entitlement_verified].include?(code)
+        %w[verified link_ready].include?(code)
       end
 
       def message
@@ -45,11 +44,9 @@ module Platform
         return result("unsupported_connection")
       end
       return result("disconnected") unless connection.active?
-      return result("not_entitled") unless Connections::SealloEntitlement.refresh!(connection)
 
       Connections::ShopifyApi.new(connection: connection).verify!
-      result("verified", plan_name: connection.shopify_plan_name, order_limit: connection.shopify_order_limit,
-        period_end: connection.shopify_billing_period_end)
+      result("verified")
     rescue Connections::SealloBridge::Error => error
       result(safe_code(error.message))
     rescue Connections::ShopifyApi::Error => error
@@ -66,13 +63,8 @@ module Platform
       domain = authorization.shop_domain.to_s
       return result("source_mismatch") unless domain.bytesize <= 253 && domain.match?(/\A[a-z0-9][a-z0-9-]*\.myshopify\.com\z/)
 
-      attributes = Connections::SealloEntitlement.attributes_for(Connections::SealloBridge.entitlement(shop: domain))
-      return result("not_entitled") unless attributes
-
-      result("entitlement_verified", plan_name: attributes.fetch(:shopify_plan_name),
-        order_limit: attributes.fetch(:shopify_order_limit), period_end: attributes.fetch(:shopify_billing_period_end))
-    rescue Connections::SealloBridge::Error => error
-      result(safe_code(error.message))
+      # Free integration: a valid pending authorization is enough to retry connect.
+      result("link_ready")
     end
 
     private

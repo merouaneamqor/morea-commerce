@@ -98,9 +98,10 @@ fr:
         needs_reauthorization: "Réautorisation requise"
       outcomes:
         verified: "Connexion vérifiée."
-        entitlement_verified: "Offre vérifiée. Le marchand peut réessayer depuis Seallo Connect."
+        entitlement_verified: "Autorisation prête. Le marchand peut réessayer depuis Seallo Connect."
+        link_ready: "L’autorisation est encore valide. Le marchand peut se connecter depuis Seallo Connect sans offre Shopify."
         disconnected: "Cette connexion est déconnectée. Le marchand doit se reconnecter."
-        not_entitled: "Aucune offre active n'a été renvoyée. Vérifiez l'offre avant de réessayer."
+        not_entitled: "Seallo Connect n’exige plus d’offre Shopify. Demandez au marchand de réessayer depuis l’application."
         unsupported: "Cette intégration ne peut pas être revérifiée ici."
         unsupported_connection: "Seul Shopify via Seallo Connect utilise cette vérification Shopify."
         credentials_missing: "Identifiants manquants. Demandez au marchand de se reconnecter."

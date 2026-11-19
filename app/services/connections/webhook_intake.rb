@@ -75,7 +75,6 @@ module Connections
       raise Error, "invalid_external_id" unless external_id.match?(/\A[a-zA-Z0-9_-]{1,255}\z/)
       receipt = @connection.external_order_receipts.find_or_initialize_by(external_id: external_id)
       return Result.new(receipt: receipt, replayed: true) if receipt.persisted? && receipt.status == "accepted"
-      SealloAllowance.check!(@connection)
 
       begin
         attrs = OrderNormalizer.new(@connection).call(payload)

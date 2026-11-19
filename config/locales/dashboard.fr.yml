@@ -80,7 +80,7 @@ fr:
       add_products: "Ajouter vos premiers produits"
       storefront_help: "Préparez votre catalogue et votre boutique avant de les partager avec vos clients."
       connect: "Connecter une boutique existante"
-      connect_help: "Recevez les commandes Shopify, WooCommerce ou YouCan. Configurez le webhook signé dans votre boutique source."
+      connect_help: "Recevez les commandes Shopify, WooCommerce ou YouCan. Seallo Connect n'impose ni frais Shopify distincts ni quota de commandes Shopify. L'abonnement de votre espace Seallo reste requis. Configurez le webhook signé pour les autres sources."
       first_order: "Recevoir votre première commande"
       first_order_help: "Les commandes arrivent après un achat ou l'acceptation d'un envoi signé pris en charge. Vous pouvez aussi créer une commande manuellement."
       optional_storefront: "La boutique Seallo est facultative. Vous pourrez l'activer plus tard."

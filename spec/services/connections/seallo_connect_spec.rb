@@ -15,10 +15,7 @@ RSpec.describe Connections::SealloConnect do
 
   before do
     allow(Connections::SealloBridge).to receive(:graphql).and_return(verification)
-    allow(Connections::SealloBridge).to receive(:entitlement).and_return(
-      "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601,
-      "plan_name" => "Seallo Basic", "order_limit" => 30
-    )
+    allow(Connections::SealloBridge).to receive(:request).and_raise("Unexpected Shopify billing call")
   end
 
   def connect
@@ -38,18 +35,12 @@ RSpec.describe Connections::SealloConnect do
     expect(Connections::SealloBridge).to have_received(:graphql).with(shop: shop, query: Connections::ShopifyApi::VERIFY_QUERY, variables: {})
   end
 
-  it "connects the paired app's Pro 100-order trial without a billing cycle end" do
-    freeze_time do
-      allow(Connections::SealloBridge).to receive(:entitlement).and_return(
-        "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => nil,
-        "plan_name" => "Seallo Pro", "order_limit" => 100
-      )
-      result = connect
-      expect(result).to be_shopify_api_connected
-      expect(result).to have_attributes(shopify_plan_name: "Seallo Pro", shopify_order_limit: 100,
-        shopify_billing_period_end: nil, shopify_entitled_until: 15.minutes.from_now)
-      expect(ShopifyOrdersSyncJob).to have_been_enqueued.with(result.id)
-    end
+  it "connects without a Shopify plan or entitlement refresh" do
+    expect(Connections::SealloBridge).not_to receive(:request)
+    result = connect
+    expect(result).to be_shopify_api_connected
+    expect(result.shopify_entitled_until).to be_nil
+    expect(ShopifyOrdersSyncJob).to have_been_enqueued.with(result.id)
   end
 
   it "rejects replay without queuing another import" do
@@ -86,11 +77,10 @@ RSpec.describe Connections::SealloConnect do
     end
   end
 
-  it "requires an active Shopify subscription at redemption" do
+  it "does not require a Shopify subscription at redemption" do
     code
-    allow(Connections::SealloBridge).to receive(:entitlement).and_return("active" => false)
-    expect { connect }.to raise_error(described_class::Error, "subscription_required")
-    expect(store.store_connections).to be_empty
+    expect { connect }.not_to raise_error
+    expect(store.store_connections.find_by!(external_domain: shop)).to be_shopify_api_connected
   end
 
   it "rolls back the connection and preserves the code when identity verification fails" do
@@ -190,10 +180,6 @@ RSpec.describe "Concurrent Seallo workspace linking" do
     @shop = "race-#{@suffix}.myshopify.com"
     allow(Connections::SealloBridge).to receive(:graphql).and_return(
       "shop" => { "myshopifyDomain" => @shop }, "currentAppInstallation" => { "accessScopes" => [ { "handle" => "read_orders" } ] }
-    )
-    allow(Connections::SealloBridge).to receive(:entitlement).and_return(
-      "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601,
-      "plan_name" => "Seallo Basic", "order_limit" => 30
     )
   end
 

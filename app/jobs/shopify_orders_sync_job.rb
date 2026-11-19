@@ -10,17 +10,7 @@ class ShopifyOrdersSyncJob < ApplicationJob
     scope = StoreConnection.where(provider: "shopify", active: true, shopify_oauth: true)
     scope = scope.where(id: connection_id) if connection_id
     scope.find_each do |connection|
-      if connection.shopify_app == "seallo_connect"
-        begin
-          unless Connections::SealloEntitlement.refresh!(connection)
-            connection.update!(shopify_sync_state: "failed", shopify_sync_error: "subscription_required")
-            next
-          end
-        rescue Connections::SealloBridge::Error => error
-          connection.update!(shopify_sync_state: "failed", shopify_sync_error: error.message)
-          next
-        end
-      end
+      # Seallo Connect has no Shopify plan refresh. Workspace access still applies.
       next unless connection.store.operational_access?
 
       # Commit the start marker before the long-running import transaction so

@@ -22,7 +22,7 @@ RSpec.describe "Platform integration diagnostics", type: :request do
 
   before do
     host! Store.base_domain
-    allow(Connections::SealloBridge).to receive(:entitlement).and_raise("Unexpected provider request")
+    allow(Connections::SealloBridge).to receive(:request).and_raise("Unexpected provider request")
     allow(Connections::SealloBridge).to receive(:graphql).and_raise("Unexpected provider request")
   end
 
@@ -48,7 +48,7 @@ RSpec.describe "Platform integration diagnostics", type: :request do
     expect(response).to redirect_to(admin_root_path)
     post "#{show_path}/recheck", params: { kind: "store_connection", connection_id: connection.id, provider: "shopify" }
     expect(response).to redirect_to(admin_root_path)
-    expect(Connections::SealloBridge).not_to have_received(:entitlement)
+    expect(Connections::SealloBridge).not_to have_received(:request)
   end
 
   it "lists failing and connected workspaces without contacting providers or exposing secrets" do
@@ -57,7 +57,7 @@ RSpec.describe "Platform integration diagnostics", type: :request do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include(store.name, connection.external_domain)
     expect(response.body).not_to include("private-upstream-secret", "synthetic-meta-token", "synthetic-woo-signing-secret")
-    expect(Connections::SealloBridge).not_to have_received(:entitlement)
+    expect(Connections::SealloBridge).not_to have_received(:request)
     expect(Connections::SealloBridge).not_to have_received(:graphql)
   end
 
@@ -73,10 +73,7 @@ RSpec.describe "Platform integration diagnostics", type: :request do
     expect(response.body).not_to include("private-upstream-secret", "synthetic-meta-token")
   end
 
-  it "rechecks Seallo Shopify without importing orders and audits the action" do
-    allow(Connections::SealloBridge).to receive(:entitlement).with(shop: connection.external_domain).and_return(
-      "active" => true, "plan_name" => "Seallo Basic", "order_limit" => 30,
-      "current_period_start" => 1.day.ago.iso8601, "current_period_end" => nil)
+  it "rechecks Seallo Shopify without a plan refresh or importing orders and audits the action" do
     api = instance_double(Connections::ShopifyApi, verify!: true)
     allow(Connections::ShopifyApi).to receive(:new).and_return(api)
     sign_in
@@ -87,6 +84,7 @@ RSpec.describe "Platform integration diagnostics", type: :request do
     follow_redirect!
     expect(response.body).to include(I18n.t("platform_admin.integrations.outcomes.verified"))
     expect(api).to have_received(:verify!)
+    expect(Connections::SealloBridge).not_to have_received(:request)
     event = AuditEvent.order(:id).last
     expect(event).to have_attributes(action: "integration.recheck", acting_as_platform: true)
     expect(event.metadata).to include("provider" => "shopify", "outcome" => "verified")
@@ -100,7 +98,7 @@ RSpec.describe "Platform integration diagnostics", type: :request do
     follow_redirect!
     expect(response.body).to include(I18n.t("platform_admin.integrations.outcomes.disconnected"))
     expect(connection.reload).not_to be_active
-    expect(Connections::SealloBridge).not_to have_received(:entitlement)
+    expect(Connections::SealloBridge).not_to have_received(:request)
   end
 
   it "refreshes WooCommerce local verified state without provider imports" do

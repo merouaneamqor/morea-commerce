@@ -20,10 +20,7 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
     allow(ENV).to receive(:[]).and_call_original
     allow(ENV).to receive(:[]).with("SEALLO_BRIDGE_SECRET").and_return(secret)
     allow(ENV).to receive(:[]).with("SEALLO_APP_URL").and_return(app_url)
-    allow(Connections::SealloBridge).to receive(:entitlement).and_return(
-      "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601,
-      "plan_name" => "Seallo Basic", "order_limit" => 30
-    )
+    allow(Connections::SealloBridge).to receive(:request).and_raise("Unexpected Shopify billing call")
     host! Store.base_domain
   end
 
@@ -200,19 +197,15 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
     expect(response.body).not_to include(code, "shopify_access_token", "shopify_refresh_token", secret)
   end
 
-  it "completes a signed Pro trial connection with the paired app's 100-order entitlement" do
+  it "completes a signed connection without a Shopify plan entitlement" do
     code = SealloConnectionCode.issue!(store: store, user: staff)
-    allow(Connections::SealloBridge).to receive(:entitlement).and_return(
-      "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => nil,
-      "plan_name" => "Seallo Pro", "order_limit" => 100
-    )
     allow(Connections::SealloBridge).to receive(:graphql).and_return(
       "shop" => { "myshopifyDomain" => shop }, "currentAppInstallation" => { "accessScopes" => [ { "handle" => "read_orders" } ] }
     )
     signed_post("connect", { code: code, shop: shop })
     expect(response).to have_http_status(:ok)
-    expect(response.parsed_body).to include("connected" => true, "state" => "verified", "plan_name" => "Seallo Pro", "order_limit" => 100)
-    expect(store.store_connections.find_by!(external_domain: shop).shopify_billing_period_end).to be_nil
+    expect(response.parsed_body).to include("connected" => true, "state" => "verified")
+    expect(response.parsed_body).not_to include("plan_name", "order_limit", "orders_used")
   end
 
   it "reports only the new app's matching shop and does not expose legacy Shopify connections" do
@@ -225,14 +218,13 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
     expect(legacy.reload).to be_active
   end
 
-  it "queues a sync only for the signed shop and obeys its Shopify entitlement" do
+  it "queues a sync only for the signed shop and still obeys Morea workspace operational access" do
     connection
     signed_post("sync", { shop: shop, store_id: 999_999 })
     expect(response).to have_http_status(:ok)
     expect(ShopifyOrdersSyncJob).to have_been_enqueued.with(connection.id)
     clear_enqueued_jobs
-    store.update!(subscription_required: true, billing_status: "past_due")
-    allow(Connections::SealloBridge).to receive(:entitlement).and_return("active" => false)
+    store.update!(subscription_required: true, billing_status: "past_due", trial_ends_at: nil, billing_period_ends_on: 1.day.ago)
     signed_post("sync", { shop: shop })
     expect(response).to have_http_status(:payment_required)
     expect(ShopifyOrdersSyncJob).not_to have_been_enqueued

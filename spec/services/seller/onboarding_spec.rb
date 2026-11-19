@@ -53,6 +53,46 @@ RSpec.describe Seller::Onboarding do
     expect(onboarding.steps.find { |step| step.key == "carrier" }.done).to eq(true)
   end
 
+  def connect_shop(workspace = store, **attributes)
+    workspace.store_connections.create!({
+      provider: "shopify", name: "Seallo shop", external_domain: "onboard-#{suffix}.myshopify.com",
+      shopify_oauth: true, shopify_app: "seallo_connect", active: true,
+      shopify_api_verified_at: Time.current
+    }.merge(attributes))
+  end
+
+  it "completes the source step for verified Seallo Connect without a Shopify plan or allowance" do
+    connection = connect_shop
+    expect(connection.shopify_plan_name).to be_nil
+    expect(connection.shopify_order_limit).to be_nil
+    source = onboarding.steps.find { |step| step.key == "source" }
+    expect(source.done).to eq(true)
+    expect(source.path).to eq("/integrations")
+    expect(source.tour_target).to eq("integrations")
+  end
+
+  it "keeps the source step open for a disconnected Seallo shop with legacy billing data" do
+    connect_shop(active: false, shopify_plan_name: "legacy", shopify_entitled_until: 1.day.from_now,
+      shopify_billing_period_start: 1.day.ago, shopify_billing_period_end: 1.day.from_now)
+    expect(onboarding.steps.find { |step| step.key == "source" }.done).to eq(false)
+  end
+
+  it "keeps the source step open until Seallo Shopify access is verified" do
+    connect_shop(shopify_api_verified_at: nil)
+    expect(onboarding.steps.find { |step| step.key == "source" }.done).to eq(false)
+  end
+
+  it "keeps the source step open when Seallo Shopify access needs attention" do
+    connect_shop(shopify_api_error_code: "missing_scopes")
+    expect(onboarding.steps.find { |step| step.key == "source" }.done).to eq(false)
+  end
+
+  it "does not complete the source step using another workspace's Seallo shop" do
+    other_store = Store.create!(name: "Other #{suffix}", slug: "other-#{suffix}", currency: "MAD", storefront_enabled: false)
+    connect_shop(other_store)
+    expect(onboarding.steps.find { |step| step.key == "source" }.done).to eq(false)
+  end
+
   it "adds and completes the confirm step after order work advances past new" do
     customer = store.customers.create!(name: "Buyer", phone: "0612345678", email: "buyer-#{suffix}@example.test")
     order = store.orders.create!(

@@ -31,7 +31,7 @@ RSpec.describe "Seallo imports with incomplete contact details" do
     expect(order.order_items.sole).to have_attributes(product_name: "Synthetic product", quantity: 1, unit_price_cents: 3_000_000)
     expect(store.customers.count).to eq(0)
     expect(connection.reload.last_error_code).to be_nil
-    expect(Connections::SealloAllowance.used(connection)).to eq(1)
+    expect(connection.external_order_receipts.where(status: "accepted").count).to eq(1)
   end
 
   it "preserves separate phone-less orders without merging buyers or duplicating replayed orders" do
@@ -41,7 +41,7 @@ RSpec.describe "Seallo imports with incomplete contact details" do
     expect(store.orders.pluck(:customer_name)).to contain_exactly("Synthetic Buyer", "Other Synthetic Buyer")
     expect(store.customers.count).to eq(0)
     expect { expect(intake.replayed).to be(true) }.not_to change(Order, :count)
-    expect(Connections::SealloAllowance.used(connection)).to eq(2)
+    expect(connection.external_order_receipts.where(status: "accepted").count).to eq(2)
   end
 
   it "recovers a previously rejected external receipt without allocating another import identity" do

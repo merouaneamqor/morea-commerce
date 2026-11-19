@@ -21,10 +21,6 @@ module Connections
       request(operation: "graphql", shop: shop, query: query, variables: variables)
     end
 
-    def self.entitlement(shop:)
-      request(operation: "entitlement", shop: shop)
-    end
-
     def self.request(**input)
       origin = URI(ENV.fetch("SEALLO_APP_URL", ""))
       raise Error, "config_missing" unless origin.scheme == "https" && origin.host.present? && origin.userinfo.nil? && [ "", "/" ].include?(origin.path) && origin.query.nil? && origin.fragment.nil?

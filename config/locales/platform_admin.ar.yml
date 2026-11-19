@@ -98,9 +98,10 @@ ar:
         needs_reauthorization: "يحتاج إعادة تفويض"
       outcomes:
         verified: "تم التحقق من الاتصال."
-        entitlement_verified: "تم التحقق من الخطة. يمكن للتاجر إعادة المحاولة من Seallo Connect."
+        entitlement_verified: "التفويض جاهز. يمكن للتاجر إعادة المحاولة من Seallo Connect."
+        link_ready: "التفويض ما زال صالحًا. يمكن للتاجر الربط من Seallo Connect دون خطة Shopify."
         disconnected: "هذا الاتصال مفصول. يجب على التاجر إعادة الاتصال."
-        not_entitled: "لم تُرجع أي خطة نشطة. تحقق من الخطة قبل إعادة المحاولة."
+        not_entitled: "Seallo Connect لم يعد يتطلب خطة Shopify. اطلب من التاجر إعادة المحاولة من التطبيق."
         unsupported: "لا يمكن إعادة فحص هذا التكامل هنا."
         unsupported_connection: "اتصالات Shopify عبر Seallo Connect فقط تستخدم فحص Shopify."
         credentials_missing: "بيانات الاعتماد ناقصة. اطلب من التاجر إعادة الاتصال."

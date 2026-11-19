@@ -181,6 +181,8 @@ jobs:
           exit 1
       - run: npm run build:test-css
       - run: npm run test:responsive
+      - name: Check Morea Three.js logo and lifecycle
+        run: node script/morea_logo_test.mjs
       - run: npm run test:dark
       - run: node --test script/tracking_consent_test.mjs
       - name: Check variant color gallery updates

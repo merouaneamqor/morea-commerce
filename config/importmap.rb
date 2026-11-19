@@ -12,3 +12,10 @@ pin_all_from "app/javascript/controllers", under: "controllers", preload: false
 pin "chart.js/auto", to: "chartjs-auto.js", preload: false
 
 pin "admin_pwa", preload: false
+
+# Three.js r180, loaded only by the Morea homepage logo.
+pin "three", to: "three.module.min.js", preload: false
+pin "three/core", to: "three.core.min.js", preload: false
+pin "three/addons/geometries/TextGeometry.js", to: "three-TextGeometry.js", preload: false
+pin "three/addons/loaders/FontLoader.js", to: "three-FontLoader.js", preload: false
+pin "morea-typeface", to: "morea-typeface.js", preload: false

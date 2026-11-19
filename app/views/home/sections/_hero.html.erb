@@ -1,4 +1,5 @@
 <% brand = current_store&.name.presence %>
+<% morea_logo = first && current_store&.slug == "morea" && section.image_src.present? %>
 <% primary_path = section.button_label.present? ? store_link_path(section.link) : nil %>
 <section class="campaign-hero<%= " campaign-hero--empty" if section.image_src.blank? %>">
   <div class="campaign-hero__media" aria-hidden="<%= section.image_src.blank? %>">
@@ -15,12 +16,14 @@
     <% end %>
   </div>
   <div class="campaign-hero__veil"></div>
-  <% if brand.present? %>
+  <% if brand.present? && !morea_logo %>
     <p class="campaign-hero__watermark" aria-hidden="true"><%= brand %></p>
   <% end %>
 
   <div class="campaign-hero__content" <% unless local_assigns[:lcp] %>data-controller="reveal" data-reveal-stagger-value="true"<% end %>>
-    <% if brand.present? %>
+    <% if morea_logo %>
+      <%= render "home/sections/morea_logo" %>
+    <% elsif brand.present? %>
       <p class="campaign-hero__brand" data-reveal-item><%= brand %></p>
     <% end %>
     <% if section.subheading.present? %>

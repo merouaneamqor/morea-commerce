@@ -5,9 +5,9 @@ module Platform
   class SealloDiagnostics
     MESSAGES = {
       "verified" => "The connection and Shopify order access are verified.",
-      "entitlement_verified" => "Shopify returned a valid plan. The merchant can retry connecting from Seallo Connect.",
+      "entitlement_verified" => "Seallo billing (or a still-active Shopify legacy contract) is valid. The merchant can retry connecting from Seallo Connect.",
       "disconnected" => "This connection is disconnected. The merchant must approve reconnection in Shopify through Seallo Connect.",
-      "not_entitled" => "No active Shopify plan was returned. Check the plan in Seallo Connect before retrying.",
+      "not_entitled" => "No active Seallo subscription (or Shopify legacy contract) was found. Check billing in Seallo before retrying.",
       "authorization_expired" => "This authorization link expired. The merchant must start a new connection from Seallo Connect.",
       "authorization_consumed" => "This authorization link was already used. Check the existing connection instead.",
       "unsupported_connection" => "Only Seallo Connect Shopify connections can be checked here.",
@@ -66,7 +66,8 @@ module Platform
       domain = authorization.shop_domain.to_s
       return result("source_mismatch") unless domain.bytesize <= 253 && domain.match?(/\A[a-z0-9][a-z0-9-]*\.myshopify\.com\z/)
 
-      attributes = Connections::SealloEntitlement.attributes_for(Connections::SealloBridge.entitlement(shop: domain))
+      attributes = Connections::SealloEntitlement.attributes_from_store(authorization.store)
+      attributes ||= Connections::SealloEntitlement.attributes_for(Connections::SealloBridge.entitlement(shop: domain))
       return result("not_entitled") unless attributes
 
       result("entitlement_verified", plan_name: attributes.fetch(:shopify_plan_name),

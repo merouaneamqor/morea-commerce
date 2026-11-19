@@ -8,31 +8,59 @@ RSpec.describe Connections::SealloEntitlement do
     store.store_connections.create!(provider: "shopify", name: "Synthetic billed shop", external_domain: "entitlement-#{SecureRandom.hex(5)}.myshopify.com",
       shopify_app: "seallo_connect", shopify_oauth: true)
   end
-  let(:payload) do
+  let(:shopify_payload) do
     { "active" => true, "plan_name" => "Seallo Basic", "order_limit" => 30,
       "current_period_start" => 1.day.ago.iso8601, "current_period_end" => 29.days.from_now.iso8601 }
   end
 
   before do
-    allow(Connections::SealloBridge).to receive(:entitlement).with(shop: connection.external_domain).and_return(payload)
+    allow(Connections::SealloBridge).to receive(:entitlement).with(shop: connection.external_domain).and_return(shopify_payload)
   end
 
-  it "caches each recognized plan with its verified allowance for at most 15 minutes" do
+  def require_seallo_billing!
+    store.update!(subscription_required: true, billing_status: "canceled", billing_period_ends_on: 1.day.ago, trial_ends_at: nil, plan: nil)
+  end
+
+  it "uses the Seallo workspace plan and config/plans.yml order limits without calling Shopify" do
     freeze_time do
-      described_class::PLANS.each do |name, limit|
-        payload.merge!("plan_name" => name, "order_limit" => limit)
+      store.update!(subscription_required: true, plan: "starter", billing_status: "active",
+        billing_interval: "monthly", billing_period_ends_on: Date.current + 20.days, trial_ends_at: nil)
+      expect(Connections::SealloBridge).not_to receive(:entitlement)
+      expect(described_class.refresh!(connection)).to be(true)
+      expect(connection.reload).to have_attributes(shopify_plan_name: "Starter", shopify_order_limit: 300,
+        shopify_entitled_until: 15.minutes.from_now)
+    end
+  end
+
+  it "maps every Seallo plan order allowance from Plans configuration" do
+    freeze_time do
+      Plans.list.each do |key, config|
+        store.update!(subscription_required: !Plans.free?(key), plan: key, billing_status: "active",
+          billing_interval: "monthly", billing_period_ends_on: Date.current + 10.days, trial_ends_at: nil)
+        expect(described_class.refresh!(connection)).to be(true)
+        expect(connection.reload).to have_attributes(shopify_plan_name: config.fetch("name"), shopify_order_limit: config["orders"])
+      end
+      expect(Connections::SealloBridge).not_to have_received(:entitlement)
+    end
+  end
+
+  it "falls back to a still-active Shopify legacy contract when Seallo billing is inactive" do
+    freeze_time do
+      require_seallo_billing!
+      described_class::SHOPIFY_LEGACY_PLANS.each do |name, limit|
+        shopify_payload.merge!("plan_name" => name, "order_limit" => limit)
         expect(described_class.refresh!(connection)).to be(true)
         expect(connection.reload).to have_attributes(shopify_plan_name: name, shopify_order_limit: limit,
           shopify_entitled_until: 15.minutes.from_now)
-        expect(connection.shopify_billing_period_start).to eq(Time.iso8601(payload["current_period_start"]))
-        expect(connection.shopify_billing_period_end).to eq(Time.iso8601(payload["current_period_end"]))
       end
     end
   end
 
-  it "accepts an ACTIVE trial without a cycle end only for the short cache lifetime" do
+  it "accepts an ACTIVE Shopify-legacy trial without a cycle end only for the short cache lifetime" do
     freeze_time do
-      payload["current_period_end"] = nil
+      require_seallo_billing!
+      shopify_payload["current_period_end"] = nil
+      shopify_payload.merge!("plan_name" => "Seallo Pro", "order_limit" => 100)
       expect(described_class.refresh!(connection)).to be(true)
       expect(connection.reload.shopify_billing_period_end).to be_nil
       expect(connection.shopify_entitled_until).to eq(15.minutes.from_now)
@@ -42,60 +70,46 @@ RSpec.describe Connections::SealloEntitlement do
     end
   end
 
-  it "rejects the retired 19 and 99 order limits instead of accepting a mismatched billing contract" do
+  it "rejects the retired 19 and 99 order limits instead of accepting a mismatched Shopify contract" do
+    require_seallo_billing!
     [ [ "Seallo Basic", 19 ], [ "Seallo Pro", 99 ] ].each do |name, limit|
-      payload.merge!("plan_name" => name, "order_limit" => limit)
+      shopify_payload.merge!("plan_name" => name, "order_limit" => limit)
       expect { described_class.refresh!(connection) }.to raise_error(Connections::SealloBridge::Error, "invalid_response")
       expect(connection.reload.shopify_entitled_until).to be_nil
     end
   end
 
-  it "caps the cache at the end of a near-expiry billing period" do
+  it "caps the Seallo cache at the end of a near-expiry billing period" do
     freeze_time do
-      payload["current_period_end"] = 2.minutes.from_now.iso8601
+      store.update!(subscription_required: true, plan: "intermediate", billing_status: "trial",
+        trial_ends_at: 2.minutes.from_now, billing_period_ends_on: nil)
       described_class.refresh!(connection)
       expect(connection.reload.shopify_entitled_until).to eq(2.minutes.from_now)
     end
   end
 
-  it "clears entitlement immediately for an inactive subscription" do
+  it "clears entitlement when neither Seallo billing nor Shopify legacy is active" do
+    require_seallo_billing!
     described_class.refresh!(connection)
-    payload["active"] = false
+    shopify_payload["active"] = false
     expect(described_class.refresh!(connection)).to be(false)
     expect(connection.reload.shopify_entitled_until).to be_nil
   end
 
-  it "requires an explicit active boolean rather than a truthy string" do
-    payload["active"] = "true"
+  it "requires an explicit active boolean on the Shopify-legacy payload" do
+    require_seallo_billing!
+    shopify_payload["active"] = "true"
     expect(described_class.refresh!(connection)).to be(false)
     expect(connection.reload.shopify_entitled_until).to be_nil
   end
 
-  it "rejects unknown plans and mismatched or missing quotas without granting access" do
+  it "rejects unknown Shopify-legacy plans and mismatched quotas without granting access" do
+    require_seallo_billing!
     [ { "plan_name" => "Synthetic unknown", "order_limit" => nil },
       { "plan_name" => "Seallo Basic", "order_limit" => nil },
       { "plan_name" => "Seallo Pro", "order_limit" => 30 },
       { "plan_name" => "Seallo Premium", "order_limit" => 100 } ].each do |attributes|
-      payload.merge!(attributes)
-      expect { described_class.refresh!(connection) }.to raise_error(Connections::SealloBridge::Error, "invalid_response")
-      expect(connection.reload.shopify_entitled_until).to be_nil
-    end
-  end
-
-  it "requires an explicit quota key even for an unlimited Premium plan" do
-    payload["plan_name"] = "Seallo Premium"
-    payload.delete("order_limit")
-    expect { described_class.refresh!(connection) }.to raise_error(Connections::SealloBridge::Error, "invalid_response")
-    expect(connection.reload.shopify_entitled_until).to be_nil
-  end
-
-  it "rejects expired, future-starting and malformed billing periods" do
-    original = payload.dup
-    [ { "current_period_end" => 1.second.ago.iso8601 },
-      { "current_period_start" => 1.minute.from_now.iso8601 },
-      { "current_period_start" => "invalid" },
-      { "current_period_end" => "invalid" } ].each do |attributes|
-      payload.replace(original.merge(attributes))
+      shopify_payload.merge!(attributes)
       expect { described_class.refresh!(connection) }.to raise_error(Connections::SealloBridge::Error, "invalid_response")
       expect(connection.reload.shopify_entitled_until).to be_nil
     end
@@ -107,9 +121,15 @@ RSpec.describe Connections::SealloEntitlement do
     expect(described_class.refresh!(legacy)).to be_nil
   end
 
-  it "propagates temporary bridge failures without inventing an entitlement" do
+  it "propagates temporary Shopify-fallback bridge failures without inventing an entitlement" do
+    require_seallo_billing!
     allow(Connections::SealloBridge).to receive(:entitlement).and_raise(Connections::SealloBridge::Error, "unavailable")
     expect { described_class.refresh!(connection) }.to raise_error(Connections::SealloBridge::Error, "unavailable")
     expect(connection.reload.shopify_entitled_until).to be_nil
+  end
+
+  it "presents an inactive payload for an unlinked or expired cache without calling Shopify" do
+    expect(described_class.inactive_payload).to include("active" => false, "plan_name" => nil, "order_limit" => nil)
+    expect(Connections::SealloBridge).not_to have_received(:entitlement)
   end
 end

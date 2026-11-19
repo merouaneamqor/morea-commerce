@@ -59,29 +59,33 @@ RSpec.describe Platform::SealloDiagnostics do
     expect(diagnostics.recheck(connection: connection).code).to eq("unsupported_connection")
   end
 
-  it "refreshes the current plan then verifies Shopify without importing orders" do
-    allow(Connections::SealloBridge).to receive(:entitlement).with(shop: connection.external_domain).and_return(payload)
+  it "refreshes the Seallo workspace plan then verifies Shopify without importing orders" do
+    store.update!(subscription_required: true, plan: "starter", billing_status: "active",
+      billing_interval: "monthly", billing_period_ends_on: Date.current + 14.days, trial_ends_at: nil)
     api = instance_double(Connections::ShopifyApi)
     expect(Connections::ShopifyApi).to receive(:new).with(connection: connection).and_return(api)
     expect(api).to receive(:verify!) do
-      expect(connection.reload.shopify_order_limit).to eq(30)
+      expect(connection.reload.shopify_order_limit).to eq(300)
       true
     end
     result = nil
     expect { result = diagnostics.recheck(connection: connection) }.not_to change { ActiveJob::Base.queue_adapter.enqueued_jobs.size }
     expect(result).to be_success
-    expect(result.to_h).to eq(code: "verified", plan_name: "Seallo Basic", order_limit: 30, period_end: nil)
+    expect(result.to_h).to include(code: "verified", plan_name: "Starter", order_limit: 300)
     expect(connection.reload.shopify_entitled_until).to be_future
+    expect(Connections::SealloBridge).not_to have_received(:entitlement)
   end
 
-  it "does not verify Shopify when no plan is active" do
+  it "does not verify Shopify when no Seallo or Shopify-legacy plan is active" do
+    store.update!(subscription_required: true, billing_status: "canceled", trial_ends_at: nil, billing_period_ends_on: 1.day.ago, plan: nil)
     allow(Connections::SealloBridge).to receive(:entitlement).and_return("active" => false)
     expect(Connections::ShopifyApi).not_to receive(:new)
     expect(diagnostics.recheck(connection: connection).code).to eq("not_entitled")
   end
 
   it "returns a safe actionable Shopify permission error" do
-    allow(Connections::SealloBridge).to receive(:entitlement).and_return(payload)
+    store.update!(subscription_required: true, plan: "starter", billing_status: "active",
+      billing_interval: "monthly", billing_period_ends_on: Date.current + 14.days, trial_ends_at: nil)
     api = instance_double(Connections::ShopifyApi)
     allow(Connections::ShopifyApi).to receive(:new).and_return(api)
     allow(api).to receive(:verify!).and_raise(Connections::ShopifyApi::Error.new("missing_scopes"))
@@ -91,27 +95,31 @@ RSpec.describe Platform::SealloDiagnostics do
     expect(result.plan_name).to be_nil
   end
 
-  it "maps unknown bridge error text to a fixed safe message" do
+  it "maps unknown Shopify-fallback bridge error text to a fixed safe message" do
+    store.update!(subscription_required: true, billing_status: "canceled", trial_ends_at: nil, billing_period_ends_on: 1.day.ago, plan: nil)
     allow(Connections::SealloBridge).to receive(:entitlement).and_raise(Connections::SealloBridge::Error, "private upstream payload synthetic-secret")
     result = diagnostics.recheck(connection: connection)
     expect(result.code).to eq("invalid_response")
     expect(result.to_h.to_s + result.message).not_to include("synthetic-secret", "private upstream")
   end
 
-  it "diagnoses an initial link using the shared plan contract without writing or consuming it" do
-    allow(Connections::SealloBridge).to receive(:entitlement).with(shop: authorization.shop_domain).and_return(payload)
+  it "diagnoses an initial link from Seallo workspace billing without writing or consuming it" do
+    store.update!(subscription_required: true, plan: "starter", billing_status: "active",
+      billing_interval: "monthly", billing_period_ends_on: Date.current + 14.days, trial_ends_at: nil)
     original = authorization.attributes
     expect(Connections::ShopifyApi).not_to receive(:new)
     expect(Connections::SealloEntitlement).not_to receive(:refresh!)
     result = nil
     expect { result = diagnostics.diagnose_link(authorization: authorization) }.not_to change(StoreConnection, :count)
-    expect(result.to_h).to eq(code: "entitlement_verified", plan_name: "Seallo Basic", order_limit: 30, period_end: nil)
+    expect(result.to_h).to include(code: "entitlement_verified", plan_name: "Starter", order_limit: 300)
     expect(result).to be_success
     expect(authorization.reload.attributes).to eq(original)
     expect(result.to_h.to_s).not_to include(authorization.digest)
+    expect(Connections::SealloBridge).not_to have_received(:entitlement)
   end
 
-  it "accepts current Pro and Premium plans with explicit absent period ends" do
+  it "falls back to Shopify-legacy Pro and Premium when Seallo billing is inactive" do
+    store.update!(subscription_required: true, billing_status: "canceled", trial_ends_at: nil, billing_period_ends_on: 1.day.ago, plan: nil)
     allow(Connections::SealloBridge).to receive(:entitlement).and_return(payload)
     { "Seallo Pro" => 100, "Seallo Premium" => nil }.each do |name, limit|
       payload.merge!("plan_name" => name, "order_limit" => limit)
@@ -119,7 +127,8 @@ RSpec.describe Platform::SealloDiagnostics do
     end
   end
 
-  it "rejects unknown plans, old quotas, missing fields and invalid periods on initial links" do
+  it "rejects unknown Shopify-legacy plans, old quotas, missing fields and invalid periods on initial links" do
+    store.update!(subscription_required: true, billing_status: "canceled", trial_ends_at: nil, billing_period_ends_on: 1.day.ago, plan: nil)
     allow(Connections::SealloBridge).to receive(:entitlement).and_return(payload)
     original = payload.dup
     [ original.merge("plan_name" => "Unknown"), original.merge("order_limit" => 19), original.except("current_period_end"),
@@ -131,6 +140,7 @@ RSpec.describe Platform::SealloDiagnostics do
   end
 
   it "returns inactive billing without granting a connection" do
+    store.update!(subscription_required: true, billing_status: "canceled", trial_ends_at: nil, billing_period_ends_on: 1.day.ago, plan: nil)
     allow(Connections::SealloBridge).to receive(:entitlement).and_return("active" => false)
     expect(diagnostics.diagnose_link(authorization: authorization).code).to eq("not_entitled")
     expect(authorization.reload.consumed_at).to be_nil

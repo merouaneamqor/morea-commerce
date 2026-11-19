@@ -200,19 +200,32 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
     expect(response.body).not_to include(code, "shopify_access_token", "shopify_refresh_token", secret)
   end
 
-  it "completes a signed Pro trial connection with the paired app's 100-order entitlement" do
+  it "completes a signed connection with the Seallo workspace plan entitlement" do
+    store.update!(subscription_required: true, plan: "starter", billing_status: "trial", trial_ends_at: 5.days.from_now)
     code = SealloConnectionCode.issue!(store: store, user: staff)
-    allow(Connections::SealloBridge).to receive(:entitlement).and_return(
-      "active" => true, "current_period_start" => 1.day.ago.iso8601, "current_period_end" => nil,
-      "plan_name" => "Seallo Pro", "order_limit" => 100
-    )
     allow(Connections::SealloBridge).to receive(:graphql).and_return(
       "shop" => { "myshopifyDomain" => shop }, "currentAppInstallation" => { "accessScopes" => [ { "handle" => "read_orders" } ] }
     )
     signed_post("connect", { code: code, shop: shop })
     expect(response).to have_http_status(:ok)
-    expect(response.parsed_body).to include("connected" => true, "state" => "verified", "plan_name" => "Seallo Pro", "order_limit" => 100)
-    expect(store.store_connections.find_by!(external_domain: shop).shopify_billing_period_end).to be_nil
+    expect(response.parsed_body).to include("connected" => true, "state" => "verified", "plan_name" => "Starter", "order_limit" => 300)
+  end
+
+  it "returns signed entitlement for a linked shop from Seallo billing without calling Shopify" do
+    store.update!(subscription_required: true, plan: "intermediate", billing_status: "active",
+      billing_interval: "monthly", billing_period_ends_on: Date.current + 10.days, trial_ends_at: nil)
+    connection.update!(shopify_plan_name: nil, shopify_order_limit: nil, shopify_entitled_until: nil)
+    expect(Connections::SealloBridge).not_to receive(:entitlement)
+    signed_post("entitlement", { shop: shop })
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to include("active" => true, "plan_name" => "Intermediate", "order_limit" => 800, "plan_handle" => "intermediate")
+    expect(response.headers["Cache-Control"]).to include("no-store")
+  end
+
+  it "returns inactive entitlement for an unlinked shop" do
+    signed_post("entitlement", { shop: "missing-#{SecureRandom.hex(4)}.myshopify.com" })
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body).to include("active" => false, "plan_name" => nil, "order_limit" => nil)
   end
 
   it "reports only the new app's matching shop and does not expose legacy Shopify connections" do

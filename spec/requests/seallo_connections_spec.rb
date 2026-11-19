@@ -20,7 +20,7 @@ RSpec.describe "Seallo Connect workspace boundary", type: :request do
     allow(ENV).to receive(:[]).and_call_original
     allow(ENV).to receive(:[]).with("SEALLO_BRIDGE_SECRET").and_return(secret)
     allow(ENV).to receive(:[]).with("SEALLO_APP_URL").and_return(app_url)
-    allow(Connections::SealloBridge).to receive(:entitlement).and_raise("Unexpected Shopify billing call")
+    allow(Connections::SealloBridge).to receive(:request).and_raise("Unexpected Shopify billing call")
     host! Store.base_domain
   end
 

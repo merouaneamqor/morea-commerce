@@ -18,7 +18,7 @@ RSpec.describe "Superadmin Seallo connections", type: :request do
 
   before do
     host! Store.base_domain
-    allow(Connections::SealloBridge).to receive(:entitlement).and_raise("Unexpected provider request")
+    allow(Connections::SealloBridge).to receive(:request).and_raise("Unexpected provider request")
     allow(Connections::SealloBridge).to receive(:graphql).and_raise("Unexpected provider request")
   end
 
@@ -45,7 +45,7 @@ RSpec.describe "Superadmin Seallo connections", type: :request do
       public_send(method, url, params: params)
       expect(response).to redirect_to(admin_root_path)
     end
-    expect(Connections::SealloBridge).not_to have_received(:entitlement)
+    expect(Connections::SealloBridge).not_to have_received(:request)
   end
 
   it "shows safe cross-workspace diagnostics without contacting providers" do
@@ -57,7 +57,7 @@ RSpec.describe "Superadmin Seallo connections", type: :request do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include(other.name, "support.myshopify.com", "pending.myshopify.com", "Recheck connection", "Check link")
     expect(response.body).not_to include("private-provider-response", authorization.digest)
-    expect(Connections::SealloBridge).not_to have_received(:entitlement)
+    expect(Connections::SealloBridge).not_to have_received(:request)
     expect(Connections::SealloBridge).not_to have_received(:graphql)
     document = Nokogiri::HTML(response.body)
     expect(document.css(".seallo-diagnostics__scroll[tabindex='0']").length).to eq(2)
@@ -100,7 +100,7 @@ RSpec.describe "Superadmin Seallo connections", type: :request do
     follow_redirect!
     expect(response.body).to include("connection and Shopify order access are verified")
     expect(api).to have_received(:verify!)
-    expect(Connections::SealloBridge).not_to have_received(:entitlement)
+    expect(Connections::SealloBridge).not_to have_received(:request)
   end
 
   it "keeps disconnected stores inactive when the administrator rechecks" do
@@ -111,7 +111,7 @@ RSpec.describe "Superadmin Seallo connections", type: :request do
     follow_redirect!
     expect(response.body).to include("merchant must approve reconnection")
     expect(connection.reload).not_to be_active
-    expect(Connections::SealloBridge).not_to have_received(:entitlement)
+    expect(Connections::SealloBridge).not_to have_received(:request)
   end
 
   it "checks a pending authorization without linking or consuming it" do
@@ -123,7 +123,7 @@ RSpec.describe "Superadmin Seallo connections", type: :request do
     follow_redirect!
     expect(response.body).to include("authorization is still valid")
     expect(authorization.reload.consumed_at).to be_nil
-    expect(Connections::SealloBridge).not_to have_received(:entitlement)
+    expect(Connections::SealloBridge).not_to have_received(:request)
   end
 
   it "returns curated errors without exposing upstream responses" do
@@ -142,7 +142,7 @@ RSpec.describe "Superadmin Seallo connections", type: :request do
     sign_in
     post "#{path}/recheck", params: { connection_id: connection.id }
     expect(response).to have_http_status(:not_found)
-    expect(Connections::SealloBridge).not_to have_received(:entitlement)
+    expect(Connections::SealloBridge).not_to have_received(:request)
   end
 
   it "invalidates suspended superadmin sessions" do

@@ -126,7 +126,11 @@ module Seller
     def has_connection?
       return @has_connection if defined?(@has_connection)
 
-      @has_connection = @store.store_connections.exists?
+      # Connect is ready after Shopify authorization and API verification, without
+      # a Shopify plan. Keep the existing completion rule for other providers.
+      @has_connection = @store.store_connections.any? do |connection|
+        connection.shopify_app != "seallo_connect" || connection.shopify_api_connected?
+      end
     end
 
     def has_products?

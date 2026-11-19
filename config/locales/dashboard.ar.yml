@@ -80,7 +80,7 @@ ar:
       add_products: "إضافة منتجاتك الأولى"
       storefront_help: "جهز كتالوجك ومتجرك قبل مشاركتهما مع العملاء."
       connect: "ربط متجر حالي"
-      connect_help: "استقبل طلبات Shopify أو WooCommerce أو YouCan. Seallo Connect بلا رسوم تطبيق على Shopify؛ يظل اشتراك مساحة Seallo مطلوبًا. اضبط إشعارات الويب الموقعة للمصادر الأخرى."
+      connect_help: "استقبل طلبات Shopify أو WooCommerce أو YouCan. لا يفرض Seallo Connect رسوم Shopify منفصلة أو حصة لطلبات Shopify. يظل اشتراك مساحة Seallo مطلوبًا. اضبط إشعارات الويب الموقعة للمصادر الأخرى."
       first_order: "استقبال طلبك الأول"
       first_order_help: "تصل الطلبات بعد الشراء أو قبول إشعار موقع مدعوم. يمكنك أيضاً إنشاء طلب يدوياً."
       optional_storefront: "متجر Seallo اختياري. يمكنك تفعيله لاحقاً."

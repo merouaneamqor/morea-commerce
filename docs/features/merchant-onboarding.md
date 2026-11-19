@@ -10,7 +10,9 @@ Any product change that affects how a merchant starts, connects, configures or f
 
 `Seller::Onboarding` is read-only. It derives step completion from the current store only: store connections, active products (when `storefront_enabled`), active delivery accounts or legacy Sendit keys, and orders. Viewing the dashboard never creates connections, products, parcels or confirmation attempts.
 
-External-only workspaces (default after signup) see connect → carrier → first order, then confirm once an order exists. Storefront workspaces also get a catalog step. An optional storefront settings link stays available when the boutique is disabled. The connect step covers Shopify via Seallo Connect (no separate Shopify app fee; Morea workspace subscription still applies), plus WooCommerce and YouCan signed webhooks.
+External-only workspaces (default after signup) see connect → carrier → first order, then confirm once an order exists. Storefront workspaces also get a catalog step. An optional storefront settings link stays available when the boutique is disabled. The connect step covers Shopify via Seallo Connect, plus WooCommerce and YouCan signed webhooks. Seallo Connect has no separate Shopify subscription, app fee, trial or Shopify order quota. Morea workspace billing and operational-access requirements still apply.
+
+For Seallo Connect, the source step completes after a connection in the current workspace is active and its Shopify API access is verified without an API error. No Shopify plan or allowance is required. Disconnected or unverified Seallo shops keep the step open even if legacy billing fields are present. Other providers keep their existing completion rule, and an enabled storefront still completes the source step. The CTA and tour continue to target `/integrations` and the existing `integrations` sidebar entry.
 
 Staff can dismiss the panel for that browser (`localStorage`, keyed by store id) or finish the tour. The panel disappears for everyone once every applicable step is complete. Confirmation agents never see it; they stay off `/dashboard`.
 
@@ -23,3 +25,5 @@ RAILS_ENV=test bundle exec rspec spec/services/seller/onboarding_spec.rb spec/re
 ```
 
 Checks use synthetic tenants and disconnected integrations. No migration or live provider sync is required.
+
+Onboarding specs cover Seallo completion without a Shopify plan, disconnected and unverified shops, Shopify access errors, tenant isolation and the unchanged integration CTA/tour target.

@@ -15,7 +15,7 @@ RSpec.describe Connections::SealloConnect do
 
   before do
     allow(Connections::SealloBridge).to receive(:graphql).and_return(verification)
-    allow(Connections::SealloBridge).to receive(:entitlement).and_raise("Unexpected Shopify billing call")
+    allow(Connections::SealloBridge).to receive(:request).and_raise("Unexpected Shopify billing call")
   end
 
   def connect
@@ -36,7 +36,7 @@ RSpec.describe Connections::SealloConnect do
   end
 
   it "connects without a Shopify plan or entitlement refresh" do
-    expect(Connections::SealloBridge).not_to receive(:entitlement)
+    expect(Connections::SealloBridge).not_to receive(:request)
     result = connect
     expect(result).to be_shopify_api_connected
     expect(result.shopify_entitled_until).to be_nil

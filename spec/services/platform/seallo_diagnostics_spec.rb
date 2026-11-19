@@ -16,7 +16,7 @@ RSpec.describe Platform::SealloDiagnostics do
   subject(:diagnostics) { described_class.new(actor: actor) }
 
   before do
-    allow(Connections::SealloBridge).to receive(:entitlement).and_raise("Unexpected bridge request")
+    allow(Connections::SealloBridge).to receive(:request).and_raise("Unexpected bridge request")
     allow(Connections::SealloBridge).to receive(:graphql).and_raise("Unexpected GraphQL request")
   end
 
@@ -46,7 +46,7 @@ RSpec.describe Platform::SealloDiagnostics do
     api = instance_double(Connections::ShopifyApi)
     expect(Connections::ShopifyApi).to receive(:new).with(connection: connection).and_return(api)
     expect(api).to receive(:verify!)
-    expect(Connections::SealloBridge).not_to receive(:entitlement)
+    expect(Connections::SealloBridge).not_to receive(:request)
     result = diagnostics.recheck(connection: connection)
     expect(result).to be_success
     expect(result.code).to eq("verified")
@@ -64,7 +64,7 @@ RSpec.describe Platform::SealloDiagnostics do
   it "diagnoses a pending link without Shopify billing" do
     original = authorization.attributes
     expect(Connections::ShopifyApi).not_to receive(:new)
-    expect(Connections::SealloBridge).not_to receive(:entitlement)
+    expect(Connections::SealloBridge).not_to receive(:request)
     result = nil
     expect { result = diagnostics.diagnose_link(authorization: authorization) }.not_to change(StoreConnection, :count)
     expect(result.to_h).to eq(code: "link_ready", plan_name: nil, order_limit: nil, period_end: nil)

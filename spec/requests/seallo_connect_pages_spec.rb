@@ -53,7 +53,11 @@ RSpec.describe "Seallo Connect public pages", type: :request do
     expect(response.body).to include("do not load Meta Pixel")
 
     get "/seallo-connect/refunds", params: { locale: "en" }
-    expect(response.body).to include("billed by Shopify")
+    expect(response.body).to include("Seallo Connect itself does not charge through Shopify App Pricing")
+    expect(response.body).to include("Seallo workspace subscription")
+    expect(response.body).to include("that billing is handled in Seallo")
+    expect(response.body).to include("Cancel a leftover Shopify subscription")
+    expect(response.body).not_to include("billed by Shopify")
     expect(response.body).to include("No hidden fees")
   end
 

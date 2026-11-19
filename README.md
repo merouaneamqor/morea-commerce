@@ -1,6 +1,6 @@
 # Seallo
 
-The new public **Seallo Connect** app adds Shopify installation-to-workspace linking and Shopify-hosted subscription plans while preserving the existing standalone Shopify integration. See [Seallo Connect setup, billing, quotas and deployment](docs/features/seallo-connect.md) and [mandatory privacy workflows](docs/features/seallo-privacy.md).
+The public **Seallo Connect** app links a Shopify store to a Seallo/Morea workspace with no separate Shopify subscription, app fee, trial or Shopify order quota. Morea's existing workspace subscription and operational-access requirements still apply. The existing standalone Shopify integration is preserved. See [Seallo Connect setup and access](docs/features/seallo-connect.md) and [mandatory privacy workflows](docs/features/seallo-privacy.md).
 
 Multi-store cash-on-delivery commerce platform for Morocco. Morea is the reference store: luxury modest sportswear storefront + COD admin.
 

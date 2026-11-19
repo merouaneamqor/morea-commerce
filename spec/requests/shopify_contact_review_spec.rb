@@ -28,7 +28,7 @@ RSpec.describe "Shopify imported orders needing contact review", type: :request 
   let(:contact) { { name: "Synthetic Review Buyer", phone: "0612345678", city: "Casablanca", address: "Synthetic review street", district: "Synthetic district" } }
 
   before do
-    allow(Connections::SealloBridge).to receive(:entitlement).and_raise("Unexpected provider operation")
+    allow(Connections::SealloBridge).to receive(:request).and_raise("Unexpected provider operation")
     allow(Connections::SealloBridge).to receive(:graphql).and_raise("Unexpected provider operation")
   end
 

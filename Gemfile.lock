@@ -265,7 +265,7 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.6.3-x86_64-linux)
-    phonelib (0.10.27)
+    phonelib (0.11.0)
     pp (0.6.4)
       prettyprint
     prettyprint (0.2.1)
@@ -469,7 +469,7 @@ DEPENDENCIES
   kamal
   mcp
   pg (~> 1.5)
-  phonelib (~> 0.10)
+  phonelib (~> 0.11)
   propshaft
   puma (>= 5.0)
   rails (~> 8.1.4, >= 8.1.4.1)

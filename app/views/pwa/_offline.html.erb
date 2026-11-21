@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7f8">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Seallo — Reconnexion</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { background: #f6f7f8; color: #20242c; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { margin: 0; min-block-size: 100vh; min-block-size: 100svh; display: grid; place-items: center; padding: max(24px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); }
+    main { inline-size: 100%; max-inline-size: 36rem; min-inline-size: 0; }
+    .brand { display: flex; align-items: center; gap: 9px; margin-block-end: 24px; font-size: 19px; font-weight: 750; letter-spacing: -.6px; }
+    .brand-mark { display: grid; place-items: center; inline-size: 29px; block-size: 29px; border-radius: 9px; background: #20242c; color: #fff; }
+    .card { padding: clamp(24px, 6vw, 44px); border: 1px solid #e2e5e9; border-radius: 24px; background: #fff; box-shadow: 0 12px 40px #20242c06; }
+    .connection-icon { display: grid; place-items: center; inline-size: 64px; block-size: 64px; margin-block-end: 26px; border: 1px solid #e4e8ed; border-radius: 19px; background: #f6f8fa; color: #56657a; }
+    h1 { margin: 0; max-inline-size: 24ch; font-size: clamp(25px, 5vw, 32px); line-height: 1.2; font-weight: 680; letter-spacing: -.8px; overflow-wrap: anywhere; }
+    .description { margin: 16px 0 0; color: #606773; font-size: 16px; line-height: 1.65; }
+    .status-box { display: flex; align-items: flex-start; gap: 12px; margin-block: 28px 22px; padding: 16px; border: 1px solid #e7eaf0; border-radius: 14px; background: #fafbfc; }
+    .status-dot { flex: 0 0 auto; inline-size: 10px; block-size: 10px; margin-block-start: 6px; border: 2px solid #93a1b4; border-radius: 50%; }
+    [data-offline-state="checking"] .status-dot { border-color: #ccd4de; border-inline-start-color: #3e5e87; animation: spin 1s linear infinite; }
+    [data-offline-state="reloading"] .status-dot { border-color: #3d765e; background: #3d765e; }
+    .status-copy { min-inline-size: 0; }
+    .status { margin: 0; color: #344255; font-size: 14px; line-height: 1.5; font-weight: 600; overflow-wrap: anywhere; }
+    .detail { margin: 5px 0 0; color: #69727e; font-size: 13px; line-height: 1.5; }
+    button, .retry-link { display: flex; justify-content: center; align-items: center; inline-size: 100%; min-block-size: 48px; padding: 12px 18px; border: 1px solid #20242c; border-radius: 11px; background: #20242c; color: #fff; font: inherit; font-size: 15px; font-weight: 650; line-height: 1.5; text-align: center; text-decoration: none; cursor: pointer; }
+    button:hover { background: #353c47; }
+    button:disabled { cursor: wait; background: #5c6470; border-color: #5c6470; }
+    button:focus-visible, .retry-link:focus-visible { outline: 3px solid #769dc9; outline-offset: 4px; }
+    .attempt { margin: 12px 0 0; color: #69727e; text-align: center; font-size: 12px; line-height: 1.5; }
+    .help { margin: 22px 4px 0; color: #66707d; font-size: 13px; line-height: 1.6; }
+    .no-script { margin: 14px 0 0; color: #606773; font-size: 14px; line-height: 1.6; }
+    [hidden] { display: none !important; }
+    [dir="rtl"] h1 { letter-spacing: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+    @media (max-height: 520px) { body { place-items: start center; } .brand { margin-block-end: 16px; } .connection-icon { margin-block-end: 18px; } }
+  </style>
+</head>
+<body data-offline-state="waiting">
+  <main>
+    <div class="brand" aria-label="Seallo">
+      <span class="brand-mark" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M17.5 6.5H9a3.5 3.5 0 0 0 0 7h6a2 2 0 0 1 0 4H6.5M17.5 6.5l-2-2m2 2-2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span>Seallo</span>
+    </div>
+    <section class="card" aria-labelledby="offline-title">
+      <div class="connection-icon" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 32 32" fill="none"><path d="M6 13.5a15 15 0 0 1 20 0M10 18a9 9 0 0 1 12 0M14 22.5a3 3 0 0 1 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="27" r="1.4" fill="currentColor"/><path d="M25 3v5m-2.5-2.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      <h1 id="offline-title" data-offline-title>Reconnexion à votre espace</h1>
+      <p class="description" data-offline-description>Votre page n’a pas pu se charger. Nous vérifions la connexion et réessayons pour vous.</p>
+      <div class="status-box" role="status" aria-live="polite" aria-atomic="true">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div class="status-copy">
+          <p class="status" data-offline-status>Connexion requise pour continuer.</p>
+          <p class="detail" data-offline-detail>Vous pouvez aussi réessayer maintenant.</p>
+        </div>
+      </div>
+      <button type="button" data-offline-retry hidden>Réessayer</button>
+      <p class="attempt" data-offline-attempt hidden></p>
+      <noscript>
+        <a class="retry-link" href="">Réessayer cette page</a>
+        <p class="no-script">Vérifiez votre connexion, puis réessayez. Activez JavaScript pour les vérifications automatiques.</p>
+      </noscript>
+    </section>
+    <p class="help" data-offline-help>Vérifiez votre Wi-Fi ou votre connexion mobile. Les pages de votre espace restent accessibles uniquement en ligne.</p>
+  </main>
+  <script>
+    (() => {
+      "use strict"
+      const messages = {
+        fr: {
+          title: "Reconnexion à votre espace",
+          description: "Votre page n’a pas pu se charger. Nous vérifions la connexion et réessayons pour vous.",
+          help: "Vérifiez votre Wi-Fi ou votre connexion mobile. Les pages de votre espace restent accessibles uniquement en ligne.",
+          retry: "Réessayer", checkingButton: "Vérification…", checking: "Vérification de la connexion…",
+          checkingDetail: "Cela peut prendre jusqu’à 15 secondes.",
+          waiting: "Nouvelle vérification dans {seconds} s.", waitingDetail: "Vous pouvez aussi réessayer maintenant.",
+          offline: "Votre appareil semble être hors ligne.", offlineDetail: "La vérification reprendra dès que la connexion sera rétablie.",
+          paused: "Vérification en pause.", pausedDetail: "Elle reprendra quand vous reviendrez sur cette page.",
+          cooldown: "Nouvelle tentative dans {seconds} s.", cooldownDetail: "La page n’a pas encore pu se charger. Vous pouvez réessayer maintenant.",
+          connected: "Connexion disponible. Rechargement…", connectedDetail: "Nous rouvrons cette même page.",
+          ready: "Connexion disponible.", readyDetail: "Vous pouvez réessayer cette page avec le bouton ci-dessous.",
+          attempt: "Vérification n° {count}"
+        },
+        en: {
+          title: "Reconnecting to your workspace",
+          description: "Your page couldn’t load. We’re checking the connection and trying again for you.",
+          help: "Check your Wi-Fi or mobile connection. Your workspace pages are available online only.",
+          retry: "Try again", checkingButton: "Checking…", checking: "Checking the connection…",
+          checkingDetail: "This can take up to 15 seconds.",
+          waiting: "Checking again in {seconds}s.", waitingDetail: "You can also try again now.",
+          offline: "Your device appears to be offline.", offlineDetail: "Checks will resume when the connection returns.",
+          paused: "Connection checks paused.", pausedDetail: "They will resume when you return to this page.",
+          cooldown: "Trying again in {seconds}s.", cooldownDetail: "The page still could not load. You can try again now.",
+          connected: "Connection available. Reloading…", connectedDetail: "Reopening this same page.",
+          ready: "Connection available.", readyDetail: "Use the button below to try this page again.",
+          attempt: "Connection check {count}"
+        },
+        ar: {
+          title: "إعادة الاتصال بمساحة عملك",
+          description: "تعذّر تحميل صفحتك. نتحقق من الاتصال ونعيد المحاولة تلقائيًا.",
+          help: "تحقق من اتصال Wi-Fi أو بيانات الهاتف. صفحات مساحة عملك متاحة عبر الإنترنت فقط.",
+          retry: "إعادة المحاولة", checkingButton: "جارٍ التحقق…", checking: "جارٍ التحقق من الاتصال…",
+          checkingDetail: "قد يستغرق ذلك حتى 15 ثانية.",
+          waiting: "التحقق مجددًا خلال {seconds} ث.", waitingDetail: "يمكنك أيضًا إعادة المحاولة الآن.",
+          offline: "يبدو أن جهازك غير متصل بالإنترنت.", offlineDetail: "سيُستأنف التحقق عند عودة الاتصال.",
+          paused: "التحقق من الاتصال متوقف مؤقتًا.", pausedDetail: "سيُستأنف عند عودتك إلى هذه الصفحة.",
+          cooldown: "محاولة جديدة خلال {seconds} ث.", cooldownDetail: "لم تُحمّل الصفحة بعد. يمكنك إعادة المحاولة الآن.",
+          connected: "الاتصال متاح. جارٍ إعادة التحميل…", connectedDetail: "جارٍ فتح الصفحة نفسها مجددًا.",
+          ready: "الاتصال متاح.", readyDetail: "استخدم الزر أدناه لإعادة محاولة تحميل هذه الصفحة.",
+          attempt: "التحقق من الاتصال رقم {count}"
+        }
+      }
+      const allowedLocale = (value) => Object.hasOwn(messages, value) ? value : null
+      const queryLocale = allowedLocale(new URL(window.location.href).searchParams.get("locale"))
+      let cookieLocale = null
+      try {
+        const entry = document.cookie.split(";").map((item) => item.trim()).find((item) => item.startsWith("morea_locale="))
+        if (entry) cookieLocale = allowedLocale(decodeURIComponent(entry.slice("morea_locale=".length)))
+      } catch (_) {}
+      const locale = queryLocale || cookieLocale || "fr"
+      const copy = messages[locale]
+      document.documentElement.lang = locale
+      document.documentElement.dir = locale === "ar" ? "rtl" : "ltr"
+      document.title = `Seallo — ${copy.title}`
+      const select = (name) => document.querySelector(`[data-offline-${name}]`)
+      const status = select("status")
+      const detail = select("detail")
+      const retry = select("retry")
+      const attempt = select("attempt")
+      for (const key of ["title", "description", "help"]) select(key).textContent = copy[key]
+      retry.textContent = copy.retry
+      retry.hidden = false
+
+      const delays = [2000, 5000, 10000, 20000, 30000]
+      const cooldownKey = "seallo:offline:last-reload"
+      let lastReload = 0
+      let cooldownStorageAvailable = true
+      try { lastReload = Number(sessionStorage.getItem(cooldownKey)) || 0 } catch (_) { cooldownStorageAvailable = false }
+      let retryTimer = null
+      let countdownTimer = null
+      let timeoutTimer = null
+      let probeController = null
+      let inFlight = false
+      let reloading = false
+      let awaitingManual = false
+      let stopped = false
+      let pendingImmediate = false
+      let delayIndex = 0
+      let checks = 0
+      const visible = () => document.visibilityState !== "hidden"
+      const offline = () => navigator.onLine === false
+      const remainingCooldown = () => {
+        const age = Date.now() - lastReload
+        return age >= 0 && age < 30000 ? 30000 - age : 0
+      }
+      const interpolate = (text, values) => text.replace(/\{(\w+)\}/g, (_, key) => values[key])
+      const show = (state, text, explanation) => {
+        document.body.dataset.offlineState = state
+        status.textContent = text
+        detail.textContent = explanation
+      }
+      const clearSchedule = () => {
+        window.clearTimeout(retryTimer)
+        window.clearInterval(countdownTimer)
+        retryTimer = countdownTimer = null
+      }
+      const showPaused = () => {
+        if (!visible()) show("paused", copy.paused, copy.pausedDetail)
+        else show("offline", copy.offline, copy.offlineDetail)
+      }
+      const schedule = (delay, cooling = false) => {
+        clearSchedule()
+        if (stopped || reloading || inFlight) return
+        if (!visible() || offline()) { showPaused(); return }
+        const wait = Math.max(delay, remainingCooldown())
+        const isCooling = cooling || remainingCooldown() > 0
+        const deadline = Date.now() + wait
+        const update = () => show("waiting", interpolate(isCooling ? copy.cooldown : copy.waiting, { seconds: Math.max(1, Math.ceil((deadline - Date.now()) / 1000)) }), isCooling ? copy.cooldownDetail : copy.waitingDetail)
+        update()
+        countdownTimer = window.setInterval(update, 1000)
+        retryTimer = window.setTimeout(() => check(false), wait)
+      }
+      async function check(manual) {
+        if (stopped || reloading || inFlight) return
+        clearSchedule()
+        if (!visible() || (!manual && offline())) { showPaused(); return }
+        if (!manual && remainingCooldown() > 0) { schedule(remainingCooldown(), true); return }
+        inFlight = true
+        awaitingManual = false
+        checks += 1
+        attempt.hidden = false
+        attempt.dataset.count = String(checks)
+        attempt.textContent = interpolate(copy.attempt, { count: checks })
+        retry.disabled = true
+        retry.textContent = copy.checkingButton
+        show("checking", copy.checking, copy.checkingDetail)
+        const controller = new AbortController()
+        probeController = controller
+        timeoutTimer = window.setTimeout(() => controller.abort(), 15000)
+        try {
+          const response = await fetch("/up", { method: "GET", credentials: "omit", cache: "no-store", signal: controller.signal })
+          if (stopped || controller.signal.aborted || !visible()) return
+          if (response.status === 200 && !response.redirected) {
+            const stamp = Date.now()
+            try { sessionStorage.setItem(cooldownKey, String(stamp)) } catch (_) { cooldownStorageAvailable = false }
+            if (!manual && !cooldownStorageAvailable) {
+              // Without persistent cooldown storage, require an explicit retry
+              // rather than risk an automatic reload loop.
+              awaitingManual = true
+              show("ready", copy.ready, copy.readyDetail)
+              return
+            }
+            lastReload = stamp
+            reloading = true
+            clearSchedule()
+            show("reloading", copy.connected, copy.connectedDetail)
+            window.location.reload()
+          }
+        } catch (_) {
+          // A timeout, captive portal, or network failure keeps this recovery page open.
+        } finally {
+          window.clearTimeout(timeoutTimer)
+          timeoutTimer = null
+          probeController = null
+          inFlight = false
+          if (stopped || reloading) return
+          retry.disabled = false
+          retry.textContent = copy.retry
+          if (awaitingManual) { pendingImmediate = false; return }
+          if (pendingImmediate) {
+            pendingImmediate = false
+            check(false)
+          } else {
+            schedule(delays[Math.min(delayIndex, delays.length - 1)])
+            delayIndex = Math.min(delayIndex + 1, delays.length - 1)
+          }
+        }
+      }
+      const resume = () => {
+        if (stopped || reloading) return
+        clearSchedule()
+        if (!visible() || offline()) {
+          awaitingManual = false
+          probeController?.abort()
+          showPaused()
+          return
+        }
+        if (awaitingManual) { show("ready", copy.ready, copy.readyDetail); return }
+        delayIndex = 0
+        if (inFlight) pendingImmediate = true
+        else check(false)
+      }
+      const manualRetry = () => check(true)
+      const cleanup = () => {
+        stopped = true
+        clearSchedule()
+        window.clearTimeout(timeoutTimer)
+        probeController?.abort()
+        retry.removeEventListener("click", manualRetry)
+        window.removeEventListener("online", resume)
+        window.removeEventListener("offline", resume)
+        document.removeEventListener("visibilitychange", resume)
+        window.removeEventListener("pagehide", cleanup)
+      }
+      retry.addEventListener("click", manualRetry)
+      window.addEventListener("online", resume)
+      window.addEventListener("offline", resume)
+      document.addEventListener("visibilitychange", resume)
+      window.addEventListener("pagehide", cleanup)
+      // A BFCache restoration revives the paused document without rerunning
+      // this script. Reload the same GET route to resume normal navigation.
+      window.addEventListener("pageshow", (event) => {
+        if (event.persisted) window.location.reload()
+      })
+      schedule(delays[0])
+      delayIndex = 1
+    })()
+  </script>
+</body>
+</html>

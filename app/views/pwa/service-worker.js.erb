@@ -2,23 +2,45 @@
 self.addEventListener("install", () => self.skipWaiting())
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()))
 
+// Public, self-contained recovery UI, embedded so it also works without assets.
+const OFFLINE_DOCUMENT = <%= render("pwa/offline", formats: [ :html ]).to_json.html_safe %>
+const NAVIGATION_RETRY_DELAYS = [750, 1500]
+
+async function fetchNavigation(request) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      // Forward the original request, including its credentials and redirect mode.
+      // A slow but healthy response is allowed to finish without an imposed timeout.
+      return await fetch(request)
+    } catch (error) {
+      if (request.signal?.aborted) throw error
+      if (attempt === NAVIGATION_RETRY_DELAYS.length) {
+        return new Response(OFFLINE_DOCUMENT, {
+          status: 503,
+          headers: {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control": "no-store",
+            "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'"
+          }
+        })
+      }
+      await new Promise((resolve) => setTimeout(resolve, NAVIGATION_RETRY_DELAYS[attempt]))
+      if (request.signal?.aborted) throw error
+    }
+  }
+}
+
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url)
   const adminPath = url.pathname === "/admin" || url.pathname.startsWith("/admin/")
+  // Provider authorization GETs can consume one-time codes or session state.
+  const authorizationPath = /^\/admin\/(youcan|seallo|woocommerce)\/(connect|callback)(?:[/.]|$)/.test(url.pathname)
   if (event.request.method !== "GET" || event.request.mode !== "navigate" ||
-      url.origin !== self.location.origin || !adminPath) return
+      url.origin !== self.location.origin || !adminPath || authorizationPath) return
 
-  event.respondWith(fetch(event.request).catch(() => new Response(`<!doctype html>
-<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Seallo — Offline</title>
-<style>body{font:18px system-ui;margin:15vh auto;padding:24px;max-width:36rem;line-height:1.6}a{color:#2e4dd5}</style>
-<h1>Connection required</h1><p>Reconnect to use your workspace.</p>
-<p lang="fr">Connexion requise pour utiliser votre espace.</p>
-<p lang="ar" dir="rtl">يلزم الاتصال بالإنترنت لاستخدام مساحة العمل.</p>
-<a href="/admin">Retry / Réessayer / إعادة المحاولة</a></html>`, {
-    status: 503,
-    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" }
-  })))
+  // Only network failures retry. HTTP errors, sign-in redirects, forms, API calls
+  // and storefront navigation retain their existing behavior.
+  event.respondWith(fetchNavigation(event.request))
 })
 
 // Order alerts: show a system notification, and tell any open admin tab so it can play the chime.

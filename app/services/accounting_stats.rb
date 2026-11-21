@@ -29,6 +29,7 @@ class AccountingStats
   BASES = %w[delivered shipped].freeze
   OPEN_STATUSES = %w[new confirmed preparing awaiting_pickup picked_up in_transit out_for_delivery address_issue unreachable postponed].freeze
   TENTHS = 1000 # shares are computed in tenths of a point, so 100.0 is exactly 1000
+  INVENTORY_BATCH_SIZE = 100
 
   Line = Struct.new(:date, :kind, :order_id, :number, :revenue, :goods, :delivery, :ads, keyword_init: true)
 
@@ -182,12 +183,16 @@ class AccountingStats
       value = 0
       missing = 0
       out_of_stock = 0
-      products.each do |product|
-        units = product.product_variants.any? ? product.product_variants.sum(&:stock) : product.stock
-        out_of_stock += 1 if units <= 0
-        if product.cost_cents.nil? then missing += 1 else value += units * product.cost_cents end
+      count = 0
+      Product.uncached do
+        products.find_each(batch_size: INVENTORY_BATCH_SIZE) do |product|
+          count += 1
+          units = product.product_variants.any? ? product.product_variants.sum(&:stock) : product.stock
+          out_of_stock += 1 if units <= 0
+          if product.cost_cents.nil? then missing += 1 else value += units * product.cost_cents end
+        end
       end
-      { cents: value, products: products.size, out_of_stock: out_of_stock, missing_cost: missing }
+      { cents: value, products: count, out_of_stock: out_of_stock, missing_cost: missing }
     end
   end
 

@@ -327,6 +327,39 @@ RSpec.describe Confirmations::AssignmentRunner do
     end
   end
 
+  describe "bounded queue traversal" do
+    before { stub_const("Confirmations::AssignmentRunner::BATCH_SIZE", 2) }
+
+    it "keeps chronological and id tie order as assignments remove rows from the waiting queue" do
+      clock_in(saida, omar)
+      rule!("Batched", agents: [ saida, omar ])
+      newest = 2.times.map { |i| make("NEW#{i}", minutes_ago: 10) }
+      oldest = 4.times.map { |i| make("OLD#{i}", minutes_ago: 30) }
+      batches = []
+      listener = lambda do |*args|
+        payload = args.last
+        batches << payload[:record_count] if payload[:class_name] == "Order"
+      end
+      result = nil
+      ActiveSupport::Notifications.subscribed(listener, "instantiation.active_record") { result = run }
+
+      expect(result).to eq(attributed: 6, transferred: 0)
+      expect((oldest + newest).map { |order| owner_of(order) }).to eq([ saida, omar ] * 3)
+      expect(batches).not_to be_empty
+      expect(batches.max).to be <= 2
+    end
+
+    it "transfers every late row once even though writing changes the cursor timestamp" do
+      clock_in(saida, omar)
+      rule = rule!("Late batches", agents: [ saida, omar ], timeout_minutes: 30)
+      orders = 5.times.map { |i| make("LATE#{i}", attributed: saida, rule: rule, attributed_minutes_ago: 60) }
+
+      expect(run).to eq(attributed: 0, transferred: 5)
+      expect(orders.map { |order| owner_of(order) }).to eq([ omar ] * 5)
+      expect(orders.map { |order| order.order_events.count }).to eq([ 1 ] * 5)
+    end
+  end
+
   describe AssignmentRulesJob do
     it "runs the rules of every store that has an active one" do
       clock_in(saida)

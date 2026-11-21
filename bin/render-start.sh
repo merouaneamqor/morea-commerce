@@ -3,11 +3,13 @@ set -o errexit
 
 # Seed once on empty catalog, then boot Sidekiq + Puma together (single Render web service).
 # Free plan is 512Mi: prefer one Puma process, one Sidekiq process, smaller malloc arenas,
-# and no YJIT unless explicitly re-enabled.
+# slower Ruby heap growth, and no YJIT unless explicitly re-enabled.
 export MALLOC_ARENA_MAX="${MALLOC_ARENA_MAX:-2}"
 export WEB_CONCURRENCY="${WEB_CONCURRENCY:-0}"
 export SIDEKIQ_CONCURRENCY="${SIDEKIQ_CONCURRENCY:-1}"
 export RUBY_YJIT_ENABLE="${RUBY_YJIT_ENABLE:-0}"
+# Reduce Ruby heap expansion during allocation bursts in either process.
+export RUBY_GC_HEAP_GROWTH_FACTOR="${RUBY_GC_HEAP_GROWTH_FACTOR:-1.1}"
 
 bundle exec rails runner '
   load "db/seeds.rb" if defined?(Store) && Store.count.zero?

@@ -67,10 +67,7 @@ module Connections
         headers.each { |name, value| request[name] = value }
         request.basic_auth(*basic_auth) if basic_auth
         response = transport ? transport.call(uri, request) : perform(uri, request)
-        status = response.code.to_i
-        raise Error.new("invalid_credentials") if [ 401, 403 ].include?(status)
-        raise Error.new("rate_limited") if status == 429
-        raise Error.new("unavailable") unless status.between?(200, 299)
+        check_status!(response)
         raise Error.new("invalid_response") if response.body.to_s.bytesize > MAX_BODY
 
         [ JSON.parse(response.body.to_s), response ]
@@ -79,9 +76,27 @@ module Connections
       end
 
       def perform(uri, request)
-        Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: OPEN_TIMEOUT, read_timeout: READ_TIMEOUT) { |http| http.request(request) }
+        Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: OPEN_TIMEOUT, read_timeout: READ_TIMEOUT) do |http|
+          http.request(request) do |response|
+            check_status!(response)
+            body = +""
+            response.read_body do |chunk|
+              raise Error.new("invalid_response") if body.bytesize + chunk.bytesize > MAX_BODY
+
+              body << chunk
+            end
+            response.body = body
+          end
+        end
       rescue Net::OpenTimeout, Net::ReadTimeout, SocketError, SystemCallError, OpenSSL::SSL::SSLError
         raise Error.new("unavailable")
+      end
+
+      def check_status!(response)
+        status = response.code.to_i
+        raise Error.new("invalid_credentials") if [ 401, 403 ].include?(status)
+        raise Error.new("rate_limited") if status == 429
+        raise Error.new("unavailable") unless status.between?(200, 299)
       end
     end
   end

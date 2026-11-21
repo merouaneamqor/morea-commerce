@@ -205,3 +205,52 @@ main, .site-footer, .mobile-menu__panel, .cart-drawer__panel {
   .storefront-body .checkout-simple :is(.checkout-modal__header, .checkout-modal__footer) { padding: 28px; }
   .storefront-body .checkout-simple .checkout-modal__body { padding: 0 28px 24px; }
 }
+
+/* The Morea logo owns its space in the hero; it cannot cover copy or controls. */
+.storefront-body .campaign-hero__logo {
+  position: relative;
+  width: min(100%, 26rem);
+  height: clamp(4.5rem, 11vw, 7rem);
+  margin-block-end: 1.25rem;
+  pointer-events: none;
+  contain: layout paint;
+}
+.storefront-body .campaign-hero__logo canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+.storefront-body .campaign-hero__logo-fallback {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(3.4rem, 10vw, 5.5rem);
+  line-height: 1;
+  color: #f5f0e8;
+  transition: opacity 600ms ease;
+}
+.storefront-body .campaign-hero__logo-initial {
+  font-family: Arial, Helvetica, sans-serif;
+  margin-inline-end: .055em;
+}
+.storefront-body .campaign-hero__logo[data-hero-atmosphere-tone-value="ink"] .campaign-hero__logo-fallback { color: #151515; }
+.storefront-body .campaign-hero__logo[data-hero-atmosphere-state="ready"] canvas { opacity: 1; }
+.storefront-body .campaign-hero__logo[data-hero-atmosphere-state="ready"] .campaign-hero__logo-fallback { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .storefront-body .campaign-hero__logo canvas,
+  .storefront-body .campaign-hero__logo-fallback { transition: none; }
+}
+
+/* Full-bleed collection tiles must offset the catalog section's own padding. */
+.storefront-body .home-section--collections.home-section--catalog .home-tiles { margin-inline: -.75rem; }
+@media (min-width: 768px) {
+  .storefront-body .home-section--collections.home-section--catalog .home-tiles { margin-inline: -1.5rem; }
+}
+@media (min-width: 1024px) {
+  .storefront-body .home-section--collections.home-section--catalog .home-tiles { margin-inline: -2rem; }
+}

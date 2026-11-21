@@ -70,7 +70,7 @@ After signing in, the admin area offers **Install**. Android browsers that suppo
 
 The installed app opens `/admin` on the same host. Your normal sign-in and workspace permissions still apply. Installation is per host; using the platform host lets super admins switch workspaces within one app. The prompt stays hidden in standalone mode, and **Later** postpones it for seven days on that browser. Browser rules determine whether the native dialog is available.
 
-Admin operations require a connection. The service worker does not cache private pages, order data, API responses or writes; offline navigation displays a connection message. Installation and device-specific behavior still need a real iOS/Android check before claiming device verification.
+Admin operations require a connection. The service worker does not cache private pages, order data, API responses or writes; failed admin navigations retry briefly before showing a localized recovery screen. It checks for reconnection automatically and offers a manual retry of the original page. See [offline navigation recovery](docs/features/admin-offline-recovery.md). Installation and device-specific behavior still need a real iOS/Android check before claiming device verification.
 
 ### Platform billing
 

@@ -29,6 +29,18 @@ RSpec.describe "Admin PWA", type: :request do
     end
   end
 
+  it "embeds a public self-contained recovery page in executable worker code" do
+    get "/admin/service-worker.js", params: { locale: "ar", filter: "synthetic-private-filter" }
+    expect(response).to have_http_status(:ok)
+    expect(response.body).not_to include("<%=", store.name, store.slug, "synthetic-private-filter")
+    embedded = response.body.match(/^const OFFLINE_DOCUMENT = (.+)$/).captures.first
+    recovery = Nokogiri::HTML(JSON.parse(embedded))
+    expect(recovery.at_css("[data-offline-retry]")).to be_present
+    expect(recovery.at_css("[data-offline-status]")).to be_present
+    expect(recovery.css("script[src], link[rel=stylesheet], img[src]")).to be_empty
+    expect(response.body).to include("NAVIGATION_RETRY_DELAYS", "request.signal?.aborted")
+  end
+
   it "does not show an install prompt before sign-in or on the public landing page" do
     [ "/admin/login", "/" ].each do |path|
       get path
